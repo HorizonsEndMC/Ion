@@ -86,7 +86,6 @@ import net.starlegacy.listener.gear.*
 import net.starlegacy.listener.minigame.BedWarsListener
 import net.starlegacy.listener.misc.*
 import net.starlegacy.listener.nations.FriendlyFireListener
-import net.starlegacy.listener.nations.GriefDefenderListener
 import net.starlegacy.listener.nations.MovementListener
 import net.starlegacy.util.*
 import net.starlegacy.util.redisaction.RedisActions
@@ -228,8 +227,6 @@ class StarLegacy : JavaPlugin() {
             MovementListener,
             FriendlyFireListener,
             ProtectionListener,
-
-            GriefDefenderListener,
 
             BlockListener,
             EntityListener,
