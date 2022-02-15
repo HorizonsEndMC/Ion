@@ -64,7 +64,6 @@ import net.starlegacy.feature.progression.*
 import net.starlegacy.feature.progression.advancement.Advancements
 import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.feature.space.*
-import net.starlegacy.feature.space_apartments.SpaceApartments
 import net.starlegacy.feature.starship.*
 import net.starlegacy.feature.starship.active.ActiveStarshipMechanics
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -192,7 +191,6 @@ class StarLegacy : JavaPlugin() {
             Merchants,
 
             PlanetSpawns,
-            SpaceApartments,
 
             DeactivatedPlayerStarships,
             ActiveStarships,
@@ -296,7 +294,6 @@ class StarLegacy : JavaPlugin() {
             GlobalGameRuleCommand,
 
             APCommand,
-            ApartmentCommand,
             BatteryCommand,
             CustomItemCommand,
             ListCommand,
