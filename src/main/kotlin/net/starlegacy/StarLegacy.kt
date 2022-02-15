@@ -88,7 +88,6 @@ import net.starlegacy.listener.misc.*
 import net.starlegacy.listener.nations.FriendlyFireListener
 import net.starlegacy.listener.nations.GriefDefenderListener
 import net.starlegacy.listener.nations.MovementListener
-import net.starlegacy.updater.Updater
 import net.starlegacy.util.*
 import net.starlegacy.util.redisaction.RedisActions
 import ninja.egg82.events.BukkitEvents
@@ -131,7 +130,6 @@ class StarLegacy : JavaPlugin() {
     // put the get() so the classes aren't initialized right away
     private val components: List<SLComponent>
         get() = listOf(
-            Updater,
             RedisActions,
             AutoRestart,
             Caches,

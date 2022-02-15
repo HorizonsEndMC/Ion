@@ -7,7 +7,6 @@ import com.google.gson.Gson
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
-import net.starlegacy.updater.Updater
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
@@ -32,7 +31,6 @@ object CryoPods : SLComponent() {
 
     override fun onEnable() {
         folder.mkdir()
-        Updater.updateCryoPods()
     }
 
     private fun getFile(playerID: UUID): File {
