@@ -1,4 +1,0 @@
-shadowJar {
-    configurations = [project.configurations.compileClasspath]
-    zip64 = true
-}

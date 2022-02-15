@@ -1,6 +1,0 @@
-name: SpaceGenerator
-version: SNAPSHOT
-main: net.starlegacy.spacegenerator.SpaceGenerator
-load: STARTUP
-depend: [StarLegacy, WorldEdit]
-api-version: "1.16"
