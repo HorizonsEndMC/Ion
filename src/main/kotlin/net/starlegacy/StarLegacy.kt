@@ -310,7 +310,6 @@ class StarLegacy : JavaPlugin() {
             ListCommand,
             TransportDebugCommand,
             PlanetSpawnMenuCommand,
-            SLTimeConvertCommand,
             ShuttleCommand,
             BuyXPCommand,
 
