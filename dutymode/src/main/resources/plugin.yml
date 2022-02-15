@@ -1,7 +1,0 @@
-name: DutyMode
-version: SNAPSHOT
-main: net.starlegacy.dutymode.DutyMode
-api-version: "1.16"
-commands:
-  dutymode:
-  blank:
