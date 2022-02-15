@@ -4,7 +4,6 @@ import com.github.stefvanschie.inventoryframework.GuiItem
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.economy.BazaarItem
 import net.starlegacy.feature.economy.city.TradeCityData
-import net.starlegacy.updater.Updater
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.displayName
@@ -24,7 +23,6 @@ object Merchants : SLComponent() {
 
     override fun onEnable() {
         reloadMerchants()
-        Updater.updateMerchants()
         Tasks.asyncRepeat(20L * 60 * 60, 20L * 60 * 60) {
             reloadMerchants()
         }

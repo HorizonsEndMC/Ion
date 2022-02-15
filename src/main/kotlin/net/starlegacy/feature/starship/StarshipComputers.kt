@@ -13,7 +13,6 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.event.StarshipComputerOpenMenuEvent
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
-import net.starlegacy.updater.Updater
 import net.starlegacy.util.*
 import org.bukkit.Material
 import org.bukkit.World
@@ -36,10 +35,6 @@ import java.util.*
 object StarshipComputers : SLComponent() {
 
     val COMPUTER_TYPE = Material.JUKEBOX
-
-    override fun onEnable() {
-        Updater.updateStarshipComputers()
-    }
 
     @EventHandler
     fun onInteract(event: PlayerInteractEvent) {
