@@ -1,7 +1,0 @@
-rootProject.name = "starlegacy"
-
-include "starlegacy-libs"
-//include "starships"
-include "dutymode"
-include "environments"
-include "spacegenerator"
