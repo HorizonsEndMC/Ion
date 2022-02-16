@@ -147,13 +147,13 @@ object TutorialManager : SLComponent() {
 	private fun clearChunk(chunkReference: WeakReference<Chunk>) {
 		val chunk = chunkReference.get() ?: return
 		val nmsChunk = chunk.nms
-		val sections = nmsChunk.sections
-		for (it in nmsChunk.tileEntities.keys.toList()) {
-			nmsChunk.world.removeTileEntity(it)
+//		val sections = nmsChunk.sections
+		for (it in nmsChunk.blockEntities.keys.toList()) {
+			nmsChunk.level.removeBlockEntity(it)
 		}
-		for (i in 0..sections.lastIndex) {
-			sections[i] = NMSLevelChunk.EMPTY_CHUNK_SECTION
-		}
+//		for (i in 0..sections.lastIndex) {
+//			sections[i] = NMSLevelChunk.EMPTY_CHUNK_SECTION
+//		}
 	}
 
 	fun start(player: Player) {

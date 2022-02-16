@@ -245,11 +245,11 @@ private val recipeCache: LoadingCache<List<Material?>, Optional<ItemStack>> =
 		val inventoryItems: NonNullList<NMSItemStack> = getItems(inventoryCrafting)
 		for ((index: Int, material: Material?) in items.withIndex()) {
 			val item: NMSItemStack = if (material != null) CBItemStack.asNMSCopy(ItemStack(material, 1))
-			else NMSItemStack.NULL_ITEM
+			else NMSItemStack.EMPTY
 			inventoryItems[index] = item
 		}
 
-		val result: NMSItemStack? = MinecraftServer.getServer().craftingManager
+		val result: NMSItemStack? = MinecraftServer.getServer().recipeManager
 			.craft(RecipeType.CRAFTING, inventoryCrafting, Bukkit.getWorlds().first().nms)
 			.orNull()?.a(inventoryCrafting)
 

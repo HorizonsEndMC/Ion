@@ -20,7 +20,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 	private fun airQueue(structure: Map<Vec3i, NMSBlockState>): Long2ObjectOpenHashMap<NMSBlockState> {
 		val blocks = Long2ObjectOpenHashMap<NMSBlockState>(structure.size * 2)
 
-		val air = NMSBlocks.AIR.blockData
+		val air = NMSBlocks.AIR.defaultBlockState()
 
 		for ((x, y, z) in structure.keys) {
 			blocks[blockKey(x + location.x, y + location.y, z + location.z)] = air
