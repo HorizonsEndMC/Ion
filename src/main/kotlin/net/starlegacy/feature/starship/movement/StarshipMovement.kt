@@ -13,7 +13,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.isFlyable
 import net.starlegacy.feature.starship.subsystem.CryoSubsystem
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
@@ -38,7 +38,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	protected abstract fun displaceLocation(oldLocation: Location): Location
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
-	protected abstract fun blockDataTransform(blockData: NMSBlockData): NMSBlockData
+	protected abstract fun blockDataTransform(blockData: NMSBlockState): NMSBlockState
 
 	/* should only be called by the ship itself */
 	fun execute() {

@@ -22,7 +22,7 @@ import kotlin.math.min
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.baseshield.BaseShieldMultiblock
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
@@ -324,7 +324,7 @@ object BaseShields : SLComponent() {
 	private val redGlassData = Material.RED_STAINED_GLASS.toNMSBlockData()
 	private val air = Material.AIR.toNMSBlockData()
 
-	private fun getDamageLevel(state: NMSBlockData): Int = when (state) {
+	private fun getDamageLevel(state: NMSBlockState): Int = when (state) {
 		lightBlueGlassData, whiteGlassData -> 4
 		yellowGlassData -> 3
 		orangeGlassData -> 2
@@ -332,7 +332,7 @@ object BaseShields : SLComponent() {
 		else -> 0
 	}
 
-	private fun getDataFromDamage(damageLevel: Int): NMSBlockData = when (damageLevel) {
+	private fun getDataFromDamage(damageLevel: Int): NMSBlockState = when (damageLevel) {
 		4 -> lightBlueGlassData
 		3 -> yellowGlassData
 		2 -> orangeGlassData

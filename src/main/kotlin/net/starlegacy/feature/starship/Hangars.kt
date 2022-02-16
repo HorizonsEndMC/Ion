@@ -16,7 +16,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import net.starlegacy.SLComponent
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.PerWorld
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKeyX
@@ -64,7 +64,7 @@ object Hangars : SLComponent() {
 				val x = blockKeyX(blockKey)
 				val y = blockKeyY(blockKey)
 				val z = blockKeyZ(blockKey)
-				val currentData: NMSBlockData = getNMSBlockDataSafe(world, x, y, z) ?: continue
+				val currentData: NMSBlockState = getNMSBlockDataSafe(world, x, y, z) ?: continue
 				if (!currentData.bukkitMaterial.isAir) {
 					continue
 				}
@@ -74,7 +74,7 @@ object Hangars : SLComponent() {
 				continue
 			}
 			Tasks.sync {
-				val queue = Long2ObjectOpenHashMap<NMSBlockData>()
+				val queue = Long2ObjectOpenHashMap<NMSBlockState>()
 				for ((data, blockKey) in restorations) {
 					if (!world.isChunkLoaded(blockKeyX(blockKey) shr 4, blockKeyZ(blockKey) shr 4)) {
 						continue

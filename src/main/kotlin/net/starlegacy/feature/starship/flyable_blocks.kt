@@ -104,8 +104,8 @@ val DESTROYABLE_BLOCKS = setOf(
 )
 
 private val FLYABLE_BLOCK_DATA_CACHE = CacheBuilder.newBuilder()
-	.build<NMSBlockData, Boolean>(CacheLoader.from { blockData ->
+	.build<NMSBlockState, Boolean>(CacheLoader.from { blockData ->
 		return@from blockData != null && FLYABLE_BLOCKS.contains(blockData.bukkitMaterial)
 	})
 
-fun isFlyable(blockData: NMSBlockData) = FLYABLE_BLOCK_DATA_CACHE[blockData]
+fun isFlyable(blockData: NMSBlockState) = FLYABLE_BLOCK_DATA_CACHE[blockData]

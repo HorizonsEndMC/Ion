@@ -152,7 +152,7 @@ object TutorialManager : SLComponent() {
 			nmsChunk.world.removeTileEntity(it)
 		}
 		for (i in 0..sections.lastIndex) {
-			sections[i] = NMSChunk.EMPTY_CHUNK_SECTION
+			sections[i] = NMSLevelChunk.EMPTY_CHUNK_SECTION
 		}
 	}
 

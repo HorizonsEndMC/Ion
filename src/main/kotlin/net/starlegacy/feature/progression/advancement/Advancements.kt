@@ -165,10 +165,10 @@ object Advancements : SLComponent() {
 	private fun syncVanillaAdvancements(player: Player) = synchronizationTiming.time {
 		require(plugin.server.isPrimaryThread)
 
-		val nmsPlayer: NMSPlayer = player.nms
+		val nmsServerPlayer: NMSServerPlayer = player.nms
 
-		val oldAdvancements: List<NMSAdvancement> = nmsPlayer.advancementData.data.keys
-			.filter { it.name.namespace == namespace && nmsPlayer.advancementData.getProgress(it).isDone }
+		val oldAdvancements: List<NMSAdvancement> = nmsServerPlayer.advancementData.data.keys
+			.filter { it.name.namespace == namespace && nmsServerPlayer.advancementData.getProgress(it).isDone }
 
 		val newAdvancements: Set<SLAdvancement> = Advancements[player]
 
@@ -179,19 +179,19 @@ object Advancements : SLComponent() {
 		val added: List<SLAdvancement> = newAdvancements.filter { !oldNames.contains(it.advancementKey) }
 
 		removed.forEach { nmsAdvancement ->
-			val progress: AdvancementProgress = nmsPlayer.advancementData.getProgress(nmsAdvancement)
+			val progress: AdvancementProgress = nmsServerPlayer.advancementData.getProgress(nmsAdvancement)
 
 			progress.awardedCriteria.forEach { criteria ->
-				nmsPlayer.advancementData.revokeCritera(nmsAdvancement, criteria)
+				nmsServerPlayer.advancementData.revokeCritera(nmsAdvancement, criteria)
 			}
 		}
 
 		added.forEach { advancement ->
-			val progress: AdvancementProgress = nmsPlayer.advancementData.getProgress(advancement.nmsAdvancement)
+			val progress: AdvancementProgress = nmsServerPlayer.advancementData.getProgress(advancement.nmsAdvancement)
 
 			if (!progress.isDone) {
 				progress.remainingCriteria.forEach { criteria ->
-					nmsPlayer.advancementData.grantCriteria(advancement.nmsAdvancement, criteria)
+					nmsServerPlayer.advancementData.grantCriteria(advancement.nmsAdvancement, criteria)
 				}
 			}
 		}
