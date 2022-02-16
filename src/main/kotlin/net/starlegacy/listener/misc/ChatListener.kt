@@ -7,7 +7,6 @@ import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.colorize
 import net.starlegacy.util.filtered
-import net.starlegacy.util.isInBedWarsGame
 import net.starlegacy.util.subscribe
 import net.starlegacy.util.vaultChat
 import org.bukkit.event.EventPriority
@@ -20,10 +19,6 @@ object ChatListener : SLEventListener() {
 
 	override fun onRegister() {
 		subscribe<AsyncPlayerChatEvent>(EventPriority.LOWEST).handler { event ->
-			if (isInBedWarsGame(event.player)) {
-				return@handler
-			}
-
 			val prefix = vaultChat.getPlayerPrefix(event.player)
 			val suffix = vaultChat.getPlayerSuffix(event.player)
 			event.format = "$prefix%s$suffix ${SLTextStyle.DARK_GRAY}» ${SLTextStyle.RESET}%s".colorize()
@@ -42,10 +37,6 @@ object ChatListener : SLEventListener() {
 		subscribe<AsyncPlayerChatEvent>(EventPriority.HIGHEST)
 			.filtered { !it.isCancelled }
 			.handler { event ->
-				if (isInBedWarsGame(event.player)) {
-					return@handler
-				}
-
 				event.isCancelled = true
 
 				val channel = when {
