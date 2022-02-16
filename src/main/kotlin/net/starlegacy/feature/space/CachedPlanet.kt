@@ -112,7 +112,7 @@ class CachedPlanet(
 			val noise = (simplexNoise / 2.0 + 0.5)
 
 			return@associateWith when {
-				crustPalette.isEmpty() -> NMSBlocks.DIRT.blockData
+				crustPalette.isEmpty() -> NMSBlocks.DIRT.defaultBlockState()
 				else -> crustPalette[(noise * crustPalette.size).toInt()]
 			}
 		}
@@ -121,7 +121,7 @@ class CachedPlanet(
 
 		val atmosphere: Map<Vec3i, NMSBlockState> = getSphereBlocks(atmosphereRadius).associateWith { (x, y, z) ->
 			if (atmospherePalette.isEmpty()) {
-				return@associateWith NMSBlocks.AIR.blockData
+				return@associateWith NMSBlocks.AIR.defaultBlockState()
 			}
 
 			val atmosphereSimplex = random.noise(
@@ -131,7 +131,7 @@ class CachedPlanet(
 			)
 
 			if ((atmosphereSimplex / 2.0 + 0.5) > cloudDensity) {
-				return@associateWith NMSBlocks.AIR.blockData
+				return@associateWith NMSBlocks.AIR.defaultBlockState()
 			}
 
 			val cloudSimplex = random.noise(
@@ -143,7 +143,7 @@ class CachedPlanet(
 			val noise = (cloudSimplex / 2.0) + 0.5
 
 			if (noise > cloudThreshold) {
-				return@associateWith NMSBlocks.AIR.blockData
+				return@associateWith NMSBlocks.AIR.defaultBlockState()
 			}
 
 			return@associateWith atmospherePalette[(noise * atmospherePalette.size).toInt()]

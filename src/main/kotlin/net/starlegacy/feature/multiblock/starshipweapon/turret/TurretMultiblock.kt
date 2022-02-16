@@ -179,7 +179,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 			val z = z0 + sign.z
 			val block = world.getBlockAt(x, y, z)
 			val data = block.blockData
-			val newData = data.nms.a(nmsRotation).createCraftBlockData()
+			val newData = data.nms.rotate(nmsRotation).createCraftBlockData()
 			val nx0 = (x0.toDouble() * cosFactor - z0.toDouble() * sinFactor).roundToInt()
 			val nz0 = (x0.toDouble() * sinFactor + z0.toDouble() * cosFactor).roundToInt()
 			val nx = nx0 + sign.x

@@ -134,8 +134,8 @@ abstract class SimpleProjectile(
 		val world = newLoc.world
 
 		// use these so we dont use hardcoded Material values
-		val armorBlastResist = CBMagicNumbers.getBlock(Material.STONE).durability
-		val impactedBlastResist = CBMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).durability
+		val armorBlastResist = CBMagicNumbers.getBlock(Material.STONE).explosionResistance
+		val impactedBlastResist = CBMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
 
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {

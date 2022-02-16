@@ -167,31 +167,31 @@ object Advancements : SLComponent() {
 
 		val nmsServerPlayer: NMSServerPlayer = player.nms
 
-		val oldAdvancements: List<NMSAdvancement> = nmsServerPlayer.advancementData.data.keys
-			.filter { it.name.namespace == namespace && nmsServerPlayer.advancementData.getProgress(it).isDone }
+		val oldAdvancements: List<NMSAdvancement> = nmsServerPlayer.advancements.advancements.keys
+			.filter { it.id.namespace == namespace && nmsServerPlayer.advancements.getOrStartProgress(it).isDone }
 
 		val newAdvancements: Set<SLAdvancement> = Advancements[player]
 
-		val oldNames: Set<String> = oldAdvancements.asSequence().map { it.name.key }.toSet()
+		val oldNames: Set<String> = oldAdvancements.asSequence().map { it.id.path }.toSet()
 		val newNames: Set<String> = newAdvancements.asSequence().map { it.advancementKey }.toSet()
 
-		val removed: List<NMSAdvancement> = oldAdvancements.filter { !newNames.contains(it.name.key) }
+		val removed: List<NMSAdvancement> = oldAdvancements.filter { !newNames.contains(it.id.path) }
 		val added: List<SLAdvancement> = newAdvancements.filter { !oldNames.contains(it.advancementKey) }
 
 		removed.forEach { nmsAdvancement ->
-			val progress: AdvancementProgress = nmsServerPlayer.advancementData.getProgress(nmsAdvancement)
+			val progress: AdvancementProgress = nmsServerPlayer.advancements.getOrStartProgress(nmsAdvancement)
 
-			progress.awardedCriteria.forEach { criteria ->
-				nmsServerPlayer.advancementData.revokeCritera(nmsAdvancement, criteria)
+			progress.completedCriteria.forEach { criteria ->
+				nmsServerPlayer.advancements.revoke(nmsAdvancement, criteria)
 			}
 		}
 
 		added.forEach { advancement ->
-			val progress: AdvancementProgress = nmsServerPlayer.advancementData.getProgress(advancement.nmsAdvancement)
+			val progress: AdvancementProgress = nmsServerPlayer.advancements.getOrStartProgress(advancement.nmsAdvancement)
 
 			if (!progress.isDone) {
 				progress.remainingCriteria.forEach { criteria ->
-					nmsServerPlayer.advancementData.grantCriteria(advancement.nmsAdvancement, criteria)
+					nmsServerPlayer.advancements.award(advancement.nmsAdvancement, criteria)
 				}
 			}
 		}

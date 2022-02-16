@@ -326,7 +326,7 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun getPing(player: Player): Int {
-		return player.nms.playerConnection.player.ping
+		return player.nms.connection.player.latency
 	}
 
 	private fun rotation() {
