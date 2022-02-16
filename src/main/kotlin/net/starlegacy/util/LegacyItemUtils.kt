@@ -52,7 +52,7 @@ object LegacyItemUtils {
 				space += maxStackSize - smelting.amount
 			}
 		} else
-			for (stack in inventory.storageContents)
+			for (stack in inventory.storageContents!!)
 				if (stack == null) {
 					space += maxStackSize
 				} else if (stack.isSimilar(item)) {
@@ -89,7 +89,7 @@ object LegacyItemUtils {
 	fun removeInventoryItems(inv: Inventory, type: Material, amount: Int) {
 		var currentAmount = amount
 		val items = inv.contents
-		for (i in items.indices) {
+		for (i in items!!.indices) {
 			val `is` = items[i]
 			if (`is` != null && `is`.type == type) {
 				val newAmount = `is`.amount - currentAmount
@@ -109,7 +109,7 @@ object LegacyItemUtils {
 
 	fun getTotalItems(inv: Inventory, type: Material): Int {
 		var amount = 0
-		for (`is` in inv.contents) {
+		for (`is` in inv.contents!!) {
 			if (`is` != null && `is`.type == type) {
 				amount += `is`.amount
 			}
@@ -119,7 +119,7 @@ object LegacyItemUtils {
 
 	fun getTotalItems(inv: Inventory, item: ItemStack): Int {
 		var amount = 0
-		for (`is` in inv.contents) {
+		for (`is` in inv.contents!!) {
 			if (`is` != null) {
 				if (`is`.isSimilar(item))
 					amount += `is`.amount

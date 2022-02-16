@@ -57,7 +57,7 @@ object BlasterListener : SLEventListener() {
 	fun preCraft(event: PrepareItemCraftEvent) {
 		var color: DyeColor? = null
 		var dye: ItemStack? = null
-		for (item: ItemStack? in event.inventory.matrix) {
+		for (item: ItemStack? in event.inventory.matrix!!) {
 			if (item != null && item.data is Colorable) {
 				color = (item.data as Colorable).color
 				dye = item
@@ -69,7 +69,7 @@ object BlasterListener : SLEventListener() {
 			return
 		}
 
-		for (item: ItemStack? in event.inventory.matrix) {
+		for (item: ItemStack? in event.inventory.matrix!!) {
 			if (item == null) {
 				continue
 			}

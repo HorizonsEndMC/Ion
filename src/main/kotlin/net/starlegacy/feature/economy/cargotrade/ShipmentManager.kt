@@ -274,7 +274,7 @@ object ShipmentManager : SLComponent() {
 				var credits = 0.0 // total credits to give to the player in revenue
 				var xp = 0.0 // total SLXP to reward the player
 
-				for ((index: Int, item: ItemStack?) in player.inventory.contents.withIndex()) {
+				for ((index: Int, item: ItemStack?) in player.inventory.contents!!.withIndex()) {
 					if (item == null) {
 						continue
 					}

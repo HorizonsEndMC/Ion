@@ -160,7 +160,7 @@ object CollectionMissions : SLComponent() {
 		val items: List<CollectedItem> = itemCache[station._id]
 			.takeIf { it.isNotEmpty() } ?: error("No items available at ${station.name}")
 
-		val freeSpace: Int = player.inventory.storageContents.count { it == null || it.type == Material.AIR }
+		val freeSpace: Int = player.inventory.storageContents!!.count { it == null || it.type == Material.AIR }
 
 		MenuHelper.apply {
 			val buttons: List<GuiItem> = items.map { collectedItem ->
@@ -235,13 +235,13 @@ object CollectionMissions : SLComponent() {
 		val customItem: CustomItem? = CustomItems[itemStack]
 
 		// slots of the full stack items that match the collector mission's item type
-		return player.inventory.contents
+		return player.inventory.contents!!
 			.withIndex()
 			.filter { it.value != null }
 			.filter {
 				when (customItem) {
-					null -> it.value.isSimilar(itemStack) && it.value.amount == it.value.maxStackSize
-					else -> customItem == CustomItems[it.value] && it.value.amount == customItem.material.maxStackSize
+					null -> it.value!!.isSimilar(itemStack) && it.value!!.amount == it.value!!.maxStackSize
+					else -> customItem == CustomItems[it.value] && it.value!!.amount == customItem.material.maxStackSize
 				}
 			}
 			// limit to the amount of stacks to avoid taking more stacks than required if they're carrying extra
@@ -329,7 +329,7 @@ object CollectionMissions : SLComponent() {
 
 	private fun getMaxBuy(shiftClick: Boolean, player: Player): Int {
 		return when {
-			shiftClick -> player.inventory.storageContents.count { it == null || it.type == Material.AIR }
+			shiftClick -> player.inventory.storageContents!!.count { it == null || it.type == Material.AIR }
 			else -> 1
 		}
 	}

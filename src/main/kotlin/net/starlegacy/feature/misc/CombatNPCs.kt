@@ -108,7 +108,7 @@ object CombatNPCs : SLComponent() {
 
 			entityToPlayer[entityId] = playerId
 
-			val inventoryCopy: Array<ItemStack?> = player.inventory.contents
+			val inventoryCopy: Array<ItemStack?> = player.inventory.contents!!
 				.map { item: ItemStack? -> item?.clone() }
 				.toTypedArray()
 			inventories[entityId] = inventoryCopy
@@ -284,7 +284,7 @@ object CombatNPCs : SLComponent() {
 				// this is necessary because of a weird mix of kotlin nullability,
 				// and plain old clear() not clearing some slots like offhand
 				@Suppress("UNCHECKED_CAST")
-				player.inventory.contents = arrayOfNulls<ItemStack?>(player.inventory.contents.size) as Array<ItemStack>
+				player.inventory.contents = arrayOfNulls<ItemStack?>(player.inventory.contents!!.size) as Array<ItemStack>
 				player.health = 0.0
 
 				val zonedDateTime: ZonedDateTime = Instant.ofEpochMilli(data.timestamp).atZone(ZoneId.systemDefault())
