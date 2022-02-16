@@ -402,7 +402,7 @@ object Pipes : SLComponent() {
 					}
 
 					// move all the items by default
-					else -> sourceInventory.contents.withIndex()
+					else -> sourceInventory.contents!!.withIndex()
 				}
 
 				for ((index: Int, item: ItemStack?) in items) {

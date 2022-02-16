@@ -237,7 +237,7 @@ object CrateRestrictions : SLComponent() {
 
 			val inventory = player.inventory
 
-			for (item: ItemStack? in inventory.contents) {
+			for (item: ItemStack? in inventory.contents!!) {
 				if (item == null) {
 					continue
 				}

@@ -48,7 +48,7 @@ object Filters : SLComponent() {
 	fun getItemData(inventory: Inventory): Set<FilterItemData> {
 		val types = mutableSetOf<FilterItemData>()
 
-		for (item: ItemStack? in inventory.contents) {
+		for (item: ItemStack? in inventory.contents!!) {
 			val type = item?.type ?: continue
 
 			if (type.isAir) {
