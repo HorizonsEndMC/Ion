@@ -3,9 +3,14 @@ package net.starlegacy.feature.starship.movement
 import co.aikar.commands.ConditionFailedException
 import java.util.*
 import java.util.concurrent.ExecutionException
+import net.minecraft.core.BlockPos
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket
 import net.minecraft.server.level.ChunkHolder
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.StainedGlassBlock
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.feature.starship.Hangars
@@ -31,7 +36,7 @@ object OptimizedMovement {
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
 		blockDataTransform: (NMSBlockState) -> NMSBlockState,
-		callback: () -> Unit
+		callback: () -> Unit,
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
 		val newChunkMap = getChunkMap(newPositionArray)
@@ -85,7 +90,7 @@ object OptimizedMovement {
 		world: World,
 		collisionChunkMap: ChunkMap,
 		hangars: LinkedList<Long>,
-		newPositionArray: LongArray
+		newPositionArray: LongArray,
 	) {
 		for ((chunkKey, sectionMap) in collisionChunkMap) {
 			val chunk = world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
@@ -132,7 +137,7 @@ object OptimizedMovement {
 		world1: World,
 		world2: World,
 		capturedStates: Array<NMSBlockState>,
-		capturedTiles: MutableMap<Int, NMSBlockEntity>
+		capturedTiles: MutableMap<Int, NMSBlockEntity>,
 	) {
 		val lightEngine = world1.nms.lightEngine
 		val air = Blocks.AIR.defaultBlockState()
@@ -177,7 +182,7 @@ object OptimizedMovement {
 		world2: World,
 		capturedStates: Array<NMSBlockState>,
 		capturedTiles: MutableMap<Int, NMSBlockEntity>,
-		blockDataTransform: (NMSBlockState) -> NMSBlockState
+		blockDataTransform: (NMSBlockState) -> NMSBlockState,
 	) {
 		val lightEngine = world2.nms.lightEngine
 
@@ -200,7 +205,7 @@ object OptimizedMovement {
 					// TODO: Save hangars
 					val data = blockDataTransform(capturedStates[index])
 					section.setBlockState(localX, localY, localZ, data, false)
-					lightEngine.a(NMSBlockPos(x, y, z))
+					lightEngine.checkBlock(NMSBlockPos(x, y, z))
 				}
 			}
 
@@ -214,16 +219,18 @@ object OptimizedMovement {
 			val z = blockKeyZ(blockKey)
 
 			val newPos = NMSBlockPos(x, y, z)
-			tile.setLocation(world2.nms, newPos)
 			val chunk = world2.getChunkAt(x shr 4, z shr 4)
-			tile.currentChunk = chunk.nms
-			tile.r() // i.e. isRemoved = false
+
+			BlockEntity::class.java.getDeclaredMethod("a", Level::class.java, BlockPos::class.java, BlockState::class.java) // a = setChanged
+				.invoke(world2.nms, newPos, tile.blockState)
+
+			tile.clearRemoved()
 
 			if (world1.uid != world2.uid) {
-				world2.nms.setTileEntity(newPos, tile)
+				world2.nms.setBlockEntity(tile)
 			}
 
-			chunk.nms.tileEntities[newPos] = tile
+			chunk.nms.blockEntities[newPos] = tile
 		}
 	}
 
@@ -248,7 +255,7 @@ object OptimizedMovement {
 		capturedTiles: MutableMap<Int, NMSBlockEntity>,
 		index: Int,
 		world1: World,
-		world2: World
+		world2: World,
 	) {
 		val blockPos = NMSBlockPos(
 			blockKeyX(blockKey),
@@ -260,11 +267,11 @@ object OptimizedMovement {
 		capturedTiles[index] = tile
 
 		if (world1.uid != world2.uid) {
-			world1.nms.removeTileEntity(blockPos)
+			world1.nms.removeBlockEntity(blockPos)
 			return
 		}
 
-		chunk.nms.tileEntities.remove(blockPos, tile)
+		chunk.nms.blockEntities.remove(blockPos, tile)
 	}
 
 	private fun getChunkMap(positionArray: LongArray): ChunkMap {
@@ -330,8 +337,9 @@ object OptimizedMovement {
 			val chunk = Bukkit.getWorld(worldID)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
 			val nmsChunk = chunk.nms
 			val playerChunk: ChunkHolder = nmsChunk.playerChunk ?: continue
-			val packet = PacketPlayOutMapChunk(nmsChunk, bitmask)
-			playerChunk.sendPacketToTrackedPlayers(packet, false)
+
+			val packet = ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.lightEngine, null, BitSet(bitmask), false, true)
+			playerChunk.broadcast(packet, false)
 		}
 	}
 }
