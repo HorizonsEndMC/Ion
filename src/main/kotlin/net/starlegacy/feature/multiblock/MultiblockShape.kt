@@ -261,7 +261,7 @@ class MultiblockShape {
 		fun machineFurnace() = complete { block, inward ->
 			val blockData = block.getNMSBlockData()
 			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
-			val facing = blockData.get(NMSBlockFurnace.FACING).blockFace
+			val facing = blockData.get(NMSAbstractFurnaceBlock.FACING).blockFace
 			return@complete facing == inward.oppositeFace
 		}
 	}

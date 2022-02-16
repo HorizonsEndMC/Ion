@@ -1,7 +1,7 @@
 package net.starlegacy.feature.space
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.NMSBlocks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
@@ -15,10 +15,10 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 	var spaceWorldName = spaceWorldName; private set
 	var location = location; private set
 
-	protected abstract fun createStructure(): Map<Vec3i, NMSBlockData>
+	protected abstract fun createStructure(): Map<Vec3i, NMSBlockState>
 
-	private fun airQueue(structure: Map<Vec3i, NMSBlockData>): Long2ObjectOpenHashMap<NMSBlockData> {
-		val blocks = Long2ObjectOpenHashMap<NMSBlockData>(structure.size * 2)
+	private fun airQueue(structure: Map<Vec3i, NMSBlockState>): Long2ObjectOpenHashMap<NMSBlockState> {
+		val blocks = Long2ObjectOpenHashMap<NMSBlockState>(structure.size * 2)
 
 		val air = NMSBlocks.AIR.blockData
 

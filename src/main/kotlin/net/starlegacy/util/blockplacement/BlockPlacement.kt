@@ -2,7 +2,7 @@ package net.starlegacy.util.blockplacement
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.server.v1_16_R3.IBlockData
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Tasks
 import org.bukkit.World
 
@@ -13,14 +13,14 @@ object BlockPlacement {
 		Tasks.syncRepeat(1, 1) { raw.flush(null) }
 	}
 
-	fun queue(world: World, queue: Long2ObjectOpenHashMap<NMSBlockData>) = raw.queue(world, queue)
+	fun queue(world: World, queue: Long2ObjectOpenHashMap<NMSBlockState>) = raw.queue(world, queue)
 
 	fun flush(onComplete: ((World) -> Unit)? = null): Unit = raw.flush(onComplete)
 
 	// can be called async
 	fun placeQueueEfficiently(
 		world: World,
-		queue: Long2ObjectOpenHashMap<NMSBlockData>,
+		queue: Long2ObjectOpenHashMap<NMSBlockState>,
 		onComplete: ((World) -> Unit)? = null
 	) {
 		val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<IBlockData>>>>()
@@ -32,7 +32,7 @@ object BlockPlacement {
 
 	fun placeImmediate(
 		world: World,
-		queue: Long2ObjectOpenHashMap<NMSBlockData>,
+		queue: Long2ObjectOpenHashMap<NMSBlockState>,
 		onComplete: ((World) -> Unit)? = null
 	) {
 		val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<IBlockData>>>>()

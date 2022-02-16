@@ -5,7 +5,7 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.space.Planet
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.NMSBlocks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.d
@@ -100,12 +100,12 @@ class CachedPlanet(
 	val crustRadius = (CRUST_RADIUS_MAX * size).toInt()
 	val atmosphereRadius = crustRadius + 3
 
-	override fun createStructure(): Map<Vec3i, NMSBlockData> {
+	override fun createStructure(): Map<Vec3i, NMSBlockState> {
 		val random = SimplexNoiseGenerator(seed)
 
-		val crustPalette: List<NMSBlockData> = crustMaterials.map(BlockData::nms)
+		val crustPalette: List<NMSBlockState> = crustMaterials.map(BlockData::nms)
 
-		val crust: Map<Vec3i, NMSBlockData> = getSphereBlocks(crustRadius).associateWith { (x, y, z) ->
+		val crust: Map<Vec3i, NMSBlockState> = getSphereBlocks(crustRadius).associateWith { (x, y, z) ->
 			// number from -1 to 1
 			val simplexNoise = random.noise(x.d() * crustNoise, y.d() * crustNoise, z.d() * crustNoise)
 
@@ -117,9 +117,9 @@ class CachedPlanet(
 			}
 		}
 
-		val atmospherePalette: List<NMSBlockData> = cloudMaterials.map(BlockData::nms)
+		val atmospherePalette: List<NMSBlockState> = cloudMaterials.map(BlockData::nms)
 
-		val atmosphere: Map<Vec3i, NMSBlockData> = getSphereBlocks(atmosphereRadius).associateWith { (x, y, z) ->
+		val atmosphere: Map<Vec3i, NMSBlockState> = getSphereBlocks(atmosphereRadius).associateWith { (x, y, z) ->
 			if (atmospherePalette.isEmpty()) {
 				return@associateWith NMSBlocks.AIR.blockData
 			}

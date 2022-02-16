@@ -83,7 +83,7 @@ fun placeSchematicEfficiently(
 	callback: () -> Unit = {}
 ) {
 	Tasks.async {
-		val queue = Long2ObjectOpenHashMap<NMSBlockData>()
+		val queue = Long2ObjectOpenHashMap<NMSBlockState>()
 		val region = schematic.region.clone()
 		val targetBlockVector = BlockVector3.at(target.x, target.y, target.z)
 		val offset = targetBlockVector.subtract(schematic.origin)

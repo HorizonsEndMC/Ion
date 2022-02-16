@@ -3,7 +3,7 @@ package net.starlegacy.feature.space
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.space.Star
 import net.starlegacy.util.CBMagicNumbers
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getSphereBlocks
 import org.bukkit.Material
@@ -27,7 +27,7 @@ class CachedStar(
 
 	val sphereRadius = (MAX_SIZE * size).toInt()
 
-	override fun createStructure(): Map<Vec3i, NMSBlockData> {
+	override fun createStructure(): Map<Vec3i, NMSBlockState> {
 		val blockData = CBMagicNumbers.getBlock(material).blockData
 
 		return getSphereBlocks(sphereRadius).associateWith { blockData }

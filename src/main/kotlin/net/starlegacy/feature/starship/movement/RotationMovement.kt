@@ -10,7 +10,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.thruster.ThrustData
 import net.starlegacy.util.ConnectionUtils
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
@@ -24,7 +24,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))
 
-	override fun blockDataTransform(blockData: NMSBlockData): NMSBlockData =
+	override fun blockDataTransform(blockData: NMSBlockState): NMSBlockState =
 		if (CustomBlocks[blockData] == null) blockData.a(nmsRotation)
 		else blockData
 

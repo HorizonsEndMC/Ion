@@ -6,7 +6,7 @@ import kotlin.math.min
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.ConnectionUtils
-import net.starlegacy.util.NMSBlockData
+import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.add
 import org.bukkit.Chunk
@@ -62,7 +62,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 		}
 	}
 
-	override fun blockDataTransform(blockData: NMSBlockData): NMSBlockData = blockData
+	override fun blockDataTransform(blockData: NMSBlockState): NMSBlockState = blockData
 
 	override fun displaceX(oldX: Int, oldZ: Int): Int = oldX + dx
 

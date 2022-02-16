@@ -244,7 +244,7 @@ object StarshipShields : SLComponent() {
 		canFlare: Boolean,
 		flaringBlocks: LongOpenHashSet,
 		flaredBlocks: LongOpenHashSet,
-		nmsWorld: NMSWorld
+		nmsLevel: NMSLevel
 	) {
 		// ignore if it's over 500 blocks away
 		if (starship.centerOfMass.toLocation(world).distanceSquared(location) > 250_000) {
@@ -270,7 +270,7 @@ object StarshipShields : SLComponent() {
 				canFlare,
 				flaringBlocks,
 				flaredBlocks,
-				nmsWorld,
+				nmsLevel,
 				starship
 			)
 		}
@@ -285,7 +285,7 @@ object StarshipShields : SLComponent() {
 		canFlare: Boolean,
 		flaringBlocks: LongOpenHashSet,
 		flaredBlocks: LongOpenHashSet,
-		nmsWorld: NMSWorld,
+		nmsLevel: NMSLevel,
 		starship: ActiveStarship
 	): Boolean {
 		val containedBlocks = blocks.filter { shield.containsBlock(it) }
@@ -312,7 +312,7 @@ object StarshipShields : SLComponent() {
 		}
 
 		if (canFlare && protectedBlocks.isNotEmpty() && percent > 0.01f) {
-			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsWorld)
+			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsLevel)
 		}
 
 		shield.power = shield.power - usage
@@ -329,11 +329,11 @@ object StarshipShields : SLComponent() {
 		shield: ShieldSubsystem,
 		flaringBlocks: LongOpenHashSet,
 		flaredBlocks: LongOpenHashSet,
-		nmsWorld: NMSWorld
+		nmsLevel: NMSLevel
 	) {
 		val percent = shield.powerRatio
 
-		val flare: NMSBlockData = when {
+		val flare: NMSBlockState = when {
 			shield.isReinforcementActive() -> Material.MAGENTA_STAINED_GLASS
 			percent <= 0.05 -> Material.RED_STAINED_GLASS
 			percent <= 0.10 -> Material.ORANGE_STAINED_GLASS
@@ -357,9 +357,9 @@ object StarshipShields : SLComponent() {
 			}
 
 			val pos = NMSBlockPos(bx, by, bz)
-			val packet = PacketPlayOutBlockChange(nmsWorld, pos)
+			val packet = PacketPlayOutBlockChange(nmsLevel, pos)
 			packet.block = flare
-			nmsWorld.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
+			nmsLevel.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
 		}
 	}
 
@@ -370,7 +370,7 @@ object StarshipShields : SLComponent() {
 		chunkKey: Long,
 		flaringBlocks: LongOpenHashSet,
 		world: World,
-		nmsWorld: NMSWorld
+		nmsLevel: NMSLevel
 	) {
 		if (!canFlare || flaredBlocks.isEmpty()) {
 			return
@@ -393,9 +393,9 @@ object StarshipShields : SLComponent() {
 				}
 
 				val pos = NMSBlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
-				val packet = PacketPlayOutBlockChange(nmsWorld, pos)
+				val packet = PacketPlayOutBlockChange(nmsLevel, pos)
 				packet.block = data
-				nmsWorld.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
+				nmsLevel.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
 			}
 		}
 	}

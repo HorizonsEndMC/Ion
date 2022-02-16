@@ -26,7 +26,7 @@ object OptimizedMovement {
 		world2: World,
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
-		blockDataTransform: (NMSBlockData) -> NMSBlockData,
+		blockDataTransform: (NMSBlockState) -> NMSBlockState,
 		callback: () -> Unit
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
@@ -34,8 +34,8 @@ object OptimizedMovement {
 		val collisionChunkMap = getCollisionChunkMap(oldChunkMap, newChunkMap)
 
 		val n = oldPositionArray.size
-		val capturedStates = java.lang.reflect.Array.newInstance(NMSBlockData::class.java, n) as Array<NMSBlockData>
-		val capturedTiles = mutableMapOf<Int, NMSTileEntity>()
+		val capturedStates = java.lang.reflect.Array.newInstance(NMSBlockState::class.java, n) as Array<NMSBlockState>
+		val capturedTiles = mutableMapOf<Int, NMSBlockEntity>()
 		val hangars = LinkedList<Long>()
 
 		try {
@@ -115,7 +115,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun isHangar(newBlockData: NMSBlockData) = newBlockData.block is BlockStainedGlass
+	private fun isHangar(newBlockData: NMSBlockState) = newBlockData.block is BlockStainedGlass
 
 	private fun dissipateHangarBlocks(world2: World, hangars: LinkedList<Long>) {
 		for (blockKey in hangars.iterator()) {
@@ -127,8 +127,8 @@ object OptimizedMovement {
 		oldChunkMap: ChunkMap,
 		world1: World,
 		world2: World,
-		capturedStates: Array<NMSBlockData>,
-		capturedTiles: MutableMap<Int, NMSTileEntity>
+		capturedStates: Array<NMSBlockState>,
+		capturedTiles: MutableMap<Int, NMSBlockEntity>
 	) {
 		val lightEngine = world1.nms.chunkProvider.lightEngine
 		val air = Blocks.AIR.blockData
@@ -152,7 +152,7 @@ object OptimizedMovement {
 					val type = section.getType(localX, localY, localZ)
 					capturedStates[index] = type
 
-					if (type.block is NMSBlockTileEntity) {
+					if (type.block is NMSBaseEntityBlock) {
 						processOldTile(blockKey, chunk, capturedTiles, index, world1, world2)
 					}
 
@@ -171,9 +171,9 @@ object OptimizedMovement {
 		newChunkMap: ChunkMap,
 		world1: World,
 		world2: World,
-		capturedStates: Array<NMSBlockData>,
-		capturedTiles: MutableMap<Int, NMSTileEntity>,
-		blockDataTransform: (NMSBlockData) -> NMSBlockData
+		capturedStates: Array<NMSBlockState>,
+		capturedTiles: MutableMap<Int, NMSBlockEntity>,
+		blockDataTransform: (NMSBlockState) -> NMSBlockState
 	) {
 		val lightEngine = world2.nms.chunkProvider.lightEngine
 
@@ -223,23 +223,23 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun getChunkSection(nmsChunk: NMSChunk, sectionY: Int): ChunkSection {
-		var section = nmsChunk.sections[sectionY]
+	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): ChunkSection {
+		var section = nmsLevelChunk.sections[sectionY]
 		if (section == null) {
-			section = ChunkSection(sectionY shl 4, nmsChunk, nmsChunk.world, true)
-			nmsChunk.sections[sectionY] = section
+			section = ChunkSection(sectionY shl 4, nmsLevelChunk, nmsLevelChunk.world, true)
+			nmsLevelChunk.sections[sectionY] = section
 		}
 		return section
 	}
 
-	private fun updateHeightMaps(nmsChunk: NMSChunk) {
-		HeightMap.a(nmsChunk, HeightMap.Type.values().toSet())
+	private fun updateHeightMaps(nmsLevelChunk: NMSLevelChunk) {
+		HeightMap.a(nmsLevelChunk, HeightMap.Type.values().toSet())
 	}
 
 	private fun processOldTile(
 		blockKey: Long,
 		chunk: Chunk,
-		capturedTiles: MutableMap<Int, NMSTileEntity>,
+		capturedTiles: MutableMap<Int, NMSBlockEntity>,
 		index: Int,
 		world1: World,
 		world2: World
@@ -250,7 +250,7 @@ object OptimizedMovement {
 			blockKeyZ(blockKey)
 		)
 
-		val tile: NMSTileEntity = chunk.nms.getTileEntityImmediately(blockPos) ?: return
+		val tile: NMSBlockEntity = chunk.nms.getTileEntityImmediately(blockPos) ?: return
 		capturedTiles[index] = tile
 
 		if (world1.uid != world2.uid) {
