@@ -6,16 +6,16 @@ import org.bukkit.block.Sign
 
 // TODO: Make signless multiblocks an actual thing
 abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : StarshipWeaponMultiblock<TSubsystem>() {
-    override val signText: List<String> = listOf("", "", "", "")
+	override val signText: List<String> = listOf("", "", "", "")
 
-    override val name: String = javaClass.simpleName
-    override val advancement: SLAdvancement? = null
+	override val name: String = javaClass.simpleName
+	override val advancement: SLAdvancement? = null
 
-    override fun matchesSign(lines: Array<String>): Boolean {
-        return false
-    }
+	override fun matchesSign(lines: Array<String>): Boolean {
+		return false
+	}
 
-    override fun matchesUndetectedSign(sign: Sign): Boolean {
-        return false
-    }
+	override fun matchesUndetectedSign(sign: Sign): Boolean {
+		return false
+	}
 }

@@ -8,7 +8,7 @@ import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 
 abstract class StarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : Multiblock() {
-    override val advancement: SLAdvancement? = null
+	override val advancement: SLAdvancement? = null
 
-    abstract fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TSubsystem
+	abstract fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TSubsystem
 }

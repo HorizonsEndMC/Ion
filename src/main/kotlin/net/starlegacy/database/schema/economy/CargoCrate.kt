@@ -1,5 +1,6 @@
 package net.starlegacy.database.schema.economy
 
+import java.util.Locale
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -15,44 +16,44 @@ import org.litote.kmongo.eq
  * Referenced by cargo crate shipments
  */
 data class CargoCrate(
-    override val _id: Oid<CargoCrate> = objId(),
-    var name: String,
-    var color: Color,
-    val values: Map<String, Double>
+	override val _id: Oid<CargoCrate> = objId(),
+	var name: String,
+	var color: Color,
+	val values: Map<String, Double>
 ) : DbObject {
-    companion object : OidDbObjectCompanion<CargoCrate>(CargoCrate::class, {
-        ensureUniqueIndex(CargoCrate::name)
-    }) {
-        fun delete(crateId: Oid<CargoCrate>): Unit = trx { sess ->
-            CargoCrateShipment.col.deleteMany(sess, CargoCrateShipment::crate eq crateId)
-            col.deleteOneById(sess, crateId)
-        }
+	companion object : OidDbObjectCompanion<CargoCrate>(CargoCrate::class, {
+		ensureUniqueIndex(CargoCrate::name)
+	}) {
+		fun delete(crateId: Oid<CargoCrate>): Unit = trx { sess ->
+			CargoCrateShipment.col.deleteMany(sess, CargoCrateShipment::crate eq crateId)
+			col.deleteOneById(sess, crateId)
+		}
 
-        fun create(name: String, color: Color, values: Map<String, Double>): Oid<CargoCrate> {
-            val id = objId<CargoCrate>()
-            col.insertOne(CargoCrate(id, name, color, values))
-            return id
-        }
-    }
+		fun create(name: String, color: Color, values: Map<String, Double>): Oid<CargoCrate> {
+			val id = objId<CargoCrate>()
+			col.insertOne(CargoCrate(id, name, color, values))
+			return id
+		}
+	}
 
-    enum class Color(val chatColor: SLTextStyle, val shulkerMaterial: Material) {
-        WHITE(SLTextStyle.WHITE, Material.WHITE_SHULKER_BOX),
-        ORANGE(SLTextStyle.GOLD, Material.ORANGE_SHULKER_BOX),
-        MAGENTA(SLTextStyle.RED, Material.MAGENTA_SHULKER_BOX),
-        LIGHT_BLUE(SLTextStyle.AQUA, Material.LIGHT_BLUE_SHULKER_BOX),
-        YELLOW(SLTextStyle.YELLOW, Material.YELLOW_SHULKER_BOX),
-        LIME(SLTextStyle.GREEN, Material.LIME_SHULKER_BOX),
-        PINK(SLTextStyle.LIGHT_PURPLE, Material.PINK_SHULKER_BOX),
-        GRAY(SLTextStyle.DARK_GRAY, Material.GRAY_SHULKER_BOX),
-        LIGHT_GRAY(SLTextStyle.GRAY, Material.LIGHT_GRAY_SHULKER_BOX),
-        CYAN(SLTextStyle.DARK_AQUA, Material.CYAN_SHULKER_BOX),
-        PURPLE(SLTextStyle.DARK_PURPLE, Material.PURPLE_SHULKER_BOX),
-        BLUE(SLTextStyle.BLUE, Material.BLUE_SHULKER_BOX),
-        BROWN(SLTextStyle.GOLD, Material.BROWN_SHULKER_BOX),
-        GREEN(SLTextStyle.DARK_GREEN, Material.GREEN_SHULKER_BOX),
-        RED(SLTextStyle.DARK_RED, Material.RED_SHULKER_BOX),
-        BLACK(SLTextStyle.BLACK, Material.BLACK_SHULKER_BOX),
-    }
+	enum class Color(val chatColor: SLTextStyle, val shulkerMaterial: Material) {
+		WHITE(SLTextStyle.WHITE, Material.WHITE_SHULKER_BOX),
+		ORANGE(SLTextStyle.GOLD, Material.ORANGE_SHULKER_BOX),
+		MAGENTA(SLTextStyle.RED, Material.MAGENTA_SHULKER_BOX),
+		LIGHT_BLUE(SLTextStyle.AQUA, Material.LIGHT_BLUE_SHULKER_BOX),
+		YELLOW(SLTextStyle.YELLOW, Material.YELLOW_SHULKER_BOX),
+		LIME(SLTextStyle.GREEN, Material.LIME_SHULKER_BOX),
+		PINK(SLTextStyle.LIGHT_PURPLE, Material.PINK_SHULKER_BOX),
+		GRAY(SLTextStyle.DARK_GRAY, Material.GRAY_SHULKER_BOX),
+		LIGHT_GRAY(SLTextStyle.GRAY, Material.LIGHT_GRAY_SHULKER_BOX),
+		CYAN(SLTextStyle.DARK_AQUA, Material.CYAN_SHULKER_BOX),
+		PURPLE(SLTextStyle.DARK_PURPLE, Material.PURPLE_SHULKER_BOX),
+		BLUE(SLTextStyle.BLUE, Material.BLUE_SHULKER_BOX),
+		BROWN(SLTextStyle.GOLD, Material.BROWN_SHULKER_BOX),
+		GREEN(SLTextStyle.DARK_GREEN, Material.GREEN_SHULKER_BOX),
+		RED(SLTextStyle.DARK_RED, Material.RED_SHULKER_BOX),
+		BLACK(SLTextStyle.BLACK, Material.BLACK_SHULKER_BOX),
+	}
 
-    fun getValue(planet: String): Double = values.getOrDefault(planet.toUpperCase(), 0.0)
+	fun getValue(planet: String): Double = values.getOrDefault(planet.uppercase(Locale.getDefault()), 0.0)
 }

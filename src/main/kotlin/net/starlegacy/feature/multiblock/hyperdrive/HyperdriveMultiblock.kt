@@ -14,38 +14,38 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
 abstract class HyperdriveMultiblock : Multiblock() {
-    override val name = "hyperdrive"
+	override val name = "hyperdrive"
 
-    abstract val maxPower: Int
-    abstract val hyperdriveClass: Int
+	abstract val maxPower: Int
+	abstract val hyperdriveClass: Int
 
-    protected abstract fun buildHopperOffsets(): List<Vec3i>
+	protected abstract fun buildHopperOffsets(): List<Vec3i>
 
-    private val hopperOffsets: Map<BlockFace, List<Vec3i>> =
-        CARDINAL_BLOCK_FACES.associate { inward ->
-            val right = inward.rightFace
-            val offsets: List<Vec3i> = buildHopperOffsets().map { (x, y, z) ->
-                Vec3i(x = right.modX * x + inward.modX * z, y = y, z = right.modZ * x + inward.modZ * z)
-            }
-            return@associate inward to offsets
-        }
+	private val hopperOffsets: Map<BlockFace, List<Vec3i>> =
+		CARDINAL_BLOCK_FACES.associate { inward ->
+			val right = inward.rightFace
+			val offsets: List<Vec3i> = buildHopperOffsets().map { (x, y, z) ->
+				Vec3i(x = right.modX * x + inward.modX * z, y = y, z = right.modZ * x + inward.modZ * z)
+			}
+			return@associate inward to offsets
+		}
 
-    protected fun addHoppers(multiblockShape: MultiblockShape) = buildHopperOffsets().forEach { (x, y, z) ->
-        multiblockShape.at(x, y, z).hopper()
-    }
+	protected fun addHoppers(multiblockShape: MultiblockShape) = buildHopperOffsets().forEach { (x, y, z) ->
+		multiblockShape.at(x, y, z).hopper()
+	}
 
-    fun getHoppers(sign: Sign): Set<Hopper> {
-        val inwards = sign.getFacing().oppositeFace
-        val offsets = hopperOffsets[inwards] ?: error("Unhandled sign direction $inwards")
+	fun getHoppers(sign: Sign): Set<Hopper> {
+		val inwards = sign.getFacing().oppositeFace
+		val offsets = hopperOffsets[inwards] ?: error("Unhandled sign direction $inwards")
 
-        val origin = sign.location.add(inwards)
+		val origin = sign.location.add(inwards)
 
-        return offsets.map { origin.clone().add(it).block.getState(false) as Hopper }.toSet()
-    }
+		return offsets.map { origin.clone().add(it).block.getState(false) as Hopper }.toSet()
+	}
 
-    override fun onTransformSign(player: Player, sign: Sign) {
-        super.onTransformSign(player, sign)
-        sign.setLine(3, ChatColor.RED.toString() + "Offline")
-        sign.update()
-    }
+	override fun onTransformSign(player: Player, sign: Sign) {
+		super.onTransformSign(player, sign)
+		sign.setLine(3, ChatColor.RED.toString() + "Offline")
+		sign.update()
+	}
 }

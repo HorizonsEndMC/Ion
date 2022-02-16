@@ -8,12 +8,12 @@ import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 
 object PulseCannonStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PulseCannonWeaponSubsystem>() {
-    override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): PulseCannonWeaponSubsystem {
-        return PulseCannonWeaponSubsystem(starship, pos, face)
-    }
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): PulseCannonWeaponSubsystem {
+		return PulseCannonWeaponSubsystem(starship, pos, face)
+	}
 
-    override fun MultiblockShape.buildStructure() {
-        at(+0, +0, +0).sponge()
-        at(+0, +0, +1).stainedGlass()
-    }
+	override fun MultiblockShape.buildStructure() {
+		at(+0, +0, +0).sponge()
+		at(+0, +0, +1).stainedGlass()
+	}
 }

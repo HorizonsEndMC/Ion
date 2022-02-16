@@ -6,24 +6,24 @@ import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
 
 class StarshipUnpilotEvent(
-    ship: ActivePlayerStarship,
-    val player: Player
+	ship: ActivePlayerStarship,
+	val player: Player
 ) : PlayerStarshipEvent(ship), Cancellable {
-    private var cancelled: Boolean = false
+	private var cancelled: Boolean = false
 
-    override fun getHandlers(): HandlerList {
-        return handlerList
-    }
+	override fun getHandlers(): HandlerList {
+		return handlerList
+	}
 
-    override fun isCancelled() = cancelled
+	override fun isCancelled() = cancelled
 
-    override fun setCancelled(cancelled: Boolean) {
-        this.cancelled = cancelled
-    }
+	override fun setCancelled(cancelled: Boolean) {
+		this.cancelled = cancelled
+	}
 
-    companion object {
-        @JvmStatic
-        val handlerList = HandlerList()
-    }
+	companion object {
+		@JvmStatic
+		val handlerList = HandlerList()
+	}
 }
 

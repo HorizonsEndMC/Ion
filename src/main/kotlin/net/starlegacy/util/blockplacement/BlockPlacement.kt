@@ -7,36 +7,36 @@ import net.starlegacy.util.Tasks
 import org.bukkit.World
 
 object BlockPlacement {
-    private val raw = BlockPlacementRaw()
+	private val raw = BlockPlacementRaw()
 
-    init {
-        Tasks.syncRepeat(1, 1) { raw.flush(null) }
-    }
+	init {
+		Tasks.syncRepeat(1, 1) { raw.flush(null) }
+	}
 
-    fun queue(world: World, queue: Long2ObjectOpenHashMap<NMSBlockData>) = raw.queue(world, queue)
+	fun queue(world: World, queue: Long2ObjectOpenHashMap<NMSBlockData>) = raw.queue(world, queue)
 
-    fun flush(onComplete: ((World) -> Unit)? = null): Unit = raw.flush(onComplete)
+	fun flush(onComplete: ((World) -> Unit)? = null): Unit = raw.flush(onComplete)
 
-    // can be called async
-    fun placeQueueEfficiently(
-        world: World,
-        queue: Long2ObjectOpenHashMap<NMSBlockData>,
-        onComplete: ((World) -> Unit)? = null
-    ) {
-        val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<IBlockData>>>>()
-        raw.addToWorldQueue(queue, worldQueue)
-        Tasks.sync {
-            raw.placeWorldQueue(world, worldQueue, onComplete, false)
-        }
-    }
+	// can be called async
+	fun placeQueueEfficiently(
+		world: World,
+		queue: Long2ObjectOpenHashMap<NMSBlockData>,
+		onComplete: ((World) -> Unit)? = null
+	) {
+		val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<IBlockData>>>>()
+		raw.addToWorldQueue(queue, worldQueue)
+		Tasks.sync {
+			raw.placeWorldQueue(world, worldQueue, onComplete, false)
+		}
+	}
 
-    fun placeImmediate(
-        world: World,
-        queue: Long2ObjectOpenHashMap<NMSBlockData>,
-        onComplete: ((World) -> Unit)? = null
-    ) {
-        val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<IBlockData>>>>()
-        raw.addToWorldQueue(queue, worldQueue)
-        raw.placeWorldQueue(world, worldQueue, onComplete, true)
-    }
+	fun placeImmediate(
+		world: World,
+		queue: Long2ObjectOpenHashMap<NMSBlockData>,
+		onComplete: ((World) -> Unit)? = null
+	) {
+		val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<IBlockData>>>>()
+		raw.addToWorldQueue(queue, worldQueue)
+		raw.placeWorldQueue(world, worldQueue, onComplete, true)
+	}
 }

@@ -6,25 +6,25 @@ import net.starlegacy.feature.progression.advancement.SLAdvancement
 import org.bukkit.Material
 
 object MagazineMultiblock : Multiblock() {
-    override val name: String = "magazine"
-    override val signText: List<String> = createSignText(
-        "&7-=[&c=&a=&b=&7]=-",
-        "&0Starship",
-        "&0Magazine",
-        "&7-=[&c=&a=&b=&7]=-",
-    )
-    override val advancement: SLAdvancement = SLAdvancement.MAGAZINES
+	override val name: String = "magazine"
+	override val signText: List<String> = createSignText(
+		"&7-=[&c=&a=&b=&7]=-",
+		"&0Starship",
+		"&0Magazine",
+		"&7-=[&c=&a=&b=&7]=-",
+	)
+	override val advancement: SLAdvancement = SLAdvancement.MAGAZINES
 
-    override fun MultiblockShape.buildStructure() {
-        y(+0) {
-            z(+0) {
-                x(+0).type(Material.END_PORTAL_FRAME)
-                x(+1).anyPipedInventory()
-            }
+	override fun MultiblockShape.buildStructure() {
+		y(+0) {
+			z(+0) {
+				x(+0).type(Material.END_PORTAL_FRAME)
+				x(+1).anyPipedInventory()
+			}
 
-            z(+1) {
-                x(+0).ironBlock()
-            }
-        }
-    }
+			z(+1) {
+				x(+0).ironBlock()
+			}
+		}
+	}
 }

@@ -21,71 +21,71 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
 object PowerToolListener : SLEventListener() {
-    private val PICKAXE = ItemStack(Material.DIAMOND_PICKAXE, 1)
+	private val PICKAXE = ItemStack(Material.DIAMOND_PICKAXE, 1)
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun onInteract(event: PlayerInteractEvent) {
-        if (event.action != Action.LEFT_CLICK_BLOCK || event.player.gameMode == GameMode.CREATIVE) {
-            return
-        }
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	fun onInteract(event: PlayerInteractEvent) {
+		if (event.action != Action.LEFT_CLICK_BLOCK || event.player.gameMode == GameMode.CREATIVE) {
+			return
+		}
 
-        val item = event.item ?: return
-        val customItem = CustomItems[item]
-        if (customItem == null || !customItem.id.startsWith("power_tool_")) {
-            return
-        }
-        val type = customItem.id.split("_")[2]
-        val player = event.player
-        val block = event.clickedBlock ?: return
-        val blockType = block.type
-        when (type) {
-            "drill" -> {
-                if (blockType == Material.BEDROCK || blockType == Material.BARRIER) {
-                    return
-                }
+		val item = event.item ?: return
+		val customItem = CustomItems[item]
+		if (customItem == null || !customItem.id.startsWith("power_tool_")) {
+			return
+		}
+		val type = customItem.id.split("_")[2]
+		val player = event.player
+		val block = event.clickedBlock ?: return
+		val blockType = block.type
+		when (type) {
+			"drill" -> {
+				if (blockType == Material.BEDROCK || blockType == Material.BARRIER) {
+					return
+				}
 
-                if (!BlockBreakEvent(block, player).callEvent()) {
-                    return
-                }
+				if (!BlockBreakEvent(block, player).callEvent()) {
+					return
+				}
 
-                Tasks.syncDelay(4) {
-                    if (blockType != block.type) return@syncDelay
+				Tasks.syncDelay(4) {
+					if (blockType != block.type) return@syncDelay
 
-                    if (getPower(item) < 20) {
-                        player.sendMessage(ChatColor.RED.toString() + "Out of power.")
-                        return@syncDelay
-                    }
+					if (getPower(item) < 20) {
+						player.sendMessage(ChatColor.RED.toString() + "Out of power.")
+						return@syncDelay
+					}
 
-                    removePower(item, 10)
-                    player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
-                    block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
-                    block.breakNaturally(PICKAXE)
-                }
+					removePower(item, 10)
+					player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
+					block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
+					block.breakNaturally(PICKAXE)
+				}
 
-                return
-            }
-            "chainsaw" -> {
-                val breakEvent = BlockBreakEvent(block, player)
-                Bukkit.getPluginManager().callEvent(breakEvent)
-                if (breakEvent.isCancelled) return
+				return
+			}
+			"chainsaw" -> {
+				val breakEvent = BlockBreakEvent(block, player)
+				Bukkit.getPluginManager().callEvent(breakEvent)
+				if (breakEvent.isCancelled) return
 
-                event.isCancelled = true
+				event.isCancelled = true
 
-                if (!TreeCutter.isApplicable(blockType)) {
-                    return
-                }
+				if (!TreeCutter.isApplicable(blockType)) {
+					return
+				}
 
-                if (getPower(item) < 1000) {
-                    player.sendMessage(ChatColor.RED.toString() + "Out of power.")
-                    return
-                }
+				if (getPower(item) < 1000) {
+					player.sendMessage(ChatColor.RED.toString() + "Out of power.")
+					return
+				}
 
-                removePower(item, 1000)
+				removePower(item, 1000)
 
-                TreeCutter(event.player, block).runTaskAsynchronously(PLUGIN)
-                return
-            }
-            else -> println("Unhandled power tool $type")
-        }
-    }
+				TreeCutter(event.player, block).runTaskAsynchronously(PLUGIN)
+				return
+			}
+			else -> println("Unhandled power tool $type")
+		}
+	}
 }

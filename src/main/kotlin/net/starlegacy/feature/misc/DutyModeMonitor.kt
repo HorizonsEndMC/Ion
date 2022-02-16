@@ -3,6 +3,7 @@ package net.starlegacy.feature.misc
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
+import java.util.Locale
 import net.starlegacy.SETTINGS
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
@@ -15,105 +16,109 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 
 object DutyModeMonitor : SLComponent() {
-    private fun isInDutyMode(player: Player) = player.hasPermission("dutymode")
+	private fun isInDutyMode(player: Player) = player.hasPermission("dutymode")
 
-    @EventHandler
-    fun onRunCommand(event: PlayerCommandPreprocessEvent) {
-        val player = event.player
+	@EventHandler
+	fun onRunCommand(event: PlayerCommandPreprocessEvent) {
+		val player = event.player
 
-        if (!isInDutyMode(player) && !isDutyModeCommand(event)) {
-            return
-        }
+		if (!isInDutyMode(player) && !isDutyModeCommand(event)) {
+			return
+		}
 
-        record(player, "**Command**: ${event.message}")
-    }
+		record(player, "**Command**: ${event.message}")
+	}
 
-    private fun isDutyModeCommand(event: PlayerCommandPreprocessEvent) = event.message
-        .removePrefix("/")
-        .toLowerCase()
-        .startsWith("dutymode")
+	private fun isDutyModeCommand(event: PlayerCommandPreprocessEvent) = event.message
+		.removePrefix("/")
+		.lowercase(Locale.getDefault())
+		.startsWith("dutymode")
 
-    @EventHandler
-    fun onChangeGameMode(event: PlayerGameModeChangeEvent) {
-        val player = event.player
+	@EventHandler
+	fun onChangeGameMode(event: PlayerGameModeChangeEvent) {
+		val player = event.player
 
-        if (!isInDutyMode(player)) {
-            return
-        }
+		if (!isInDutyMode(player)) {
+			return
+		}
 
-        record(player, "**Game Mode**: ${event.player.gameMode} -> ${event.newGameMode}")
-    }
+		record(player, "**Game Mode**: ${event.player.gameMode} -> ${event.newGameMode}")
+	}
 
-    @EventHandler
-    fun onTeleport(event: PlayerChangedWorldEvent) {
-        val player = event.player
+	@EventHandler
+	fun onTeleport(event: PlayerChangedWorldEvent) {
+		val player = event.player
 
-        if (!isInDutyMode(player)) {
-            return
-        }
+		if (!isInDutyMode(player)) {
+			return
+		}
 
-        record(player, "**World Change**: ${event.from} -> ${event.player.world}")
-    }
+		record(player, "**World Change**: ${event.from} -> ${event.player.world}")
+	}
 
-    @EventHandler
-    fun onCreativeItem(event: InventoryCreativeEvent) {
-        val player = event.whoClicked as? Player ?: return
+	@EventHandler
+	fun onCreativeItem(event: InventoryCreativeEvent) {
+		val player = event.whoClicked as? Player ?: return
 
-        if (!isInDutyMode(player)) {
-            return
-        }
+		if (!isInDutyMode(player)) {
+			return
+		}
 
-        record(player, "**Creative Inventory**: inventoryType=${event.inventory.type}, " +
-                "slotType=${event.slotType}, " +
-                "slot=${event.slot}, " +
-                "newItem/cursor=${event.cursor}")
-    }
+		record(
+			player, "**Creative Inventory**: inventoryType=${event.inventory.type}, " +
+				"slotType=${event.slotType}, " +
+				"slot=${event.slot}, " +
+				"newItem/cursor=${event.cursor}"
+		)
+	}
 
-    @EventHandler
-    fun onStarshipPilot(event: StarshipPilotedEvent) {
-        val player = event.player
+	@EventHandler
+	fun onStarshipPilot(event: StarshipPilotedEvent) {
+		val player = event.player
 
-        if (!isInDutyMode(player)) {
-            return
-        }
+		if (!isInDutyMode(player)) {
+			return
+		}
 
-        val starship = event.starship
-        record(player, "**Starship Pilot**: ${starship.type} (${starship.blockCount} blocks)")
-    }
+		val starship = event.starship
+		record(player, "**Starship Pilot**: ${starship.type} (${starship.blockCount} blocks)")
+	}
 
-    @EventHandler
-    fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
-        val player = event.player
+	@EventHandler
+	fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
+		val player = event.player
 
-        if (!isInDutyMode(player)) {
-            return
-        }
+		if (!isInDutyMode(player)) {
+			return
+		}
 
-        val starship = event.starship
-        record(player, "**Starship Unpilot**: ${starship.type} (${starship.blockCount} blocks)")
-    }
+		val starship = event.starship
+		record(player, "**Starship Unpilot**: ${starship.type} (${starship.blockCount} blocks)")
+	}
 
-    private fun record(player: Player, content: String) {
-        val url = SETTINGS.dutyModeMonitorWebhook ?: return
+	private fun record(player: Player, content: String) {
+		val url = SETTINGS.dutyModeMonitorWebhook ?: return
 
-        val builder = WebhookClientBuilder(url)
+		val builder = WebhookClientBuilder(url)
 
-        builder.setThreadFactory { job ->
-            val thread = Thread(job)
-            thread.name = "Hello"
-            thread.isDaemon = true
-            thread
-        }
+		builder.setThreadFactory { job ->
+			val thread = Thread(job)
+			thread.name = "Hello"
+			thread.isDaemon = true
+			thread
+		}
 
-        builder.setWait(true)
+		builder.setWait(true)
 
-        val client: WebhookClient = builder.build()
-        val name = player.name
-        val uuid = player.uniqueId
-        client.send(WebhookMessageBuilder()
-            .setUsername("$name ($uuid)")
-            .setAvatarUrl("https://crafatar.com/renders/head/$uuid")
-            .setContent(content)
-            .build())
-    }
+		val client: WebhookClient = builder.build()
+		val name = player.name
+		val uuid = player.uniqueId
+		client.send(
+			WebhookMessageBuilder()
+				.setUsername("$name ($uuid)")
+				.setAvatarUrl("https://crafatar.com/renders/head/$uuid")
+				.setContent(content)
+				.build()
+		)
+	}
 }

@@ -9,19 +9,19 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class PointDefenseLaserProjectile(
-    starship: ActiveStarship?,
-    loc: Location,
-    dir: Vector,
-    override val range: Double,
-    shooter: Player?
+	starship: ActiveStarship?,
+	loc: Location,
+	dir: Vector,
+	override val range: Double,
+	shooter: Player?
 ) : LaserProjectile(starship, loc, dir, shooter) {
-    override val speed: Double = 150.0
-    override val shieldDamageMultiplier: Int = 1
-    override val color: Color = Color.BLUE
-    override val thickness: Double = 0.2
-    override val particleThickness: Double = 0.35
-    override val explosionPower: Float = 2.0f
-    override val volume: Int = 20
-    override val pitch: Float = 2.0f
-    override val soundName: String = Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST.mcName
+	override val speed: Double = 150.0
+	override val shieldDamageMultiplier: Int = 1
+	override val color: Color = Color.BLUE
+	override val thickness: Double = 0.2
+	override val particleThickness: Double = 0.35
+	override val explosionPower: Float = 2.0f
+	override val volume: Int = 20
+	override val pitch: Float = 2.0f
+	override val soundName: String = Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST.mcName
 }

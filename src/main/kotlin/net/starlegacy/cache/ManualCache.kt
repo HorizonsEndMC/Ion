@@ -5,9 +5,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 abstract class ManualCache : Cache {
-    internal inline val plugin get() = PLUGIN
+	internal inline val plugin get() = PLUGIN
 
-    protected val log: Logger = LoggerFactory.getLogger(javaClass)
+	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
-    abstract override fun load()
+	abstract override fun load()
 }

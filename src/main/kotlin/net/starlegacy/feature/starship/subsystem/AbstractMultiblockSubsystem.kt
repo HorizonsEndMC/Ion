@@ -9,21 +9,21 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 
 abstract class AbstractMultiblockSubsystem<T>(
-    starship: ActiveStarship,
-    sign: Sign,
-    val multiblock: T
+	starship: ActiveStarship,
+	sign: Sign,
+	val multiblock: T
 ) : StarshipSubsystem(starship, Vec3i(sign.location)), DirectionalSubsystem where T : Multiblock {
-    override var face: BlockFace = sign.getFacing().oppositeFace
+	override var face: BlockFace = sign.getFacing().oppositeFace
 
-    override fun isIntact(): Boolean {
-        val block = starship.world.getBlockAtKey(pos.toBlockKey())
+	override fun isIntact(): Boolean {
+		val block = starship.world.getBlockAtKey(pos.toBlockKey())
 
-        if (!block.type.isWallSign) {
-            return false
-        }
+		if (!block.type.isWallSign) {
+			return false
+		}
 
-        val sign = block.getState(false) as Sign
+		val sign = block.getState(false) as Sign
 
-        return multiblock.signMatchesStructure(sign)
-    }
+		return multiblock.signMatchesStructure(sign)
+	}
 }

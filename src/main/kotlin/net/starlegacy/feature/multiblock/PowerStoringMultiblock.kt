@@ -9,16 +9,16 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
 abstract class PowerStoringMultiblock : Multiblock() {
-    abstract val maxPower: Int
+	abstract val maxPower: Int
 
-    override fun onTransformSign(player: Player, sign: Sign) {
-        PowerMachines.setPower(sign, 0, fast = true)
-    }
+	override fun onTransformSign(player: Player, sign: Sign) {
+		PowerMachines.setPower(sign, 0, fast = true)
+	}
 
-    open val inputComputerOffset = Vec3i(0, -1, 0)
+	open val inputComputerOffset = Vec3i(0, -1, 0)
 
-    fun getNoteblockLocation(sign: Sign): Location {
-        val facing = sign.getFacing().oppositeFace
-        return sign.location.add(facing.modX, facing.modY, facing.modZ).add(inputComputerOffset)
-    }
+	fun getNoteblockLocation(sign: Sign): Location {
+		val facing = sign.getFacing().oppositeFace
+		return sign.location.add(facing.modX, facing.modY, facing.modZ).add(inputComputerOffset)
+	}
 }

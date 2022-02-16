@@ -1,5 +1,5 @@
 package net.starlegacy.feature.gear.powerarmor
 
 enum class PowerArmorType {
-    BOOTS, LEGGINGS, CHESTPLATE, HELMET
+	BOOTS, LEGGINGS, CHESTPLATE, HELMET
 }

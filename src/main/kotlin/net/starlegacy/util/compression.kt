@@ -6,11 +6,11 @@ import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 fun gzip(content: String): ByteArray {
-    val bos = ByteArrayOutputStream()
-    GZIPOutputStream(bos).bufferedWriter(UTF_8).use { it.write(content) }
-    return bos.toByteArray()
+	val bos = ByteArrayOutputStream()
+	GZIPOutputStream(bos).bufferedWriter(UTF_8).use { it.write(content) }
+	return bos.toByteArray()
 }
 
 fun ungzip(content: ByteArray): String {
-    return GZIPInputStream(content.inputStream()).bufferedReader(UTF_8).use { it.readText() }
+	return GZIPInputStream(content.inputStream()).bufferedReader(UTF_8).use { it.readText() }
 }

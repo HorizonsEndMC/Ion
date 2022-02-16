@@ -1,5 +1,8 @@
 package net.starlegacy.listener.nations
 
+import java.lang.System.currentTimeMillis
+import java.util.Collections
+import java.util.UUID
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
@@ -20,82 +23,79 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.lang.System.currentTimeMillis
-import java.util.Collections
-import java.util.UUID
 
 object MovementListener : SLEventListener() {
-    override fun supportsVanilla(): Boolean {
-        return true
-    }
+	override fun supportsVanilla(): Boolean {
+		return true
+	}
 
-    private val lastMoved = Collections.synchronizedMap(mutableMapOf<UUID, Long>())
-    private val lastPlayerTerritories = Collections.synchronizedMap(mutableMapOf<UUID, Oid<Territory>?>())
-    private val lastPlayerZones = Collections.synchronizedMap(mutableMapOf<UUID, Oid<SettlementZone>?>())
+	private val lastMoved = Collections.synchronizedMap(mutableMapOf<UUID, Long>())
+	private val lastPlayerTerritories = Collections.synchronizedMap(mutableMapOf<UUID, Oid<Territory>?>())
+	private val lastPlayerZones = Collections.synchronizedMap(mutableMapOf<UUID, Oid<SettlementZone>?>())
 
-    @EventHandler
-    fun onPlayerMove(event: PlayerMoveEvent) {
-        if (lastMoved.containsKey(event.player.uniqueId)
-            && currentTimeMillis() - lastMoved.getOrElse(event.player.uniqueId) { currentTimeMillis() } < 1000
-        ) return
-        lastMoved[event.player.uniqueId] = currentTimeMillis()
+	@EventHandler
+	fun onPlayerMove(event: PlayerMoveEvent) {
+		if (lastMoved.containsKey(event.player.uniqueId)
+			&& currentTimeMillis() - lastMoved.getOrElse(event.player.uniqueId) { currentTimeMillis() } < 1000
+		) return
+		lastMoved[event.player.uniqueId] = currentTimeMillis()
 
-        val player: Player = event.player
+		val player: Player = event.player
 
-        val territory: RegionTerritory? = Regions.findFirstOf(event.to)
+		val territory: RegionTerritory? = Regions.findFirstOf(event.to)
 
-        val uuid = player.uniqueId
-        val oldTerritory: Oid<Territory>? = lastPlayerTerritories[uuid]
+		val uuid = player.uniqueId
+		val oldTerritory: Oid<Territory>? = lastPlayerTerritories[uuid]
 
-        if (oldTerritory != territory?.id) {
-            lastPlayerTerritories[uuid] = territory?.id
+		if (oldTerritory != territory?.id) {
+			lastPlayerTerritories[uuid] = territory?.id
 
-            if (territory != null) {
-                Tasks.async {
-                    val title = "${GOLD}Entered Territory"
-                    var subtitle = territory.name
+			if (territory != null) {
+				Tasks.async {
+					val title = "${GOLD}Entered Territory"
+					var subtitle = territory.name
 
-                    territory.settlement?.let { id: Oid<Settlement> ->
-                        subtitle += " (${SettlementCache[id].name})"
-                    }
+					territory.settlement?.let { id: Oid<Settlement> ->
+						subtitle += " (${SettlementCache[id].name})"
+					}
 
-                    territory.nation?.let { id: Oid<Nation> ->
-                        subtitle += " (${NationCache[id].name})"
-                    }
+					territory.nation?.let { id: Oid<Nation> ->
+						subtitle += " (${NationCache[id].name})"
+					}
 
-                    territory.npcOwner?.let { id: Oid<NPCTerritoryOwner> ->
-                        subtitle += " (${NPCTerritoryOwner.getName(id)})"
-                    }
+					territory.npcOwner?.let { id: Oid<NPCTerritoryOwner> ->
+						subtitle += " (${NPCTerritoryOwner.getName(id)})"
+					}
 
-                    player.sendTitle(title, subtitle, 20, 40, 20)
-                }
-            }
-        }
+					player.sendTitle(title, subtitle, 20, 40, 20)
+				}
+			}
+		}
 
-        territory?.children?.firstOrNull { region ->
-            region is RegionSettlementZone && region.contains(event.to.blockX, event.to.blockY, event.to.blockZ)
-        }.also { zone: Region<*>? ->
-            zone as RegionSettlementZone?
+		territory?.children?.firstOrNull { region ->
+			region is RegionSettlementZone && region.contains(event.to.blockX, event.to.blockY, event.to.blockZ)
+		}.also { zone: Region<*>? ->
+			zone as RegionSettlementZone?
 
-            val oldZone = lastPlayerZones[uuid]
+			val oldZone = lastPlayerZones[uuid]
 
-            if (oldZone != zone?.id) {
-                lastPlayerZones[uuid] = zone?.id
+			if (oldZone != zone?.id) {
+				lastPlayerZones[uuid] = zone?.id
 
-                if (zone != null) {
-                    player action "&3Entered zone&b ${zone.name}"
-                } else {
-                    oldZone?.let { Regions.get<RegionSettlementZone>(it) }?.let {
-                        player action "&3Exited zone&b ${it.name}"
-                    }
-                }
-            }
-        }
-    }
+				if (zone != null) {
+					player action "&3Entered zone&b ${zone.name}"
+				} else {
+					oldZone?.let { Regions.get<RegionSettlementZone>(it) }?.let {
+						player action "&3Exited zone&b ${it.name}"
+					}
+				}
+			}
+		}
+	}
 
-    @EventHandler
-    fun onQuit(event: PlayerQuitEvent) {
-        lastMoved.remove(event.player.uniqueId)
-        lastPlayerTerritories.remove(event.player.uniqueId)
-    }
+	@EventHandler
+	fun onQuit(event: PlayerQuitEvent) {
+		lastMoved.remove(event.player.uniqueId)
+		lastPlayerTerritories.remove(event.player.uniqueId)
+	}
 }

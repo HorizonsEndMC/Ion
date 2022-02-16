@@ -19,35 +19,35 @@ import org.bukkit.inventory.ItemStack
 @CommandAlias("battery")
 @CommandPermission("machinery.battery")
 object BatteryCommand : SLCommand() {
-    private fun getPowerableItemInHand(sender: Player): ItemStack {
-        val item = sender.inventory.itemInMainHand
+	private fun getPowerableItemInHand(sender: Player): ItemStack {
+		val item = sender.inventory.itemInMainHand
 
-        if (item == null || !isPowerable(item)) {
-            throw ConditionFailedException("You must be holding a powerable item to do this!")
-        }
+		if (item == null || !isPowerable(item)) {
+			throw ConditionFailedException("You must be holding a powerable item to do this!")
+		}
 
-        return item
-    }
+		return item
+	}
 
-    @Subcommand("set")
-    @CommandCompletion("0|10|100|1000|10000")
-    fun onSet(sender: Player, amount: Int) {
-        val item = getPowerableItemInHand(sender)
-        setPower(item, amount)
-        sender msg green("Set power of ${item.displayName} to $amount")
-    }
+	@Subcommand("set")
+	@CommandCompletion("0|10|100|1000|10000")
+	fun onSet(sender: Player, amount: Int) {
+		val item = getPowerableItemInHand(sender)
+		setPower(item, amount)
+		sender msg green("Set power of ${item.displayName} to $amount")
+	}
 
-    @Subcommand("add")
-    fun onAdd(sender: Player, amount: Int) {
-        val item = getPowerableItemInHand(sender)
-        addPower(item, amount)
-        sender msg green("Added $amount power to ${item.displayName}")
-    }
+	@Subcommand("add")
+	fun onAdd(sender: Player, amount: Int) {
+		val item = getPowerableItemInHand(sender)
+		addPower(item, amount)
+		sender msg green("Added $amount power to ${item.displayName}")
+	}
 
-    @Subcommand("remove")
-    fun onRemove(sender: Player, amount: Int) {
-        val item = getPowerableItemInHand(sender)
-        removePower(item, amount)
-        sender msg green("Removed $amount power from ${item.displayName}")
-    }
+	@Subcommand("remove")
+	fun onRemove(sender: Player, amount: Int) {
+		val item = getPowerableItemInHand(sender)
+		removePower(item, amount)
+		sender msg green("Removed $amount power from ${item.displayName}")
+	}
 }

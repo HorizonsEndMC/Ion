@@ -5,9 +5,9 @@ import org.bukkit.entity.Player
 import org.screamingsandals.bedwars.api.BedwarsAPI
 
 fun isInBedWarsGame(player: Player): Boolean {
-    if (!Bukkit.getPluginManager().isPluginEnabled("BedWars")) {
-        return false
-    }
+	if (!Bukkit.getPluginManager().isPluginEnabled("BedWars")) {
+		return false
+	}
 
-    return BedwarsAPI.getInstance().isEntityInGame(player)
+	return BedwarsAPI.getInstance().isEntityInGame(player)
 }

@@ -69,43 +69,43 @@ inline val NMSChunk.cbukkit: CBChunk get() = this.bukkitChunk as CBChunk
 
 //region misc
 val NMSEnumDirection.blockFace
-    get() = when (this) {
-        NMSEnumDirection.DOWN -> BlockFace.DOWN
-        NMSEnumDirection.UP -> BlockFace.UP
-        NMSEnumDirection.NORTH -> BlockFace.NORTH
-        NMSEnumDirection.SOUTH -> BlockFace.SOUTH
-        NMSEnumDirection.WEST -> BlockFace.WEST
-        NMSEnumDirection.EAST -> BlockFace.EAST
-    }
+	get() = when (this) {
+		NMSEnumDirection.DOWN -> BlockFace.DOWN
+		NMSEnumDirection.UP -> BlockFace.UP
+		NMSEnumDirection.NORTH -> BlockFace.NORTH
+		NMSEnumDirection.SOUTH -> BlockFace.SOUTH
+		NMSEnumDirection.WEST -> BlockFace.WEST
+		NMSEnumDirection.EAST -> BlockFace.EAST
+	}
 //endregion
 
 //region NBT
 fun ItemStack.withNBTInt(key: String, value: Int): ItemStack {
-    val nms: NMSItemStack = CBItemStack.asNMSCopy(this)
-    val tag: NMSNBTTagCompound = nms.tag ?: NMSNBTTagCompound()
-    tag.setInt(key, value)
-    nms.tag = tag
-    return nms.asBukkitCopy().ensureServerConversions()
+	val nms: NMSItemStack = CBItemStack.asNMSCopy(this)
+	val tag: NMSNBTTagCompound = nms.tag ?: NMSNBTTagCompound()
+	tag.setInt(key, value)
+	nms.tag = tag
+	return nms.asBukkitCopy().ensureServerConversions()
 }
 
 fun ItemStack.getNBTInt(key: String): Int? {
-    val tag = CBItemStack.asNMSCopy(this).tag ?: return null
-    if (!tag.hasKey(key)) return null
-    return tag.getInt(key)
+	val tag = CBItemStack.asNMSCopy(this).tag ?: return null
+	if (!tag.hasKey(key)) return null
+	return tag.getInt(key)
 }
 
 fun ItemStack.withNBTString(key: String, value: String): ItemStack {
-    val nms: NMSItemStack = CBItemStack.asNMSCopy(this)
-    val tag: NMSNBTTagCompound = nms.tag ?: NMSNBTTagCompound()
-    tag.setString(key, value)
-    nms.tag = tag
-    return nms.asBukkitCopy().ensureServerConversions()
+	val nms: NMSItemStack = CBItemStack.asNMSCopy(this)
+	val tag: NMSNBTTagCompound = nms.tag ?: NMSNBTTagCompound()
+	tag.setString(key, value)
+	nms.tag = tag
+	return nms.asBukkitCopy().ensureServerConversions()
 }
 
 fun ItemStack.getNBTString(key: String): String? {
-    val tag = CBItemStack.asNMSCopy(this).tag ?: return null
-    if (!tag.hasKey(key)) return null
-    return tag.getString(key)
+	val tag = CBItemStack.asNMSCopy(this).tag ?: return null
+	if (!tag.hasKey(key)) return null
+	return tag.getString(key)
 }
 //endregion
 
@@ -115,7 +115,7 @@ fun Material.toNMSBlockData(): NMSBlockData = createBlockData().nms
 val NMSBlockData.bukkitMaterial: Material get() = CBMagicNumbers.getMaterial(this.block)
 
 fun Block.getNMSBlockData(): NMSBlockData {
-    return world.nms.getChunkAt(x shr 4, z shr 4).getBlockData(x and 15, y, z and 15)
+	return world.nms.getChunkAt(x shr 4, z shr 4).getBlockData(x and 15, y, z and 15)
 }
 
 /**
@@ -123,39 +123,39 @@ fun Block.getNMSBlockData(): NMSBlockData {
  * If the chunk is not loaded or it's outside of the valid Y range, will return null.
  */
 fun getNMSBlockDataSafe(world: World, x: Int, y: Int, z: Int): NMSBlockData? {
-    if (y < 0 || y > 255) {
-        return null
-    }
+	if (y < 0 || y > 255) {
+		return null
+	}
 
-    return try {
-        val chunk: NMSChunk = world.nms.getChunkIfLoaded(x shr 4, z shr 4) ?: return null
+	return try {
+		val chunk: NMSChunk = world.nms.getChunkIfLoaded(x shr 4, z shr 4) ?: return null
 
-        chunk.getBlockData(x and 15, y, z and 15)
-    } catch (indexOutOfBounds: IndexOutOfBoundsException) {
-        null
-    }
+		chunk.getBlockData(x and 15, y, z and 15)
+	} catch (indexOutOfBounds: IndexOutOfBoundsException) {
+		null
+	}
 }
 
 private val air = Material.AIR.createBlockData()
 
 fun World.setAir(x: Int, y: Int, z: Int, applyPhysics: Boolean = true) {
-    setNMSBlockData(x, y, z, air.nms, applyPhysics)
+	setNMSBlockData(x, y, z, air.nms, applyPhysics)
 }
 
 fun World.getChunkAtIfLoaded(chunkX: Int, chunkZ: Int): Chunk? = nms.getChunkIfLoaded(chunkX, chunkZ)?.bukkitChunk
 
 fun World.setNMSBlockData(x: Int, y: Int, z: Int, data: NMSBlockData, applyPhysics: Boolean = false): Boolean {
-    getBlockAt(x, y, z).setBlockData(data.createCraftBlockData(), applyPhysics)
-    return true
+	getBlockAt(x, y, z).setBlockData(data.createCraftBlockData(), applyPhysics)
+	return true
 }
 //endregion
 
 //region Block Positions
 fun NMSBlockPos.added(x: Int, y: Int, z: Int): NMSBlockPos {
-    return NMSBlockPos(this.x + x, this.y + y, this.z + z)
+	return NMSBlockPos(this.x + x, this.y + y, this.z + z)
 }
 
 fun NMSBlockPos.subtracted(x: Int, y: Int, z: Int): NMSBlockPos {
-    return NMSBlockPos(this.x - x, this.y - y, this.z - z)
+	return NMSBlockPos(this.x - x, this.y - y, this.z - z)
 }
 //endregion

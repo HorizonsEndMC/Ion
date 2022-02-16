@@ -13,317 +13,317 @@ import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
 object CustomRecipes : SLComponent() {
-    override fun onEnable() {
-        Tasks.syncDelay(1) {
-            registerMineralRecipes()
-            registerBatteryRecipes()
-            registerBlasterRecipes()
-            registerArmorRecipes()
-            registerModuleRecipes()
-            registerSwordRecipes()
-            registerPowerToolRecipes()
-            registerGasCanisterRecipe()
-            registerDetonatorRecipe()
-            registerWireRecipe()
-            registerSeaLanternRecipe()
-            registerEndPortalFrameRecipe()
-            registerRocketRecipes()
-        }
-    }
+	override fun onEnable() {
+		Tasks.syncDelay(1) {
+			registerMineralRecipes()
+			registerBatteryRecipes()
+			registerBlasterRecipes()
+			registerArmorRecipes()
+			registerModuleRecipes()
+			registerSwordRecipes()
+			registerPowerToolRecipes()
+			registerGasCanisterRecipe()
+			registerDetonatorRecipe()
+			registerWireRecipe()
+			registerSeaLanternRecipe()
+			registerEndPortalFrameRecipe()
+			registerRocketRecipes()
+		}
+	}
 
-    private fun registerShapedRecipe(
-        id: String,
-        output: ItemStack,
-        vararg shape: String,
-        ingredients: Map<Char, RecipeChoice>
-    ): ShapedRecipe {
-        val key = NamespacedKey(PLUGIN, id)
+	private fun registerShapedRecipe(
+		id: String,
+		output: ItemStack,
+		vararg shape: String,
+		ingredients: Map<Char, RecipeChoice>
+	): ShapedRecipe {
+		val key = NamespacedKey(PLUGIN, id)
 
-        val recipe = ShapedRecipe(key, output)
+		val recipe = ShapedRecipe(key, output)
 
-        recipe.shape(*shape)
+		recipe.shape(*shape)
 
-        for ((char, ingredient: RecipeChoice) in ingredients) {
-            recipe.setIngredient(char, ingredient)
-        }
+		for ((char, ingredient: RecipeChoice) in ingredients) {
+			recipe.setIngredient(char, ingredient)
+		}
 
-        addRecipe(recipe, key)
+		addRecipe(recipe, key)
 
-        return recipe
-    }
+		return recipe
+	}
 
-    private fun registerShapelessRecipe(
-        id: String,
-        output: ItemStack,
-        vararg ingredients: RecipeChoice
-    ): ShapelessRecipe {
-        check(ingredients.isNotEmpty())
+	private fun registerShapelessRecipe(
+		id: String,
+		output: ItemStack,
+		vararg ingredients: RecipeChoice
+	): ShapelessRecipe {
+		check(ingredients.isNotEmpty())
 
-        val key = NamespacedKey(PLUGIN, id)
+		val key = NamespacedKey(PLUGIN, id)
 
-        val recipe = ShapelessRecipe(key, output)
+		val recipe = ShapelessRecipe(key, output)
 
-        for (ingredient in ingredients) {
-            recipe.addIngredient(ingredient)
-        }
+		for (ingredient in ingredients) {
+			recipe.addIngredient(ingredient)
+		}
 
-        addRecipe(recipe, key)
+		addRecipe(recipe, key)
 
-        return recipe
-    }
+		return recipe
+	}
 
-    private fun addRecipe(recipe: Recipe, key: NamespacedKey, attempt: Int = 1) {
-        Bukkit.getServer().addRecipe(recipe)
-        if (attempt > 1) {
-            val added = Bukkit.getServer().getRecipe(key) != null
-            log.info("Recipe $key Added (attempt $attempt): ${(added)}")
-        }
-        Tasks.syncDelay(1) {
-            val kept = Bukkit.getServer().getRecipe(key) != null
-            if (attempt > 1) {
-                log.info("Recipe $kept Kept (attempt $attempt): ${(kept)}")
-            }
-            if (!kept) {
-                addRecipe(recipe, key, attempt + 1)
-            }
-        }
-    }
+	private fun addRecipe(recipe: Recipe, key: NamespacedKey, attempt: Int = 1) {
+		Bukkit.getServer().addRecipe(recipe)
+		if (attempt > 1) {
+			val added = Bukkit.getServer().getRecipe(key) != null
+			log.info("Recipe $key Added (attempt $attempt): ${(added)}")
+		}
+		Tasks.syncDelay(1) {
+			val kept = Bukkit.getServer().getRecipe(key) != null
+			if (attempt > 1) {
+				log.info("Recipe $kept Kept (attempt $attempt): ${(kept)}")
+			}
+			if (!kept) {
+				addRecipe(recipe, key, attempt + 1)
+			}
+		}
+	}
 
-    private fun createRecipe(
-        item: CustomItem,
-        vararg shape: String,
-        ingredients: Map<Char, RecipeChoice>,
-        amount: Int = 1
-    ): ShapedRecipe = registerShapedRecipe(item.id, item.itemStack(amount), *shape, ingredients = ingredients)
+	private fun createRecipe(
+		item: CustomItem,
+		vararg shape: String,
+		ingredients: Map<Char, RecipeChoice>,
+		amount: Int = 1
+	): ShapedRecipe = registerShapedRecipe(item.id, item.itemStack(amount), *shape, ingredients = ingredients)
 
-    private fun createShapelessRecipe(
-        item: CustomItem,
-        vararg ingredients: RecipeChoice,
-        amount: Int = 1
-    ): ShapelessRecipe = registerShapelessRecipe(item.id, item.itemStack(amount), *ingredients)
+	private fun createShapelessRecipe(
+		item: CustomItem,
+		vararg ingredients: RecipeChoice,
+		amount: Int = 1
+	): ShapelessRecipe = registerShapelessRecipe(item.id, item.itemStack(amount), *ingredients)
 
-    private fun customItemChoice(customItem: CustomItem): RecipeChoice {
-        return RecipeChoice.ExactChoice(customItem.singleItem())
-    }
+	private fun customItemChoice(customItem: CustomItem): RecipeChoice {
+		return RecipeChoice.ExactChoice(customItem.singleItem())
+	}
 
-    private fun materialChoice(material: Material): RecipeChoice {
-        return RecipeChoice.MaterialChoice(material)
-    }
+	private fun materialChoice(material: Material): RecipeChoice {
+		return RecipeChoice.MaterialChoice(material)
+	}
 
-    private fun registerBatteryRecipes() {
-        createRecipe(
-            CustomItems.BATTERY_SMALL, "aba", "aba", "aba", ingredients = mapOf(
-                'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-                'b' to materialChoice(Material.GLOWSTONE_DUST)
-            )
-        )
-        createRecipe(
-            CustomItems.BATTERY_MEDIUM, "aba", "aba", "aba", ingredients = mapOf(
-                'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-                'b' to materialChoice(Material.REDSTONE)
-            )
-        )
-        createRecipe(
-            CustomItems.BATTERY_LARGE, "aba", "aba", "aba", ingredients = mapOf(
-                'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-                'b' to materialChoice(Material.SEA_LANTERN)
-            )
-        )
-    }
+	private fun registerBatteryRecipes() {
+		createRecipe(
+			CustomItems.BATTERY_SMALL, "aba", "aba", "aba", ingredients = mapOf(
+				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
+				'b' to materialChoice(Material.GLOWSTONE_DUST)
+			)
+		)
+		createRecipe(
+			CustomItems.BATTERY_MEDIUM, "aba", "aba", "aba", ingredients = mapOf(
+				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
+				'b' to materialChoice(Material.REDSTONE)
+			)
+		)
+		createRecipe(
+			CustomItems.BATTERY_LARGE, "aba", "aba", "aba", ingredients = mapOf(
+				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
+				'b' to materialChoice(Material.SEA_LANTERN)
+			)
+		)
+	}
 
-    private fun registerMineralRecipes() = listOf(
-        CustomItems.MINERAL_COPPER,
-        CustomItems.MINERAL_ALUMINUM,
-        CustomItems.MINERAL_TITANIUM,
-        CustomItems.MINERAL_URANIUM,
-        CustomItems.MINERAL_CHETHERITE,
-        CustomItems.MINERAL_ORIOMIUM
-    ).forEach { mineral: CustomItems.MineralCustomItem ->
-        createShapelessRecipe(
-            mineral,
-            customItemChoice(mineral.fullBlock),
-            amount = 9
-        )
-        createRecipe(
-            mineral.fullBlock, "aaa", "aaa", "aaa", ingredients = mapOf('a' to customItemChoice(mineral))
-        )
-    }
+	private fun registerMineralRecipes() = listOf(
+		CustomItems.MINERAL_COPPER,
+		CustomItems.MINERAL_ALUMINUM,
+		CustomItems.MINERAL_TITANIUM,
+		CustomItems.MINERAL_URANIUM,
+		CustomItems.MINERAL_CHETHERITE,
+		CustomItems.MINERAL_ORIOMIUM
+	).forEach { mineral: CustomItems.MineralCustomItem ->
+		createShapelessRecipe(
+			mineral,
+			customItemChoice(mineral.fullBlock),
+			amount = 9
+		)
+		createRecipe(
+			mineral.fullBlock, "aaa", "aaa", "aaa", ingredients = mapOf('a' to customItemChoice(mineral))
+		)
+	}
 
-    private fun registerBlasterRecipes() {
-        createRecipe(
-            CustomItems.BLASTER_PISTOL, " bg", " t ", ingredients = mapOf(
-                'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-                'g' to materialChoice(Material.GLASS_PANE),
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
-            )
-        )
+	private fun registerBlasterRecipes() {
+		createRecipe(
+			CustomItems.BLASTER_PISTOL, " bg", " t ", ingredients = mapOf(
+				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
+				'g' to materialChoice(Material.GLASS_PANE),
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
+			)
+		)
 
-        createRecipe(
-            CustomItems.BLASTER_RIFLE, "btg", "t  ", ingredients = mapOf(
-                'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-                'g' to materialChoice(Material.GLASS_PANE)
-            )
-        )
+		createRecipe(
+			CustomItems.BLASTER_RIFLE, "btg", "t  ", ingredients = mapOf(
+				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+				'g' to materialChoice(Material.GLASS_PANE)
+			)
+		)
 
-        createRecipe(
-            CustomItems.BLASTER_SNIPER, " t ", "btg", "t  ", ingredients = mapOf(
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-                'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-                'g' to materialChoice(Material.GLASS_PANE)
-            )
-        )
+		createRecipe(
+			CustomItems.BLASTER_SNIPER, " t ", "btg", "t  ", ingredients = mapOf(
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
+				'g' to materialChoice(Material.GLASS_PANE)
+			)
+		)
 
-        createRecipe(
-            CustomItems.BLASTER_CANNON, "brt", "t  ", ingredients = mapOf(
-                'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-                'r' to materialChoice(Material.REDSTONE),
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
-            )
-        )
-    }
+		createRecipe(
+			CustomItems.BLASTER_CANNON, "brt", "t  ", ingredients = mapOf(
+				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
+				'r' to materialChoice(Material.REDSTONE),
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
+			)
+		)
+	}
 
-    private fun registerArmorRecipes() {
-        val items = mapOf(
-            '*' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-            'b' to customItemChoice(CustomItems.BATTERY_LARGE)
-        )
+	private fun registerArmorRecipes() {
+		val items = mapOf(
+			'*' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+			'b' to customItemChoice(CustomItems.BATTERY_LARGE)
+		)
 
-        createRecipe(CustomItems.POWER_ARMOR_HELMET, "*b*", "* *", ingredients = items)
-        createRecipe(CustomItems.POWER_ARMOR_CHESTPLATE, "* *", "*b*", "***", ingredients = items)
-        createRecipe(CustomItems.POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *", ingredients = items)
-        createRecipe(CustomItems.POWER_ARMOR_BOOTS, "* *", "*b*", ingredients = items)
-    }
+		createRecipe(CustomItems.POWER_ARMOR_HELMET, "*b*", "* *", ingredients = items)
+		createRecipe(CustomItems.POWER_ARMOR_CHESTPLATE, "* *", "*b*", "***", ingredients = items)
+		createRecipe(CustomItems.POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *", ingredients = items)
+		createRecipe(CustomItems.POWER_ARMOR_BOOTS, "* *", "*b*", ingredients = items)
+	}
 
-    private fun registerModuleRecipes() = mapOf(
-        CustomItems.POWER_MODULE_SHOCK_ABSORBING to customItemChoice(CustomItems.MINERAL_TITANIUM),
-        CustomItems.POWER_MODULE_SPEED_BOOSTING to materialChoice(Material.FEATHER),
-        CustomItems.POWER_MODULE_ROCKET_BOOSTING to materialChoice(Material.FIREWORK_ROCKET),
-        CustomItems.POWER_MODULE_NIGHT_VISION to materialChoice(Material.SPIDER_EYE),
-        CustomItems.POWER_MODULE_ENVIRONMENT to materialChoice(Material.CHAINMAIL_HELMET),
-        CustomItems.POWER_MODULE_PRESSURE_FIELD to customItemChoice(CustomItems.GAS_CANISTER_OXYGEN)
-    ).forEach { (piece, center) ->
-        createRecipe(
-            piece, "aga", "g*g", "aga", ingredients = mapOf(
-                'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-                'g' to materialChoice(Material.GLASS_PANE),
-                '*' to center
-            )
-        )
-    }
+	private fun registerModuleRecipes() = mapOf(
+		CustomItems.POWER_MODULE_SHOCK_ABSORBING to customItemChoice(CustomItems.MINERAL_TITANIUM),
+		CustomItems.POWER_MODULE_SPEED_BOOSTING to materialChoice(Material.FEATHER),
+		CustomItems.POWER_MODULE_ROCKET_BOOSTING to materialChoice(Material.FIREWORK_ROCKET),
+		CustomItems.POWER_MODULE_NIGHT_VISION to materialChoice(Material.SPIDER_EYE),
+		CustomItems.POWER_MODULE_ENVIRONMENT to materialChoice(Material.CHAINMAIL_HELMET),
+		CustomItems.POWER_MODULE_PRESSURE_FIELD to customItemChoice(CustomItems.GAS_CANISTER_OXYGEN)
+	).forEach { (piece, center) ->
+		createRecipe(
+			piece, "aga", "g*g", "aga", ingredients = mapOf(
+				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
+				'g' to materialChoice(Material.GLASS_PANE),
+				'*' to center
+			)
+		)
+	}
 
-    private fun registerSwordRecipes() = mapOf(
-        CustomItems.ENERGY_SWORD_BLUE to materialChoice(Material.DIAMOND),
-        CustomItems.ENERGY_SWORD_RED to materialChoice(Material.REDSTONE),
-        CustomItems.ENERGY_SWORD_YELLOW to materialChoice(Material.COAL),
-        CustomItems.ENERGY_SWORD_GREEN to materialChoice(Material.EMERALD),
-        CustomItems.ENERGY_SWORD_PURPLE to customItemChoice(CustomItems.MINERAL_CHETHERITE),
-        CustomItems.ENERGY_SWORD_ORANGE to customItemChoice(CustomItems.MINERAL_COPPER)
-    ).forEach { (sword, specialItem) ->
-        createRecipe(
-            sword, "aga", "a*a", "ata", ingredients = mapOf(
-                'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-                'g' to materialChoice(Material.GLASS_PANE),
-                '*' to specialItem,
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
-            )
-        )
-    }
+	private fun registerSwordRecipes() = mapOf(
+		CustomItems.ENERGY_SWORD_BLUE to materialChoice(Material.DIAMOND),
+		CustomItems.ENERGY_SWORD_RED to materialChoice(Material.REDSTONE),
+		CustomItems.ENERGY_SWORD_YELLOW to materialChoice(Material.COAL),
+		CustomItems.ENERGY_SWORD_GREEN to materialChoice(Material.EMERALD),
+		CustomItems.ENERGY_SWORD_PURPLE to customItemChoice(CustomItems.MINERAL_CHETHERITE),
+		CustomItems.ENERGY_SWORD_ORANGE to customItemChoice(CustomItems.MINERAL_COPPER)
+	).forEach { (sword, specialItem) ->
+		createRecipe(
+			sword, "aga", "a*a", "ata", ingredients = mapOf(
+				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
+				'g' to materialChoice(Material.GLASS_PANE),
+				'*' to specialItem,
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
+			)
+		)
+	}
 
-    private fun registerPowerToolRecipes() {
-        createRecipe(
-            CustomItems.POWER_TOOL_DRILL, "i  ", " bt", " ts", ingredients = mapOf(
-                'i' to materialChoice(Material.IRON_INGOT),
-                'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-                's' to materialChoice(Material.STICK)
-            )
-        )
+	private fun registerPowerToolRecipes() {
+		createRecipe(
+			CustomItems.POWER_TOOL_DRILL, "i  ", " bt", " ts", ingredients = mapOf(
+				'i' to materialChoice(Material.IRON_INGOT),
+				'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+				's' to materialChoice(Material.STICK)
+			)
+		)
 
-        createRecipe(
-            CustomItems.POWER_TOOL_CHAINSAW, "ai ", "ibt", " ts", ingredients = mapOf(
-                'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-                'i' to materialChoice(Material.IRON_INGOT),
-                'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-                's' to materialChoice(Material.STICK)
-            )
-        )
-    }
+		createRecipe(
+			CustomItems.POWER_TOOL_CHAINSAW, "ai ", "ibt", " ts", ingredients = mapOf(
+				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
+				'i' to materialChoice(Material.IRON_INGOT),
+				'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+				's' to materialChoice(Material.STICK)
+			)
+		)
+	}
 
-    private fun registerGasCanisterRecipe() {
-        createRecipe(
-            CustomItems.GAS_CANISTER_EMPTY, " i ", "igi", " i ", ingredients = mapOf(
-                'i' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-                'g' to materialChoice(Material.GLASS_PANE)
-            )
-        )
-    }
+	private fun registerGasCanisterRecipe() {
+		createRecipe(
+			CustomItems.GAS_CANISTER_EMPTY, " i ", "igi", " i ", ingredients = mapOf(
+				'i' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+				'g' to materialChoice(Material.GLASS_PANE)
+			)
+		)
+	}
 
-    private fun registerDetonatorRecipe() {
-        createRecipe(
-            CustomItems.DETONATOR, " r ", "tut", " t ", ingredients = mapOf(
-                'r' to materialChoice(Material.REDSTONE),
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-                'u' to customItemChoice(CustomItems.MINERAL_URANIUM)
-            )
-        )
-    }
+	private fun registerDetonatorRecipe() {
+		createRecipe(
+			CustomItems.DETONATOR, " r ", "tut", " t ", ingredients = mapOf(
+				'r' to materialChoice(Material.REDSTONE),
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+				'u' to customItemChoice(CustomItems.MINERAL_URANIUM)
+			)
+		)
+	}
 
-    private fun registerWireRecipe() {
-        registerShapelessRecipe(
-            "wire",
-            ItemStack(Material.END_ROD, 16),
-            customItemChoice(CustomItems.MINERAL_COPPER),
-            customItemChoice(CustomItems.MINERAL_COPPER),
-            customItemChoice(CustomItems.MINERAL_COPPER)
-        )
-    }
+	private fun registerWireRecipe() {
+		registerShapelessRecipe(
+			"wire",
+			ItemStack(Material.END_ROD, 16),
+			customItemChoice(CustomItems.MINERAL_COPPER),
+			customItemChoice(CustomItems.MINERAL_COPPER),
+			customItemChoice(CustomItems.MINERAL_COPPER)
+		)
+	}
 
-    private fun registerSeaLanternRecipe() {
-        registerShapelessRecipe(
-                "sea_lantern",
-                ItemStack(Material.SEA_LANTERN, 1),
-                materialChoice(Material.PRISMARINE_CRYSTALS),
-                materialChoice(Material.PRISMARINE_CRYSTALS),
-                materialChoice(Material.PRISMARINE_CRYSTALS),
-                materialChoice(Material.PRISMARINE_CRYSTALS)
-        )
-    }
+	private fun registerSeaLanternRecipe() {
+		registerShapelessRecipe(
+			"sea_lantern",
+			ItemStack(Material.SEA_LANTERN, 1),
+			materialChoice(Material.PRISMARINE_CRYSTALS),
+			materialChoice(Material.PRISMARINE_CRYSTALS),
+			materialChoice(Material.PRISMARINE_CRYSTALS),
+			materialChoice(Material.PRISMARINE_CRYSTALS)
+		)
+	}
 
-    private fun registerEndPortalFrameRecipe() {
-        registerShapedRecipe(
-            "end_portal_frame",
-            ItemStack(Material.END_PORTAL_FRAME, 1),
-            "wow", "sss",
-            ingredients = mapOf(
-                'w' to materialChoice(Material.WARPED_PLANKS),
-                'o' to materialChoice(Material.ENDER_PEARL),
-                's' to materialChoice(Material.END_STONE)
-            )
-        )
-    }
+	private fun registerEndPortalFrameRecipe() {
+		registerShapedRecipe(
+			"end_portal_frame",
+			ItemStack(Material.END_PORTAL_FRAME, 1),
+			"wow", "sss",
+			ingredients = mapOf(
+				'w' to materialChoice(Material.WARPED_PLANKS),
+				'o' to materialChoice(Material.ENDER_PEARL),
+				's' to materialChoice(Material.END_STONE)
+			)
+		)
+	}
 
-    private fun registerRocketRecipes() {
-        createRecipe(
-            CustomItems.ROCKET_BASE, "t t", "tht", "tgt", amount = 3, ingredients = mapOf(
-                't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-                'h' to customItemChoice(CustomItems.GAS_CANISTER_HELIUM),
-                'g' to materialChoice(Material.HOPPER),
-            )
-        )
+	private fun registerRocketRecipes() {
+		createRecipe(
+			CustomItems.ROCKET_BASE, "t t", "tht", "tgt", amount = 3, ingredients = mapOf(
+				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
+				'h' to customItemChoice(CustomItems.GAS_CANISTER_HELIUM),
+				'g' to materialChoice(Material.HOPPER),
+			)
+		)
 
-        createRecipe(
-            CustomItems.ROCKET_WARHEAD_ORIOMIUM, " a ", "aoa", " a ", amount = 3, ingredients = mapOf(
-                'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-                'o' to customItemChoice(CustomItems.MINERAL_ORIOMIUM.fullBlock)
-            )
-        )
+		createRecipe(
+			CustomItems.ROCKET_WARHEAD_ORIOMIUM, " a ", "aoa", " a ", amount = 3, ingredients = mapOf(
+				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
+				'o' to customItemChoice(CustomItems.MINERAL_ORIOMIUM.fullBlock)
+			)
+		)
 
-        createShapelessRecipe(
-            CustomItems.ROCKET_ORIOMIUM,
-            customItemChoice(CustomItems.ROCKET_BASE),
-            customItemChoice(CustomItems.ROCKET_WARHEAD_ORIOMIUM)
-        )
-    }
+		createShapelessRecipe(
+			CustomItems.ROCKET_ORIOMIUM,
+			customItemChoice(CustomItems.ROCKET_BASE),
+			customItemChoice(CustomItems.ROCKET_WARHEAD_ORIOMIUM)
+		)
+	}
 }

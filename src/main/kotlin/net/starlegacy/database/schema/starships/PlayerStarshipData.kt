@@ -24,55 +24,55 @@ import org.litote.kmongo.or
  * not currently in the database.
  */
 data class PlayerStarshipData(
-    override val _id: Oid<PlayerStarshipData>,
-    /** Player UUID of the captain of the ship */
-    var captain: SLPlayerId,
-    var type: StarshipType,
+	override val _id: Oid<PlayerStarshipData>,
+	/** Player UUID of the captain of the ship */
+	var captain: SLPlayerId,
+	var type: StarshipType,
 
-    var world: String,
-    var blockKey: Long,
+	var world: String,
+	var blockKey: Long,
 
-    /** UUIDs of players who have been added to the ship by the captain. Should never include the captain. */
-    val pilots: MutableSet<SLPlayerId> = mutableSetOf(),
-    var name: String? = null,
-    /** Chunk combined coordinates, of each chunk the detected blocks reside in */
-    var containedChunks: Set<Long>? = null,
+	/** UUIDs of players who have been added to the ship by the captain. Should never include the captain. */
+	val pilots: MutableSet<SLPlayerId> = mutableSetOf(),
+	var name: String? = null,
+	/** Chunk combined coordinates, of each chunk the detected blocks reside in */
+	var containedChunks: Set<Long>? = null,
 
-    var lastUsed: Long = System.currentTimeMillis(),
-    var isLockEnabled: Boolean = false
+	var lastUsed: Long = System.currentTimeMillis(),
+	var isLockEnabled: Boolean = false
 ) : DbObject {
-    companion object : OidDbObjectCompanion<PlayerStarshipData>(PlayerStarshipData::class, setup = {
-        ensureIndex(PlayerStarshipData::captain)
-        ensureIndex(PlayerStarshipData::pilots)
-        ensureIndex(PlayerStarshipData::name)
-        ensureIndex(PlayerStarshipData::world)
-        ensureUniqueIndex(PlayerStarshipData::world, PlayerStarshipData::blockKey)
-    }) {
-        const val LOCK_TIME_MS = 1_000 * 5;
+	companion object : OidDbObjectCompanion<PlayerStarshipData>(PlayerStarshipData::class, setup = {
+		ensureIndex(PlayerStarshipData::captain)
+		ensureIndex(PlayerStarshipData::pilots)
+		ensureIndex(PlayerStarshipData::name)
+		ensureIndex(PlayerStarshipData::world)
+		ensureUniqueIndex(PlayerStarshipData::world, PlayerStarshipData::blockKey)
+	}) {
+		const val LOCK_TIME_MS = 1_000 * 5
 
-        fun add(data: PlayerStarshipData) {
-            col.insertOne(data)
-        }
+		fun add(data: PlayerStarshipData) {
+			col.insertOne(data)
+		}
 
-        fun remove(dataId: Oid<PlayerStarshipData>) {
-            col.deleteOneById(dataId)
-        }
+		fun remove(dataId: Oid<PlayerStarshipData>) {
+			col.deleteOneById(dataId)
+		}
 
-        fun findByPilot(playerId: SLPlayerId) =
-            find(or(PlayerStarshipData::captain eq playerId, PlayerStarshipData::pilots contains playerId))
-    }
+		fun findByPilot(playerId: SLPlayerId) =
+			find(or(PlayerStarshipData::captain eq playerId, PlayerStarshipData::pilots contains playerId))
+	}
 
-    fun bukkitWorld(): World = requireNotNull(Bukkit.getWorld(world)) {
-        "World $world is not loaded, but tried getting it for computer $_id"
-    }
+	fun bukkitWorld(): World = requireNotNull(Bukkit.getWorld(world)) {
+		"World $world is not loaded, but tried getting it for computer $_id"
+	}
 
-    fun isPilot(player: Player): Boolean {
-        val id = player.slPlayerId
-        return captain == id || pilots.contains(id)
-    }
+	fun isPilot(player: Player): Boolean {
+		val id = player.slPlayerId
+		return captain == id || pilots.contains(id)
+	}
 
-    /** assumes that it's also deactivated */
-    fun isLockActive(): Boolean {
-        return isLockEnabled && System.currentTimeMillis() - lastUsed >= LOCK_TIME_MS
-    }
+	/** assumes that it's also deactivated */
+	fun isLockActive(): Boolean {
+		return isLockEnabled && System.currentTimeMillis() - lastUsed >= LOCK_TIME_MS
+	}
 }
