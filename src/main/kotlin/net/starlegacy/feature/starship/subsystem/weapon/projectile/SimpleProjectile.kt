@@ -67,8 +67,8 @@ abstract class SimpleProjectile(
 		)
 		val range = if (chunkRange > 1) chunkRange * 16.0 else 16.0
 		val nmsWorld = loc.world.nms
-		val playerList = checkNotNull(nmsWorld.minecraftServer).playerList
-		playerList.sendPacketNearby(null, x, y, z, range, nmsWorld.dimensionKey, packet)
+		val playerList = checkNotNull(nmsWorld.server).playerList
+		playerList.broadcast(null, x, y, z, range, nmsWorld.dimension(), packet)
 	}
 
 	override fun tick() {

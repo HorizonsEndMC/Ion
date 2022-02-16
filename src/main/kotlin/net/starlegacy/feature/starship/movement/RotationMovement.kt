@@ -25,7 +25,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 	private val sinTheta: Double = sin(Math.toRadians(theta))
 
 	override fun blockDataTransform(blockData: NMSBlockState): NMSBlockState =
-		if (CustomBlocks[blockData] == null) blockData.a(nmsRotation)
+		if (CustomBlocks[blockData] == null) blockData.rotate(nmsRotation)
 		else blockData
 
 	override fun displaceX(oldX: Int, oldZ: Int): Int {
