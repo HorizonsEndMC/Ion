@@ -52,3 +52,7 @@ dependencies {
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.5.8")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.0-beta")
 }
+
+tasks.shadowJar {
+	minimize()
+}
