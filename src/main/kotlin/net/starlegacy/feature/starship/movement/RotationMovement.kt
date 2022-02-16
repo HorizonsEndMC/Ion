@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship.movement
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
-import net.minecraft.server.v1_16_R3.EnumBlockRotation
+import net.minecraft.world.level.block.Rotation
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -19,7 +19,7 @@ import org.bukkit.util.Vector
 
 class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship) {
 	private val origin = starship.centerOfMass
-	private val nmsRotation = if (clockwise) EnumBlockRotation.CLOCKWISE_90 else EnumBlockRotation.COUNTERCLOCKWISE_90
+	private val nmsRotation = if (clockwise) Rotation.CLOCKWISE_90 else Rotation.COUNTERCLOCKWISE_90
 	private val theta: Double = if (clockwise) 90.0 else -90.0
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))

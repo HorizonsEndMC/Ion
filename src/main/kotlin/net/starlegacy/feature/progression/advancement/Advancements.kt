@@ -3,7 +3,7 @@ package net.starlegacy.feature.progression.advancement
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
-import net.minecraft.server.v1_16_R3.AdvancementProgress
+import net.minecraft.advancements.AdvancementProgress
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.slPlayerId
