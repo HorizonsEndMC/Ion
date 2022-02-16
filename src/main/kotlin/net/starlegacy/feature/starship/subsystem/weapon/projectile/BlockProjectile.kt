@@ -102,6 +102,6 @@ abstract class BlockProjectile(
 	private fun sendFakeBlock(block: Block, blockData: BlockData) {
 		val nmsBlockPos = NMSBlockPos(block.x, block.y, block.z)
 		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms)
-		block.chunk.nms.playerChunk?.sendPacketToTrackedPlayers(packet, false)
+		block.chunk.nms.playerChunk?.broadcast(packet, false)
 	}
 }

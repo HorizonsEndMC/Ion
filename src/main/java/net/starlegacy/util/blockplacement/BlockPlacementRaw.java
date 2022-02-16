@@ -2,7 +2,18 @@ package net.starlegacy.util.blockplacement;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.server.v1_16_R3.*;
+import java.util.BitSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R1.CraftChunk;
@@ -23,18 +34,18 @@ import static net.starlegacy.util.CoordinatesKt.*;
 class BlockPlacementRaw {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final WeakHashMap<World, Long2ObjectOpenHashMap<IBlockData[][][]>> worldQueues = new WeakHashMap<>();
+    private final WeakHashMap<World, Long2ObjectOpenHashMap<BlockState[][][]>> worldQueues = new WeakHashMap<>();
 
     @NotNull
-    private static IBlockData[][][] emptyChunkMap() {
+    private static BlockState[][][] emptyChunkMap() {
         // y x z array
-        IBlockData[][][] array = new IBlockData[256][][];
+		BlockState[][][] array = new BlockState[256][][];
 
         for (int y1 = 0; y1 < array.length; y1++) {
-            IBlockData[][] xArray = new IBlockData[16][];
+			BlockState[][] xArray = new BlockState[16][];
 
             for (int x1 = 0; x1 < xArray.length; x1++) {
-                xArray[x1] = new IBlockData[16];
+                xArray[x1] = new BlockState[16];
             }
 
             array[y1] = xArray;
@@ -43,13 +54,13 @@ class BlockPlacementRaw {
         return array;
     }
 
-    synchronized void queue(World world, Long2ObjectOpenHashMap<IBlockData> queue) {
-        Long2ObjectOpenHashMap<IBlockData[][][]> worldQueue = worldQueues.computeIfAbsent(world, w -> new Long2ObjectOpenHashMap<>());
+    synchronized void queue(World world, Long2ObjectOpenHashMap<BlockState> queue) {
+        Long2ObjectOpenHashMap<BlockState[][][]> worldQueue = worldQueues.computeIfAbsent(world, w -> new Long2ObjectOpenHashMap<>());
 
         addToWorldQueue(queue, worldQueue);
     }
 
-    void addToWorldQueue(Long2ObjectOpenHashMap<IBlockData> queue, Long2ObjectOpenHashMap<IBlockData[][][]> worldQueue) {
+    void addToWorldQueue(Long2ObjectOpenHashMap<BlockState> queue, Long2ObjectOpenHashMap<BlockState[][][]> worldQueue) {
         queue.forEach((coords, blockData) -> {
             int y = blockKeyY(coords);
             int x = blockKeyX(coords);
@@ -60,7 +71,7 @@ class BlockPlacementRaw {
 
             long chunkKey = chunkKey(chunkX, chunkZ);
 
-            IBlockData[][][] chunkQueue = worldQueue.computeIfAbsent(chunkKey, c -> emptyChunkMap());
+			BlockState[][][] chunkQueue = worldQueue.computeIfAbsent(chunkKey, c -> emptyChunkMap());
 
             chunkQueue[y][x & 15][z & 15] = blockData;
         });
@@ -74,12 +85,12 @@ class BlockPlacementRaw {
         }
 
         for (World world : new ArrayList<>(worldQueues.keySet())) {
-            Long2ObjectOpenHashMap<IBlockData[][][]> worldQueue = worldQueues.get(world);
+            Long2ObjectOpenHashMap<BlockState[][][]> worldQueue = worldQueues.get(world);
             placeWorldQueue(world, worldQueue, onComplete, false);
         }
     }
 
-    void placeWorldQueue(World world, Long2ObjectOpenHashMap<IBlockData[][][]> worldQueue, @Nullable Consumer<World> onComplete, boolean immediate) {
+    void placeWorldQueue(World world, Long2ObjectOpenHashMap<BlockState[][][]> worldQueue, @Nullable Consumer<World> onComplete, boolean immediate) {
         if (worldQueue.isEmpty()) {
             log.debug("Queue for  " + world.getName() + " was empty!");
             worldQueues.remove(world, worldQueue);
@@ -95,9 +106,9 @@ class BlockPlacementRaw {
 
         log.debug("Queued " + chunkCount + " chunks for " + world.getName());
 
-        for (Map.Entry<Long, IBlockData[][][]> entry : worldQueue.long2ObjectEntrySet()) {
+        for (Map.Entry<Long, BlockState[][][]> entry : worldQueue.long2ObjectEntrySet()) {
             long chunkKey = entry.getKey();
-            IBlockData[][][] blocks = entry.getValue();
+			BlockState[][][] blocks = entry.getValue();
 
             actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, chunkKey, blocks, immediate);
         }
@@ -108,7 +119,7 @@ class BlockPlacementRaw {
     }
 
     private void actuallyPlaceChunk(World world, @Nullable Consumer<World> onComplete, long start, AtomicInteger placedChunks,
-                                    AtomicInteger placed, int chunkCount, long chunkKey, IBlockData[][][] blocks, boolean immediate) {
+                                    AtomicInteger placed, int chunkCount, long chunkKey, BlockState[][][] blocks, boolean immediate) {
         int cx = chunkKeyX(chunkKey);
         int cz = chunkKeyZ(chunkKey);
 
@@ -127,63 +138,63 @@ class BlockPlacementRaw {
 
     private static final boolean ignoreOldData = true; // if false, client will recalculate lighting based on old/new chunk data
 
-    private void updateHeightMap(@Nullable HeightMap heightMap, int x, int y, int z, IBlockData iBlockData) {
+    private void updateHeightMap(@Nullable Heightmap heightMap, int x, int y, int z, BlockState iBlockData) {
         if (heightMap != null) {
-            heightMap.a(x & 15, y, z & 15, iBlockData);
+            heightMap.update(x & 15, y, z & 15, iBlockData);
         }
     }
 
     private void actuallyPlaceChunk(World world, @Nullable Consumer<World> onComplete, long start,
                                     AtomicInteger placedChunks, AtomicInteger placed, int chunkCount,
-                                    IBlockData[][][] blocks, int cx, int cz, boolean wasLoaded, org.bukkit.Chunk chunk) {
-        Chunk nmsChunk = ((CraftChunk) chunk).getHandle();
-        WorldServer nmsWorld = nmsChunk.world;
+									BlockState[][][] blocks, int cx, int cz, boolean wasLoaded, org.bukkit.Chunk chunk) {
+        LevelChunk nmsChunk = ((CraftChunk) chunk).getHandle();
+        Level nmsWorld = nmsChunk.level;
 
-        ChunkSection[] sections = nmsChunk.getSections();
+		LevelChunkSection[] sections = nmsChunk.getSections();
 
-        ChunkSection section = null;
+		LevelChunkSection section = null;
 
         int localPlaced = 0;
 
         int bitmask = 0; // used for the player chunk update thing to let it know which chunks to update
 
-        HeightMap motionBlocking = nmsChunk.heightMap.get(HeightMap.Type.MOTION_BLOCKING);
-        HeightMap motionBlockingNoLeaves = nmsChunk.heightMap.get(HeightMap.Type.MOTION_BLOCKING_NO_LEAVES);
-        HeightMap oceanFloor = nmsChunk.heightMap.get(HeightMap.Type.OCEAN_FLOOR);
-        HeightMap worldSurface = nmsChunk.heightMap.get(HeightMap.Type.WORLD_SURFACE);
+		Heightmap motionBlocking = nmsChunk.heightmaps.get(Heightmap.Types.MOTION_BLOCKING);
+		Heightmap motionBlockingNoLeaves = nmsChunk.heightmaps.get(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES);
+		Heightmap oceanFloor = nmsChunk.heightmaps.get(Heightmap.Types.OCEAN_FLOOR);
+		Heightmap worldSurface = nmsChunk.heightmaps.get(Heightmap.Types.WORLD_SURFACE);
 
         for (int y = 0; y < blocks.length; y++) {
             int sectionY = y >> 4;
 
-            if (section == null || sectionY != section.getYPosition()) {
-                section = sections[sectionY];
+//            if (section == null || sectionY != section.getYPosition()) {
+//                section = sections[sectionY];
+//
+//                if (section == null) {
+//                    section = new LevelChunkSection(sectionY << 4, nmsChunk, nmsWorld, true);
+//                    sections[sectionY] = section;
+//                }
+//            }
 
-                if (section == null) {
-                    section = new ChunkSection(sectionY << 4, nmsChunk, nmsWorld, true);
-                    sections[sectionY] = section;
-                }
-            }
-
-            IBlockData[][] xBlocks = blocks[y];
+			BlockState[][] xBlocks = blocks[y];
 
             for (int x = 0; x < xBlocks.length; x++) {
-                IBlockData[] zBlocks = xBlocks[x];
+				BlockState[] zBlocks = xBlocks[x];
 
                 for (int z = 0; z < zBlocks.length; z++) {
-                    IBlockData newData = zBlocks[z];
+					BlockState newData = zBlocks[z];
 
                     if (newData == null) {
                         continue;
                     }
 
-                    IBlockData oldData = section.getType(x, y & 15, z);
+					BlockState oldData = section.getBlockState(x, y & 15, z);
 
-                    if (oldData.getBlock() instanceof BlockTileEntity && oldData.getBlock() != newData.getBlock()) {
-                        BlockPosition pos = nmsChunk.getPos().asPosition().add(x, y, z);
-                        nmsWorld.removeTileEntity(pos);
+                    if (oldData.getBlock() instanceof BaseEntityBlock && oldData.getBlock() != newData.getBlock()) {
+                        BlockPos pos = nmsChunk.getPos().getWorldPosition().offset(x, y, z);
+                        nmsWorld.removeBlockEntity(pos);
                     }
 
-                    section.setType(x, y & 15, z, newData);
+                    section.setBlockState(x, y & 15, z, newData);
                     updateHeightMap(motionBlocking, x, y, z, newData);
                     updateHeightMap(motionBlockingNoLeaves, x, y, z, newData);
                     updateHeightMap(oceanFloor, x, y, z, newData);
@@ -198,7 +209,7 @@ class BlockPlacementRaw {
         relight(world, cx, cz, nmsWorld);
         sendChunkPacket(nmsChunk, bitmask);
 
-        nmsChunk.setNeedsSaving(true);
+        nmsChunk.setUnsaved(true);
 
         if (!wasLoaded) {
             world.unloadChunkRequest(cx, cz);
@@ -220,17 +231,18 @@ class BlockPlacementRaw {
         }
     }
 
-    private void relight(World world, int cx, int cz, WorldServer nmsWorld) {
-        LightEngine lightEngine = nmsWorld.getChunkProvider().getLightEngine();
-        lightEngine.b(new ChunkCoordIntPair(cx, cz), world.getEnvironment() == World.Environment.NORMAL);
+    private void relight(World world, int cx, int cz, Level nmsWorld) {
+		LevelLightEngine lightEngine = nmsWorld.getLightEngine();
+        lightEngine.retainData(new ChunkPos(cx, cz), world.getEnvironment() == World.Environment.NORMAL);
     }
 
-    private void sendChunkPacket(Chunk nmsChunk, int bitmask) {
-        PlayerChunk playerChunk = nmsChunk.playerChunk;
+    private void sendChunkPacket(LevelChunk nmsChunk, int bitmask) {
+		ChunkHolder playerChunk = nmsChunk.playerChunk;
         if (playerChunk == null) {
             return;
         }
-        PacketPlayOutMapChunk packet = new PacketPlayOutMapChunk(nmsChunk, bitmask);
-        playerChunk.sendPacketToTrackedPlayers(packet, false);
+
+		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), false, true);
+        playerChunk.broadcast(packet, false);
     }
 }

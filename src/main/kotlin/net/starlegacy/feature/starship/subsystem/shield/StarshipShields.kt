@@ -357,9 +357,8 @@ object StarshipShields : SLComponent() {
 			}
 
 			val pos = NMSBlockPos(bx, by, bz)
-			val packet = ClientboundBlockUpdatePacket(nmsLevel, pos)
-			packet.block = flare
-			nmsLevel.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
+			val packet = ClientboundBlockUpdatePacket(pos, flare)
+			nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
 		}
 	}
 
@@ -393,9 +392,8 @@ object StarshipShields : SLComponent() {
 				}
 
 				val pos = NMSBlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
-				val packet = ClientboundBlockUpdatePacket(nmsLevel, pos)
-				packet.block = data
-				nmsLevel.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
+				val packet = ClientboundBlockUpdatePacket(pos, data)
+				nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
 			}
 		}
 	}
