@@ -42,189 +42,189 @@ import org.litote.kmongo.util.KMongoUtil.idFilterQuery
  */
 
 data class Settlement(
-    override val _id: Oid<Settlement>,
-    /** The territory the settlement resides in. SHOULD NOT BE UPDATED WITHOUT UPDATING ZONES */
-    val territory: Oid<Territory>,
-    /** The name of the settlement (user-adjustable) */
-    var name: String,
-    /** The leader of the settlement */
-    var leader: SLPlayerId,
-    /** The amount of money the settlement has */
-    override var balance: Int = 0,
-    /** The nation the settlement is in */
-    var nation: Oid<Nation>? = null,
-    /** The minimum foreign relation a player must have to build in the settlement */
-    var minimumBuildAccess: ForeignRelation = ForeignRelation.SETTLEMENT_MEMBER,
-    /** List of players the settlement has invited */
-    val invites: MutableSet<SLPlayerId> = mutableSetOf(),
-    /** Null if it's not a city, unpaid if it hasn't paid its taxes, active if it's an active city */
-    var cityState: CityState? = null,
-    /** Lets settlement cities set tax percents on cargo trade and bazaars */
-    var tradeTax: Double? = null
+	override val _id: Oid<Settlement>,
+	/** The territory the settlement resides in. SHOULD NOT BE UPDATED WITHOUT UPDATING ZONES */
+	val territory: Oid<Territory>,
+	/** The name of the settlement (user-adjustable) */
+	var name: String,
+	/** The leader of the settlement */
+	var leader: SLPlayerId,
+	/** The amount of money the settlement has */
+	override var balance: Int = 0,
+	/** The nation the settlement is in */
+	var nation: Oid<Nation>? = null,
+	/** The minimum foreign relation a player must have to build in the settlement */
+	var minimumBuildAccess: ForeignRelation = ForeignRelation.SETTLEMENT_MEMBER,
+	/** List of players the settlement has invited */
+	val invites: MutableSet<SLPlayerId> = mutableSetOf(),
+	/** Null if it's not a city, unpaid if it hasn't paid its taxes, active if it's an active city */
+	var cityState: CityState? = null,
+	/** Lets settlement cities set tax percents on cargo trade and bazaars */
+	var tradeTax: Double? = null
 ) : DbObject, MoneyHolder {
-    enum class CityState { UNPAID, ACTIVE }
+	enum class CityState { UNPAID, ACTIVE }
 
-    companion object : OidDbObjectCompanion<Settlement>(Settlement::class, setup = {
-        ensureUniqueIndex(Settlement::territory)
-        ensureUniqueIndexCaseInsensitive(Settlement::name, indexOptions = IndexOptions().textVersion(3))
-        ensureUniqueIndex(Settlement::leader)
-        ensureIndex(Settlement::nation)
-        ensureIndex(Settlement::invites)
-        ensureIndex(Settlement::cityState)
-    }) {
-        fun nameQuery(name: String): Bson = Filters.regex("name", "^$name$", "i")
+	companion object : OidDbObjectCompanion<Settlement>(Settlement::class, setup = {
+		ensureUniqueIndex(Settlement::territory)
+		ensureUniqueIndexCaseInsensitive(Settlement::name, indexOptions = IndexOptions().textVersion(3))
+		ensureUniqueIndex(Settlement::leader)
+		ensureIndex(Settlement::nation)
+		ensureIndex(Settlement::invites)
+		ensureIndex(Settlement::cityState)
+	}) {
+		fun nameQuery(name: String): Bson = Filters.regex("name", "^$name$", "i")
 
-        fun findByName(name: String): Oid<Settlement>? {
-            return findOneProp(nameQuery(name), Settlement::_id)
-        }
+		fun findByName(name: String): Oid<Settlement>? {
+			return findOneProp(nameQuery(name), Settlement::_id)
+		}
 
-        fun getName(settlementId: Oid<Settlement>): String? = findPropById(settlementId, Settlement::name)
+		fun getName(settlementId: Oid<Settlement>): String? = findPropById(settlementId, Settlement::name)
 
-        fun getNation(settlementId: Oid<Settlement>): Oid<Nation>? = findPropById(settlementId, Settlement::nation)
+		fun getNation(settlementId: Oid<Settlement>): Oid<Nation>? = findPropById(settlementId, Settlement::nation)
 
-        fun getMembers(settlementId: Oid<Settlement>): MongoIterable<SLPlayerId> = SLPlayer
-            .findProp(SLPlayer::settlement eq settlementId, SLPlayer::_id)
+		fun getMembers(settlementId: Oid<Settlement>): MongoIterable<SLPlayerId> = SLPlayer
+			.findProp(SLPlayer::settlement eq settlementId, SLPlayer::_id)
 
-        fun isCapital(settlementId: Oid<Settlement>?): Boolean = !Nation.none(Nation::capital eq settlementId)
+		fun isCapital(settlementId: Oid<Settlement>?): Boolean = !Nation.none(Nation::capital eq settlementId)
 
-        fun isInvitedTo(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Boolean =
-            matches(settlementId, Settlement::invites contains slPlayer)
+		fun isInvitedTo(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Boolean =
+			matches(settlementId, Settlement::invites contains slPlayer)
 
-        fun addInvite(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Unit = trx { sess ->
-            require(!SLPlayer.matches(sess, slPlayer, SLPlayer::settlement eq settlementId))
-            require(!matches(sess, settlementId, Settlement::invites contains slPlayer))
-            updateById(sess, settlementId, addToSet(Settlement::invites, slPlayer))
-        }
+		fun addInvite(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Unit = trx { sess ->
+			require(!SLPlayer.matches(sess, slPlayer, SLPlayer::settlement eq settlementId))
+			require(!matches(sess, settlementId, Settlement::invites contains slPlayer))
+			updateById(sess, settlementId, addToSet(Settlement::invites, slPlayer))
+		}
 
-        fun removeInvite(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Unit = trx { sess ->
-            require(matches(sess, settlementId, Settlement::invites contains slPlayer))
-            updateById(sess, settlementId, pull(Settlement::invites, slPlayer))
-        }
+		fun removeInvite(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Unit = trx { sess ->
+			require(matches(sess, settlementId, Settlement::invites contains slPlayer))
+			updateById(sess, settlementId, pull(Settlement::invites, slPlayer))
+		}
 
-        private fun updateMembers(session: ClientSession, settlementId: Oid<Settlement>, vararg update: Bson): Long {
-            return SLPlayer.col.updateMany(session, SLPlayer::settlement eq settlementId, combine(*update))
-                .matchedCount
-        }
+		private fun updateMembers(session: ClientSession, settlementId: Oid<Settlement>, vararg update: Bson): Long {
+			return SLPlayer.col.updateMany(session, SLPlayer::settlement eq settlementId, combine(*update))
+				.matchedCount
+		}
 
-        fun create(territory: Oid<Territory>, name: String, leader: SLPlayerId): Oid<Settlement> = trx { sess ->
-            require(none(sess, nameQuery(name)))
-            require(Territory.matches(sess, territory, Territory.unclaimedQuery))
-            require(SLPlayer.matches(sess, leader, SLPlayer::settlement eq null))
+		fun create(territory: Oid<Territory>, name: String, leader: SLPlayerId): Oid<Settlement> = trx { sess ->
+			require(none(sess, nameQuery(name)))
+			require(Territory.matches(sess, territory, Territory.unclaimedQuery))
+			require(SLPlayer.matches(sess, leader, SLPlayer::settlement eq null))
 
-            val id: Oid<Settlement> = objId()
-            val settlement = Settlement(id, territory, name, leader)
+			val id: Oid<Settlement> = objId()
+			val settlement = Settlement(id, territory, name, leader)
 
-            SLPlayer.col.updateOne(sess, idFilterQuery(leader), org.litote.kmongo.setValue(SLPlayer::settlement, id))
-            Territory.col.updateOne(
-                sess, idFilterQuery(territory),
-                org.litote.kmongo.setValue(Territory::settlement, id)
-            )
-            col.insertOne(sess, settlement)
+			SLPlayer.col.updateOne(sess, idFilterQuery(leader), org.litote.kmongo.setValue(SLPlayer::settlement, id))
+			Territory.col.updateOne(
+				sess, idFilterQuery(territory),
+				org.litote.kmongo.setValue(Territory::settlement, id)
+			)
+			col.insertOne(sess, settlement)
 
-            return@trx id
-        }
+			return@trx id
+		}
 
-        fun delete(settlementId: Oid<Settlement>) {
-            // leave nation first, to update members that they are no longer in a nation, remove nation roles, etc
-            leaveNation(settlementId)
+		fun delete(settlementId: Oid<Settlement>) {
+			// leave nation first, to update members that they are no longer in a nation, remove nation roles, etc
+			leaveNation(settlementId)
 
-            trx { sess ->
-                require(exists(sess, settlementId))
+			trx { sess ->
+				require(exists(sess, settlementId))
 
-                // make the members no long members
-                updateMembers(sess, settlementId, set(SLPlayer::settlement setTo null, SLPlayer::nation setTo null))
+				// make the members no long members
+				updateMembers(sess, settlementId, set(SLPlayer::settlement setTo null, SLPlayer::nation setTo null))
 
-                // remove all related settlement roles
-                SettlementRole.col.deleteMany(sess, SettlementRole::parent eq settlementId)
+				// remove all related settlement roles
+				SettlementRole.col.deleteMany(sess, SettlementRole::parent eq settlementId)
 
-                // update the territory's settlement
-                Territory.col.updateOne(
-                    sess, Territory::settlement eq settlementId,
-                    set(Territory::settlement setTo null, Territory::isProtected setTo false)
-                )
+				// update the territory's settlement
+				Territory.col.updateOne(
+					sess, Territory::settlement eq settlementId,
+					set(Territory::settlement setTo null, Territory::isProtected setTo false)
+				)
 
-                // remove/update all the relevant settlement regions
-                SettlementZone.col.deleteMany(sess, SettlementZone::settlement eq settlementId)
-                SettlementZone.col.updateMany(
-                    sess,
-                    SettlementZone::trustedSettlements ne null,
-                    pull(SettlementZone::trustedSettlements, settlementId)
-                )
+				// remove/update all the relevant settlement regions
+				SettlementZone.col.deleteMany(sess, SettlementZone::settlement eq settlementId)
+				SettlementZone.col.updateMany(
+					sess,
+					SettlementZone::trustedSettlements ne null,
+					pull(SettlementZone::trustedSettlements, settlementId)
+				)
 
-                // remove invite from nations
-                Nation.col.updateAll(sess, pull(Nation::invites, settlementId))
+				// remove invite from nations
+				Nation.col.updateAll(sess, pull(Nation::invites, settlementId))
 
-                // remove the actual settlement
-                col.deleteOne(sess, idFilterQuery(settlementId))
-            }
-        }
+				// remove the actual settlement
+				col.deleteOne(sess, idFilterQuery(settlementId))
+			}
+		}
 
-        fun leaveNation(settlementId: Oid<Settlement>): Boolean = trx { sess ->
-            require(exists(sess, settlementId))
-            require(Nation.none(sess, Nation::capital eq settlementId))
+		fun leaveNation(settlementId: Oid<Settlement>): Boolean = trx { sess ->
+			require(exists(sess, settlementId))
+			require(Nation.none(sess, Nation::capital eq settlementId))
 
-            val members: List<SLPlayerId> = getMembers(settlementId).toList()
+			val members: List<SLPlayerId> = getMembers(settlementId).toList()
 
-            // remove roles
-            NationRole.col.updateAll(sess, pullAll(NationRole::members, members))
+			// remove roles
+			NationRole.col.updateAll(sess, pullAll(NationRole::members, members))
 
-            // unset nation for members
-            updateMembers(sess, settlementId, org.litote.kmongo.setValue(SLPlayer::nation, null))
+			// unset nation for members
+			updateMembers(sess, settlementId, org.litote.kmongo.setValue(SLPlayer::nation, null))
 
-            // unset actual settlement nation
-            return@trx col.updateOne(
-                sess, idFilterQuery(settlementId),
-                org.litote.kmongo.setValue(Settlement::nation, null)
-            ).modifiedCount > 0
-        }
+			// unset actual settlement nation
+			return@trx col.updateOne(
+				sess, idFilterQuery(settlementId),
+				org.litote.kmongo.setValue(Settlement::nation, null)
+			).modifiedCount > 0
+		}
 
-        fun joinNation(settlementId: Oid<Settlement>, nationId: Oid<Nation>): Unit = trx { sess ->
-            require(exists(sess, settlementId))
+		fun joinNation(settlementId: Oid<Settlement>, nationId: Oid<Nation>): Unit = trx { sess ->
+			require(exists(sess, settlementId))
 
-            // require the settlement isn't already in a nation
-            require(matches(sess, settlementId, Settlement::nation eq null))
+			// require the settlement isn't already in a nation
+			require(matches(sess, settlementId, Settlement::nation eq null))
 
-            // update the nation of all members
-            updateMembers(sess, settlementId, org.litote.kmongo.setValue(SLPlayer::nation, nationId))
+			// update the nation of all members
+			updateMembers(sess, settlementId, org.litote.kmongo.setValue(SLPlayer::nation, nationId))
 
-            // set the nation to the new nation
-            col.updateOne(sess, idFilterQuery(settlementId), org.litote.kmongo.setValue(Settlement::nation, nationId))
-        }
+			// set the nation to the new nation
+			col.updateOne(sess, idFilterQuery(settlementId), org.litote.kmongo.setValue(Settlement::nation, nationId))
+		}
 
-        fun deposit(settlementId: Oid<Settlement>, amount: Int) {
-            updateById(settlementId, inc(Settlement::balance, amount))
-        }
+		fun deposit(settlementId: Oid<Settlement>, amount: Int) {
+			updateById(settlementId, inc(Settlement::balance, amount))
+		}
 
-        fun withdraw(settlementId: Oid<Settlement>, amount: Int) {
-            updateById(settlementId, inc(Settlement::balance, -amount))
-        }
+		fun withdraw(settlementId: Oid<Settlement>, amount: Int) {
+			updateById(settlementId, inc(Settlement::balance, -amount))
+		}
 
-        fun setCityState(settlementId: Oid<Settlement>, cityState: CityState?): Unit = trx { sess ->
-            require(exists(sess, settlementId))
+		fun setCityState(settlementId: Oid<Settlement>, cityState: CityState?): Unit = trx { sess ->
+			require(exists(sess, settlementId))
 
-            val protected = cityState == CityState.ACTIVE
+			val protected = cityState == CityState.ACTIVE
 
-            col.updateOneById(sess, settlementId, org.litote.kmongo.setValue(Settlement::cityState, cityState))
-            Territory.col.updateOne(
-                sess, Territory::settlement eq settlementId,
-                org.litote.kmongo.setValue(Territory::isProtected, protected)
-            )
-        }
+			col.updateOneById(sess, settlementId, org.litote.kmongo.setValue(Settlement::cityState, cityState))
+			Territory.col.updateOne(
+				sess, Territory::settlement eq settlementId,
+				org.litote.kmongo.setValue(Territory::isProtected, protected)
+			)
+		}
 
-        fun setName(settlementId: Oid<Settlement>, name: String): Unit = trx { sess ->
-            require(none(sess, and(Settlement::_id ne settlementId, nameQuery(name))))
-            updateById(sess, settlementId, org.litote.kmongo.setValue(Settlement::name, name))
-        }
+		fun setName(settlementId: Oid<Settlement>, name: String): Unit = trx { sess ->
+			require(none(sess, and(Settlement::_id ne settlementId, nameQuery(name))))
+			updateById(sess, settlementId, org.litote.kmongo.setValue(Settlement::name, name))
+		}
 
-        fun setLeader(settlementId: Oid<Settlement>, slPlayerId: SLPlayerId): Unit = trx { sess ->
-            require(SLPlayer.matches(sess, slPlayerId, SLPlayer::settlement eq settlementId))
-            updateById(sess, settlementId, org.litote.kmongo.setValue(Settlement::leader, slPlayerId))
-        }
+		fun setLeader(settlementId: Oid<Settlement>, slPlayerId: SLPlayerId): Unit = trx { sess ->
+			require(SLPlayer.matches(sess, slPlayerId, SLPlayer::settlement eq settlementId))
+			updateById(sess, settlementId, org.litote.kmongo.setValue(Settlement::leader, slPlayerId))
+		}
 
-        fun setMinBuildAccess(settlementId: Oid<Settlement>, level: ForeignRelation) {
-            updateById(settlementId, org.litote.kmongo.setValue(Settlement::minimumBuildAccess, level))
-        }
-    }
+		fun setMinBuildAccess(settlementId: Oid<Settlement>, level: ForeignRelation) {
+			updateById(settlementId, org.litote.kmongo.setValue(Settlement::minimumBuildAccess, level))
+		}
+	}
 
-    enum class ForeignRelation { NONE, ALLY, NATION_MEMBER, SETTLEMENT_MEMBER, STRICT; }
+	enum class ForeignRelation { NONE, ALLY, NATION_MEMBER, SETTLEMENT_MEMBER, STRICT; }
 }

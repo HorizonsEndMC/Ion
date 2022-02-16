@@ -7,11 +7,11 @@ import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 
 class LightTurretWeaponSubsystem(
-    ship: ActiveStarship,
-    pos: Vec3i,
-    face: BlockFace,
-    override val multiblock: LightTurretMultiblock
+	ship: ActiveStarship,
+	pos: Vec3i,
+	face: BlockFace,
+	override val multiblock: LightTurretMultiblock
 ) : TurretWeaponSubsystem(ship, pos, face) {
-    override val powerUsage: Int = 6000
-    override val inaccuracyRadians: Double = Math.toRadians(2.0)
+	override val powerUsage: Int = 6000
+	override val inaccuracyRadians: Double = Math.toRadians(2.0)
 }

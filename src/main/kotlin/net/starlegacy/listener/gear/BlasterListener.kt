@@ -1,5 +1,6 @@
 package net.starlegacy.listener.gear
 
+import java.util.Locale
 import net.starlegacy.feature.gear.blaster.Blasters
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.listener.SLEventListener
@@ -23,99 +24,99 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
 
 object BlasterListener : SLEventListener() {
-    @EventHandler
-    fun onClick(event: PlayerInteractEvent) {
-        if (event.action != LEFT_CLICK_AIR && event.action != LEFT_CLICK_BLOCK) {
-            return
-        }
+	@EventHandler
+	fun onClick(event: PlayerInteractEvent) {
+		if (event.action != LEFT_CLICK_AIR && event.action != LEFT_CLICK_BLOCK) {
+			return
+		}
 
-        val item = event.item ?: return
-        val blaster = Blasters.getBlaster(item) ?: return
-        event.isCancelled = true
-        val player = event.player
+		val item = event.item ?: return
+		val blaster = Blasters.getBlaster(item) ?: return
+		event.isCancelled = true
+		val player = event.player
 
-        Blasters.fireBlaster(player, item, Blasters.getBlasterType(blaster))
-    }
+		Blasters.fireBlaster(player, item, Blasters.getBlasterType(blaster))
+	}
 
-    @EventHandler
-    fun onFireBlaster(event: EntityShootBowEvent) {
-        val entity = event.entity
-        val bow = event.bow ?: return
+	@EventHandler
+	fun onFireBlaster(event: EntityShootBowEvent) {
+		val entity = event.entity
+		val bow = event.bow ?: return
 
-        if (entity is Player && entity.gameMode == GameMode.SPECTATOR) {
-            return
-        }
+		if (entity is Player && entity.gameMode == GameMode.SPECTATOR) {
+			return
+		}
 
-        val blaster = Blasters.getBlaster(bow) ?: return
+		val blaster = Blasters.getBlaster(bow) ?: return
 
-        event.isCancelled = true
-        Blasters.fireBlaster(entity, bow, Blasters.getBlasterType(blaster))
-    }
+		event.isCancelled = true
+		Blasters.fireBlaster(entity, bow, Blasters.getBlasterType(blaster))
+	}
 
-    @EventHandler
-    fun preCraft(event: PrepareItemCraftEvent) {
-        var color: DyeColor? = null
-        var dye: ItemStack? = null
-        for (item: ItemStack? in event.inventory.matrix) {
-            if (item != null && item.data is Colorable) {
-                color = (item.data as Colorable).color
-                dye = item
-                break
-            }
-        }
+	@EventHandler
+	fun preCraft(event: PrepareItemCraftEvent) {
+		var color: DyeColor? = null
+		var dye: ItemStack? = null
+		for (item: ItemStack? in event.inventory.matrix) {
+			if (item != null && item.data is Colorable) {
+				color = (item.data as Colorable).color
+				dye = item
+				break
+			}
+		}
 
-        if (dye == null || color == null) {
-            return
-        }
+		if (dye == null || color == null) {
+			return
+		}
 
-        for (item: ItemStack? in event.inventory.matrix) {
-            if (item == null) {
-                continue
-            }
+		for (item: ItemStack? in event.inventory.matrix) {
+			if (item == null) {
+				continue
+			}
 
-            Blasters.getBlaster(item) ?: continue
-            val lore = item.lore ?: mutableListOf()
+			Blasters.getBlaster(item) ?: continue
+			val lore = item.lore ?: mutableListOf()
 
-            if (lore.size < 2) {
-                lore.add(color.name)
-            } else {
-                lore[1] = color.name
-            }
+			if (lore.size < 2) {
+				lore.add(color.name)
+			} else {
+				lore[1] = color.name
+			}
 
-            if (lore == item.lore) {
-                return
-            }
+			if (lore == item.lore) {
+				return
+			}
 
-            if (item.lore == lore) {
-                return
-            }
+			if (item.lore == lore) {
+				return
+			}
 
-            item.lore = lore
-            dye.amount = dye.amount - 1
-            return
-        }
-    }
+			item.lore = lore
+			dye.amount = dye.amount - 1
+			return
+		}
+	}
 
-    @EventHandler
-    fun onSkeletonSpawn(event: CreatureSpawnEvent) {
-        if (event.entityType != EntityType.SKELETON) return
-        val skeleton = event.entity as Skeleton
+	@EventHandler
+	fun onSkeletonSpawn(event: CreatureSpawnEvent) {
+		if (event.entityType != EntityType.SKELETON) return
+		val skeleton = event.entity as Skeleton
 
-        if (skeleton.world.name.toLowerCase().contains("arena")) Tasks.sync {
-            val blasterRifle = CustomItems["blaster_rifle"]?.itemStack(1)
-            val meta = blasterRifle?.itemMeta
-            meta?.lore = listOf("PINK")
-            blasterRifle?.itemMeta = meta
-            skeleton.equipment?.setItemInMainHand(blasterRifle)
-        }
-    }
+		if (skeleton.world.name.lowercase(Locale.getDefault()).contains("arena")) Tasks.sync {
+			val blasterRifle = CustomItems["blaster_rifle"]?.itemStack(1)
+			val meta = blasterRifle?.itemMeta
+			meta?.lore = listOf("PINK")
+			blasterRifle?.itemMeta = meta
+			skeleton.equipment.setItemInMainHand(blasterRifle)
+		}
+	}
 
-    @EventHandler
-    fun onEntityDamage(event: EntityDamageByEntityEvent) {
-        val entity = event.entity
-        val damager = event.damager
-        if (entity is Monster && (damager is Monster || damager is Projectile && damager.shooter is Monster)) {
-            event.isCancelled = true
-        }
-    }
+	@EventHandler
+	fun onEntityDamage(event: EntityDamageByEntityEvent) {
+		val entity = event.entity
+		val damager = event.damager
+		if (entity is Monster && (damager is Monster || damager is Projectile && damager.shooter is Monster)) {
+			event.isCancelled = true
+		}
+	}
 }

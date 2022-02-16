@@ -8,14 +8,14 @@ import org.bukkit.inventory.meta.ItemMeta
 fun isEmpty(itemStack: ItemStack?): Boolean = itemStack == null || itemStack.type == Material.AIR
 
 fun ItemStack.updateMeta(block: (ItemMeta) -> Unit): ItemStack = apply {
-    itemMeta = requireNotNull(itemMeta) { "No item meta for $type!" }.apply(block)
+	itemMeta = requireNotNull(itemMeta) { "No item meta for $type!" }.apply(block)
 }
 
 fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = updateMeta { it.setDisplayName(name) }
 
 val ItemStack.displayName
-    get() =
-        if (this.hasItemMeta() && this.itemMeta.hasDisplayName()) this.itemMeta.displayName
-        else this.i18NDisplayName ?: this.type.name
+	get() =
+		if (this.hasItemMeta() && this.itemMeta.hasDisplayName()) this.itemMeta.displayName
+		else this.i18NDisplayName ?: this.type.name
 
 fun ItemStack.setLoreAndGet(lines: List<String>): ItemStack = apply { this.lore = lines }

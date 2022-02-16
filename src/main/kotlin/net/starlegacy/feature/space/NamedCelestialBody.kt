@@ -1,7 +1,9 @@
 package net.starlegacy.feature.space
 
-interface NamedCelestialBody {
-    val name: String
+import java.util.Locale
 
-    val id get() = name.toLowerCase().replace(" ", "")
+interface NamedCelestialBody {
+	val name: String
+
+	val id get() = name.lowercase(Locale.getDefault()).replace(" ", "")
 }

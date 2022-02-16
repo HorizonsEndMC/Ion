@@ -8,8 +8,8 @@ import org.bukkit.block.BlockFace
 
 /** thruster subsystem representing a single thruster, the facing direction being forward */
 class ThrusterSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace, val type: ThrusterType) :
-    StarshipSubsystem(starship, pos), DirectionalSubsystem {
-    override fun isIntact(): Boolean = type.matchesStructure(starship, pos.x, pos.y, pos.z, face)
+	StarshipSubsystem(starship, pos), DirectionalSubsystem {
+	override fun isIntact(): Boolean = type.matchesStructure(starship, pos.x, pos.y, pos.z, face)
 
-    // TODO : remove automatically when the block gets destroyed
+	// TODO : remove automatically when the block gets destroyed
 }

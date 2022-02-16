@@ -33,8 +33,8 @@ import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass3
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
-import net.starlegacy.feature.multiblock.misc.GasCollectorMultiblock
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
+import net.starlegacy.feature.multiblock.misc.GasCollectorMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.misc.MobDefender
 import net.starlegacy.feature.multiblock.misc.ShipFactoryMultiblock
@@ -91,186 +91,186 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object Multiblocks : SLComponent() {
-    private lateinit var multiblocks: List<Multiblock>
+	private lateinit var multiblocks: List<Multiblock>
 
-    private fun initMultiblocks() {
-        multiblocks = listOf(
-            GasCollectorMultiblock,
+	private fun initMultiblocks() {
+		multiblocks = listOf(
+			GasCollectorMultiblock,
 
-            GeneratorMultiblockTier1,
-            GeneratorMultiblockTier2,
-            GeneratorMultiblockTier3,
+			GeneratorMultiblockTier1,
+			GeneratorMultiblockTier2,
+			GeneratorMultiblockTier3,
 
-            PowerFurnaceMultiblockTier1,
-            PowerFurnaceMultiblockTier2,
-            PowerFurnaceMultiblockTier3,
+			PowerFurnaceMultiblockTier1,
+			PowerFurnaceMultiblockTier2,
+			PowerFurnaceMultiblockTier3,
 
-            PowerBankMultiblockTier1,
-            PowerBankMultiblockTier2,
-            PowerBankMultiblockTier3,
+			PowerBankMultiblockTier1,
+			PowerBankMultiblockTier2,
+			PowerBankMultiblockTier3,
 
-            PowerCellMultiblock,
+			PowerCellMultiblock,
 
-            ChargerMultiblockTier1,
-            ChargerMultiblockTier2,
-            ChargerMultiblockTier3,
+			ChargerMultiblockTier1,
+			ChargerMultiblockTier2,
+			ChargerMultiblockTier3,
 
-            AutoCrafterMultiblockTier1,
-            AutoCrafterMultiblockTier3,
-            AutoCrafterMultiblockTier2,
+			AutoCrafterMultiblockTier1,
+			AutoCrafterMultiblockTier3,
+			AutoCrafterMultiblockTier2,
 
-            HyperdriveMultiblockClass1,
-            HyperdriveMultiblockClass2,
-            HyperdriveMultiblockClass3,
-            HyperdriveMultiblockClass4,
+			HyperdriveMultiblockClass1,
+			HyperdriveMultiblockClass2,
+			HyperdriveMultiblockClass3,
+			HyperdriveMultiblockClass4,
 
-            NavigationComputerMultiblockBasic,
-            NavigationComputerMultiblockAdvanced,
+			NavigationComputerMultiblockBasic,
+			NavigationComputerMultiblockAdvanced,
 
-            SmallBaseShieldMultiblock,
-            MediumBaseShieldMultiblock,
-            LargeBaseShieldMultiblock,
+			SmallBaseShieldMultiblock,
+			MediumBaseShieldMultiblock,
+			LargeBaseShieldMultiblock,
 
-            ShieldMultiblockClass08Right,
-            ShieldMultiblockClass08Left,
-            ShieldMultiblockClass20,
-            ShieldMultiblockClass30,
-            ShieldMultiblockClass65,
-            ShieldMultiblockClass85,
-            ShieldMultiblockClass08i,
-            BoxShieldMultiblock,
+			ShieldMultiblockClass08Right,
+			ShieldMultiblockClass08Left,
+			ShieldMultiblockClass20,
+			ShieldMultiblockClass30,
+			ShieldMultiblockClass65,
+			ShieldMultiblockClass85,
+			ShieldMultiblockClass08i,
+			BoxShieldMultiblock,
 
-            CarbonProcessorMultiblock,
+			CarbonProcessorMultiblock,
 
-            CarbonPrinterMultiblock,
-            TechnicalPrinterMultiblock,
-            GlassPrinterMultiblock,
-            ArmorPrinterMultiblock,
+			CarbonPrinterMultiblock,
+			TechnicalPrinterMultiblock,
+			GlassPrinterMultiblock,
+			ArmorPrinterMultiblock,
 
-            DisconnectedDockingTubeMultiblock,
-            ConnectedDockingTubeMultiblock,
+			DisconnectedDockingTubeMultiblock,
+			ConnectedDockingTubeMultiblock,
 
-            CryoPodMultiblock,
-            MagazineMultiblock,
-            AirlockMultiblock,
-            TractorBeamMultiblock,
+			CryoPodMultiblock,
+			MagazineMultiblock,
+			AirlockMultiblock,
+			TractorBeamMultiblock,
 
-            ShipFactoryMultiblock,
+			ShipFactoryMultiblock,
 
-            DrillMultiblockTier1,
-            DrillMultiblockTier2,
-            DrillMultiblockTier3,
+			DrillMultiblockTier1,
+			DrillMultiblockTier2,
+			DrillMultiblockTier3,
 
-            StandardGravityWellMultiblock,
-            AmplifiedGravityWellMultiblock,
+			StandardGravityWellMultiblock,
+			AmplifiedGravityWellMultiblock,
 
-            AreaShield5,
-            AreaShield10,
-            AreaShield20,
-            AreaShield30,
+			AreaShield5,
+			AreaShield10,
+			AreaShield20,
+			AreaShield30,
 
-            MobDefender,
+			MobDefender,
 
-            LaserCannonStarshipWeaponMultiblock,
-            PlasmaCannonStarshipWeaponMultiblock,
-            PulseCannonStarshipWeaponMultiblock,
-            HeavyLaserStarshipWeaponMultiblock,
-            TorpedoStarshipWeaponMultiblock,
-            PointDefenseStarshipWeaponMultiblockTop,
-            PointDefenseStarshipWeaponMultiblockSide,
-            PointDefenseStarshipWeaponMultiblockBottom,
-            TopLightTurretMultiblock,
-            BottomLightTurretMultiblock,
-            TopHeavyTurretMultiblock,
-            BottomHeavyTurretMultiblock,
-            TopTriTurretMultiblock,
-            BottomTriTurretMultiblock,
-            HorizontalRocketStarshipWeaponMultiblock,
-            UpwardRocketStarshipWeaponMultiblock,
-            DownwardRocketStarshipWeaponMultiblock,
-            PhaserStarshipWeaponMultiblock,
-            DecomposerMultiblock,
+			LaserCannonStarshipWeaponMultiblock,
+			PlasmaCannonStarshipWeaponMultiblock,
+			PulseCannonStarshipWeaponMultiblock,
+			HeavyLaserStarshipWeaponMultiblock,
+			TorpedoStarshipWeaponMultiblock,
+			PointDefenseStarshipWeaponMultiblockTop,
+			PointDefenseStarshipWeaponMultiblockSide,
+			PointDefenseStarshipWeaponMultiblockBottom,
+			TopLightTurretMultiblock,
+			BottomLightTurretMultiblock,
+			TopHeavyTurretMultiblock,
+			BottomHeavyTurretMultiblock,
+			TopTriTurretMultiblock,
+			BottomTriTurretMultiblock,
+			HorizontalRocketStarshipWeaponMultiblock,
+			UpwardRocketStarshipWeaponMultiblock,
+			DownwardRocketStarshipWeaponMultiblock,
+			PhaserStarshipWeaponMultiblock,
+			DecomposerMultiblock,
 
-            APTurret,
-        )
-    }
+			APTurret,
+		)
+	}
 
-    private val multiblockCache: MutableMap<Location, Multiblock> = Object2ObjectOpenHashMap()
+	private val multiblockCache: MutableMap<Location, Multiblock> = Object2ObjectOpenHashMap()
 
-    private lateinit var gettingTiming: Timing
-    private lateinit var detectionTiming: Timing
+	private lateinit var gettingTiming: Timing
+	private lateinit var detectionTiming: Timing
 
-    override fun onEnable() {
-        initMultiblocks()
+	override fun onEnable() {
+		initMultiblocks()
 
-        gettingTiming = timing("Multiblock Getting")
-        detectionTiming = timing("Multiblock Detection")
+		gettingTiming = timing("Multiblock Getting")
+		detectionTiming = timing("Multiblock Detection")
 
-        log.info("Loaded ${multiblocks.size} multiblocks")
-    }
+		log.info("Loaded ${multiblocks.size} multiblocks")
+	}
 
-    fun all(): List<Multiblock> = multiblocks
+	fun all(): List<Multiblock> = multiblocks
 
-    @JvmStatic
-    @JvmOverloads
-    operator fun get(
-        sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true
-    ): Multiblock? = gettingTiming.time {
-        val location: Location = sign.location
-        val lines: Array<String> = sign.lines
+	@JvmStatic
+	@JvmOverloads
+	operator fun get(
+		sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true
+	): Multiblock? = gettingTiming.time {
+		val location: Location = sign.location
+		val lines: Array<String> = sign.lines
 
-        val cached: Multiblock? = multiblockCache[location]
-        if (cached != null) {
-            // one was already cached before
-            if (cached.matchesSign(lines) && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
-                // it still matches so returned the cached one
-                return@time cached
-            } else {
-                // it no longer matches so remove it, and re-detect it afterwards
-                multiblockCache.remove(location)
-            }
-        }
+		val cached: Multiblock? = multiblockCache[location]
+		if (cached != null) {
+			// one was already cached before
+			if (cached.matchesSign(lines) && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
+				// it still matches so returned the cached one
+				return@time cached
+			} else {
+				// it no longer matches so remove it, and re-detect it afterwards
+				multiblockCache.remove(location)
+			}
+		}
 
-        for (multiblock in multiblocks) {
-            val matchesSign = multiblock.matchesSign(lines)
-            if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
-                if (checkStructure) {
-                    multiblockCache[location] = multiblock
-                }
-                return@time multiblock
-            }
-        }
+		for (multiblock in multiblocks) {
+			val matchesSign = multiblock.matchesSign(lines)
+			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
+				if (checkStructure) {
+					multiblockCache[location] = multiblock
+				}
+				return@time multiblock
+			}
+		}
 
-        return@time null
-    }
+		return@time null
+	}
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onInteractMultiblockSign(event: PlayerInteractEvent) {
-        if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) {
-            return
-        }
+	@EventHandler(priority = EventPriority.HIGHEST)
+	fun onInteractMultiblockSign(event: PlayerInteractEvent) {
+		if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) {
+			return
+		}
 
-        val sign = event.clickedBlock?.state as? Sign ?: return
-        var lastMatch: Multiblock? = null
-        val player = event.player
+		val sign = event.clickedBlock?.state as? Sign ?: return
+		var lastMatch: Multiblock? = null
+		val player = event.player
 
-        if (!player.hasPermission("starlegacy.multiblock.detect")) {
-            player msg "&cYou don't have permission to detect multiblocks!"
-            return
-        }
+		if (!player.hasPermission("starlegacy.multiblock.detect")) {
+			player msg "&cYou don't have permission to detect multiblocks!"
+			return
+		}
 
-        for (multiblock in multiblocks) {
-            if (multiblock.matchesUndetectedSign(sign)) {
-                if (multiblock.signMatchesStructure(sign, particles = true)) {
-                    return multiblock.setupSign(player, sign)
-                } else {
-                    lastMatch = multiblock
-                }
-            }
-        }
+		for (multiblock in multiblocks) {
+			if (multiblock.matchesUndetectedSign(sign)) {
+				if (multiblock.signMatchesStructure(sign, particles = true)) {
+					return multiblock.setupSign(player, sign)
+				} else {
+					lastMatch = multiblock
+				}
+			}
+		}
 
-        if (lastMatch != null) {
-            player msg "&4Improperly built &c${lastMatch.name}&4. Make sure every block is correctly placed!"
-        }
-    }
+		if (lastMatch != null) {
+			player msg "&4Improperly built &c${lastMatch.name}&4. Make sure every block is correctly placed!"
+		}
+	}
 }

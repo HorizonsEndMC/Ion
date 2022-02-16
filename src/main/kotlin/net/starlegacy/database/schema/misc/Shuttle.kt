@@ -1,58 +1,75 @@
 package net.starlegacy.database.schema.misc
 
-import net.starlegacy.database.*
-import org.litote.kmongo.*
 import java.time.Instant
-import java.util.*
+import java.util.Date
+import net.starlegacy.database.DbObject
+import net.starlegacy.database.Oid
+import net.starlegacy.database.OidDbObjectCompanion
+import net.starlegacy.database.objId
+import net.starlegacy.database.trx
+import org.litote.kmongo.SetTo
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.pull
+import org.litote.kmongo.push
+import org.litote.kmongo.set
+import org.litote.kmongo.setValue
+import org.litote.kmongo.updateOneById
 
 data class Shuttle(
-        override val _id: Oid<Shuttle>,
-        val name: String,
-        val schematic: String,
-        val destinations: List<Destination>,
-        val currentPosition: Int,
-        val lastMove: Date = Date.from(Instant.now())
+	override val _id: Oid<Shuttle>,
+	val name: String,
+	val schematic: String,
+	val destinations: List<Destination>,
+	val currentPosition: Int,
+	val lastMove: Date = Date.from(Instant.now())
 ) : DbObject {
-    data class Destination(
-            val name: String,
-            val world: String,
-            val x: Int,
-            val y: Int,
-            val z: Int
-    )
+	data class Destination(
+		val name: String,
+		val world: String,
+		val x: Int,
+		val y: Int,
+		val z: Int
+	)
 
-    companion object : OidDbObjectCompanion<Shuttle>(Shuttle::class, setup = {
-        ensureUniqueIndex(Shuttle::name)
-    }) {
-        operator fun get(name: String): Shuttle? = col.findOne(Shuttle::name eq name)
+	companion object : OidDbObjectCompanion<Shuttle>(Shuttle::class, setup = {
+		ensureUniqueIndex(Shuttle::name)
+	}) {
+		operator fun get(name: String): Shuttle? = col.findOne(Shuttle::name eq name)
 
-        fun create(name: String, schematic: String): Oid<Shuttle> = trx { sess ->
-            val shuttle = Shuttle(objId(), name, schematic, listOf(), 0)
-            col.insertOne(sess, shuttle)
-            return@trx shuttle._id
-        }
+		fun create(name: String, schematic: String): Oid<Shuttle> = trx { sess ->
+			val shuttle = Shuttle(objId(), name, schematic, listOf(), 0)
+			col.insertOne(sess, shuttle)
+			return@trx shuttle._id
+		}
 
-        fun addDestination(id: Oid<Shuttle>, destination: Destination): Unit = trx { sess ->
-            col.updateOneById(sess, id, push(Shuttle::destinations, destination))
-        }
+		fun addDestination(id: Oid<Shuttle>, destination: Destination): Unit = trx { sess ->
+			col.updateOneById(sess, id, push(Shuttle::destinations, destination))
+		}
 
-        fun removeDestination(id: Oid<Shuttle>, destination: Destination): Unit = trx { sess ->
-            col.updateOneById(sess, id, pull(Shuttle::destinations, destination))
-        }
+		fun removeDestination(id: Oid<Shuttle>, destination: Destination): Unit = trx { sess ->
+			col.updateOneById(sess, id, pull(Shuttle::destinations, destination))
+		}
 
-        fun moveLocation(id: Oid<Shuttle>, newLocation: Int): Unit = trx { sess ->
-            col.updateOneById(sess, id, set(SetTo(Shuttle::currentPosition, newLocation),
-                    SetTo(Shuttle::lastMove, Date.from(Instant.now()))))
-        }
+		fun moveLocation(id: Oid<Shuttle>, newLocation: Int): Unit = trx { sess ->
+			col.updateOneById(
+				sess, id, set(
+					SetTo(Shuttle::currentPosition, newLocation),
+					SetTo(Shuttle::lastMove, Date.from(Instant.now()))
+				)
+			)
+		}
 
-        fun setSchematic(id: Oid<Shuttle>, newSchematic: String): Unit = trx { sess ->
-            col.updateOneById(sess, id, setValue(Shuttle::schematic, newSchematic))
-        }
+		fun setSchematic(id: Oid<Shuttle>, newSchematic: String): Unit = trx { sess ->
+			col.updateOneById(sess, id, setValue(Shuttle::schematic, newSchematic))
+		}
 
-        fun delete(id: Oid<Shuttle>): Unit = trx { sess ->
-            col.deleteOneById(sess, id)
-        }
-    }
+		fun delete(id: Oid<Shuttle>): Unit = trx { sess ->
+			col.deleteOneById(sess, id)
+		}
+	}
 
-    fun nextPosition(): Int = (currentPosition + 1) % destinations.size
+	fun nextPosition(): Int = (currentPosition + 1) % destinations.size
 }

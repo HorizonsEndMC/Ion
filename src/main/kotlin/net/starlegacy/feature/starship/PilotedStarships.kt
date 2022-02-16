@@ -1,5 +1,9 @@
 package net.starlegacy.feature.starship
 
+import java.util.Locale
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -29,226 +33,223 @@ import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 object PilotedStarships : SLComponent() {
-    private val map = mutableMapOf<Player, ActivePlayerStarship>()
+	private val map = mutableMapOf<Player, ActivePlayerStarship>()
 
-    override fun onEnable() {
-        subscribe<PlayerQuitEvent> { event ->
-            map[event.player]?.let(::unpilot) // release the player's starship if they are piloting one
-        }
-    }
+	override fun onEnable() {
+		subscribe<PlayerQuitEvent> { event ->
+			map[event.player]?.let(::unpilot) // release the player's starship if they are piloting one
+		}
+	}
 
-    fun pilot(starship: ActivePlayerStarship, player: Player) {
-        Tasks.checkMainThread()
-        check(!starship.isExploding)
-        check(!map.containsKey(player)) { "${player.name} is already piloting a starship" }
-        check(starship.isWithinHitbox(player)) { "${player.name} is not in their ship!" }
-        removeFromCurrentlyRidingShip(player)
-        map[player] = starship
-        starship.pilot = player
-        setupPassengers(starship)
-        setupShieldDisplayIndicators(starship)
-        StarshipShields.updateShieldBars(starship)
-        saveLoadshipData(starship, player)
-        removeExtractors(starship)
-        StarshipPilotedEvent(starship, player).callEvent()
-    }
+	fun pilot(starship: ActivePlayerStarship, player: Player) {
+		Tasks.checkMainThread()
+		check(!starship.isExploding)
+		check(!map.containsKey(player)) { "${player.name} is already piloting a starship" }
+		check(starship.isWithinHitbox(player)) { "${player.name} is not in their ship!" }
+		removeFromCurrentlyRidingShip(player)
+		map[player] = starship
+		starship.pilot = player
+		setupPassengers(starship)
+		setupShieldDisplayIndicators(starship)
+		StarshipShields.updateShieldBars(starship)
+		saveLoadshipData(starship, player)
+		removeExtractors(starship)
+		StarshipPilotedEvent(starship, player).callEvent()
+	}
 
-    private fun removeFromCurrentlyRidingShip(player: Player) {
-        ActiveStarships.findByPassenger(player)?.removePassenger(player.uniqueId)
-    }
+	private fun removeFromCurrentlyRidingShip(player: Player) {
+		ActiveStarships.findByPassenger(player)?.removePassenger(player.uniqueId)
+	}
 
-    private fun setupPassengers(starship: ActivePlayerStarship) {
-        starship.addPassenger(starship.requirePilot().uniqueId)
-        for (otherPlayer in starship.world.players) {
-            if (!starship.isWithinHitbox(otherPlayer)) {
-                continue
-            }
-            if (ActiveStarships.findByPassenger(otherPlayer) != null) {
-                continue
-            }
-            starship.addPassenger(otherPlayer.uniqueId)
-        }
-    }
+	private fun setupPassengers(starship: ActivePlayerStarship) {
+		starship.addPassenger(starship.requirePilot().uniqueId)
+		for (otherPlayer in starship.world.players) {
+			if (!starship.isWithinHitbox(otherPlayer)) {
+				continue
+			}
+			if (ActiveStarships.findByPassenger(otherPlayer) != null) {
+				continue
+			}
+			starship.addPassenger(otherPlayer.uniqueId)
+		}
+	}
 
-    private fun setupShieldDisplayIndicators(starship: ActivePlayerStarship) {
-        starship.shields.map(ShieldSubsystem::name).distinct().associateWithTo(starship.shieldBars) { name: String ->
-            // create the actual boss bar
-            val bar: BossBar = Bukkit.createBossBar(name, BarColor.GREEN, BarStyle.SEGMENTED_10)
-            // add all passengers
-            starship.onlinePassengers.forEach(bar::addPlayer)
-            starship.shieldBars[name] = bar
-            return@associateWithTo bar
-        }
-    }
+	private fun setupShieldDisplayIndicators(starship: ActivePlayerStarship) {
+		starship.shields.map(ShieldSubsystem::name).distinct().associateWithTo(starship.shieldBars) { name: String ->
+			// create the actual boss bar
+			val bar: BossBar = Bukkit.createBossBar(name, BarColor.GREEN, BarStyle.SEGMENTED_10)
+			// add all passengers
+			starship.onlinePassengers.forEach(bar::addPlayer)
+			starship.shieldBars[name] = bar
+			return@associateWithTo bar
+		}
+	}
 
-    private fun saveLoadshipData(starship: ActivePlayerStarship, player: Player) {
-        val schematic = StarshipSchematic.createSchematic(starship)
+	private fun saveLoadshipData(starship: ActivePlayerStarship, player: Player) {
+		val schematic = StarshipSchematic.createSchematic(starship)
 
-        val key = "starships.lastpiloted.${player.uniqueId}.${starship.world.name.toLowerCase()}"
+		val key = "starships.lastpiloted.${player.uniqueId}.${starship.world.name.lowercase(Locale.getDefault())}"
 
-        Tasks.async {
-            redis {
-                set(key, Blueprint.createData(schematic))
-            }
-        }
-    }
+		Tasks.async {
+			redis {
+				set(key, Blueprint.createData(schematic))
+			}
+		}
+	}
 
-    private fun removeExtractors(starship: ActivePlayerStarship) {
-        starship.iterateBlocks { x, y, z ->
-            if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-                Extractors.remove(starship.world, Vec3i(x, y, z))
-            }
-        }
-    }
+	private fun removeExtractors(starship: ActivePlayerStarship) {
+		starship.iterateBlocks { x, y, z ->
+			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
+				Extractors.remove(starship.world, Vec3i(x, y, z))
+			}
+		}
+	}
 
-    fun isPiloted(starship: ActivePlayerStarship): Boolean {
-        return starship.pilot != null
-    }
+	fun isPiloted(starship: ActivePlayerStarship): Boolean {
+		return starship.pilot != null
+	}
 
-    fun unpilot(starship: ActivePlayerStarship) {
-        Tasks.checkMainThread()
-        val player = starship.pilot ?: error("Starship $starship is not piloted")
-        map.remove(player)
-        starship.pilot = null
-        starship.clearPassengers()
-        starship.shieldBars.values.forEach { it.removeAll() }
-        starship.shieldBars.clear()
+	fun unpilot(starship: ActivePlayerStarship) {
+		Tasks.checkMainThread()
+		val player = starship.pilot ?: error("Starship $starship is not piloted")
+		map.remove(player)
+		starship.pilot = null
+		starship.clearPassengers()
+		starship.shieldBars.values.forEach { it.removeAll() }
+		starship.shieldBars.clear()
 
-        starship.iterateBlocks { x, y, z ->
-            if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-                Extractors.add(starship.world, Vec3i(x, y, z))
-            }
-        }
+		starship.iterateBlocks { x, y, z ->
+			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
+				Extractors.add(starship.world, Vec3i(x, y, z))
+			}
+		}
 
-        StarshipUnpilotedEvent(starship, player).callEvent()
-    }
+		StarshipUnpilotedEvent(starship, player).callEvent()
+	}
 
-    operator fun get(player: Player): ActivePlayerStarship? = map[player]
+	operator fun get(player: Player): ActivePlayerStarship? = map[player]
 
-    fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActivePlayerStarship) -> Unit = {}): Boolean {
-        if (!data.isPilot(player)) {
-            player actionAndMsg "&cYou're not a pilot of this!"
-            return false
-        }
+	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActivePlayerStarship) -> Unit = {}): Boolean {
+		if (!data.isPilot(player)) {
+			player actionAndMsg "&cYou're not a pilot of this!"
+			return false
+		}
 
-        val pilotedStarship = PilotedStarships[player]
-        if (pilotedStarship != null) {
-            if (pilotedStarship.dataId == data._id) {
-                tryRelease(pilotedStarship, player)
-                return false
-            }
+		val pilotedStarship = PilotedStarships[player]
+		if (pilotedStarship != null) {
+			if (pilotedStarship.dataId == data._id) {
+				tryRelease(pilotedStarship, player)
+				return false
+			}
 
-            player actionAndMsg "&cYou're already piloting a starship!"
-            return false
-        }
+			player actionAndMsg "&cYou're already piloting a starship!"
+			return false
+		}
 
-        if (!StarshipPilotEvent(player).callEvent()) {
-            return false
-        }
+		if (!StarshipPilotEvent(player).callEvent()) {
+			return false
+		}
 
-        // handle starship being already activated
-        val activeStarship = ActiveStarships[data._id]
+		// handle starship being already activated
+		val activeStarship = ActiveStarships[data._id]
 
-        if (activeStarship != null) {
-            if (isPiloted(activeStarship)) {
-                player actionAndMsg "&cThat starship is already being piloted!"
-                return false
-            }
+		if (activeStarship != null) {
+			if (isPiloted(activeStarship)) {
+				player actionAndMsg "&cThat starship is already being piloted!"
+				return false
+			}
 
-            if (!activeStarship.isWithinHitbox(player)) {
-                player msg "&cYou need to be inside the ship to pilot it"
-                return false
-            }
+			if (!activeStarship.isWithinHitbox(player)) {
+				player msg "&cYou need to be inside the ship to pilot it"
+				return false
+			}
 
-            pilot(activeStarship, player)
-            player actionAndMsg "&bPiloted already activated starship"
-            return false
-        }
+			pilot(activeStarship, player)
+			player actionAndMsg "&bPiloted already activated starship"
+			return false
+		}
 
-        val world: World = data.bukkitWorld()
+		val world: World = data.bukkitWorld()
 
-        val state: PlayerStarshipState? = DeactivatedPlayerStarships.getSavedState(data)
+		val state: PlayerStarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 
-        if (state == null) {
-            player actionAndMsg "&cStarship has not been detected"
-            return false
-        }
+		if (state == null) {
+			player actionAndMsg "&cStarship has not been detected"
+			return false
+		}
 
-        val carriedShips = mutableListOf<PlayerStarshipData>()
+		val carriedShips = mutableListOf<PlayerStarshipData>()
 
-        for ((key: Long, blockData: BlockData) in state.blockMap) {
-            val x: Int = blockKeyX(key)
-            val y: Int = blockKeyY(key)
-            val z: Int = blockKeyZ(key)
-            val foundData: BlockData = world.getBlockAt(x, y, z).blockData
+		for ((key: Long, blockData: BlockData) in state.blockMap) {
+			val x: Int = blockKeyX(key)
+			val y: Int = blockKeyY(key)
+			val z: Int = blockKeyZ(key)
+			val foundData: BlockData = world.getBlockAt(x, y, z).blockData
 
-            if (blockData.material != foundData.material) {
-                val expected: String = blockData.material.name
-                val found: String = foundData.material.name
-                player actionAndMsg "&cBlock at $x, $y, $z does not match! Expected $expected but found $found"
-                return false
-            }
+			if (blockData.material != foundData.material) {
+				val expected: String = blockData.material.name
+				val found: String = foundData.material.name
+				player actionAndMsg "&cBlock at $x, $y, $z does not match! Expected $expected but found $found"
+				return false
+			}
 
-            if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
-                if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
-                    player actionAndMsg "Block at $x, $y, $z is the computer of a piloted ship!"
-                    return false
-                }
+			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
+				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
+					player actionAndMsg "Block at $x, $y, $z is the computer of a piloted ship!"
+					return false
+				}
 
-                DeactivatedPlayerStarships[world, x, y, z]?.takeIf { it._id != data._id }?.also { carried ->
-                    if (!carried.isPilot(player)) {
-                        player actionAndMsg "Block at $x, $y, $z is a ship computer which you're not a pilot of!"
-                        return false
-                    }
+				DeactivatedPlayerStarships[world, x, y, z]?.takeIf { it._id != data._id }?.also { carried ->
+					if (!carried.isPilot(player)) {
+						player actionAndMsg "Block at $x, $y, $z is a ship computer which you're not a pilot of!"
+						return false
+					}
 
-                    carriedShips.add(carried)
-                }
-            }
-        }
+					carriedShips.add(carried)
+				}
+			}
+		}
 
-        DeactivatedPlayerStarships.activateAsync(data, state, carriedShips) { activePlayerStarship ->
-            // if the player logs out while it is piloting, deactivate it
-            if (!player.isOnline) {
-                DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-                return@activateAsync
-            }
+		DeactivatedPlayerStarships.activateAsync(data, state, carriedShips) { activePlayerStarship ->
+			// if the player logs out while it is piloting, deactivate it
+			if (!player.isOnline) {
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
 
-            if (!activePlayerStarship.isWithinHitbox(player)) {
-                player msg "&cYou need to be inside the ship to pilot it"
-                DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-                return@activateAsync
-            }
+			if (!activePlayerStarship.isWithinHitbox(player)) {
+				player msg "&cYou need to be inside the ship to pilot it"
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
 
-            pilot(activePlayerStarship, player)
-            player actionAndMsg "&bActivated and piloted ${getDisplayName(data)} with (${activePlayerStarship.blockCount} blocks)"
+			pilot(activePlayerStarship, player)
+			player actionAndMsg "&bActivated and piloted ${getDisplayName(data)} with (${activePlayerStarship.blockCount} blocks)"
 
-            if (carriedShips.any()) {
-                player msg "&7&o(${carriedShips.size} carried ship(s))"
-            }
+			if (carriedShips.any()) {
+				player msg "&7&o(${carriedShips.size} carried ship(s))"
+			}
 
-            callback(activePlayerStarship)
-        }
+			callback(activePlayerStarship)
+		}
 
-        return true
-    }
+		return true
+	}
 
-    private fun tryRelease(starship: ActivePlayerStarship, player: Player): Boolean {
-        if (!StarshipUnpilotEvent(starship, player).callEvent()) {
-            return false
-        }
+	private fun tryRelease(starship: ActivePlayerStarship, player: Player): Boolean {
+		if (!StarshipUnpilotEvent(starship, player).callEvent()) {
+			return false
+		}
 
-        unpilot(starship)
-        DeactivatedPlayerStarships.deactivateAsync(starship)
-        player actionAndMsg "&bReleased ${getDisplayName(starship.data)}"
-        return true
-    }
+		unpilot(starship)
+		DeactivatedPlayerStarships.deactivateAsync(starship)
+		player actionAndMsg "&bReleased ${getDisplayName(starship.data)}"
+		return true
+	}
 
-    private fun getDisplayName(data: PlayerStarshipData): String {
-        return data.name ?: data.type.displayName.toLowerCase()
-    }
+	private fun getDisplayName(data: PlayerStarshipData): String {
+		return data.name ?: data.type.displayName.lowercase(Locale.getDefault())
+	}
 }

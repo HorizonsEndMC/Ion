@@ -62,22 +62,22 @@ inline fun Number.d(): Double = this.toDouble()
 inline fun Number.i(): Int = this.toInt()
 
 fun getDurationBreakdown(input: Long): String {
-    var millis: Long = input
+	var millis: Long = input
 
-    if (millis < 0) {
-        throw IllegalArgumentException("Duration must be greater than zero!")
-    }
+	if (millis < 0) {
+		throw IllegalArgumentException("Duration must be greater than zero!")
+	}
 
-    val days: Long = TimeUnit.MILLISECONDS.toDays(millis)
-    millis -= TimeUnit.DAYS.toMillis(days)
+	val days: Long = TimeUnit.MILLISECONDS.toDays(millis)
+	millis -= TimeUnit.DAYS.toMillis(days)
 
-    val hours: Long = TimeUnit.MILLISECONDS.toHours(millis)
-    millis -= TimeUnit.HOURS.toMillis(hours)
+	val hours: Long = TimeUnit.MILLISECONDS.toHours(millis)
+	millis -= TimeUnit.HOURS.toMillis(hours)
 
-    val minutes: Long = TimeUnit.MILLISECONDS.toMinutes(millis)
-    millis -= TimeUnit.MINUTES.toMillis(minutes)
+	val minutes: Long = TimeUnit.MILLISECONDS.toMinutes(millis)
+	millis -= TimeUnit.MINUTES.toMillis(minutes)
 
-    val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(millis)
+	val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(millis)
 
-    return "$days Days $hours Hours $minutes Minutes $seconds Seconds"
+	return "$days Days $hours Hours $minutes Minutes $seconds Seconds"
 }

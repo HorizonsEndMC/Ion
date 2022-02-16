@@ -9,19 +9,19 @@ import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.cache.trade.EcoStations
 
 object Caches : SLComponent() {
-    private val caches: List<Cache> = listOf(
-        PlayerCache,
-        SettlementCache,
-        NationCache,
-        RelationCache,
+	private val caches: List<Cache> = listOf(
+		PlayerCache,
+		SettlementCache,
+		NationCache,
+		RelationCache,
 
-        CargoCrates,
-        EcoStations
-    )
+		CargoCrates,
+		EcoStations
+	)
 
-    override fun onEnable() = caches.forEach(Cache::load)
+	override fun onEnable() = caches.forEach(Cache::load)
 
-    override fun supportsVanilla(): Boolean {
-        return true
-    }
+	override fun supportsVanilla(): Boolean {
+		return true
+	}
 }

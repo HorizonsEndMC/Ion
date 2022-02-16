@@ -5,10 +5,10 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 interface ManualWeaponSubsystem {
-    /**
-     * Does the actual firing of the weapon, does not use power or check for collision
-     */
-    fun manualFire(shooter: Player, dir: Vector, target: Vector?)
+	/**
+	 * Does the actual firing of the weapon, does not use power or check for collision
+	 */
+	fun manualFire(shooter: Player, dir: Vector, target: Vector?)
 
-    fun isAcceptableDirection(face: BlockFace) = true
+	fun isAcceptableDirection(face: BlockFace) = true
 }

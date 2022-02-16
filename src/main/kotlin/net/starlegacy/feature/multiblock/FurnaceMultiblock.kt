@@ -5,5 +5,5 @@ import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
 interface FurnaceMultiblock {
-    fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign)
+	fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign)
 }
