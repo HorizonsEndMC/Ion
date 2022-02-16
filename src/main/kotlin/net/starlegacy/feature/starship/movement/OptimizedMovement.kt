@@ -105,7 +105,7 @@ object OptimizedMovement {
 					val localY = y and 0xF
 					val localZ = z and 0xF
 
-					val blockData = section.getType(localX, localY, localZ)
+					val blockData = section.getBlockState(localX, localY, localZ)
 
 					if (!passThroughBlocks.contains(blockData)) {
 						if (!isHangar(blockData)) {
@@ -134,8 +134,8 @@ object OptimizedMovement {
 		capturedStates: Array<NMSBlockState>,
 		capturedTiles: MutableMap<Int, NMSBlockEntity>
 	) {
-		val lightEngine = world1.nms.chunkProvider.lightEngine
-		val air = Blocks.AIR.blockData
+		val lightEngine = world1.nms.lightEngine
+		val air = Blocks.AIR.defaultBlockState()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
 			val chunk = world1.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
@@ -153,16 +153,16 @@ object OptimizedMovement {
 					val localY = y and 0xF
 					val localZ = z and 0xF
 
-					val type = section.getType(localX, localY, localZ)
+					val type = section.getBlockState(localX, localY, localZ)
 					capturedStates[index] = type
 
 					if (type.block is NMSBaseEntityBlock) {
 						processOldTile(blockKey, chunk, capturedTiles, index, world1, world2)
 					}
 
-					section.setType(localX, localY, localZ, air, false)
+					section.setBlockState(localX, localY, localZ, air, false)
 
-					lightEngine.a(NMSBlockPos(x, y, z))
+					lightEngine.checkBlock(NMSBlockPos(x, y, z))
 				}
 			}
 
@@ -179,7 +179,7 @@ object OptimizedMovement {
 		capturedTiles: MutableMap<Int, NMSBlockEntity>,
 		blockDataTransform: (NMSBlockState) -> NMSBlockState
 	) {
-		val lightEngine = world2.nms.chunkProvider.lightEngine
+		val lightEngine = world2.nms.lightEngine
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
 			val chunk = world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
@@ -199,7 +199,7 @@ object OptimizedMovement {
 
 					// TODO: Save hangars
 					val data = blockDataTransform(capturedStates[index])
-					section.setType(localX, localY, localZ, data, false)
+					section.setBlockState(localX, localY, localZ, data, false)
 					lightEngine.a(NMSBlockPos(x, y, z))
 				}
 			}
@@ -227,17 +227,19 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection {
-		var section = nmsLevelChunk.sections[sectionY]
-		if (section == null) {
-			section = LevelChunkSection(sectionY shl 4, nmsLevelChunk, nmsLevelChunk.world, true)
-			nmsLevelChunk.sections[sectionY] = section
-		}
-		return section
-	}
+	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection = nmsLevelChunk.sections[sectionY]
+
+//	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection {
+//		var section = nmsLevelChunk.sections[sectionY]
+//		if (section == null) {
+//			section = LevelChunkSection(sectionY shl 4, nmsLevelChunk, nmsLevelChunk.world, true)
+//			nmsLevelChunk.sections[sectionY] = section
+//		}
+//		return section
+//	}
 
 	private fun updateHeightMaps(nmsLevelChunk: NMSLevelChunk) {
-		Heightmap.a(nmsLevelChunk, Heightmap.Type.values().toSet())
+		Heightmap.primeHeightmaps(nmsLevelChunk, Heightmap.Types.values().toSet())
 	}
 
 	private fun processOldTile(
