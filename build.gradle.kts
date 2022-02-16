@@ -18,7 +18,6 @@ repositories {
 	maven("https://nexus.vankka.dev/repository/maven-public/")
 	maven("https://repo.codemc.io/repository/maven-snapshots/")
 	maven("https://repo.codemc.io/repository/maven-snapshots/")
-	maven("https://repo.screamingsandals.org/repository/maven-public/")
 	maven("https://raw.githubusercontent.com/FabioZumbi12/UltimateChat/mvn-repo/")
 	mavenCentral()
 	jcenter()
@@ -41,7 +40,6 @@ dependencies {
 	compileOnly("com.discordsrv:discordsrv:1.20.0")
 	compileOnly("com.github.bloodmc:GriefDefenderAPI:master")
 	compileOnly("com.sk89q.worldguard:worldguard-core:7.0.0-SNAPSHOT")
-	compileOnly("org.screamingsandals.bedwars:BedWars-API:0.3.0-SNAPSHOT")
 
 	implementation("redis.clients:jedis:2.9.0")
 	implementation("org.ejml:ejml-all:0.40")
