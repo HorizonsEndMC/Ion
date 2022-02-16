@@ -1,3 +1,5 @@
+import org.gradle.jvm.toolchain.JavaLanguageVersion.of
+
 plugins {
   java
   kotlin("jvm") version "1.6.10"
@@ -53,6 +55,9 @@ dependencies {
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.0-beta")
 }
 
-tasks.shadowJar {
-	minimize()
+tasks {
+	compileKotlin { kotlinOptions { jvmTarget = "17" } }
+	shadowJar { minimize() }
 }
+
+java.toolchain.languageVersion.set(of(17))
