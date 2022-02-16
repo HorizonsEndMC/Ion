@@ -8,8 +8,8 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.math.abs
 import kotlin.math.sqrt
-import net.minecraft.server.v1_16_R3.BlockTileEntity
-import net.minecraft.server.v1_16_R3.PacketPlayOutBlockChange
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
+import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -357,7 +357,7 @@ object StarshipShields : SLComponent() {
 			}
 
 			val pos = NMSBlockPos(bx, by, bz)
-			val packet = PacketPlayOutBlockChange(nmsLevel, pos)
+			val packet = ClientboundBlockUpdatePacket(nmsLevel, pos)
 			packet.block = flare
 			nmsLevel.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
 		}
@@ -387,13 +387,13 @@ object StarshipShields : SLComponent() {
 
 				val data = world.getBlockAtKey(key).blockData.nms
 
-				if (data.block is BlockTileEntity) {
+				if (data.block is BaseEntityBlock) {
 					world.getBlockAtKey(key).state.update(false, false)
 					continue
 				}
 
 				val pos = NMSBlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
-				val packet = PacketPlayOutBlockChange(nmsLevel, pos)
+				val packet = ClientboundBlockUpdatePacket(nmsLevel, pos)
 				packet.block = data
 				nmsLevel.getChunkAtWorldCoords(pos).playerChunk.sendPacketToTrackedPlayers(packet, false)
 			}
@@ -424,7 +424,7 @@ object StarshipShields : SLComponent() {
 				val x = x0 + dx + 0.5
 				val y = y0 + dy + 0.5
 				val z = z0 + dz + 0.5
-				world.spawnParticle(Particle.BARRIER, x, y, z, 1, 0.0, 0.0, 0.0, 0.0)
+				world.spawnParticle(Particle.BLOCK_MARKER, x, y, z, 1, 0.0, 0.0, 0.0, 0.0)
 			}
 
 			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(10L)) {

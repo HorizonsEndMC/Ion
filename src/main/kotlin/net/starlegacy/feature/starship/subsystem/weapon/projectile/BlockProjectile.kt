@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.minecraft.server.v1_16_R3.PacketPlayOutBlockChange
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.Projectiles
 import net.starlegacy.util.NMSBlockPos
@@ -101,7 +101,7 @@ abstract class BlockProjectile(
 
 	private fun sendFakeBlock(block: Block, blockData: BlockData) {
 		val nmsBlockPos = NMSBlockPos(block.x, block.y, block.z)
-		val packet = PacketPlayOutBlockChange(nmsBlockPos, blockData.nms)
+		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms)
 		block.chunk.nms.playerChunk?.sendPacketToTrackedPlayers(packet, false)
 	}
 }

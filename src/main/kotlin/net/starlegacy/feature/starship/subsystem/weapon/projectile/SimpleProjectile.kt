@@ -2,10 +2,10 @@ package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
-import net.minecraft.server.v1_16_R3.MinecraftKey
-import net.minecraft.server.v1_16_R3.PacketPlayOutCustomSoundEffect
-import net.minecraft.server.v1_16_R3.SoundCategory
-import net.minecraft.server.v1_16_R3.Vec3D
+import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.sounds.SoundSource
+import net.minecraft.world.phys.Vec3
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -58,10 +58,10 @@ abstract class SimpleProjectile(
 		val x = loc.x
 		val y = loc.y
 		val z = loc.z
-		val packet = PacketPlayOutCustomSoundEffect(
-			MinecraftKey(soundName),
-			SoundCategory.MASTER,
-			Vec3D(x, y, z),
+		val packet = ClientboundCustomSoundPacket(
+			ResourceLocation(soundName),
+			SoundSource.MASTER,
+			Vec3(x, y, z),
 			1.0f,
 			pitch
 		)

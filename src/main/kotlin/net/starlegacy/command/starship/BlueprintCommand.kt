@@ -9,7 +9,7 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
 import java.util.*
 import kotlin.collections.set
-import net.minecraft.server.v1_16_R3.BlockTileEntity
+import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
@@ -186,7 +186,7 @@ object BlueprintCommand : SLCommand() {
 					starship.iterateBlocks { x, y, z ->
 						val block = starship.world.getBlockAt(x, y, z)
 						val blockData = block.blockData
-						if (blockData.nms.block is BlockTileEntity) {
+						if (blockData.nms.block is BaseEntityBlock) {
 							return@iterateBlocks
 						}
 						block.setType(Material.AIR, false)

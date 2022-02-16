@@ -154,7 +154,7 @@ object ShuttleCommand : SLCommand() {
 			val z = vec.blockZ + dz
 			failIf(getBlockTypeSafe(world, x, y, z)?.isAir != true) { "Blocked at $x $y $z" }
 			val block = world.getBlockAt(x, y, z)
-			world.spawnParticle(Particle.BARRIER, block.location.toCenterLocation(), 1)
+			world.spawnParticle(Particle.BLOCK_MARKER, block.location.toCenterLocation(), 1)
 		}
 
 		Shuttle.addDestination(shuttle._id, Shuttle.Destination(destinationName, world.name, ox, oy, oz))

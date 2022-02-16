@@ -3,7 +3,11 @@ package net.starlegacy.feature.starship.movement
 import co.aikar.commands.ConditionFailedException
 import java.util.*
 import java.util.concurrent.ExecutionException
-import net.minecraft.server.v1_16_R3.*
+import net.minecraft.server.level.ChunkHolder
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.StainedGlassBlock
+import net.minecraft.world.level.chunk.LevelChunkSection
+import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.feature.starship.Hangars
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -115,7 +119,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun isHangar(newBlockData: NMSBlockState) = newBlockData.block is BlockStainedGlass
+	private fun isHangar(newBlockData: NMSBlockState) = newBlockData.block is StainedGlassBlock
 
 	private fun dissipateHangarBlocks(world2: World, hangars: LinkedList<Long>) {
 		for (blockKey in hangars.iterator()) {
@@ -223,17 +227,17 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): ChunkSection {
+	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection {
 		var section = nmsLevelChunk.sections[sectionY]
 		if (section == null) {
-			section = ChunkSection(sectionY shl 4, nmsLevelChunk, nmsLevelChunk.world, true)
+			section = LevelChunkSection(sectionY shl 4, nmsLevelChunk, nmsLevelChunk.world, true)
 			nmsLevelChunk.sections[sectionY] = section
 		}
 		return section
 	}
 
 	private fun updateHeightMaps(nmsLevelChunk: NMSLevelChunk) {
-		HeightMap.a(nmsLevelChunk, HeightMap.Type.values().toSet())
+		Heightmap.a(nmsLevelChunk, Heightmap.Type.values().toSet())
 	}
 
 	private fun processOldTile(
@@ -323,7 +327,7 @@ object OptimizedMovement {
 			val (worldID, chunkKey) = key
 			val chunk = Bukkit.getWorld(worldID)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
 			val nmsChunk = chunk.nms
-			val playerChunk: PlayerChunk = nmsChunk.playerChunk ?: continue
+			val playerChunk: ChunkHolder = nmsChunk.playerChunk ?: continue
 			val packet = PacketPlayOutMapChunk(nmsChunk, bitmask)
 			playerChunk.sendPacketToTrackedPlayers(packet, false)
 		}
