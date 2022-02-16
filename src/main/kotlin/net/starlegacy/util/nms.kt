@@ -78,28 +78,28 @@ val NMSDirection.blockFace
 fun ItemStack.withNBTInt(key: String, value: Int): ItemStack {
 	val nms: NMSItemStack = CBItemStack.asNMSCopy(this)
 	val tag: NMSCompoundTag = nms.tag ?: NMSCompoundTag()
-	tag.setInt(key, value)
+	tag.putInt(key, value)
 	nms.tag = tag
 	return nms.asBukkitCopy().ensureServerConversions()
 }
 
 fun ItemStack.getNBTInt(key: String): Int? {
 	val tag = CBItemStack.asNMSCopy(this).tag ?: return null
-	if (!tag.hasKey(key)) return null
+	if (!tag.contains(key)) return null
 	return tag.getInt(key)
 }
 
 fun ItemStack.withNBTString(key: String, value: String): ItemStack {
 	val nms: NMSItemStack = CBItemStack.asNMSCopy(this)
 	val tag: NMSCompoundTag = nms.tag ?: NMSCompoundTag()
-	tag.setString(key, value)
+	tag.putString(key, value)
 	nms.tag = tag
 	return nms.asBukkitCopy().ensureServerConversions()
 }
 
 fun ItemStack.getNBTString(key: String): String? {
 	val tag = CBItemStack.asNMSCopy(this).tag ?: return null
-	if (!tag.hasKey(key)) return null
+	if (!tag.contains(key)) return null
 	return tag.getString(key)
 }
 //endregion
@@ -110,7 +110,7 @@ fun Material.toNMSBlockData(): NMSBlockState = createBlockData().nms
 val NMSBlockState.bukkitMaterial: Material get() = CBMagicNumbers.getMaterial(this.block)
 
 fun Block.getNMSBlockData(): NMSBlockState {
-	return world.nms.getChunkAt(x shr 4, z shr 4).getBlockData(x and 15, y, z and 15)
+	return world.nms.getChunk(x shr 4, z shr 4).getBlockState(x and 15, y, z and 15)
 }
 
 /**
@@ -125,7 +125,7 @@ fun getNMSBlockDataSafe(world: World, x: Int, y: Int, z: Int): NMSBlockState? {
 	return try {
 		val chunk: NMSLevelChunk = world.nms.getChunkIfLoaded(x shr 4, z shr 4) ?: return null
 
-		chunk.getBlockData(x and 15, y, z and 15)
+		chunk.getBlockState(x and 15, y, z and 15)
 	} catch (indexOutOfBounds: IndexOutOfBoundsException) {
 		null
 	}

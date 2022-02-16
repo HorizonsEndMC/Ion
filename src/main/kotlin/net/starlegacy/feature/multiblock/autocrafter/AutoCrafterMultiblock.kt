@@ -250,8 +250,8 @@ private val recipeCache: LoadingCache<List<Material?>, Optional<ItemStack>> =
 		}
 
 		val result: NMSItemStack? = MinecraftServer.getServer().recipeManager
-			.craft(RecipeType.CRAFTING, inventoryCrafting, Bukkit.getWorlds().first().nms)
-			.orNull()?.a(inventoryCrafting)
+			.getRecipeFor(RecipeType.CRAFTING, inventoryCrafting, Bukkit.getWorlds().first().nms)
+			.orNull()?.assemble(inventoryCrafting)
 
 		return@from Optional.ofNullable(result?.asBukkitCopy())
 	})
