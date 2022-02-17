@@ -25,7 +25,6 @@ import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks
@@ -152,9 +151,6 @@ abstract class SLCommand : BaseCommand() {
 
 	protected fun resolveNation(name: String): Oid<Nation> = NationCache.getByName(name)
 		?: fail { "Nation $name not found" }
-
-	protected fun requireMinLevel(sender: Player, level: Int) = failIf(Levels[sender] < level)
-	{ "You need to be at least level $level to do that" }
 
 	protected fun requireTerritoryIn(sender: Player): RegionTerritory = Regions.findFirstOf(sender.location)
 		?: fail { "You're not in a territory on a planet" }

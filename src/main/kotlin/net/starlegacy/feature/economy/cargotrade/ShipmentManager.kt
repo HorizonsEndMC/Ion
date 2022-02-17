@@ -25,7 +25,6 @@ import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Notify
 import net.starlegacy.util.SLTextStyle
@@ -272,7 +271,6 @@ object ShipmentManager : SLComponent() {
 
 				val updatedShipments = mutableSetOf<String>() // the shipments that were updated
 				var credits = 0.0 // total credits to give to the player in revenue
-				var xp = 0.0 // total SLXP to reward the player
 
 				for ((index: Int, item: ItemStack?) in player.inventory.contents!!.withIndex()) {
 					if (item == null) {
@@ -291,10 +289,6 @@ object ShipmentManager : SLComponent() {
 					updatedShipments += shipmentId
 
 					credits += if (delivery.isReturn) delivery.crateCost else delivery.crateRevenue
-
-					if (!delivery.isReturn) {
-						xp += balancing.importExport.baseCrateXP
-					}
 
 					player.inventory.setItem(index, null)
 				}
@@ -349,16 +343,10 @@ object ShipmentManager : SLComponent() {
 					totalRevenue += revenue
 				}
 
-				xp *= randomDouble(balancing.importExport.minXPFactor, balancing.importExport.maxXPFactor)
-
 				val taxPercent = city.tax
 
 				val tax = (totalRevenue * taxPercent).roundToInt()
 				totalRevenue -= tax
-
-				if (xp > 0) {
-					SLXP.addAsync(player, xp.roundToInt())
-				}
 
 				if (totalRevenue > 0) {
 					player msg "&1Revenue from all updated shipments, after tax: " +

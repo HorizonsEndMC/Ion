@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import net.starlegacy.command.SLCommand
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.advancement.Advancements
 import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.Tasks
@@ -56,8 +55,7 @@ object AdvanceCommand : SLCommand() {
 	 * Prerequisites for unlocking an advancement:
 	 * #1 Not already having the advancement
 	 * #2 Having all of its required parents unlocked, if applicable
-	 * #3 Having the minimum level for the advancement
-	 * #4 Having enough money to spend on it
+	 * #3 Having enough money to spend on it
 	 * @return An error message if a prerequisite was not met, else null
 	 */
 	private fun checkPrerequisites(player: Player, advancement: SLAdvancement): String? {
@@ -72,15 +70,6 @@ object AdvanceCommand : SLCommand() {
 		}
 
 		// #3
-		val minimumLevel = advancement.requiredLevel
-		val currentLevel = Levels[player]
-
-		if (currentLevel < minimumLevel) {
-			return "You aren't a high enough level for that advancement!" +
-				" It requires level $minimumLevel, but you're only level $currentLevel!"
-		}
-
-		// #4
 		val cost = advancement.getMoneyCost()
 
 		if (!player.hasEnoughMoney(cost)) {

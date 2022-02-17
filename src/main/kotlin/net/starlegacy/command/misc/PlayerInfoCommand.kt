@@ -33,8 +33,6 @@ object PlayerInfoCommand : SLCommand() {
 
 		sendNationsInfo(sender, slPlayer)
 
-		sendAdvanceInfo(sender, slPlayer)
-
 		sender msg "&7Last Seen: ${getInactiveTimeText(slPlayer)}"
 	}
 
@@ -68,11 +66,6 @@ object PlayerInfoCommand : SLCommand() {
 				}
 			}
 		}
-	}
-
-	private fun sendAdvanceInfo(sender: CommandSender, slPlayer: SLPlayer) {
-		sender msg "&5SLXP:&d ${slPlayer.xp}"
-		sender msg "&cLevel:&e ${slPlayer.level}"
 	}
 
 	private fun getInactiveTimeText(player: SLPlayer): String {

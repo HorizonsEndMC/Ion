@@ -6,8 +6,6 @@ import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.feature.progression.Levels
-import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.util.msg
 import net.starlegacy.util.multimapOf
 import org.bukkit.Bukkit
@@ -35,15 +33,14 @@ object ListCommand : SLCommand() {
 			.sortedBy { id -> id?.let { NationCache[it].name } ?: "_" }
 
 		for (nationId: Oid<Nation>? in nationIdsSortedByName) {
-			val members: Collection<Player> = nationMap[nationId].sortedBy { SLXP[it] }
+			val members: Collection<Player> = nationMap[nationId]
 
 			val nationText = nationId?.let { "&5${NationCache[it].name}" } ?: "&e&oNationless"
 
 			sender msg "$nationText &8&l:(&d${members.count()}&8&l):&7 ${
 				members.joinToString { player ->
-					val xpPrefix = Levels.toArabicNumeral(Levels[player])
 					val nationPrefix = PlayerCache[player].nationTag?.let { "&r$it " } ?: ""
-					return@joinToString "&7[&b&l$xpPrefix&7] $nationPrefix&7${player.name}"
+					return@joinToString "$nationPrefix&7${player.name}"
 				}
 			}"
 		}
