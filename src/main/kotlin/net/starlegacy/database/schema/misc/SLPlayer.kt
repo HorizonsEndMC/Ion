@@ -44,8 +44,6 @@ data class SLPlayer(
 	var lastKnownName: String,
 	/** The last time they were seen online */
 	var lastSeen: Date = Date.from(Instant.now()),
-	var xp: Int = 0,
-	val level: Int = 1,
 	val unlockedAdvancements: List<String> = listOf(),
 	/** The settlement they're current a member of */
 	var settlement: Oid<Settlement>? = null,
@@ -85,30 +83,6 @@ data class SLPlayer(
 		}
 
 		fun getName(id: SLPlayerId): String? = findPropById(id, SLPlayer::lastKnownName)
-
-		fun getXP(id: SLPlayerId): Int? = findPropById(id, SLPlayer::xp)
-
-		fun getLevel(id: SLPlayerId): Int? = findPropById(id, SLPlayer::level)
-
-		fun getXPAndLevel(id: SLPlayerId): Pair<Int, Int>? {
-			val results: ProjectedResults = findPropsById(
-				id, SLPlayer::xp, SLPlayer::level
-			) ?: return null
-
-			val xp: Int = results[SLPlayer::xp]
-			val level: Int = results[SLPlayer::level]
-
-			return xp to level
-		}
-
-		fun setLevel(id: SLPlayerId, level: Int): UpdateResult =
-			updateById(id, org.litote.kmongo.setValue(SLPlayer::level, level))
-
-		fun addXP(id: SLPlayerId, addition: Int): UpdateResult =
-			updateById(id, inc(SLPlayer::xp, addition))
-
-		fun setXP(id: SLPlayerId, xp: Int): UpdateResult =
-			updateById(id, org.litote.kmongo.setValue(SLPlayer::xp, xp))
 
 		fun addAdvancement(id: SLPlayerId, vararg advancements: String): UpdateResult =
 			updateById(id, addEachToSet(SLPlayer::unlockedAdvancements, advancements.toList()))

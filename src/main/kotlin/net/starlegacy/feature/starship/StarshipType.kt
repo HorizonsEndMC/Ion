@@ -1,7 +1,6 @@
 package net.starlegacy.feature.starship
 
 import java.util.Locale
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.util.setDisplayNameAndGet
 import net.starlegacy.util.setLoreAndGet
 import org.bukkit.Material
@@ -309,7 +308,7 @@ enum class StarshipType(
 		)
 
 	fun canUse(player: Player): Boolean =
-		player.hasPermission("starships.anyship") || Levels[player] >= minLevel
+		player.hasPermission("starships.anyship")
 
 	companion object {
 		private val stringMap = mutableMapOf<String, StarshipType>().apply {

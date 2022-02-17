@@ -20,7 +20,6 @@ import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
-import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
@@ -263,7 +262,6 @@ object StationSieges : SLComponent() {
 			Notify online "${GOLD}Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
 				" $nationName now has $nowCaptured stations!"
 			Notify discord "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"
-			SLXP.addAsync(player, NATIONS_BALANCE.capturableStation.siegerXP)
 			Tasks.sync {
 				for (otherPlayer in world.players) {
 					if (otherPlayer.slPlayerId == slPlayerId) {
@@ -276,7 +274,6 @@ object StationSieges : SLComponent() {
 					if (!station.contains(otherPlayer.location)) {
 						continue
 					}
-					SLXP.addAsync(otherPlayer, NATIONS_BALANCE.capturableStation.siegerAllyXP)
 				}
 			}
 		}

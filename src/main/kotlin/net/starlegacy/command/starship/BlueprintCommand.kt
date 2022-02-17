@@ -15,7 +15,6 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.nations.gui.playerClicker
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.starship.*
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.factory.PrintItem
@@ -32,7 +31,7 @@ import org.litote.kmongo.save
 object BlueprintCommand : SLCommand() {
 
 	private fun getMaxBlueprints(player: Player): Int {
-		return Levels[player] * 3
+		return 20
 	}
 
 	private fun validateName(name: String) {

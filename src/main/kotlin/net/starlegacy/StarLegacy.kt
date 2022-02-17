@@ -46,9 +46,6 @@ import net.starlegacy.command.nations.settlementZones.SettlementPlotCommand
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
 import net.starlegacy.command.progression.AdvanceAdminCommand
 import net.starlegacy.command.progression.AdvanceCommand
-import net.starlegacy.command.progression.BuyXPCommand
-import net.starlegacy.command.progression.GiveXPCommand
-import net.starlegacy.command.progression.XPCommand
 import net.starlegacy.command.space.PlanetCommand
 import net.starlegacy.command.space.SpaceWorldCommand
 import net.starlegacy.command.space.StarCommand
@@ -104,11 +101,6 @@ import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.feature.progression.Levels
-import net.starlegacy.feature.progression.MAX_LEVEL
-import net.starlegacy.feature.progression.PlayerXPLevelCache
-import net.starlegacy.feature.progression.SLXP
-import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.progression.advancement.Advancements
 import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.feature.space.CachedPlanet
@@ -208,10 +200,7 @@ class StarLegacy : JavaPlugin() {
 			Notify,
 			Shuttles,
 
-			PlayerXPLevelCache,
 			Advancements,
-			Levels,
-			SLXP,
 
 			ChannelSelections,
 			ChatChannel.ChannelActions,
@@ -285,7 +274,6 @@ class StarLegacy : JavaPlugin() {
 			TutorialManager,
 			Interdiction,
 			StarshipDealers,
-			ShipKillXP,
 			Decomposers,
 
 			DutyModeMonitor
@@ -375,7 +363,6 @@ class StarLegacy : JavaPlugin() {
 			TransportDebugCommand,
 			PlanetSpawnMenuCommand,
 			ShuttleCommand,
-			BuyXPCommand,
 
 			SettlementCommand,
 			NationCommand,
@@ -399,9 +386,6 @@ class StarLegacy : JavaPlugin() {
 
 			AdvanceAdminCommand,
 			AdvanceCommand,
-			GiveXPCommand,
-			XPCommand,
-
 
 			PlanetCommand,
 			SpaceWorldCommand,
@@ -468,7 +452,6 @@ class StarLegacy : JavaPlugin() {
 
 		// Add static tab completions
 		mapOf(
-			"levels" to (0..MAX_LEVEL).joinToString("|"),
 			"advancements" to SLAdvancement.values().joinToString("|"),
 			"customitems" to CustomItems.all().joinToString("|") { it.id },
 			"npctypes" to CityNPC.Type.values().joinToString("|") { it.name }
