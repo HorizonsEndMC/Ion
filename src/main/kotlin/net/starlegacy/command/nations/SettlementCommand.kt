@@ -55,7 +55,7 @@ import org.litote.kmongo.updateOneById
 @CommandAlias("settlement|s")
 internal object SettlementCommand : SLCommand() {
 	private fun validateName(name: String, settlementId: Oid<Settlement>?) {
-		if (!name.isAlphanumeric()) {
+		if (!"\\w*".toRegex().matches(name)) { 
 			throw InvalidCommandArgument("Name must be alphanumeric")
 		}
 
