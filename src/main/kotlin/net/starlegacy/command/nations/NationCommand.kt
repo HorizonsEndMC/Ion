@@ -59,7 +59,7 @@ import org.litote.kmongo.ne
 @CommandAlias("nation|n")
 internal object NationCommand : SLCommand() {
 	private fun validateName(name: String, nationId: Oid<Nation>?) {
-		if (!name.isAlphanumeric()) {
+		if (!"\\w*".toRegex().matches(name)) { 
 			throw InvalidCommandArgument("Name must be alphanumeric")
 		}
 
