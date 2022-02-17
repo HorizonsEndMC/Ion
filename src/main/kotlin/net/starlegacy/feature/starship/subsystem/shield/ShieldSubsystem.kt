@@ -16,7 +16,7 @@ abstract class ShieldSubsystem(
 	multiblock: ShieldMultiblock
 ) : AbstractMultiblockSubsystem<ShieldMultiblock>(starship, sign, multiblock) {
 	val name: String = sign.getLine(2).stripColor()
-	val maxPower: Int = (starship.blockCount.coerceAtLeast(500).d().pow(2.0 / 3.0) * 7000.0).roundToInt()
+	val maxPower: Int = (starship.blockCount.coerceAtLeast(500).d().pow(3.0 / 5.0) * 10000.0).roundToInt()
 
 	var power: Int = maxPower
 		set(value) {
