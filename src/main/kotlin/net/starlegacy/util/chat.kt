@@ -7,21 +7,28 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 infix fun CommandSender.msg(text: String) = this.sendMessage(text.colorize())
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 infix fun CommandSender.msg(text: TextComponent) = sendMessage(text)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 infix fun Player.action(text: TextComponent) = action(text.toLegacyText())
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 infix fun Player.action(text: String) = sendActionBar(text.colorize())
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 infix fun Player.actionAndMsg(text: String) {
 	this.action(text)
 	this.msg(text)
 }
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 infix fun Player.title(title: Title) = sendTitle(title)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun Player.title(
 	title: TextComponent = "".text(),
 	subtitle: TextComponent = "".text(),
@@ -32,18 +39,24 @@ fun Player.title(
 	sendTitle(title.toLegacyText(), subtitle.toLegacyText(), fadeIn, stay, fadeOut)
 }
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun broadcastMessage(text: TextComponent) = Bukkit.broadcast(text)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun broadcastGlobal(message: String) = Notify.online(message)
 
 fun execConsoleCmd(cmd: String): Boolean = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.colorize(): String = ChatColor.translateAlternateColorCodes('&', this)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.stripColor(): String = ChatColor.stripColor(this)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.fromLegacy(): TextComponent = TextComponent(*TextComponent.fromLegacyText(this.colorize()))
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun <T> Iterable<T>.joinToText(
 	commaColor: SLTextStyle = SLTextStyle.GRAY,
 	transform: (T) -> TextComponent = { toString().fromLegacy() }
@@ -58,58 +71,142 @@ fun <T> Iterable<T>.joinToText(
 	return component
 }
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.isAlphanumeric() = matches("^[a-zA-Z0-9]*$".toRegex())
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.text(): TextComponent = TextComponent(this)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 operator fun TextComponent.plus(that: TextComponent) = apply { addExtra(that) }
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.style(style: SLTextStyle) = text().style(style)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.style(style: SLTextStyle): TextComponent = apply { color = style.wrappedColor }
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.black() = style(SLTextStyle.BLACK)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkBlue() = style(SLTextStyle.DARK_BLUE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkGreen() = style(SLTextStyle.DARK_GREEN)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkAqua() = style(SLTextStyle.DARK_AQUA)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkRed() = style(SLTextStyle.DARK_RED)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkPurple() = style(SLTextStyle.DARK_PURPLE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.gold() = style(SLTextStyle.GOLD)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.gray() = style(SLTextStyle.GRAY)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkGray() = style(SLTextStyle.DARK_GRAY)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.blue() = style(SLTextStyle.BLUE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.green() = style(SLTextStyle.GREEN)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.aqua() = style(SLTextStyle.AQUA)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.red() = style(SLTextStyle.RED)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.lightPurple() = style(SLTextStyle.LIGHT_PURPLE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.yellow() = style(SLTextStyle.YELLOW)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.white() = style(SLTextStyle.WHITE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.obfuscated() = style(SLTextStyle.OBFUSCATED)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.bold() = apply { isBold = true }
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.strikethrough() = apply { isStrikethrough = true }
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.underline() = apply { isUnderlined = true }
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.italic() = apply { isItalic = true }
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.resetColor() = style(SLTextStyle.RESET)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun black(s: String) = s.style(SLTextStyle.BLACK)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkBlue(s: String) = s.style(SLTextStyle.DARK_BLUE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkGreen(s: String) = s.style(SLTextStyle.DARK_GREEN)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkAqua(s: String) = s.style(SLTextStyle.DARK_AQUA)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkRed(s: String) = s.style(SLTextStyle.DARK_RED)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkPurple(s: String) = s.style(SLTextStyle.DARK_PURPLE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun gold(s: String) = s.style(SLTextStyle.GOLD)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun gray(s: String) = s.style(SLTextStyle.GRAY)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkGray(s: String) = s.style(SLTextStyle.DARK_GRAY)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun blue(s: String) = s.style(SLTextStyle.BLUE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun green(s: String) = s.style(SLTextStyle.GREEN)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun aqua(s: String) = s.style(SLTextStyle.AQUA)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun red(s: String) = s.style(SLTextStyle.RED)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun lightPurple(s: String) = s.style(SLTextStyle.LIGHT_PURPLE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun yellow(s: String) = s.style(SLTextStyle.YELLOW)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun white(s: String) = s.style(SLTextStyle.WHITE)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun obfuscated(s: String) = s.style(SLTextStyle.OBFUSCATED)
+
+@Deprecated("Use Ion MiniMessage Extension Functions")
 fun resetColor(s: String) = s.style(SLTextStyle.RESET)
 
+@Deprecated("Use Ion MiniMessage Extension Functions")
 enum class SLTextStyle(val wrappedColor: ChatColor) {
 	BLACK(ChatColor.BLACK),
 	DARK_BLUE(ChatColor.DARK_BLUE),
