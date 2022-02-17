@@ -8,11 +8,6 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
-	GLOWSTONE(0.2, 2.25, 1) {
-		override fun MultiblockShape.buildStructure() {
-			at(0, 0, 0).type(Material.GLOWSTONE)
-		}
-	},
 	PLASMA(0.75, 2.5, 1) {
 		override fun MultiblockShape.buildStructure() {
 			at(0, 0, 0).type(Material.REDSTONE_LAMP)
