@@ -99,10 +99,6 @@ object Interdiction : SLComponent() {
 				continue
 			}
 
-			if (isAllied(pilot, player)) {
-				continue
-			}
-
 			cruisingShip.cruiseData.velocity.multiply(0.9)
 			cruisingShip.sendMessage("&cQuantum fluctuations detected - velocity has been reduced by 10%.")
 		}
