@@ -161,8 +161,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.PRISMARINE_STAIRS,
 		isWarship = false
 	),
-	BULK_FREIGHTER(
-		displayName = "Bulk Freighter",
+	HEAVY_FREIGHTER(
+		displayName = "Heavy Freighter",
 		minSize = 8000,
 		maxSize = 12000,
 		minLevel = 48,
