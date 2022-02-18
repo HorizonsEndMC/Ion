@@ -176,6 +176,7 @@ enum class StarshipType(
 		colour = "#0000ff"
 	);
 
+	val formatted: String get() = "<$colour>$displayName</$colour>"
 
 	val menuItem: ItemStack = ItemStack(menuItemMaterial)
 		.setDisplayNameAndGet(displayName)
