@@ -5,4 +5,4 @@ pluginManagement {
 	}
 }
 
-rootProject.name = "Ion"
+rootProject.name = "IonCore"
