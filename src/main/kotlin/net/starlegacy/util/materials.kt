@@ -34,6 +34,12 @@ val Material.isDaylightSensor: Boolean get() = this == Material.DAYLIGHT_DETECTO
 val BUTTON_TYPES = getMatchingMaterials { it.name.endsWith("_BUTTON") }
 val Material.isButton: Boolean get() = BUTTON_TYPES.contains(this)
 
+val CANDLE_TYPES = getMatchingMaterials { it.name.endsWith("CANDLE") }
+val Material.isCandle: Boolean get() = CANDLE_TYPES.contains(this)
+
+val CAKE_TYPES = getMatchingMaterials { it.name.endsWith("CAKE") }
+val Material.isCake: Boolean get() = CAKE_TYPES.contains(this)
+
 val DOOR_TYPES = getMatchingMaterials { it.name.endsWith("_DOOR") }
 val Material.isDoor: Boolean get() = DOOR_TYPES.contains(this)
 
@@ -102,3 +108,9 @@ val Material.isFence: Boolean get() = FENCE_TYPES.contains(this)
 
 val WALL_TYPES = getMatchingMaterials { it.name.endsWith("_WALL") }
 val Material.isWall: Boolean get() = WALL_TYPES.contains(this)
+
+val CANDLE_TYPES = getMatchingMaterials { it.name.endsWith("CANDLE") }
+val Material.isCandle: Boolean get() = CANDLE_TYPES.contains(this)
+
+val CAKE_TYPES = getMatchingMaterials { it.name.endsWith("CAKE") }
+val Material.isCake: Boolean get() = CAKE_TYPES.contains(this)
