@@ -18,7 +18,8 @@ enum class StarshipType(
 	val interdictionRange: Int,
 	val hyperspaceRangeMultiplier: Double,
 	menuItemMaterial: Material,
-	val isWarship: Boolean
+	val isWarship: Boolean,
+	val colour: String
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -31,7 +32,8 @@ enum class StarshipType(
 		interdictionRange = 10,
 		hyperspaceRangeMultiplier = 3.0,
 		menuItemMaterial = Material.DEAD_BUSH,
-		isWarship = false
+		isWarship = false,
+		colour = "#710000"
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
@@ -44,7 +46,8 @@ enum class StarshipType(
 		interdictionRange = 400,
 		hyperspaceRangeMultiplier = 2.0,
 		menuItemMaterial = Material.IRON_NUGGET,
-		isWarship = true
+		isWarship = true,
+		colour = "#330000"
 	),
 	GUNSHIP(
 		displayName = "Gunship",
@@ -57,7 +60,8 @@ enum class StarshipType(
 		interdictionRange = 800,
 		hyperspaceRangeMultiplier = 2.1,
 		menuItemMaterial = Material.IRON_INGOT,
-		isWarship = true
+		isWarship = true,
+		colour = "#660000"
 	),
 	CORVETTE(
 		displayName = "Corvette",
@@ -70,7 +74,8 @@ enum class StarshipType(
 		interdictionRange = 1200,
 		hyperspaceRangeMultiplier = 2.2,
 		menuItemMaterial = Material.IRON_BLOCK,
-		isWarship = true
+		isWarship = true,
+		colour = "#990000"
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -83,7 +88,8 @@ enum class StarshipType(
 		interdictionRange = 1600,
 		hyperspaceRangeMultiplier = 2.3,
 		menuItemMaterial = Material.LAPIS_BLOCK,
-		isWarship = true
+		isWarship = true,
+		colour = "#cc0000"
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -96,7 +102,8 @@ enum class StarshipType(
 		interdictionRange = 2000,
 		hyperspaceRangeMultiplier = 2.4,
 		menuItemMaterial = Material.GOLD_BLOCK,
-		isWarship = true
+		isWarship = true,
+		colour = "#ff0000"
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
@@ -109,7 +116,8 @@ enum class StarshipType(
 		interdictionRange = 300,
 		hyperspaceRangeMultiplier = 1.0,
 		menuItemMaterial = Material.PRISMARINE_SHARD,
-		isWarship = false
+		isWarship = false,
+		colour = "#000033"
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -122,7 +130,8 @@ enum class StarshipType(
 		interdictionRange = 600,
 		hyperspaceRangeMultiplier = 1.1,
 		menuItemMaterial = Material.PRISMARINE_CRYSTALS,
-		isWarship = false
+		isWarship = false,
+		colour = "#000066"
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -135,7 +144,8 @@ enum class StarshipType(
 		interdictionRange = 900,
 		hyperspaceRangeMultiplier = 1.2,
 		menuItemMaterial = Material.PRISMARINE_SLAB,
-		isWarship = false
+		isWarship = false,
+		colour = "#000099"
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -148,7 +158,8 @@ enum class StarshipType(
 		interdictionRange = 1200,
 		hyperspaceRangeMultiplier = 1.3,
 		menuItemMaterial = Material.PRISMARINE_STAIRS,
-		isWarship = false
+		isWarship = false,
+		colour = "#0000cc"
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -161,7 +172,8 @@ enum class StarshipType(
 		interdictionRange = 1500,
 		hyperspaceRangeMultiplier = 1.4,
 		menuItemMaterial = Material.PRISMARINE,
-		isWarship = false
+		isWarship = false,
+		colour = "#0000ff"
 	);
 
 
