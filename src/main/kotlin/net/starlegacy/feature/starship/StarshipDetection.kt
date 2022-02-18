@@ -142,7 +142,7 @@ object StarshipDetection : SLComponent() {
 				material == Material.STICKY_PISTON -> stickyPistons++
 			}
 
-			if (material == Material.CHEST || material == Material.TRAPPED_CHEST) {
+			if (material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.BARREL) {
 				containers += 2
 			}
 
