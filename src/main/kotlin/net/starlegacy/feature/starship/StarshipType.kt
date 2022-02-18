@@ -11,7 +11,6 @@ enum class StarshipType(
 	val displayName: String,
 	val minSize: Int,
 	val maxSize: Int,
-	val minLevel: Int,
 	val containerPercent: Double,
 	val crateLimitMultiplier: Double,
 	val sneakFlyAccelDistance: Int,
@@ -25,7 +24,6 @@ enum class StarshipType(
 		displayName = "Speeder",
 		minSize = 25,
 		maxSize = 100,
-		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.25,
 		sneakFlyAccelDistance = 5,
@@ -39,7 +37,6 @@ enum class StarshipType(
 		displayName = "Starfighter",
 		minSize = 250,
 		maxSize = 500,
-		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 4,
@@ -53,7 +50,6 @@ enum class StarshipType(
 		displayName = "Gunship",
 		minSize = 500,
 		maxSize = 2000,
-		minLevel = 12,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 5,
@@ -67,7 +63,6 @@ enum class StarshipType(
 		displayName = "Corvette",
 		minSize = 2000,
 		maxSize = 4000,
-		minLevel = 24,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 6,
@@ -81,7 +76,6 @@ enum class StarshipType(
 		displayName = "Frigate",
 		minSize = 4000,
 		maxSize = 8000,
-		minLevel = 36,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 6,
@@ -95,7 +89,6 @@ enum class StarshipType(
 		displayName = "Destroyer",
 		minSize = 8000,
 		maxSize = 12000,
-		minLevel = 48,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 5,
@@ -109,7 +102,6 @@ enum class StarshipType(
 		displayName = "Shuttle",
 		minSize = 100,
 		maxSize = 500,
-		minLevel = 1,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 5,
@@ -123,7 +115,6 @@ enum class StarshipType(
 		displayName = "Transport",
 		minSize = 500,
 		maxSize = 2000,
-		minLevel = 12,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -137,7 +128,6 @@ enum class StarshipType(
 		displayName = "Light Freighter",
 		minSize = 2000,
 		maxSize = 4000,
-		minLevel = 24,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -151,7 +141,6 @@ enum class StarshipType(
 		displayName = "Medium Freighter",
 		minSize = 4000,
 		maxSize = 8000,
-		minLevel = 36,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -165,7 +154,6 @@ enum class StarshipType(
 		displayName = "Heavy Freighter",
 		minSize = 8000,
 		maxSize = 12000,
-		minLevel = 48,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -183,7 +171,6 @@ enum class StarshipType(
 			listOf(
 				"Min Block Count: $minSize",
 				"Max Block Count: $maxSize",
-				"Min Level: $minLevel",
 				"Max Container:Total Blocks Ratio: $containerPercent",
 				"Crate Limit Multiplier: $crateLimitMultiplier",
 				"Sneak Fly Accel Distance: $sneakFlyAccelDistance",
@@ -209,6 +196,6 @@ enum class StarshipType(
 
 		fun getUnlockedTypes(player: Player): List<StarshipType> = values()
 			.filter { it.canUse(player) }
-			.sortedBy { it.minLevel }
+			.sortedBy { it.minSize }
 	}
 }
