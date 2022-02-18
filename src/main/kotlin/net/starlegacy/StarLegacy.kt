@@ -6,6 +6,7 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import java.io.File
 import java.util.Locale
+import net.horizonsend.ion.core.commands.Starships
 import net.starlegacy.cache.Caches
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -404,7 +405,9 @@ class StarLegacy : JavaPlugin() {
 			StarshipDebugCommand,
 			TutorialStartStopCommand,
 			HyperspaceBeaconCommand,
-			StarshipInfoCommand
+			StarshipInfoCommand,
+
+			Starships()
 		)
 
 	private fun registerCommands() {
@@ -518,7 +521,7 @@ class StarLegacy : JavaPlugin() {
 
 		// Register commands
 		for (command in commands) {
-			if (SETTINGS.vanilla && !command.supportsVanilla()) {
+			if (command is SLCommand && SETTINGS.vanilla && !command.supportsVanilla()) {
 				continue
 			}
 
