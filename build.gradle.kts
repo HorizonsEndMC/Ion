@@ -8,6 +8,8 @@ plugins {
 }
 
 repositories {
+	jcenter()
+	mavenCentral()
 	maven("https://jitpack.io")
 	maven("https://repo.citizensnpcs.co/")
 	maven("https://maven.sk89q.com/repo/")
@@ -18,9 +20,8 @@ repositories {
 	maven("https://nexus.vankka.dev/repository/maven-public/")
 	maven("https://repo.codemc.io/repository/maven-snapshots/")
 	maven("https://repo.codemc.io/repository/maven-snapshots/")
+	maven("https://oss.sonatype.org/content/repositories/snapshots/")
 	maven("https://raw.githubusercontent.com/FabioZumbi12/UltimateChat/mvn-repo/")
-	mavenCentral()
-	jcenter()
 }
 
 dependencies {
@@ -35,6 +36,7 @@ dependencies {
 
 	implementation("org.litote.kmongo:kmongo:4.2.3")
 	implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
+	implementation("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT")
 
 	// TODO: Remove these
 	compileOnly("com.discordsrv:discordsrv:1.20.0")
