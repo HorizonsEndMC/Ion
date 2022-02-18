@@ -27,7 +27,7 @@ dependencies {
 	compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT") // Dynmap includes Bukkit causing conflicts
 	paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
-	compileOnly("net.luckperms:api:5.0")
+	compileOnly("net.luckperms:api:5.4")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 	compileOnly("net.citizensnpcs:citizens:2.0.27-SNAPSHOT")
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1-beta-4")
