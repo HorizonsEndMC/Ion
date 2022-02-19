@@ -50,7 +50,7 @@ dependencies {
 	implementation("net.wesjd:anvilgui:1.5.0-SNAPSHOT")
 	implementation("club.minnced:discord-webhooks:0.7.4")
 	implementation("ninja.egg82:event-chain-bukkit:1.0.7")
-	implementation("com.googlecode.cqengine:cqengine:3.0.0")
+	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.5.8")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 }
