@@ -34,7 +34,7 @@ dependencies {
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT")
 
-	implementation("org.litote.kmongo:kmongo:4.2.3")
+	implementation("org.litote.kmongo:kmongo:4.4.0")
 	implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
 	implementation("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT")
 
