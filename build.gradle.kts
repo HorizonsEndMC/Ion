@@ -43,7 +43,7 @@ dependencies {
 	compileOnly("com.github.bloodmc:GriefDefenderAPI:master")
 	compileOnly("com.sk89q.worldguard:worldguard-core:7.0.0-SNAPSHOT")
 
-	implementation("redis.clients:jedis:2.9.0")
+	implementation("redis.clients:jedis:4.1.0")
 	implementation("org.ejml:ejml-all:0.40")
 	implementation("com.github.jkcclemens:khttp:0.1.0")
 	implementation("io.github.config4k:config4k:0.4.1")
