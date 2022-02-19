@@ -1,0 +1,8 @@
+main: net.horizonsend.ion.Ion
+name: Ion
+version: SNAPSHOT
+api-version: 1.18
+load: POSTWORLD
+author: PeterCrawley
+website: https://horizonsend.net
+depend: [IonCore]
