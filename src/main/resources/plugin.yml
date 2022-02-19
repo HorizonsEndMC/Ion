@@ -1,7 +1,8 @@
-name: StarLegacy
-version: VersionsTakeEffort
 main: net.starlegacy.StarLegacy
-loadbefore: [Essentials]
-depend: [StarLegacyLibs, LuckPerms, Vault, dynmap, WorldEdit, WorldGuard, Citizens]
-softdepend: [GameAPI, GriefDefender]
-api-version: "1.16"
+name: ion-core
+version: SNAPSHOT
+api-version: 1.18
+load: POSTWORLD
+authors: [PeterCrawley, MicleBrick]
+website: https://horizonsend.net/
+depend: [LuckPerms, Vault, dynmap, WorldEdit, WorldGuard, Citizens]
