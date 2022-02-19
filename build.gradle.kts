@@ -46,7 +46,7 @@ dependencies {
 	implementation("redis.clients:jedis:4.1.0")
 	implementation("org.ejml:ejml-all:0.41")
 	implementation("com.github.jkcclemens:khttp:0.1.0")
-	implementation("io.github.config4k:config4k:0.4.1")
+	implementation("io.github.config4k:config4k:0.4.2")
 	implementation("net.wesjd:anvilgui:1.5.0-SNAPSHOT")
 	implementation("club.minnced:discord-webhooks:0.5.6")
 	implementation("ninja.egg82:event-chain-bukkit:1.0.7")
