@@ -29,7 +29,7 @@ dependencies {
 	paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
 	compileOnly("net.luckperms:api:5.4")
-	compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("net.citizensnpcs:citizens:2.0.27-SNAPSHOT")
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT")
