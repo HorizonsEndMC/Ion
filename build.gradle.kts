@@ -41,7 +41,7 @@ dependencies {
 	// TODO: Remove these
 	compileOnly("com.discordsrv:discordsrv:1.20.0")
 	compileOnly("com.github.bloodmc:GriefDefenderAPI:master")
-	compileOnly("com.sk89q.worldguard:worldguard-core:7.0.0-SNAPSHOT")
+	compileOnly("com.sk89q.worldguard:worldguard-core:7.0.6")
 
 	implementation("redis.clients:jedis:4.1.0")
 	implementation("org.ejml:ejml-all:0.41")
