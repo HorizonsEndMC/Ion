@@ -23,7 +23,10 @@ dependencies {
 
 tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
-	shadowJar { minimize() }
+	shadowJar {
+		minimize()
+		archiveFileName.set("../../../build/Ion.jar")
+	}
 	build {
 		dependsOn("shadowJar")
 		dependsOn("IonCore:reobfJar")
