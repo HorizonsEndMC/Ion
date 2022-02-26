@@ -25,7 +25,7 @@ tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
 	shadowJar {
 		minimize()
-		archiveFileName.set("../../build/Ion.jar")
+		archiveFileName.set("build/Ion.jar")
 	}
 	build {
 		dependsOn("shadowJar")
