@@ -24,6 +24,10 @@ dependencies {
 tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
 	shadowJar { minimize() }
+	build {
+		dependsOn("shadowJar")
+		dependsOn("IonCore:reobfJar")
+	}
 }
 
 java.toolchain.languageVersion.set(of(17))
