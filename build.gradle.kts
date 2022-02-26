@@ -1,4 +1,5 @@
 import org.gradle.jvm.toolchain.JavaLanguageVersion.of
+import java.io.ByteArrayOutputStream
 
 plugins {
   java
@@ -58,6 +59,7 @@ dependencies {
 tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
 	shadowJar { minimize() }
+	reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonCore.jar")) }
 }
 
 java.toolchain.languageVersion.set(of(17))
