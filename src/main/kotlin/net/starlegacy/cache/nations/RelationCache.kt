@@ -5,6 +5,7 @@ import com.googlecode.cqengine.index.hash.HashIndex
 import com.googlecode.cqengine.query.QueryFactory.and
 import com.googlecode.cqengine.query.QueryFactory.equal
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import net.starlegacy.PLUGIN
 import net.starlegacy.cache.Cache
 import net.starlegacy.cache.DbObjectCache
 import net.starlegacy.database.Oid
@@ -19,14 +20,16 @@ object RelationCache : DbObjectCache<NationRelation, Oid<NationRelation>>(Nation
 	private val otherAttr = attribute(NationRelation::other)
 
 	override fun addExtraIndexes() {
-		cache.addIndex(HashIndex.onAttribute(nationAttr))
-		cache.addIndex(HashIndex.onAttribute(otherAttr))
-		cache.addIndex(
-			CompoundIndex.onAttributes(
-				nationAttr,
-				otherAttr
+		try {
+			cache.addIndex(HashIndex.onAttribute(nationAttr))
+			cache.addIndex(HashIndex.onAttribute(otherAttr))
+			cache.addIndex(
+				CompoundIndex.onAttributes(
+					nationAttr,
+					otherAttr
+				)
 			)
-		)
+		} catch (_: Exception) {} // Silently fail
 	}
 
 	override fun update(cached: NationRelation, change: ChangeStreamDocument<NationRelation>) {
