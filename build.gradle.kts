@@ -38,7 +38,7 @@ dependencies {
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT")
 
 	implementation("org.litote.kmongo:kmongo:4.5.0")
-	implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
+	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT")
 
 	// TODO: Remove these
