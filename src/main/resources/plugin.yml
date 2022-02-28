@@ -1,5 +1,5 @@
 main: net.starlegacy.StarLegacy
-name: ion-core
+name: IonCore
 version: SNAPSHOT
 api-version: 1.18
 load: POSTWORLD
