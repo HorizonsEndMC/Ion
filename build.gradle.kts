@@ -9,7 +9,7 @@ plugins {
 }
 
 repositories {
-	jcenter()
+	jcenter() // Evil, required by DiscordSRV - Peter
 	mavenCentral()
 	maven("https://jitpack.io")
 	maven("https://repo.citizensnpcs.co/")
@@ -26,7 +26,9 @@ repositories {
 }
 
 dependencies {
-	compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT") // Dynmap includes Bukkit causing conflicts
+	// Dynmap and probably something else is including old Bukkit / Spigot versions, I could use excludes...
+	// or I can just set paper at the top, thus overriding it. - Peter
+	compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT")
 	paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
 	compileOnly("net.luckperms:api:5.4")
@@ -44,7 +46,6 @@ dependencies {
 	compileOnly("com.github.bloodmc:GriefDefenderAPI:master")
 	compileOnly("com.sk89q.worldguard:worldguard-core:7.0.6")
 
-	implementation("redis.clients:jedis:4.1.1")
 	implementation("org.ejml:ejml-all:0.41")
 	implementation("com.github.jkcclemens:khttp:0.1.0")
 	implementation("io.github.config4k:config4k:0.4.2")
@@ -52,8 +53,12 @@ dependencies {
 	implementation("club.minnced:discord-webhooks:0.7.4")
 	implementation("ninja.egg82:event-chain-bukkit:1.0.7")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.5.8")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
+
+	// Older versions need to be used for compatibility, I won't bother fixing it for now because were going to drop these
+	// dependencies in the future anyway - Peter
+	implementation("redis.clients:jedis:3.7.1")
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.5.8")
 }
 
 tasks {
