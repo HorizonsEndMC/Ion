@@ -39,7 +39,7 @@ dependencies {
 
 	implementation("org.litote.kmongo:kmongo:4.5.0")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-	implementation("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT")
+	implementation("net.kyori:adventure-text-minimessage:4.11.0-SNAPSHOT")
 
 	// TODO: Remove these
 	compileOnly("com.discordsrv:discordsrv:1.20.0")
