@@ -18,7 +18,7 @@ dependencies {
 
 	compileOnly(project(":IonCore"))
 
-	implementation("net.kyori:adventure-text-minimessage:4.10.0-SNAPSHOT")
+	implementation("net.kyori:adventure-text-minimessage:4.10.0")
 }
 
 tasks {
