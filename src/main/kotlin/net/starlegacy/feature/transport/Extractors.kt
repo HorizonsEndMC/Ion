@@ -23,6 +23,8 @@ import net.starlegacy.util.randomEntry
 import net.starlegacy.util.randomFloat
 import net.starlegacy.util.timing
 import net.starlegacy.util.ungzip
+import org.bukkit.Bukkit
+import org.bukkit.Bukkit.shutdown
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -108,8 +110,9 @@ object Extractors : SLComponent() {
 				Gson().fromJson(ungzip(Files.readAllBytes(file.toPath())), WorldDataStorage::class.java)
 			} catch (e: Exception) {
 				e.printStackTrace()
-				file.delete()
-				return loadExtractors(world)
+				log.error("Failed to load extractors, to be safe, the server will now shutdown to prevent loss of data, please correct the issue if possible.")
+				shutdown()
+				return
 			}
 		} else {
 			WorldDataStorage(listOf())
