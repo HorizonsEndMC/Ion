@@ -20,7 +20,7 @@ dependencies {
 
 	compileOnly(project(":IonCore"))
 
-	implementation("net.kyori:adventure-text-minimessage:4.10.0") // MiniMessage
+//	implementation("net.kyori:adventure-text-minimessage:4.10.0") // MiniMessage
 
 	implementation("org.spongepowered:configurate-hocon:$configurateVersion") // Configurate (HOCON)
 	implementation("org.spongepowered:configurate-extra-kotlin:$configurateVersion") // Configurate (Kotlin Additions)
