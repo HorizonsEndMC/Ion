@@ -30,7 +30,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.DaylightDetector
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftInventory
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventory
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
