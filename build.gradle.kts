@@ -29,7 +29,7 @@ dependencies {
 	// Dynmap and probably something else is including old Bukkit / Spigot versions, I could use excludes...
 	// or I can just set paper at the top, thus overriding it. - Peter
 	compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-	paperDevBundle("1.18.1-R0.1-SNAPSHOT")
+	paperDevBundle("1.18.2-R0.1-SNAPSHOT")
 
 	compileOnly("net.luckperms:api:5.4")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
