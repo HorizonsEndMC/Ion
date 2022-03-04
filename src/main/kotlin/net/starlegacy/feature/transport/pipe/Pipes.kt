@@ -398,7 +398,7 @@ object Pipes : SLComponent() {
 						val result: ItemStack = sourceInventory.getItem(resultSlot)
 							?: return // if there is no result item, there is nothing to extract from this inventory
 
-						listOf(IndexedValue(resultSlot, result))
+						setOf(IndexedValue(resultSlot, result))
 					}
 
 					// move all the items by default
