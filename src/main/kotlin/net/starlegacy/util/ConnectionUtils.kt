@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.Relat
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.RelativeArgument.Z
 import net.minecraft.world.phys.Vec3
 import org.bukkit.Location
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
