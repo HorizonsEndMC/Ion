@@ -16,7 +16,7 @@ repositories {
 val configurateVersion = "4.1.2"
 
 dependencies {
-	compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT")
+	compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
 
 	compileOnly(project(":IonCore"))
 
