@@ -38,7 +38,6 @@ dependencies {
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 
-	implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
 	implementation("org.litote.kmongo:kmongo:4.5.0")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 
