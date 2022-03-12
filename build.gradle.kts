@@ -16,14 +16,14 @@ repositories {
 val configurateVersion = "4.1.2"
 
 dependencies {
-	compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+	compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT") // Paper
 
-	compileOnly(project(":IonCore"))
-
-//	implementation("net.kyori:adventure-text-minimessage:4.10.0") // MiniMessage
+	compileOnly(project(":IonCore")) // IonCore
 
 	implementation("org.spongepowered:configurate-hocon:$configurateVersion") // Configurate (HOCON)
 	implementation("org.spongepowered:configurate-extra-kotlin:$configurateVersion") // Configurate (Kotlin Additions)
+
+	implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10") // Required by Configurate (Kotlin Additions)
 }
 
 tasks {
