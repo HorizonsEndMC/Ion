@@ -1,5 +1,4 @@
 import org.gradle.jvm.toolchain.JavaLanguageVersion.of
-import java.io.ByteArrayOutputStream
 
 plugins {
   java
