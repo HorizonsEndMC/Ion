@@ -5,4 +5,4 @@ api-version: 1.18
 load: POSTWORLD
 author: PeterCrawley
 website: https://horizonsend.net
-depend: [IonCore]
+soft-depend: [IonCore]
