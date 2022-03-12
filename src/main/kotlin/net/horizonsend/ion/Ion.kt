@@ -1,5 +1,6 @@
 package net.horizonsend.ion
 
+import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader.builder
@@ -11,6 +12,9 @@ class Ion: JavaPlugin() {
 	val configuration: Configuration
 
 	init {
+		/**
+		 * Load configuration
+		 */
 		saveResource("config.conf", false) // Ensure the config file exists
 
 		val newConfiguration: Configuration? = builder()
@@ -38,5 +42,19 @@ class Ion: JavaPlugin() {
 		}
 
 		configuration = newConfiguration
+
+		/**
+		 * Check for IonCore
+		 */
+		if (getPluginManager().isPluginEnabled("IonCore")) {
+			// Register anything that requires IonCore here.
+
+		} else {
+			slF4JLogger.error("""
+				IonCore is missing! Depending on what your doing this is what you wanted, or a big problem.
+				The following features are currently disabled due to IonCore being absent:
+				**None, Ion is basically a dummy plugin right now.**
+			""".trimIndent())
+		}
 	}
 }
