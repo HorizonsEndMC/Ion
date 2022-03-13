@@ -48,19 +48,17 @@ object PowerToolListener : SLEventListener() {
 					return
 				}
 
-				Tasks.syncDelay(4) {
-					if (blockType != block.type) return@syncDelay
+				if (blockType != block.type) return
 
-					if (getPower(item) < 20) {
-						player.sendMessage(ChatColor.RED.toString() + "Out of power.")
-						return@syncDelay
-					}
-
-					removePower(item, 10)
-					player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
-					block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
-					block.breakNaturally(PICKAXE)
+				if (getPower(item) < 20) {
+					player.sendMessage(ChatColor.RED.toString() + "Out of power.")
+					return
 				}
+
+				removePower(item, 10)
+				player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
+				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
+				block.breakNaturally(PICKAXE)
 
 				return
 			}
