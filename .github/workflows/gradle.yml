@@ -28,6 +28,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@db5c4250043af20d97cb4298ed4311aac2915b13
+      uses: gradle/gradle-build-action@adcc4faa556bcd969fd48d5b88ec5150aee499fa
       with:
         arguments: :shadowJar
