@@ -294,7 +294,6 @@ object CustomItems {
 		)
 	}
 
-	val MINERAL_COPPER = registerMineral(type = "copper", typeName = "Copper", model = 1)
 	val MINERAL_ALUMINUM = registerMineral(type = "aluminum", typeName = "Aluminum", model = 2)
 	val MINERAL_CHETHERITE = registerMineral(type = "chetherite", typeName = "Chetherite", model = 3)
 	val MINERAL_TITANIUM = registerMineral(type = "titanium", typeName = "Titanium", model = 4)
