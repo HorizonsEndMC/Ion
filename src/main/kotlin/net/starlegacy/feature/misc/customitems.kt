@@ -294,10 +294,10 @@ object CustomItems {
 		)
 	}
 
-	val MINERAL_ALUMINUM = registerMineral(type = "aluminum", typeName = "Aluminum", model = 2)
-	val MINERAL_CHETHERITE = registerMineral(type = "chetherite", typeName = "Chetherite", model = 3)
-	val MINERAL_TITANIUM = registerMineral(type = "titanium", typeName = "Titanium", model = 4)
-	val MINERAL_URANIUM = registerMineral(type = "uranium", typeName = "Uranium", model = 5)
+	val MINERAL_ALUMINUM = registerMineral(type = "aluminum", typeName = "Aluminum", model = 1)
+	val MINERAL_CHETHERITE = registerMineral(type = "chetherite", typeName = "Chetherite", model = 2)
+	val MINERAL_TITANIUM = registerMineral(type = "titanium", typeName = "Titanium", model = 3)
+	val MINERAL_URANIUM = registerMineral(type = "uranium", typeName = "Uranium", model = 4)
 	//endregion Minerals
 
 	//region Planet Icons
