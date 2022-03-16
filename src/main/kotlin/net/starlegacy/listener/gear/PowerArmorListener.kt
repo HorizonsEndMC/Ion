@@ -98,10 +98,7 @@ object PowerArmorListener : SLEventListener() {
 		}
 
 		for ((module, moduleItem) in modules) {
-			if (module == PowerArmorModule.SHOCK_ABSORBING
-				&& (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
-					|| cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION)
-			) {
+			if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
 				modifier = 0.0
 				if (!player.world.name.lowercase(Locale.getDefault()).contains("arena")) {
 					removePower(moduleItem, 10)
