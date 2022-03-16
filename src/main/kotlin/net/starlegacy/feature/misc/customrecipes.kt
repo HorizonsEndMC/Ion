@@ -27,7 +27,6 @@ object CustomRecipes : SLComponent() {
 			registerWireRecipe()
 			registerSeaLanternRecipe()
 			registerEndPortalFrameRecipe()
-			registerRocketRecipes()
 		}
 	}
 
@@ -132,12 +131,12 @@ object CustomRecipes : SLComponent() {
 	}
 
 	private fun registerMineralRecipes() = listOf(
-		CustomItems.MINERAL_COPPER,
+//		CustomItems.MINERAL_COPPER,
 		CustomItems.MINERAL_ALUMINUM,
 		CustomItems.MINERAL_TITANIUM,
 		CustomItems.MINERAL_URANIUM,
 		CustomItems.MINERAL_CHETHERITE,
-		CustomItems.MINERAL_ORIOMIUM
+//		CustomItems.MINERAL_ORIOMIUM
 	).forEach { mineral: CustomItems.MineralCustomItem ->
 		createShapelessRecipe(
 			mineral,
@@ -196,7 +195,7 @@ object CustomRecipes : SLComponent() {
 	}
 
 	private fun registerModuleRecipes() = mapOf(
-		CustomItems.POWER_MODULE_SHOCK_ABSORBING to customItemChoice(CustomItems.MINERAL_TITANIUM),
+//		CustomItems.POWER_MODULE_SHOCK_ABSORBING to customItemChoice(CustomItems.MINERAL_TITANIUM),
 		CustomItems.POWER_MODULE_SPEED_BOOSTING to materialChoice(Material.FEATHER),
 		CustomItems.POWER_MODULE_ROCKET_BOOSTING to materialChoice(Material.FIREWORK_ROCKET),
 		CustomItems.POWER_MODULE_NIGHT_VISION to materialChoice(Material.SPIDER_EYE),
@@ -218,7 +217,7 @@ object CustomRecipes : SLComponent() {
 		CustomItems.ENERGY_SWORD_YELLOW to materialChoice(Material.COAL),
 		CustomItems.ENERGY_SWORD_GREEN to materialChoice(Material.EMERALD),
 		CustomItems.ENERGY_SWORD_PURPLE to customItemChoice(CustomItems.MINERAL_CHETHERITE),
-		CustomItems.ENERGY_SWORD_ORANGE to customItemChoice(CustomItems.MINERAL_COPPER)
+		CustomItems.ENERGY_SWORD_ORANGE to materialChoice(Material.COPPER_INGOT)
 	).forEach { (sword, specialItem) ->
 		createRecipe(
 			sword, "aga", "a*a", "ata", ingredients = mapOf(
@@ -274,9 +273,9 @@ object CustomRecipes : SLComponent() {
 		registerShapelessRecipe(
 			"wire",
 			ItemStack(Material.END_ROD, 16),
-			customItemChoice(CustomItems.MINERAL_COPPER),
-			customItemChoice(CustomItems.MINERAL_COPPER),
-			customItemChoice(CustomItems.MINERAL_COPPER)
+			materialChoice(Material.COPPER_INGOT),
+			materialChoice(Material.COPPER_INGOT),
+			materialChoice(Material.COPPER_INGOT)
 		)
 	}
 
@@ -301,29 +300,6 @@ object CustomRecipes : SLComponent() {
 				'o' to materialChoice(Material.ENDER_PEARL),
 				's' to materialChoice(Material.END_STONE)
 			)
-		)
-	}
-
-	private fun registerRocketRecipes() {
-		createRecipe(
-			CustomItems.ROCKET_BASE, "t t", "tht", "tgt", amount = 3, ingredients = mapOf(
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-				'h' to customItemChoice(CustomItems.GAS_CANISTER_HELIUM),
-				'g' to materialChoice(Material.HOPPER),
-			)
-		)
-
-		createRecipe(
-			CustomItems.ROCKET_WARHEAD_ORIOMIUM, " a ", "aoa", " a ", amount = 3, ingredients = mapOf(
-				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-				'o' to customItemChoice(CustomItems.MINERAL_ORIOMIUM.fullBlock)
-			)
-		)
-
-		createShapelessRecipe(
-			CustomItems.ROCKET_ORIOMIUM,
-			customItemChoice(CustomItems.ROCKET_BASE),
-			customItemChoice(CustomItems.ROCKET_WARHEAD_ORIOMIUM)
 		)
 	}
 }
