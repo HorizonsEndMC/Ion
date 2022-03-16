@@ -33,7 +33,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 3.0,
 		menuItemMaterial = Material.DEAD_BUSH,
 		isWarship = false,
-		colour = "#710000"
+		colour = "#007100"
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
