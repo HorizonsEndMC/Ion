@@ -40,7 +40,7 @@ class Ion: JavaPlugin() {
 		configuration = newConfiguration
 	}
 
-	init {
+	override fun onEnable() {
 		loadConfiguration()
 
 //		/**
