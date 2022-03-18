@@ -2,7 +2,6 @@ package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
 import org.bukkit.block.Sign
@@ -11,7 +10,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
 object ShipFactoryMultiblock : PowerStoringMultiblock() {
-	override val advancement = SLAdvancement.SHIP_FACTORY
 	override val name = "shipfactory"
 
 	override val signText = createSignText(

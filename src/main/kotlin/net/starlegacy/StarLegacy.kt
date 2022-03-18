@@ -45,8 +45,6 @@ import net.starlegacy.command.nations.roles.NationRoleCommand
 import net.starlegacy.command.nations.roles.SettlementRoleCommand
 import net.starlegacy.command.nations.settlementZones.SettlementPlotCommand
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
-import net.starlegacy.command.progression.AdvanceAdminCommand
-import net.starlegacy.command.progression.AdvanceCommand
 import net.starlegacy.command.space.PlanetCommand
 import net.starlegacy.command.space.SpaceWorldCommand
 import net.starlegacy.command.space.StarCommand
@@ -101,8 +99,6 @@ import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.feature.progression.advancement.Advancements
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Orbits
@@ -198,8 +194,6 @@ class StarLegacy : JavaPlugin() {
 			Caches,
 			Notify,
 			Shuttles,
-
-			Advancements,
 
 			ChannelSelections,
 			ChatChannel.ChannelActions,
@@ -382,13 +376,9 @@ class StarLegacy : JavaPlugin() {
 
 			SiegeCommand,
 
-			AdvanceAdminCommand,
-			AdvanceCommand,
-
 			PlanetCommand,
 			SpaceWorldCommand,
 			StarCommand,
-
 
 			BazaarCommand,
 			CityNpcCommand,
@@ -451,7 +441,6 @@ class StarLegacy : JavaPlugin() {
 
 		// Add static tab completions
 		mapOf(
-			"advancements" to SLAdvancement.values().joinToString("|"),
 			"customitems" to CustomItems.all().joinToString("|") { it.id },
 			"npctypes" to CityNPC.Type.values().joinToString("|") { it.name }
 		).forEach { manager.commandCompletions.registerStaticCompletion(it.key, it.value) }

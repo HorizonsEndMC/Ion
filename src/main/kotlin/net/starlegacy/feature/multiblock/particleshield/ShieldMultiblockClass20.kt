@@ -1,10 +1,8 @@
 package net.starlegacy.feature.multiblock.particleshield
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 
 object ShieldMultiblockClass20 : SphereShieldMultiblock() {
-	override val advancement = SLAdvancement.PARTICLE_SHIELD_20
 	override val maxRange = 14
 	override val signText = createSignText(
 		line1 = "&3Particle Shield",

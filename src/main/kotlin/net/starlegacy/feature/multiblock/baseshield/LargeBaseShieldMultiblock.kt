@@ -1,12 +1,9 @@
 package net.starlegacy.feature.multiblock.baseshield
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import org.bukkit.ChatColor
 
 object LargeBaseShieldMultiblock : BaseShieldMultiblock() {
-	override val advancement = SLAdvancement.BASE_SHIELD_LARGE
-
 	override val maxPower: Int = 50_000
 	override val radius: Int = 100
 

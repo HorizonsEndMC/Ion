@@ -14,7 +14,6 @@ import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.APLaserProjectile
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.randomDouble
@@ -32,8 +31,6 @@ import org.bukkit.util.Vector
 object APTurret : PowerStoringMultiblock(), FurnaceMultiblock {
 	private const val MAX_DISTANCE = 64.0
 	private const val POWER_USAGE = 100
-
-	override val advancement: SLAdvancement? = null
 
 	override val name: String = "apturret"
 	override val maxPower: Int = 10000

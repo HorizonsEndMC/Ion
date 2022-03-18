@@ -2,12 +2,9 @@ package net.starlegacy.feature.multiblock.powerbank
 
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.Vec3i
 
 object PowerCellMultiblock : PowerStoringMultiblock() {
-	override val advancement = SLAdvancement.POWER_CELL
-
 	override val name = "powercell"
 
 	override val signText = createSignText(

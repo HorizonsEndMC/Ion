@@ -1,12 +1,9 @@
 package net.starlegacy.feature.multiblock.hyperdrive
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.Vec3i
 
 object HyperdriveMultiblockClass4 : HyperdriveMultiblock() {
-	override val advancement = SLAdvancement.HYPERDRIVE_FOUR
-
 	override val signText = createSignText(
 		line1 = "&7Class",
 		line2 = "&64",

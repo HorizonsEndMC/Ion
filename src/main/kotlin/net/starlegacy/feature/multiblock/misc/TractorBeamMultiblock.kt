@@ -2,10 +2,8 @@ package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 
 object TractorBeamMultiblock : Multiblock() {
-	override val advancement: SLAdvancement? = null
 	override val name = "tractorbeam"
 
 	override val signText = createSignText(

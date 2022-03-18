@@ -2,7 +2,6 @@ package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.block.Sign
@@ -10,8 +9,6 @@ import org.bukkit.entity.Player
 
 object AirlockMultiblock : Multiblock() {
 	override val name: String = "airlock"
-
-	override val advancement = SLAdvancement.AIRLOCK
 
 	override val signText = createSignText(
 		line1 = "&7Airlock",
