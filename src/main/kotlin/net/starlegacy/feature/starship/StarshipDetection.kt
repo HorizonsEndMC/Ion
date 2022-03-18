@@ -246,6 +246,7 @@ object StarshipDetection : SLComponent() {
 			Material.TRAPPED_CHEST,
 			Material.HOPPER,
 			Material.DISPENSER,
+			Material.BARREL,
 			Material.DROPPER -> true
 			else -> false
 		}
