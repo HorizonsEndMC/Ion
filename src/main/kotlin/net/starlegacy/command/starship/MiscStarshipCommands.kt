@@ -22,7 +22,6 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
-import net.starlegacy.feature.starship.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import net.starlegacy.feature.starship.subsystem.NavCompSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -210,17 +209,6 @@ object MiscStarshipCommands : SLCommand() {
 		}
 
 		getStarshipRiding(sender).updatePower(sender, shieldPct, weaponPct, thrusterPct)
-	}
-
-	@CommandAlias("usebeacon")
-	fun onUseBeacon(sender: Player) {
-		val ship = getStarshipRiding(sender) as? ActivePlayerStarship ?: return
-		val beacon = ship.nearbyBeacon
-		if (beacon != null) {
-			val other = HyperspaceBeacons[beacon.pairId] ?: fail { "Beacon pair is missing!" }
-			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender)
-			ship.nearbyBeacon = null
-		}
 	}
 
 	@CommandAlias("nukeship")
