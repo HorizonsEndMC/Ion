@@ -1,5 +1,6 @@
 package net.horizonsend.ion
 
+import co.aikar.commands.PaperCommandManager
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.ConfigurateException
@@ -9,9 +10,13 @@ import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
+	private val commands = setOf(
+		IonReloadCommand(this)
+	)
+
 	private lateinit var configuration: Configuration
 
-	private fun loadConfiguration() {
+	internal fun loadConfiguration() {
 		saveResource("config.conf", false) // Ensure the config file exists
 
 		configuration = builder()
@@ -40,6 +45,13 @@ class Ion: JavaPlugin() {
 			slF4JLogger.error("Failed to load Ion configuration: ${exception.message}")
 			shutdown()
 		}
+
+		val commandManager = PaperCommandManager(this)
+
+		commands.forEach { commandManager.registerCommand(it) }
+
+		@Suppress("DEPRECATION")
+		commandManager.enableUnstableAPI("help")
 
 //		/**
 //		 * Check for IonCore
