@@ -5,4 +5,4 @@ api-version: 1.18
 load: POSTWORLD
 authors: [PeterCrawley, MicleBrick]
 website: https://horizonsend.net/
-depend: [LuckPerms, Vault, dynmap, WorldEdit, WorldGuard, Citizens]
+depend: [LuckPerms, Vault, dynmap, WorldEdit, Citizens]
