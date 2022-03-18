@@ -60,7 +60,7 @@ object APTurret : PowerStoringMultiblock(), FurnaceMultiblock {
 		z(+1) {
 			y(-1) {
 				x(-1).anyGlass()
-				x(+0).oriomiumBlock()
+				x(+0).titaniumBlock()
 				x(+1).anyGlass()
 			}
 			y(+0) {
