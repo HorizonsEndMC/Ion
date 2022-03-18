@@ -226,7 +226,24 @@ class MultiblockShape {
 		fun netheriteBlock() = type(Material.NETHERITE_BLOCK)
 		fun emeraldBlock() = type(Material.EMERALD_BLOCK)
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
-		fun copperBlock() = customBlock(CustomBlocks.MINERAL_COPPER.block)
+		fun copperBlock() = anyType(
+			Material.COPPER_BLOCK,
+			Material.EXPOSED_COPPER,
+			Material.WEATHERED_COPPER,
+			Material.OXIDIZED_COPPER,
+			Material.WAXED_COPPER_BLOCK,
+			Material.WAXED_EXPOSED_COPPER,
+			Material.WAXED_WEATHERED_COPPER,
+			Material.WAXED_OXIDIZED_COPPER,
+			Material.CUT_COPPER,
+			Material.EXPOSED_CUT_COPPER,
+			Material.WEATHERED_CUT_COPPER,
+			Material.OXIDIZED_CUT_COPPER,
+			Material.WAXED_CUT_COPPER,
+			Material.WAXED_EXPOSED_CUT_COPPER,
+			Material.WAXED_WEATHERED_CUT_COPPER,
+			Material.WAXED_OXIDIZED_CUT_COPPER,
+		)
 		fun titaniumBlock() = customBlock(CustomBlocks.MINERAL_TITANIUM.block)
 		fun aluminumBlock() = customBlock(CustomBlocks.MINERAL_ALUMINUM.block)
 		fun chetheriteBlock() = customBlock(CustomBlocks.MINERAL_CHETHERITE.block)
