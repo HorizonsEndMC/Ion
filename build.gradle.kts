@@ -10,6 +10,8 @@ repositories {
 
 	maven("https://papermc.io/repo/repository/maven-public/") // Paper API
 
+	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
+
 	mavenCentral()
 }
 
@@ -24,6 +26,8 @@ dependencies {
 	implementation("org.spongepowered:configurate-extra-kotlin:$configurateVersion") // Configurate (Kotlin Additions)
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10") // Required by Configurate (Kotlin Additions)
+
+	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") // Annotation Command Framework
 }
 
 tasks {
