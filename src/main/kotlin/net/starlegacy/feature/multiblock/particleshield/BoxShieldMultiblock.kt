@@ -1,7 +1,6 @@
 package net.starlegacy.feature.multiblock.particleshield
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.msg
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -51,8 +50,6 @@ object BoxShieldMultiblock : ShieldMultiblock() {
 		sign.setLine(3, sign.getLine(2))
 		super.onTransformSign(player, sign)
 	}
-
-	override val advancement: SLAdvancement = SLAdvancement.PARTICLE_SHIELD_B
 
 	override val signText = createSignText(
 		line1 = "&3Particle Shield",

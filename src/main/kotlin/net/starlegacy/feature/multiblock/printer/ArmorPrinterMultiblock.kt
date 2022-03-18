@@ -1,14 +1,11 @@
 package net.starlegacy.feature.multiblock.printer
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.isStainedTerracotta
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 object ArmorPrinterMultiblock : PrinterMultiblock() {
-	override val advancement = SLAdvancement.PRINTER_ARMOR
-
 	override val signText = createSignText(
 		line1 = "&6Armor",
 		line2 = "&fPrinter",

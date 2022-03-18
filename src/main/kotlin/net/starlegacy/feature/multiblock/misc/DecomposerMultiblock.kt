@@ -2,7 +2,6 @@ package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
@@ -17,7 +16,6 @@ object DecomposerMultiblock : PowerStoringMultiblock() {
 		null,
 		null
 	)
-	override val advancement: SLAdvancement? = null
 
 	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).ironBlock()

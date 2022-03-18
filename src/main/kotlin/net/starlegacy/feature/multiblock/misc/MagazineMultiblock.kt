@@ -2,7 +2,6 @@ package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import org.bukkit.Material
 
 object MagazineMultiblock : Multiblock() {
@@ -13,7 +12,6 @@ object MagazineMultiblock : Multiblock() {
 		"&0Magazine",
 		"&7-=[&c=&a=&b=&7]=-",
 	)
-	override val advancement: SLAdvancement = SLAdvancement.MAGAZINES
 
 	override fun MultiblockShape.buildStructure() {
 		y(+0) {

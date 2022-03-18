@@ -6,7 +6,6 @@ import kotlin.math.abs
 import net.starlegacy.PLUGIN
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.msg
@@ -17,8 +16,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 
 object MobDefender : Multiblock() {
-	override val advancement = SLAdvancement.MOB_DEFENDER
-
 	override val name = "mobdefender"
 
 	override val signText = createSignText(

@@ -1,11 +1,8 @@
 package net.starlegacy.feature.multiblock.gravitywell
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 
 object StandardGravityWellMultiblock : GravityWellMultiblock() {
-	override val advancement = SLAdvancement.GRAVITY_WELL
-
 	override val name = "gravitywell"
 
 	override val signText = createSignText(

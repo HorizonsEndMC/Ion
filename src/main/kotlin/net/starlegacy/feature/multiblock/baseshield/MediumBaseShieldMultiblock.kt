@@ -1,14 +1,11 @@
 package net.starlegacy.feature.multiblock.baseshield
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import org.bukkit.ChatColor
 
 object MediumBaseShieldMultiblock : BaseShieldMultiblock() {
 	override val maxPower = 50_000
 	override val radius = 50
-
-	override val advancement = SLAdvancement.BASE_SHIELD_MEDIUM
 
 	override val signText = createSignText(
 		"${ChatColor.YELLOW}Medium",

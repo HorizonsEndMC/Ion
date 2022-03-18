@@ -4,7 +4,6 @@ import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isConcretePowder
@@ -18,7 +17,6 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
 object CarbonProcessorMultiblock : PowerStoringMultiblock(), FurnaceMultiblock {
-	override val advancement = SLAdvancement.PRINTER_CARBON
 	override val maxPower: Int = 30000
 	override val name = "processor"
 

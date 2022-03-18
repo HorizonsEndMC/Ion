@@ -1,12 +1,9 @@
 package net.starlegacy.feature.multiblock.gravitywell
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import org.bukkit.Material
 
 object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
-	override val advancement: SLAdvancement = SLAdvancement.GRAVITY_WELL
-
 	override val name: String = "amplifiedwell"
 	override val signText = createSignText(
 		line1 = "&2Gravity",

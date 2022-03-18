@@ -1,11 +1,8 @@
 package net.starlegacy.feature.multiblock.areashield
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 
 object AreaShield20 : AreaShield(radius = 20) {
-	override val advancement = SLAdvancement.AREA_SHIELD_20
-
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {

@@ -1,6 +1,5 @@
 package net.starlegacy.feature.multiblock.starshipweapon
 
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import org.bukkit.block.Sign
 
@@ -9,7 +8,6 @@ abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : 
 	override val signText: List<String> = listOf("", "", "", "")
 
 	override val name: String = javaClass.simpleName
-	override val advancement: SLAdvancement? = null
 
 	override fun matchesSign(lines: Array<String>): Boolean {
 		return false

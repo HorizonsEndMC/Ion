@@ -2,7 +2,6 @@ package net.starlegacy.feature.multiblock.starshipweapon.turret
 
 import java.util.concurrent.TimeUnit
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
@@ -16,7 +15,6 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getYFactor(): Int
 
-	override val advancement: SLAdvancement? = null
 	override val cooldownNanos: Long = TimeUnit.SECONDS.toNanos(3L)
 	override val range: Double = 500.0
 	override val sound: String = "starship.weapon.turbolaser.tri.shoot"

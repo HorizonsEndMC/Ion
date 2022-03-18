@@ -1,11 +1,8 @@
 package net.starlegacy.feature.multiblock.navigationcomputer
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 
 object NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
-	override val advancement = SLAdvancement.NAV_COMPUTER_ADVANCED
-
 	override val signText = createSignText(
 		line1 = "&6Advanced",
 		line2 = "&8Navigation",

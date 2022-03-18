@@ -1,11 +1,8 @@
 package net.starlegacy.feature.multiblock.baseshield
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.progression.advancement.SLAdvancement
 
 object SmallBaseShieldMultiblock : BaseShieldMultiblock() {
-	override val advancement = SLAdvancement.BASE_SHIELD_SMALL
-
 	override val maxPower = 50_000
 	override val radius = 25
 
