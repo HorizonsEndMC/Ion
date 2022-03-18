@@ -8,12 +8,9 @@ import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
-	val configuration: Configuration
+	private lateinit var configuration: Configuration
 
-	init {
-		/**
-		 * Load configuration
-		 */
+	private fun loadConfiguration() {
 		saveResource("config.conf", false) // Ensure the config file exists
 
 		val newConfiguration: Configuration? = builder()
@@ -41,6 +38,10 @@ class Ion: JavaPlugin() {
 		}
 
 		configuration = newConfiguration
+	}
+
+	init {
+		loadConfiguration()
 
 //		/**
 //		 * Check for IonCore
