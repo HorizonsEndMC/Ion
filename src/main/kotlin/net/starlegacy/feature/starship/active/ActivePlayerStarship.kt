@@ -17,7 +17,6 @@ import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.event.StarshipMoveEvent
 import net.starlegacy.feature.starship.event.StarshipRotateEvent
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
-import net.starlegacy.feature.starship.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.starship.movement.RotationMovement
 import net.starlegacy.feature.starship.movement.StarshipMovement
 import net.starlegacy.feature.starship.movement.TranslateMovement
@@ -159,8 +158,6 @@ class ActivePlayerStarship(
 		get() = pilot?.let { PlayerCache[it].nation }?.let { Color.fromRGB(NationCache[it].color) } ?: Color.RED
 
 	fun requirePilot(): Player = requireNotNull(pilot) { "Starship must be piloted!" }
-
-	var nearbyBeacon: HyperspaceBeacons.Beacon? = null
 
 	var isDirectControlEnabled: Boolean = false
 		private set
