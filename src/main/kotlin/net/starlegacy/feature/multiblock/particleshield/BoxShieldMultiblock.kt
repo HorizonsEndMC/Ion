@@ -76,7 +76,7 @@ object BoxShieldMultiblock : ShieldMultiblock() {
 		z(+1) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(+0).oriomiumBlock()
+				x(+0).titaniumBlock()
 				x(+1).ironBlock()
 			}
 

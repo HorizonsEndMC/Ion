@@ -230,7 +230,6 @@ class MultiblockShape {
 		fun titaniumBlock() = customBlock(CustomBlocks.MINERAL_TITANIUM.block)
 		fun aluminumBlock() = customBlock(CustomBlocks.MINERAL_ALUMINUM.block)
 		fun chetheriteBlock() = customBlock(CustomBlocks.MINERAL_CHETHERITE.block)
-		fun oriomiumBlock() = customBlock(CustomBlocks.MINERAL_ORIOMIUM.block)
 		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)
 
 		fun redstoneLamp() = filteredTypes { it.isRedstoneLamp }
