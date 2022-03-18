@@ -2,6 +2,7 @@ package net.horizonsend.ion
 
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
+import org.spongepowered.configurate.ConfigurateException
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader.builder
 import org.spongepowered.configurate.kotlin.extensions.get
 import org.spongepowered.configurate.kotlin.objectMapperFactory
@@ -13,7 +14,7 @@ class Ion: JavaPlugin() {
 	private fun loadConfiguration() {
 		saveResource("config.conf", false) // Ensure the config file exists
 
-		val newConfiguration: Configuration? = builder()
+		configuration = builder()
 			// Specify configuration file path
 			.path(dataFolder.toPath().resolve("config.conf"))
 
@@ -29,19 +30,16 @@ class Ion: JavaPlugin() {
 			// Load configuration
 			.build()
 			.load()
-			.get()
-
-		if (newConfiguration == null) {
-			slF4JLogger.error("Failed to load configuration, server is stopping.")
-			shutdown()
-			throw IllegalStateException("Failed to load configuration, server is stopping.")
-		}
-
-		configuration = newConfiguration
+			.get()!!
 	}
 
 	override fun onEnable() {
-		loadConfiguration()
+		try {
+			loadConfiguration()
+		} catch (exception: ConfigurateException) {
+			slF4JLogger.error("Failed to load Ion configuration: ${exception.message}")
+			shutdown()
+		}
 
 //		/**
 //		 * Check for IonCore
