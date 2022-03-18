@@ -33,7 +33,6 @@ dependencies {
 tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
 	shadowJar {
-		minimize()
 		archiveFileName.set("../Ion.jar")
 	}
 	build {
