@@ -18,6 +18,7 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.randomEntry
 import net.starlegacy.util.squared
 import org.bukkit.Bukkit
+import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -197,6 +198,8 @@ object ActiveStarshipMechanics : SLComponent() {
 	}
 
 	private fun updateDynmapVisibility(player: Player, starship: ActivePlayerStarship?) {
+		if (!getPluginManager().isPluginEnabled("dynmap")) return
+
 		val isNoStarship = starship == null
 		val isHoldingController = StarshipControl.isHoldingController(player)
 		val isInvisible = isNoStarship && !isHoldingController
