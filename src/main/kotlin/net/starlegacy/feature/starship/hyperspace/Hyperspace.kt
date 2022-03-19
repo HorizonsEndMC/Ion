@@ -28,6 +28,12 @@ object Hyperspace : SLComponent() {
 
 	const val HYPERMATTER_AMOUNT = 2
 
+	override fun onDisable() {
+		movementTasks.forEach { activeStarship, hyperspaceMovement ->
+			cancelJumpMovement(hyperspaceMovement)
+		}
+	}
+
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }

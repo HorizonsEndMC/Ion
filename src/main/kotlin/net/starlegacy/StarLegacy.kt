@@ -249,6 +249,7 @@ class StarLegacy : JavaPlugin() {
 
 			PlanetSpawns,
 
+			Hyperspace,
 			DeactivatedPlayerStarships,
 			ActiveStarships,
 			ActiveStarshipMechanics,
@@ -260,7 +261,6 @@ class StarLegacy : JavaPlugin() {
 			StarshipCruising,
 			ContactsDisplay,
 			Hangars,
-			Hyperspace,
 			Turrets,
 			StarshipFactories,
 			TutorialManager,
