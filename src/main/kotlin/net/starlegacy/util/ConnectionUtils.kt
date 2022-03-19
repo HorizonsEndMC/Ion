@@ -28,7 +28,7 @@ object ConnectionUtils {
 	private var lastPosZField: Field = getField("lastPosZ")
 	private var awaitingTeleportField: Field = getField("z") // z = awaitingTeleport
 	private var awaitingTeleportTimeField: Field = getField("A") // A = awaitingTeleportTimeField
-	private var aboveGroundVehicleTickCountField: Field = getField("e") // E = aboveGroundVehicleTickCountField
+	private var aboveGroundVehicleTickCountField: Field = getField("E") // E = aboveGroundVehicleTickCountField
 
 	private fun getField(name: String): Field =
 		ServerGamePacketListenerImpl::class.java.getDeclaredField(name).apply { isAccessible = true }
