@@ -103,10 +103,8 @@ object CustomBlocks {
 
 	val MINERAL_ALUMINUM = mineral("aluminum", setOf(NORTH, UP), setOf(SOUTH, UP, WEST))
 	val MINERAL_CHETHERITE = mineral("chetherite", setOf(EAST, NORTH, UP), setOf(SOUTH, UP), "chetherite", 3)
-	val MINERAL_COPPER = mineral("copper", setOf(NORTH, UP, WEST), setOf(EAST, UP))
 	val MINERAL_TITANIUM = mineral("titanium", setOf(UP, WEST), setOf(EAST, SOUTH, UP))
 	val MINERAL_URANIUM = mineral("uranium", setOf(UP), setOf(EAST, NORTH, SOUTH, WEST))
-	val MINERAL_ORIOMIUM = mineral("oriomium", setOf(EAST, NORTH, SOUTH, WEST, UP, DOWN), setOf(DOWN), "oriomium", 6)
 	//endregion Minerals
 
 	operator fun get(blockId: String?): CustomBlock? = idMap[blockId]
