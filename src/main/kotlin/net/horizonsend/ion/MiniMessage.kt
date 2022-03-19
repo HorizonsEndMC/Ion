@@ -1,4 +1,4 @@
-package net.horizonsend.ion.extensions
+package net.horizonsend.ion
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
