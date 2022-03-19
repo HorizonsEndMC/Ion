@@ -23,7 +23,6 @@ object ConnectionUtils {
 
 	private var justTeleportedField: Field = getField("justTeleported")
 	private var awaitingPositionFromClientField: Field = getField("y") // y = awaitingPositionFromClient
-	private var teleportPosField: Field = getField("teleportPos")
 	private var lastPosXField: Field = getField("lastPosX")
 	private var lastPosYField: Field = getField("lastPosY")
 	private var lastPosZField: Field = getField("lastPosZ")
