@@ -175,6 +175,14 @@ object OptimizedMovement {
 		}
 	}
 
+	private val setChanged =
+		BlockEntity::class.java.getDeclaredMethod("a",
+			Level::class.java,
+			BlockPos::class.java,
+			BlockState::class.java) // a = setChanged
+
+	init { setChanged.isAccessible = true }
+
 	private fun processNewBlocks(
 		newPositionArray: LongArray,
 		newChunkMap: ChunkMap,
@@ -221,8 +229,7 @@ object OptimizedMovement {
 			val newPos = NMSBlockPos(x, y, z)
 			val chunk = world2.getChunkAt(x shr 4, z shr 4)
 
-			BlockEntity::class.java.getDeclaredMethod("a", Level::class.java, BlockPos::class.java, BlockState::class.java) // a = setChanged
-				.invoke(world2.nms, newPos, tile.blockState)
+			setChanged.invoke(world2.nms, newPos, tile.blockState)
 
 			tile.clearRemoved()
 
