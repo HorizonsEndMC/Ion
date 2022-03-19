@@ -1,4 +1,4 @@
-package net.horizonsend.ion.configuration
+package net.horizonsend.ion
 
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
