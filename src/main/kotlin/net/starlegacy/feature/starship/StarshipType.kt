@@ -194,8 +194,8 @@ enum class StarshipType(
 			)
 		)
 
-	fun canUse(player: Player): Boolean =
-		player.hasPermission("starships.anyship")
+	fun canUse(player: Player): Boolean = true
+//		player.hasPermission("starships.anyship")
 
 	companion object {
 		private val stringMap = mutableMapOf<String, StarshipType>().apply {
