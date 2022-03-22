@@ -18,6 +18,8 @@ import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.utils.hover
+import net.starlegacy.feature.progression.Levels
+import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.feature.space.Space
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.colorize
@@ -318,6 +320,8 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 
 private fun playerInfo(player: Player): String =
 	"""
+    Level: ${Levels[player]}
+    XP: ${SLXP[player]}
     Nation: ${PlayerCache[player].nation?.let(NationCache::get)?.name}
     Settlement: ${PlayerCache[player].settlement?.let(SettlementCache::get)?.name}
     """.trimIndent()

@@ -45,6 +45,11 @@ import net.starlegacy.command.nations.roles.NationRoleCommand
 import net.starlegacy.command.nations.roles.SettlementRoleCommand
 import net.starlegacy.command.nations.settlementZones.SettlementPlotCommand
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
+import net.starlegacy.command.progression.AdvanceAdminCommand
+import net.starlegacy.command.progression.AdvanceCommand
+import net.starlegacy.command.progression.BuyXPCommand
+import net.starlegacy.command.progression.GiveXPCommand
+import net.starlegacy.command.progression.XPCommand
 import net.starlegacy.command.space.PlanetCommand
 import net.starlegacy.command.space.SpaceWorldCommand
 import net.starlegacy.command.space.StarCommand
@@ -195,6 +200,10 @@ class StarLegacy : JavaPlugin() {
 			Notify,
 			Shuttles,
 
+			PlayerXPLevelCache,
+			Levels,
+			SLXP,
+
 			ChannelSelections,
 			ChatChannel.ChannelActions,
 
@@ -266,6 +275,7 @@ class StarLegacy : JavaPlugin() {
 			TutorialManager,
 			Interdiction,
 			StarshipDealers,
+			ShipKillXP,
 			Decomposers,
 
 			DutyModeMonitor
@@ -355,6 +365,7 @@ class StarLegacy : JavaPlugin() {
 			TransportDebugCommand,
 			PlanetSpawnMenuCommand,
 			ShuttleCommand,
+			BuyXPCommand,
 
 			SettlementCommand,
 			NationCommand,
@@ -375,6 +386,11 @@ class StarLegacy : JavaPlugin() {
 			SettlementZoneCommand,
 
 			SiegeCommand,
+
+			AdvanceAdminCommand,
+			AdvanceCommand,
+			GiveXPCommand,
+			XPCommand,
 
 			PlanetCommand,
 			SpaceWorldCommand,
@@ -441,6 +457,7 @@ class StarLegacy : JavaPlugin() {
 
 		// Add static tab completions
 		mapOf(
+			"levels" to (0..MAX_LEVEL).joinToString("|"),
 			"customitems" to CustomItems.all().joinToString("|") { it.id },
 			"npctypes" to CityNPC.Type.values().joinToString("|") { it.name }
 		).forEach { manager.commandCompletions.registerStaticCompletion(it.key, it.value) }
@@ -506,7 +523,7 @@ class StarLegacy : JavaPlugin() {
 
 		// Register commands
 		for (command in commands) {
-			if (command is SLCommand && SETTINGS.vanilla && !command.supportsVanilla()) {
+			if (SETTINGS.vanilla && !command.supportsVanilla()) {
 				continue
 			}
 
