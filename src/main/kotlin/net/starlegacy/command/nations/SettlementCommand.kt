@@ -78,6 +78,8 @@ internal object SettlementCommand : SLCommand() {
 	fun onCreate(sender: Player, name: String, @Optional cost: Int?): Unit = asyncCommand(sender) {
 		requireNotInSettlement(sender)
 
+		requireMinLevel(sender, NATIONS_BALANCE.settlement.minCreateLevel)
+
 		validateName(name, null)
 
 		val territory = requireTerritoryIn(sender)

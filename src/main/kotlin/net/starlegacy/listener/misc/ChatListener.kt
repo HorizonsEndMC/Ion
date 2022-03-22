@@ -2,6 +2,7 @@ package net.starlegacy.listener.misc
 
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.chat.ChatChannel
+import net.starlegacy.feature.progression.Levels
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.colorize
@@ -26,6 +27,11 @@ object ChatListener : SLEventListener() {
 				val channel = ChannelSelections[event.player]
 				event.message = "${channel.messageColor}${event.message}"
 			}
+		}
+
+		subscribe<AsyncPlayerChatEvent>(EventPriority.HIGH).handler { event ->
+			val levelText = Levels.toArabicNumeral(Levels[event.player])
+			event.format = "&8[&b&l$levelText&8]&7".colorize() + event.format
 		}
 
 		subscribe<AsyncPlayerChatEvent>(EventPriority.HIGHEST)

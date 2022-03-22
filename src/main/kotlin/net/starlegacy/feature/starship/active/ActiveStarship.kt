@@ -16,6 +16,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
+import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.movement.StarshipMovement
@@ -123,6 +124,8 @@ abstract class ActiveStarship(
 
 	var forward: BlockFace = BlockFace.NORTH
 	var isExploding = false
+
+	val damagers = mutableMapOf<ShipKillXP.Damager, AtomicInteger>()
 
 	val min: Vec3i get() = hitbox.min
 	val max: Vec3i get() = hitbox.max

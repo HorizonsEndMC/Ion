@@ -115,6 +115,7 @@ internal object NationCommand : SLCommand() {
 		val settlement = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlement)
 		requireNotInNation(sender)
+		requireMinLevel(sender, NATIONS_BALANCE.nation.minCreateLevel)
 		validateName(name, null)
 		val color = validateColor(red, green, blue, nationId = null)
 
@@ -197,6 +198,7 @@ internal object NationCommand : SLCommand() {
 		val settlementId = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlementId)
 		requireNotInNation(sender)
+		requireMinLevel(sender, NATIONS_BALANCE.nation.minJoinLevel)
 		val nationId: Oid<Nation> = resolveNation(nation)
 
 		val settlementName = getSettlementName(settlementId)
