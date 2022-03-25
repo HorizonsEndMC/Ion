@@ -10,7 +10,7 @@ import org.spongepowered.configurate.ConfigurateException
 
 @CommandAlias("ionreload")
 @CommandPermission("ion.reload")
-class IonReloadCommand(private val plugin: Ion) : BaseCommand() {
+internal class IonReloadCommand(private val plugin: Ion) : BaseCommand() {
 	@Default
 	@Description("Reloads Ion's Configuration")
 	@Suppress("unused") // Entrypoint (Command)
