@@ -134,8 +134,6 @@ class BlockPlacementRaw {
         }
     }
 
-    private static final boolean ignoreOldData = true; // if false, client will recalculate lighting based on old/new chunk data
-
     private void updateHeightMap(@Nullable Heightmap heightMap, int x, int y, int z, BlockState iBlockData) {
         if (heightMap != null) {
             heightMap.update(x & 15, y, z & 15, iBlockData);
