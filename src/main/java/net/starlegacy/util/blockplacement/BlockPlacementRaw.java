@@ -39,7 +39,7 @@ class BlockPlacementRaw {
     @NotNull
     private static BlockState[][][] emptyChunkMap() {
         // y x z array
-		BlockState[][][] array = new BlockState[256][][];
+		BlockState[][][] array = new BlockState[Bukkit.getWorlds().get(0).getMaxHeight() - Bukkit.getWorlds().get(0).getMinHeight()][][];
 
         for (int y1 = 0; y1 < array.length; y1++) {
 			BlockState[][] xArray = new BlockState[16][];
