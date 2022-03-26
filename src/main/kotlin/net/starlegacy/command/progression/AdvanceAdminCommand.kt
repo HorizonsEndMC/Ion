@@ -10,7 +10,6 @@ import co.aikar.commands.annotation.Subcommand
 import com.google.gson.Gson
 import java.io.File
 import java.io.FileReader
-import java.util.Locale
 import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.pow
@@ -20,19 +19,15 @@ import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.uuid
-import net.starlegacy.feature.economy.cargotrade.EvilShipmentDrainer
-import net.starlegacy.feature.economy.cargotrade.EvilShipmentDrainer.drain
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import net.starlegacy.feature.progression.SLXP
-import net.starlegacy.feature.progression.advancement.Advancements
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.green
 import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
-import org.bukkit.command.ConsoleCommandSender
 
 /**
  * Admin only commands for manipulating player Advance data
