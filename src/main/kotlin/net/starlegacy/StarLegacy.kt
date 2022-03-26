@@ -46,7 +46,6 @@ import net.starlegacy.command.nations.roles.SettlementRoleCommand
 import net.starlegacy.command.nations.settlementZones.SettlementPlotCommand
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
 import net.starlegacy.command.progression.AdvanceAdminCommand
-import net.starlegacy.command.progression.AdvanceCommand
 import net.starlegacy.command.progression.BuyXPCommand
 import net.starlegacy.command.progression.GiveXPCommand
 import net.starlegacy.command.progression.XPCommand
@@ -104,6 +103,11 @@ import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
+import net.starlegacy.feature.progression.Levels
+import net.starlegacy.feature.progression.MAX_LEVEL
+import net.starlegacy.feature.progression.PlayerXPLevelCache
+import net.starlegacy.feature.progression.SLXP
+import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Orbits
@@ -388,7 +392,6 @@ class StarLegacy : JavaPlugin() {
 			SiegeCommand,
 
 			AdvanceAdminCommand,
-			AdvanceCommand,
 			GiveXPCommand,
 			XPCommand,
 
@@ -522,13 +525,7 @@ class StarLegacy : JavaPlugin() {
 		).forEach { manager.commandCompletions.registerAsyncCompletion(it.key, it.value) }
 
 		// Register commands
-		for (command in commands) {
-			if (SETTINGS.vanilla && !command.supportsVanilla()) {
-				continue
-			}
-
-			manager.registerCommand(command)
-		}
+		for (command in commands) manager.registerCommand(command)
 	}
 
 	private fun enableRedis() {
