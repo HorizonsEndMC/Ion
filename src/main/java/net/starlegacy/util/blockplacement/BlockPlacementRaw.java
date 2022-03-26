@@ -162,7 +162,7 @@ class BlockPlacementRaw {
         for (int y = 0; y < blocks.length; y++) {
             int sectionY = y >> 4;
 
-            if (section == null) { //|| sectionY != section.getYPosition()) {
+            if (section == null || sectionY != section.bottomBlockY()) {
                 section = sections[sectionY];
 
 //                if (section == null) {
