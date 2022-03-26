@@ -110,30 +110,28 @@ class BlockPlacementRaw {
             long chunkKey = entry.getKey();
 			BlockState[][][] blocks = entry.getValue();
 
-            actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, chunkKey, blocks, immediate);
+//          actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, chunkKey, blocks, immediate);
+
+			// Actually Place Chunk
+			int cx = chunkKeyX(chunkKey);
+			int cz = chunkKeyZ(chunkKey);
+
+			boolean isLoaded = world.isChunkLoaded(cx, cz);
+
+			if (!isLoaded && !immediate) {
+				world.getChunkAtAsync(cx, cz).thenAccept(chunk -> {
+					actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, blocks, cx, cz, false, chunk);
+				});
+				return;
+			}
+
+			org.bukkit.Chunk chunk = world.getChunkAt(cx, cz);
+			actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, blocks, cx, cz, isLoaded, chunk);
         }
 
         if (worldQueues.remove(world, worldQueue)) {
             worldQueue.clear();
         }
-    }
-
-    private void actuallyPlaceChunk(World world, @Nullable Consumer<World> onComplete, long start, AtomicInteger placedChunks,
-                                    AtomicInteger placed, int chunkCount, long chunkKey, BlockState[][][] blocks, boolean immediate) {
-        int cx = chunkKeyX(chunkKey);
-        int cz = chunkKeyZ(chunkKey);
-
-        boolean isLoaded = world.isChunkLoaded(cx, cz);
-
-        if (!isLoaded && !immediate) {
-            world.getChunkAtAsync(cx, cz).thenAccept(chunk -> {
-                actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, blocks, cx, cz, false, chunk);
-            });
-            return;
-        }
-
-        org.bukkit.Chunk chunk = world.getChunkAt(cx, cz);
-        actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, blocks, cx, cz, isLoaded, chunk);
     }
 
     private static final boolean ignoreOldData = true; // if false, client will recalculate lighting based on old/new chunk data
