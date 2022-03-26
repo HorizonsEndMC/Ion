@@ -202,7 +202,12 @@ class BlockPlacementRaw {
             bitmask = bitmask | (1 << sectionY); // update the bitmask to include this section
         }
 
-        relight(world, cx, cz, nmsWorld);
+//        relight(world, cx, cz, nmsWorld);
+
+		// Relight
+		LevelLightEngine lightEngine = nmsWorld.getLightEngine();
+		lightEngine.retainData(new ChunkPos(cx, cz), world.getEnvironment() == World.Environment.NORMAL);
+
 //        sendChunkPacket(nmsChunk, bitmask);
 
 		// Send Chunk Packet
@@ -234,10 +239,5 @@ class BlockPlacementRaw {
         } else {
             log.debug("Placed " + placedNow + " blocks and " + placedChunksNow + "/" + chunkCount + " chunks ");
         }
-    }
-
-    private void relight(World world, int cx, int cz, Level nmsWorld) {
-		LevelLightEngine lightEngine = nmsWorld.getLightEngine();
-        lightEngine.retainData(new ChunkPos(cx, cz), world.getEnvironment() == World.Environment.NORMAL);
     }
 }
