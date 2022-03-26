@@ -203,7 +203,16 @@ class BlockPlacementRaw {
         }
 
         relight(world, cx, cz, nmsWorld);
-        sendChunkPacket(nmsChunk, bitmask);
+//        sendChunkPacket(nmsChunk, bitmask);
+
+		// Send Chunk Packet
+		ChunkHolder playerChunk = nmsChunk.playerChunk;
+		if (playerChunk == null) {
+			return;
+		}
+
+		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), false, true);
+		playerChunk.broadcast(packet, false);
 
         nmsChunk.setUnsaved(true);
 
@@ -230,15 +239,5 @@ class BlockPlacementRaw {
     private void relight(World world, int cx, int cz, Level nmsWorld) {
 		LevelLightEngine lightEngine = nmsWorld.getLightEngine();
         lightEngine.retainData(new ChunkPos(cx, cz), world.getEnvironment() == World.Environment.NORMAL);
-    }
-
-    private void sendChunkPacket(LevelChunk nmsChunk, int bitmask) {
-		ChunkHolder playerChunk = nmsChunk.playerChunk;
-        if (playerChunk == null) {
-            return;
-        }
-
-		ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.getLightEngine(), null, new BitSet(bitmask), false, true);
-        playerChunk.broadcast(packet, false);
     }
 }
