@@ -47,7 +47,6 @@ import net.starlegacy.command.nations.settlementZones.SettlementPlotCommand
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
 import net.starlegacy.command.progression.AdvanceAdminCommand
 import net.starlegacy.command.progression.BuyXPCommand
-import net.starlegacy.command.progression.GiveXPCommand
 import net.starlegacy.command.progression.XPCommand
 import net.starlegacy.command.space.PlanetCommand
 import net.starlegacy.command.space.SpaceWorldCommand
@@ -392,7 +391,6 @@ class StarLegacy : JavaPlugin() {
 			SiegeCommand,
 
 			AdvanceAdminCommand,
-			GiveXPCommand,
 			XPCommand,
 
 			PlanetCommand,
