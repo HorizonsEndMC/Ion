@@ -30,8 +30,7 @@ object ChatListener : SLEventListener() {
 		}
 
 		subscribe<AsyncPlayerChatEvent>(EventPriority.HIGH).handler { event ->
-			val levelText = Levels.toArabicNumeral(Levels[event.player])
-			event.format = "&8[&b&l$levelText&8]&7".colorize() + event.format
+			event.format = "&8[&b&l${Levels[event.player]}&8]&7 ".colorize() + event.format
 		}
 
 		subscribe<AsyncPlayerChatEvent>(EventPriority.HIGHEST)

@@ -41,9 +41,8 @@ object ListCommand : SLCommand() {
 
 			sender msg "$nationText &8&l:(&d${members.count()}&8&l):&7 ${
 				members.joinToString { player ->
-					val xpPrefix = Levels.toArabicNumeral(Levels[player])
 					val nationPrefix = PlayerCache[player].nationTag?.let { "&r$it " } ?: ""
-					return@joinToString "&7[&b&l$xpPrefix&7] $nationPrefix&7${player.name}"
+					return@joinToString "&7[&b&l${Levels[player]}&7] $nationPrefix&7${player.name}"
 				}
 			}"
 		}
