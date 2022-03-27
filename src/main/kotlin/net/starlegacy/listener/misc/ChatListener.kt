@@ -30,7 +30,7 @@ object ChatListener : SLEventListener() {
 		}
 
 		subscribe<AsyncPlayerChatEvent>(EventPriority.HIGH).handler { event ->
-			event.format = "&8[&l${Levels[event.player]}&8]&7 ".colorize() + event.format
+			event.format = "&8[&b${Levels[event.player]}&8]&7 ".colorize() + event.format
 		}
 
 		subscribe<AsyncPlayerChatEvent>(EventPriority.HIGHEST)
