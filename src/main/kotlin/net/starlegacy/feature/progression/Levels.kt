@@ -152,9 +152,6 @@ object Levels : SLComponent() {
 			.toString()
 	}
 
-	fun toArabicNumeral(level: Int): String =
-		NumberFormat.getIntegerInstance(Locale.Builder().setLanguageTag("ar-SA-u-nu-arab").build()).format(level)
-
 	/**
 	 * Get cached level of an online player
 	 * Requires the player to be online
