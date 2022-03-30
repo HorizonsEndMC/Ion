@@ -1,6 +1,7 @@
 package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
+import net.horizonsend.ion.enchantment.EnchantmentListener
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.ConfigurateException
@@ -10,6 +11,10 @@ import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
+	private val listeners = setOf(
+		EnchantmentListener()
+	)
+
 	private val commands = setOf(
 		IonReloadCommand(this)
 	)
@@ -52,6 +57,8 @@ class Ion: JavaPlugin() {
 
 		@Suppress("DEPRECATION")
 		commandManager.enableUnstableAPI("help")
+
+		listeners.forEach { server.pluginManager.registerEvents(it, this) }
 
 //		/**
 //		 * Check for IonCore
