@@ -13,13 +13,11 @@ internal class EnchantmentListener: Listener {
 	fun onPrepareItemEnchantEvent(event: PrepareItemEnchantEvent) {
 		// All of these suppressions are because Spigot don't know how nullability annotations work.
 		@Suppress("UNCHECKED_CAST")
-		(event.offers as Array<EnchantmentOffer?>)[0] = if (SILK_TOUCH.canEnchantItem(event.item)) EnchantmentOffer(SILK_TOUCH, 120, 0) else null
+		val eventOffers = (event.offers as Array<EnchantmentOffer?>)
 
-		@Suppress("UNCHECKED_CAST")
-		(event.offers as Array<EnchantmentOffer?>)[1] = null
-
-		@Suppress("UNCHECKED_CAST")
-		(event.offers as Array<EnchantmentOffer?>)[2] = null
+		eventOffers[0] = EnchantmentOffer(SILK_TOUCH, 120, 120)
+		eventOffers[1] = null
+		eventOffers[2] = null
 	}
 
 	@EventHandler
