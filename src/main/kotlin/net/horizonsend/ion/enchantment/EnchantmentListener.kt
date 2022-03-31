@@ -15,7 +15,7 @@ internal class EnchantmentListener: Listener {
 		@Suppress("UNCHECKED_CAST")
 		val eventOffers = (event.offers as Array<EnchantmentOffer?>)
 
-		eventOffers[0] = EnchantmentOffer(SILK_TOUCH, 120, 120)
+		eventOffers[0] = EnchantmentOffer(SILK_TOUCH, 1, 120)
 		eventOffers[1] = null
 		eventOffers[2] = null
 	}
