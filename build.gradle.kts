@@ -2,7 +2,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion.of
 
 plugins {
   java
-  kotlin("jvm") version "1.6.10"
+  kotlin("jvm") version "1.6.20"
 	id("io.papermc.paperweight.userdev") version "1.3.5"
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
