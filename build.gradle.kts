@@ -40,7 +40,6 @@ dependencies {
 	compileOnly("com.discordsrv:discordsrv:1.25.1")
 	compileOnly("com.griefdefender:api:2.1.0-SNAPSHOT")
 
-	implementation("org.ejml:ejml-all:0.41")
 	implementation("com.github.jkcclemens:khttp:0.1.0")
 	implementation("io.github.config4k:config4k:0.4.2")
 	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
