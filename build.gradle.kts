@@ -8,13 +8,14 @@ plugins {
 }
 
 repositories {
+	mavenCentral()
+
 	maven("https://repo.glaremasters.me/repository/bloodshot") // GriefDefender
 	maven("https://nexus.scarsz.me/content/groups/public/") // AnvilGUI, DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper), WorldEdit API
 	maven("https://m2.dv8tion.net/releases") // JDA (Required by DiscordSRV)
 	maven("https://repo.citizensnpcs.co/") // Citizens
 	maven("https://jitpack.io") // khttp, VaultAPI, Dynmap (Spigot)
-	mavenCentral()
 }
 
 val minecraftVersion = "1.18.2-R0.1-SNAPSHOT"
