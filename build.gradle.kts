@@ -8,11 +8,11 @@ plugins {
 }
 
 repositories {
-	jcenter() // Evil, required by DiscordSRV - Peter
 	mavenCentral()
 	maven("https://jitpack.io")
 	maven("https://repo.citizensnpcs.co/")
 	maven("https://maven.sk89q.com/repo/")
+	maven("https://m2.dv8tion.net/releases") // JDA (Required by DiscordSRV)
 	maven("https://www.myget.org/F/egg82-java/maven/")
 	maven("https://repo.aikar.co/content/groups/aikar/")
 	maven("https://nexus.scarsz.me/content/groups/public/")
@@ -43,7 +43,7 @@ dependencies {
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 
 	// TODO: Remove these
-	compileOnly("com.discordsrv:discordsrv:1.20.0")
+	compileOnly("com.discordsrv:discordsrv:1.25.1")
 	compileOnly("com.github.bloodmc:GriefDefenderAPI:master")
 
 	implementation("org.ejml:ejml-all:0.41")
