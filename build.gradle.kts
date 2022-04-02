@@ -39,7 +39,7 @@ dependencies {
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
-	implementation("org.litote.kmongo:kmongo:4.5.0")
+	implementation("org.litote.kmongo:kmongo:4.5.1")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 
 	// TODO: Remove these
