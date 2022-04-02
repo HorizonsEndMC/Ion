@@ -28,13 +28,7 @@ dependencies {
 
 tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
-	shadowJar {
-		archiveFileName.set("../Ion.jar")
-	}
-	build {
-		dependsOn("shadowJar")
-		dependsOn("IonCore:reobfJar")
-	}
+	shadowJar { archiveFileName.set("../Ion.jar") }
 }
 
 java.toolchain.languageVersion.set(of(17))
