@@ -43,7 +43,6 @@ dependencies {
 	implementation("com.github.jkcclemens:khttp:0.1.0")
 	implementation("io.github.config4k:config4k:0.4.2")
 	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
-	implementation("club.minnced:discord-webhooks:0.8.0")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 
