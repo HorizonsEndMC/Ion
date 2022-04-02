@@ -12,7 +12,6 @@ repositories {
 	maven("https://jitpack.io") // khttp, VaultAPI, Dynmap (Spigot)
 	maven("https://repo.citizensnpcs.co/") // Citizens
 	maven("https://m2.dv8tion.net/releases") // JDA (Required by DiscordSRV)
-	maven("https://www.myget.org/F/egg82-java/maven/") // Event Chain Bukkit
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper), WorldEdit API
 	maven("https://nexus.scarsz.me/content/groups/public/") // AnvilGUI, DiscordSRV
 	maven("https://repo.glaremasters.me/repository/bloodshot") // GriefDefender
@@ -45,7 +44,6 @@ dependencies {
 	implementation("io.github.config4k:config4k:0.4.2")
 	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 	implementation("club.minnced:discord-webhooks:0.8.0")
-	implementation("ninja.egg82:event-chain-bukkit:1.0.7")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 
