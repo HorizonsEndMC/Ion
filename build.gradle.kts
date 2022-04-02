@@ -6,12 +6,8 @@ plugins {
 }
 
 repositories {
-	maven("https://oss.sonatype.org/content/repositories/snapshots/") // MiniMessage
-
 	maven("https://papermc.io/repo/repository/maven-public/") // Paper API
-
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
-
 	mavenCentral()
 }
 
