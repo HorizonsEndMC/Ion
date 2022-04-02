@@ -22,7 +22,6 @@ import net.starlegacy.util.Vec3i
 import net.starlegacy.util.action
 import net.starlegacy.util.actionAndMsg
 import net.starlegacy.util.colorize
-import net.starlegacy.util.filtered
 import net.starlegacy.util.getChunkAtIfLoaded
 import net.starlegacy.util.isInRange
 import net.starlegacy.util.msg
@@ -30,13 +29,13 @@ import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.readSchematic
 import net.starlegacy.util.setDisplayNameAndGet
 import net.starlegacy.util.setLoreAndGet
-import net.starlegacy.util.subscribe
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
@@ -63,44 +62,43 @@ object Shuttles : SLComponent() {
 
 		// run updateShuttles() every minute
 		//Tasks.asyncRepeat(20 * 60, 20 * 60, ::updateShuttles)
-
-		signEvents()
 	}
 
-	private fun signEvents() {
-		val line1 = "&b&lShuttle".colorize()
-		val line2 = "&b&lTicket".colorize()
-		val line3 = "&b&lVendor".colorize()
-		val line4 = "&d&o[Right Click]".colorize()
+	val line1 = "&b&lShuttle".colorize()
+	val line2 = "&b&lTicket".colorize()
+	val line3 = "&b&lVendor".colorize()
+	val line4 = "&d&o[Right Click]".colorize()
 
-		subscribe<PlayerInteractEvent>()
-			.filtered { it.player.isOp }
-			.filtered { (it.clickedBlock?.state as? Sign)?.getLine(0) == "[ticketvendor]" }
-			.handler { event ->
-				val sign = event.clickedBlock?.state as? Sign ?: return@handler
-				sign.setLine(0, line1)
-				sign.setLine(1, line2)
-				sign.setLine(2, line3)
-				sign.setLine(3, line4)
-				sign.update()
-			}
+	@EventHandler
+	fun onPlayerInteractEventA(event: PlayerInteractEvent) {
+		if (!event.player.isOp) return
+		if ((event.clickedBlock?.state as? Sign)?.getLine(0) != "[ticketvendor]") return
 
-		subscribe<PlayerInteractEvent> { event ->
-			val sign = event.clickedBlock?.state as? Sign ?: return@subscribe
-			if (sign.getLine(0) == line1 && sign.getLine(1) == line2 && sign.getLine(2) == line3 && sign.getLine(3) == line4) {
-				val player = event.player
-				player.openConfirmMenu("Buy ticket for ${TICKET_COST.toCreditsString()}?", onConfirm = {
-					playerClicker.also { p ->
-						if (!VAULT_ECO.has(p, TICKET_COST.toDouble())) {
-							p msg "You don't have enough credits! Cost: ${TICKET_COST.toCreditsString()}"
-						} else {
-							VAULT_ECO.withdrawPlayer(p, TICKET_COST.toDouble())
-							p.world.dropItem(p.eyeLocation, createTicket())
-						}
-						p.closeInventory()
+		val sign = event.clickedBlock?.state as? Sign ?: return
+
+		sign.setLine(0, line1)
+		sign.setLine(1, line2)
+		sign.setLine(2, line3)
+		sign.setLine(3, line4)
+		sign.update()
+	}
+
+	@EventHandler
+	fun onPlayerInteractEventB(event: PlayerInteractEvent) {
+		val sign = event.clickedBlock?.state as? Sign ?: return
+		if (sign.getLine(0) == line1 && sign.getLine(1) == line2 && sign.getLine(2) == line3 && sign.getLine(3) == line4) {
+			val player = event.player
+			player.openConfirmMenu("Buy ticket for ${TICKET_COST.toCreditsString()}?", onConfirm = {
+				playerClicker.also { p ->
+					if (!VAULT_ECO.has(p, TICKET_COST.toDouble())) {
+						p msg "You don't have enough credits! Cost: ${TICKET_COST.toCreditsString()}"
+					} else {
+						VAULT_ECO.withdrawPlayer(p, TICKET_COST.toDouble())
+						p.world.dropItem(p.eyeLocation, createTicket())
 					}
-				}, onCancel = {})
-			}
+					p.closeInventory()
+				}
+			}, onCancel = {})
 		}
 	}
 

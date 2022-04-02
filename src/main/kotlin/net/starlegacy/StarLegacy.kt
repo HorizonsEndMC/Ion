@@ -156,7 +156,6 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.loadConfig
 import net.starlegacy.util.orNull
 import net.starlegacy.util.redisaction.RedisActions
-import ninja.egg82.events.BukkitEvents
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.event.Event
@@ -305,10 +304,6 @@ class StarLegacy : JavaPlugin() {
 		)
 
 	override fun onEnable() {
-		// Hack. Dumb library has a static plugin set based on which plugin loaded it.
-		// Set it to this, since the starlegacy-libs plugin is loading it.
-		BukkitEvents::class.java.getDeclaredField("plugin").apply { isAccessible = true }.set(null, this)
-
 		SETTINGS = loadConfig(dataFolder, "config")
 
 		// manually call this for MongoManager, as some of the components break if it's not ready on init
