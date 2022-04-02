@@ -20,7 +20,6 @@ repositories {
 	maven("https://nexus.vankka.dev/repository/maven-public/")
 	maven("https://repo.glaremasters.me/repository/bloodshot") // GriefDefender
 	maven("https://repo.codemc.io/repository/maven-snapshots/")
-	maven("https://repo.codemc.io/repository/maven-snapshots/")
 	maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
