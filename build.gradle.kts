@@ -9,18 +9,13 @@ plugins {
 
 repositories {
 	mavenCentral()
-	maven("https://jitpack.io")
-	maven("https://repo.citizensnpcs.co/")
-	maven("https://maven.sk89q.com/repo/")
+	maven("https://jitpack.io") // khttp, VaultAPI, Dynmap (Spigot)
+	maven("https://repo.citizensnpcs.co/") // Citizens
 	maven("https://m2.dv8tion.net/releases") // JDA (Required by DiscordSRV)
-	maven("https://www.myget.org/F/egg82-java/maven/")
-	maven("https://repo.aikar.co/content/groups/aikar/")
-	maven("https://nexus.scarsz.me/content/groups/public/")
-	maven("https://papermc.io/repo/repository/maven-public/")
-	maven("https://nexus.vankka.dev/repository/maven-public/")
+	maven("https://www.myget.org/F/egg82-java/maven/") // Event Chain Bukkit
+	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper), WorldEdit API
+	maven("https://nexus.scarsz.me/content/groups/public/") // AnvilGUI, DiscordSRV
 	maven("https://repo.glaremasters.me/repository/bloodshot") // GriefDefender
-	maven("https://repo.codemc.io/repository/maven-snapshots/")
-	maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 val minecraftVersion = "1.18.2-R0.1-SNAPSHOT"
