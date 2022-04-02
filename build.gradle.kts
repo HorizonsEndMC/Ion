@@ -22,7 +22,6 @@ repositories {
 	maven("https://repo.codemc.io/repository/maven-snapshots/")
 	maven("https://repo.codemc.io/repository/maven-snapshots/")
 	maven("https://oss.sonatype.org/content/repositories/snapshots/")
-	maven("https://raw.githubusercontent.com/FabioZumbi12/UltimateChat/mvn-repo/")
 }
 
 val minecraftVersion = "1.18.2-R0.1-SNAPSHOT"
