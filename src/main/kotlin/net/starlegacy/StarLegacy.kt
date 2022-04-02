@@ -89,7 +89,6 @@ import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.CustomRecipes
 import net.starlegacy.feature.misc.Decomposers
-import net.starlegacy.feature.misc.DutyModeMonitor
 import net.starlegacy.feature.misc.GameplayTweaks
 import net.starlegacy.feature.misc.PlanetSpawns
 import net.starlegacy.feature.misc.Shuttles
@@ -275,9 +274,7 @@ class StarLegacy : JavaPlugin() {
 			Interdiction,
 			StarshipDealers,
 			ShipKillXP,
-			Decomposers,
-
-			DutyModeMonitor
+			Decomposers
 		)
 
 	// put the get() so the classes aren't initialized right away
