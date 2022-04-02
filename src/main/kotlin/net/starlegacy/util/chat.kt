@@ -40,12 +40,7 @@ fun Player.title(
 }
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun broadcastMessage(text: TextComponent) = Bukkit.broadcast(text)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun broadcastGlobal(message: String) = Notify.online(message)
-
-fun execConsoleCmd(cmd: String): Boolean = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.colorize(): String = ChatColor.translateAlternateColorCodes('&', this)
@@ -87,19 +82,7 @@ fun String.style(style: SLTextStyle) = text().style(style)
 fun TextComponent.style(style: SLTextStyle): TextComponent = apply { color = style.wrappedColor }
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.black() = style(SLTextStyle.BLACK)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.darkBlue() = style(SLTextStyle.DARK_BLUE)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.darkGreen() = style(SLTextStyle.DARK_GREEN)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkAqua() = style(SLTextStyle.DARK_AQUA)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.darkRed() = style(SLTextStyle.DARK_RED)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.darkPurple() = style(SLTextStyle.DARK_PURPLE)
@@ -109,9 +92,6 @@ fun TextComponent.gold() = style(SLTextStyle.GOLD)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.gray() = style(SLTextStyle.GRAY)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.darkGray() = style(SLTextStyle.DARK_GRAY)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.blue() = style(SLTextStyle.BLUE)
@@ -126,46 +106,22 @@ fun TextComponent.aqua() = style(SLTextStyle.AQUA)
 fun TextComponent.red() = style(SLTextStyle.RED)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.lightPurple() = style(SLTextStyle.LIGHT_PURPLE)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.yellow() = style(SLTextStyle.YELLOW)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.white() = style(SLTextStyle.WHITE)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.obfuscated() = style(SLTextStyle.OBFUSCATED)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.bold() = apply { isBold = true }
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.strikethrough() = apply { isStrikethrough = true }
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.underline() = apply { isUnderlined = true }
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.italic() = apply { isItalic = true }
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.resetColor() = style(SLTextStyle.RESET)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun black(s: String) = s.style(SLTextStyle.BLACK)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun darkBlue(s: String) = s.style(SLTextStyle.DARK_BLUE)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkGreen(s: String) = s.style(SLTextStyle.DARK_GREEN)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkAqua(s: String) = s.style(SLTextStyle.DARK_AQUA)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun darkRed(s: String) = s.style(SLTextStyle.DARK_RED)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkPurple(s: String) = s.style(SLTextStyle.DARK_PURPLE)
@@ -201,12 +157,6 @@ fun yellow(s: String) = s.style(SLTextStyle.YELLOW)
 fun white(s: String) = s.style(SLTextStyle.WHITE)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun obfuscated(s: String) = s.style(SLTextStyle.OBFUSCATED)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun resetColor(s: String) = s.style(SLTextStyle.RESET)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 enum class SLTextStyle(val wrappedColor: ChatColor) {
 	BLACK(ChatColor.BLACK),
 	DARK_BLUE(ChatColor.DARK_BLUE),
@@ -225,7 +175,6 @@ enum class SLTextStyle(val wrappedColor: ChatColor) {
 	YELLOW(ChatColor.YELLOW),
 	WHITE(ChatColor.WHITE),
 	OBFUSCATED(ChatColor.MAGIC),
-	ITALIC(ChatColor.ITALIC),
 	RESET(ChatColor.RESET);
 
 	override fun toString() = wrappedColor.toString()
