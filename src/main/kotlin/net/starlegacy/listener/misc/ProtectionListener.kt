@@ -1,7 +1,7 @@
 package net.starlegacy.listener.misc
 
-import com.flowpowered.math.vector.Vector3i
 import com.griefdefender.api.GriefDefender
+import com.griefdefender.lib.flowpowered.math.vector.Vector3i
 import net.starlegacy.feature.misc.CombatNPCs
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -62,7 +62,7 @@ object ProtectionListener : SLEventListener() {
 	private fun checkGPAccess(player: Player, location: Location): Boolean {
 		val claimManager = GriefDefender.getCore().getClaimManager(location.world.uid)
 		val vector3i = Vector3i(location.blockX, location.blockY, location.blockZ)
-		return claimManager.getClaimAt(vector3i) != claimManager.wildernessClaim
+		return claimManager!!.getClaimAt(vector3i) != claimManager.wildernessClaim
 	}
 
 	/** Called on block break etc. GriefPrevention check should be done first.
