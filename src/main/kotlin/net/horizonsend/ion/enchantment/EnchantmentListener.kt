@@ -11,13 +11,9 @@ import org.bukkit.event.inventory.PrepareAnvilEvent
 internal class EnchantmentListener: Listener {
 	@EventHandler
 	fun onPrepareItemEnchantEvent(event: PrepareItemEnchantEvent) {
-		// All of these suppressions are because Spigot don't know how nullability annotations work.
-		@Suppress("UNCHECKED_CAST")
-		val eventOffers = (event.offers as Array<EnchantmentOffer?>)
-
-		eventOffers[0] = EnchantmentOffer(SILK_TOUCH, 1, 120)
-		eventOffers[1] = null
-		eventOffers[2] = null
+		event.offers!![0] = EnchantmentOffer(SILK_TOUCH, 1, 120)
+		event.offers!![1] = null
+		event.offers!![2] = null
 	}
 
 	@EventHandler
