@@ -10,7 +10,6 @@ plugins {
 repositories {
 	mavenCentral()
 
-	maven("https://repo.glaremasters.me/repository/bloodshot") // GriefDefender
 	maven("https://nexus.scarsz.me/content/groups/public/") // AnvilGUI, DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper), WorldEdit API
 	maven("https://m2.dv8tion.net/releases") // JDA (Required by DiscordSRV)
@@ -38,7 +37,6 @@ dependencies {
 
 	// TODO: Remove these
 	compileOnly("com.discordsrv:discordsrv:1.25.1")
-	compileOnly("com.griefdefender:api:2.1.0-SNAPSHOT")
 
 	implementation("com.github.jkcclemens:khttp:0.1.0")
 	implementation("io.github.config4k:config4k:0.4.2")

@@ -1,7 +1,5 @@
 package net.starlegacy.listener.misc
 
-import com.griefdefender.api.GriefDefender
-import com.griefdefender.lib.flowpowered.math.vector.Vector3i
 import net.starlegacy.feature.misc.CombatNPCs
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -11,7 +9,6 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.action
 import net.starlegacy.util.colorize
 import net.starlegacy.util.msg
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -50,19 +47,9 @@ object ProtectionListener : SLEventListener() {
 	fun onBlockBreak(event: BlockBreakEvent) = onBlockEdit(event, event.block.location, event.player)
 
 	private fun onBlockEdit(event: Cancellable, location: Location, player: Player) {
-		if (Bukkit.getPluginManager().isPluginEnabled("GriefDefender") && checkGPAccess(player, location)) {
-			return
-		}
-
 		if (denyBlockAccess(player, location)) {
 			event.isCancelled = true
 		}
-	}
-
-	private fun checkGPAccess(player: Player, location: Location): Boolean {
-		val claimManager = GriefDefender.getCore().getClaimManager(location.world.uid)
-		val vector3i = Vector3i(location.blockX, location.blockY, location.blockZ)
-		return claimManager!!.getClaimAt(vector3i) != claimManager.wildernessClaim
 	}
 
 	/** Called on block break etc. GriefPrevention check should be done first.
