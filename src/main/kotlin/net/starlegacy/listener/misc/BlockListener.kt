@@ -31,6 +31,7 @@ object BlockListener : SLEventListener() {
 	}
 
 	// Prevent huge mushroom trees from growing as large mushroom blocks are used as custom ores
+	@EventHandler
 	fun onStructureGrowEvent(event: StructureGrowEvent) {
 		if (!event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) return
 		event.isCancelled = true
