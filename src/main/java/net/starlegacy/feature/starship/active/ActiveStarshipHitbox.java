@@ -1,11 +1,11 @@
 package net.starlegacy.feature.starship.active;
 
+import java.util.Set;
 import net.starlegacy.util.Vec3i;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
-
-import static net.starlegacy.util.CoordinatesKt.*;
+import static net.starlegacy.util.CoordinatesKt.blockKeyX;
+import static net.starlegacy.util.CoordinatesKt.blockKeyY;
+import static net.starlegacy.util.CoordinatesKt.blockKeyZ;
 
 public class ActiveStarshipHitbox {
     /**

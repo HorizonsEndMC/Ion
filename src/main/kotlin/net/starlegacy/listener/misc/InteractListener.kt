@@ -1,7 +1,5 @@
 package net.starlegacy.listener.misc
 
-import kotlin.math.sign
-import net.minecraft.data.worldgen.placement.PlacementUtils.filtered
 import net.starlegacy.feature.machine.BaseShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem

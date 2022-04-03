@@ -6,7 +6,6 @@ import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.getPower
 import net.starlegacy.feature.misc.removePower
 import net.starlegacy.listener.SLEventListener
-import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Effect

@@ -1,7 +1,5 @@
 package net.starlegacy.feature.progression
 
-import java.text.NumberFormat
-import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.max

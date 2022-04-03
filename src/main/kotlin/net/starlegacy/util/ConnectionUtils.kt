@@ -1,19 +1,18 @@
 package net.starlegacy.util
 
 import java.lang.reflect.Field
-import net.minecraft.server.network.ServerGamePacketListenerImpl
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.RelativeArgument.X
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.RelativeArgument.X_ROT
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.RelativeArgument.Y
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.RelativeArgument.Y_ROT
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.RelativeArgument.Z
+import net.minecraft.server.network.ServerGamePacketListenerImpl
 import net.minecraft.world.phys.Vec3
 import org.bukkit.Location
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.litote.kmongo.newId
 
 // Updated version based on https://www.spigotmc.org/threads/teleport-player-smoothly.317416/page-2#post-4186516
 

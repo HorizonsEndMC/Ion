@@ -1,11 +1,10 @@
 package net.starlegacy.feature.gas;
 
+import java.util.List;
 import net.starlegacy.feature.gas.collectionfactors.CollectionFactor;
 import net.starlegacy.feature.misc.CustomItem;
 import net.starlegacy.feature.misc.CustomItems;
 import org.bukkit.Location;
-
-import java.util.List;
 
 public class Gas {
 //	HELIUM("gas_helium") {

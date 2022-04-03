@@ -2,9 +2,8 @@ package net.starlegacy.util;
 
 import com.google.gson.Gson;
 import com.sk89q.jnbt.CompoundTag;
-import org.bukkit.ChatColor;
-
 import java.util.List;
+import org.bukkit.ChatColor;
 
 public class SignUtils {
     private static Gson gson = new Gson();

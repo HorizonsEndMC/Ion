@@ -7,7 +7,6 @@ import net.starlegacy.util.nms
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.EAST
 import org.bukkit.block.BlockFace.NORTH
 import org.bukkit.block.BlockFace.SOUTH

@@ -5,7 +5,6 @@ import com.googlecode.cqengine.index.hash.HashIndex
 import com.googlecode.cqengine.query.QueryFactory.and
 import com.googlecode.cqengine.query.QueryFactory.equal
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.starlegacy.PLUGIN
 import net.starlegacy.cache.Cache
 import net.starlegacy.cache.DbObjectCache
 import net.starlegacy.database.Oid

@@ -40,7 +40,6 @@ import net.starlegacy.util.darkGreen
 import net.starlegacy.util.darkPurple
 import net.starlegacy.util.fromLegacy
 import net.starlegacy.util.gray
-import net.starlegacy.util.isAlphanumeric
 import net.starlegacy.util.msg
 import net.starlegacy.util.style
 import net.starlegacy.util.toCreditsString
@@ -55,7 +54,7 @@ import org.litote.kmongo.updateOneById
 @CommandAlias("settlement|s")
 internal object SettlementCommand : SLCommand() {
 	private fun validateName(name: String, settlementId: Oid<Settlement>?) {
-		if (!"\\w*".toRegex().matches(name)) { 
+		if (!"\\w*".toRegex().matches(name)) {
 			throw InvalidCommandArgument("Name must be alphanumeric")
 		}
 

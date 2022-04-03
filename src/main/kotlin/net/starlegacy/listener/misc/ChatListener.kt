@@ -1,6 +1,5 @@
 package net.starlegacy.listener.misc
 
-import net.minecraft.data.worldgen.placement.PlacementUtils.filtered
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.chat.ChatChannel
 import net.starlegacy.feature.progression.Levels

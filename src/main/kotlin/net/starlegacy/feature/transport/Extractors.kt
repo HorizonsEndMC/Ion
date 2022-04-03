@@ -23,7 +23,6 @@ import net.starlegacy.util.randomEntry
 import net.starlegacy.util.randomFloat
 import net.starlegacy.util.timing
 import net.starlegacy.util.ungzip
-import org.bukkit.Bukkit
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.Material
 import org.bukkit.World
