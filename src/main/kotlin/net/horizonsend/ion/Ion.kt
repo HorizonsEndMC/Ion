@@ -12,6 +12,10 @@ import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
+	private val listenerCommands = setOf(
+		AutoRestart(this)
+	)
+
 	private val listeners = setOf(
 		EnchantmentListener()
 	)
@@ -55,11 +59,13 @@ class Ion: JavaPlugin() {
 		val commandManager = PaperCommandManager(this)
 
 		commands.forEach { commandManager.registerCommand(it) }
+		listenerCommands.forEach { commandManager.registerCommand(it) }
 
 		@Suppress("DEPRECATION")
 		commandManager.enableUnstableAPI("help")
 
 		listeners.forEach { server.pluginManager.registerEvents(it, this) }
+		listenerCommands.forEach { server.pluginManager.registerEvents(it, this) }
 
 //		/**
 //		 * Check for IonCore
