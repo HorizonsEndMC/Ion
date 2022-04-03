@@ -1,7 +1,8 @@
 package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.enchantment.EnchantmentListener
+import net.horizonsend.ion.commands.IonReloadCommand
+import net.horizonsend.ion.listeners.EnchantmentListener
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.ConfigurateException

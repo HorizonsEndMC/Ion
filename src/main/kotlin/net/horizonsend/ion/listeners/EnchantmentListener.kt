@@ -1,4 +1,4 @@
-package net.horizonsend.ion.enchantment
+package net.horizonsend.ion.listeners
 
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment.SILK_TOUCH
