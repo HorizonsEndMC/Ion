@@ -48,9 +48,9 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 				x(+1).stainedTerracotta()
 			}
 			y(getSign() * 4) {
-				x(-1).anySlabs()
-				{ x(+0).type(Material.GRINDSTONE) } // This should be a grindstone
-				x(+1).anySlabs()
+				x(-1).anySlab()
+				x(+0).type(Material.GRINDSTONE)
+				x(+1).anySlab()
 			}
 		}
 		z(+1) {
