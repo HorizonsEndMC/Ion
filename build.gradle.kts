@@ -30,6 +30,7 @@ dependencies {
 tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
 	shadowJar { archiveFileName.set("../Ion.jar") }
+	shadowJar { minimize() }
 }
 
 java.toolchain.languageVersion.set(of(17))
