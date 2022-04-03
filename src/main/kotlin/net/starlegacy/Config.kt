@@ -10,10 +10,6 @@ data class Config(
 	//@Comment("Whether this is the master server which runs certain tasks like settlement purges")
 	val master: Boolean = false,
 
-	//@Comment("The hour (0-23) of day to restart the server automatically")
-//    @ValidatorRange(min = 0, max = 23)
-	val restartHour: Int = 2,
-
 	//@Comment("Whether to allow players in the same group to attack eachother on this server")
 	val allowFriendlyFire: Boolean = false,
 
