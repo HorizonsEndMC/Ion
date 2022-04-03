@@ -81,7 +81,6 @@ import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.BaseShields
 import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.feature.misc.AutoRestart
 import net.starlegacy.feature.misc.CombatNPCs
 import net.starlegacy.feature.misc.CryoPods
 import net.starlegacy.feature.misc.CustomItem
@@ -193,7 +192,6 @@ class StarLegacy : JavaPlugin() {
 	private val components: List<SLComponent>
 		get() = listOf(
 			RedisActions,
-			AutoRestart,
 			Caches,
 			Notify,
 			Shuttles,
