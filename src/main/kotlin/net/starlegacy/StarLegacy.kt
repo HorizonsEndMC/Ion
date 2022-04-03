@@ -81,7 +81,6 @@ import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.BaseShields
 import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.feature.machine.Turrets
 import net.starlegacy.feature.misc.AutoRestart
 import net.starlegacy.feature.misc.CombatNPCs
 import net.starlegacy.feature.misc.CryoPods
@@ -269,7 +268,7 @@ class StarLegacy : JavaPlugin() {
 			StarshipCruising,
 			ContactsDisplay,
 			Hangars,
-			Turrets,
+//			Turrets,
 			StarshipFactories,
 			Interdiction,
 			StarshipDealers,
