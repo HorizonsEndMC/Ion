@@ -6,6 +6,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
 import net.starlegacy.util.Vec3i
+import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 sealed class HeavyTurretMultiblock : TurretMultiblock() {
@@ -47,7 +48,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).ironBlock()
 				x(+1).anyStairs()
 			}
 		}
@@ -58,15 +59,15 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 3) {
 				x(-2).anyStairs()
-				x(-1).carbyne()
+				x(-1).stainedTerracotta()
 				x(+0).carbyne()
-				x(+1).carbyne()
+				x(+1).stainedTerracotta()
 				x(+2).anyStairs()
 			}
 			y(getSign() * 4) {
-				x(-1).stainedTerracotta()
-				x(+0).ironBlock()
-				x(+1).stainedTerracotta()
+				{ x(-1).type(Material.GRINDSTONE) } // grindstone
+				x(+0).anyStairs()
+				{ x(+1).type(Material.GRINDSTONE) } // grindstone
 			}
 		}
 		z(+1) {
@@ -75,27 +76,22 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 3) {
 				x(-2).anyStairs()
-				x(-1).carbyne()
-				x(+0).anyGlass()
-				x(+1).carbyne()
+				x(-1).stainedTerracotta()
+				x(+0).carbyne()
+				x(+1).stainedTerracotta()
 				x(+2).anyStairs()
 			}
 			y(getSign() * 4) {
-				x(-1).anyStairs()
-				x(+0).anyGlass()
-				x(+1).anyStairs()
+				x(-1).endRod()
+				{ x(+0).type(Material.IRON_TRAPDOOR) } // iron trapdoor
+				x(+1).endRod()
 			}
 		}
 		z(+2) {
 			y(getSign() * 3) {
-				x(-1).stainedGlass()
-				x(+1).stainedGlass()
-			}
-		}
-		z(+3) {
-			y(getSign() * 3) {
-				x(-1).stainedGlass()
-				x(+1).stainedGlass()
+				x(-1).anyStairs()
+				x(+0).anyStairs()
+				x(+1).anyStairs()
 			}
 		}
 	}
