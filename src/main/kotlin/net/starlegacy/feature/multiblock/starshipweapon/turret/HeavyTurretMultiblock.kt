@@ -65,9 +65,9 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 				x(+2).anyStairs()
 			}
 			y(getSign() * 4) {
-				{ x(-1).type(Material.GRINDSTONE) } // grindstone
+				x(-1).type(Material.GRINDSTONE)
 				x(+0).anyStairs()
-				{ x(+1).type(Material.GRINDSTONE) } // grindstone
+				x(+1).type(Material.GRINDSTONE)
 			}
 		}
 		z(+1) {
@@ -83,7 +83,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-1).endRod()
-				{ x(+0).type(Material.IRON_TRAPDOOR) } // iron trapdoor
+				x(+0).type(Material.IRON_TRAPDOOR)
 				x(+1).endRod()
 			}
 		}
