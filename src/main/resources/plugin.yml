@@ -7,3 +7,13 @@ authors: [PeterCrawley, MicleBrick]
 website: https://horizonsend.net/
 depend: [LuckPerms, Vault, WorldEdit, Citizens, DiscordSRV]
 softdepend: [dynmap]
+libraries:
+  - org.jetbrains.kotlin:kotlin-reflect:1.6.20
+  - org.jetbrains.kotlin:kotlin-stdlib:1.6.20
+  - org.litote.kmongo:kmongo:4.5.1
+  - io.github.config4k:config4k:0.4.2
+  - com.googlecode.cqengine:cqengine:3.6.0
+  - com.daveanthonythomas.moshipack:moshipack:1.0.1
+  - redis.clients:jedis:3.7.1
+  - com.github.stefvanschie.inventoryframework:IF:0.5.8
+  - org.json:json:20150729
