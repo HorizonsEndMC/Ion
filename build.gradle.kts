@@ -59,6 +59,7 @@ dependencies {
 tasks {
 	compileKotlin { kotlinOptions { jvmTarget = "17" } }
 	reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonCore.jar")) }
+	shadowJar { minimize() }
 }
 
 java.toolchain.languageVersion.set(of(17))
