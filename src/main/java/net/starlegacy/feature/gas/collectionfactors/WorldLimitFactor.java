@@ -1,8 +1,7 @@
 package net.starlegacy.feature.gas.collectionfactors;
 
-import org.bukkit.Location;
-
 import java.util.Arrays;
+import org.bukkit.Location;
 
 public class WorldLimitFactor extends CollectionFactor {
 

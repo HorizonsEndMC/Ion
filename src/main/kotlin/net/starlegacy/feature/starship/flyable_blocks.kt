@@ -2,10 +2,118 @@ package net.starlegacy.feature.starship
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import java.util.*
-import net.starlegacy.util.*
+import java.util.EnumSet
+import net.starlegacy.util.BANNER_TYPES
+import net.starlegacy.util.BED_TYPES
+import net.starlegacy.util.BUTTON_TYPES
+import net.starlegacy.util.CAKE_TYPES
+import net.starlegacy.util.CANDLE_TYPES
+import net.starlegacy.util.CARPET_TYPES
+import net.starlegacy.util.CONCRETE_TYPES
+import net.starlegacy.util.DOOR_TYPES
+import net.starlegacy.util.FENCE_TYPES
+import net.starlegacy.util.GLAZED_TERRACOTTA_TYPES
+import net.starlegacy.util.NMSBlockState
+import net.starlegacy.util.PLANKS_TYPES
+import net.starlegacy.util.PRESSURE_PLATE_TYPES
+import net.starlegacy.util.SHULKER_BOX_TYPES
+import net.starlegacy.util.SIGN_TYPES
+import net.starlegacy.util.SLAB_TYPES
+import net.starlegacy.util.STAINED_GLASS_PANE_TYPES
+import net.starlegacy.util.STAINED_GLASS_TYPES
+import net.starlegacy.util.STAINED_TERRACOTTA_TYPES
+import net.starlegacy.util.STAIR_TYPES
+import net.starlegacy.util.TRAPDOOR_TYPES
+import net.starlegacy.util.WALL_TYPES
+import net.starlegacy.util.WOOL_TYPES
 import org.bukkit.Material
-import org.bukkit.Material.*
+import org.bukkit.Material.ANVIL
+import org.bukkit.Material.BARREL
+import org.bukkit.Material.BELL
+import org.bukkit.Material.BOOKSHELF
+import org.bukkit.Material.BREWING_STAND
+import org.bukkit.Material.BROWN_MUSHROOM_BLOCK
+import org.bukkit.Material.CAULDRON
+import org.bukkit.Material.CHAIN
+import org.bukkit.Material.CHEST
+import org.bukkit.Material.COMPARATOR
+import org.bukkit.Material.CRAFTING_TABLE
+import org.bukkit.Material.DAYLIGHT_DETECTOR
+import org.bukkit.Material.DIAMOND_BLOCK
+import org.bukkit.Material.DISPENSER
+import org.bukkit.Material.DROPPER
+import org.bukkit.Material.EMERALD_BLOCK
+import org.bukkit.Material.ENDER_CHEST
+import org.bukkit.Material.END_PORTAL_FRAME
+import org.bukkit.Material.END_ROD
+import org.bukkit.Material.FLOWER_POT
+import org.bukkit.Material.FURNACE
+import org.bukkit.Material.GLASS
+import org.bukkit.Material.GLASS_PANE
+import org.bukkit.Material.GLOWSTONE
+import org.bukkit.Material.GOLD_BLOCK
+import org.bukkit.Material.GRINDSTONE
+import org.bukkit.Material.HOPPER
+import org.bukkit.Material.IRON_BARS
+import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.JUKEBOX
+import org.bukkit.Material.LADDER
+import org.bukkit.Material.LAPIS_BLOCK
+import org.bukkit.Material.LECTERN
+import org.bukkit.Material.LEVER
+import org.bukkit.Material.LODESTONE
+import org.bukkit.Material.MAGMA_BLOCK
+import org.bukkit.Material.MOVING_PISTON
+import org.bukkit.Material.NETHER_PORTAL
+import org.bukkit.Material.NOTE_BLOCK
+import org.bukkit.Material.OBSERVER
+import org.bukkit.Material.PISTON
+import org.bukkit.Material.PISTON_HEAD
+import org.bukkit.Material.POTTED_AZURE_BLUET
+import org.bukkit.Material.POTTED_BAMBOO
+import org.bukkit.Material.POTTED_BIRCH_SAPLING
+import org.bukkit.Material.POTTED_BLUE_ORCHID
+import org.bukkit.Material.POTTED_BROWN_MUSHROOM
+import org.bukkit.Material.POTTED_CACTUS
+import org.bukkit.Material.POTTED_CORNFLOWER
+import org.bukkit.Material.POTTED_CRIMSON_FUNGUS
+import org.bukkit.Material.POTTED_CRIMSON_ROOTS
+import org.bukkit.Material.POTTED_DANDELION
+import org.bukkit.Material.POTTED_DARK_OAK_SAPLING
+import org.bukkit.Material.POTTED_DEAD_BUSH
+import org.bukkit.Material.POTTED_FERN
+import org.bukkit.Material.POTTED_FLOWERING_AZALEA_BUSH
+import org.bukkit.Material.POTTED_JUNGLE_SAPLING
+import org.bukkit.Material.POTTED_LILY_OF_THE_VALLEY
+import org.bukkit.Material.POTTED_OAK_SAPLING
+import org.bukkit.Material.POTTED_ORANGE_TULIP
+import org.bukkit.Material.POTTED_OXEYE_DAISY
+import org.bukkit.Material.POTTED_PINK_TULIP
+import org.bukkit.Material.POTTED_POPPY
+import org.bukkit.Material.POTTED_RED_MUSHROOM
+import org.bukkit.Material.POTTED_RED_TULIP
+import org.bukkit.Material.POTTED_SPRUCE_SAPLING
+import org.bukkit.Material.POTTED_WARPED_FUNGUS
+import org.bukkit.Material.POTTED_WARPED_ROOTS
+import org.bukkit.Material.POTTED_WHITE_TULIP
+import org.bukkit.Material.POTTED_WITHER_ROSE
+import org.bukkit.Material.REDSTONE_BLOCK
+import org.bukkit.Material.REDSTONE_LAMP
+import org.bukkit.Material.REDSTONE_TORCH
+import org.bukkit.Material.REDSTONE_WALL_TORCH
+import org.bukkit.Material.REDSTONE_WIRE
+import org.bukkit.Material.REPEATER
+import org.bukkit.Material.SCAFFOLDING
+import org.bukkit.Material.SEA_LANTERN
+import org.bukkit.Material.SHROOMLIGHT
+import org.bukkit.Material.SNOW
+import org.bukkit.Material.SPONGE
+import org.bukkit.Material.STICKY_PISTON
+import org.bukkit.Material.TALL_GRASS
+import org.bukkit.Material.TINTED_GLASS
+import org.bukkit.Material.TORCH
+import org.bukkit.Material.TRAPPED_CHEST
+import org.bukkit.Material.WALL_TORCH
 
 val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	JUKEBOX, // ship computer
@@ -108,7 +216,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	POTTED_WARPED_ROOTS,
 	POTTED_WHITE_TULIP,
 	POTTED_WITHER_ROSE,
-	
+
 	).also {
 	it.addAll(CONCRETE_TYPES)
 	it.addAll(SLAB_TYPES)
@@ -132,7 +240,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	it.addAll(PLANKS_TYPES)
 	it.addAll(CANDLE_TYPES)
 	it.addAll(CAKE_TYPES)
-	
+
 }.filter { it.isBlock }.toCollection(EnumSet.noneOf(Material::class.java))
 
 val DESTROYABLE_BLOCKS = setOf(

@@ -2,7 +2,13 @@ package net.starlegacy.util.blockplacement;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ChunkHolder;
@@ -21,15 +27,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-
-import static net.starlegacy.util.CoordinatesKt.*;
+import static net.starlegacy.util.CoordinatesKt.blockKeyX;
+import static net.starlegacy.util.CoordinatesKt.blockKeyY;
+import static net.starlegacy.util.CoordinatesKt.blockKeyZ;
+import static net.starlegacy.util.CoordinatesKt.chunkKey;
+import static net.starlegacy.util.CoordinatesKt.chunkKeyX;
+import static net.starlegacy.util.CoordinatesKt.chunkKeyZ;
 
 class BlockPlacementRaw {
     private final Logger log = LoggerFactory.getLogger(getClass());

@@ -42,7 +42,6 @@ import net.starlegacy.util.darkPurple
 import net.starlegacy.util.distance
 import net.starlegacy.util.fromLegacy
 import net.starlegacy.util.gray
-import net.starlegacy.util.isAlphanumeric
 import net.starlegacy.util.joinToText
 import net.starlegacy.util.msg
 import net.starlegacy.util.plus
@@ -59,7 +58,7 @@ import org.litote.kmongo.ne
 @CommandAlias("nation|n")
 internal object NationCommand : SLCommand() {
 	private fun validateName(name: String, nationId: Oid<Nation>?) {
-		if (!"\\w*".toRegex().matches(name)) { 
+		if (!"\\w*".toRegex().matches(name)) {
 			throw InvalidCommandArgument("Name must be alphanumeric")
 		}
 

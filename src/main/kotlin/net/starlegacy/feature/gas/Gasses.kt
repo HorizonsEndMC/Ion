@@ -1,11 +1,6 @@
 package net.starlegacy.feature.gas
 
 import java.io.File
-import kotlin.collections.HashMap
-import kotlin.collections.List
-import kotlin.collections.filter
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.gas.collectionfactors.CollectionFactor

@@ -1,10 +1,9 @@
 package net.starlegacy.feature.gas.collectionfactors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 public abstract class CollectionFactor {
 
