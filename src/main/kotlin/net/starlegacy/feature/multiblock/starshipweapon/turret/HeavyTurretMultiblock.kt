@@ -6,7 +6,8 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
 import net.starlegacy.util.Vec3i
-import org.bukkit.Material
+import org.bukkit.Material.GRINDSTONE
+import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 
 sealed class HeavyTurretMultiblock : TurretMultiblock() {
@@ -65,9 +66,9 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 				x(+2).anyStairs()
 			}
 			y(getSign() * 4) {
-				x(-1).type(Material.GRINDSTONE)
+				x(-1).type(GRINDSTONE)
 				x(+0).anyStairs()
-				x(+1).type(Material.GRINDSTONE)
+				x(+1).type(GRINDSTONE)
 			}
 		}
 		z(+1) {
@@ -83,7 +84,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-1).endRod()
-				x(+0).type(Material.IRON_TRAPDOOR)
+				x(+0).type(IRON_TRAPDOOR)
 				x(+1).endRod()
 			}
 		}
