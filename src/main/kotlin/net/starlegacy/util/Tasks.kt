@@ -14,16 +14,9 @@ import org.bukkit.scheduler.BukkitTask
 object Tasks {
 	fun checkMainThread() = check(Bukkit.isPrimaryThread()) { "Attempted to call non-thread-safe method async!" }
 
-	fun async(block: () -> Unit) {; asyncTask(block); }
-	fun asyncTask(block: () -> Unit): BukkitTask = Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, block)
-
-	fun asyncDelay(delay: Long, block: () -> Unit) {; asyncDelayTask(delay, block); }
-	fun asyncDelayTask(delay: Long, block: () -> Unit): BukkitTask =
-		Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, block, delay)
-
-	fun asyncRepeat(delay: Long, interval: Long, block: () -> Unit) {; asyncRepeatTask(delay, interval, block); }
-	fun asyncRepeatTask(delay: Long, interval: Long, block: () -> Unit): BukkitTask =
-		Bukkit.getScheduler().runTaskTimerAsynchronously(PLUGIN, block, delay, interval)
+	fun async(block: () -> Unit) { Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, block) }
+	fun asyncDelay(delay: Long, block: () -> Unit) { Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, block, delay) }
+	fun asyncRepeat(delay: Long, interval: Long, block: () -> Unit) { Bukkit.getScheduler().runTaskTimerAsynchronously(PLUGIN, block, delay, interval) }
 
 	inline fun sync(crossinline block: () -> Unit) {; syncTask(block); }
 	inline fun syncTask(crossinline block: () -> Unit): BukkitTask {
