@@ -159,7 +159,6 @@ fun white(s: String) = s.style(SLTextStyle.WHITE)
 @Deprecated("Use Ion MiniMessage Extension Functions")
 enum class SLTextStyle(val wrappedColor: ChatColor) {
 	BLACK(ChatColor.BLACK),
-	DARK_BLUE(ChatColor.DARK_BLUE),
 	DARK_GREEN(ChatColor.DARK_GREEN),
 	DARK_AQUA(ChatColor.DARK_AQUA),
 	DARK_RED(ChatColor.DARK_RED),
