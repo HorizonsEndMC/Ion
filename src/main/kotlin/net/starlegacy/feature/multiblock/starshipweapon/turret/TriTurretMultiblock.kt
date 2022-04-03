@@ -66,13 +66,13 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 				x(-2..+2) { concrete() }
 				x(+3).anyStairs()
 			}
-			
+
 			z(+0) {
 				x(-3..-2) { stainedTerracotta() }
 				x(-1..+1) { concrete() }
 				x(+2..+3) { stainedTerracotta() }
 			}
-			
+
 			z(+1) {
 				x(-3).anyStairs()
 				x(-2).stainedTerracotta()
@@ -82,7 +82,7 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 				x(+2).stainedTerracotta()
 				x(+3).anyStairs()
 			}
-			
+
 			z(+2) {
 				x(-2).ironBlock()
 				x(-1).concrete()
@@ -112,12 +112,6 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 			}
 
 			z(-1) {
-				x(-2).anyStairs()
-				x(-1..+1) { stainedTerracotta() }
-				x(+2).anyStairs()
-			}
-
-			z(+0) {
 				x(-2).stainedTerracotta()
 				x(-1).stainedTerracotta()
 				x(+0).stainedTerracotta()
@@ -125,7 +119,7 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 				x(+2).stainedTerracotta()
 			}
 
-			z(+1) {
+			z(+0) {
 				x(-3).anyStairs()
 				x(-2).type(GRINDSTONE)
 				x(-1).anyStairs()
@@ -135,23 +129,23 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 				x(+3).anyStairs()
 			}
 
-			z(+2) {
+			z(+1) {
 				x(-2).endRod()
 				x(-1).type(IRON_TRAPDOOR)
 				x(+0).type(GRINDSTONE)
 				x(+1).type(IRON_TRAPDOOR)
 				x(+2).endRod()
 			}
-			
-			z(+3) {
+
+			z(+2) {
 				x(-2).endRod()
 				x(-1).type(IRON_TRAPDOOR)
 				x(+0).endRod()
 				x(+1).type(IRON_TRAPDOOR)
 				x(+2).endRod()
 			}
-			
-			z(+4) {
+
+			z(+3) {
 				x(+0).endRod()
 			}
 		}
