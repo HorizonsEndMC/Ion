@@ -6,6 +6,8 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
 import net.starlegacy.util.Vec3i
+import org.bukkit.Material.GRINDSTONE
+import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 
 sealed class TriTurretMultiblock : TurretMultiblock() {
@@ -48,53 +50,65 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 
 		y(getYFactor() * 3) {
 			z(-3) {
-				x(-1..+1) { anyStairs() }
+				x(-1).anyStairs()
+				x(+0).stainedTerracotta()
+				x(+1).anyStairs()
 			}
 
 			z(-2) {
-				x(-2).stainedTerracotta()
+				x(-2).ironBlock()
 				x(-1..+1) { concrete() }
-				x(+2).stainedTerracotta()
+				x(+2).ironBlock()
 			}
 
-			z(-1..+1) {
+			z(-1) {
 				x(-3).anyStairs()
 				x(-2..+2) { concrete() }
 				x(+3).anyStairs()
 			}
-
-			z(+2) {
-				x(-2).stainedGlass()
+			
+			z(+0) {
+				x(-3..-2) { stainedTerracotta() }
+				x(-1..+1) { concrete() }
+				x(+2..+3) { stainedTerracotta() }
+			}
+			
+			z(+1) {
+				x(-3).anyStairs()
+				x(-2).stainedTerracotta()
 				x(-1).concrete()
-				x(+0).anyGlass()
+				x(+0).stainedTerracotta()
+				x(+1).concrete()
+				x(+2).stainedTerracotta()
+				x(+3).anyStairs()
+			}
+			
+			z(+2) {
+				x(-2).ironBlock()
+				x(-1).concrete()
+				x(+0).stainedTerracotta()
 				x(+1).concrete()
 				x(+2).stainedGlass()
 			}
 
 			z(+3) {
-				x(-2).stainedGlass()
 				x(-1).anyStairs()
-				x(+0).stainedGlass()
+				x(+0).anyStairs()
 				x(+1).anyStairs()
-				x(+2).stainedGlass()
-			}
-
-			z(+4) {
-				x(-2).stainedGlass()
-				x(+0).stainedGlass()
-				x(+2).stainedGlass()
-			}
-
-			z(+5) {
-				x(+0).stainedGlass()
 			}
 		}
 
 		y(getYFactor() * 4) {
+			z(-3) {
+				x(+0).anyStairs()
+			}
+
 			z(-2) {
+				x(-2).anySlab()
 				x(-1).anyStairs()
-				x(+0).ironBlock()
+				x(+0).stainedTerracotta()
 				x(+1).anyStairs()
+				x(+2).anySlab()
 			}
 
 			z(-1) {
@@ -104,25 +118,41 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 			}
 
 			z(+0) {
-				x(-2).ironBlock()
+				x(-2).stainedTerracotta()
 				x(-1).stainedTerracotta()
-				x(+0).ironBlock()
+				x(+0).stainedTerracotta()
 				x(+1).stainedTerracotta()
-				x(+2).ironBlock()
+				x(+2).stainedTerracotta()
 			}
 
 			z(+1) {
-				x(-2).anyStairs()
-				x(-1).stainedTerracotta()
-				x(+0).anyGlass()
-				x(+1).stainedTerracotta()
-				x(+2).anyStairs()
+				x(-3).anyStairs()
+				x(-2).type(GRINDSTONE)
+				x(-1).anyStairs()
+				x(+0).stainedTerracotta()
+				x(+1).anyStairs()
+				x(+2).type(GRINDSTONE)
+				x(+3).anyStairs()
 			}
 
 			z(+2) {
-				x(-1).anyStairs()
-				x(+0).anyGlass()
-				x(+1).anyStairs()
+				x(-2).endRod()
+				x(-1).type(IRON_TRAPDOOR)
+				x(+0).type(GRINDSTONE)
+				x(+1).type(IRON_TRAPDOOR)
+				x(+2).endRod()
+			}
+			
+			z(+3) {
+				x(-2).endRod()
+				x(-1).type(IRON_TRAPDOOR)
+				x(+0).endRod()
+				x(+1).type(IRON_TRAPDOOR)
+				x(+2).endRod()
+			}
+			
+			z(+4) {
+				x(+0).endRod()
 			}
 		}
 	}
