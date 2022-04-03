@@ -6,7 +6,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.primary.LightTurretWeaponSubsystem
 import net.starlegacy.util.Vec3i
-import org.bukkit.Material
+import org.bukkit.Material.GRINDSTONE
 import org.bukkit.block.BlockFace
 
 sealed class LightTurretMultiblock : TurretMultiblock() {
@@ -49,7 +49,7 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-1).anySlab()
-				x(+0).type(Material.GRINDSTONE)
+				x(+0).type(GRINDSTONE)
 				x(+1).anySlab()
 			}
 		}
