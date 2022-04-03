@@ -6,6 +6,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.primary.LightTurretWeaponSubsystem
 import net.starlegacy.util.Vec3i
+import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 sealed class LightTurretMultiblock : TurretMultiblock() {
@@ -43,33 +44,23 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 3) {
 				x(-1).stainedTerracotta()
-				x(+0).carbyne()
+				x(+0).ironBlock()
 				x(+1).stainedTerracotta()
 			}
 			y(getSign() * 4) {
-				x(-1).anyStairs()
-				x(+0).ironBlock()
-				x(+1).anyStairs()
+				x(-1).anySlabs()
+				{ x(+0).type(Material.GRINDSTONE) } // This should be a grindstone
+				x(+1).anySlabs()
 			}
 		}
 		z(+1) {
 			y(getSign() * 3) {
 				x(-1).anyStairs()
-				x(+0).anyGlass()
+				x(+0).stainedTerracotta()
 				x(+1).anyStairs()
 			}
 			y(getSign() * 4) {
-				x(+0).anyGlass()
-			}
-		}
-		z(+2) {
-			y(getSign() * 3) {
-				x(+0).stainedGlass()
-			}
-		}
-		z(+3) {
-			y(getSign() * 3) {
-				x(+0).stainedGlass()
+				x(+0).endRod()
 			}
 		}
 	}
