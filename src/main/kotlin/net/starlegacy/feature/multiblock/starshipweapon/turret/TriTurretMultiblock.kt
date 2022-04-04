@@ -88,7 +88,7 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 				x(-1).concrete()
 				x(+0).stainedTerracotta()
 				x(+1).concrete()
-				x(+2).stainedGlass()
+				x(+2).ironBlock()
 			}
 
 			z(+3) {
