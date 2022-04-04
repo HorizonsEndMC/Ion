@@ -3,6 +3,7 @@ package net.horizonsend.ion
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.commands.IonReloadCommand
 import net.horizonsend.ion.listeners.EnchantmentListener
+import net.horizonsend.ion.listeners.MobSpawnListener
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.ConfigurateException
@@ -49,7 +50,8 @@ class Ion: JavaPlugin() {
 		)
 
 		val listeners = setOf(
-			EnchantmentListener()
+			EnchantmentListener(),
+			MobSpawnListener()
 		)
 
 		val commands = setOf(
