@@ -74,8 +74,9 @@ internal class AutoRestart(private val plugin: Ion): BaseCommand(), Listener {
 	fun onRestartASAP(source: CommandSender) {
 		if (plugin.server.onlinePlayers.isEmpty()) plugin.server.shutdown()
 
-		restartAsSoonAsPossible = true
-
-		source.server.sendMiniMessage("<aqua>The server has been set to restart as soon as possible in order to apply changes, a restart will occur when all players have disconnected.")
+		if (!restartAsSoonAsPossible) {
+			plugin.server.sendMiniMessage("<aqua>The server has been set to restart as soon as possible in order to apply changes, a restart will occur when all players have disconnected.")
+			restartAsSoonAsPossible = true
+		}
 	}
 }
