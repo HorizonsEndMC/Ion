@@ -12,18 +12,6 @@ import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
-	private val listenerCommands = setOf(
-		AutoRestart(this)
-	)
-
-	private val listeners = setOf(
-		EnchantmentListener()
-	)
-
-	private val commands = setOf(
-		IonReloadCommand(this)
-	)
-
 	private lateinit var configuration: Configuration
 
 	internal fun loadConfiguration() {
@@ -55,6 +43,18 @@ class Ion: JavaPlugin() {
 			slF4JLogger.error("Failed to load Ion configuration: ${exception.message}")
 			shutdown()
 		}
+
+		val listenerCommands = setOf(
+			AutoRestart(this)
+		)
+
+		val listeners = setOf(
+			EnchantmentListener()
+		)
+
+		val commands = setOf(
+			IonReloadCommand(this)
+		)
 
 		val commandManager = PaperCommandManager(this)
 
