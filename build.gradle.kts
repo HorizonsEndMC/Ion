@@ -17,43 +17,44 @@ repositories {
 	maven("https://jitpack.io") // khttp, VaultAPI, Dynmap (Spigot)
 }
 
-val minecraftVersion = "1.18.2-R0.1-SNAPSHOT"
-
 dependencies {
-	// Dynmap and probably something else is including old Bukkit / Spigot versions, I could use excludes...
-	// or I can just set paper at the top, thus overriding it. - Peter
-	compileOnly("io.papermc.paper:paper-api:$minecraftVersion")
-	paperDevBundle(minecraftVersion)
+	paperDevBundle("1.18.2-R0.1-SNAPSHOT")
 
 	// Provided by us
-	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-	// TODO: Remove
-	implementation("com.github.jkcclemens:khttp:0.1.0") {
-		exclude("org.jetbrains.kotlin")
-		exclude("org.json")
-	}
-	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
+		implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+
+		// TODO: Remove
+			implementation("com.github.jkcclemens:khttp:0.1.0") {
+				exclude("org.jetbrains.kotlin") // Old Version + Provided by Server Library Loader
+				exclude("org.json") // Server Library Loader
+			}
+			implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 
 	// Provided by other plugins
-	compileOnly("net.luckperms:api:5.4")
-	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-	compileOnly("net.citizensnpcs:citizens:2.0.27-SNAPSHOT")
-	compileOnly("com.github.webbukkit.dynmap:spigot:3.1")
-	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
-	// TODO: Remove
-	compileOnly("com.discordsrv:discordsrv:1.25.1")
+		compileOnly("net.luckperms:api:5.4")
+		compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+		compileOnly("net.citizensnpcs:citizens:2.0.27-SNAPSHOT")
+		compileOnly("com.github.webbukkit.dynmap:spigot:3.1") {
+			exclude("org.bukkit") // Old Version
+		}
+		compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
+
+		// TODO: Remove
+			compileOnly("com.discordsrv:discordsrv:1.25.1")
 
 	// Provided by Server Library Loader
-	compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
-	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
-	compileOnly("org.litote.kmongo:kmongo:4.5.1")
-	// TODO: Remove
-	compileOnly("io.github.config4k:config4k:0.4.2")
-	compileOnly("com.googlecode.cqengine:cqengine:3.6.0")
-	compileOnly("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	// Older versions
-	compileOnly("redis.clients:jedis:3.7.1")
-	compileOnly("com.github.stefvanschie.inventoryframework:IF:0.5.8")
+		compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
+		compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
+		compileOnly("org.litote.kmongo:kmongo:4.5.1")
+
+		// TODO: Remove
+			compileOnly("io.github.config4k:config4k:0.4.2")
+			compileOnly("com.googlecode.cqengine:cqengine:3.6.0")
+			compileOnly("com.daveanthonythomas.moshipack:moshipack:1.0.1")
+
+			// Older Versions
+				compileOnly("redis.clients:jedis:3.7.1")
+				compileOnly("com.github.stefvanschie.inventoryframework:IF:0.5.8")
 }
 
 tasks {
