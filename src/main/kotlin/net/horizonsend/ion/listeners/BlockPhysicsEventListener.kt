@@ -4,8 +4,10 @@ import org.bukkit.Material.BLACK_CONCRETE_POWDER
 import org.bukkit.Material.BLUE_CONCRETE_POWDER
 import org.bukkit.Material.BROWN_CONCRETE_POWDER
 import org.bukkit.Material.CYAN_CONCRETE_POWDER
+import org.bukkit.Material.FROSTED_ICE
 import org.bukkit.Material.GRAY_CONCRETE_POWDER
 import org.bukkit.Material.GREEN_CONCRETE_POWDER
+import org.bukkit.Material.ICE
 import org.bukkit.Material.LIGHT_BLUE_CONCRETE_POWDER
 import org.bukkit.Material.LIGHT_GRAY_CONCRETE_POWDER
 import org.bukkit.Material.LIME_CONCRETE_POWDER
@@ -20,7 +22,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPhysicsEvent
 
-class ConcreteHardenListener: Listener {
+/**
+ * Alternate class name: TheLeggiestEventListenerEver
+ */
+
+class BlockPhysicsEventListener: Listener {
 	@EventHandler
 	fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
 		if (
@@ -39,7 +45,9 @@ class ConcreteHardenListener: Listener {
 			event.changedType == BROWN_CONCRETE_POWDER      ||
 			event.changedType == GREEN_CONCRETE_POWDER      ||
 			event.changedType == RED_CONCRETE_POWDER        ||
-			event.changedType == BLACK_CONCRETE_POWDER
+			event.changedType == BLACK_CONCRETE_POWDER      ||
+			event.changedType == ICE                        ||
+			event.changedType == FROSTED_ICE
 		) {
 			event.isCancelled = true
 		}
