@@ -9,7 +9,6 @@ import java.lang.System.currentTimeMillis
 import java.lang.Thread.sleep
 import net.horizonsend.ion.extensions.asMiniMessage
 import net.horizonsend.ion.extensions.sendMiniMessage
-import org.bukkit.command.CommandSender
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority.MONITOR
 import org.bukkit.event.Listener
@@ -71,7 +70,7 @@ internal class AutoRestart(private val plugin: Ion): BaseCommand(), Listener {
 
 	@Default
 	@Suppress("unused") // Entrypoint (Command)
-	fun onRestartASAP(source: CommandSender) {
+	fun onRestartASAP() {
 		if (plugin.server.onlinePlayers.isEmpty()) plugin.server.shutdown()
 
 		if (!restartAsSoonAsPossible) {
