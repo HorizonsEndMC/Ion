@@ -57,7 +57,7 @@ internal class AutoRestart(private val plugin: Ion): BaseCommand(), Listener {
 	}
 
 	@EventHandler(priority = MONITOR)
-	fun onPlayerDisconnect(event: PlayerQuitEvent) {
+	fun onPlayerDisconnect(@Suppress("unused") event: PlayerQuitEvent) { // Event
 		if (!restartAsSoonAsPossible && currentTimeMillis() - serverStart < 21600000) return // 6h
 
 		// The player that just disconnected will still be included in this list
