@@ -24,7 +24,7 @@ object BlockPlacement {
 		onComplete: ((World) -> Unit)? = null
 	) {
 		val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<BlockState>>>>()
-		raw.addToWorldQueue(queue, worldQueue)
+		raw.addToWorldQueue(queue, worldQueue, world)
 		Tasks.sync {
 			raw.placeWorldQueue(world, worldQueue, onComplete, false)
 		}
@@ -36,7 +36,7 @@ object BlockPlacement {
 		onComplete: ((World) -> Unit)? = null
 	) {
 		val worldQueue = Long2ObjectOpenHashMap<Array<Array<Array<BlockState>>>>()
-		raw.addToWorldQueue(queue, worldQueue)
+		raw.addToWorldQueue(queue, worldQueue, world)
 		raw.placeWorldQueue(world, worldQueue, onComplete, true)
 	}
 }
