@@ -163,7 +163,7 @@ class BlockPlacementRaw {
 		Heightmap worldSurface = nmsChunk.heightmaps.get(Heightmap.Types.WORLD_SURFACE);
 
         for (int y = 0; y < blocks.length - 1; y++) {
-            int sectionY = y >> 4;
+            int sectionY = (y >> 4) - 1;
 
             if (section == null || sectionY != section.bottomBlockY()) {
                 section = sections[sectionY];
