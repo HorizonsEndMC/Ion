@@ -71,7 +71,7 @@ internal class AutoRestart(private val plugin: Ion): BaseCommand(), Listener {
 
 	@Default
 	@Suppress("unused") // Entrypoint (Command)
-	fun onRestartASAP(@Suppress("unused") sender: CommandSender) { // Command
+	fun onRestartASAP(sender: CommandSender) {
 		if (plugin.server.onlinePlayers.isEmpty()) plugin.server.shutdown()
 
 		if (!restartAsSoonAsPossible) {
