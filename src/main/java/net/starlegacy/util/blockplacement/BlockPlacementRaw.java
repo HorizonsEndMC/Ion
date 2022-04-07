@@ -40,9 +40,9 @@ class BlockPlacementRaw {
     private final WeakHashMap<World, Long2ObjectOpenHashMap<BlockState[][][]>> worldQueues = new WeakHashMap<>();
 
     @NotNull
-    private static BlockState[][][] emptyChunkMap() {
+    private static BlockState[][][] emptyChunkMap(World world) {
         // y x z array
-		BlockState[][][] array = new BlockState[Bukkit.getWorlds().get(0).getMaxHeight() - Bukkit.getWorlds().get(0).getMinHeight() - 1][][];
+		BlockState[][][] array = new BlockState[world.getMaxHeight() - world.getMinHeight()][][];
 
         for (int y1 = 0; y1 < array.length; y1++) {
 			BlockState[][] xArray = new BlockState[16][];
@@ -60,10 +60,10 @@ class BlockPlacementRaw {
     synchronized void queue(World world, Long2ObjectOpenHashMap<BlockState> queue) {
         Long2ObjectOpenHashMap<BlockState[][][]> worldQueue = worldQueues.computeIfAbsent(world, w -> new Long2ObjectOpenHashMap<>());
 
-        addToWorldQueue(queue, worldQueue);
+        addToWorldQueue(queue, worldQueue, world);
     }
 
-    void addToWorldQueue(Long2ObjectOpenHashMap<BlockState> queue, Long2ObjectOpenHashMap<BlockState[][][]> worldQueue) {
+    void addToWorldQueue(Long2ObjectOpenHashMap<BlockState> queue, Long2ObjectOpenHashMap<BlockState[][][]> worldQueue, World world) {
         queue.forEach((coords, blockData) -> {
             int y = blockKeyY(coords);
             int x = blockKeyX(coords);
@@ -74,7 +74,7 @@ class BlockPlacementRaw {
 
             long chunkKey = chunkKey(chunkX, chunkZ);
 
-			BlockState[][][] chunkQueue = worldQueue.computeIfAbsent(chunkKey, c -> emptyChunkMap());
+			BlockState[][][] chunkQueue = worldQueue.computeIfAbsent(chunkKey, c -> emptyChunkMap(world));
 
             chunkQueue[y][x & 15][z & 15] = blockData;
         });
