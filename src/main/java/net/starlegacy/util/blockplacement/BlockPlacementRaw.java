@@ -42,7 +42,7 @@ class BlockPlacementRaw {
     @NotNull
     private static BlockState[][][] emptyChunkMap() {
         // y x z array
-		BlockState[][][] array = new BlockState[Bukkit.getWorlds().get(0).getMaxHeight() - Bukkit.getWorlds().get(0).getMinHeight()][][];
+		BlockState[][][] array = new BlockState[Bukkit.getWorlds().get(0).getMaxHeight() - Bukkit.getWorlds().get(0).getMinHeight() - 1][][];
 
         for (int y1 = 0; y1 < array.length; y1++) {
 			BlockState[][] xArray = new BlockState[16][];
@@ -163,7 +163,7 @@ class BlockPlacementRaw {
 		Heightmap worldSurface = nmsChunk.heightmaps.get(Heightmap.Types.WORLD_SURFACE);
 
         for (int y = 0; y < blocks.length - 1; y++) {
-            int sectionY = (y >> 4) - 1;
+            int sectionY = y >> 4;
 
             if (section == null || sectionY != section.bottomBlockY()) {
                 section = sections[sectionY];
