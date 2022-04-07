@@ -162,7 +162,7 @@ class BlockPlacementRaw {
 		Heightmap oceanFloor = nmsChunk.heightmaps.get(Heightmap.Types.OCEAN_FLOOR);
 		Heightmap worldSurface = nmsChunk.heightmaps.get(Heightmap.Types.WORLD_SURFACE);
 
-        for (int y = 0; y < blocks.length; y++) {
+        for (int y = 0; y < blocks.length - 1; y++) {
             int sectionY = y >> 4;
 
             if (section == null || sectionY != section.bottomBlockY()) {
