@@ -50,7 +50,7 @@ import org.litote.kmongo.save
 object BlueprintCommand : SLCommand() {
 
 	private fun getMaxBlueprints(player: Player): Int {
-		return Levels[player] * 3
+		return Levels[player] * 3 + 20
 	}
 
 	private fun validateName(name: String) {
