@@ -2,6 +2,7 @@ package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.commands.IonReloadCommand
+import net.horizonsend.ion.commands.ShrugCommand
 import net.horizonsend.ion.listeners.BlockPhysicsEventListener
 import net.horizonsend.ion.listeners.EnchantmentListener
 import net.horizonsend.ion.listeners.MobSpawnListener
@@ -57,7 +58,8 @@ class Ion: JavaPlugin() {
 		)
 
 		val commands = setOf(
-			IonReloadCommand(this)
+			IonReloadCommand(this),
+			ShrugCommand()
 		)
 
 		val commandManager = PaperCommandManager(this)
