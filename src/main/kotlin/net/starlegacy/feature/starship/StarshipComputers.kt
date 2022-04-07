@@ -67,6 +67,7 @@ object StarshipComputers : SLComponent() {
 		when (event.action) {
 			Action.LEFT_CLICK_BLOCK -> handleLeftClick(data, player, block)
 			Action.RIGHT_CLICK_BLOCK -> handleRightClick(data, player)
+			else -> return
 		}
 	}
 
