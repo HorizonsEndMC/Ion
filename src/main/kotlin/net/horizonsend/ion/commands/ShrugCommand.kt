@@ -8,5 +8,5 @@ import org.bukkit.entity.Player
 @CommandAlias("shrug")
 internal class ShrugCommand: BaseCommand() {
 	@Default
-	fun onShrug(sender: Player) = sender.performCommand("¯\\_(ツ)_/¯")
+	fun onShrug(sender: Player) = sender.chat("¯\\_(ツ)_/¯")
 }
