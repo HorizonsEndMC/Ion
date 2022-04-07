@@ -176,10 +176,10 @@ class BlockPlacementRaw {
 
 			BlockState[][] xBlocks = blocks[y];
 
-            for (int x = 0; x < xBlocks.length; x++) {
+            for (int x = 0; x < xBlocks.length - 1; x++) {
 				BlockState[] zBlocks = xBlocks[x];
 
-                for (int z = 0; z < zBlocks.length; z++) {
+                for (int z = 0; z < zBlocks.length - 1; z++) {
 					BlockState newData = zBlocks[z];
 
                     if (newData == null) {
