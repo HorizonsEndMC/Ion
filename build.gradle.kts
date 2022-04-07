@@ -28,9 +28,21 @@ dependencies {
 }
 
 tasks {
-	compileKotlin { kotlinOptions { jvmTarget = "17" } }
-	shadowJar { archiveFileName.set("../Ion.jar") }
-	shadowJar { minimize() }
+	compileJava {
+		options.compilerArgs.add("-parameters")
+		options.isFork = true
+		options.forkOptions.executable = "javac"
+	}
+
+	compileKotlin {
+		kotlinOptions.javaParameters = true
+		kotlinOptions.jvmTarget = "17"
+	}
+
+	shadowJar {
+		archiveFileName.set("../Ion.jar")
+		minimize()
+	}
 }
 
 java.toolchain.languageVersion.set(of(17))
