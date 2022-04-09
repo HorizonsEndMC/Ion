@@ -36,8 +36,8 @@ class DeactivatedShipWorldCache(world: World) {
 	fun add(data: PlayerStarshipData): Unit = synchronized(mutex) {
 		val blockKey: Long = data.blockKey
 
-		check(!blockKeyMap.containsKey(blockKey)) {
-			"$worldName already has starship data at ${Vec3i(blockKey)} (existing: ${blockKeyMap[blockKey]}, tried adding: $data)"
+		if (blockKeyMap.containsKey(blockKey)) {
+			remove(blockKeyMap[blockKey]!!)
 		}
 
 		blockKeyMap[blockKey] = data
