@@ -4,28 +4,9 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.Set
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.filter
-import kotlin.collections.flatMap
-import kotlin.collections.fold
-import kotlin.collections.isNotEmpty
-import kotlin.collections.iterator
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.maxOfOrNull
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.plus
 import kotlin.collections.set
-import kotlin.collections.setOf
-import kotlin.collections.toSet
 import kotlin.math.abs
 import kotlin.math.sqrt
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
@@ -269,7 +250,7 @@ object StarshipShields : SLComponent() {
 
 		if (blockList.isEmpty()) {
 			LAST_EXPLOSION_ABSORBED = true
-			location.world.playSound(location, Sound.ENTITY_IRON_GOLEM_HURT, 8.0f, 0.5f)
+			location.world.playSound(location, Sound.ENTITY_WITHER_SPAWN, 8.0f, 0.5f)
 		}
 	}
 
