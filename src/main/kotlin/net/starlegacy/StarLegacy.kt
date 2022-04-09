@@ -165,7 +165,7 @@ import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 
-internal val PLUGIN: StarLegacy get() = StarLegacy.PLUGIN
+val PLUGIN: StarLegacy get() = StarLegacy.PLUGIN
 internal lateinit var SETTINGS: Config
 
 class StarLegacy : JavaPlugin() {
