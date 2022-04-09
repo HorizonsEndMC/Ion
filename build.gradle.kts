@@ -60,7 +60,6 @@ dependencies {
 tasks {
 	compileJava {
 		options.compilerArgs.add("-parameters")
-		options.isFork = true
 	}
 
 	compileKotlin {
