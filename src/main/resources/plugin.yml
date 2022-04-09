@@ -5,7 +5,8 @@ api-version: 1.18
 load: POSTWORLD
 authors: [PeterCrawley, MicleBrick]
 website: https://horizonsend.net/
-softdepend: [LuckPerms, Vault, WorldEdit, Citizens, DiscordSRV, dynmap]
+depend: [WorldEdit]
+softdepend: [LuckPerms, Vault, Citizens, DiscordSRV, dynmap]
 libraries:
   - org.jetbrains.kotlin:kotlin-reflect:1.6.20
   - org.jetbrains.kotlin:kotlin-stdlib:1.6.20
