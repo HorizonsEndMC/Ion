@@ -5,22 +5,12 @@ import java.util.BitSet
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.ExecutionException
-import kotlin.collections.Map
-import kotlin.collections.MutableMap
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.getOrPut
-import kotlin.collections.indices
-import kotlin.collections.iterator
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import kotlin.collections.toSet
-import net.minecraft.core.BlockPos
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket
 import net.minecraft.server.level.ChunkHolder
-import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.StainedGlassBlock
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -31,7 +21,6 @@ import net.starlegacy.feature.starship.Hangars
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.NMSBaseEntityBlock
-import net.starlegacy.util.NMSBlockEntity
 import net.starlegacy.util.NMSBlockPos
 import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.NMSLevelChunk
@@ -72,7 +61,7 @@ object OptimizedMovement {
 
 		val n = oldPositionArray.size
 		val capturedStates = java.lang.reflect.Array.newInstance(NMSBlockState::class.java, n) as Array<NMSBlockState>
-		val capturedTiles = mutableMapOf<Int, NMSBlockEntity>()
+		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
 		val hangars = LinkedList<Long>()
 
 		try {
@@ -165,7 +154,7 @@ object OptimizedMovement {
 		world1: World,
 		world2: World,
 		capturedStates: Array<NMSBlockState>,
-		capturedTiles: MutableMap<Int, NMSBlockEntity>,
+		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 	) {
 		val lightEngine = world1.nms.lightEngine
 		val air = Blocks.AIR.defaultBlockState()
@@ -203,18 +192,13 @@ object OptimizedMovement {
 		}
 	}
 
-	private val setChanged =
-		BlockEntity::class.java.getDeclaredMethod("a", Level::class.java, BlockPos::class.java, BlockState::class.java) // a = setChanged
-
-	init { setChanged.isAccessible = true }
-
 	private fun processNewBlocks(
 		newPositionArray: LongArray,
 		newChunkMap: ChunkMap,
 		world1: World,
 		world2: World,
 		capturedStates: Array<NMSBlockState>,
-		capturedTiles: MutableMap<Int, NMSBlockEntity>,
+		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		blockDataTransform: (NMSBlockState) -> NMSBlockState,
 	) {
 		val lightEngine = world2.nms.lightEngine
@@ -252,17 +236,11 @@ object OptimizedMovement {
 			val z = blockKeyZ(blockKey)
 
 			val newPos = NMSBlockPos(x, y, z)
-			val chunk = world2.getChunkAt(x shr 4, z shr 4)
 
-			setChanged.invoke(tile, world2.nms, newPos, tile.blockState)
+			val blockEntity = BlockEntity.loadStatic(newPos, tile.first, tile.second) ?: continue
+			blockEntity.level = world2.nms
 
-			tile.clearRemoved()
-
-			if (world1.uid != world2.uid) {
-				world2.nms.setBlockEntity(tile)
-			}
-
-			chunk.nms.blockEntities[newPos] = tile
+			world2.nms.setBlockEntity(blockEntity)
 		}
 	}
 
@@ -284,7 +262,7 @@ object OptimizedMovement {
 	private fun processOldTile(
 		blockKey: Long,
 		chunk: Chunk,
-		capturedTiles: MutableMap<Int, NMSBlockEntity>,
+		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		index: Int,
 		world1: World,
 		world2: World,
@@ -295,15 +273,10 @@ object OptimizedMovement {
 			blockKeyZ(blockKey)
 		)
 
-		val tile: NMSBlockEntity = chunk.nms.getTileEntityImmediately(blockPos) ?: return
-		capturedTiles[index] = tile
+		val blockEntity = chunk.nms.getBlockEntity(blockPos) ?: return
+		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata())
 
-		if (world1.uid != world2.uid) {
-			world1.nms.removeBlockEntity(blockPos)
-			return
-		}
-
-		chunk.nms.blockEntities.remove(blockPos, tile)
+		world1.nms.removeBlockEntity(blockPos)
 	}
 
 	private fun getChunkMap(positionArray: LongArray): ChunkMap {
