@@ -37,7 +37,7 @@ class DeactivatedShipWorldCache(world: World) {
 		val blockKey: Long = data.blockKey
 
 		if (blockKeyMap.containsKey(blockKey)) {
-			remove(blockKeyMap[blockKey]!!)
+			PlayerStarshipData.remove(blockKeyMap[blockKey]!!._id)
 		}
 
 		blockKeyMap[blockKey] = data
