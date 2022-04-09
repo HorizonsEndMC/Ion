@@ -8,6 +8,7 @@ import io.github.config4k.toConfig
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import net.starlegacy.PLUGIN
 
 inline fun <reified T : Any> loadConfig(parent: File, name: String): T {
 	parent.mkdirs()
@@ -26,7 +27,11 @@ inline fun <reified T : Any> loadConfig(parent: File, name: String): T {
 	} else T::class.java.newInstance()
 
 	// Write it with proper formatting
-	saveConfig(config, parent, name)
+	try {
+		saveConfig(config, parent, name)
+	} catch (exception: Exception) {
+		PLUGIN.slF4JLogger.warn("Failed to save config file, this could be an issue, or intentional.")
+	}
 
 	if (json) jsonFile.delete()
 
