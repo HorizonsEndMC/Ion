@@ -239,10 +239,8 @@ object OptimizedMovement {
 			val chunk = world2.getChunkAt(x shr 4, z shr 4)
 
 			val blockEntity = BlockEntity.loadStatic(newPos, tile.first, tile.second) ?: continue
-			blockEntity.level = world2.nms
 
-			world2.nms.setBlockEntity(blockEntity)
-			chunk.nms.blockEntities[newPos] = blockEntity
+			chunk.nms.setBlockEntity(blockEntity)
 		}
 	}
 
