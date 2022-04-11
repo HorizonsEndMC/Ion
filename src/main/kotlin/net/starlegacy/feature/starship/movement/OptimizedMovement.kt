@@ -238,7 +238,9 @@ object OptimizedMovement {
 			val newPos = NMSBlockPos(x, y, z)
 			val chunk = world2.getChunkAt(x shr 4, z shr 4)
 
-			val blockEntity = BlockEntity.loadStatic(newPos, tile.first, tile.second) ?: continue
+			val data = blockDataTransform(tile.first)
+
+			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second) ?: continue
 
 			chunk.nms.setBlockEntity(blockEntity)
 		}
@@ -276,7 +278,7 @@ object OptimizedMovement {
 		val blockEntity = chunk.nms.getBlockEntity(blockPos) ?: return
 		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata())
 
-		world1.nms.removeBlockEntity(blockPos)
+		chunk.nms.removeBlockEntity(blockPos)
 	}
 
 	private fun getChunkMap(positionArray: LongArray): ChunkMap {
