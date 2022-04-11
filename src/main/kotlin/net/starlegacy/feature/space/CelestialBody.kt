@@ -31,7 +31,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 	fun erase() {
 		val spaceWorld = this.spaceWorld ?: return
 		val blocks = airQueue(createStructure())
-		BlockPlacement.queue(spaceWorld, blocks)
+		BlockPlacement.placeImmediate(spaceWorld, blocks)
 	}
 
 	fun generate() {
@@ -39,7 +39,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 
 		val structure = createStructure()
 
-		BlockPlacement.queue(spaceWorld, structure.mapKeysTo(Long2ObjectOpenHashMap(structure.size)) { (intTrio, _) ->
+		BlockPlacement.placeImmediate(spaceWorld, structure.mapKeysTo(Long2ObjectOpenHashMap(structure.size)) { (intTrio, _) ->
 			blockKey(intTrio.x + location.x, intTrio.y + location.y, intTrio.z + location.z)
 		})
 	}
@@ -55,7 +55,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 			blockKey(intTrio.x + newLoc.x, intTrio.y + newLoc.y, intTrio.z + newLoc.z)
 		}
 
-		BlockPlacement.queue(spaceWorld, blocks)
+		BlockPlacement.placeImmediate(spaceWorld, blocks)
 
 		blocks.clear()
 
