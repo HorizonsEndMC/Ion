@@ -2,9 +2,10 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion.of
 
 plugins {
   java
-  kotlin("jvm") version "1.6.20"
-	id("io.papermc.paperweight.userdev") version "1.3.5"
-  id("com.github.johnrengelman.shadow") version "7.1.2"
+	id("com.github.johnrengelman.shadow") version "7.1.2"   // ShadowJar
+	id("io.papermc.paperweight.userdev") version "1.3.5"    // Paperweight
+	kotlin("jvm") version "1.6.20"                  // Kotlin
+	kotlin("plugin.serialization") version "1.6.20" // Kotlin Serialization
 }
 
 repositories {
@@ -43,6 +44,7 @@ dependencies {
 			compileOnly("com.discordsrv:discordsrv:1.25.1")
 
 	// Provided by Server Library Loader
+		compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 		compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
 		compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
 		compileOnly("org.litote.kmongo:kmongo:4.5.1")
