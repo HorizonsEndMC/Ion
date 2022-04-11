@@ -20,6 +20,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LevelLightEngine;
+import net.starlegacy.StarLegacy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R2.CraftChunk;
@@ -225,7 +226,11 @@ class BlockPlacementRaw {
         nmsChunk.setUnsaved(true);
 
         if (!wasLoaded) {
-            world.unloadChunkRequest(cx, cz);
+            Bukkit.getServer().getScheduler().runTask(StarLegacy.PLUGIN, new Runnable() {
+				@Override public void run() {
+					world.unloadChunkRequest(cx, cz);
+				}
+			});
         }
 
         int placedNow = placed.addAndGet(localPlaced);
