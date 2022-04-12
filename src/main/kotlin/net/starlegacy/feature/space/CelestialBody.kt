@@ -5,7 +5,8 @@ import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.NMSBlocks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
-import net.starlegacy.util.blockplacement.BlockPlacement
+import net.starlegacy.util.blockplacement.BlockPlacement.placeImmediate
+import net.starlegacy.util.blockplacement.BlockPlacement.queue
 import org.bukkit.Bukkit
 import org.bukkit.World
 
@@ -31,7 +32,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 	fun erase() {
 		val spaceWorld = this.spaceWorld ?: return
 		val blocks = airQueue(createStructure())
-		BlockPlacement.placeImmediate(spaceWorld, blocks)
+		placeImmediate(spaceWorld, blocks)
 	}
 
 	fun generate() {
@@ -39,12 +40,12 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 
 		val structure = createStructure()
 
-		BlockPlacement.placeImmediate(spaceWorld, structure.mapKeysTo(Long2ObjectOpenHashMap(structure.size)) { (intTrio, _) ->
+		placeImmediate(spaceWorld, structure.mapKeysTo(Long2ObjectOpenHashMap(structure.size)) { (intTrio, _) ->
 			blockKey(intTrio.x + location.x, intTrio.y + location.y, intTrio.z + location.z)
 		})
 	}
 
-	fun move(newLoc: Vec3i) {
+	fun move(newLoc: Vec3i, urgent: Boolean = false) {
 		val spaceWorld = this.spaceWorld ?: return
 
 		val structure = createStructure()
@@ -55,7 +56,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 			blockKey(intTrio.x + newLoc.x, intTrio.y + newLoc.y, intTrio.z + newLoc.z)
 		}
 
-		BlockPlacement.placeImmediate(spaceWorld, blocks)
+		if (urgent) placeImmediate(spaceWorld, blocks) else queue(spaceWorld, blocks)
 
 		blocks.clear()
 

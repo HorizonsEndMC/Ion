@@ -212,7 +212,7 @@ object PlanetCommand : SLCommand() {
 		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
 
 		val elapsedNanos = measureNanoTime {
-			planet.orbit()
+			planet.orbit(true)
 			spaceWorld.save()
 			SpaceMap.refresh()
 		}
@@ -225,7 +225,7 @@ object PlanetCommand : SLCommand() {
 	@Subcommand("orbit all")
 	fun onOrbitAll(sender: CommandSender) {
 		val elapsedNanos = measureNanoTime {
-			Orbits.orbitPlanets()
+			Orbits.orbitPlanets(true)
 		}
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
