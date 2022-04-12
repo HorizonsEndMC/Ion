@@ -10,9 +10,9 @@ import net.starlegacy.util.blockplacement.BlockPlacement
 object Orbits : SLComponent() {
 	// schedule orbiting all the planets every midnight
 	override fun onEnable() {
-		Tasks.sync {
-			orbitPlanets()
-		}
+//		Tasks.sync {
+//			orbitPlanets()
+//		}
 
 //        schedule()
 	}
@@ -26,14 +26,14 @@ object Orbits : SLComponent() {
 		}
 	}
 
-	fun orbitPlanets(urgent: Boolean = false) {
+	fun orbitPlanets() {
 		// Orbit all the planets
 		log.info("Calculating planet orbits...")
 
 		val elapsedNanos = measureNanoTime {
 			Space.getPlanets().parallelStream()
 				.filter { it.spaceWorld != null }
-				.forEach { it.orbit(urgent = urgent, updateDb = false) }
+				.forEach { it.orbit(updateDb = false) }
 
 			SpaceMap.refresh()
 		}
