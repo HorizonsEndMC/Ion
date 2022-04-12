@@ -250,7 +250,7 @@ object StarshipShields : SLComponent() {
 
 		if (blockList.isEmpty()) {
 			LAST_EXPLOSION_ABSORBED = true
-			location.world.playSound(location, Sound.ENTITY_WITHER_SPAWN, 8.0f, 0.5f)
+			location.world.playSound(location, Sound.ENTITY_IRON_GOLEM_HURT, 8.0f, 0.5f)
 		}
 	}
 
