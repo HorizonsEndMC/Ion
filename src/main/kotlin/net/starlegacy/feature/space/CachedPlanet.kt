@@ -83,12 +83,12 @@ class CachedPlanet(
 		Planet.setOrbitDistance(databaseId, newDistance)
 	}
 
-	fun orbit(): Unit = orbit(updateDb = true)
+	fun orbit(urgent: Boolean = false): Unit = orbit(urgent, updateDb = true)
 
-	fun orbit(updateDb: Boolean = true) {
+	fun orbit(urgent: Boolean = false, updateDb: Boolean = true) {
 		val newProgress = (orbitProgress + orbitSpeed) % 360
 		val newLocation = calculateLocation(sun, orbitDistance, newProgress)
-		move(newLocation)
+		move(newLocation, urgent = urgent)
 
 		orbitProgress = newProgress
 

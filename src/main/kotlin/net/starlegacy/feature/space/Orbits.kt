@@ -26,14 +26,14 @@ object Orbits : SLComponent() {
 		}
 	}
 
-	fun orbitPlanets() {
+	fun orbitPlanets(urgent: Boolean = false) {
 		// Orbit all the planets
 		log.info("Calculating planet orbits...")
 
 		val elapsedNanos = measureNanoTime {
 			Space.getPlanets().parallelStream()
 				.filter { it.spaceWorld != null }
-				.forEach { it.orbit(updateDb = false) }
+				.forEach { it.orbit(urgent = urgent, updateDb = false) }
 
 			SpaceMap.refresh()
 		}
