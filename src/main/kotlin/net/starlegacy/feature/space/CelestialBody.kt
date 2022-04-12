@@ -56,7 +56,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 			blockKey(intTrio.x + newLoc.x, intTrio.y + newLoc.y, intTrio.z + newLoc.z)
 		}
 
-		if (urgent) placeImmediate(spaceWorld, blocks) else queue(spaceWorld, blocks)
+		queue(spaceWorld, blocks)
 
 		blocks.clear()
 
