@@ -10,9 +10,9 @@ import net.starlegacy.util.blockplacement.BlockPlacement
 object Orbits : SLComponent() {
 	// schedule orbiting all the planets every midnight
 	override fun onEnable() {
-//		Tasks.sync {
-//			orbitPlanets()
-//		}
+		Tasks.sync {
+			orbitPlanets()
+		}
 
 //        schedule()
 	}
