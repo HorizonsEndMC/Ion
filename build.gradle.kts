@@ -40,7 +40,9 @@ tasks {
 
 	shadowJar {
 		archiveFileName.set("../Ion.jar")
-		minimize()
+
+		relocate("co.aikar.commands", "net.horizonsend.ion.libraries.co.aikar.commands")
+		relocate("co.aikar.locales", "net.horizonsend.ion.libraries.co.aikar.locales")
 	}
 }
 
