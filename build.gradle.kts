@@ -69,6 +69,11 @@ tasks {
 		kotlinOptions.jvmTarget = "17"
 	}
 
+	shadowJar {
+		relocate("co.aikar.commands", "net.horizonsend.ion.core.libraries.co.aikar.commands")
+		relocate("co.aikar.locales", "net.horizonsend.ion.core.libraries.co.aikar.locales")
+	}
+
 	reobfJar {
 		outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonCore.jar"))
 	}
