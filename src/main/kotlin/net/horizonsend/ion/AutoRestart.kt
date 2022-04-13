@@ -41,7 +41,7 @@ internal class AutoRestart(private val plugin: Ion): BaseCommand(), Listener {
 			sleep(50000) // 50s
 
 			for (i in 10 downTo 2) {
-				plugin.server.sendMiniMessage("<red>Server restart in 10 seconds!")
+				plugin.server.sendMiniMessage("<red>Server restart in $i seconds!")
 				sleep(1000) // 1s
 			}
 
