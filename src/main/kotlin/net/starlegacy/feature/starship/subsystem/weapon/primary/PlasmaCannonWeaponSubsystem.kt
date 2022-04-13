@@ -11,9 +11,9 @@ import org.bukkit.util.Vector
 
 class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 	CannonWeaponSubsystem(starship, pos, face) {
-	override val powerUsage: Int = 2500
+	override val powerUsage: Int = 950
 	override val length: Int = 3
-	override val angleRadians: Double = Math.toRadians(15.0)
+	override val angleRadians: Double = Math.toRadians(25.0)
 	override val convergeDist: Double = 10.0
 	override val extraDistance: Int = 1
 
@@ -24,7 +24,7 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	override fun isForwardOnly(): Boolean = true
 
 	override fun getMaxPerShot(): Int {
-		return 1
+		return 2
 	}
 
 	override fun fire(
