@@ -16,7 +16,6 @@ import net.starlegacy.feature.multiblock.baseshield.SmallBaseShieldMultiblock
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier1
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier2
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier3
-import net.starlegacy.feature.multiblock.defenseturret.APTurret
 import net.starlegacy.feature.multiblock.dockingtube.ConnectedDockingTubeMultiblock
 import net.starlegacy.feature.multiblock.dockingtube.DisconnectedDockingTubeMultiblock
 import net.starlegacy.feature.multiblock.drills.DrillMultiblockTier1
@@ -189,9 +188,7 @@ object Multiblocks : SLComponent() {
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,
 			PhaserStarshipWeaponMultiblock,
-			DecomposerMultiblock,
-
-			APTurret,
+			DecomposerMultiblock
 		)
 	}
 
