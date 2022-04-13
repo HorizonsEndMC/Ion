@@ -101,7 +101,7 @@ object CustomBlocks {
 	}
 
 	val MINERAL_ALUMINUM = mineral("aluminum", setOf(NORTH, UP), setOf(SOUTH, UP, WEST))
-	val MINERAL_CHETHERITE = mineral("chetherite", setOf(EAST, NORTH, UP), setOf(SOUTH, UP), "chetherite", 3)
+	val MINERAL_CHETHERITE = mineral("chetherite", setOf(EAST, NORTH, UP), setOf(SOUTH, UP), "chetherite", 1)
 	val MINERAL_TITANIUM = mineral("titanium", setOf(UP, WEST), setOf(EAST, SOUTH, UP))
 	val MINERAL_URANIUM = mineral("uranium", setOf(UP), setOf(EAST, NORTH, SOUTH, WEST))
 	//endregion Minerals
