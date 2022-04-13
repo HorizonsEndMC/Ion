@@ -20,7 +20,6 @@ import net.starlegacy.command.economy.CollectedItemCommand
 import net.starlegacy.command.economy.CollectorCommand
 import net.starlegacy.command.economy.EcoStationCommand
 import net.starlegacy.command.economy.TradeDebugCommand
-import net.starlegacy.command.misc.APCommand
 import net.starlegacy.command.misc.BatteryCommand
 import net.starlegacy.command.misc.CustomItemCommand
 import net.starlegacy.command.misc.DyeCommand
@@ -347,7 +346,6 @@ class StarLegacy : JavaPlugin() {
 			DyeCommand,
 			GlobalGameRuleCommand,
 
-			APCommand,
 			BatteryCommand,
 			CustomItemCommand,
 			ListCommand,
