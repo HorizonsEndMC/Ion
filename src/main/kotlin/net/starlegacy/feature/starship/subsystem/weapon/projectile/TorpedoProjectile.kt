@@ -16,13 +16,13 @@ class TorpedoProjectile(
 	originalTarget: Vector,
 	baseAimDistance: Int
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
-	override val range: Double = 100.0
-	override val speed: Double = 70.0
+	override val range: Double = 200.0
+	override val speed: Double = 100.0
 	override val shieldDamageMultiplier: Int = 2
 	override val color: Color = Color.fromRGB(255, 0, 255)
 	override val thickness: Double = 0.4
 	override val particleThickness: Double = 1.0
-	override val explosionPower: Float = 6.0f
+	override val explosionPower: Float = 3.5f
 	override val maxDegrees: Double = 45.0
 	override val volume: Int = 10
 	override val pitch: Float = 0.75f

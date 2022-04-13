@@ -22,11 +22,11 @@ class TorpedoWeaponSubsystem(
 	override fun isForwardOnly(): Boolean = true
 
 	override val length: Int = 3
-	override val powerUsage: Int get() = 10000
+	override val powerUsage: Int get() = 3000
 	override val extraDistance: Int = 1
 	override val aimDistance: Int = 3
 
-	override fun getMaxPerShot() = 2
+	override fun getMaxPerShot() = 5
 
 	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
 		TorpedoProjectile(starship, loc, dir, shooter, checkNotNull(target), aimDistance).fire()
