@@ -27,9 +27,9 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 	override val projectileShieldDamageMultiplier: Int = 3
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
-		Vec3i(-2, getYFactor() * 3, +6),
-		Vec3i(+0, getYFactor() * 3, +7),
-		Vec3i(+2, getYFactor() * 3, +6)
+		Vec3i(-2, getYFactor() * 4, +3),
+		Vec3i(+0, getYFactor() * 4, +4),
+		Vec3i(+2, getYFactor() * 4, +3)
 	)
 
 	override fun MultiblockShape.buildStructure() {

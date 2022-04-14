@@ -25,7 +25,7 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 	override val projectileExplosionPower: Float = 4f
 	override val projectileShieldDamageMultiplier: Int = 2
 
-	override fun buildFirePointOffsets(): List<Vec3i> = listOf(Vec3i(0, +3 * getSign(), +4))
+	override fun buildFirePointOffsets(): List<Vec3i> = listOf(Vec3i(0, +4 * getSign(), +2))
 
 	override fun MultiblockShape.buildStructure() {
 		z(-1) {
