@@ -31,6 +31,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.RAID
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS
 import org.bukkit.event.inventory.PrepareAnvilEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 
 class MiscellaneousListeners: Listener {
 	private val concretePowder: EnumSet<Material> = setOf(
@@ -88,4 +90,10 @@ class MiscellaneousListeners: Listener {
 		if (event.spawnReason == NATURAL || event.spawnReason == RAID || event.spawnReason == REINFORCEMENTS)
 			event.isCancelled = true
 	}
+
+	@EventHandler
+	fun onPlayerJoin(event: PlayerJoinEvent) = event.joinMessage(null)
+
+	@EventHandler
+	fun onPlayerQuit(event: PlayerQuitEvent) = event.quitMessage(null)
 }
