@@ -1,6 +1,7 @@
 package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
+import net.horizonsend.ion.ores.OreListener
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.ConfigurateException
@@ -60,6 +61,7 @@ class Ion: JavaPlugin() {
 		commandManager.enableUnstableAPI("help")
 
 		server.pluginManager.registerEvents(MiscellaneousListeners(), this)
+		server.pluginManager.registerEvents(OreListener(this), this)
 
 		listenerCommands.forEach { server.pluginManager.registerEvents(it, this) }
 
