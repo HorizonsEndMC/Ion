@@ -86,6 +86,7 @@ internal class AutoRestart(private val plugin: Ion): BaseCommand(), Listener {
 		isRestartVoting = true
 
 		plugin.server.scheduler.runTaskLater(plugin, Runnable {
+			plugin.server.sendMiniMessage("<red>Failed to get enough restart votes.")
 			restartVotes.clear()
 			isRestartVoting = false
 		}, 20*60*2)
@@ -101,7 +102,7 @@ internal class AutoRestart(private val plugin: Ion): BaseCommand(), Listener {
 
 		if (restartVotes.size >= requiredRestartVotes) {
 			plugin.server.sendMiniMessage("<aqua>Required votes met, server will restart.")
-			restartCountdown()
+			plugin.server.scheduler.runTaskAsynchronously(plugin, Runnable { restartCountdown() })
 			return
 		}
 
