@@ -1,12 +1,6 @@
 package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.commands.IonReloadCommand
-import net.horizonsend.ion.commands.ShrugCommand
-import net.horizonsend.ion.listeners.ConcreteHardenListener
-import net.horizonsend.ion.listeners.EnchantmentListener
-import net.horizonsend.ion.listeners.IceMeltListener
-import net.horizonsend.ion.listeners.MobSpawnListener
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.ConfigurateException
@@ -52,13 +46,6 @@ class Ion: JavaPlugin() {
 			AutoRestart(this)
 		)
 
-		val listeners = setOf(
-			ConcreteHardenListener(),
-			EnchantmentListener(),
-			MobSpawnListener(),
-			IceMeltListener()
-		)
-
 		val commands = setOf(
 			IonReloadCommand(this),
 			ShrugCommand()
@@ -72,7 +59,8 @@ class Ion: JavaPlugin() {
 		@Suppress("DEPRECATION")
 		commandManager.enableUnstableAPI("help")
 
-		listeners.forEach { server.pluginManager.registerEvents(it, this) }
+		server.pluginManager.registerEvents(MiscellaneousListeners(), this)
+
 		listenerCommands.forEach { server.pluginManager.registerEvents(it, this) }
 
 //		/**
