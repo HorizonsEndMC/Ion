@@ -45,6 +45,8 @@ internal class OreListener(private val ion: Ion): Listener {
 				event.chunk.persistentDataContainer.set(oreCheckNamespace, INTEGER, 1)
 			})
 
+			if (placedOres.isEmpty()) return@Runnable
+
 			ion.dataFolder.resolve("ores/1/${event.world.name}")
 				.apply { mkdirs() }
 				.resolve("${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
