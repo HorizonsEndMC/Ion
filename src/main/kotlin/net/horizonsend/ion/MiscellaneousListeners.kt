@@ -1,4 +1,4 @@
-package net.horizonsend.ion.listeners
+package net.horizonsend.ion
 
 import java.util.EnumSet
 import org.bukkit.Material
@@ -8,6 +8,7 @@ import org.bukkit.Material.BROWN_CONCRETE_POWDER
 import org.bukkit.Material.CYAN_CONCRETE_POWDER
 import org.bukkit.Material.GRAY_CONCRETE_POWDER
 import org.bukkit.Material.GREEN_CONCRETE_POWDER
+import org.bukkit.Material.ICE
 import org.bukkit.Material.LIGHT_BLUE_CONCRETE_POWDER
 import org.bukkit.Material.LIGHT_GRAY_CONCRETE_POWDER
 import org.bukkit.Material.LIME_CONCRETE_POWDER
@@ -18,11 +19,20 @@ import org.bukkit.Material.PURPLE_CONCRETE_POWDER
 import org.bukkit.Material.RED_CONCRETE_POWDER
 import org.bukkit.Material.WHITE_CONCRETE_POWDER
 import org.bukkit.Material.YELLOW_CONCRETE_POWDER
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.enchantments.EnchantmentOffer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent
+import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.RAID
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS
+import org.bukkit.event.inventory.PrepareAnvilEvent
 
-internal class ConcreteHardenListener: Listener {
+class MiscellaneousListeners: Listener {
 	private val concretePowder: EnumSet<Material> = setOf(
 		WHITE_CONCRETE_POWDER,
 		ORANGE_CONCRETE_POWDER,
@@ -45,5 +55,37 @@ internal class ConcreteHardenListener: Listener {
 	@EventHandler
 	fun onConcreteHarden(event: BlockFormEvent) {
 		if (concretePowder.contains(event.block.type)) event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onPrepareItemEnchantEvent(event: PrepareItemEnchantEvent) {
+		event.offers!![0] = EnchantmentOffer(Enchantment.SILK_TOUCH, 1, 120)
+		event.offers!![1] = null
+		event.offers!![2] = null
+	}
+
+	@EventHandler
+	fun onPrepareAnvilEvent(event: PrepareAnvilEvent) {
+		if (event.inventory.firstItem == null) return
+		if (event.inventory.secondItem == null) return
+
+		if (event.inventory.secondItem!!.type == Material.ENCHANTED_BOOK) {
+			if (!event.inventory.secondItem!!.enchantments.containsKey(Enchantment.SILK_TOUCH)) event.result = null
+			else {
+				event.result = event.inventory.firstItem!!.clone()
+				event.result!!.enchantments[Enchantment.SILK_TOUCH] = 1
+			}
+		}
+	}
+
+	@EventHandler
+	fun onIceMelt(event: BlockFadeEvent) {
+		if (event.block.type == ICE) event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onMobSpawn(event: CreatureSpawnEvent) {
+		if (event.spawnReason == NATURAL || event.spawnReason == RAID || event.spawnReason == REINFORCEMENTS)
+			event.isCancelled = true
 	}
 }
