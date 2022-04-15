@@ -18,7 +18,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
 
-private const val ITERATIONS_PER_BLOCK = 4f
+private const val ITERATIONS_PER_BLOCK = 1f
 
 class BlasterProjectile(
 	private var shooter: Entity,
