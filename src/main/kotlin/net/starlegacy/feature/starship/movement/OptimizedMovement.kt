@@ -241,8 +241,7 @@ object OptimizedMovement {
 			val data = blockDataTransform(tile.first)
 
 			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second) ?: continue
-
-			chunk.nms.setBlockEntity(blockEntity)
+			chunk.nms.addAndRegisterBlockEntity(blockEntity)
 		}
 	}
 
