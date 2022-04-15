@@ -57,7 +57,7 @@ object StarshipDealers : SLComponent() {
 		val world = player.world
 		val targetVec3i = Vec3i(target)
 		placeSchematicEfficiently(schematic, world, targetVec3i, true) {
-			player.teleport(target)
+			player.teleport(target.add(0.0, -3.0, 0.0))
 
 			player.withdrawMoney(PRICE)
 
