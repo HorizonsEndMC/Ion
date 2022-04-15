@@ -55,12 +55,12 @@ internal class NameReservationCommand(val plugin: StarLegacy): BaseCommand() {
 
 		private fun getSettlementNameReservations() =
 			getNameReservationData().settlements.map {
-				"<aqua>Settlement</aqua> ${it.key} <aqua>for Player</aqua> ${(plugin.server.getPlayer(it.value) ?: plugin.server.getOfflinePlayer(it.value)).name ?: "Unknown"}"
+				"<aqua>Settlement</aqua> ${it.key} <aqua>for Player</aqua> ${(plugin.server.getPlayer(it.value) ?: Bukkit.getOfflinePlayer(it.value)).name ?: "Unknown"}"
 			}
 
 		private fun getNationNameReservations() =
 			getNameReservationData().nations.map {
-				"<aqua>Nation</aqua> ${it.key} <aqua>for Player</aqua> ${(plugin.server.getPlayer(it.value) ?: plugin.server.getOfflinePlayer(it.value)).name ?: "Unknown"}"
+				"<aqua>Nation</aqua> ${it.key} <aqua>for Player</aqua> ${(plugin.server.getPlayer(it.value) ?: Bukkit.getOfflinePlayer(it.value)).name ?: "Unknown"}"
 			}
 	}
 
