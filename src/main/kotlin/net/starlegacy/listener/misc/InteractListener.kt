@@ -174,7 +174,7 @@ object InteractListener : SLEventListener() {
 	// Put power into the sign if right clicking with a battery
 	@EventHandler
 	fun onPlayerInteractEventE(event: PlayerInteractEvent) {
-		if (event.action == Action.RIGHT_CLICK_BLOCK) return
+		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 		if (CustomItems[event.item] !is CustomItems.BatteryItem) return
 
 		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
