@@ -6,6 +6,7 @@ import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Material
@@ -23,7 +24,7 @@ fun Location.add(x: Int, y: Int, z: Int): Location = add(x.toDouble(), y.toDoubl
 fun Location.add(trio: Vec3i): Location = add(trio.x.toDouble(), trio.y.toDouble(), trio.z.toDouble())
 fun Location.add(face: BlockFace): Location = add(face.modX, face.modY, face.modZ)
 
-fun isValidYLevel(y: Int) = y in 0..255
+fun isValidYLevel(y: Int) = y in 0..Bukkit.getServer().getWorlds()[0].maxHeight
 
 fun blockKey(x: Int, y: Int, z: Int): Long =
 	x.toLong() and 134217727L or (z.toLong() and 134217727L shl 27) or (y.toLong() shl 54)

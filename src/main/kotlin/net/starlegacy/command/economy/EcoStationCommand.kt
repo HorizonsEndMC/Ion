@@ -52,7 +52,7 @@ object EcoStationCommand : SLCommand() {
 			?: throw ConditionFailedException("World ${ecoStation.world} not loaded!")
 
 		val x = ecoStation.x.toDouble()
-		val y = 256.0
+		val y = world.maxHeight.toDouble()
 		val z = ecoStation.z.toDouble()
 
 		val location = Location(world, x, y, z)

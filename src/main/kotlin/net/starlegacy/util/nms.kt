@@ -118,7 +118,7 @@ fun Block.getNMSBlockData(): NMSBlockState {
  * If the chunk is not loaded or it's outside of the valid Y range, will return null.
  */
 fun getNMSBlockDataSafe(world: World, x: Int, y: Int, z: Int): NMSBlockState? {
-	if (y < 0 || y > 255) {
+	if (y < world.minHeight || y > world.maxHeight) {
 		return null
 	}
 
