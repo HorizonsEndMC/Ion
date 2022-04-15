@@ -34,8 +34,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : P
 	companion object {
 		private val DISABLED = ChatColor.RED.toString() + "[DISABLED]"
 		private val blacklist = EnumSet.of(
-			Material.BARRIER
-//            Material.BEDROCK
+			Material.BARRIER,
+      Material.BEDROCK
 		)
 
 		private var lastDrillCount: Map<UUID, Int> = mutableMapOf()
