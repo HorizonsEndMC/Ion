@@ -227,8 +227,8 @@ object StarshipControl : SLComponent() {
 			dy < 0 && starship.min.y + dy < 0 -> {
 				dy = -starship.min.y
 			}
-			dy > 0 && starship.max.y + dy > 255 -> {
-				dy = 255 - starship.max.y
+			dy > 0 && starship.max.y + dy > starship.world.maxHeight -> {
+				dy = starship.world.maxHeight - starship.max.y
 			}
 		}
 
@@ -296,7 +296,7 @@ object StarshipControl : SLComponent() {
 		val centerX = border?.center?.x ?: halfLength
 		val centerZ = border?.center?.z ?: halfLength
 
-		val distance = (halfLength - 250) * max(0.15, newCenter.y / 255.0)
+		val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.world.maxHeight)
 		val offset = newCenter.toVector()
 			.subtract(planet.location.toVector())
 			.normalize().multiply(distance)

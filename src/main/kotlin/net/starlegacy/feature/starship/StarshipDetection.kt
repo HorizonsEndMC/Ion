@@ -155,7 +155,7 @@ object StarshipDetection : SLComponent() {
 						val adjacentZ = offsetZ + z
 
 						// Ensure it's a valid Y-level before adding it to the queue
-						if (adjacentY < 0 || adjacentY > 255) {
+						if (adjacentY < 0 || adjacentY > world.maxHeight) {
 							continue
 						}
 
