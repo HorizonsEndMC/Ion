@@ -17,8 +17,8 @@ object NameReservations {
 		}
 
 	fun canCreateOrganisationWithName(name: String, player: Player): Boolean {
-		val nationNameOwner = nameReservationData.nations[name] ?: player.uniqueId
-		val settlementNameOwner = nameReservationData.settlements[name] ?: player.uniqueId
+		val nationNameOwner = nameReservationData.nations[name.lowercase()] ?: player.uniqueId
+		val settlementNameOwner = nameReservationData.settlements[name.lowercase()] ?: player.uniqueId
 
 		return settlementNameOwner == player.uniqueId && nationNameOwner == player.uniqueId
 	}
@@ -29,27 +29,27 @@ object NameReservations {
 			nameReservationData.nations.toMutableMap()
 		)
 
-	fun doesSettlementReservationExist(name: String) = nameReservationData.settlements.containsKey(name)
+	fun doesSettlementReservationExist(name: String) = nameReservationData.settlements.containsKey(name.lowercase())
 
-	fun doesNationReservationExist(name: String) = nameReservationData.nations.containsKey(name)
+	fun doesNationReservationExist(name: String) = nameReservationData.nations.containsKey(name.lowercase())
 
 	fun addSettlementReservation(name: String, player: UUID) {
-		nameReservationData.settlements[name] = player
+		nameReservationData.settlements[name.lowercase()] = player
 		updateReservationFile()
 	}
 
 	fun addNationReservation(name: String, player: UUID) {
-		nameReservationData.nations[name] = player
+		nameReservationData.nations[name.lowercase()] = player
 		updateReservationFile()
 	}
 
 	fun removeSettlementReservation(name: String) {
-		nameReservationData.settlements.remove(name)
+		nameReservationData.settlements.remove(name.lowercase())
 		updateReservationFile()
 	}
 
 	fun removeNationReservation(name: String) {
-		nameReservationData.nations.remove(name)
+		nameReservationData.nations.remove(name.lowercase())
 		updateReservationFile()
 	}
 
