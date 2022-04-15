@@ -10,7 +10,7 @@ object NavigationComputerMultiblockBasic : NavigationComputerMultiblock() {
 		line4 = null
 	)
 
-	override val baseRange: Int = 25000
+	override val baseRange: Int = 75000
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
