@@ -51,7 +51,7 @@ object StarshipDealers : SLComponent() {
 		}
 
 		var target = player.location
-		target.y = 200.0
+		target.y = 196.0
 		target = resolveTarget(schematic, target)
 
 		val world = player.world
