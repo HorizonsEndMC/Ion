@@ -7,6 +7,7 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.factory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
+import net.starlegacy.feature.starship.subsystem.shield.ShieldSubsystem
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.isConcrete
 import net.starlegacy.util.msg
@@ -84,6 +85,7 @@ object StarshipInfoCommand : SLCommand() {
 				p msg "      &7${shield.name}:&b $percent ($shieldClass&b)"
 			}
 			p msg "   &7Shield Regen Efficiency:&b ${ship.shieldEfficiency}"
+			p msg "    &7Maximum Shields the starship can handle:&b ${ship.maxShields}   "
 		}
 
 		p msg "   &7Hull Integrity:&f ${ship.hullIntegrity().times(100).roundToInt()}%"
