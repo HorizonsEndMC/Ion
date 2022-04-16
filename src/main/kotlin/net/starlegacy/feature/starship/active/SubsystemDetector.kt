@@ -26,7 +26,6 @@ import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
-import net.starlegacy.util.isSign
 import net.starlegacy.util.isWallSign
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -154,7 +153,7 @@ object SubsystemDetector {
 
 	private fun getWeaponMultiblock(block: Block, face: BlockFace): StarshipWeaponMultiblock<*>? {
 		return when {
-			block.blockData.material.isSign -> getSignWeaponMultiblock(block, face)
+			block.state is Sign -> getSignWeaponMultiblock(block, face)
 			else -> getSignlessStarshipWeaponMultiblock(block, face)
 		}
 	}
