@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
 
 object BlasterListener : SLEventListener() {
+	/*
 	@EventHandler
 	fun onClick(event: PlayerInteractEvent) {
 		if (event.action != LEFT_CLICK_AIR && event.action != LEFT_CLICK_BLOCK) {
@@ -52,6 +53,7 @@ object BlasterListener : SLEventListener() {
 		event.isCancelled = true
 		Blasters.fireBlaster(entity, bow, Blasters.getBlasterType(blaster))
 	}
+	 */
 
 	@EventHandler
 	fun preCraft(event: PrepareItemCraftEvent) {
