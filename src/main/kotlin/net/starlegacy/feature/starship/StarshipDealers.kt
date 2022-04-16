@@ -3,7 +3,10 @@ package net.starlegacy.feature.starship
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import java.io.File
+import java.lang.System.currentTimeMillis
+import java.util.UUID
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getMoneyBalance
@@ -20,12 +23,19 @@ object StarshipDealers : SLComponent() {
 	private const val PRICE = 200.0
 	private const val SCHEMATIC_NAME = "noob_ship"
 
+	private val lastBuyTimes = mutableMapOf<UUID, Long>()
+
 	@EventHandler
 	fun onClickNPC(event: NPCRightClickEvent) {
 		val npc = event.npc
 		val player = event.clicker
 
 		if (!npc.name.endsWith("Ship Dealer")) {
+			return
+		}
+
+		if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + (1000 * 60 * 60 * 2) > currentTimeMillis()) {
+			player.sendMessage(miniMessage().deserialize("<yellow>Didn't I sell you a ship not too long ago? These things are expensive, and I am already selling them at a discount, leave some for other people."))
 			return
 		}
 
@@ -60,6 +70,7 @@ object StarshipDealers : SLComponent() {
 			player.teleport(target.add(0.0, -3.0, 0.0))
 
 			player.withdrawMoney(PRICE)
+			lastBuyTimes[player.uniqueId] = currentTimeMillis()
 
 			player msg "&aPasted! (Cost: ${PRICE.toCreditsString()}; " +
 				"Remaining Balance: ${player.getMoneyBalance().toCreditsString()})"
