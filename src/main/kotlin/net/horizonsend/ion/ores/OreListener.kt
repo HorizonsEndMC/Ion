@@ -47,7 +47,7 @@ internal class OreListener(private val ion: Ion): Listener {
 
 			if (placedOres.isEmpty()) return@Runnable
 
-			ion.dataFolder.resolve("ores/1/${event.world.name}")
+			ion.dataFolder.resolve("ores/${event.world.name}")
 				.apply { mkdirs() }
 				.resolve("${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 				.writeText(placedOres.map {
