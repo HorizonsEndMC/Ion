@@ -84,7 +84,7 @@ internal object SettlementCommand : SLCommand() {
 
 		requireNotInSettlement(sender)
 
-		requireMinLevel(sender, NATIONS_BALANCE.settlement.minCreateLevel)
+//		requireMinLevel(sender, NATIONS_BALANCE.settlement.minCreateLevel)
 
 		validateName(name, null)
 
