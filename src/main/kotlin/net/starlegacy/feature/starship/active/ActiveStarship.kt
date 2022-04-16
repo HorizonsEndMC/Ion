@@ -93,6 +93,9 @@ abstract class ActiveStarship(
 		get() = (shields.size.d().pow(0.9) / (blockCount / 500.0).coerceAtLeast(1.0).pow(0.7))
 			.coerceAtMost(1.0)
 
+	val maxShields: Int = (0.00671215 * blockCount.toDouble().pow(0.836512) -0.188437).toInt()
+		get() = if (blockCount < 500) (1 - field + (1)) else field
+
 	val thrusterMap = mutableMapOf<BlockFace, ThrustData>()
 
 	var lastTick = System.nanoTime()
