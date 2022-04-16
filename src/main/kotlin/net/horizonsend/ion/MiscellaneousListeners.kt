@@ -33,6 +33,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 
 class MiscellaneousListeners: Listener {
 	private val concretePowder: EnumSet<Material> = setOf(
@@ -96,4 +98,13 @@ class MiscellaneousListeners: Listener {
 
 	@EventHandler
 	fun onPlayerQuit(event: PlayerQuitEvent) = event.quitMessage(null)
+
+	@EventHandler
+	fun onPlayerTeleport(event: PlayerTeleportEvent) {
+		event.isCancelled = when(event.cause) {
+			TeleportCause.CHORUS_FRUIT -> true
+			TeleportCause.ENDER_PEARL -> true
+			else -> false
+		}
+	}
 }
