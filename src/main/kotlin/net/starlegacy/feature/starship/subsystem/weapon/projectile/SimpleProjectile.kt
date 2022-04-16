@@ -110,6 +110,8 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
+		return false
+
 		val block: Block? = result.hitBlock
 		val entity: Entity? = result.hitEntity
 
@@ -131,6 +133,8 @@ abstract class SimpleProjectile(
 	}
 
 	protected open fun impact(newLoc: Location, block: Block?, entity: Entity?) {
+		return
+
 		val world = newLoc.world
 
 		// use these so we dont use hardcoded Material values
