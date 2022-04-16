@@ -15,7 +15,7 @@ fun getMatchingMaterials(filter: (Material) -> Boolean): EnumSet<Material> =
 val LIQUID_TYPES = getMatchingMaterials { it.isBlock && it.createBlockData().nms.material.isLiquid }
 val Material.isLiquid: Boolean get() = LIQUID_TYPES.contains(this)
 
-val STAINED_GLASS_TYPES = getMatchingMaterials { it.name.endsWith("_GLASS") }
+val STAINED_GLASS_TYPES = getMatchingMaterials { it.name.endsWith("_STAINED_GLASS") }
 val Material.isGlass: Boolean get() = this == Material.GLASS || this.isStainedGlass
 val Material.isStainedGlass: Boolean get() = STAINED_GLASS_TYPES.contains(this)
 
