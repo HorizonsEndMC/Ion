@@ -2,7 +2,6 @@ package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.ores.OreListener
-import org.bukkit.Bukkit.shutdown
 import org.bukkit.Material.DIORITE
 import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.QUARTZ
@@ -11,45 +10,10 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import org.spongepowered.configurate.ConfigurateException
-import org.spongepowered.configurate.hocon.HoconConfigurationLoader.builder
-import org.spongepowered.configurate.kotlin.extensions.get
-import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
-	private lateinit var configuration: Configuration
-
-	internal fun loadConfiguration() {
-		saveResource("config.conf", false) // Ensure the config file exists
-
-		configuration = builder()
-			// Specify configuration file path
-			.path(dataFolder.toPath().resolve("config.conf"))
-
-			// Register deserializer
-			.defaultOptions { options ->
-				options.serializers { builder ->
-					builder.registerAnnotatedObjects(
-						objectMapperFactory()
-					)
-				}
-			}
-
-			// Load configuration
-			.build()
-			.load()
-			.get()!!
-	}
-
 	override fun onEnable() {
-		try {
-			loadConfiguration()
-		} catch (exception: ConfigurateException) {
-			slF4JLogger.error("Failed to load Ion configuration: ${exception.message}")
-			shutdown()
-		}
-
 		val listenerCommands = setOf(
 			AutoRestart(this)
 		)
