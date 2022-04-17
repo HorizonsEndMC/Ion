@@ -1,6 +1,5 @@
 package net.starlegacy.feature.economy.cargotrade
 
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.pow
@@ -84,7 +83,7 @@ object ShipmentGenerator : SLComponent() {
 				val importingPlanets: Set<String> = crate.values.filterValues { it < 0 }.keys
 
 				val importingCities: List<TradeCityData> = TradeCities.getAll().filter {
-					importingPlanets.contains(Regions.get<RegionTerritory>(it.territoryId).world.uppercase(Locale.getDefault()))
+					importingPlanets.contains(Regions.get<RegionTerritory>(it.territoryId).world)
 				}.toList()
 
 				return@associate crate to importingCities
