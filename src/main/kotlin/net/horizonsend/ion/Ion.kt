@@ -3,6 +3,13 @@ package net.horizonsend.ion
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.ores.OreListener
 import org.bukkit.Bukkit.shutdown
+import org.bukkit.Material.DIORITE
+import org.bukkit.Material.GLOWSTONE_DUST
+import org.bukkit.Material.QUARTZ
+import org.bukkit.Material.REDSTONE
+import org.bukkit.NamespacedKey
+import org.bukkit.inventory.FurnaceRecipe
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.spongepowered.configurate.ConfigurateException
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader.builder
@@ -64,6 +71,9 @@ class Ion: JavaPlugin() {
 		server.pluginManager.registerEvents(OreListener(this), this)
 
 		listenerCommands.forEach { server.pluginManager.registerEvents(it, this) }
+
+		this.server.addRecipe(FurnaceRecipe(NamespacedKey(this, "quartzrecipe"), ItemStack(QUARTZ), DIORITE, 1f, 400))
+		this.server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
 
 //		/**
 //		 * Check for IonCore
