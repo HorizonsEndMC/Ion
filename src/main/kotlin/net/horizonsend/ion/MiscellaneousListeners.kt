@@ -27,7 +27,9 @@ import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
 import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.PATROL
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.RAID
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS
 import org.bukkit.event.inventory.PrepareAnvilEvent
@@ -87,10 +89,16 @@ class MiscellaneousListeners: Listener {
 		if (event.block.type == ICE) event.isCancelled = true
 	}
 
+	private val canceledSpawnReasons: EnumSet<SpawnReason> = setOf(
+		NATURAL,
+		RAID,
+		REINFORCEMENTS,
+		PATROL
+	).toCollection(EnumSet.noneOf(SpawnReason::class.java))
+
 	@EventHandler
 	fun onMobSpawn(event: CreatureSpawnEvent) {
-		if (event.spawnReason == NATURAL || event.spawnReason == RAID || event.spawnReason == REINFORCEMENTS)
-			event.isCancelled = true
+		if (canceledSpawnReasons.contains(event.spawnReason)) event.isCancelled = true
 	}
 
 	@EventHandler
