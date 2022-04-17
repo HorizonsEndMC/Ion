@@ -15,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 class Ion: JavaPlugin() {
 	override fun onEnable() {
 		val listenerCommands = setOf(
-			AutoRestart(this)
+			Restart(this)
 		)
 
 		val commands = setOf(
