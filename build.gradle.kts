@@ -72,6 +72,7 @@ tasks {
 	shadowJar {
 		relocate("co.aikar.commands", "net.horizonsend.ion.core.libraries.co.aikar.commands")
 		relocate("co.aikar.locales", "net.horizonsend.ion.core.libraries.co.aikar.locales")
+		relocate("net.wesjd.anvilgui", "net.horizonsend.ion.core.libraries.net.wesjd.anvilgui")
 	}
 
 	reobfJar {

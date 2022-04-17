@@ -107,7 +107,13 @@ class AnvilInput(val question: String, action: AnvilInputAction) {
 }
 
 fun Player.input(question: String, action: AnvilInputAction) = Tasks.sync {
-	AnvilGUI(PLUGIN, this, question, action)
+	AnvilGUI.Builder()
+		.plugin(PLUGIN)
+		.text(question)
+		.onComplete { player, field ->
+			AnvilGUI.Response.text(action(player, field))
+		}
+		.open(this)
 }
 
 fun Player.inputs(vararg inputs: AnvilInput) {
