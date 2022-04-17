@@ -74,19 +74,5 @@ class Ion: JavaPlugin() {
 
 		this.server.addRecipe(FurnaceRecipe(NamespacedKey(this, "quartzrecipe"), ItemStack(QUARTZ), DIORITE, 1f, 400))
 		this.server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
-
-//		/**
-//		 * Check for IonCore
-//		 */
-//		if (getPluginManager().isPluginEnabled("IonCore")) {
-//			// Register anything that requires IonCore here.
-//
-//		} else {
-//			slF4JLogger.error("""
-//				IonCore is missing! Depending on what your doing this is what you wanted, or a big problem.
-//				The following features are currently disabled due to IonCore being absent:
-//				**None, Ion is basically a dummy plugin right now.**
-//			""".trimIndent())
-//		}
 	}
 }
