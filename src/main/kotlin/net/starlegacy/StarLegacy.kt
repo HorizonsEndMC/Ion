@@ -114,6 +114,8 @@ import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.Hangars
 import net.starlegacy.feature.starship.Interdiction
 import net.starlegacy.feature.starship.PilotedStarships
+import net.starlegacy.feature.starship.PilotedStarships.map
+import net.starlegacy.feature.starship.PilotedStarships.unpilot
 import net.starlegacy.feature.starship.StarshipComputers
 import net.starlegacy.feature.starship.StarshipDealers
 import net.starlegacy.feature.starship.StarshipDetection
@@ -516,6 +518,8 @@ class StarLegacy : JavaPlugin() {
 	}
 
 	override fun onDisable() {
+		map.values.forEach { unpilot(it) } // Unpilot all ships
+
 		SLCommand.ASYNC_COMMAND_THREAD.shutdown()
 
 		for (component in components.asReversed()) {

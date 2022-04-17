@@ -35,7 +35,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 
 object PilotedStarships : SLComponent() {
-	private val map = mutableMapOf<Player, ActivePlayerStarship>()
+	internal val map = mutableMapOf<Player, ActivePlayerStarship>()
 
 	override fun onEnable() {
 		subscribe<PlayerQuitEvent> { event ->
