@@ -19,7 +19,6 @@ class Ion: JavaPlugin() {
 		)
 
 		val commands = setOf(
-			IonReloadCommand(this),
 			ShrugCommand()
 		)
 
