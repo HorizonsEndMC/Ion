@@ -160,6 +160,8 @@ object StarshipCruising : SLComponent() {
 			return
 		}
 
+		maxSpeed /= 2
+
 		if (!SpaceWorlds.contains(starship.world)) {
 			maxSpeed /= 2
 		}
