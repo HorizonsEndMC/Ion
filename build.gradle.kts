@@ -2,16 +2,17 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion.of
 
 plugins {
   java
-	id("com.github.johnrengelman.shadow") version "7.1.2"   // ShadowJar
-	id("io.papermc.paperweight.userdev") version "1.3.5"    // Paperweight
-	kotlin("jvm") version "1.6.20"                  // Kotlin
-	kotlin("plugin.serialization") version "1.6.20" // Kotlin Serialization
+	id("com.github.johnrengelman.shadow") version "7.1.2" // ShadowJar
+	id("io.papermc.paperweight.userdev") version "1.3.5"  // Paperweight
+	kotlin("jvm") version "1.6.20"                        // Kotlin
+	kotlin("plugin.serialization") version "1.6.20"       // Kotlin Serialization
 }
 
 repositories {
 	mavenCentral()
 
-	maven("https://nexus.scarsz.me/content/groups/public/") // AnvilGUI, DiscordSRV
+	maven("https://repo.codemc.io/repository/maven-snapshots/") // AnvilGUI
+	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper), WorldEdit API
 	maven("https://m2.dv8tion.net/releases") // JDA (Required by DiscordSRV)
 	maven("https://repo.citizensnpcs.co/") // Citizens
