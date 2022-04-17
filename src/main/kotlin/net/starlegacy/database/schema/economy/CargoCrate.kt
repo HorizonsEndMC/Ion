@@ -1,6 +1,5 @@
 package net.starlegacy.database.schema.economy
 
-import java.util.Locale
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -19,7 +18,7 @@ data class CargoCrate(
 	override val _id: Oid<CargoCrate> = objId(),
 	var name: String,
 	var color: Color,
-	val values: Map<String, Double>
+	val values: Map<String, Double> // String = Importing Planet Name // Double = Export Amount
 ) : DbObject {
 	companion object : OidDbObjectCompanion<CargoCrate>(CargoCrate::class, {
 		ensureUniqueIndex(CargoCrate::name)
@@ -55,5 +54,19 @@ data class CargoCrate(
 		BLACK(SLTextStyle.BLACK, Material.BLACK_SHULKER_BOX),
 	}
 
-	fun getValue(planet: String): Double = values.getOrDefault(planet.uppercase(Locale.getDefault()), 0.0)
+	fun getValue(planet: String): Double = values.getOrDefault(planet, 0.0)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
