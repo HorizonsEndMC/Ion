@@ -97,7 +97,7 @@ object ProtectionListener : SLEventListener() {
 				if (!denied) { // only if no other region has already reached this, in order to maintain the priority of region messages
 					// Send them the detailed message
 					player.sendTitle("", "&e$message".colorize(), 5, 20, 5)
-					player.sendActionBar("&cThis place is claimed! Find an unclaimed territory with the map (https://starlegacy.net/map)".colorize())
+					player.sendActionBar("&cThis place is claimed! Find an unclaimed territory with the map (https://survival.horizonsend.net)".colorize())
 					denied = true
 					region.onFailedToAccess(player)
 				}
