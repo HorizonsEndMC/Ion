@@ -162,9 +162,6 @@ object StarshipCruising : SLComponent() {
 
 		maxSpeed /= 2
 
-		if (!SpaceWorlds.contains(starship.world)) {
-			maxSpeed /= 2
-		}
 
 		starship.cruiseData.accel = accel
 		starship.cruiseData.targetSpeed = maxSpeed
