@@ -22,7 +22,7 @@ dependencies {
 	compileOnly("org.spongepowered:configurate-hocon:4.1.2") // Configurate (HOCON)
 	compileOnly("org.spongepowered:configurate-extra-kotlin:4.1.2") // Configurate (Kotlin Additions)
 
-	compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.20") // Required by Configurate (Kotlin Additions)
+	compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.21") // Required by Configurate (Kotlin Additions)
 
 	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
 }
