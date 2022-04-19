@@ -24,7 +24,7 @@ dependencies {
 
 	compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.20") // Required by Configurate (Kotlin Additions)
 
-	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
+	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
 }
 
 tasks {
