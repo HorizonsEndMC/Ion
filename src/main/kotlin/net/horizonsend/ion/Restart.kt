@@ -7,8 +7,6 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Private
 import java.lang.Math.floorDiv
 import java.lang.Thread.sleep
-import net.horizonsend.ion.extensions.asMiniMessage
-import net.horizonsend.ion.extensions.sendMiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
