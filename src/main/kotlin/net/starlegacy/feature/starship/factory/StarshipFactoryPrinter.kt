@@ -5,8 +5,8 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.min
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
@@ -35,7 +35,7 @@ class StarshipFactoryPrinter(
 	val missingItems = mutableMapOf<PrintItem, Int>()
 	var missingCredits = 0.0
 
-	private val queue = Long2ObjectOpenHashMap<NMSBlockState>()
+	private val queue = Long2ObjectOpenHashMap<BlockState>()
 
 	fun print() {
 		calculateMaterialCounts()

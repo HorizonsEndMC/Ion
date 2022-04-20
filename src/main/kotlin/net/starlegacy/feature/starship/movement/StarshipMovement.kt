@@ -4,6 +4,7 @@ import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import kotlin.collections.set
 import kotlin.math.sqrt
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.misc.CryoPods
 import net.starlegacy.feature.space.CachedPlanet
@@ -13,7 +14,6 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.isFlyable
 import net.starlegacy.feature.starship.subsystem.CryoSubsystem
-import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
@@ -38,7 +38,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	protected abstract fun displaceLocation(oldLocation: Location): Location
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
-	protected abstract fun blockDataTransform(blockData: NMSBlockState): NMSBlockState
+	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
 
 	/* should only be called by the ship itself */
 	fun execute() {

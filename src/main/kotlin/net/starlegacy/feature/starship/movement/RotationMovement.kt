@@ -4,13 +4,13 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import net.minecraft.world.level.block.Rotation
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.thruster.ThrustData
 import net.starlegacy.util.ConnectionUtils
-import net.starlegacy.util.NMSBlockState
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
@@ -24,7 +24,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))
 
-	override fun blockDataTransform(blockData: NMSBlockState): NMSBlockState =
+	override fun blockDataTransform(blockData: BlockState): BlockState =
 		if (CustomBlocks[blockData] == null) blockData.rotate(nmsRotation)
 		else blockData
 

@@ -7,13 +7,13 @@ import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.PLUGIN
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarshipMechanics
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
-import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
@@ -49,7 +49,7 @@ object StarshipDestruction {
 
 	private fun vanishShip(starship: ActiveStarship) {
 		val air = Material.AIR.createBlockData().nms
-		val queue = Long2ObjectOpenHashMap<NMSBlockState>(starship.blockCount)
+		val queue = Long2ObjectOpenHashMap<BlockState>(starship.blockCount)
 		starship.blocks.associateWithTo(queue) { air }
 		BlockPlacement.placeImmediate(starship.world, queue)
 	}
@@ -94,7 +94,7 @@ object StarshipDestruction {
 
 		val newSinking = LinkedBlockingQueue<Long>()
 
-		val placements = Long2ObjectOpenHashMap<NMSBlockState>(sinking.size)
+		val placements = Long2ObjectOpenHashMap<BlockState>(sinking.size)
 
 		var iterator = sinking.iterator()
 
@@ -132,7 +132,7 @@ object StarshipDestruction {
 		world: World,
 		newSinkingBlocks: LinkedBlockingQueue<Long>,
 		sinkingBlocks: LongOpenHashSet,
-		placements: Long2ObjectOpenHashMap<NMSBlockState>
+		placements: Long2ObjectOpenHashMap<BlockState>
 	): Boolean = Tasks.getSyncBlocking {
 		val start = System.nanoTime()
 

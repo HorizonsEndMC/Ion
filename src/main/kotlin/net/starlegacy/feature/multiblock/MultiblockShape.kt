@@ -4,6 +4,7 @@ import java.util.EnumSet
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import net.minecraft.world.level.block.AbstractFurnaceBlock
 import net.starlegacy.feature.misc.CustomBlock
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.multiblock.areashield.AreaShield10.buildStructure
@@ -13,7 +14,6 @@ import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.CONCRETE_TYPES
 import net.starlegacy.util.MATERIALS
-import net.starlegacy.util.NMSAbstractFurnaceBlock
 import net.starlegacy.util.STAINED_TERRACOTTA_TYPES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockFace
@@ -300,7 +300,7 @@ class MultiblockShape {
 		fun machineFurnace() = complete { block, inward ->
 			val blockData = block.getNMSBlockData()
 			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
-			val facing = blockData.getValue(NMSAbstractFurnaceBlock.FACING).blockFace
+			val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
 			return@complete facing == inward.oppositeFace
 		}
 	}

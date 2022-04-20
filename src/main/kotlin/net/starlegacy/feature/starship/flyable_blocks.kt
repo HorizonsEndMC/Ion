@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import java.util.EnumSet
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.BANNER_TYPES
 import net.starlegacy.util.BED_TYPES
 import net.starlegacy.util.BUTTON_TYPES
@@ -13,7 +14,6 @@ import net.starlegacy.util.CONCRETE_TYPES
 import net.starlegacy.util.DOOR_TYPES
 import net.starlegacy.util.FENCE_TYPES
 import net.starlegacy.util.GLAZED_TERRACOTTA_TYPES
-import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.PLANKS_TYPES
 import net.starlegacy.util.PRESSURE_PLATE_TYPES
 import net.starlegacy.util.SHULKER_BOX_TYPES
@@ -266,8 +266,8 @@ val DESTROYABLE_BLOCKS = setOf(
 )
 
 private val FLYABLE_BLOCK_DATA_CACHE = CacheBuilder.newBuilder()
-	.build<NMSBlockState, Boolean>(CacheLoader.from { blockData ->
+	.build<BlockState, Boolean>(CacheLoader.from { blockData ->
 		return@from blockData != null && FLYABLE_BLOCKS.contains(blockData.bukkitMaterial)
 	})
 
-fun isFlyable(blockData: NMSBlockState) = FLYABLE_BLOCK_DATA_CACHE[blockData]
+fun isFlyable(blockData: BlockState) = FLYABLE_BLOCK_DATA_CACHE[blockData]

@@ -12,8 +12,7 @@ import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.util.CBItemStack
-import net.starlegacy.util.NMSItemStack
+import net.minecraft.world.item.ItemStack as MinecraftItemStack
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getStateIfLoaded
 import net.starlegacy.util.nms
@@ -23,6 +22,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -232,9 +232,9 @@ abstract class AutoCrafterMultiblock(
 }
 
 private val itemsField = CraftingContainer::class.java.getDeclaredField("items").apply { isAccessible = true }
-private fun getItems(inventoryCrafting: CraftingContainer): NonNullList<NMSItemStack> {
+private fun getItems(inventoryCrafting: CraftingContainer): NonNullList<MinecraftItemStack> {
 	@Suppress("UNCHECKED_CAST")
-	return itemsField[inventoryCrafting] as NonNullList<NMSItemStack>
+	return itemsField[inventoryCrafting] as NonNullList<MinecraftItemStack>
 }
 
 private val recipeCache: LoadingCache<List<Material?>, Optional<ItemStack>> =
@@ -242,14 +242,14 @@ private val recipeCache: LoadingCache<List<Material?>, Optional<ItemStack>> =
 		requireNotNull(items)
 		val inventoryCrafting = CraftingContainer(/*container=*/null, /*width=*/3, /*height=*/3)
 
-		val inventoryItems: NonNullList<NMSItemStack> = getItems(inventoryCrafting)
+		val inventoryItems: NonNullList<MinecraftItemStack> = getItems(inventoryCrafting)
 		for ((index: Int, material: Material?) in items.withIndex()) {
-			val item: NMSItemStack = if (material != null) CBItemStack.asNMSCopy(ItemStack(material, 1))
-			else NMSItemStack.EMPTY
+			val item: MinecraftItemStack = if (material != null) CraftItemStack.asNMSCopy(ItemStack(material, 1))
+			else MinecraftItemStack.EMPTY
 			inventoryItems[index] = item
 		}
 
-		val result: NMSItemStack? = MinecraftServer.getServer().recipeManager
+		val result: MinecraftItemStack? = MinecraftServer.getServer().recipeManager
 			.getRecipeFor(RecipeType.CRAFTING, inventoryCrafting, Bukkit.getWorlds().first().nms)
 			.orNull()?.assemble(inventoryCrafting)
 

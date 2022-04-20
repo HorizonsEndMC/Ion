@@ -2,7 +2,7 @@ package net.starlegacy.feature.misc
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import java.util.Locale
-import net.starlegacy.util.NMSBlockState
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.nms
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -41,7 +41,7 @@ open class CustomBlock(
 @Suppress("unused")
 object CustomBlocks {
 	private val idMap = mutableMapOf<String, CustomBlock>()
-	private val blockDataMap = Object2ObjectOpenHashMap<NMSBlockState, CustomBlock>()
+	private val blockDataMap = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
 
 	private fun <T : CustomBlock> register(block: T): T {
 		idMap[block.id] = block
@@ -112,5 +112,5 @@ object CustomBlocks {
 
 	operator fun get(blockData: BlockData): CustomBlock? = this[blockData.nms]
 
-	operator fun get(blockData: NMSBlockState): CustomBlock? = blockDataMap[blockData]
+	operator fun get(blockData: BlockState): CustomBlock? = blockDataMap[blockData]
 }

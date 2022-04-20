@@ -8,22 +8,21 @@ import java.util.concurrent.ExecutionException
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket
 import net.minecraft.server.level.ChunkHolder
+import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.StainedGlassBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.feature.starship.Hangars
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
-import net.starlegacy.util.NMSBaseEntityBlock
-import net.starlegacy.util.NMSBlockPos
-import net.starlegacy.util.NMSBlockState
-import net.starlegacy.util.NMSLevelChunk
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
@@ -52,7 +51,7 @@ object OptimizedMovement {
 		world2: World,
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
-		blockDataTransform: (NMSBlockState) -> NMSBlockState,
+		blockDataTransform: (BlockState) -> BlockState,
 		callback: () -> Unit,
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
@@ -60,7 +59,7 @@ object OptimizedMovement {
 		val collisionChunkMap = getCollisionChunkMap(oldChunkMap, newChunkMap)
 
 		val n = oldPositionArray.size
-		val capturedStates = java.lang.reflect.Array.newInstance(NMSBlockState::class.java, n) as Array<NMSBlockState>
+		val capturedStates = java.lang.reflect.Array.newInstance(BlockState::class.java, n) as Array<BlockState>
 		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
 		val hangars = LinkedList<Long>()
 
@@ -141,7 +140,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun isHangar(newBlockData: NMSBlockState) = newBlockData.block is StainedGlassBlock
+	private fun isHangar(newBlockData: BlockState) = newBlockData.block is StainedGlassBlock
 
 	private fun dissipateHangarBlocks(world2: World, hangars: LinkedList<Long>) {
 		for (blockKey in hangars.iterator()) {
@@ -153,7 +152,7 @@ object OptimizedMovement {
 		oldChunkMap: ChunkMap,
 		world1: World,
 		world2: World,
-		capturedStates: Array<NMSBlockState>,
+		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 	) {
 		val lightEngine = world1.nms.lightEngine
@@ -178,13 +177,13 @@ object OptimizedMovement {
 					val type = section.getBlockState(localX, localY, localZ)
 					capturedStates[index] = type
 
-					if (type.block is NMSBaseEntityBlock) {
+					if (type.block is BaseEntityBlock) {
 						processOldTile(blockKey, chunk, capturedTiles, index, world1, world2)
 					}
 
 					section.setBlockState(localX, localY, localZ, air, false)
 
-					lightEngine.checkBlock(NMSBlockPos(x, y, z))
+					lightEngine.checkBlock(BlockPos(x, y, z))
 				}
 			}
 
@@ -197,9 +196,9 @@ object OptimizedMovement {
 		newChunkMap: ChunkMap,
 		world1: World,
 		world2: World,
-		capturedStates: Array<NMSBlockState>,
+		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
-		blockDataTransform: (NMSBlockState) -> NMSBlockState,
+		blockDataTransform: (BlockState) -> BlockState,
 	) {
 		val lightEngine = world2.nms.lightEngine
 
@@ -222,7 +221,7 @@ object OptimizedMovement {
 					// TODO: Save hangars
 					val data = blockDataTransform(capturedStates[index])
 					section.setBlockState(localX, localY, localZ, data, false)
-					lightEngine.checkBlock(NMSBlockPos(x, y, z))
+					lightEngine.checkBlock(BlockPos(x, y, z))
 				}
 			}
 
@@ -235,7 +234,7 @@ object OptimizedMovement {
 			val y = blockKeyY(blockKey)
 			val z = blockKeyZ(blockKey)
 
-			val newPos = NMSBlockPos(x, y, z)
+			val newPos = BlockPos(x, y, z)
 			val chunk = world2.getChunkAt(x shr 4, z shr 4)
 
 			val data = blockDataTransform(tile.first)
@@ -245,7 +244,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection = nmsLevelChunk.sections[sectionY]
+	private fun getChunkSection(nmsLevelChunk: LevelChunk, sectionY: Int): LevelChunkSection = nmsLevelChunk.sections[sectionY]
 
 //	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection {
 //		var section = nmsLevelChunk.sections[sectionY]
@@ -256,7 +255,7 @@ object OptimizedMovement {
 //		return section
 //	}
 
-	private fun updateHeightMaps(nmsLevelChunk: NMSLevelChunk) {
+	private fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
 		Heightmap.primeHeightmaps(nmsLevelChunk, Heightmap.Types.values().toSet())
 	}
 
@@ -268,7 +267,7 @@ object OptimizedMovement {
 		world1: World,
 		world2: World,
 	) {
-		val blockPos = NMSBlockPos(
+		val blockPos = BlockPos(
 			blockKeyX(blockKey),
 			blockKeyY(blockKey),
 			blockKeyZ(blockKey)

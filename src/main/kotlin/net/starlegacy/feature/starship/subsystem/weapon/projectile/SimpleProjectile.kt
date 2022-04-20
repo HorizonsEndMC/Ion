@@ -10,7 +10,7 @@ import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
-import net.starlegacy.util.CBMagicNumbers
+import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers
 import net.starlegacy.util.nms
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -138,8 +138,8 @@ abstract class SimpleProjectile(
 		val world = newLoc.world
 
 		// use these so we dont use hardcoded Material values
-		val armorBlastResist = CBMagicNumbers.getBlock(Material.STONE).explosionResistance
-		val impactedBlastResist = CBMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
+		val armorBlastResist = CraftMagicNumbers.getBlock(Material.STONE).explosionResistance
+		val impactedBlastResist = CraftMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
 
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
