@@ -18,7 +18,7 @@ enum class BlasterType(
 ) {
 	PISTOL(
 		CustomItems.BLASTER_PISTOL,
-		speed = 1100.0,
+		speed = 2100.0,
 		range = 50,
 		thickness = 0.1,
 		cooldown = 300,
@@ -30,7 +30,7 @@ enum class BlasterType(
 	),
 	RIFLE(
 		CustomItems.BLASTER_RIFLE,
-		speed = 650.0,
+		speed = 1650.0,
 		range = 75,
 		thickness = 0.1,
 		cooldown = 600,
@@ -42,7 +42,7 @@ enum class BlasterType(
 	),
 	SNIPER(
 		CustomItems.BLASTER_SNIPER,
-		speed = 1100.0,
+		speed = 2100.0,
 		range = 250,
 		thickness = 0.2,
 		cooldown = 2000,
@@ -54,7 +54,7 @@ enum class BlasterType(
 	),
 	CANNON(
 		CustomItems.BLASTER_CANNON,
-		speed = 450.0,
+		speed = 1450.0,
 		range = 200,
 		thickness = 0.2,
 		cooldown = 500,
