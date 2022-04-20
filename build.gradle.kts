@@ -14,16 +14,13 @@ repositories {
 dependencies {
 	compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT") // Paper
 
+	// Provided by other Plugins
 	compileOnly(project(":IonCore")) // IonCore
 
+	// Provided by us
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") // Annotation Command Framework
 
-	// Provided by Server Library Loader
-	compileOnly("org.spongepowered:configurate-hocon:4.1.2") // Configurate (HOCON)
-	compileOnly("org.spongepowered:configurate-extra-kotlin:4.1.2") // Configurate (Kotlin Additions)
-
-	compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.20") // Required by Configurate (Kotlin Additions)
-
+	// Provided by Library Loader
 	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
 }
 
