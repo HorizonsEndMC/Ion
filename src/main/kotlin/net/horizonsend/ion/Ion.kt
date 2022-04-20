@@ -31,6 +31,7 @@ class Ion: JavaPlugin() {
 		commandManager.enableUnstableAPI("help")
 
 		server.pluginManager.registerEvents(MiscellaneousListeners(), this)
+		server.pluginManager.registerEvents(MobSpawning(), this)
 		server.pluginManager.registerEvents(OreListener(this), this)
 
 		listenerCommands.forEach { server.pluginManager.registerEvents(it, this) }
