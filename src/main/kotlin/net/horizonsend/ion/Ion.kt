@@ -1,6 +1,8 @@
 package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
+import net.horizonsend.ion.commands.Restart
+import net.horizonsend.ion.commands.ShrugCommand
 import net.horizonsend.ion.ores.OreListener
 import org.bukkit.Material.DIORITE
 import org.bukkit.Material.GLOWSTONE_DUST

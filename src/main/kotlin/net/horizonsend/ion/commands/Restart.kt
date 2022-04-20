@@ -1,4 +1,4 @@
-package net.horizonsend.ion
+package net.horizonsend.ion.commands
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
@@ -7,6 +7,9 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Private
 import java.lang.Math.floorDiv
 import java.lang.Thread.sleep
+import net.horizonsend.ion.Ion
+import net.horizonsend.ion.asMiniMessage
+import net.horizonsend.ion.sendMiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
