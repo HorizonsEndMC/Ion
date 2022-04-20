@@ -1,6 +1,5 @@
 package net.horizonsend.ion
 
-import java.util.EnumSet
 import org.bukkit.Material
 import org.bukkit.Material.BLACK_CONCRETE_POWDER
 import org.bukkit.Material.BLUE_CONCRETE_POWDER
@@ -27,7 +26,6 @@ import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
 import org.bukkit.event.entity.CreatureSpawnEvent
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.PATROL
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.RAID
@@ -39,7 +37,7 @@ import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 
 class MiscellaneousListeners: Listener {
-	private val concretePowder: EnumSet<Material> = setOf(
+	private val concretePowder = enumSetOf(
 		WHITE_CONCRETE_POWDER,
 		ORANGE_CONCRETE_POWDER,
 		MAGENTA_CONCRETE_POWDER,
@@ -56,7 +54,7 @@ class MiscellaneousListeners: Listener {
 		GREEN_CONCRETE_POWDER,
 		RED_CONCRETE_POWDER,
 		BLACK_CONCRETE_POWDER
-	).toCollection(EnumSet.noneOf(Material::class.java))
+	)
 
 	@EventHandler
 	fun onConcreteHarden(event: BlockFormEvent) {
@@ -89,12 +87,12 @@ class MiscellaneousListeners: Listener {
 		if (event.block.type == ICE) event.isCancelled = true
 	}
 
-	private val canceledSpawnReasons: EnumSet<SpawnReason> = setOf(
+	private val canceledSpawnReasons= enumSetOf(
 		NATURAL,
 		RAID,
 		REINFORCEMENTS,
 		PATROL
-	).toCollection(EnumSet.noneOf(SpawnReason::class.java))
+	)
 
 	@EventHandler
 	fun onMobSpawn(event: CreatureSpawnEvent) {
