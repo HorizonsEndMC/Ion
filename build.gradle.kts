@@ -4,8 +4,8 @@ plugins {
   java
 	id("com.github.johnrengelman.shadow") version "7.1.2" // ShadowJar
 	id("io.papermc.paperweight.userdev") version "1.3.5"  // Paperweight
-	kotlin("jvm") version "1.6.20"                        // Kotlin
-	kotlin("plugin.serialization") version "1.6.20"       // Kotlin Serialization
+	kotlin("jvm") version "1.6.21"                        // Kotlin
+	kotlin("plugin.serialization") version "1.6.21"       // Kotlin Serialization
 }
 
 repositories {
@@ -46,8 +46,8 @@ dependencies {
 
 	// Provided by Server Library Loader
 		compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-		compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
-		compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
+		compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
+		compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
 		compileOnly("org.litote.kmongo:kmongo:4.5.1")
 
 		// TODO: Remove
