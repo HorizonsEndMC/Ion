@@ -19,22 +19,21 @@ class Ion: JavaPlugin() {
 		private set
 
 	override fun onEnable() {
-		OreListener(this) // Super important and is needed immediately.
-		MiscellaneousListeners(this)
-
-		// Everything unimportant goes here.
 		server.scheduler.runTaskAsynchronously(this, Runnable {
+			OreListener(this) // Super important and is needed immediately.
+			MiscellaneousListeners(this)
+
 			commandManager = PaperCommandManager(this)
 
 			@Suppress("DEPRECATION")
 			commandManager.enableUnstableAPI("help")
 
-			server.addRecipe(FurnaceRecipe(NamespacedKey(this, "quartzrecipe"), ItemStack(QUARTZ), DIORITE, 1f, 400))
-			server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
-
 			MobSpawning(this)
 			ShrugCommand(this)
 			Restart(this)
 		})
+
+		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "quartzrecipe"), ItemStack(QUARTZ), DIORITE, 1f, 400))
+		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
 	}
 }
