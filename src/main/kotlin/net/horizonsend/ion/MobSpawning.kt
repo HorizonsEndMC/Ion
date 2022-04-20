@@ -54,7 +54,12 @@ internal class MobSpawning(plugin: Ion): Listener {
 
 	@EventHandler
 	fun onMobSpawn(event: CreatureSpawnEvent) {
-		if (canceledSpawnReasons.contains(event.spawnReason)) event.isCancelled = true // Prevent certain types of mob spawns.
+		// Prevent certain types of mob spawns.
+		if (canceledSpawnReasons.contains(event.spawnReason)) {
+			event.isCancelled = true
+			return
+		}
+
 		if (event.spawnReason != NATURAL) return // Only interfere with certain types of mob spawns.
 
 		event.isCancelled = true
