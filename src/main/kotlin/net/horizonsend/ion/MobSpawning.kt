@@ -45,7 +45,9 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.PATROL
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.RAID
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS
 
-class MobSpawning: Listener {
+internal class MobSpawning(plugin: Ion): Listener {
+	init { plugin.server.pluginManager.registerEvents(this, plugin) }
+
 	private val canceledSpawnReasons = enumSetOf(RAID, REINFORCEMENTS, PATROL)
 
 	private val hostileMobs = enumSetOf(BLAZE, CREEPER, DROWNED, ELDER_GUARDIAN, ENDERMITE, EVOKER, GHAST, GUARDIAN, HOGLIN, HUSK, ILLUSIONER, MAGMA_CUBE, PHANTOM, PIGLIN_BRUTE, PILLAGER, RAVAGER, SHULKER, SILVERFISH, SKELETON, SLIME, STRAY, VEX, WITCH, ZOMBIE, ZOMBIE_VILLAGER)
