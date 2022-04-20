@@ -10,14 +10,16 @@ import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType.INTEGER
 
-internal class OreListener(private val ion: Ion): Listener {
-	private val oreCheckNamespace = NamespacedKey(ion, "oreCheck")
+internal class OreListener(private val plugin: Ion): Listener {
+	init { plugin.server.pluginManager.registerEvents(this, plugin) }
+
+	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
 	@EventHandler
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		if (event.chunk.persistentDataContainer.get(oreCheckNamespace, INTEGER) != null) return
 
-		Bukkit.getScheduler().runTaskAsynchronously(ion, Runnable {
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
 			val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
 			val placementConfig = try { valueOf(event.world.name) } catch (exception: IllegalArgumentException) { return@Runnable }
 			val random = Random(event.chunk.chunkKey)
@@ -37,7 +39,7 @@ internal class OreListener(private val ion: Ion): Listener {
 				}
 			}
 
-			Bukkit.getScheduler().runTask(ion, Runnable {
+			Bukkit.getScheduler().runTask(plugin, Runnable {
 				placedOres.forEach { (position, ore) ->
 					event.chunk.getBlock(position.first, position.second, position.third).setBlockData(ore.blockData, false)
 				}
@@ -47,7 +49,7 @@ internal class OreListener(private val ion: Ion): Listener {
 
 			if (placedOres.isEmpty()) return@Runnable
 
-			ion.dataFolder.resolve("ores/${event.world.name}")
+			plugin.dataFolder.resolve("ores/${event.world.name}")
 				.apply { mkdirs() }
 				.resolve("${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 				.writeText(placedOres.map {

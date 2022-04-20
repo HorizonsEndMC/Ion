@@ -31,7 +31,9 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 
-class MiscellaneousListeners: Listener {
+internal class MiscellaneousListeners(plugin: Ion): Listener {
+	init { plugin.server.pluginManager.registerEvents(this, plugin) }
+
 	private val concretePowder = enumSetOf(
 		WHITE_CONCRETE_POWDER,
 		ORANGE_CONCRETE_POWDER,
