@@ -3,10 +3,10 @@ package net.starlegacy.feature.starship.movement
 import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 import kotlin.math.min
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.ConnectionUtils
-import net.starlegacy.util.NMSBlockState
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.add
 import org.bukkit.Chunk
@@ -62,7 +62,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 		}
 	}
 
-	override fun blockDataTransform(blockData: NMSBlockState): NMSBlockState = blockData
+	override fun blockDataTransform(blockData: BlockState): BlockState = blockData
 
 	override fun displaceX(oldX: Int, oldZ: Int): Int = oldX + dx
 

@@ -11,7 +11,6 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import com.sk89q.worldedit.util.io.file.FilenameException
-import com.sk89q.worldedit.world.block.BlockState
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import java.io.File
 import java.io.FileInputStream
@@ -21,6 +20,8 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
+import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
+import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 
 fun loadSchematic(player: Player?, filename: String): Clipboard? {
 	val file: File
@@ -83,7 +84,7 @@ fun placeSchematicEfficiently(
 	callback: () -> Unit = {}
 ) {
 	Tasks.async {
-		val queue = Long2ObjectOpenHashMap<NMSBlockState>()
+		val queue = Long2ObjectOpenHashMap<MinecraftBlockState>()
 		val region = schematic.region.clone()
 		val targetBlockVector = BlockVector3.at(target.x, target.y, target.z)
 		val offset = targetBlockVector.subtract(schematic.origin)
@@ -109,7 +110,7 @@ fun placeSchematicEfficiently(
 
 private val blockDataCache = mutableMapOf<String, BlockData>()
 
-fun BlockState.toBukkitBlockData(): BlockData {
+fun WorldEditBlockState.toBukkitBlockData(): BlockData {
 	val string = this.asString
 	return blockDataCache.getOrPut(string) {
 		Bukkit.createBlockData(string)

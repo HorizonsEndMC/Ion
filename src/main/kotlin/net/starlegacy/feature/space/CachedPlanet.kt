@@ -1,12 +1,12 @@
 package net.starlegacy.feature.space
 
 import java.util.Locale
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.space.Planet
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.util.NMSBlockState
-import net.starlegacy.util.NMSBlocks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.d
 import net.starlegacy.util.getSphereBlocks
@@ -100,28 +100,28 @@ class CachedPlanet(
 	val crustRadius = (CRUST_RADIUS_MAX * size).toInt()
 	val atmosphereRadius = crustRadius + 3
 
-	override fun createStructure(): Map<Vec3i, NMSBlockState> {
+	override fun createStructure(): Map<Vec3i, BlockState> {
 		val random = SimplexNoiseGenerator(seed)
 
-		val crustPalette: List<NMSBlockState> = crustMaterials.map(BlockData::nms)
+		val crustPalette: List<BlockState> = crustMaterials.map(BlockData::nms)
 
-		val crust: Map<Vec3i, NMSBlockState> = getSphereBlocks(crustRadius).associateWith { (x, y, z) ->
+		val crust: Map<Vec3i, BlockState> = getSphereBlocks(crustRadius).associateWith { (x, y, z) ->
 			// number from -1 to 1
 			val simplexNoise = random.noise(x.d() * crustNoise, y.d() * crustNoise, z.d() * crustNoise)
 
 			val noise = (simplexNoise / 2.0 + 0.5)
 
 			return@associateWith when {
-				crustPalette.isEmpty() -> NMSBlocks.DIRT.defaultBlockState()
+				crustPalette.isEmpty() -> Blocks.DIRT.defaultBlockState()
 				else -> crustPalette[(noise * crustPalette.size).toInt()]
 			}
 		}
 
-		val atmospherePalette: List<NMSBlockState> = cloudMaterials.map(BlockData::nms)
+		val atmospherePalette: List<BlockState> = cloudMaterials.map(BlockData::nms)
 
-		val atmosphere: Map<Vec3i, NMSBlockState> = getSphereBlocks(atmosphereRadius).associateWith { (x, y, z) ->
+		val atmosphere: Map<Vec3i, BlockState> = getSphereBlocks(atmosphereRadius).associateWith { (x, y, z) ->
 			if (atmospherePalette.isEmpty()) {
-				return@associateWith NMSBlocks.AIR.defaultBlockState()
+				return@associateWith Blocks.AIR.defaultBlockState()
 			}
 
 			val atmosphereSimplex = random.noise(
@@ -131,7 +131,7 @@ class CachedPlanet(
 			)
 
 			if ((atmosphereSimplex / 2.0 + 0.5) > cloudDensity) {
-				return@associateWith NMSBlocks.AIR.defaultBlockState()
+				return@associateWith Blocks.AIR.defaultBlockState()
 			}
 
 			val cloudSimplex = random.noise(
@@ -143,7 +143,7 @@ class CachedPlanet(
 			val noise = (cloudSimplex / 2.0) + 0.5
 
 			if (noise > cloudThreshold) {
-				return@associateWith NMSBlocks.AIR.defaultBlockState()
+				return@associateWith Blocks.AIR.defaultBlockState()
 			}
 
 			return@associateWith atmospherePalette[(noise * atmospherePalette.size).toInt()]

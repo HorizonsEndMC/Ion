@@ -9,8 +9,11 @@ import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.abs
 import kotlin.math.sqrt
+import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -22,9 +25,6 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipActivatedEvent
 import net.starlegacy.feature.starship.event.StarshipDeactivatedEvent
-import net.starlegacy.util.NMSBlockPos
-import net.starlegacy.util.NMSBlockState
-import net.starlegacy.util.NMSLevel
 import net.starlegacy.util.PerWorld
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks
@@ -265,7 +265,7 @@ object StarshipShields : SLComponent() {
 		canFlare: Boolean,
 		flaringBlocks: LongOpenHashSet,
 		flaredBlocks: LongOpenHashSet,
-		nmsLevel: NMSLevel
+		nmsLevel: Level
 	) {
 		// ignore if it's over 500 blocks away
 		if (starship.centerOfMass.toLocation(world).distanceSquared(location) > 250_000) {
@@ -306,7 +306,7 @@ object StarshipShields : SLComponent() {
 		canFlare: Boolean,
 		flaringBlocks: LongOpenHashSet,
 		flaredBlocks: LongOpenHashSet,
-		nmsLevel: NMSLevel,
+		nmsLevel: Level,
 		starship: ActiveStarship
 	): Boolean {
 		val containedBlocks = blocks.filter { shield.containsBlock(it) }
@@ -350,11 +350,11 @@ object StarshipShields : SLComponent() {
 		shield: ShieldSubsystem,
 		flaringBlocks: LongOpenHashSet,
 		flaredBlocks: LongOpenHashSet,
-		nmsLevel: NMSLevel
+		nmsLevel: Level
 	) {
 		val percent = shield.powerRatio
 
-		val flare: NMSBlockState = when {
+		val flare: BlockState = when {
 			shield.isReinforcementActive() -> Material.MAGENTA_STAINED_GLASS
 			percent <= 0.05 -> Material.RED_STAINED_GLASS
 			percent <= 0.10 -> Material.ORANGE_STAINED_GLASS
@@ -377,7 +377,7 @@ object StarshipShields : SLComponent() {
 				continue
 			}
 
-			val pos = NMSBlockPos(bx, by, bz)
+			val pos = BlockPos(bx, by, bz)
 			val packet = ClientboundBlockUpdatePacket(pos, flare)
 			nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
 		}
@@ -390,7 +390,7 @@ object StarshipShields : SLComponent() {
 		chunkKey: Long,
 		flaringBlocks: LongOpenHashSet,
 		world: World,
-		nmsLevel: NMSLevel
+		nmsLevel: Level
 	) {
 		if (!canFlare || flaredBlocks.isEmpty()) {
 			return
@@ -412,7 +412,7 @@ object StarshipShields : SLComponent() {
 					continue
 				}
 
-				val pos = NMSBlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
+				val pos = BlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
 				val packet = ClientboundBlockUpdatePacket(pos, data)
 				nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
 			}

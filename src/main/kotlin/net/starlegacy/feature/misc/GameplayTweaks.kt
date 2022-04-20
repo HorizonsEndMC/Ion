@@ -4,7 +4,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.FLYABLE_BLOCKS
 import net.starlegacy.feature.starship.Mass
-import net.starlegacy.util.CBMagicNumbers
+import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers
 import net.starlegacy.util.SLAB_TYPES
 import net.starlegacy.util.STAINED_GLASS_TYPES
 import net.starlegacy.util.STAINED_TERRACOTTA_TYPES
@@ -116,7 +116,7 @@ object GameplayTweaks : SLComponent() {
 	private fun setBlastResistance(material: Material, durability: Float) {
 		require(material.isBlock)
 
-		val block = CBMagicNumbers.getBlock(material)
+		val block = CraftMagicNumbers.getBlock(material)
 		val field = BlockBehaviour::class.java.getDeclaredField("aH") // aH = obfuscation for explosionResistance
 		field.isAccessible = true
 		field.set(block, durability)
