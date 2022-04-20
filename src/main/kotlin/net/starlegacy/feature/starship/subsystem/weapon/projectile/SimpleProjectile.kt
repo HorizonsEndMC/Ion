@@ -10,13 +10,13 @@ import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
-import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers
 import net.starlegacy.util.nms
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -110,8 +110,6 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		return false
-
 		val block: Block? = result.hitBlock
 		val entity: Entity? = result.hitEntity
 
@@ -133,8 +131,6 @@ abstract class SimpleProjectile(
 	}
 
 	protected open fun impact(newLoc: Location, block: Block?, entity: Entity?) {
-		return
-
 		val world = newLoc.world
 
 		// use these so we dont use hardcoded Material values
