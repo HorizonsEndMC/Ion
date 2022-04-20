@@ -14,6 +14,7 @@ import org.bukkit.Material.LIME_CONCRETE_POWDER
 import org.bukkit.Material.MAGENTA_CONCRETE_POWDER
 import org.bukkit.Material.ORANGE_CONCRETE_POWDER
 import org.bukkit.Material.PINK_CONCRETE_POWDER
+import org.bukkit.Material.POTION
 import org.bukkit.Material.PURPLE_CONCRETE_POWDER
 import org.bukkit.Material.RED_CONCRETE_POWDER
 import org.bukkit.Material.WHITE_CONCRETE_POWDER
@@ -25,7 +26,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
+import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.PrepareAnvilEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -96,6 +99,19 @@ internal class MiscellaneousListeners(plugin: Ion): Listener {
 			TeleportCause.CHORUS_FRUIT -> true
 			TeleportCause.ENDER_PEARL -> true
 			else -> false
+		}
+	}
+
+	@EventHandler
+	fun onPotionSplashEvent(event: PotionSplashEvent) {
+		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent) {
+		if (event.item.type == POTION) {
+			event.isCancelled = true
+			event.setItem(null)
 		}
 	}
 }
