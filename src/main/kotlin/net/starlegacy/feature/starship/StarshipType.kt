@@ -21,7 +21,8 @@ enum class StarshipType(
 	val hyperspaceRangeMultiplier: Double,
 	menuItemMaterial: Material,
 	val isWarship: Boolean,
-	val colour: String
+	val colour: String,
+	val overridePermission: String
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -36,7 +37,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 3.0,
 		menuItemMaterial = Material.DEAD_BUSH,
 		isWarship = false,
-		colour = "#007100"
+		colour = "#007100",
+		overridePermission = "ion.ships.override.1"
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
@@ -51,7 +53,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.0,
 		menuItemMaterial = Material.IRON_NUGGET,
 		isWarship = true,
-		colour = "#330000"
+		colour = "#330000",
+		overridePermission = "ion.ships.override.1"
 	),
 	GUNSHIP(
 		displayName = "Gunship",
@@ -66,7 +69,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.1,
 		menuItemMaterial = Material.IRON_INGOT,
 		isWarship = true,
-		colour = "#660000"
+		colour = "#660000",
+		overridePermission = "ion.ships.override.10"
 	),
 	CORVETTE(
 		displayName = "Corvette",
@@ -81,7 +85,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.2,
 		menuItemMaterial = Material.IRON_BLOCK,
 		isWarship = true,
-		colour = "#990000"
+		colour = "#990000",
+		overridePermission = "ion.ships.override.20"
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -96,7 +101,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.3,
 		menuItemMaterial = Material.LAPIS_BLOCK,
 		isWarship = true,
-		colour = "#cc0000"
+		colour = "#cc0000",
+		overridePermission = "ion.ships.override.40"
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -111,7 +117,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.4,
 		menuItemMaterial = Material.GOLD_BLOCK,
 		isWarship = true,
-		colour = "#ff0000"
+		colour = "#ff0000",
+		overridePermission = "ion.ships.override.80"
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
@@ -126,7 +133,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.0,
 		menuItemMaterial = Material.PRISMARINE_SHARD,
 		isWarship = false,
-		colour = "#000033"
+		colour = "#000033",
+		overridePermission = "ion.ships.override.1"
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -141,7 +149,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.1,
 		menuItemMaterial = Material.PRISMARINE_CRYSTALS,
 		isWarship = false,
-		colour = "#000066"
+		colour = "#000066",
+		overridePermission = "ion.ships.override.10"
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -156,7 +165,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.2,
 		menuItemMaterial = Material.PRISMARINE_SLAB,
 		isWarship = false,
-		colour = "#000099"
+		colour = "#000099",
+		overridePermission = "ion.ships.override.20"
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -171,7 +181,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.3,
 		menuItemMaterial = Material.PRISMARINE_STAIRS,
 		isWarship = false,
-		colour = "#0000cc"
+		colour = "#0000cc",
+		overridePermission = "ion.ships.override.40"
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -186,7 +197,8 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.4,
 		menuItemMaterial = Material.PRISMARINE,
 		isWarship = false,
-		colour = "#0000ff"
+		colour = "#0000ff",
+		overridePermission = "ion.ships.override.80"
 	);
 
 	val formatted: String get() = "<$colour>$displayName</$colour>"
@@ -209,7 +221,7 @@ enum class StarshipType(
 		)
 
 	fun canUse(player: Player): Boolean =
-		player.hasPermission("starships.anyship") || Levels[player] >= minLevel
+		player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel
 
 	companion object {
 		private val stringMap = mutableMapOf<String, StarshipType>().apply {
