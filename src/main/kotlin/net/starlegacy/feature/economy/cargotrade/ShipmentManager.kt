@@ -173,7 +173,7 @@ object ShipmentManager : SLComponent() {
 		}
 	}
 
-	private const val TIME_LIMIT = 18L
+	private const val TIME_LIMIT = 12L
 
 	private fun giveShipment(player: Player, shipment: UnclaimedShipment, count: Int) {
 		val cost = getCost(shipment, count)
