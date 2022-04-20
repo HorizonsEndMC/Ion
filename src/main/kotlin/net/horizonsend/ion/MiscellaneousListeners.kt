@@ -25,11 +25,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
-import org.bukkit.event.entity.CreatureSpawnEvent
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.PATROL
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.RAID
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -85,18 +80,6 @@ class MiscellaneousListeners: Listener {
 	@EventHandler
 	fun onIceMelt(event: BlockFadeEvent) {
 		if (event.block.type == ICE) event.isCancelled = true
-	}
-
-	private val canceledSpawnReasons= enumSetOf(
-		NATURAL,
-		RAID,
-		REINFORCEMENTS,
-		PATROL
-	)
-
-	@EventHandler
-	fun onMobSpawn(event: CreatureSpawnEvent) {
-		if (canceledSpawnReasons.contains(event.spawnReason)) event.isCancelled = true
 	}
 
 	@EventHandler
