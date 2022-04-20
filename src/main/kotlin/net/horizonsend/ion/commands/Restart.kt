@@ -19,6 +19,11 @@ import org.bukkit.event.player.PlayerKickEvent.Cause.RESTART_COMMAND
 import org.bukkit.event.player.PlayerQuitEvent
 
 internal class Restart(private val plugin: Ion): BaseCommand(), Listener {
+	init {
+		plugin.commandManager.registerCommand(this)
+		plugin.server.pluginManager.registerEvents(this, plugin)
+	}
+
 	private val isVoteRestartInProgress = false
 
 	private val requiredRestartVotes get() = floorDiv(plugin.server.onlinePlayers.size, 2) + 1

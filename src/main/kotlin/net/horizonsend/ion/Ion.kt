@@ -15,30 +15,26 @@ import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
+	lateinit var commandManager: PaperCommandManager
+		private set
+
 	override fun onEnable() {
-		val listenerCommands = setOf(
+		OreListener(this) // Super important and is needed immediately.
+		MiscellaneousListeners(this)
+
+		// Everything unimportant goes here.
+		server.scheduler.runTaskAsynchronously(this, Runnable {
+			commandManager = PaperCommandManager(this)
+
+			@Suppress("DEPRECATION")
+			commandManager.enableUnstableAPI("help")
+
+			server.addRecipe(FurnaceRecipe(NamespacedKey(this, "quartzrecipe"), ItemStack(QUARTZ), DIORITE, 1f, 400))
+			server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
+
+			MobSpawning(this)
+			ShrugCommand(this)
 			Restart(this)
-		)
-
-		val commands = setOf(
-			ShrugCommand()
-		)
-
-		val commandManager = PaperCommandManager(this)
-
-		commands.forEach { commandManager.registerCommand(it) }
-		listenerCommands.forEach { commandManager.registerCommand(it) }
-
-		@Suppress("DEPRECATION")
-		commandManager.enableUnstableAPI("help")
-
-		server.pluginManager.registerEvents(MiscellaneousListeners(), this)
-		server.pluginManager.registerEvents(MobSpawning(), this)
-		server.pluginManager.registerEvents(OreListener(this), this)
-
-		listenerCommands.forEach { server.pluginManager.registerEvents(it, this) }
-
-		this.server.addRecipe(FurnaceRecipe(NamespacedKey(this, "quartzrecipe"), ItemStack(QUARTZ), DIORITE, 1f, 400))
-		this.server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
+		})
 	}
 }
