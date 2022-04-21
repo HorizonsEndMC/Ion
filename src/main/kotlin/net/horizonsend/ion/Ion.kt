@@ -28,7 +28,6 @@ class Ion: JavaPlugin() {
 			@Suppress("DEPRECATION")
 			commandManager.enableUnstableAPI("help")
 
-			MobSpawning(this)
 			ShrugCommand(this)
 			Restart(this)
 		})
