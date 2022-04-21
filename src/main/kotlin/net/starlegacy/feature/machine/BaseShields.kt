@@ -21,8 +21,6 @@ import kotlin.math.max
 import kotlin.math.min
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.SLComponent
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.baseshield.BaseShieldMultiblock
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
@@ -33,7 +31,6 @@ import net.starlegacy.util.getNMSBlockData
 import net.starlegacy.util.getNMSBlockDataSafe
 import net.starlegacy.util.getSphereBlocks
 import net.starlegacy.util.isStainedGlass
-import net.starlegacy.util.isWallSign
 import net.starlegacy.util.setAir
 import net.starlegacy.util.setNMSBlockData
 import net.starlegacy.util.timing
@@ -45,15 +42,12 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockPhysicsEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.entity.EntityExplodeEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.EquipmentSlot
 
 object BaseShields : SLComponent() {
 	private lateinit var impactTiming: Timing
@@ -378,21 +372,6 @@ object BaseShields : SLComponent() {
 			if (event.blocks.any { isShieldBlock(it) }) {
 				event.isCancelled = true
 			}
-		}
-
-		plugin.listen<PlayerInteractEvent> { event ->
-			val clickedBlock = event.clickedBlock ?: return@listen
-			if (event.isCancelled
-				|| event.hand != EquipmentSlot.HAND
-				|| event.action != Action.RIGHT_CLICK_BLOCK
-				|| !clickedBlock.type.isWallSign
-			) return@listen
-
-			val sign = clickedBlock.getState(false) as Sign
-
-			if (Multiblocks[sign] !is BaseShieldMultiblock) return@listen
-
-			setBaseShieldEnabled(sign, isBaseShieldDisabled(sign))
 		}
 	}
 }

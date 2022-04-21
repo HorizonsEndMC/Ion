@@ -15,7 +15,6 @@ import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.feature.multiblock.areashield.AreaShield
-import net.starlegacy.feature.multiblock.baseshield.BaseShieldMultiblock
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
@@ -271,7 +270,7 @@ object Wires : SLComponent() {
 				val destinationFreeSpace = destinationPowerMax - destinationPower
 
 				val transferLimit = when (destinationMultiblock) {
-					is BaseShieldMultiblock, is AreaShield -> transportConfig.wires.maxShieldInput
+					is AreaShield -> transportConfig.wires.maxShieldInput
 					else -> transportConfig.wires.maxPowerInput
 				}
 
