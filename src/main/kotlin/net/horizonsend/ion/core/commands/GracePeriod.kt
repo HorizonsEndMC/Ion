@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender
 
 @CommandAlias("graceperiodtoggle")
 @CommandPermission("graceperiodtoggle")
-internal object GracePeriod: BaseCommand() {
+object GracePeriod: BaseCommand() {
 	val graceperiodfile = PLUGIN.dataFolder.resolve("graceperiod")
 
 	val isGracePeriod get() = graceperiodfile.exists()
