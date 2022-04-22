@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
+import net.horizonsend.ion.core.commands.GracePeriod
 import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundSource
@@ -110,6 +111,8 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
+		if (GracePeriod.isGracePeriod) return false
+
 		val block: Block? = result.hitBlock
 		val entity: Entity? = result.hitEntity
 
@@ -131,6 +134,8 @@ abstract class SimpleProjectile(
 	}
 
 	protected open fun impact(newLoc: Location, block: Block?, entity: Entity?) {
+		if (GracePeriod.isGracePeriod) return
+
 		val world = newLoc.world
 
 		// use these so we dont use hardcoded Material values
