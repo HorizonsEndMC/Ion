@@ -6,6 +6,7 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import java.io.File
 import java.util.Locale
+import net.horizonsend.ion.core.commands.GracePeriod
 import net.horizonsend.ion.core.commands.Starships
 import net.horizonsend.ion.core.namereservations.NameReservationCommand
 import net.starlegacy.cache.Caches
@@ -397,7 +398,8 @@ class StarLegacy : JavaPlugin() {
 			StarshipInfoCommand,
 
 			Starships(),
-			NameReservationCommand(this)
+			NameReservationCommand(this),
+			GracePeriod
 		)
 
 	private fun registerCommands() {
