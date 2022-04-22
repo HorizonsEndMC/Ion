@@ -2,6 +2,7 @@ package net.starlegacy.feature.gear.blaster
 
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import net.horizonsend.ion.core.commands.GracePeriod
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.enumValueOfOrNull
@@ -79,6 +80,8 @@ class BlasterProjectile(
 
 
 	private fun schedule() {
+		if (GracePeriod.isGracePeriod) return
+
 		scheduler.schedule({
 			if (distance < range) {
 				Tasks.sync { tick() }
@@ -88,6 +91,8 @@ class BlasterProjectile(
 	}
 
 	private fun tick() {
+		if (GracePeriod.isGracePeriod) return
+
 		this.distance += movementPerBlock
 		if (this.distance > range) {
 			return
