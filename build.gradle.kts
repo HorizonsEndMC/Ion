@@ -3,7 +3,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion.of
 plugins {
   java
 	id("com.github.johnrengelman.shadow") version "7.1.2" // ShadowJar
-	id("io.papermc.paperweight.userdev") version "1.3.5"  // Paperweight
+	id("io.papermc.paperweight.userdev") version "1.3.6"  // Paperweight
 	kotlin("jvm") version "1.6.21"                        // Kotlin
 	kotlin("plugin.serialization") version "1.6.21"       // Kotlin Serialization
 }
