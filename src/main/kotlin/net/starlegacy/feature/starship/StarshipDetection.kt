@@ -12,6 +12,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
@@ -195,7 +196,7 @@ object StarshipDetection : SLComponent() {
 		}
 
 		val carbynePercent: Double = carbyne.toDouble() / size.toDouble()
-		if (carbynePercent < 0.3) {
+		if (type != PLATFORM && carbynePercent < 0.3) {
 			throw DetectionFailedException(
 				"All ships require at least 30% carbyne (concrete) blocks in order to fly. Current %: ${carbynePercent * 100}"
 			)
