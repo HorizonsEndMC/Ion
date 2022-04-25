@@ -27,6 +27,7 @@ import org.litote.kmongo.pull
 import org.litote.kmongo.pullAll
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
+import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 
@@ -60,7 +61,9 @@ data class Settlement(
 	/** Null if it's not a city, unpaid if it hasn't paid its taxes, active if it's an active city */
 	var cityState: CityState? = null,
 	/** Lets settlement cities set tax percents on cargo trade and bazaars */
-	var tradeTax: Double? = null
+	var tradeTax: Double? = null,
+
+	val needsRefund: Boolean = true
 ) : DbObject, MoneyHolder {
 	enum class CityState { UNPAID, ACTIVE }
 
@@ -112,7 +115,7 @@ data class Settlement(
 			require(SLPlayer.matches(sess, leader, SLPlayer::settlement eq null))
 
 			val id: Oid<Settlement> = objId()
-			val settlement = Settlement(id, territory, name, leader)
+			val settlement = Settlement(id, territory, name, leader, needsRefund = false)
 
 			SLPlayer.col.updateOne(sess, idFilterQuery(leader), org.litote.kmongo.setValue(SLPlayer::settlement, id))
 			Territory.col.updateOne(
@@ -223,6 +226,10 @@ data class Settlement(
 
 		fun setMinBuildAccess(settlementId: Oid<Settlement>, level: ForeignRelation) {
 			updateById(settlementId, org.litote.kmongo.setValue(Settlement::minimumBuildAccess, level))
+		}
+
+		fun setNeedsRefund(settlementId: Oid<Settlement>) {
+			updateById(settlementId, setValue(Settlement::needsRefund, false))
 		}
 	}
 
