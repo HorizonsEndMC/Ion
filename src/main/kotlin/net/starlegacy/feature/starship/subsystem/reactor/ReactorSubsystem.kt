@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.subsystem.reactor
 
 import kotlin.math.min
 import kotlin.math.roundToInt
+import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.StarshipSubsystem
@@ -10,8 +11,7 @@ import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 class ReactorSubsystem(
 	starship: ActiveStarship
 ) : StarshipSubsystem(starship, starship.centerOfMass) {
-	val output: Double =
-		Math.cbrt(starship.blockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (if (starship.type.isWarship) 1.0 else 0.7)
+	val output: Double = if (starship.type == PLATFORM) 0.0 else Math.cbrt(starship.blockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (if (starship.type.isWarship) 1.0 else 0.7)
 	val powerDistributor = PowerDistributor()
 	val weaponCapacitor = WeaponCapacitor(this)
 	val heavyWeaponBooster = HeavyWeaponBooster(this)
