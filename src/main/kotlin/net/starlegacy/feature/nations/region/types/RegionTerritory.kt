@@ -3,6 +3,7 @@ package net.starlegacy.feature.nations.region.types
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import java.awt.Polygon
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import net.starlegacy.SETTINGS
@@ -41,7 +42,15 @@ class RegionTerritory(territory: Territory) : Region<Territory>(territory),
 	var isProtected: Boolean = territory.isProtected; private set
 	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
 
-	val cost get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(SETTINGS.territoryCost).toInt()
+	val oldCost get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(SETTINGS.territoryCost).toInt()
+	val cost: Int get() {
+		val n = polygon.npoints
+		var sum = 0
+		for (i in 0 until n) {
+			sum += polygon.xpoints[i] * (polygon.ypoints[(i + 1) % n] - polygon.ypoints[(i + n - 1) % n])
+		}
+		return abs(sum/2)
+	}
 
 	var centerX = polygon.xpoints.average().roundToInt(); private set
 	var centerZ = polygon.ypoints.average().roundToInt(); private set

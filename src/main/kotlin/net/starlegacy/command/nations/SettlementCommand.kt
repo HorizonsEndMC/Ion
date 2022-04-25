@@ -23,6 +23,7 @@ import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SettlementRole
+import net.starlegacy.database.schema.nations.Territory
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.nations.NATIONS_BALANCE
@@ -40,6 +41,7 @@ import net.starlegacy.util.colorize
 import net.starlegacy.util.darkAqua
 import net.starlegacy.util.darkGreen
 import net.starlegacy.util.darkPurple
+import net.starlegacy.util.depositMoney
 import net.starlegacy.util.fromLegacy
 import net.starlegacy.util.gray
 import net.starlegacy.util.msg
@@ -522,4 +524,19 @@ internal object SettlementCommand : SLCommand() {
 
 	@Subcommand("role")
 	fun onRole(sender: CommandSender): Unit = fail { "Use /srole, not /s role (remove the space)" }
+
+	@Subcommand("refund")
+	fun onRefund(sender: Player) {
+		val settlementId = requireSettlementIn(sender)
+		requireSettlementLeader(sender, settlementId)
+
+		val settlement = Settlement.findById(settlementId) ?: return
+
+		val territory = RegionTerritory(Territory.findById(settlement.territory) ?: return)
+
+		if (settlement.needsRefund) {
+			Settlement.setNeedsRefund(settlementId)
+			sender.depositMoney(territory.oldCost - territory.cost)
+		}
+	}
 }
