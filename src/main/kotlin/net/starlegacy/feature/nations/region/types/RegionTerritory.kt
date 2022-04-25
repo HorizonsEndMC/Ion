@@ -49,7 +49,7 @@ class RegionTerritory(territory: Territory) : Region<Territory>(territory),
 		for (i in 0 until n) {
 			sum += polygon.xpoints[i] * (polygon.ypoints[(i + 1) % n] - polygon.ypoints[(i + n - 1) % n])
 		}
-		return abs(sum/2)
+		return abs(sum/2)/100
 	}
 
 	var centerX = polygon.xpoints.average().roundToInt(); private set
