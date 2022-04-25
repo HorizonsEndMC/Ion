@@ -8,7 +8,9 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
+import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.database.Oid
@@ -26,6 +28,7 @@ import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.SLXP
+import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Notify
 import net.starlegacy.util.SLTextStyle
@@ -159,11 +162,13 @@ object ShipmentManager : SLComponent() {
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
-		player.input("What color is the sky?") { _: Player, answer ->
+		player.input("Select amount of crates:") { _: Player, answer ->
 			val amount = answer.toIntOrNull() ?: return@input "Amount must be an integer"
 
+			val playerMaxShipSize = StarshipType.values().filter { !it.isWarship && it.canUse(player) }.sortedByDescending { it.maxSize }[0].maxSize
+
 			val min = balancing.generator.minShipmentSize
-			val max = balancing.generator.maxShipmentSize
+			val max = min(balancing.generator.maxShipmentSize, (min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt())
 			if (amount !in min..max) {
 				return@input "Amount must be between $min and $max"
 			}
