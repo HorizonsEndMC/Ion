@@ -138,6 +138,8 @@ object ActiveStarships : SLComponent() {
 	fun updateWorld(starship: ActiveStarship, oldWorld: World, newWorld: World) {
 		worldMap[oldWorld].remove(starship)
 		worldMap[newWorld].add(starship)
+
+		if (newWorld.name == "Space") StarshipDestruction.destroy(starship)
 	}
 
 	operator fun get(playerShipId: Oid<PlayerStarshipData>) = playerShipIdMap[playerShipId]
