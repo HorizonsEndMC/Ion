@@ -3,9 +3,11 @@ package net.starlegacy.feature.starship.control
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.starlegacy.SLComponent
-import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.PilotedStarships
+import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipStartCruisingEvent
@@ -139,6 +141,11 @@ object StarshipCruising : SLComponent() {
 	}
 
 	fun startCruising(player: Player, starship: ActivePlayerStarship) {
+		if (starship.type == PLATFORM) {
+			player.sendMessage(text("This ship type is not capable of moving.", RED))
+			return
+		}
+
 		if (!StarshipStartCruisingEvent(starship, player).callEvent()) {
 			return
 		}
@@ -178,6 +185,11 @@ object StarshipCruising : SLComponent() {
 	}
 
 	fun stopCruising(player: Player, starship: ActivePlayerStarship) {
+		if (starship.type == PLATFORM) {
+			player.sendMessage(text("This ship type is not capable of moving.", RED))
+			return
+		}
+
 		if (!StarshipStopCruisingEvent(starship, player).callEvent()) {
 			return
 		}
