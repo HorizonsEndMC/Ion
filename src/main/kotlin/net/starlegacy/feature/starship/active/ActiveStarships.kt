@@ -12,6 +12,7 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipDestruction
+import net.starlegacy.feature.starship.StarshipType.SPEEDER
 import net.starlegacy.feature.starship.event.StarshipActivatedEvent
 import net.starlegacy.feature.starship.event.StarshipDeactivatedEvent
 import net.starlegacy.util.Tasks
@@ -139,7 +140,7 @@ object ActiveStarships : SLComponent() {
 		worldMap[oldWorld].remove(starship)
 		worldMap[newWorld].add(starship)
 
-		if (newWorld.name == "Space") StarshipDestruction.destroy(starship)
+		if (starship.type == SPEEDER && newWorld.name == "Space") StarshipDestruction.destroy(starship)
 	}
 
 	operator fun get(playerShipId: Oid<PlayerStarshipData>) = playerShipIdMap[playerShipId]
