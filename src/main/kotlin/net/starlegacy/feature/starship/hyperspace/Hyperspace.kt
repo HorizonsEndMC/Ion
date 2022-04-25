@@ -2,8 +2,11 @@ package net.starlegacy.feature.starship.hyperspace
 
 import kotlin.math.log10
 import kotlin.math.sqrt
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.SpaceWorlds
+import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipActivatedEvent
@@ -35,6 +38,11 @@ object Hyperspace : SLComponent() {
 	}
 
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
+		if (starship.type == PLATFORM) {
+			starship.onlinePassengers.forEach{ it.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED)) }
+			return
+		}
+
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }
 		check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }

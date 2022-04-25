@@ -199,6 +199,22 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#0000ff",
 		overridePermission = "ion.ships.override.80"
+	),
+	PLATFORM(
+		displayName = "Platform",
+		minSize = 25,
+		maxSize = 100000,
+		minLevel = 1,
+		containerPercent = 0.0,
+		crateLimitMultiplier = 0.0,
+		sneakFlyAccelDistance = 0,
+		maxSneakFlyAccel = 0,
+		interdictionRange = 0,
+		hyperspaceRangeMultiplier = 0.0,
+		menuItemMaterial = Material.BEDROCK,
+		isWarship = false,
+		colour = "#ffffff",
+		overridePermission = "ion.ships.override.1"
 	);
 
 	val formatted: String get() = "<$colour>$displayName</$colour>"

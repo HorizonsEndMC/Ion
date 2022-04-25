@@ -15,9 +15,12 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.sin
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
+import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -110,6 +113,11 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun processManualFlight(starship: ActivePlayerStarship) {
+		if (starship.type == PLATFORM) {
+			starship.pilot!!.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			return
+		}
+
 		if (starship.isTeleporting) {
 			return
 		}
@@ -124,6 +132,11 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun processDirectControl(starship: ActivePlayerStarship) {
+		if (starship.type == PLATFORM) {
+			starship.pilot!!.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			return
+		}
+
 		if (starship.isInterdicting || Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) {
 			starship.setDirectControlEnabled(false)
 			return
@@ -245,6 +258,11 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun processSneakFlight(pilot: Player, starship: ActivePlayerStarship) {
+		if (starship.type == PLATFORM) {
+			pilot.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			return
+		}
+
 		if (!isHoldingController(pilot)) {
 			return
 		}
