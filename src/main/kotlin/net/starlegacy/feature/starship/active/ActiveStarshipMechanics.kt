@@ -99,10 +99,6 @@ object ActiveStarshipMechanics : SLComponent() {
 					continue
 				}
 
-				if (weapon is TurretWeaponSubsystem && targetRiding == null) {
-					continue
-				}
-
 				val dir = weapon.getAdjustedDir(direct, targetVec)
 
 				if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(dir)) {
