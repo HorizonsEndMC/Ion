@@ -34,8 +34,8 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 			horizontalAxis.rotateAroundY(90.0)
 			horizontalAxis.normalize()
 
-			adjustedDir.rotateAroundAxis(horizontalAxis, Math.toRadians(randomDouble(-2.5, 2.5)))
-			adjustedDir.rotateAroundY(Math.toRadians(randomDouble(-2.5, 2.5)))
+			adjustedDir.rotateAroundAxis(horizontalAxis, Math.toRadians(randomDouble(-0.01, 0.01)))
+			adjustedDir.rotateAroundY(Math.toRadians(randomDouble(-0.01, 0.01)))
 
 			return adjustedDir.normalize()
 		}
