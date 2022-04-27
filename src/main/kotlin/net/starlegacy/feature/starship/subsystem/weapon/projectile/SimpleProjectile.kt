@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import net.horizonsend.ion.core.commands.GracePeriod
@@ -42,6 +43,7 @@ abstract class SimpleProjectile(
 	protected var firedAtNanos: Long = -1
 	private var lastTick: Long = -1
 	protected var delta: Double = 0.0
+	private var hasHit: Boolean = false
 
 	override fun fire() {
 		firedAtNanos = System.nanoTime()
@@ -111,6 +113,7 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
+		if (starship?.world?.name?.lowercase(Locale.getDefault())?.contains("hyperspace")!!) return false
 		if (GracePeriod.isGracePeriod) return false
 
 		val block: Block? = result.hitBlock
@@ -144,7 +147,10 @@ abstract class SimpleProjectile(
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
 
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
-			world.createExplosion(newLoc, explosionPower)
+			if (!hasHit) {
+				world.createExplosion(newLoc, explosionPower)
+				hasHit = true
+			}
 		}
 
 		if (block != null && shooter != null) {
