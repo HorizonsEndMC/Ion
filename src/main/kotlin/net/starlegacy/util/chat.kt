@@ -6,19 +6,34 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-@Deprecated("Use Ion MiniMessage Extension Functions")
+@Deprecated(
+	"Use Ion MiniMessage Extension Functions",
+	ReplaceWith("sendMiniMessage(text)", "net.horizonsend.ion.core.extensions.sendMiniMessage")
+)
 infix fun CommandSender.msg(text: String) = this.sendMessage(text.colorize())
 
-@Deprecated("Use Ion MiniMessage Extension Functions")
+@Deprecated(
+	"Use Ion MiniMessage Extension Functions",
+	ReplaceWith("sendMiniMessage(text)", "net.horizonsend.ion.core.extensions.sendMiniMessage")
+)
 infix fun CommandSender.msg(text: TextComponent) = sendMessage(text)
 
-@Deprecated("Use Ion MiniMessage Extension Functions")
+@Deprecated(
+	"Use Ion MiniMessage Extension Functions",
+	ReplaceWith("sendMiniMessageActionBar(text)", "net.horizonsend.ion.core.extensions.sendMiniMessageActionBar")
+)
 infix fun Player.action(text: TextComponent) = action(text.toLegacyText())
 
-@Deprecated("Use Ion MiniMessage Extension Functions")
+@Deprecated(
+	"Use Ion MiniMessage Extension Functions",
+	ReplaceWith("sendMiniMessageActionBar(text)", "net.horizonsend.ion.core.extensions.sendMiniMessageActionBar")
+)
 infix fun Player.action(text: String) = sendActionBar(text.colorize())
 
-@Deprecated("Use Ion MiniMessage Extension Functions")
+@Deprecated(
+	"Use Ion MiniMessage Extension Functions",
+	ReplaceWith("sendMiniMessageActionBar(text)", "net.horizonsend.ion.core.extensions.sendMiniMessageActionBar")
+)
 infix fun Player.actionAndMsg(text: String) {
 	this.action(text)
 	this.msg(text)
