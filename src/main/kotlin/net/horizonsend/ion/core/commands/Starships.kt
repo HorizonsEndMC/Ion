@@ -3,7 +3,7 @@ package net.horizonsend.ion.core.commands
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
-import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import net.horizonsend.ion.core.extensions.sendMiniMessage
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.starships.PlayerStarshipData.Companion.findByPilot
 import net.starlegacy.database.slPlayerId
@@ -13,10 +13,10 @@ import net.starlegacy.util.blockKeyZ
 import org.bukkit.entity.Player
 
 @CommandAlias("starships")
-internal class Starships: BaseCommand() {
+internal class Starships : BaseCommand() {
 	@Default
 	fun starships(sender: Player) {
-		sender.sendMessage(miniMessage().deserialize(
+		sender.sendMiniMessage(
 			findByPilot(sender.slPlayerId).map {
 				val x = blockKeyX(it.blockKey)
 				val y = blockKeyY(it.blockKey)
@@ -25,6 +25,6 @@ internal class Starships: BaseCommand() {
 				"${it.type.formatted} in world <gold>${it.world}</gold> at <green>$x</green>, <green>$y</green>, <green>$z</green> owned by <aqua>${SLPlayer[it.captain]?.lastKnownName}</aqua>"
 
 			}.joinToString("\n", "<bold>Starships:</bold><gray>")
-		))
+		)
 	}
 }
