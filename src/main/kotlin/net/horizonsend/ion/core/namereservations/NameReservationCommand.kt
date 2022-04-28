@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Single
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.core.extensions.sendMiniMessage
 import net.horizonsend.ion.core.namereservations.NameReservations.addNationReservation
 import net.horizonsend.ion.core.namereservations.NameReservations.addSettlementReservation
 import net.horizonsend.ion.core.namereservations.NameReservations.doesNationReservationExist
@@ -14,7 +15,6 @@ import net.horizonsend.ion.core.namereservations.NameReservations.doesSettlement
 import net.horizonsend.ion.core.namereservations.NameReservations.getNameReservationData
 import net.horizonsend.ion.core.namereservations.NameReservations.removeNationReservation
 import net.horizonsend.ion.core.namereservations.NameReservations.removeSettlementReservation
-import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.StarLegacy
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -31,27 +31,27 @@ internal class NameReservationCommand(val plugin: StarLegacy): BaseCommand() {
 		@Subcommand("all")
 		@Description("Lists all name reservations")
 		fun commandReservationsListAll(sender: CommandSender) =
-			sender.sendMessage(miniMessage().deserialize(
+			sender.sendMiniMessage(
 				mutableListOf<String>().apply {
 					addAll(getSettlementNameReservations())
 					addAll(getNationNameReservations())
 					sort()
 				}.joinToString("\n", "", "")
-			))
+			)
 
 		@Subcommand("settlements")
 		@Description("Lists all settlement reservations")
 		fun commandReservationsListSettlements(sender: CommandSender) =
-			sender.sendMessage(miniMessage().deserialize(
+			sender.sendMiniMessage(
 				getSettlementNameReservations().joinToString("\n", "", "")
-			))
+			)
 
 		@Subcommand("nations")
 		@Description("Lists all nation reservations")
 		fun commandReservationsListNations(sender: CommandSender) =
-			sender.sendMessage(miniMessage().deserialize(
+			sender.sendMiniMessage(
 				getNationNameReservations().joinToString("\n", "", "")
-			))
+			)
 
 		private fun getSettlementNameReservations() =
 			getNameReservationData().settlements.map {
@@ -67,20 +67,20 @@ internal class NameReservationCommand(val plugin: StarLegacy): BaseCommand() {
 	@Subcommand("add")
 	@Description("Adds name reservations")
 	@Suppress("unused") // Entrypoint (Command)
-	inner class Add: BaseCommand() {
+	inner class Add : BaseCommand() {
 		@Subcommand("settlement")
 		@Description("Adds a settlement name reservation")
 		fun commandReservationsAddSettlement(sender: CommandSender, @Single target: String, @Single name: String) {
 			val targetPlayer = Bukkit.getPlayer(target)?.uniqueId ?: Bukkit.getOfflinePlayer(target).uniqueId
 
 			if (doesSettlementReservationExist(name)) {
-				sender.sendMessage(miniMessage().deserialize("<yellow>Settlement reservation <white>\"$name\"</white> already exists."))
+				sender.sendMiniMessage("<yellow>Settlement reservation <white>\"$name\"</white> already exists.")
 				return
 			}
 
 			addSettlementReservation(name, targetPlayer)
 
-			sender.sendMessage(miniMessage().deserialize("<green>Settlement reservation <white>\"$name\"</white> created."))
+			sender.sendMiniMessage("<green>Settlement reservation <white>\"$name\"</white> created.")
 		}
 
 		@Subcommand("nation")
@@ -89,13 +89,13 @@ internal class NameReservationCommand(val plugin: StarLegacy): BaseCommand() {
 			val targetPlayer = Bukkit.getPlayer(target)?.uniqueId ?: Bukkit.getOfflinePlayer(target).uniqueId
 
 			if (doesNationReservationExist(name)) {
-				sender.sendMessage(miniMessage().deserialize("<yellow>Nation reservation <white>\"$name\"</white> already exists."))
+				sender.sendMiniMessage("<yellow>Nation reservation <white>\"$name\"</white> already exists.")
 				return
 			}
 
 			addNationReservation(name, targetPlayer)
 
-			sender.sendMessage(miniMessage().deserialize("<green>Nation reservation <white>\"$name\"</white> created."))
+			sender.sendMiniMessage("<green>Nation reservation <white>\"$name\"</white> created.")
 		}
 	}
 
@@ -107,26 +107,26 @@ internal class NameReservationCommand(val plugin: StarLegacy): BaseCommand() {
 		@Description("Removes a settlement name reservation")
 		fun commandReservationsRemoveSettlement(sender: CommandSender, @Single name: String) {
 			if (!doesSettlementReservationExist(name)) {
-				sender.sendMessage(miniMessage().deserialize("<yellow>Settlement reservation <white>\"$name\"</white> does not exist."))
+				sender.sendMiniMessage("<yellow>Settlement reservation <white>\"$name\"</white> does not exist.")
 				return
 			}
 
 			removeSettlementReservation(name)
 
-			sender.sendMessage(miniMessage().deserialize("<green>Settlement reservation <white>\"$name\"</white> removed."))
+			sender.sendMiniMessage("<green>Settlement reservation <white>\"$name\"</white> removed.")
 		}
 
 		@Subcommand("nation")
 		@Description("Removes a nation name reservation")
 		fun commandReservationsRemoveNation(sender: CommandSender, @Single name: String) {
 			if (!doesNationReservationExist(name)) {
-				sender.sendMessage(miniMessage().deserialize("<yellow>Nation reservation <white>\"$name\"</white> does not exist."))
+				sender.sendMiniMessage("<yellow>Nation reservation <white>\"$name\"</white> does not exist.")
 				return
 			}
 
 			removeNationReservation(name)
 
-			sender.sendMessage(miniMessage().deserialize("<green>Nation reservation <white>\"$name\"</white> removed."))
+			sender.sendMiniMessage("<green>Nation reservation <white>\"$name\"</white> removed.")
 		}
 	}
 }
