@@ -1,5 +1,10 @@
 package net.starlegacy.feature.starship
 
+import net.horizonsend.ion.core.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.FeedbackType.SUCCESS
+import net.horizonsend.ion.core.FeedbackType.INFORMATION
+import net.horizonsend.ion.core.sendFeedbackActionMessage
+import net.horizonsend.ion.core.sendFeedbackMessage
 import java.util.Locale
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -19,11 +24,9 @@ import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.redis
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.actionAndMsg
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
-import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -130,10 +133,13 @@ object PilotedStarships : SLComponent() {
 	}
 
 	operator fun get(player: Player): ActivePlayerStarship? = map[player]
-
 	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActivePlayerStarship) -> Unit = {}): Boolean {
 		if (!data.isPilot(player)) {
-			player actionAndMsg "&cYou're not a pilot of this!"
+			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this!")
+			return false
+		}
+		if (!data.type.canUse(player)) {
+			player.sendFeedbackActionMessage(USER_ERROR, "You are not high enough level to pilot this!")
 			return false
 		}
 
@@ -144,7 +150,7 @@ object PilotedStarships : SLComponent() {
 				return false
 			}
 
-			player actionAndMsg "&cYou're already piloting a starship!"
+			player.sendFeedbackActionMessage(USER_ERROR, "You're already piloting a starship!")
 			return false
 		}
 
@@ -157,17 +163,17 @@ object PilotedStarships : SLComponent() {
 
 		if (activeStarship != null) {
 			if (isPiloted(activeStarship)) {
-				player actionAndMsg "&cThat starship is already being piloted!"
+				player.sendFeedbackActionMessage(USER_ERROR, "That starship is already being piloted!")
 				return false
 			}
 
 			if (!activeStarship.isWithinHitbox(player)) {
-				player msg "&cYou need to be inside the ship to pilot it"
+				player.sendFeedbackMessage(USER_ERROR, "You need to be inside the ship to pilot it")
 				return false
 			}
 
 			pilot(activeStarship, player)
-			player actionAndMsg "&bPiloted already activated starship"
+			player.sendFeedbackActionMessage(USER_ERROR, "Piloted already activated starship")
 			return false
 		}
 
@@ -176,7 +182,7 @@ object PilotedStarships : SLComponent() {
 		val state: PlayerStarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 
 		if (state == null) {
-			player actionAndMsg "&cStarship has not been detected"
+			player.sendFeedbackActionMessage(USER_ERROR, "Starship has not been detected")
 			return false
 		}
 
@@ -191,19 +197,19 @@ object PilotedStarships : SLComponent() {
 			if (blockData.material != foundData.material) {
 				val expected: String = blockData.material.name
 				val found: String = foundData.material.name
-				player actionAndMsg "&cBlock at $x, $y, $z does not match! Expected $expected but found $found"
+				player.sendFeedbackActionMessage(USER_ERROR, "Block at {0}, {1}, {2} does not match! Expected {3} but found {4}", x, y, z, expected, found)
 				return false
 			}
 
 			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
 				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
-					player actionAndMsg "Block at $x, $y, $z is the computer of a piloted ship!"
+					player.sendFeedbackMessage(USER_ERROR, "Block at {0}, {1}, {2} is the computer of a piloted ship!", x, y, z)
 					return false
 				}
 
 				DeactivatedPlayerStarships[world, x, y, z]?.takeIf { it._id != data._id }?.also { carried ->
 					if (!carried.isPilot(player)) {
-						player actionAndMsg "Block at $x, $y, $z is a ship computer which you're not a pilot of!"
+						player.sendFeedbackActionMessage(USER_ERROR, "Block at {0} {1} {2} is a ship computer which you are not a pilot of!", x, y, z)
 						return false
 					}
 
@@ -220,16 +226,16 @@ object PilotedStarships : SLComponent() {
 			}
 
 			if (!activePlayerStarship.isWithinHitbox(player)) {
-				player msg "&cYou need to be inside the ship to pilot it"
+				player.sendFeedbackMessage(USER_ERROR, "You need to be inside the ship to pilot it")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
 
 			pilot(activePlayerStarship, player)
-			player actionAndMsg "&bActivated and piloted ${getDisplayName(data)} with (${activePlayerStarship.blockCount} blocks)"
+			player.sendFeedbackActionMessage(SUCCESS, "Activated and piloted {0} with {1} blocks.", getDisplayName(data), activePlayerStarship.blockCount)
 
 			if (carriedShips.any()) {
-				player msg "&7&o(${carriedShips.size} carried ship(s))"
+				player.sendFeedbackMessage(INFORMATION, "{0} carried ship${if (carriedShips.size != 1) "s" else ""}.", carriedShips.size)
 			}
 
 			callback(activePlayerStarship)
@@ -245,7 +251,7 @@ object PilotedStarships : SLComponent() {
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
-		player actionAndMsg "&bReleased ${getDisplayName(starship.data)}"
+		player.sendFeedbackActionMessage(SUCCESS, "Released {0}", getDisplayName(starship.data))
 		return true
 	}
 
