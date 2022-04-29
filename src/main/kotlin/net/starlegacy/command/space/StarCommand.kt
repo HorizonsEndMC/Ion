@@ -66,7 +66,7 @@ object StarCommand : SLCommand() {
 		val world = star.spaceWorld ?: throw ConditionFailedException("Star's space world is not loaded!")
 
 		val location = star.location.toLocation(world).apply {
-			y = 255.0
+			y = world.maxHeight.toDouble()
 		}
 
 		sender.teleport(location)

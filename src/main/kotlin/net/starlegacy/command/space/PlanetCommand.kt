@@ -255,7 +255,7 @@ object PlanetCommand : SLCommand() {
 		val world = planet.spaceWorld ?: throw ConditionFailedException("Planet's space world is not loaded!")
 
 		val location = planet.location.toLocation(world).apply {
-			y = 255.0
+			y = world.maxHeight.toDouble()
 		}
 
 		sender.teleport(location)

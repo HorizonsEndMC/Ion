@@ -118,7 +118,7 @@ object InteractListener : SLEventListener() {
 		if (event.player.location.pitch > -60) return
 
 		val original = event.player.location.block
-		for (i in 0..(255 - original.y)) {
+		for (i in event.player.world.minHeight..(event.player.world.maxHeight - original.y)) {
 			val block = original.getRelative(BlockFace.UP, i)
 			if (block.type == Material.AIR) continue
 
