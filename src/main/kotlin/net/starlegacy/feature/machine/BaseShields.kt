@@ -226,7 +226,7 @@ object BaseShields : SLComponent() {
 		return shieldBlockCache.getOrPut(ShieldKey(world, sign.location.toBlockKey(), radius)) {
 			getSphereBlocks(radius, lowerBoundOffset = 0.5).map {
 				val x = it.x + sign.x
-				val y = (it.y + sign.y).coerceIn(0..255)
+				val y = (it.y + sign.y).coerceIn(sign.world.minHeight..sign.world.maxHeight)
 				val z = it.z + sign.z
 				return@map ShieldBlockKey(world, blockKey(x, y, z))
 			}
