@@ -1,13 +1,12 @@
 package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.GuiItem
+import java.util.LinkedList
+import net.horizonsend.ion.core.FeedbackType.SERVER_ERROR
 import net.horizonsend.ion.core.FeedbackType.SUCCESS
 import net.horizonsend.ion.core.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.FeedbackType.INFORMATION
-import net.horizonsend.ion.core.FeedbackType.SERVER_ERROR
 import net.horizonsend.ion.core.sendFeedbackActionMessage
 import net.horizonsend.ion.core.sendFeedbackMessage
-import java.util.LinkedList
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
@@ -24,7 +23,6 @@ import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.colorize
-import net.starlegacy.util.msg
 import net.starlegacy.util.toText
 import org.bukkit.Material
 import org.bukkit.World
@@ -115,7 +113,7 @@ object StarshipComputers : SLComponent() {
 	}
 
 	private fun tryOpenMenu(player: Player, data: PlayerStarshipData) {
-		if (!data.isPilot(player) || !player.hasPermission("ion.core.starship.override")) {
+		if (!data.isPilot(player) && !player.hasPermission("ion.core.starship.override")) {
 			Tasks.async {
 				val name: String? = SLPlayer.getName(data.captain)
 				if (name != null) (player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this ship! The captain is {0}", name))
