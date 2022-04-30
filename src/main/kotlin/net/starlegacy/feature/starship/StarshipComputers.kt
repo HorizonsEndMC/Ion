@@ -1,6 +1,12 @@
 package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.GuiItem
+import net.horizonsend.ion.core.FeedbackType.SUCCESS
+import net.horizonsend.ion.core.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.FeedbackType.INFORMATION
+import net.horizonsend.ion.core.FeedbackType.SERVER_ERROR
+import net.horizonsend.ion.core.sendFeedbackActionMessage
+import net.horizonsend.ion.core.sendFeedbackMessage
 import java.util.LinkedList
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
@@ -17,8 +23,6 @@ import net.starlegacy.feature.starship.event.StarshipDetectEvent
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.action
-import net.starlegacy.util.actionAndMsg
 import net.starlegacy.util.colorize
 import net.starlegacy.util.msg
 import net.starlegacy.util.toText
@@ -57,7 +61,7 @@ object StarshipComputers : SLComponent() {
 		}
 
 		if (!StarshipControl.isHoldingController(player)) {
-			player action "&eNot holding starship controller, ignoring computer click"
+			player.sendFeedbackMessage(USER_ERROR, "Not holding starship controller, ignoring computer click")
 			return
 		}
 
@@ -96,7 +100,7 @@ object StarshipComputers : SLComponent() {
 			?: return
 		val player = event.player
 		DeactivatedPlayerStarships.destroyAsync(computer) {
-			player actionAndMsg "&cDestroyed starship computer"
+			player.sendFeedbackActionMessage(SUCCESS, "Destroyed starship computer")
 		}
 	}
 
@@ -106,15 +110,15 @@ object StarshipComputers : SLComponent() {
 
 	private fun createComputer(player: Player, block: Block) {
 		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
-			player actionAndMsg "&7Registered starship computer! Left click again to open the menu."
+			player.sendFeedbackActionMessage(SUCCESS, "Registered starship computer! Left click again to open the menu.")
 		}
 	}
 
 	private fun tryOpenMenu(player: Player, data: PlayerStarshipData) {
-		if (!data.isPilot(player)) {
+		if (!data.isPilot(player) || !player.hasPermission("ion.core.starship.override")) {
 			Tasks.async {
 				val name: String? = SLPlayer.getName(data.captain)
-				player actionAndMsg "&cYou're not a pilot of this ship! The captain is $name"
+				if (name != null) (player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this ship! The captain is {0}", name))
 			}
 			return
 		}
@@ -163,11 +167,11 @@ object StarshipComputers : SLComponent() {
 				val state = try {
 					StarshipDetection.detectNewState(data)
 				} catch (e: StarshipDetection.DetectionFailedException) {
-					player actionAndMsg "&c" + (e.message ?: "Detection failed!")
+					player.sendFeedbackActionMessage(SERVER_ERROR, "{0} Detection failed!", e.message!!)
 					return@async
 				} catch (e: Exception) {
 					e.printStackTrace()
-					player actionAndMsg "&cAn error occurred while detecting"
+					player.sendFeedbackActionMessage(SERVER_ERROR, "An error occurred while detecting")
 					return@async
 				}
 
@@ -177,7 +181,7 @@ object StarshipComputers : SLComponent() {
 
 				DeactivatedPlayerStarships.updateState(data, state)
 
-				player actionAndMsg "&aRe-detected! New size (block count): &e${state.blockMap.keys.size.toText()}"
+				player.sendFeedbackActionMessage(SUCCESS, "Re-detected! New size {0}", state.blockMap.size.toText())
 			}
 		}
 	}
@@ -197,12 +201,12 @@ object StarshipComputers : SLComponent() {
 							if (input != null) Tasks.async {
 								val id = SLPlayer.findIdByName(input)
 								if (id == null) {
-									player msg "&cPlayer not found"
+									player.sendFeedbackMessage(USER_ERROR, "Player not found")
 								} else {
 									DeactivatedPlayerStarships.addPilot(data, id)
 									data.pilots += id
 									PlayerStarshipData.updateById(data._id, addToSet(PlayerStarshipData::pilots, id))
-									player msg "&7Added $input as a pilot to the starship."
+									player.sendFeedbackMessage(SUCCESS, "Added {0} as a pilot to starship.", input)
 								}
 							}
 							return null
@@ -220,7 +224,7 @@ object StarshipComputers : SLComponent() {
 								PlayerStarshipData.updateById(data._id, pull(PlayerStarshipData::pilots, pilot))
 							}
 							player.closeInventory()
-							player msg "&7Removed $name"
+							player.sendFeedbackMessage(SUCCESS, "Removed {0}", name)
 						}
 					})
 				}
@@ -243,7 +247,7 @@ object StarshipComputers : SLComponent() {
 					DeactivatedPlayerStarships.updateType(data, type)
 
 					playerClicker.closeInventory()
-					player msg "&7Changed type to $type"
+					player.sendFeedbackMessage(SUCCESS, "Changed type to {0}", type)
 				}
 			}
 			player.openPaginatedMenu("Select Type", items)
@@ -256,9 +260,9 @@ object StarshipComputers : SLComponent() {
 		DeactivatedPlayerStarships.updateLockEnabled(data, newValue)
 
 		if (newValue) {
-			player msg "&7Enabled lock"
+			player.sendFeedbackMessage(SUCCESS, "Enabled Lock")
 		} else {
-			player msg "&7Disabled lock"
+			player.sendFeedbackMessage(SUCCESS, "Disabled Lock")
 		}
 	}
 }
