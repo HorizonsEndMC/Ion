@@ -39,7 +39,7 @@ enum class FeedbackType(val colour: String) {
  * @see FeedbackType
  */
 fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
-	sendActionBar(parseFeedback(type, message, parameters))
+	sendActionBar(parseFeedback(type, message, parameters.toList()))
 
 /**
  * @param type The type of feedback
@@ -48,7 +48,7 @@ fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg para
  * @see FeedbackType
  */
 fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
-	sendMessage(parseFeedback(type, message, parameters))
+	sendMessage(parseFeedback(type, message, parameters.toList()))
 
 /**
  * @param type The type of feedback
@@ -57,22 +57,21 @@ fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg par
  * @see FeedbackType
  */
 fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
-	parseFeedback(type, message, parameters).also { feedback ->
+	parseFeedback(type, message, parameters.toList()).also { feedback ->
 		sendActionBar(feedback)
 		sendMessage(feedback)
 	}
 }
 
-private fun parseFeedback(type: FeedbackType, message: String, vararg parameters: Any): Component {
+private fun parseFeedback(type: FeedbackType, message: String, parameters: Collection<Any>): Component {
 	var newMessage = "<${type.colour}>$message"
 
 	parameters.forEachIndexed { index, parameter ->
 		newMessage = newMessage.replace(
 			"{$index}", "<white>${
 				when (parameter) {
-					is Number -> parameter.toString()
-					is String -> "\"$parameter\""
-					else -> "\"${parameter}\""
+					is Number -> "$parameter"
+					else -> "\"$parameter\""
 				}
 			}</white>"
 		)
