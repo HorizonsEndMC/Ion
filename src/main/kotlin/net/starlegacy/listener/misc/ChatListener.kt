@@ -1,5 +1,6 @@
 package net.starlegacy.listener.misc
 
+import net.horizonsend.ion.core.updateProtection
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.chat.ChatChannel
 import net.starlegacy.feature.progression.Levels
@@ -18,6 +19,7 @@ object ChatListener : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onAsyncPlayerChatEventA(event: AsyncPlayerChatEvent) {
+		event.player.updateProtection()
 		val prefix = vaultChat.getPlayerPrefix(event.player)
 		val suffix = vaultChat.getPlayerSuffix(event.player)
 		event.format = "$prefix%s$suffix ${SLTextStyle.DARK_GRAY}» ${SLTextStyle.RESET}%s".colorize()
@@ -30,6 +32,7 @@ object ChatListener : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	fun onAsyncPlayerChatEventB(event: AsyncPlayerChatEvent) {
+		event.player.updateProtection()
 		event.format = "&8[&b${Levels[event.player]}&8]&7 ".colorize() + event.format
 	}
 
@@ -38,6 +41,8 @@ object ChatListener : SLEventListener() {
 		if (event.isCancelled) return
 
 		event.isCancelled = true
+
+		event.player.updateProtection()
 
 		val channel = when {
 			event.message.startsWith("!") -> ChatChannel.GLOBAL
