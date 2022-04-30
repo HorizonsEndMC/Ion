@@ -8,15 +8,15 @@ import java.util.Locale
 import net.starlegacy.command.SLCommand
 import net.starlegacy.util.action
 import net.starlegacy.util.enumValueOfOrNull
+import net.starlegacy.util.isBed
+import net.starlegacy.util.isCarpet
 import net.starlegacy.util.isConcrete
 import net.starlegacy.util.isConcretePowder
-import net.starlegacy.util.isWool
-import net.starlegacy.util.isGlassPane
 import net.starlegacy.util.isGlass
-import net.starlegacy.util.isStainedTerracotta
+import net.starlegacy.util.isGlassPane
 import net.starlegacy.util.isGlazedTerracotta
-import net.starlegacy.util.isCarpet
-import net.starlegacy.util.isBed
+import net.starlegacy.util.isStainedTerracotta
+import net.starlegacy.util.isWool
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -37,7 +37,7 @@ object DyeCommand : SLCommand() {
 	}
 
 	private fun dyeItem(item: ItemStack, newDyeColor: DyeColor): DyeColor? {
-		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.Glass || item.type.GlassPane || item.type.StainedTerracotta || item.type.GlazedTerracotta || item.type.Carpet || item.type.Bed)) {
+		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.isGlass || item.type.isGlassPane || item.type.isStainedTerracotta || item.type.isGlazedTerracotta || item.type.isCarpet || item.type.isBed)) {
 			fail { "This item can not be dyed." }
 		}
 
