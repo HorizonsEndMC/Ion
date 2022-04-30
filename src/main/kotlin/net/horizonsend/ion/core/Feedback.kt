@@ -68,7 +68,13 @@ private fun parseFeedback(type: FeedbackType, message: String, vararg parameters
 
 	parameters.forEachIndexed { index, parameter ->
 		newMessage = newMessage.replace(
-			"{$index}", "<white>${if (parameter is Number) parameter else "\"$parameter\""}</white>"
+			"{$index}", "<white>${
+				when (parameter) {
+					is Number -> parameter.toString()
+					is String -> "\"$parameter\""
+					else -> "\"${parameter}\""
+				}
+			}</white>"
 		)
 	}
 
