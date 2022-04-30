@@ -11,6 +11,12 @@ import net.starlegacy.util.enumValueOfOrNull
 import net.starlegacy.util.isConcrete
 import net.starlegacy.util.isConcretePowder
 import net.starlegacy.util.isWool
+import net.starlegacy.util.isGlassPane
+import net.starlegacy.util.isGlass
+import net.starlegacy.util.isStainedTerracotta
+import net.starlegacy.util.isGlazedTerracotta
+import net.starlegacy.util.isCarpet
+import net.starlegacy.util.isBed
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -31,7 +37,7 @@ object DyeCommand : SLCommand() {
 	}
 
 	private fun dyeItem(item: ItemStack, newDyeColor: DyeColor): DyeColor? {
-		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool)) {
+		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.Glass || item.type.GlassPane || item.type.StainedTerracotta || item.type.GlazedTerracotta || item.type.Carpet || item.type.Bed)) {
 			fail { "This item can not be dyed." }
 		}
 
