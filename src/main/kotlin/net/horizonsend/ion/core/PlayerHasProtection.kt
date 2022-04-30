@@ -8,11 +8,13 @@ import net.starlegacy.util.vaultPermission
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
 
-fun Player.updateProtection(): Boolean {
+fun Player.updateProtection(){
+	if (hasPermission("ion.core.protection.freeze")) return
+
 	// If protection has been voided
 	if (hasPermission("ion.core.protection.void")) {
 		vaultPermission.playerRemove(this, "suffix.1000. &6★ &r")
-		return false
+		return
 	}
 
 	var hasProtection = true
@@ -30,5 +32,5 @@ fun Player.updateProtection(): Boolean {
 	else
 		vaultPermission.playerAdd(this, "suffix.1000. &6★ &r")
 
-	return hasProtection
+	return
 }
