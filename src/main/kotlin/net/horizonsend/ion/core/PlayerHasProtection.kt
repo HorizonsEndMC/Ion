@@ -1,5 +1,6 @@
 package net.horizonsend.ion.core
 
+import net.luckperms.api.LuckPermsProvider
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.Settlement
@@ -13,7 +14,8 @@ fun Player.updateProtection(){
 
 	// If protection has been voided
 	if (hasPermission("ion.core.protection.void")) {
-		vaultPermission.playerRemove(this, "suffix.1000. &6★ &r")
+		LuckPermsProvider.get().userManager.getUser(uniqueId)
+		vaultPermission.playerRemoveTransient(this, "suffix.1000. &6★ &r")
 		return
 	}
 
@@ -28,9 +30,9 @@ fun Player.updateProtection(){
 			hasProtection = false
 
 	if (!hasProtection)
-		vaultPermission.playerAdd(this, "ion.core.protection.void")
+		vaultPermission.playerAddTransient(this, "ion.core.protection.void")
 	else
-		vaultPermission.playerAdd(this, "suffix.1000. &6★ &r")
+		vaultPermission.playerAddTransient(this, "suffix.1000. &6★ &r")
 
 	return
 }
