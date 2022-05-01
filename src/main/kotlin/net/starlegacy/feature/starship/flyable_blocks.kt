@@ -113,7 +113,6 @@ import org.bukkit.Material.SNOW
 import org.bukkit.Material.SPONGE
 import org.bukkit.Material.STICKY_PISTON
 import org.bukkit.Material.TALL_GRASS
-import org.bukkit.Material.TINTED_GLASS
 import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.WALL_TORCH
@@ -192,7 +191,6 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	BELL,
 	GRINDSTONE,
 	BARREL,
-	TINTED_GLASS,
 	SCAFFOLDING,
 	CHAIN,
 
