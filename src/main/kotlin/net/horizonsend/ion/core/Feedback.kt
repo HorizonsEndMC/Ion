@@ -38,7 +38,7 @@ enum class FeedbackType(val colour: String) {
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
+internal inline fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
 	sendActionBar(parseFeedback(type, message, parameters.toList()))
 
 /**
@@ -47,7 +47,7 @@ fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg para
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
+internal inline fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
 	sendMessage(parseFeedback(type, message, parameters.toList()))
 
 /**
@@ -56,14 +56,14 @@ fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg par
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
+internal inline fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
 	parseFeedback(type, message, parameters.toList()).also { feedback ->
 		sendActionBar(feedback)
 		sendMessage(feedback)
 	}
 }
 
-private fun parseFeedback(type: FeedbackType, message: String, parameters: Collection<Any>): Component {
+private inline fun parseFeedback(type: FeedbackType, message: String, parameters: Collection<Any>): Component {
 	var newMessage = "<${type.colour}>$message"
 
 	parameters.forEachIndexed { index, parameter ->
