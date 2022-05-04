@@ -1,130 +1,101 @@
 package net.horizonsend.ion.ores
 
-import java.util.EnumSet
-import net.horizonsend.ion.ores.Ore.Aluminium
-import net.horizonsend.ion.ores.Ore.Chetherite
-import net.horizonsend.ion.ores.Ore.Coal
-import net.horizonsend.ion.ores.Ore.Copper
-import net.horizonsend.ion.ores.Ore.Diamond
-import net.horizonsend.ion.ores.Ore.Emerald
-import net.horizonsend.ion.ores.Ore.Gold
-import net.horizonsend.ion.ores.Ore.Iron
-import net.horizonsend.ion.ores.Ore.Lapis
-import net.horizonsend.ion.ores.Ore.Netherite
-import net.horizonsend.ion.ores.Ore.Redstone
-import net.horizonsend.ion.ores.Ore.Titanium
-import net.horizonsend.ion.ores.Ore.Uranium
-import org.bukkit.Material
-import org.bukkit.Material.ANDESITE
-import org.bukkit.Material.BLACKSTONE
-import org.bukkit.Material.CALCITE
-import org.bukkit.Material.COBBLED_DEEPSLATE
-import org.bukkit.Material.DEEPSLATE
-import org.bukkit.Material.DIORITE
-import org.bukkit.Material.GRANITE
-import org.bukkit.Material.GRAVEL
-import org.bukkit.Material.LIGHT_GRAY_TERRACOTTA
-import org.bukkit.Material.NETHERRACK
-import org.bukkit.Material.ORANGE_TERRACOTTA
-import org.bukkit.Material.PACKED_ICE
-import org.bukkit.Material.POLISHED_GRANITE
-import org.bukkit.Material.PRISMARINE
-import org.bukkit.Material.RED_CONCRETE
-import org.bukkit.Material.RED_TERRACOTTA
-import org.bukkit.Material.STONE
-import org.bukkit.Material.TUFF
-
 @Suppress("unused")
-internal enum class OrePlacementConfig(internal val groundMaterial: EnumSet<Material>, internal val options: Map<Ore, Double>) {
+internal enum class OrePlacementConfig(
+	internal val options: Map<Ore, Int>
+) {
 	Chandra(
-		setOf(STONE, TUFF, BLACKSTONE, COBBLED_DEEPSLATE).toCollection(EnumSet.noneOf(Material::class.java)),
 		mapOf(
-			Titanium to 1.0,
-			Iron to 0.3
+			Ore.Titanium to 3
 		)
 	),
 	Ilius(
-		setOf(STONE, DEEPSLATE).toCollection(EnumSet.noneOf(Material::class.java)),
 		mapOf(
-			Aluminium to 0.3,
-			Coal to 0.3
-		)
-	),
-	Damkoth(
-		setOf(DEEPSLATE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Chetherite to 1.0,
-			Emerald to 0.3
-		)
-	),
-	Herdoli(
-		setOf(STONE, GRANITE, ANDESITE, DIORITE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Copper to 1.0,
-			Iron to 0.3
-		)
-	),
-	Rubaciea(
-		setOf(NETHERRACK, RED_TERRACOTTA, RED_CONCRETE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Redstone to 1.0,
-			Lapis to 0.3
-		)
-	),
-	Isik(
-		setOf(STONE, GRANITE, ANDESITE, DIORITE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Netherite to 0.3,
-			Emerald to 0.3
-		)
-	),
-	Chimgara(
-		setOf(STONE, GRANITE, ANDESITE, DIORITE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Redstone to 0.3,
-			Lapis to 0.3
-		)
-	),
-	Vask(
-		setOf(STONE, POLISHED_GRANITE, ORANGE_TERRACOTTA).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Copper to 0.3,
-			Coal to 0.3
-		)
-	),
-	Krio(
-		setOf(STONE, GRANITE, ANDESITE, DIORITE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Diamond to 1.0,
-			Gold to 0.3
-		)
-	),
-	Aret(
-		setOf(STONE, GRANITE, ANDESITE, DIORITE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Iron to 1.0,
-			Diamond to 0.3
-		)
-	),
-	Aerach(
-		setOf(STONE, GRANITE, ANDESITE, DIORITE).toCollection(EnumSet.noneOf(Material::class.java)),
-		mapOf(
-			Aluminium to 0.3,
-			Coal to 0.3
+			Ore.Iron to 2
 		)
 	),
 	Luxiterna(
-		setOf(DIORITE, CALCITE).toCollection(EnumSet.noneOf(Material::class.java)),
 		mapOf(
-			Uranium to 0.6,
-			Chetherite to 0.3,
+			Ore.Uranium to 1,
+			Ore.Chetherite to 2,
+		)
+	),
+	Herdoli(
+		mapOf(
+			Ore.Copper to 3
+		)
+	),
+	Rubaciea(
+		mapOf(
+			Ore.Redstone to 3,
+			Ore.Quartz to 2
+		)
+	),
+	Aret(
+		mapOf(
+			Ore.Iron to 3,
+			Ore.Titanium to 2
+		)
+	),
+	Aerach(
+		mapOf(
+			Ore.Coal to 2
+		)
+	),
+	Vask(
+		mapOf(
+			Ore.Copper to 2
 		)
 	),
 	Gahara(
-		setOf(STONE, GRANITE, ANDESITE, DIORITE, LIGHT_GRAY_TERRACOTTA, GRAVEL, PRISMARINE, PACKED_ICE).toCollection(EnumSet.noneOf(Material::class.java)),
 		mapOf(
-			Gold to 1.0,
-			Titanium to 0.3
+			Ore.Gold to 3,
+			Ore.Emerald to 2
+		)
+	),
+	Isik(
+		mapOf(
+			Ore.Netherite to 1,
+			Ore.Aluminium to 2
+		)
+	),
+	Chimgara(
+		mapOf(
+			Ore.Redstone to 2
+		)
+	),
+	Damkoth(
+		mapOf(
+			Ore.Chetherite to 3
+		)
+	),
+	Krio(
+		mapOf(
+			Ore.Diamond to 3,
+			Ore.Lapis to 2
+		)
+	),
+	Qatra(
+		mapOf(
+			Ore.Coal to 3,
+			Ore.Gold to 2
+		)
+	),
+	Kovfefe(
+		mapOf(
+			Ore.Aluminium to 3
+		)
+	),
+	Iioda(
+		mapOf(
+			Ore.Quartz to 2,
+			Ore.Diamond to 2
+		)
+	),
+	Turms(
+		mapOf(
+			Ore.Lapis to 3,
+			Ore.Emerald to 2
 		)
 	);
 }
