@@ -13,6 +13,7 @@ import net.starlegacy.feature.misc.removePower
 import net.starlegacy.util.updateMeta
 import org.bukkit.Color
 import org.bukkit.DyeColor
+import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -64,6 +65,8 @@ object Blasters {
 			blaster.updateMeta {
 				(it as Damageable).damage++
 			}
+
+			if ((blaster.itemMeta as Damageable).damage >= Material.BOW.maxDurability) blaster.type = Material.AIR
 		}
 		lastFired[uniqueId] = Instant.now().toEpochMilli()
 		BlasterProjectile.scheduler.submit {
