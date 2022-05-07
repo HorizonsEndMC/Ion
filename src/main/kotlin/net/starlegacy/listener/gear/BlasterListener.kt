@@ -20,8 +20,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 object BlasterListener : SLEventListener() {
 	@EventHandler
@@ -36,6 +39,10 @@ object BlasterListener : SLEventListener() {
 		val player = event.player
 
 		Blasters.fireBlaster(player, item, Blasters.getBlasterType(blaster))
+
+		player.addPotionEffect(
+			PotionEffect(PotionEffectType.FAST_DIGGING, 10, 5)
+		)
 	}
 
 	@EventHandler
@@ -43,7 +50,7 @@ object BlasterListener : SLEventListener() {
 		val entity = event.entity
 		val bow = event.bow ?: return
 
-		if (entity is Player && entity.gameMode == GameMode.SPECTATOR) {
+		if (entity is Player) {
 			return
 		}
 
@@ -51,6 +58,7 @@ object BlasterListener : SLEventListener() {
 
 		event.isCancelled = true
 		Blasters.fireBlaster(entity, bow, Blasters.getBlasterType(blaster))
+
 	}
 
 	@EventHandler

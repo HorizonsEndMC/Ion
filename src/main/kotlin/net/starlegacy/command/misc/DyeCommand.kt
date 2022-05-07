@@ -17,6 +17,12 @@ import net.starlegacy.util.isGlassPane
 import net.starlegacy.util.isGlazedTerracotta
 import net.starlegacy.util.isStainedTerracotta
 import net.starlegacy.util.isWool
+import net.starlegacy.util.isGlassPane
+import net.starlegacy.util.isGlass
+import net.starlegacy.util.isStainedTerracotta
+import net.starlegacy.util.isGlazedTerracotta
+import net.starlegacy.util.isCarpet
+import net.starlegacy.util.isBed
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
