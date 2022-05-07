@@ -46,8 +46,9 @@ object Wires : SLComponent() {
 	// region cache stuff for sync code
 	// should only be updated from the checkComputers
 	private val powerSignUpdateCache = CacheBuilder.newBuilder()
-		.build<Sign, Int>(CacheLoader.from { sign ->
-			checkNotNull(sign)
+		.build<Location, Int>(CacheLoader.from { signLocation ->
+			checkNotNull(signLocation)
+			val sign = signLocation.block.state as Sign
 			PowerMachines.getPower(sign, fast = true)
 		})
 
@@ -72,9 +73,9 @@ object Wires : SLComponent() {
 
 	//endregion
 
-	private fun setCachedPower(sign: Sign, power: Int) = powerSignUpdateCache.put(sign, power)
+	private fun setCachedPower(sign: Sign, power: Int) = powerSignUpdateCache.put(sign.location, power)
 
-	private val offsets = setOf(
+	private val offsets = listOf(
 		// most multiblocks have the sign a block up and out of the computer
 		Vec3i(1, 1, 0), Vec3i(-1, 1, 0), Vec3i(0, 1, -1), Vec3i(0, 1, 1),
 		// power cells have it on the block
@@ -112,7 +113,9 @@ object Wires : SLComponent() {
 			}
 
 			powerMachineUpdateTiming.time {
-				for ((sign, power) in powerSignUpdateCache.asMap()) {
+				for ((signLocation, power) in powerSignUpdateCache.asMap()) {
+					val sign = signLocation.block.state as Sign
+
 					PowerMachines.setPower(sign, power, fast = true)
 				}
 			}
@@ -151,7 +154,7 @@ object Wires : SLComponent() {
 		val reverse = direction.oppositeFace // used for ensuring we're not going backwards when dealing w/ connectors
 
 		val checkDirections = when (nextType) {
-			Material.END_ROD -> setOf(direction)
+			Material.END_ROD -> listOf(direction)
 			Material.SPONGE, Material.IRON_BLOCK, Material.REDSTONE_BLOCK -> ADJACENT_BLOCK_FACES
 			else -> return // if it's not one of the above blocks it's not a wire block, so end the wire chain
 		}
@@ -159,8 +162,8 @@ object Wires : SLComponent() {
 		// directional wires go forward if possible, and don't go into sponges
 		val isDirectional = nextType == Material.IRON_BLOCK || nextType == Material.REDSTONE_BLOCK
 
-		val adjacentComputers = mutableSetOf<BlockFace>()
-		val adjacentWires = mutableSetOf<BlockFace>()
+		val adjacentComputers = mutableListOf<BlockFace>()
+		val adjacentWires = mutableListOf<BlockFace>()
 
 		adjacentLoop@
 		for (face: BlockFace in checkDirections) {
@@ -229,7 +232,7 @@ object Wires : SLComponent() {
 	 */
 	private fun checkComputers(
 		world: World, x: Int, y: Int, z: Int, isDirectional: Boolean, direction: BlockFace,
-		computers: Set<BlockFace>, wires: Set<BlockFace>, originComputer: Vec3i?, distance: Int
+		computers: List<BlockFace>, wires: List<BlockFace>, originComputer: Vec3i?, distance: Int
 	) {
 		val validComputers = computers.asSequence()
 			.mapNotNull { getStateIfLoaded(world, x + it.modX, y + it.modY, z + it.modZ) }
@@ -246,7 +249,7 @@ object Wires : SLComponent() {
 			}
 
 			var originPower = when {
-				originSign != null -> powerSignUpdateCache[originSign]
+				originSign != null -> powerSignUpdateCache[originSign.location]
 				else -> transportConfig.wires.solarPanelPower
 			}
 
@@ -265,7 +268,7 @@ object Wires : SLComponent() {
 					continue@computerLoop
 				}
 
-				val destinationPower = powerSignUpdateCache[destinationSign]
+				val destinationPower = powerSignUpdateCache[destinationSign.location]
 				val destinationPowerMax = destinationMultiblock.maxPower
 				val destinationFreeSpace = destinationPowerMax - destinationPower
 
@@ -296,7 +299,7 @@ object Wires : SLComponent() {
 				?: return@filter false
 
 			return@filter canWiresTransfer(isDirectional, direction, data)
-		}.toSet()
+		}
 
 		if (validWires.isEmpty()) return // end the chain if there's no more valid wires
 
@@ -307,7 +310,7 @@ object Wires : SLComponent() {
 		}
 	}
 
-	private fun pickDirection(isDirectional: Boolean, adjacentWires: Set<BlockFace>, direction: BlockFace): BlockFace {
+	private fun pickDirection(isDirectional: Boolean, adjacentWires: List<BlockFace>, direction: BlockFace): BlockFace {
 		return when {
 			isDirectional && adjacentWires.contains(direction) -> direction
 			else -> adjacentWires.randomEntry()
