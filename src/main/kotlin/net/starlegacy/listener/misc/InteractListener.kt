@@ -1,5 +1,8 @@
 package net.starlegacy.listener.misc
 
+import net.horizonsend.ion.core.FeedbackType
+import net.horizonsend.ion.core.sendFeedbackActionMessage
+import net.horizonsend.ion.core.sendFeedbackMessage
 import net.starlegacy.feature.machine.BaseShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem
@@ -20,14 +23,15 @@ import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.LegacyBlockUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.axis
-import net.starlegacy.util.colorize
 import net.starlegacy.util.getFacing
-import net.starlegacy.util.isStainedGlass
-import net.starlegacy.util.isWallSign
+import net.starlegacy.util.rightFace
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.msg
+import net.starlegacy.util.colorize
 import net.starlegacy.util.red
-import net.starlegacy.util.rightFace
+import net.starlegacy.util.isBed
+import net.starlegacy.util.isStainedGlass
+import net.starlegacy.util.isWallSign
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -300,6 +304,18 @@ object InteractListener : SLEventListener() {
 			}
 
 			player.sendMessage(ChatColor.GREEN.toString() + "All clear at direction " + face)
+		}
+	}
+	// Disable beds
+	@EventHandler
+	fun onPlayerInteractEventH(event: PlayerInteractEvent) {
+		if (event.action != Action.RIGHT_CLICK_BLOCK) return
+		val item = event.clickedBlock!!
+		val player = event.player
+
+		if (item.type.isBed) {
+			event.isCancelled = true
+			player.sendFeedbackActionMessage(FeedbackType.INFORMATION, "Beds are disabled on this server! Use a cryopod instead")
 		}
 	}
 
