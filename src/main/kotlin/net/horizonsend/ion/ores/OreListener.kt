@@ -69,12 +69,12 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					if (blockData.material.isAir) continue
 					if (blockData.material.isInteractable) continue
 
-					if (chunkSnapshot.getBlockType(x + 1, y, z).isAir) continue
-					if (chunkSnapshot.getBlockType(x - 1, y, z).isAir) continue
-					if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
-					if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
-					if (chunkSnapshot.getBlockType(x, y, z + 1).isAir) continue
-					if (chunkSnapshot.getBlockType(x, y, z - 1).isAir) continue
+					if (x < 15 && chunkSnapshot.getBlockType(x + 1, y, z).isAir) continue
+					if (x > 0  && chunkSnapshot.getBlockType(x - 1, y, z).isAir) continue
+					if (y < 15 && chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
+					if (y > 0  && chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
+					if (z < 15 && chunkSnapshot.getBlockType(x, y, z + 1).isAir) continue
+					if (z > 0  && chunkSnapshot.getBlockType(x, y, z - 1).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
 						if (random.nextDouble(0.0, 100.0) > 0.3 * (1 / chance)) return@forEach
