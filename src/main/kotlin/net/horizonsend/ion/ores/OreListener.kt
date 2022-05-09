@@ -37,8 +37,10 @@ internal class OreListener(private val plugin: Ion) : Listener {
 				OrePlacementConfig.values().find { it.name == chunkSnapshot.worldName } ?: return@Runnable
 			val random = Random(chunk.chunkKey)
 
-			val placedBlocks = mutableMapOf<BlockLocation, BlockData>()
-			val placedOres = mutableMapOf<BlockLocation, Ore>()
+			// These are kept separate as ores need to be written to a file,
+			// reversing ores does not need to be written to a file.
+			val placedBlocks = mutableMapOf<BlockLocation, BlockData>() // Everything
+			val placedOres = mutableMapOf<BlockLocation, Ore>() // Everything that needs to be written to a file.
 
 			if (removeExisting) {
 				val file =
@@ -86,8 +88,8 @@ internal class OreListener(private val plugin: Ion) : Listener {
 			placedBlocks.putAll(placedOres.map { Pair(it.key, it.value.blockData) })
 
 			Bukkit.getScheduler().runTask(plugin, Runnable {
-				placedOres.forEach { (position, ore) ->
-					chunk.getBlock(position.x, position.y, position.z).setBlockData(ore.blockData, false)
+				placedBlocks.forEach { (position, blockData) ->
+					chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 				}
 
 				chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, 2)
