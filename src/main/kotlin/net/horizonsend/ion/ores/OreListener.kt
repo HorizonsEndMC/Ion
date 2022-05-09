@@ -50,6 +50,8 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					file.readText().split("\n").forEach { oreLine ->
 						val oreData = oreLine.split(",")
 
+						if (oreData.size != 5) return@forEach
+
 						val x = oreData[0].toInt()
 						val y = oreData[1].toInt()
 						val z = oreData[2].toInt()
