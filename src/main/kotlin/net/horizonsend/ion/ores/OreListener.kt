@@ -24,8 +24,9 @@ internal class OreListener(private val plugin: Ion) : Listener {
 
 	@EventHandler
 	fun onChunkLoad(event: ChunkLoadEvent) {
-		if (event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER) == currentOreVersion)
-			return
+		val chunkOreVersion = event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER)
+
+		if (chunkOreVersion == currentOreVersion) return
 
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
 			val chunkSnapshot = event.chunk.getChunkSnapshot(false, false, false)
@@ -89,6 +90,8 @@ internal class OreListener(private val plugin: Ion) : Listener {
 				placedBlocks.forEach { (position, blockData) ->
 					event.chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 				}
+
+				println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to the latest version, it was previously $chunkOreVersion, ${placedBlocks.size} ores placed.")
 
 				event.chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, currentOreVersion)
 			})
