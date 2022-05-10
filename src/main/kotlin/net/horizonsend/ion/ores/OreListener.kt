@@ -42,6 +42,8 @@ internal class OreListener(private val plugin: Ion) : Listener {
 				plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 
 			if (file.exists()) file.readText().split("\n").forEach { oreLine ->
+				if (oreLine.isEmpty()) return@forEach
+
 				val oreData = oreLine.split(",")
 
 				if (oreData.size != 5)
