@@ -3,7 +3,6 @@ package net.horizonsend.ion.ores
 import kotlin.random.Random
 import net.horizonsend.ion.Ion
 import org.bukkit.Bukkit
-import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.BlockData
@@ -17,54 +16,48 @@ internal class OreListener(private val plugin: Ion) : Listener {
 		plugin.server.pluginManager.registerEvents(this, plugin)
 	}
 
-	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
+	private val currentOreVersion = 2
 
-	@EventHandler
-	fun onChunkLoad(event: ChunkLoadEvent) {
-		when (event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER)) {
-			2 -> return // Ores are up-to-date.
-			null -> placeOres(event.chunk) // Ores have not been placed.
-			else -> placeOres(event.chunk, true) // Ores are out of date.
-		}
-	}
+	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
 	private class BlockLocation(var x: Int, var y: Int, var z: Int)
 
-	private fun placeOres(chunk: Chunk, removeExisting: Boolean = false) {
+	@EventHandler
+	fun onChunkLoad(event: ChunkLoadEvent) {
+		if (event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER) == currentOreVersion)
+			return
+
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-			val chunkSnapshot = chunk.getChunkSnapshot(false, false, false)
+			val chunkSnapshot = event.chunk.getChunkSnapshot(false, false, false)
 			val placementConfiguration =
 				OrePlacementConfig.values().find { it.name == chunkSnapshot.worldName } ?: return@Runnable
-			val random = Random(chunk.chunkKey)
+			val random = Random(event.chunk.chunkKey)
 
 			// These are kept separate as ores need to be written to a file,
 			// reversing ores does not need to be written to a file.
 			val placedBlocks = mutableMapOf<BlockLocation, BlockData>() // Everything
 			val placedOres = mutableMapOf<BlockLocation, Ore>() // Everything that needs to be written to a file.
 
-			if (removeExisting) {
-				val file =
-					plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
+			val file =
+				plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 
-				if (file.exists()) {
-					file.readText().split("\n").forEach { oreLine ->
-						val oreData = oreLine.split(",")
+			if (file.exists()) file.readText().split("\n").forEach { oreLine ->
+				val oreData = oreLine.split(",")
 
-						if (oreData.size != 5) return@forEach
+				if (oreData.size != 5)
+					throw IllegalArgumentException("${file.absolutePath} ore data line $oreLine is not valid.")
 
-						val x = oreData[0].toInt()
-						val y = oreData[1].toInt()
-						val z = oreData[2].toInt()
-						val original = Material.valueOf(oreData[3])
-						val placedOre = Ore.valueOf(oreData[4])
+				val x = oreData[0].toInt()
+				val y = oreData[1].toInt()
+				val z = oreData[2].toInt()
+				val original = Material.valueOf(oreData[3])
+				val placedOre = Ore.valueOf(oreData[4])
 
-						if (chunkSnapshot.getBlockData(x, y, z) == placedOre.blockData)
-							placedBlocks[BlockLocation(x, y, z)] = original.createBlockData()
-					}
-				}
+				if (chunkSnapshot.getBlockData(x, y, z) == placedOre.blockData)
+					placedBlocks[BlockLocation(x, y, z)] = original.createBlockData()
 			}
 
-			for (sectionY in chunk.world.minHeight.shr(16)..chunk.world.maxHeight.shr(16)) {
+			for (sectionY in event.chunk.world.minHeight.shr(16)..event.chunk.world.maxHeight.shr(16)) {
 				if (chunkSnapshot.isSectionEmpty(sectionY)) continue
 
 				for (x in 0..15) for (y in 0..15) for (z in 0..15) {
@@ -74,11 +67,12 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					if (blockData.material.isInteractable) continue
 
 					if (x < 15) if (chunkSnapshot.getBlockType(x + 1, y, z).isAir) continue
-					if (x > 0 ) if (chunkSnapshot.getBlockType(x - 1, y, z).isAir) continue
 					if (y < 15) if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
-					if (y > 0 ) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 					if (z < 15) if (chunkSnapshot.getBlockType(x, y, z + 1).isAir) continue
-					if (z > 0 ) if (chunkSnapshot.getBlockType(x, y, z - 1).isAir) continue
+
+					if (x > 0) if (chunkSnapshot.getBlockType(x - 1, y, z).isAir) continue
+					if (y > 0) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
+					if (z > 0) if (chunkSnapshot.getBlockType(x, y, z - 1).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
 						if (random.nextDouble(0.0, 100.0) > 0.3 * (1 / chance)) return@forEach
@@ -91,10 +85,10 @@ internal class OreListener(private val plugin: Ion) : Listener {
 
 			Bukkit.getScheduler().runTask(plugin, Runnable {
 				placedBlocks.forEach { (position, blockData) ->
-					chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
+					event.chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 				}
 
-				chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, 2)
+				event.chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, currentOreVersion)
 			})
 
 			plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}")
