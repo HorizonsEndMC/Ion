@@ -83,7 +83,7 @@ internal class OreListener(private val plugin: Ion) : Listener {
 				}
 			}
 
-			placedBlocks.putAll(placedOres.map { Pair(it.key, it.value.blockData) })
+			placedBlocks.putAll(placedOres.mapValues { it.value.blockData })
 
 			Bukkit.getScheduler().runTask(plugin, Runnable {
 				placedBlocks.forEach { (position, blockData) ->
