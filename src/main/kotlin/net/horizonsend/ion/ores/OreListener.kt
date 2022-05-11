@@ -71,12 +71,13 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					if (!placementConfiguration.groundMaterial.contains(blockData.material)) continue
 
 					if (x < 15) if (chunkSnapshot.getBlockType(x + 1, realY, z).isAir) continue
-					if (y < 15) if (chunkSnapshot.getBlockType(x, realY + 1, z).isAir) continue
 					if (z < 15) if (chunkSnapshot.getBlockType(x, realY, z + 1).isAir) continue
 
 					if (x > 0) if (chunkSnapshot.getBlockType(x - 1, realY, z).isAir) continue
-					if (y > 0) if (chunkSnapshot.getBlockType(x, realY - 1, z).isAir) continue
 					if (z > 0) if (chunkSnapshot.getBlockType(x, realY, z - 1).isAir) continue
+
+					if (realY < 15) if (chunkSnapshot.getBlockType(x, realY + 1, z).isAir) continue
+					if (realY > 0) if (chunkSnapshot.getBlockType(x, realY - 1, z).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
 						if (random.nextDouble(0.0, 100.0) < 3 * (1.0 / chance)) placedOres[BlockLocation(x, realY, z)] = ore
