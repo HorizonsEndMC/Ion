@@ -6,8 +6,8 @@ import org.bukkit.Material
 
 @Suppress("unused")
 internal enum class OrePlacementConfig(
-	internal val groundMaterial: EnumSet<Material>,
-	internal val options: Map<Ore, Int>
+	internal val groundMaterial: EnumSet<Material> = enumSetOf(),
+	internal val options: Map<Ore, Int> = mapOf()
 ) {
 	Chandra(
 		enumSetOf(
@@ -154,27 +154,23 @@ internal enum class OrePlacementConfig(
 		)
 	),
 	Qatra(
-		TODO(),
 		mapOf(
 			Ore.Coal to 3,
 			Ore.Gold to 2
 		)
 	),
 	Kovfefe(
-		TODO(),
 		mapOf(
 			Ore.Aluminium to 3
 		)
 	),
 	Iioda(
-		TODO(),
 		mapOf(
 			Ore.Quartz to 2,
 			Ore.Diamond to 2
 		)
 	),
 	Turms(
-		TODO(),
 		mapOf(
 			Ore.Lapis to 3,
 			Ore.Emerald to 2
