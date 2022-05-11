@@ -154,24 +154,24 @@ internal enum class OrePlacementConfig(
 		)
 	),
 	Qatra(
-		mapOf(
+		options = mapOf(
 			Ore.Coal to 3,
 			Ore.Gold to 2
 		)
 	),
 	Kovfefe(
-		mapOf(
+		options = mapOf(
 			Ore.Aluminium to 3
 		)
 	),
 	Iioda(
-		mapOf(
+		options = mapOf(
 			Ore.Quartz to 2,
 			Ore.Diamond to 2
 		)
 	),
 	Turms(
-		mapOf(
+		options = mapOf(
 			Ore.Lapis to 3,
 			Ore.Emerald to 2
 		)
