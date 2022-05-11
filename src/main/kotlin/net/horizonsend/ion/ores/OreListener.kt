@@ -64,21 +64,23 @@ internal class OreListener(private val plugin: Ion) : Listener {
 				if (chunkSnapshot.isSectionEmpty(sectionY)) continue
 
 				for (x in 0..15) for (y in 0..15) for (z in 0..15) {
-					val blockData = chunkSnapshot.getBlockData(x, y + sectionY.shl(16), z)
+					val realY = y + sectionY.shl(16)
+
+					val blockData = chunkSnapshot.getBlockData(x, realY, z)
 
 					if (blockData.material.isAir) continue
 					if (blockData.material.isInteractable) continue
 
-					if (x < 15) if (chunkSnapshot.getBlockType(x + 1, y, z).isAir) continue
-					if (y < 15) if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
-					if (z < 15) if (chunkSnapshot.getBlockType(x, y, z + 1).isAir) continue
+					if (x < 15) if (chunkSnapshot.getBlockType(x + 1, realY, z).isAir) continue
+					if (y < 15) if (chunkSnapshot.getBlockType(x, realY + 1, z).isAir) continue
+					if (z < 15) if (chunkSnapshot.getBlockType(x, realY, z + 1).isAir) continue
 
-					if (x > 0) if (chunkSnapshot.getBlockType(x - 1, y, z).isAir) continue
-					if (y > 0) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
-					if (z > 0) if (chunkSnapshot.getBlockType(x, y, z - 1).isAir) continue
+					if (x > 0) if (chunkSnapshot.getBlockType(x - 1, realY, z).isAir) continue
+					if (y > 0) if (chunkSnapshot.getBlockType(x, realY - 1, z).isAir) continue
+					if (z > 0) if (chunkSnapshot.getBlockType(x, realY, z - 1).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
-						if (random.nextDouble(0.0, 100.0) < 3 * (1.0 / chance)) placedOres[BlockLocation(x, y, z)] = ore
+						if (random.nextDouble(0.0, 100.0) < 3 * (1.0 / chance)) placedOres[BlockLocation(x, realY, z)] = ore
 					}
 				}
 			}
