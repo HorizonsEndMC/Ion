@@ -29,7 +29,7 @@ internal class OreListener(private val plugin: Ion) : Listener {
 		if (chunkOreVersion == currentOreVersion) return
 
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-			val chunkSnapshot = event.chunk.getChunkSnapshot(false, false, false)
+			val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
 			val placementConfiguration =
 				OrePlacementConfig.values().find { it.name == chunkSnapshot.worldName } ?: return@Runnable
 			val random = Random(event.chunk.chunkKey)
@@ -60,27 +60,26 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					placedBlocks[BlockLocation(x, y, z)] = original.createBlockData()
 			}
 
-			for (sectionY in event.chunk.world.minHeight.shr(16)..event.chunk.world.maxHeight.shr(16)) {
-				if (chunkSnapshot.isSectionEmpty(sectionY)) continue
+			for (x in 0..15) for (z in 0..15) {
+				val minBlockY = event.chunk.world.minHeight
+				val maxBlockY = chunkSnapshot.getHighestBlockYAt(x, z)
 
-				for (x in 0..15) for (y in 0..15) for (z in 0..15) {
-					val realY = y + sectionY.shl(16)
-
-					val blockData = chunkSnapshot.getBlockData(x, realY, z)
+				for (y in minBlockY..maxBlockY) {
+					val blockData = chunkSnapshot.getBlockData(x, y, z)
 
 					if (!placementConfiguration.groundMaterial.contains(blockData.material)) continue
 
-					if (x < 15) if (chunkSnapshot.getBlockType(x + 1, realY, z).isAir) continue
-					if (z < 15) if (chunkSnapshot.getBlockType(x, realY, z + 1).isAir) continue
+					if (x < 15) if (chunkSnapshot.getBlockType(x + 1, y, z).isAir) continue
+					if (z < 15) if (chunkSnapshot.getBlockType(x, y, z + 1).isAir) continue
 
-					if (x > 0) if (chunkSnapshot.getBlockType(x - 1, realY, z).isAir) continue
-					if (z > 0) if (chunkSnapshot.getBlockType(x, realY, z - 1).isAir) continue
+					if (x > 0) if (chunkSnapshot.getBlockType(x - 1, y, z).isAir) continue
+					if (z > 0) if (chunkSnapshot.getBlockType(x, y, z - 1).isAir) continue
 
-					if (realY < 15) if (chunkSnapshot.getBlockType(x, realY + 1, z).isAir) continue
-					if (realY > 0) if (chunkSnapshot.getBlockType(x, realY - 1, z).isAir) continue
+					if (y < maxBlockY) if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
+					if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
-						if (random.nextDouble(0.0, 100.0) < 3 * (1.0 / chance)) placedOres[BlockLocation(x, realY, z)] = ore
+						if (random.nextDouble(0.0, 100.0) < 3 * (1.0 / chance)) placedOres[BlockLocation(x, y, z)] = ore
 					}
 				}
 			}
