@@ -68,8 +68,7 @@ internal class OreListener(private val plugin: Ion) : Listener {
 
 					val blockData = chunkSnapshot.getBlockData(x, realY, z)
 
-					if (blockData.material.isAir) continue
-					if (blockData.material.isInteractable) continue
+					if (!placementConfiguration.groundMaterial.contains(blockData.material)) continue
 
 					if (x < 15) if (chunkSnapshot.getBlockType(x + 1, realY, z).isAir) continue
 					if (y < 15) if (chunkSnapshot.getBlockType(x, realY + 1, z).isAir) continue
