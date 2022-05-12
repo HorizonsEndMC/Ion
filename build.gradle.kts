@@ -45,7 +45,7 @@ dependencies {
 			compileOnly("com.discordsrv:discordsrv:1.25.1")
 
 	// Provided by Server Library Loader
-		compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+		compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 		compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 		compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
 		compileOnly("org.litote.kmongo:kmongo:4.5.1")
