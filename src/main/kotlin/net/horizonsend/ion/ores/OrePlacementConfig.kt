@@ -154,26 +154,51 @@ internal enum class OrePlacementConfig(
 		)
 	),
 	Qatra(
-		options = mapOf(
+		enumSetOf(
+			Material.STONE,
+			Material.GRANITE,
+			Material.ANDESITE,
+			Material.DIORITE
+		),
+		mapOf(
 			Ore.Coal to 3,
 			Ore.Gold to 2
 		)
 	),
 	Kovfefe(
-		options = mapOf(
+		enumSetOf(
+			Material.STONE,
+			Material.GRANITE,
+			Material.ANDESITE,
+			Material.DIORITE,
+			Material.END_STONE
+		),
+		mapOf(
 			Ore.Aluminium to 3
 		)
 	),
 	Iioda(
-		options = mapOf(
+		enumSetOf(
+			Material.DIORITE,
+			Material.CALCITE,
+			Material.DEEPSLATE,
+			Material.STONE
+		),
+		mapOf(
 			Ore.Quartz to 2,
 			Ore.Diamond to 2
 		)
 	),
 	Turms(
-		options = mapOf(
+		enumSetOf(
+			Material.STONE,
+			Material.GRANITE,
+			Material.ANDESITE,
+			Material.DIORITE
+		),
+		mapOf(
 			Ore.Lapis to 3,
 			Ore.Emerald to 2
 		)
-	);
+	)
 }
