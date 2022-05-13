@@ -177,7 +177,7 @@ internal enum class OrePlacementConfig(
 			Ore.Aluminium to 3
 		)
 	),
-	Iioda(
+	Lioda(
 		enumSetOf(
 			Material.DIORITE,
 			Material.CALCITE,
