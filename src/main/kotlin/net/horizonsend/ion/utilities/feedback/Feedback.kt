@@ -1,6 +1,6 @@
 @file:Suppress("unused") // API
 
-package net.horizonsend.ion.core
+package net.horizonsend.ion.utilities.feedback
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
@@ -38,7 +38,7 @@ enum class FeedbackType(val colour: String) {
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-internal inline fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
+internal fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
 	sendActionBar(parseFeedback(type, message, parameters.toList()))
 
 /**
@@ -47,7 +47,7 @@ internal inline fun Audience.sendFeedbackAction(type: FeedbackType, message: Str
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-internal inline fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
+internal fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
 	sendMessage(parseFeedback(type, message, parameters.toList()))
 
 /**
@@ -56,14 +56,14 @@ internal inline fun Audience.sendFeedbackMessage(type: FeedbackType, message: St
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-internal inline fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
+internal fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
 	parseFeedback(type, message, parameters.toList()).also { feedback ->
 		sendActionBar(feedback)
 		sendMessage(feedback)
 	}
 }
 
-private inline fun parseFeedback(type: FeedbackType, message: String, parameters: Collection<Any>): Component {
+private fun parseFeedback(type: FeedbackType, message: String, parameters: Collection<Any>): Component {
 	var newMessage = "<${type.colour}>$message"
 
 	parameters.forEachIndexed { index, parameter ->
