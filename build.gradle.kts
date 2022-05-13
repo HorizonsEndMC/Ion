@@ -1,18 +1,18 @@
-import org.gradle.jvm.toolchain.JavaLanguageVersion.of
-
 plugins {
-	kotlin("jvm") version "1.6.21"
-	id("com.github.johnrengelman.shadow") version "7.1.2"
+	id("xyz.jpenilla.run-paper"         ) version "1.0.6"  // Run Paper
+	id("org.jetbrains.kotlin.jvm"       ) version "1.6.21" // Kotlin
+	id("io.papermc.paperweight.userdev" ) version "1.3.6"  // Paperweight
+	id("com.github.johnrengelman.shadow") version "7.1.2"  // ShadowJar
 }
 
 repositories {
-	maven("https://papermc.io/repo/repository/maven-public/") // Paper API
-	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
 	mavenCentral()
+
+	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
 }
 
 dependencies {
-	compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT") // Paper
+	paperDevBundle("1.18.2-R0.1-SNAPSHOT") // Paper
 
 	// Provided by other Plugins
 	compileOnly(project(":IonCore")) // IonCore
@@ -41,6 +41,8 @@ tasks {
 		relocate("co.aikar.commands", "net.horizonsend.ion.libraries.co.aikar.commands")
 		relocate("co.aikar.locales", "net.horizonsend.ion.libraries.co.aikar.locales")
 	}
-}
 
-java.toolchain.languageVersion.set(of(17))
+	runServer {
+		minecraftVersion("1.18.2")
+	}
+}
