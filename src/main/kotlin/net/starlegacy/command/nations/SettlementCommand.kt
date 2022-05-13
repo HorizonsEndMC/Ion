@@ -10,7 +10,6 @@ import java.util.Date
 import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
-import net.horizonsend.ion.core.namereservations.NameReservations
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.PlayerCache
@@ -79,11 +78,6 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("create")
 	@Description("Create your own settlement in the territory you're in (More expensive for bigger territories)")
 	fun onCreate(sender: Player, name: String, @Optional cost: Int?): Unit = asyncCommand(sender) {
-		if (!NameReservations.canCreateOrganisationWithName(name, sender)) {
-			sender.sendMessage(MiniMessage.miniMessage().deserialize("\"$name\" <yellow>is reserved."))
-			return@asyncCommand
-		}
-
 		requireNotInSettlement(sender)
 
 //		requireMinLevel(sender, NATIONS_BALANCE.settlement.minCreateLevel)
@@ -235,11 +229,6 @@ internal object SettlementCommand : SLCommand() {
 	@Subcommand("set name")
 	@Description("Rename your settlement")
 	fun onSetName(sender: Player, newName: String, @Optional cost: Int?): Unit = asyncCommand(sender) {
-		if (!NameReservations.canCreateOrganisationWithName(newName, sender)) {
-			sender.sendMessage(MiniMessage.miniMessage().deserialize("\"$newName\" <yellow>is reserved."))
-			return@asyncCommand
-		}
-
 		val settlementId = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlementId)
 

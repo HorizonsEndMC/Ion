@@ -8,7 +8,6 @@ import java.io.File
 import java.util.Locale
 import net.horizonsend.ion.core.commands.GracePeriod
 import net.horizonsend.ion.core.commands.Starships
-import net.horizonsend.ion.core.namereservations.NameReservationCommand
 import net.starlegacy.cache.Caches
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -398,7 +397,6 @@ class StarLegacy : JavaPlugin() {
 			StarshipInfoCommand,
 
 			Starships(),
-			NameReservationCommand(this),
 			GracePeriod
 		)
 
