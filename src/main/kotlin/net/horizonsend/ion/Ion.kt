@@ -19,9 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused") // Plugin entrypoint
 class Ion: JavaPlugin() {
-	lateinit var commandManager: PaperCommandManager
-		private set
-
 	override fun onEnable() {
 		server.scheduler.runTaskAsynchronously(this, Runnable {
 			setOf(
@@ -38,12 +35,12 @@ class Ion: JavaPlugin() {
 				server.pluginManager.registerEvents(it, this)
 			}
 
-			commandManager = PaperCommandManager(this)
+			PaperCommandManager(this).apply {
+				@Suppress("DEPRECATION")
+				enableUnstableAPI("help")
 
-			@Suppress("DEPRECATION")
-			commandManager.enableUnstableAPI("help")
-
-			ShrugCommand(this)
+				registerCommand(ShrugCommand())
+			}
 		})
 
 		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(Material.GLOWSTONE_DUST), Material.REDSTONE, 1f, 400))
