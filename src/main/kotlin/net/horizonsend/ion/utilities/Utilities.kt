@@ -1,4 +1,4 @@
-package net.horizonsend.ion
+package net.horizonsend.ion.utilities
 
 import java.util.EnumSet
 
