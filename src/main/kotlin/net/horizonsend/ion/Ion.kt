@@ -4,9 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.commands.Restart
 import net.horizonsend.ion.commands.ShrugCommand
 import net.horizonsend.ion.ores.OreListener
-import org.bukkit.Material.DIORITE
 import org.bukkit.Material.GLOWSTONE_DUST
-import org.bukkit.Material.QUARTZ
 import org.bukkit.Material.REDSTONE
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -32,7 +30,6 @@ class Ion: JavaPlugin() {
 			Restart(this)
 		})
 
-		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "quartzrecipe"), ItemStack(QUARTZ), DIORITE, 1f, 400))
 		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
 	}
 }
