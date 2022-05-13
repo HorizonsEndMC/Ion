@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Build" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Clean [All]" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -10,8 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="IonCore:reobfJar" />
-          <option value=":shadowJar" />
+          <option value="clean" />
         </list>
       </option>
       <option name="vmOptions" />
