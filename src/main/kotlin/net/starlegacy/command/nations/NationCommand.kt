@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.Subcommand
 import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
-import net.horizonsend.ion.core.namereservations.NameReservations
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
@@ -113,11 +112,6 @@ internal object NationCommand : SLCommand() {
 	fun onCreate(
 		sender: Player, name: String, red: Int, green: Int, blue: Int, @Optional cost: Int?
 	) = asyncCommand(sender) {
-		if (!NameReservations.canCreateOrganisationWithName(name, sender)) {
-			sender.sendMessage(miniMessage().deserialize("\"$name\" <yellow>is reserved."))
-			return@asyncCommand
-		}
-
 		val settlement = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlement)
 		requireNotInNation(sender)
@@ -259,11 +253,6 @@ internal object NationCommand : SLCommand() {
 	@Subcommand("set name")
 	@Description("Rename your nation")
 	fun onSetName(sender: Player, newName: String, @Optional cost: Int?) = asyncCommand(sender) {
-		if (!NameReservations.canCreateOrganisationWithName(newName, sender)) {
-			sender.sendMessage(miniMessage().deserialize("\"$newName\" <yellow>is reserved."))
-			return@asyncCommand
-		}
-
 		val nationId = requireNationIn(sender)
 		requireNationLeader(sender, nationId)
 		validateName(newName, nationId)
