@@ -1,4 +1,4 @@
-package net.horizonsend.ion.commands
+package net.horizonsend.ion.miscellaneous
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
@@ -11,5 +11,6 @@ internal class ShrugCommand(plugin: Ion): BaseCommand() {
 	init { plugin.commandManager.registerCommand(this) }
 
 	@Default
+	@Suppress("unused") // Command
 	fun onShrug(sender: Player) = sender.chat("¯\\_(ツ)_/¯")
 }

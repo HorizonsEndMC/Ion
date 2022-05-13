@@ -1,11 +1,17 @@
 package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.commands.Restart
-import net.horizonsend.ion.commands.ShrugCommand
-import net.horizonsend.ion.ores.OreListener
-import org.bukkit.Material.GLOWSTONE_DUST
-import org.bukkit.Material.REDSTONE
+import net.horizonsend.ion.features.ores.OreListener
+import net.horizonsend.ion.miscellaneous.ShrugCommand
+import net.horizonsend.ion.miscellaneous.listeners.BlockFormListener
+import net.horizonsend.ion.miscellaneous.listeners.PlayerItemConsumeListener
+import net.horizonsend.ion.miscellaneous.listeners.PlayerJoinListener
+import net.horizonsend.ion.miscellaneous.listeners.PlayerQuitListener
+import net.horizonsend.ion.miscellaneous.listeners.PlayerTeleportListener
+import net.horizonsend.ion.miscellaneous.listeners.PotionSplashListener
+import net.horizonsend.ion.miscellaneous.listeners.PrepareAnvilListener
+import net.horizonsend.ion.miscellaneous.listeners.PrepateItemEnchantListener
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -18,8 +24,19 @@ class Ion: JavaPlugin() {
 
 	override fun onEnable() {
 		server.scheduler.runTaskAsynchronously(this, Runnable {
-			OreListener(this) // Super important and is needed immediately.
-			MiscellaneousListeners(this)
+			setOf(
+				BlockFormListener(),
+				PlayerItemConsumeListener(),
+				PlayerJoinListener(),
+				PlayerQuitListener(),
+				PlayerTeleportListener(),
+				PotionSplashListener(),
+				PrepareAnvilListener(),
+				PrepateItemEnchantListener(),
+				OreListener(this)
+			).forEach {
+				server.pluginManager.registerEvents(it, this)
+			}
 
 			commandManager = PaperCommandManager(this)
 
@@ -27,9 +44,8 @@ class Ion: JavaPlugin() {
 			commandManager.enableUnstableAPI("help")
 
 			ShrugCommand(this)
-			Restart(this)
 		})
 
-		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(GLOWSTONE_DUST), REDSTONE, 1f, 400))
+		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstonerecipe"), ItemStack(Material.GLOWSTONE_DUST), Material.REDSTONE, 1f, 400))
 	}
 }

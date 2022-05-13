@@ -1,4 +1,4 @@
-package net.horizonsend.ion.ores
+package net.horizonsend.ion.features.ores
 
 import kotlin.random.Random
 import net.horizonsend.ion.Ion
@@ -12,10 +12,6 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
 internal class OreListener(private val plugin: Ion) : Listener {
-	init {
-		plugin.server.pluginManager.registerEvents(this, plugin)
-	}
-
 	private val currentOreVersion = 2
 
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
