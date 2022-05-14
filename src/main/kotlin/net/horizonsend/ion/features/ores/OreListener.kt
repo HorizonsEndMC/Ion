@@ -1,5 +1,6 @@
 package net.horizonsend.ion.features.ores
 
+import kotlin.math.pow
 import kotlin.random.Random
 import net.horizonsend.ion.Ion
 import org.bukkit.Bukkit
@@ -12,7 +13,7 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
 internal class OreListener(private val plugin: Ion) : Listener {
-	private val currentOreVersion = 5
+	private val currentOreVersion = 6
 
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
@@ -75,7 +76,7 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
-						if (random.nextFloat() < .1f * (1f / chance)) placedOres[BlockLocation(x, y, z)] = ore
+						if (random.nextFloat() < .1f.pow(1.5f / chance)) placedOres[BlockLocation(x, y, z)] = ore
 					}
 				}
 			}
@@ -87,7 +88,7 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					event.chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 				}
 
-				println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to the latest version, it was previously $chunkOreVersion, ${placedBlocks.size} ores placed.")
+				println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to the latest version, it was previously $chunkOreVersion, ${placedOres.size} ores placed.")
 
 				event.chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, currentOreVersion)
 			})
