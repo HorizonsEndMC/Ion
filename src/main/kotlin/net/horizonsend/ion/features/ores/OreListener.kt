@@ -12,7 +12,7 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
 internal class OreListener(private val plugin: Ion) : Listener {
-	private val currentOreVersion = 4
+	private val currentOreVersion = 5
 
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
