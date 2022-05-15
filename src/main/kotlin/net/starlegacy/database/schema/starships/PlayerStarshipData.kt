@@ -48,7 +48,7 @@ data class PlayerStarshipData(
 		ensureIndex(PlayerStarshipData::world)
 		ensureUniqueIndex(PlayerStarshipData::world, PlayerStarshipData::blockKey)
 	}) {
-		const val LOCK_TIME_MS = 1_000 * 5
+		const val LOCK_TIME_MS = 1_000 * 300
 
 		fun add(data: PlayerStarshipData) {
 			col.insertOne(data)
