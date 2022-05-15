@@ -1,6 +1,6 @@
 package net.starlegacy.listener.misc
 
-import net.horizonsend.ion.core.updateProtection
+import net.horizonsend.ion.core.NewPlayerProtection.updateProtection
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.chat.ChatChannel
 import net.starlegacy.feature.progression.Levels
