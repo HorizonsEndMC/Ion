@@ -48,7 +48,7 @@ dependencies {
 		compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 		compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 		compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
-		compileOnly("org.litote.kmongo:kmongo:4.5.1")
+		compileOnly("org.litote.kmongo:kmongo:4.6.0")
 
 		// TODO: Remove
 			compileOnly("io.github.config4k:config4k:0.4.2")
