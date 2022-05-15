@@ -5,6 +5,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
+import net.horizonsend.ion.core.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.sendFeedbackMessage
 import java.util.Locale
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
@@ -22,6 +24,7 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
+import net.starlegacy.feature.starship.hyperspace.MassShadows
 import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import net.starlegacy.feature.starship.subsystem.NavCompSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -151,6 +154,15 @@ object MiscStarshipCommands : SLCommand() {
 			"Coords are out of world border."
 		}
 
+		if(MassShadows.find(starship.world, x.toDouble(), z.toDouble()) != null) {
+			sender.sendFeedbackMessage(USER_ERROR, "You're within a MassShadow, jump cancelled.")
+			return
+		}
+
+		if(starship.cruiseData.velocity.lengthSquared() != 0.0){
+			sender.sendFeedbackMessage(USER_ERROR, "Starship is cruising, jump cancelled.")
+			return
+		}
 		var x1: Int = x
 		var z1: Int = z
 

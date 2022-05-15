@@ -1,5 +1,8 @@
 package net.starlegacy.feature.starship
 
+import net.horizonsend.ion.core.FeedbackType.SUCCESS
+import net.horizonsend.ion.core.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
@@ -35,7 +38,7 @@ object Interdiction : SLComponent() {
 				return@subscribe
 			}
 			val starship = ActiveStarships.findByPassenger(player)
-				?: return@subscribe player msg "&cYou're not riding the starship"
+				?: return@subscribe player.sendFeedbackMessage(USER_ERROR, "You're not riding the starship")
 			if (!starship.contains(block.x, block.y, block.z)) {
 				return@subscribe
 			}
@@ -59,24 +62,24 @@ object Interdiction : SLComponent() {
 		val world = sign.world
 
 		if (!SpaceWorlds.contains(world)) {
-			player msg "&cYou cannot use gravity wells within other gravity wells."
+			player.sendFeedbackMessage(USER_ERROR, "You cannot use gravity wells within other gravity wells.")
 			return
 		}
 
 		if (world.environment == World.Environment.NETHER) {
-			player msg "You can't use gravity wells in hyperspace."
+			player.sendFeedbackMessage(USER_ERROR, "You can't use gravity wells in hyperspace.")
 			return
 		}
 
 		if (!starship.isInterdicting) {
-			player msg "Gravity well is disabled."
+			player.sendFeedbackMessage(SUCCESS, "Gravity well is disabled.")
 			return
 		}
 
 		val input = GravityWellMultiblock.getInput(sign)
 
 		if (LegacyItemUtils.getTotalItems(input, CustomItems.MINERAL_CHETHERITE.singleItem()) < 2) {
-			player msg "&cNot enough hypermatter in the dropper. Two chetherite shards are required!"
+			player.sendFeedbackMessage(USER_ERROR,"Not enough hypermatter in the dropper. Two chetherite shards are required!")
 			return
 		}
 
@@ -95,12 +98,12 @@ object Interdiction : SLComponent() {
 
 			val pilot = cruisingShip.pilot ?: continue
 
-			if (pilot.location.distance(sign.location) > GravityWellMultiblock.PULSE_RADIUS) {
+			if (pilot.location.distance(sign.location) > starship.interdictionRange) {
 				continue
 			}
 
 			cruisingShip.cruiseData.velocity.multiply(0.9)
-			cruisingShip.sendMessage("&cQuantum fluctuations detected - velocity has been reduced by 10%.")
+			cruisingShip.sendMessage("Quantum fluctuations detected - velocity has been reduced by 10%.")
 		}
 
 		input.removeItem(CustomItems.MINERAL_CHETHERITE.itemStack(2))

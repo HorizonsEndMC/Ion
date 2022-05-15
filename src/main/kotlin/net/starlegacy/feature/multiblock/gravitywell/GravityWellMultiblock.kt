@@ -12,7 +12,6 @@ import org.bukkit.inventory.InventoryHolder
 abstract class GravityWellMultiblock : Multiblock() {
 
 	companion object {
-		const val PULSE_RADIUS = 500
 
 		private val DISABLED = ChatColor.RED.toString() + "[DISABLED]"
 		private val ENABLED = ChatColor.GREEN.toString() + "[ENABLED]"
