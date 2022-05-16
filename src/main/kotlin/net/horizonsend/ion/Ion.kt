@@ -3,6 +3,7 @@ package net.horizonsend.ion
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.features.ores.OreListener
 import net.horizonsend.ion.miscellaneous.ShrugCommand
+import net.horizonsend.ion.miscellaneous.listeners.BlockFadeListener
 import net.horizonsend.ion.miscellaneous.listeners.BlockFormListener
 import net.horizonsend.ion.miscellaneous.listeners.PlayerItemConsumeListener
 import net.horizonsend.ion.miscellaneous.listeners.PlayerJoinListener
@@ -22,6 +23,7 @@ class Ion: JavaPlugin() {
 	override fun onEnable() {
 		server.scheduler.runTaskAsynchronously(this, Runnable {
 			setOf(
+				BlockFadeListener(),
 				BlockFormListener(),
 				PlayerItemConsumeListener(),
 				PlayerJoinListener(),
