@@ -154,7 +154,7 @@ object MiscStarshipCommands : SLCommand() {
 			"Coords are out of world border."
 		}
 
-		if(MassShadows.find(starship.world, x.toDouble(), z.toDouble()) != null) {
+		if(MassShadows.find(starship.world, starship.centerOfMass.x.toDouble(), starship.centerOfMass.z.toDouble()) != null) {
 			sender.sendFeedbackMessage(USER_ERROR, "You're within a MassShadow, jump cancelled.")
 			return
 		}
