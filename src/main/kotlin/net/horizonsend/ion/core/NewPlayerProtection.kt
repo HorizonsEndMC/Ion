@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Subcommand
 import kotlin.math.pow
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
@@ -30,6 +31,7 @@ object NewPlayerProtection : BaseCommand() {
 	}
 
 	@CommandPermission("ion.core.protection.removeothers")
+	@Subcommand("other")
 	fun onRemoveProtection(sender: Player, target: String) {
 		val lpUser = lpUserManager.getUser(target)
 
