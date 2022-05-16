@@ -12,7 +12,7 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
 internal class OreListener(private val plugin: Ion) : Listener {
-	private val currentOreVersion = 7
+	private val currentOreVersion = 8
 
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
@@ -75,7 +75,7 @@ internal class OreListener(private val plugin: Ion) : Listener {
 					if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
-						if (random.nextFloat() < .001f * chance) placedOres[BlockLocation(x, y, z)] = ore
+						if (random.nextFloat() < .002f * chance) placedOres[BlockLocation(x, y, z)] = ore
 					}
 				}
 			}
