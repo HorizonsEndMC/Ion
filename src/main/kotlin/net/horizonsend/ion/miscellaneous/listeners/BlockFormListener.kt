@@ -4,6 +4,7 @@ import net.horizonsend.ion.utilities.enumSetOf
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 
 class BlockFormListener: Listener {
@@ -23,8 +24,7 @@ class BlockFormListener: Listener {
 		Material.BROWN_CONCRETE_POWDER,
 		Material.GREEN_CONCRETE_POWDER,
 		Material.RED_CONCRETE_POWDER,
-		Material.BLACK_CONCRETE_POWDER,
-		Material.ICE
+		Material.BLACK_CONCRETE_POWDER
 	)
 
 	@EventHandler
