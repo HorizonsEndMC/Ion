@@ -8,6 +8,8 @@ import org.bukkit.event.block.BlockFadeEvent
 internal class BlockFadeListener : Listener {
 	@EventHandler
 	fun onBlockFadeEvent(event: BlockFadeEvent) {
-		if (event.block.type == Material.ICE) event.isCancelled = true
+		if (event.block.type != Material.ICE) return
+
+		event.isCancelled = true
 	}
 }

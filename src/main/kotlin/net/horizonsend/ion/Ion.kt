@@ -11,7 +11,7 @@ import net.horizonsend.ion.miscellaneous.listeners.PlayerQuitListener
 import net.horizonsend.ion.miscellaneous.listeners.PlayerTeleportListener
 import net.horizonsend.ion.miscellaneous.listeners.PotionSplashListener
 import net.horizonsend.ion.miscellaneous.listeners.PrepareAnvilListener
-import net.horizonsend.ion.miscellaneous.listeners.PrepateItemEnchantListener
+import net.horizonsend.ion.miscellaneous.listeners.PrepareItemEnchantListener
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -31,14 +31,14 @@ class Ion: JavaPlugin() {
 				PlayerTeleportListener(),
 				PotionSplashListener(),
 				PrepareAnvilListener(),
-				PrepateItemEnchantListener(),
+				PrepareItemEnchantListener(),
 				OreListener(this)
 			).forEach {
 				server.pluginManager.registerEvents(it, this)
 			}
 
 			PaperCommandManager(this).apply {
-				@Suppress("DEPRECATION")
+				@Suppress("deprecation")
 				enableUnstableAPI("help")
 
 				registerCommand(ShrugCommand())

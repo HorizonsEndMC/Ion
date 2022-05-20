@@ -7,7 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 
-class BlockFormListener: Listener {
+internal class BlockFormListener: Listener {
 	private val cancelTypes = enumSetOf(
 		Material.WHITE_CONCRETE_POWDER,
 		Material.ORANGE_CONCRETE_POWDER,
@@ -29,6 +29,8 @@ class BlockFormListener: Listener {
 
 	@EventHandler
 	fun onBlockFormEvent(event: BlockFormEvent) {
-		if (cancelTypes.contains(event.block.type)) event.isCancelled = true
+		if (!cancelTypes.contains(event.block.type)) return
+
+		event.isCancelled = true
 	}
 }
