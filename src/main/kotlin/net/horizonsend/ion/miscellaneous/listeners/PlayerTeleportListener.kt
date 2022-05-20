@@ -9,8 +9,7 @@ internal class PlayerTeleportListener: Listener {
 	@EventHandler
 	fun onPlayerTeleportEvent(event: PlayerTeleportEvent) {
 		event.isCancelled = when(event.cause) {
-			TeleportCause.CHORUS_FRUIT -> true
-			TeleportCause.ENDER_PEARL -> true
+			TeleportCause.CHORUS_FRUIT, TeleportCause.ENDER_PEARL -> true
 			else -> false
 		}
 	}
