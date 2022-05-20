@@ -4,7 +4,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 
-class PlayerQuitListener : Listener {
+internal class PlayerQuitListener : Listener {
 	@EventHandler
-	fun onPlayerQuitEvent(event: PlayerQuitEvent) = event.quitMessage(null)
+	fun onPlayerQuitEvent(event: PlayerQuitEvent) {
+		event.quitMessage(null)
+	}
 }
