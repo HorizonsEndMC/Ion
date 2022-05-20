@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
 
-class PrepateItemEnchantListener: Listener {
+internal class PrepareItemEnchantListener: Listener {
 	@EventHandler
 	fun onPrepareItemEnchantEvent(event: PrepareItemEnchantEvent) {
 		event.offers!![0] = EnchantmentOffer(Enchantment.SILK_TOUCH, 1, 120)
