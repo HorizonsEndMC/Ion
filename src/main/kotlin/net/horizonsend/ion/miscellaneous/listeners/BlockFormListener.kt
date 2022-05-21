@@ -4,10 +4,9 @@ import net.horizonsend.ion.utilities.enumSetOf
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 
-internal class BlockFormListener: Listener {
+class BlockFormListener: Listener {
 	private val cancelTypes = enumSetOf(
 		Material.WHITE_CONCRETE_POWDER,
 		Material.ORANGE_CONCRETE_POWDER,

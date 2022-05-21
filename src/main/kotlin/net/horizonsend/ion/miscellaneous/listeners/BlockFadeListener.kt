@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockFadeEvent
 
-internal class BlockFadeListener : Listener {
+class BlockFadeListener : Listener {
 	@EventHandler
 	fun onBlockFadeEvent(event: BlockFadeEvent) {
 		if (event.block.type != Material.ICE) return

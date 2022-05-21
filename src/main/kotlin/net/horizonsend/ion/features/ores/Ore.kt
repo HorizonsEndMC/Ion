@@ -5,8 +5,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 
-internal enum class Ore(
-	internal val blockData: BlockData
+enum class Ore(
+	val blockData: BlockData
 ) {
 	Chetherite(
 		Material.BROWN_MUSHROOM_BLOCK.createBlockData {
