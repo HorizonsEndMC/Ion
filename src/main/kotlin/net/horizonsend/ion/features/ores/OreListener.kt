@@ -2,6 +2,7 @@ package net.horizonsend.ion.features.ores
 
 import kotlin.random.Random
 import net.horizonsend.ion.Ion
+import net.horizonsend.ion.utilities.Position
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -15,8 +16,6 @@ class OreListener(private val plugin: Ion) : Listener {
 	private val currentOreVersion = 8
 
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
-
-	private class BlockLocation(var x: Int, var y: Int, var z: Int)
 
 	@EventHandler
 	fun onChunkLoad(event: ChunkLoadEvent) {
@@ -32,8 +31,8 @@ class OreListener(private val plugin: Ion) : Listener {
 
 			// These are kept separate as ores need to be written to a file,
 			// reversing ores does not need to be written to a file.
-			val placedBlocks = mutableMapOf<BlockLocation, BlockData>() // Everything
-			val placedOres = mutableMapOf<BlockLocation, Ore>() // Everything that needs to be written to a file.
+			val placedBlocks = mutableMapOf<Position, BlockData>() // Everything
+			val placedOres = mutableMapOf<Position, Ore>() // Everything that needs to be written to a file.
 
 			val file =
 				plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
@@ -53,7 +52,7 @@ class OreListener(private val plugin: Ion) : Listener {
 				val placedOre = Ore.valueOf(oreData[4])
 
 				if (chunkSnapshot.getBlockData(x, y, z) == placedOre.blockData)
-					placedBlocks[BlockLocation(x, y, z)] = original.createBlockData()
+					placedBlocks[Position(x, y, z)] = original.createBlockData()
 			}
 
 			for (x in 0..15) for (z in 0..15) {
@@ -75,7 +74,7 @@ class OreListener(private val plugin: Ion) : Listener {
 					if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
 					placementConfiguration.options.forEach { (ore, chance) ->
-						if (random.nextFloat() < .002f * chance) placedOres[BlockLocation(x, y, z)] = ore
+						if (random.nextFloat() < .002f * chance) placedOres[Position(x, y, z)] = ore
 					}
 				}
 			}
