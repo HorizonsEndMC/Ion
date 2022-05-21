@@ -10,7 +10,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-internal fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
+fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
 	sendActionBar(parseFeedback(type, message, parameters.toList()))
 
 /**
@@ -19,7 +19,7 @@ internal fun Audience.sendFeedbackAction(type: FeedbackType, message: String, va
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-internal fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
+fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
 	sendMessage(parseFeedback(type, message, parameters.toList()))
 
 /**
@@ -28,7 +28,7 @@ internal fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, v
  * @param parameters Variables to insert into the message
  * @see FeedbackType
  */
-internal fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
+fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
 	parseFeedback(type, message, parameters.toList()).also { feedback ->
 		sendActionBar(feedback)
 		sendMessage(feedback)

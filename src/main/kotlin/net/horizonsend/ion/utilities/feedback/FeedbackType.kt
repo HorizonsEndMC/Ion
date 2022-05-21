@@ -4,7 +4,7 @@ package net.horizonsend.ion.utilities.feedback
  * Represents a type of feedback that can be sent to a player
  * @property colour The colour used when displaying feedback
  */
-internal enum class FeedbackType(val colour: String) {
+enum class FeedbackType(val colour: String) {
 	/**
 	 * Something failed as a result of an issue on the server, this is generally rare
 	 */
