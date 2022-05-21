@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareAnvilEvent
 
-internal class PrepareAnvilListener : Listener {
+class PrepareAnvilListener : Listener {
 	@EventHandler
 	fun onPrepareAnvilEvent(event: PrepareAnvilEvent) {
 		if (event.inventory.firstItem == null) return

@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemConsumeEvent
 
-internal class PlayerItemConsumeListener : Listener {
+class PlayerItemConsumeListener : Listener {
 	@EventHandler
 	fun onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent) {
 		if (event.item.type != Material.POTION) return
