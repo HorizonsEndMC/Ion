@@ -12,11 +12,13 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import net.starlegacy.SLComponent
+import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.CargoCrate
 import net.starlegacy.database.schema.economy.CargoCrateShipment
 import net.starlegacy.database.schema.misc.SLPlayerId
+import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.Territory
 import net.starlegacy.database.slPlayerId
@@ -24,6 +26,7 @@ import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.feature.economy.city.TradeCityType
 import net.starlegacy.feature.misc.CustomItems
+import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -62,6 +65,7 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.util.Vector
+import org.litote.kmongo.eq
 
 object ShipmentManager : SLComponent() {
 	private data class Delivery(
@@ -365,6 +369,11 @@ object ShipmentManager : SLComponent() {
 				if (xp > 0) {
 					SLXP.addAsync(player, xp.roundToInt())
 				}
+
+				val playernationid = PlayerCache[player].nation
+
+				if  (CapturableStation.count(CapturableStation::nation eq playernationid).toInt() > 2)(totalRevenue*1.05)
+				else if (CapturableStation.count(CapturableStation::nation eq playernationid).toInt() > 2)(totalRevenue*1.025)
 
 				if (totalRevenue > 0) {
 					player msg "&1Revenue from all updated shipments, after tax: " +
