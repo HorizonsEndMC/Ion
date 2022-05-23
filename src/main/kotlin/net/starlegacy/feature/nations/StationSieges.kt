@@ -48,7 +48,7 @@ object StationSieges : SLComponent() {
 	private val siegeMinTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMinDuration)
 	private val siegeMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMaxDuration)
 
-	private fun currentQuarter() = ZonedDateTime.now().hour / 6 + 1
+	private fun currentHour() = ZonedDateTime.now().hour + 1 // Don't know why the +1 is there, but we shall keep it, just in case something breaks.
 
 	override fun onEnable() {
 		Tasks.syncRepeat(20, 20) {
@@ -79,7 +79,7 @@ object StationSieges : SLComponent() {
 	private var lastStations = listOf<String>()
 
 	private fun updateQuarter() {
-		val newQuarter = currentQuarter()
+		val newQuarter = currentHour()
 		if (lastQuarter == newQuarter) {
 			return
 		}
@@ -97,7 +97,7 @@ object StationSieges : SLComponent() {
 	}
 
 	fun getStationsNow() = Regions.getAllOf<RegionCapturableStation>()
-		.filter { station -> station.siegeTimeFrame == currentQuarter() }
+		.filter { station -> station.siegeTimeFrame == currentHour() }
 
 	override fun onDisable() {
 		sieges.forEach(this::endSiege)
@@ -143,9 +143,9 @@ object StationSieges : SLComponent() {
 			isUnderSiege(stationId) -> {
 				return@asyncLocked player msg "&cThis station is already under siege."
 			}
-			station.siegeTimeFrame != currentQuarter() -> {
+			station.siegeTimeFrame != currentHour() -> {
 				return@asyncLocked player msg "&cThis station can only be besieged in quarter ${station.siegeTimeFrame} " +
-					"of the day (EST timezone), but the current quarter is ${currentQuarter()}"
+					"of the day (EST timezone), but the current quarter is ${currentHour()}"
 			}
 		}
 

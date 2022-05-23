@@ -93,7 +93,9 @@ object NationsMasterTasks {
 
 			// Give the nation its station income if it has stations
 			val stationCount = CapturableStation.count(CapturableStation::nation eq nationId)
-			val stationIncome = (stationCount * NATIONS_BALANCE.capturableStation.hourlyIncome).toInt()
+			val stationIncome = if(stationCount>2)(stationCount* 100).toInt()
+			else(stationCount * 75).toInt()
+			if (stationCount>4)(3* 100)//perfect solutions from Sciath™
 
 			if (stationIncome > 0) {
 				Nation.deposit(nationId, stationIncome)

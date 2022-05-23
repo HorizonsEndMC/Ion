@@ -32,11 +32,10 @@ object NationsBalancing : SLComponent() {
 		)
 
 		data class Stations(
-			val radius: Int = 1000,
-			val siegeMinDuration: Long = 15,
+			val radius: Int = 500,
+			val siegeMinDuration: Long = 25,
 			val siegeMaxDuration: Long = 60,
 			val siegeCost: Int = 1000,
-			val hourlyIncome: Int = 20,
 			val daysPerSiege: Double = 0.5,
 			val siegerXP: Int = 2000,
 			val siegerAllyXP: Int = 1000
