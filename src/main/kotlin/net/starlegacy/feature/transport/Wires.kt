@@ -3,6 +3,7 @@ package net.starlegacy.feature.transport
 import co.aikar.timings.Timing
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
+import net.starlegacy.PLUGIN
 import java.util.Optional
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
@@ -109,6 +110,10 @@ object Wires : SLComponent() {
 			completionTiming.time {
 				while (!computerCheckQueue.isEmpty() && System.nanoTime() - start < maxTime) {
 					computerCheckQueue.poll().invoke()
+				}
+
+				if (System.nanoTime() - start > maxTime) {
+					PLUGIN.slF4JLogger.warn("Power update took too long!")
 				}
 			}
 
