@@ -7,6 +7,7 @@ import co.aikar.commands.PaperCommandManager
 import java.io.File
 import java.util.Locale
 import net.horizonsend.ion.core.NewPlayerProtection
+import net.horizonsend.ion.core.commands.AdminCommands
 import net.horizonsend.ion.core.commands.GracePeriod
 import net.horizonsend.ion.core.commands.Starships
 import net.starlegacy.cache.Caches
@@ -399,7 +400,8 @@ class StarLegacy : JavaPlugin() {
 
 			Starships(),
 			GracePeriod,
-			NewPlayerProtection
+			NewPlayerProtection,
+			AdminCommands
 		)
 
 	private fun registerCommands() {
