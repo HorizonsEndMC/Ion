@@ -7,9 +7,6 @@ import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
 import net.starlegacy.feature.multiblock.areashield.AreaShield30
 import net.starlegacy.feature.multiblock.areashield.AreaShield5
-import net.starlegacy.feature.multiblock.autocrafter.AutoCrafterMultiblockTier1
-import net.starlegacy.feature.multiblock.autocrafter.AutoCrafterMultiblockTier2
-import net.starlegacy.feature.multiblock.autocrafter.AutoCrafterMultiblockTier3
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier1
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier2
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier3
@@ -110,10 +107,6 @@ object Multiblocks : SLComponent() {
 			ChargerMultiblockTier1,
 			ChargerMultiblockTier2,
 			ChargerMultiblockTier3,
-
-			AutoCrafterMultiblockTier1,
-			AutoCrafterMultiblockTier3,
-			AutoCrafterMultiblockTier2,
 
 			HyperdriveMultiblockClass1,
 			HyperdriveMultiblockClass2,
