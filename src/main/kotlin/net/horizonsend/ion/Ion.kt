@@ -49,8 +49,6 @@ class Ion: JavaPlugin() {
 			}
 		})
 
-		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstoneRecipe"), ItemStack(Material.GLOWSTONE_DUST), Material.REDSTONE, 1f, 400))
-
 		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "prismarineBricksRecipe"), ItemStack(Material.PRISMARINE), Material.PRISMARINE_BRICKS, 1f, 200))
 
 		val bellrecipe = ShapedRecipe(NamespacedKey(this,"bellrecipe"), ItemStack(Material.BELL))
