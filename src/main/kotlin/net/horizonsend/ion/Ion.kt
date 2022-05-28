@@ -17,6 +17,8 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.ShapedRecipe
+import org.bukkit.inventory.RecipeChoice
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused") // Plugin entrypoint
@@ -50,5 +52,13 @@ class Ion: JavaPlugin() {
 		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "glowstoneRecipe"), ItemStack(Material.GLOWSTONE_DUST), Material.REDSTONE, 1f, 400))
 
 		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "prismarineBricksRecipe"), ItemStack(Material.PRISMARINE), Material.PRISMARINE_BRICKS, 1f, 200))
+
+		val bellrecipe = ShapedRecipe(NamespacedKey(this,"bellrecipe"), ItemStack(Material.BELL))
+		bellrecipe.shape("wow", "szs", "zzz")
+		bellrecipe.setIngredient('w', RecipeChoice.MaterialChoice(Material.STICK))
+		bellrecipe.setIngredient('o', RecipeChoice.MaterialChoice(Material.OAK_LOG))
+		bellrecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.IRON_BLOCK))
+		bellrecipe.setIngredient('z',RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
+		server.addRecipe(bellrecipe)
 	}
 }
