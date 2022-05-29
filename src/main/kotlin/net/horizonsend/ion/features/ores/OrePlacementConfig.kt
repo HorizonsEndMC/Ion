@@ -7,7 +7,8 @@ import org.bukkit.Material
 @Suppress("unused")
 enum class OrePlacementConfig(
 	val groundMaterial: EnumSet<Material> = enumSetOf(),
-	val options: Map<Ore, Int> = mapOf()
+	val options: Map<Ore, Int> = mapOf(),
+	val currentOreVersion: Int = 9
 ) {
 	Chandra(
 		enumSetOf(

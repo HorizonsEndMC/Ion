@@ -13,22 +13,20 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
 class OreListener(private val plugin: Ion) : Listener {
-	private val currentOreVersion = 9
 
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
 	@EventHandler
 	fun onChunkLoad(event: ChunkLoadEvent) {
+		val placementConfiguration = try { OrePlacementConfig.valueOf(event.world.name) } catch (_: IllegalArgumentException) { return }
 		val chunkOreVersion = event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER)
 
-		if (chunkOreVersion == currentOreVersion) return
+		if (chunkOreVersion == placementConfiguration.currentOreVersion) return
 
 		Bukkit.getScheduler().runTaskAsynchronously(
 			plugin,
 			Runnable {
 				val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
-				val placementConfiguration =
-					OrePlacementConfig.values().find { it.name == chunkSnapshot.worldName } ?: return@Runnable
 				val random = Random(event.chunk.chunkKey)
 
 				// These are kept separate as ores need to be written to a file,
@@ -90,9 +88,9 @@ class OreListener(private val plugin: Ion) : Listener {
 							event.chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 						}
 
-						println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to version $currentOreVersion from $chunkOreVersion, ${placedOres.size} ores placed.")
+						println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
 
-						event.chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, currentOreVersion)
+						event.chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, placementConfiguration.currentOreVersion)
 					}
 				)
 
