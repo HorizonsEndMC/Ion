@@ -1,6 +1,6 @@
 package net.horizonsend.ion.utilities
 
-class Position(
+class IntegerPosition(
 	val x: Int,
 	val y: Int,
 	val z: Int
