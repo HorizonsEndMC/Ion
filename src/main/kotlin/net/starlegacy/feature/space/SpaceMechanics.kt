@@ -78,9 +78,9 @@ object SpaceMechanics : SLComponent() {
 				return@subscribe
 			}
 
-			val isPositiveChange = event.to.y - event.from.y > 0
+			val isPositiveChange = event.to.y - event.from.y > event.player.world.minHeight
 
-			if (event.to.y < -5 && !isPositiveChange || event.to.y > 260 && isPositiveChange) {
+			if (event.to.y < event.player.world.minHeight && !isPositiveChange || event.to.y > event.player.world.maxHeight && isPositiveChange) {
 				event.isCancelled = true
 			}
 		}
