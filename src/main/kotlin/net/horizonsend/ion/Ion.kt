@@ -3,16 +3,7 @@ package net.horizonsend.ion
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.features.ores.OreListener
 import net.horizonsend.ion.miscellaneous.ShrugCommand
-import net.horizonsend.ion.miscellaneous.listeners.BlockFadeListener
-import net.horizonsend.ion.miscellaneous.listeners.BlockFormListener
-import net.horizonsend.ion.miscellaneous.listeners.PlayerFishListener
-import net.horizonsend.ion.miscellaneous.listeners.PlayerItemConsumeListener
-import net.horizonsend.ion.miscellaneous.listeners.PlayerJoinListener
-import net.horizonsend.ion.miscellaneous.listeners.PlayerQuitListener
-import net.horizonsend.ion.miscellaneous.listeners.PlayerTeleportListener
-import net.horizonsend.ion.miscellaneous.listeners.PotionSplashListener
-import net.horizonsend.ion.miscellaneous.listeners.PrepareAnvilListener
-import net.horizonsend.ion.miscellaneous.listeners.PrepareItemEnchantListener
+import net.horizonsend.ion.miscellaneous.listeners.*
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -28,6 +19,7 @@ class Ion: JavaPlugin() {
 			setOf(
 				BlockFadeListener(),
 				BlockFormListener(),
+				PlayerDeathListener(),
 				PlayerFishListener(),
 				PlayerItemConsumeListener(),
 				PlayerJoinListener(),
