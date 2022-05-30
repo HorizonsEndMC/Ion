@@ -35,7 +35,7 @@ enum class OrePlacementConfig(
 			Material.CALCITE
 		),
 		mapOf(
-			Ore.Uranium to 1,
+			Ore.Uranium to 2,
 			Ore.Chetherite to 2,
 		)
 	),
