@@ -4,6 +4,7 @@ import co.aikar.timings.Timing
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.starlegacy.PLUGIN
+import java.util.Optional
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -22,6 +23,7 @@ import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.getStateIfLoaded
 import net.starlegacy.util.matchesAxis
+import net.starlegacy.util.orNull
 import net.starlegacy.util.randomEntry
 import net.starlegacy.util.time
 import net.starlegacy.util.timing
@@ -55,7 +57,7 @@ object Wires : SLComponent() {
 
 	private val multiblockCache = CacheBuilder.newBuilder()
 		.expireAfterWrite(5, TimeUnit.SECONDS)
-		.build<Location, CachedPowerStore?>(CacheLoader.from { loc ->
+		.build<Location, Optional<CachedPowerStore>>(CacheLoader.from { loc ->
 			checkNotNull(loc)
 			return@from powerMachineFindingTiming.time {
 				for ((x, y, z) in offsets) {
@@ -63,9 +65,9 @@ object Wires : SLComponent() {
 					val sign = state as? Sign ?: continue
 					val multiblock = Multiblocks[sign, true, false] as? PowerStoringMultiblock
 						?: continue
-					return@time CachedPowerStore(multiblock, sign)
+					return@time Optional.of(CachedPowerStore(multiblock, sign))
 				}
-				return@time null
+				return@time Optional.empty()
 			}
 		})
 	private val computerCheckQueue = ConcurrentLinkedQueue<() -> Unit>()
@@ -245,7 +247,8 @@ object Wires : SLComponent() {
 		if (validComputers.isNotEmpty()) {
 			val originSign: Sign? = when {
 				// if there's an origin computer, find its power machine, if it's not findable, end the chain
-				originComputer != null -> multiblockCache[originComputer.toLocation(world)]?.sign
+				originComputer != null -> multiblockCache[originComputer.toLocation(world)]
+					.orNull()?.sign
 					?: return
 				else -> null
 			}
@@ -262,7 +265,8 @@ object Wires : SLComponent() {
 
 			computerLoop@
 			for (destination in validComputers) {
-				val (destinationMultiblock, destinationSign) = multiblockCache[destination.location] ?: continue@computerLoop
+				val (destinationMultiblock, destinationSign) = multiblockCache[destination.location]
+					.orNull() ?: continue@computerLoop
 
 				// ensure we're not returning power to the same computer
 				if (destinationSign.location == originSign?.location) {
