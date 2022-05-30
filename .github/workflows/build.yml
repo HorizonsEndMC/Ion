@@ -25,4 +25,4 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2.1.7
         with:
-          arguments: :shadowJar IonCore:reobfJar
+          arguments: build
