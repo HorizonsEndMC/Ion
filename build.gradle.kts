@@ -45,4 +45,9 @@ tasks {
 	runServer {
 		minecraftVersion("1.18.2")
 	}
+
+	build {
+		dependsOn(":shadowJar")
+		dependsOn(":IonCore:build")
+	}
 }
