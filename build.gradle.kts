@@ -79,6 +79,10 @@ tasks {
 	reobfJar {
 		outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonCore.jar"))
 	}
+
+	build {
+		dependsOn("reobfJar")
+	}
 }
 
 java.toolchain.languageVersion.set(of(17))
