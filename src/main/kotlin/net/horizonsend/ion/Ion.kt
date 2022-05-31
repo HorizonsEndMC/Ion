@@ -5,6 +5,7 @@ import net.horizonsend.ion.features.ores.OreListener
 import net.horizonsend.ion.miscellaneous.ShrugCommand
 import net.horizonsend.ion.miscellaneous.listeners.BlockFadeListener
 import net.horizonsend.ion.miscellaneous.listeners.BlockFormListener
+import net.horizonsend.ion.miscellaneous.listeners.PlayerDeathListener
 import net.horizonsend.ion.miscellaneous.listeners.PlayerFishListener
 import net.horizonsend.ion.miscellaneous.listeners.PlayerItemConsumeListener
 import net.horizonsend.ion.miscellaneous.listeners.PlayerJoinListener
@@ -28,6 +29,7 @@ class Ion: JavaPlugin() {
 			setOf(
 				BlockFadeListener(),
 				BlockFormListener(),
+				PlayerDeathListener(),
 				PlayerFishListener(),
 				PlayerItemConsumeListener(),
 				PlayerJoinListener(),
