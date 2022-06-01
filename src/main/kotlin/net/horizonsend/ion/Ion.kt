@@ -16,9 +16,10 @@ import net.horizonsend.ion.miscellaneous.listeners.PrepareAnvilListener
 import net.horizonsend.ion.miscellaneous.listeners.PrepareItemEnchantListener
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.inventory.FurnaceRecipe
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -60,5 +61,29 @@ class Ion: JavaPlugin() {
 		bellrecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.IRON_BLOCK))
 		bellrecipe.setIngredient('z',RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
 		server.addRecipe(bellrecipe)
+
+		val ingredients = listOf(
+			Material.WHITE_WOOL,
+			Material.ORANGE_WOOL,
+			Material.MAGENTA_WOOL,
+			Material.LIGHT_BLUE_WOOL,
+			Material.YELLOW_WOOL,
+			Material.LIME_WOOL,
+			Material.PINK_WOOL,
+			Material.GRAY_WOOL,
+			Material.LIGHT_GRAY_WOOL,
+			Material.CYAN_WOOL,
+			Material.PURPLE_WOOL,
+			Material.BLUE_WOOL,
+			Material.BROWN_WOOL,
+			Material.GREEN_WOOL,
+			Material.RED_WOOL,
+			Material.BLACK_WOOL
+		)
+		for (item in ingredients){
+			val wooltype = ShapelessRecipe(NamespacedKey(this, item.toString()+"stringrecipe"), ItemStack(Material.BELL, 4))
+			wooltype.addIngredient(1, item)
+			server.addRecipe(wooltype)
+		}
 	}
 }
