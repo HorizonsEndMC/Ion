@@ -2,6 +2,7 @@ package net.horizonsend.ion.miscellaneous.listeners
 
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -16,6 +17,8 @@ class PlayerDeathListener : Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
+		if (event.entity.killer !is Player) return
+
 		val headCooldownEnd = cooldowns.getOrDefault(event.player.uniqueId, 0)
 		cooldowns[event.player.uniqueId] = currentTimeMillis() + 1000 * 60 * 10
 		if (headCooldownEnd > currentTimeMillis()) return
