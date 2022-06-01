@@ -62,7 +62,7 @@ class Ion: JavaPlugin() {
 		bellrecipe.setIngredient('z',RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
 		server.addRecipe(bellrecipe)
 
-		val ingredients = listOf(
+		listOf(
 			Material.WHITE_WOOL,
 			Material.ORANGE_WOOL,
 			Material.MAGENTA_WOOL,
