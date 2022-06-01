@@ -103,6 +103,8 @@ abstract class ActiveStarship(
 	var isInterdicting = false
 		private set
 
+	var rainbowtoggle = false
+
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
 		isInterdicting = value

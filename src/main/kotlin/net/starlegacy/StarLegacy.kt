@@ -33,6 +33,7 @@ import net.starlegacy.command.misc.PlanetSpawnMenuCommand
 import net.starlegacy.command.misc.PlayerInfoCommand
 import net.starlegacy.command.misc.ShuttleCommand
 import net.starlegacy.command.misc.TransportDebugCommand
+import  net.horizonsend.ion.core.commands.RainbowProjectileCommand
 import net.starlegacy.command.nations.NationCommand
 import net.starlegacy.command.nations.NationRelationCommand
 import net.starlegacy.command.nations.NationSpaceStationCommand
@@ -358,6 +359,7 @@ class StarLegacy : JavaPlugin() {
 			PlanetSpawnMenuCommand,
 			ShuttleCommand,
 			BuyXPCommand,
+			RainbowProjectileCommand,
 
 			SettlementCommand,
 			NationCommand,
