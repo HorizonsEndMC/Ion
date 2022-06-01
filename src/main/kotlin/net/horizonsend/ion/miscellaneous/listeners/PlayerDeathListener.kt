@@ -17,7 +17,7 @@ class PlayerDeathListener : Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
-		if(event.entity.killer !is Player) return
+		if (event.entity.killer !is Player) return
 
 		val headCooldownEnd = cooldowns.getOrDefault(event.player.uniqueId, 0)
 		cooldowns[event.player.uniqueId] = currentTimeMillis() + 1000 * 60 * 10
