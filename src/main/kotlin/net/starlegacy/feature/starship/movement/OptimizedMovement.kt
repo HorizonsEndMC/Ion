@@ -343,6 +343,8 @@ object OptimizedMovement {
 			val nmsChunk = chunk.nms
 			val playerChunk: ChunkHolder = nmsChunk.playerChunk ?: continue
 
+			nmsChunk.isUnsaved = true // Hacky fix to ensure chunks are saved following server restarts.
+
 			val packet = ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.lightEngine, null, BitSet(bitmask), false, true)
 			playerChunk.broadcast(packet, false)
 		}
