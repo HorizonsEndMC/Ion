@@ -19,6 +19,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
+import net.starlegacy.feature.starship.subsystem.weapon.projectile.flagcolors
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
@@ -245,7 +246,6 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 
 	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship?, shooter: Player?) {
 		val color: Color = getColor(starship, shooter)
-
 		val speed = projectileSpeed.toDouble()
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
@@ -272,8 +272,10 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	}
 
 	private fun getColor(starship: ActiveStarship?, shooter: Player?): Color {
+		var counter = 0
 		if (starship != null) {
-			return starship.weaponColor
+			if(starship.rainbowtoggle) flagcolors.random()
+			else return starship.weaponColor
 		}
 
 		if (shooter != null) {
