@@ -190,7 +190,7 @@ object NationsMap : SLComponent() {
 		removeCapturableStation(station)
 
 		val name = station.name
-		val world = station.world
+		val world = station.world.substring(16, station.world.length - 1)
 		val x = station.x
 		val y = 128.0
 		val z = station.z.toDouble()
