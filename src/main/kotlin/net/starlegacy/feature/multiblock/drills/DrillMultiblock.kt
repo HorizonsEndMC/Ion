@@ -35,7 +35,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : P
 		private val DISABLED = ChatColor.RED.toString() + "[DISABLED]"
 		private val blacklist = EnumSet.of(
 			Material.BARRIER,
-      Material.BEDROCK
+			Material.BEDROCK
 		)
 
 		private var lastDrillCount: Map<UUID, Int> = mutableMapOf()
@@ -241,6 +241,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : P
 			for (v in -this.radius..this.radius) {
 				val block = center.getRelative(right, h).getRelative(UP, v)
 				if (block.type == Material.AIR) continue
+				if (block.type == Material.BEDROCK) continue
 				toDestroy.add(block)
 			}
 		}
