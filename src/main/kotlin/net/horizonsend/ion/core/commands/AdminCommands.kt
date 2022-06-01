@@ -7,6 +7,9 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.core.FeedbackType.SUCCESS
 import net.horizonsend.ion.core.sendFeedbackMessage
 import net.starlegacy.database.schema.nations.CapturableStation
+import net.starlegacy.feature.nations.NationsMap
+import net.starlegacy.feature.nations.region.Regions
+import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 
 import org.bukkit.entity.Player
 import java.time.DayOfWeek
@@ -16,7 +19,8 @@ import java.time.DayOfWeek
 object AdminCommands : BaseCommand(){
 	@Default
 	fun captuablestationcreation(sender: Player, stationname: String, x: Int, z: Int, siegehour: Int){
-		CapturableStation.create(stationname,sender.world.toString(), x, z, siegehour, DayOfWeek.values().toSet())
+		CapturableStation.findById(CapturableStation.create(stationname,sender.world.toString(), x, z, siegehour, DayOfWeek.values().toSet()))
+			?.let { RegionCapturableStation(it) }?.let { NationsMap.addCapturableStation(it) }
 		sender.sendFeedbackMessage(SUCCESS, "Successfully created Capturable Station ({0}), At {1}, {2}, SiegeHour is {3}", stationname, x, z, siegehour)
 	}
 }
