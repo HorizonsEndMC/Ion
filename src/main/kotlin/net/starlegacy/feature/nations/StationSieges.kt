@@ -1,5 +1,7 @@
 package net.starlegacy.feature.nations
 
+import net.horizonsend.ion.core.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.sendFeedbackMessage
 import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.Date
@@ -158,6 +160,11 @@ object StationSieges : SLComponent() {
 
 		if (sieges.any { it.siegerId == playerId }) {
 			player msg "&cYou are already besieging a station"
+			return@asyncLocked
+		}
+
+		if (!isInBigShip(player)) {
+			player.sendFeedbackMessage(USER_ERROR, "You cannot siege in a ship smaller then 2000 blocks.")
 			return@asyncLocked
 		}
 
