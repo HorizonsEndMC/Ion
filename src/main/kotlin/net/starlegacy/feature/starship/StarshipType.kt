@@ -37,7 +37,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 3.0,
 		menuItemMaterial = Material.DEAD_BUSH,
 		isWarship = false,
-		colour = "#007100",
+		colour = "#ffff32",
 		overridePermission = "ion.ships.override.1"
 	),
 	STARFIGHTER(
@@ -53,7 +53,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.0,
 		menuItemMaterial = Material.IRON_NUGGET,
 		isWarship = true,
-		colour = "#330000",
+		colour = "#ff8000",
 		overridePermission = "ion.ships.override.1"
 	),
 	GUNSHIP(
@@ -69,7 +69,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.1,
 		menuItemMaterial = Material.IRON_INGOT,
 		isWarship = true,
-		colour = "#660000",
+		colour = "#ff4000",
 		overridePermission = "ion.ships.override.10"
 	),
 	CORVETTE(
@@ -85,7 +85,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.2,
 		menuItemMaterial = Material.IRON_BLOCK,
 		isWarship = true,
-		colour = "#990000",
+		colour = "#ff0000",
 		overridePermission = "ion.ships.override.20"
 	),
 	FRIGATE(
@@ -101,7 +101,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.3,
 		menuItemMaterial = Material.LAPIS_BLOCK,
 		isWarship = true,
-		colour = "#cc0000",
+		colour = "#c00000",
 		overridePermission = "ion.ships.override.40"
 	),
 	DESTROYER(
@@ -117,7 +117,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.4,
 		menuItemMaterial = Material.GOLD_BLOCK,
 		isWarship = true,
-		colour = "#ff0000",
+		colour = "#800000",
 		overridePermission = "ion.ships.override.80"
 	),
 	SHUTTLE(
@@ -133,7 +133,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.0,
 		menuItemMaterial = Material.PRISMARINE_SHARD,
 		isWarship = false,
-		colour = "#000033",
+		colour = "#008033",
 		overridePermission = "ion.ships.override.1"
 	),
 	TRANSPORT(
@@ -149,7 +149,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.1,
 		menuItemMaterial = Material.PRISMARINE_CRYSTALS,
 		isWarship = false,
-		colour = "#000066",
+		colour = "#008066",
 		overridePermission = "ion.ships.override.10"
 	),
 	LIGHT_FREIGHTER(
@@ -165,7 +165,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.2,
 		menuItemMaterial = Material.PRISMARINE_SLAB,
 		isWarship = false,
-		colour = "#000099",
+		colour = "#008099",
 		overridePermission = "ion.ships.override.20"
 	),
 	MEDIUM_FREIGHTER(
@@ -181,7 +181,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.3,
 		menuItemMaterial = Material.PRISMARINE_STAIRS,
 		isWarship = false,
-		colour = "#0000cc",
+		colour = "#0080cc",
 		overridePermission = "ion.ships.override.40"
 	),
 	HEAVY_FREIGHTER(
@@ -197,7 +197,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.4,
 		menuItemMaterial = Material.PRISMARINE,
 		isWarship = false,
-		colour = "#0000ff",
+		colour = "#0080ff",
 		overridePermission = "ion.ships.override.80"
 	),
 	PLATFORM(
