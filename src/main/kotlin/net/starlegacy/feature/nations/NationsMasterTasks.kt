@@ -25,6 +25,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
+import java.lang.Integer.min
 
 object NationsMasterTasks {
 	fun executeAll() {
@@ -92,10 +93,8 @@ object NationsMasterTasks {
 			val nation: NationCache.NationData = NationCache[nationId]
 
 			// Give the nation its station income if it has stations
-			val stationCount = CapturableStation.count(CapturableStation::nation eq nationId)
-			val stationIncome = if(stationCount>2)(stationCount* 100).toInt()
-			else(stationCount * 75).toInt()
-			if (stationCount>4)(3* 100)//perfect solutions from Sciath™
+			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), 4)
+			val stationIncome = if (stationCount > 2) stationCount * 75 else stationCount * 50
 
 			if (stationIncome > 0) {
 				Nation.deposit(nationId, stationIncome)
