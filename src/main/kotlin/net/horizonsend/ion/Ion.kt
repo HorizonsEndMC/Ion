@@ -29,7 +29,7 @@ class Ion : JavaPlugin() {
 		server.scheduler.runTaskAsynchronously(
 			this,
 			Runnable {
-				setOf(
+				arrayOf(
 					BlockFadeListener(),
 					BlockFormListener(),
 					PlayerDeathListener(),
@@ -65,7 +65,7 @@ class Ion : JavaPlugin() {
 		bellrecipe.setIngredient('z', RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
 		server.addRecipe(bellrecipe)
 
-		listOf(
+		arrayOf(
 			Material.WHITE_WOOL,
 			Material.ORANGE_WOOL,
 			Material.MAGENTA_WOOL,
