@@ -40,11 +40,12 @@ private fun parseFeedback(type: FeedbackType, message: String, parameters: Colle
 
 	parameters.forEachIndexed { index, parameter ->
 		newMessage = newMessage.replace(
-			"{$index}", "<white>${
-				when (parameter) {
-					is Number -> "$parameter"
-					else -> "\"$parameter\""
-				}
+			"{$index}",
+			"<white>${
+			when (parameter) {
+				is Number -> "$parameter"
+				else -> "\"$parameter\""
+			}
 			}</white>"
 		)
 	}
