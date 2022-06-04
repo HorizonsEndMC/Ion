@@ -2,6 +2,7 @@ package net.starlegacy.feature.progression
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import net.horizonsend.ion.core.FeedbackType
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -17,12 +18,16 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
 import org.bukkit.Bukkit
+import net.horizonsend.ion.core.sendFeedbackMessage
+import org.bukkit.Bukkit.getPlayer
+import org.bukkit.Bukkit.getServer
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.litote.kmongo.util.idValue
 
 object ShipKillXP : SLComponent() {
 	data class Damager(val id: UUID, val size: Int?)
@@ -141,7 +146,27 @@ object ShipKillXP : SLComponent() {
 			if (xp > 0) {
 				SLXP.addAsync(player, xp)
 				log.info("Gave ${player.name} $xp XP for ship-killing $killedName")
+				}
+			var pointsrn = 0
+			if (points > pointsrn) {
+				pointsrn = points
+
+				killMessage(killedName, damager, data)
 			}
 		}
+	}
+
+	private fun killMessage(killedName: String, damager: Damager, data: ShipDamageData) {
+		val damagership = ActiveStarships.findByPassenger(getPlayer(damager.id)!!)!!.type.formatted
+		getServer().sendFeedbackMessage(
+			FeedbackType.ALERT,
+			"<hover:show_text:'<gray>Block Count: {0}</gray>'>{1}</hover> piloted by {2} was sunk by {3} piloting <hover:show_text:'<gray>Block Count: {4}</gray>'>{5}</hover>\n",
+			data.size,
+			data.type.formatted,
+			killedName,
+			getPlayer(damager.id)!!.name,
+			damager.size!!,
+			damagership
+		)
 	}
 }
