@@ -1,16 +1,17 @@
 package net.starlegacy.feature.misc
 
+import net.horizonsend.ion.core.FeedbackType
+import net.horizonsend.ion.core.sendFeedbackMessage
 import kotlin.math.max
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
+import net.starlegacy.util.CHISELED_TYPES
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
-import net.starlegacy.util.msg
 import net.starlegacy.util.rightFace
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
@@ -22,8 +23,7 @@ object Decomposers : SLComponent() {
 
 	private const val MAX_LENGTH = 100
 	private const val BLOCKS_PER_SECOND = 1000
-	private val FRAME_MATERIAL = Material.CHISELED_QUARTZ_BLOCK
-
+	private val FRAME_MATERIAL = CHISELED_TYPES
 	@EventHandler
 	fun onClick(event: PlayerInteractEvent) {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) {
@@ -48,7 +48,7 @@ object Decomposers : SLComponent() {
 		val frameOrigin: Location = signLoc.clone().add(forward.direction)
 
 		if (!busySigns.add(signLoc)) {
-			event.player msg "&cDecomposer in use"
+			event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer in use")
 			return
 		}
 
@@ -80,7 +80,7 @@ object Decomposers : SLComponent() {
 			tempBlock = tempBlock.getRelativeIfLoaded(direction)
 				?: return dimension
 
-			if (tempBlock.type != FRAME_MATERIAL) {
+			if (!FRAME_MATERIAL.contains(tempBlock.type)) {
 				return dimension
 			}
 
