@@ -26,8 +26,3 @@ jobs:
         uses: gradle/gradle-build-action@v2.1.7
         with:
           arguments: build
-
-      - name: Check Format
-        uses: gradle/gradle-build-action@v2.1.7
-        with:
-          arguments: ktlintCheck
