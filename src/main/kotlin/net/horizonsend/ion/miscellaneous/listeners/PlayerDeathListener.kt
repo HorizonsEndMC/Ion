@@ -1,5 +1,7 @@
 package net.horizonsend.ion.miscellaneous.listeners
 
+import java.lang.System.currentTimeMillis
+import java.util.UUID
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -9,8 +11,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
-import java.lang.System.currentTimeMillis
-import java.util.UUID
 
 class PlayerDeathListener : Listener {
 	private val cooldowns = mutableMapOf<UUID, Long>()

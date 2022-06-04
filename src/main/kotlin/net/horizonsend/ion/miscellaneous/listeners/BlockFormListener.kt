@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockFormEvent
 
-class BlockFormListener: Listener {
+class BlockFormListener : Listener {
 	private val cancelTypes = enumSetOf(
 		Material.WHITE_CONCRETE_POWDER,
 		Material.ORANGE_CONCRETE_POWDER,
