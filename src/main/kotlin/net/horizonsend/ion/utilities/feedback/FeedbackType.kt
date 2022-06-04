@@ -23,5 +23,10 @@ enum class FeedbackType(val colour: String) {
 	/**
 	 * Used when confirming a command succeeded
 	 */
-	SUCCESS("#88ff88")
+	SUCCESS("#88ff88"),
+
+	/**
+	 * Used when alerting the server of an event
+	 */
+	ALERT("#ff3030")
 }
