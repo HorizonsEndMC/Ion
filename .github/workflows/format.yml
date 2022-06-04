@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build
+      - name: Check Format
         uses: gradle/gradle-build-action@v2.1.7
         with:
-          arguments: build
+          arguments: ktlintCheck
