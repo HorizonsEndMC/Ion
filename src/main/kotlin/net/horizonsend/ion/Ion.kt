@@ -83,9 +83,19 @@ class Ion : JavaPlugin() {
 			Material.RED_WOOL,
 			Material.BLACK_WOOL
 		).forEach {
-			val woolType = ShapelessRecipe(NamespacedKey(this, "${it.name.lowercase()}_string_recipe"), ItemStack(Material.STRING, 4))
+			val woolType = ShapelessRecipe(
+				NamespacedKey(this, "${it.name.lowercase()}_string_recipe"),
+				ItemStack(Material.STRING, 4)
+			)
 			woolType.addIngredient(1, it)
 			server.addRecipe(woolType)
+
+			val gunpowderrecipe = ShapelessRecipe(NamespacedKey(this, "gunpowderrecipe"), ItemStack(Material.GUNPOWDER))
+			gunpowderrecipe.addIngredient(Material.REDSTONE)
+			gunpowderrecipe.addIngredient(Material.FLINT)
+			gunpowderrecipe.addIngredient(Material.SAND)
+			gunpowderrecipe.addIngredient(Material.CHARCOAL)
+			server.addRecipe(gunpowderrecipe)
 		}
 	}
 }
