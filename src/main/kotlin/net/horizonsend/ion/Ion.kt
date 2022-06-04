@@ -90,12 +90,12 @@ class Ion : JavaPlugin() {
 			woolType.addIngredient(1, it)
 			server.addRecipe(woolType)
 
-			val gunpowderrecipe = ShapelessRecipe(NamespacedKey(this, "gunpowderrecipe"), ItemStack(Material.GUNPOWDER))
-			gunpowderrecipe.addIngredient(Material.REDSTONE)
-			gunpowderrecipe.addIngredient(Material.FLINT)
-			gunpowderrecipe.addIngredient(Material.SAND)
-			gunpowderrecipe.addIngredient(Material.CHARCOAL)
-			server.addRecipe(gunpowderrecipe)
+			val gunpowder_recipe = ShapelessRecipe(NamespacedKey(this, "gunpowder_recipe"), ItemStack(Material.GUNPOWDER))
+			gunpowder_recipe.addIngredient(Material.REDSTONE)
+			gunpowder_recipe.addIngredient(Material.FLINT)
+			gunpowder_recipe.addIngredient(Material.SAND)
+			gunpowder_recipe.addIngredient(Material.CHARCOAL)
+			server.addRecipe(gunpowder_recipe)
 		}
 	}
 }
