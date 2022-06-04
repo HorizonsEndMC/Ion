@@ -55,15 +55,15 @@ class Ion : JavaPlugin() {
 			}
 		)
 
-		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "prismarinebricksrecipe"), ItemStack(Material.PRISMARINE), Material.PRISMARINE_BRICKS, 1f, 200))
+		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "prismarine_bricks_recipe"), ItemStack(Material.PRISMARINE), Material.PRISMARINE_BRICKS, 1f, 200))
 
-		val bellrecipe = ShapedRecipe(NamespacedKey(this, "bellrecipe"), ItemStack(Material.BELL))
-		bellrecipe.shape("wow", "szs", "zzz")
-		bellrecipe.setIngredient('w', RecipeChoice.MaterialChoice(Material.STICK))
-		bellrecipe.setIngredient('o', RecipeChoice.MaterialChoice(Material.OAK_LOG))
-		bellrecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.IRON_BLOCK))
-		bellrecipe.setIngredient('z', RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
-		server.addRecipe(bellrecipe)
+		val bellRecipe = ShapedRecipe(NamespacedKey(this, "bell_recipe"), ItemStack(Material.BELL))
+		bellRecipe.shape("wow", "szs", "zzz")
+		bellRecipe.setIngredient('w', RecipeChoice.MaterialChoice(Material.STICK))
+		bellRecipe.setIngredient('o', RecipeChoice.MaterialChoice(Material.OAK_LOG))
+		bellRecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.IRON_BLOCK))
+		bellRecipe.setIngredient('z', RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
+		server.addRecipe(bellRecipe)
 
 		arrayOf(
 			Material.WHITE_WOOL,
@@ -83,9 +83,9 @@ class Ion : JavaPlugin() {
 			Material.RED_WOOL,
 			Material.BLACK_WOOL
 		).forEach {
-			val wooltype = ShapelessRecipe(NamespacedKey(this, it.toString() + "stringrecipe"), ItemStack(Material.STRING, 4))
-			wooltype.addIngredient(1, it)
-			server.addRecipe(wooltype)
+			val woolType = ShapelessRecipe(NamespacedKey(this, "${it.name.lowercase()}_string_recipe"), ItemStack(Material.STRING, 4))
+			woolType.addIngredient(1, it)
+			server.addRecipe(woolType)
 		}
 	}
 }
