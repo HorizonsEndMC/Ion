@@ -50,7 +50,7 @@ object StationSieges : SLComponent() {
 	private val siegeMinTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMinDuration)
 	private val siegeMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMaxDuration)
 
-	private fun currentHour() = ZonedDateTime.now().hour + 1 // Don't know why the +1 is there, but we shall keep it, just in case something breaks.
+	private fun currentHour() = ZonedDateTime.now().hour
 
 	override fun onEnable() {
 		Tasks.syncRepeat(20, 20) {
