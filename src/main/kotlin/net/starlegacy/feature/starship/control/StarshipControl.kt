@@ -114,7 +114,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processManualFlight(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot!!.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			starship.pilot?.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
 			return
 		}
 
