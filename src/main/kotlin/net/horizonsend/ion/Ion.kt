@@ -65,6 +65,15 @@ class Ion : JavaPlugin() {
 		bellrecipe.setIngredient('z', RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
 		server.addRecipe(bellrecipe)
 
+		val gunpowderrecipe = ShapedRecipe(NamespacedKey(this,"gunpowderrecipe"), ItemStack(Material.GUNPOWDER))
+		gunpowderrecipe.shape("wzo", "wsr", "www")
+		gunpowderrecipe.setIngredient('w', RecipeChoice.MaterialChoice(Material.AIR))
+		gunpowderrecipe.setIngredient('o', RecipeChoice.MaterialChoice(Material.REDSTONE))
+		gunpowderrecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.FLINT))
+		gunpowderrecipe.setIngredient('z',RecipeChoice.MaterialChoice(Material.SAND))
+		gunpowderrecipe.setIngredient('r',RecipeChoice.MaterialChoice(Material.CHARCOAL))
+		server.addRecipe(gunpowderrecipe)
+
 		listOf(
 			Material.WHITE_WOOL,
 			Material.ORANGE_WOOL,
@@ -87,5 +96,12 @@ class Ion : JavaPlugin() {
 			wooltype.addIngredient(1, it)
 			server.addRecipe(wooltype)
 		}
+
+		val gunpowderrecipe = ShapelessRecipe(NamespacedKey(this, "gunpowderrecipe"), ItemStack(Material.GUNPOWDER))
+		gunpowderrecipe.addIngredient(Material.REDSTONE)
+		gunpowderrecipe.addIngredient(Material.FLINT)
+		gunpowderrecipe.addIngredient(Material.SAND)
+		gunpowderrecipe.addIngredient(Material.CHARCOAL)
+		server.addRecipe(gunpowderrecipe)
 	}
 }
