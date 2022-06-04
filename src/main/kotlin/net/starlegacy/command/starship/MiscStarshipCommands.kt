@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
+import net.horizonsend.ion.core.FeedbackType
 import net.horizonsend.ion.core.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.sendFeedbackMessage
 import java.util.Locale
@@ -19,6 +20,7 @@ import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipDestruction
+import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
@@ -235,6 +237,10 @@ object MiscStarshipCommands : SLCommand() {
 		val starship = getStarshipPiloting(sender)
 		failIf(!starship.isDirectControlEnabled && !StarshipControl.isHoldingController(sender)) {
 			"You need to hold a starship controller to enable direct control"
+		}
+		if (starship.blockCount > StarshipType.CORVETTE.maxSize) {
+			sender.sendFeedbackMessage(FeedbackType.SERVER_ERROR, "Only ships of size {0} or less can use direct control, this is mostly a performance thing, and will probably change in the future.", StarshipType.CORVETTE.maxSize)
+			return
 		}
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}

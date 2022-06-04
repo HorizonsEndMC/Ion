@@ -72,7 +72,7 @@ object StarshipControl : SLComponent() {
 		rotation()
 	}
 
-	private const val DIRECT_CONTROL_DIVISOR = 2
+	private const val DIRECT_CONTROL_DIVISOR = 1.75
 
 	private fun manualFlight() {
 
