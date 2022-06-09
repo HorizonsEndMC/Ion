@@ -1,6 +1,6 @@
 plugins {
 	id("xyz.jpenilla.run-paper") version "1.0.6" // Run Paper
-	id("org.jetbrains.kotlin.jvm") version "1.6.21" // Kotlin
+	id("org.jetbrains.kotlin.jvm") version "1.7.0" // Kotlin
 	id("io.papermc.paperweight.userdev") version "1.3.6" // Paperweight
 	id("com.github.johnrengelman.shadow") version "7.1.2" // ShadowJar
 	id("org.jlleitschuh.gradle.ktlint") version "10.3.0" // KTLint
@@ -22,7 +22,7 @@ dependencies {
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") // Annotation Command Framework
 
 	// Provided by Library Loader
-	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
+	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
 }
 
 tasks {
