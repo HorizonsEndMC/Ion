@@ -23,7 +23,7 @@ import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.starlegacy.StarLegacy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_18_R2.CraftChunk;
+import org.bukkit.craftbukkit.v1_19_R1.CraftChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
