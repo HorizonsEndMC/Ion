@@ -9,8 +9,8 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent
 class PrepareItemEnchantListener : Listener {
 	@EventHandler
 	fun onPrepareItemEnchantEvent(event: PrepareItemEnchantEvent) {
-		event.offers!![0] = EnchantmentOffer(Enchantment.SILK_TOUCH, 1, 120)
-		event.offers!![1] = null
-		event.offers!![2] = null
+		event.offers[0] = EnchantmentOffer(Enchantment.SILK_TOUCH, 1, 120)
+		event.offers[1] = null
+		event.offers[2] = null
 	}
 }

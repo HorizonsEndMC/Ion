@@ -6,4 +6,4 @@ load: POSTWORLD
 author: PeterCrawley
 website: https://horizonsend.net
 libraries:
-  - org.jetbrains.kotlin:kotlin-stdlib:1.6.21
+  - org.jetbrains.kotlin:kotlin-stdlib:1.7.0
