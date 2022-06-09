@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-	paperDevBundle("1.18.2-R0.1-SNAPSHOT") // Paper
+	paperDevBundle("1.19-R0.1-SNAPSHOT") // Paper
 
 	// Provided by other Plugins
 	compileOnly(project(":IonCore")) // IonCore
@@ -44,7 +44,7 @@ tasks {
 	}
 
 	runServer {
-		minecraftVersion("1.18.2")
+		minecraftVersion("1.19")
 	}
 
 	build {
