@@ -4,21 +4,17 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import net.horizonsend.ion.core.commands.GracePeriod
-import net.minecraft.network.protocol.game.ClientboundCustomSoundPacket
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.sounds.SoundSource
-import net.minecraft.world.phys.Vec3
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
-import net.starlegacy.util.nms
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.SoundCategory
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers
+import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -58,20 +54,7 @@ abstract class SimpleProjectile(
 	}
 
 	protected fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float = 1f) {
-		val x = loc.x
-		val y = loc.y
-		val z = loc.z
-		val packet = ClientboundCustomSoundPacket(
-			ResourceLocation(soundName),
-			SoundSource.MASTER,
-			Vec3(x, y, z),
-			1.0f,
-			pitch
-		)
-		val range = if (chunkRange > 1) chunkRange * 16.0 else 16.0
-		val nmsWorld = loc.world.nms
-		val playerList = checkNotNull(nmsWorld.server).playerList
-		playerList.broadcast(null, x, y, z, range, nmsWorld.dimension(), packet)
+		loc.world.playSound(loc, soundName, SoundCategory.PLAYERS, 1.0f, pitch)
 	}
 
 	override fun tick() {

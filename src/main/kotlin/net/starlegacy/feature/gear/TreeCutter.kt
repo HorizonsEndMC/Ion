@@ -16,6 +16,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerAnimationEvent
+import org.bukkit.event.player.PlayerAnimationType
 import org.bukkit.scheduler.BukkitRunnable
 
 private const val INSTANT_CUT = false
@@ -142,7 +143,7 @@ class TreeCutter(private val player: Player, private val startBlock: Block) : Bu
 
 				val block = blocks[indexed++]
 
-				val animationEvent = PlayerAnimationEvent(player)
+				val animationEvent = PlayerAnimationEvent(player, PlayerAnimationType.ARM_SWING)
 				Bukkit.getPluginManager().callEvent(animationEvent)
 				val event = BlockBreakEvent(block, player)
 				Bukkit.getPluginManager().callEvent(event)
