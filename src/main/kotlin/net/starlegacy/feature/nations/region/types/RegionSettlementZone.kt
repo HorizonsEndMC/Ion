@@ -122,6 +122,7 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 					}
 				}
 				Settlement.ForeignRelation.STRICT -> error("WRONG! I ALREADY CHECKED! IT CAN'T BE! WHAT TRICKERY IS THIS?")
+				else -> {}
 			}
 		}
 

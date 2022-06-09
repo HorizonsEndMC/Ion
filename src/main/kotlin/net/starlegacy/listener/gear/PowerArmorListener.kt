@@ -73,12 +73,12 @@ object PowerArmorListener : SLEventListener() {
 		val modules = HashMap<PowerArmorModule, ItemStack>()
 		val cause = event.cause
 
-		for (item in player.inventory.armorContents!!) {
+		for (item in player.inventory.armorContents) {
 			if (!PowerArmorManager.isPowerArmor(item)) {
 				continue
 			}
 
-			if (getPower(item) < 100) {
+			if (getPower(item!!) < 100) {
 				continue
 			}
 

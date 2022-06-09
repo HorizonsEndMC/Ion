@@ -78,8 +78,8 @@ object PowerArmorManager {
 				continue
 			}
 
-			for (item in player.inventory.armorContents!!) {
-				if (!isPowerArmor(item) || getPower(item) == 0) {
+			for (item in player.inventory.armorContents) {
+				if (!isPowerArmor(item) || getPower(item!!) == 0) {
 					continue
 				}
 
