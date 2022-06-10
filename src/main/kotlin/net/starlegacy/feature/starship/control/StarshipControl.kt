@@ -1,5 +1,7 @@
 package net.starlegacy.feature.starship.control
 
+import net.horizonsend.ion.core.FeedbackType
+import net.horizonsend.ion.core.sendFeedbackMessage
 import java.util.Collections
 import java.util.LinkedList
 import java.util.UUID
@@ -115,6 +117,11 @@ object StarshipControl : SLComponent() {
 	private fun processManualFlight(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
 			starship.pilot?.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			return
+		}
+
+		if (Hyperspace.isWarmingUp(starship)){
+			starship.pilot?.sendFeedbackMessage(FeedbackType.USER_ERROR, "Cannot move while in hyperspace warmup.")
 			return
 		}
 
