@@ -1,7 +1,7 @@
 package net.starlegacy.feature.misc
 
-import net.horizonsend.ion.core.FeedbackType
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import kotlin.math.max
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent

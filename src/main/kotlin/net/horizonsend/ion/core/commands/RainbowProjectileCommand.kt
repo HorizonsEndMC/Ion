@@ -2,8 +2,8 @@ package net.horizonsend.ion.core.commands
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
-import net.horizonsend.ion.core.FeedbackType.SUCCESS
-import net.horizonsend.ion.core.sendFeedbackActionMessage
+import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
+import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
 import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player

@@ -5,9 +5,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.core.FeedbackType
-import net.horizonsend.ion.core.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.util.Locale
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set

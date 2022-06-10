@@ -1,8 +1,7 @@
 package net.starlegacy.listener.misc
 
-import net.horizonsend.ion.core.FeedbackType
-import net.horizonsend.ion.core.sendFeedbackActionMessage
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
 import net.starlegacy.feature.machine.BaseShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem

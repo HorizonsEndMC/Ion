@@ -2,7 +2,7 @@ package net.starlegacy.feature.progression
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import net.horizonsend.ion.core.FeedbackType
+import net.horizonsend.ion.core.feedback.FeedbackType
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -18,7 +18,7 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
 import org.bukkit.Bukkit
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Bukkit.getServer
 import org.bukkit.Location
@@ -27,7 +27,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.litote.kmongo.util.idValue
 
 object ShipKillXP : SLComponent() {
 	data class Damager(val id: UUID, val size: Int?)

@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations
 
-import net.horizonsend.ion.core.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.Date

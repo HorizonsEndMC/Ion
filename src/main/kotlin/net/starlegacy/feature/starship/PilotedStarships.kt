@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.core.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.FeedbackType.SUCCESS
-import net.horizonsend.ion.core.FeedbackType.INFORMATION
-import net.horizonsend.ion.core.sendFeedbackActionMessage
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
+import net.horizonsend.ion.core.feedback.FeedbackType.INFORMATION
+import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.util.Locale
 import kotlin.collections.component1
 import kotlin.collections.component2
