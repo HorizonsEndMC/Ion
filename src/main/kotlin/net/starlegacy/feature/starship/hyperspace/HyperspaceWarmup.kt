@@ -1,7 +1,9 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.starlegacy.PLUGIN
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
+import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
@@ -22,6 +24,10 @@ class HyperspaceWarmup(val ship: ActiveStarship, val warmup: Int, val dest: Loca
 			cancel()
 			return
 		}
+		if (MassShadows.find(ship.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble())!= null){
+			ship.sendMessage("&cShip is within Gravity Well, jump cancelled")
+		}
+
 		if (seconds < warmup) {
 			return
 		}

@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.control
 
+import net.horizonsend.ion.core.commands.GracePeriod
 import java.util.Collections
 import java.util.UUID
 import kotlin.math.abs
@@ -137,7 +138,13 @@ object ContactsDisplay : SLComponent() {
 
 				if (text.length > 40) {
 					println("$text is longer than 40!")
+
 					text = StringBuilder(otherPlayer.name)
+					if (ActiveStarships.findByPilot(otherPlayer)!!.isInterdicting){
+						text = StringBuilder(otherPlayer.name+"⍉")
+					}
+					if (GracePeriod.isGracePeriod) text = java.lang.StringBuilder(otherPlayer.name+"☆")
+					else if (GracePeriod.isGracePeriod && ActiveStarships.findByPilot(otherPlayer)!!.isInterdicting)  text = java.lang.StringBuilder(otherPlayer.name+"☆"+"⍉")
 				}
 
 				objective.getScore(text.toString()).score = score
