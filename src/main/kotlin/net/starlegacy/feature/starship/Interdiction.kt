@@ -1,8 +1,8 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.core.FeedbackType.SUCCESS
-import net.horizonsend.ion.core.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
@@ -17,7 +17,6 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.isWallSign
-import net.starlegacy.util.msg
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player

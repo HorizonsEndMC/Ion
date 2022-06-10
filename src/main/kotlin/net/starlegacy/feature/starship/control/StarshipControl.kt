@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.control
 
-import net.horizonsend.ion.core.FeedbackType
-import net.horizonsend.ion.core.sendFeedbackMessage
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.util.Collections
 import java.util.LinkedList
 import java.util.UUID
