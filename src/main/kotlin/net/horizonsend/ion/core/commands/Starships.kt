@@ -3,7 +3,6 @@ package net.horizonsend.ion.core.commands
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.core.extensions.sendMiniMessage
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.starships.PlayerStarshipData.Companion.findByPilot
 import net.starlegacy.database.slPlayerId
@@ -16,7 +15,7 @@ import org.bukkit.entity.Player
 internal class Starships : BaseCommand() {
 	@Default
 	fun starships(sender: Player) {
-		sender.sendMiniMessage(
+		sender.sendRichMessage(
 			findByPilot(sender.slPlayerId).map {
 				val x = blockKeyX(it.blockKey)
 				val y = blockKeyY(it.blockKey)
