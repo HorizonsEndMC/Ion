@@ -47,7 +47,7 @@ class Ion : JavaPlugin() {
 				}
 
 				PaperCommandManager(this).apply {
-					@Suppress("deprecation")
+					@Suppress("Deprecation", "RedundantSuppression")
 					enableUnstableAPI("help")
 
 					registerCommand(ShrugCommand())
