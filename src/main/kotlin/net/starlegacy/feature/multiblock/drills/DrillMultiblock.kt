@@ -12,6 +12,7 @@ import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.getFacing
+import net.starlegacy.util.isShulkerBox
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
 import org.bukkit.Bukkit
@@ -207,6 +208,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : P
 			if (isPick && customBlock == null) {
 				drops = block.getDrops(fuel)
 			}
+
+			if (block.type.isShulkerBox) drops = listOf()
 
 			for (item in drops) {
 				if (!LegacyItemUtils.canFit(output, item)) {
