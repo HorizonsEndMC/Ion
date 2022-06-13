@@ -21,13 +21,13 @@ object ConnectionUtils {
 	private val OFFSET_ALL = setOf(X_ROT, Y_ROT, X, Y, Z)
 
 	private var justTeleportedField: Field = getField("justTeleported")
-	private var awaitingPositionFromClientField: Field = getField("y") // y = awaitingPositionFromClient
+	private var awaitingPositionFromClientField: Field = getField("B") // awaitingPositionFromClient
 	private var lastPosXField: Field = getField("lastPosX")
 	private var lastPosYField: Field = getField("lastPosY")
 	private var lastPosZField: Field = getField("lastPosZ")
-	private var awaitingTeleportField: Field = getField("z") // z = awaitingTeleport
-	private var awaitingTeleportTimeField: Field = getField("A") // A = awaitingTeleportTimeField
-	private var aboveGroundVehicleTickCountField: Field = getField("E") // E = aboveGroundVehicleTickCountField
+	private var awaitingTeleportField: Field = getField("C") // awaitingTeleport
+	private var awaitingTeleportTimeField: Field = getField("D") // awaitingTeleportTime
+	private var aboveGroundVehicleTickCountField: Field = getField("H") // aboveGroundVehicleTickCount
 
 	private fun getField(name: String): Field =
 		ServerGamePacketListenerImpl::class.java.getDeclaredField(name).apply { isAccessible = true }
