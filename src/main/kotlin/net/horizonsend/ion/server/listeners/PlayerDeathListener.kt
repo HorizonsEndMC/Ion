@@ -1,4 +1,4 @@
-package net.horizonsend.ion.miscellaneous.listeners
+package net.horizonsend.ion.server.listeners
 
 import java.lang.System.currentTimeMillis
 import java.util.UUID

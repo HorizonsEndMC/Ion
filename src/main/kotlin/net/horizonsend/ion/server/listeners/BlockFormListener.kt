@@ -1,6 +1,6 @@
-package net.horizonsend.ion.miscellaneous.listeners
+package net.horizonsend.ion.server.listeners
 
-import net.horizonsend.ion.utilities.enumSetOf
+import net.horizonsend.ion.common.utilities.enumSetOf
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
