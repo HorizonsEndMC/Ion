@@ -3,6 +3,7 @@ package net.horizonsend.ion.common.utilities.feedback
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import org.bukkit.entity.Player
 
 /*
  Paper's sendRichMessage is not used as parseFeedback handles MiniMessage deserialization because sendRichMessage does
@@ -48,7 +49,8 @@ private fun parseFeedback(type: FeedbackType, message: String, parameters: Colle
 			"{$index}",
 			"<white>${
 			when (parameter) {
-				is Number -> "$parameter"
+				is Number -> parameter.toString()
+				is Player -> parameter.name
 				else -> "\"$parameter\""
 			}
 			}</white>"
