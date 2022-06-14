@@ -12,6 +12,8 @@ plugins {
 repositories {
 	mavenCentral()
 
+	maven("https://repo.papermc.io/repository/maven-public/") // Paper
+
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
 }
 
