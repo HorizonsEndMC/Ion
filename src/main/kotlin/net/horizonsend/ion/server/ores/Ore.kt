@@ -5,6 +5,11 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 
+/*
+ TODO: Enums should have full caps names, however simply renaming it will break things as these names are used in ore
+       data storage.
+*/
+
 enum class Ore(
 	val blockData: BlockData
 ) {
