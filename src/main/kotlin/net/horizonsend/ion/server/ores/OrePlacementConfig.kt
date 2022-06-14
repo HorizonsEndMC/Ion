@@ -1,7 +1,7 @@
-package net.horizonsend.ion.features.ores
+package net.horizonsend.ion.server.ores
 
 import java.util.EnumSet
-import net.horizonsend.ion.utilities.enumSetOf
+import net.horizonsend.ion.common.utilities.enumSetOf
 import org.bukkit.Material
 
 @Suppress("unused")

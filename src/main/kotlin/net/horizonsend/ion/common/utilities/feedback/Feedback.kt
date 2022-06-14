@@ -1,4 +1,4 @@
-package net.horizonsend.ion.utilities.feedback
+package net.horizonsend.ion.common.utilities.feedback
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
