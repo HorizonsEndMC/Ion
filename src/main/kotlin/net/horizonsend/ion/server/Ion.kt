@@ -58,5 +58,11 @@ class Ion : JavaPlugin() {
 		gunpowderRecipe.addIngredient(Material.SAND)
 		gunpowderRecipe.addIngredient(Material.CHARCOAL)
 		server.addRecipe(gunpowderRecipe)
+
+		// Ensure loading is actually complete before continuing.
+		if (asyncInit.loadLock.count == 1L) {
+			slF4JLogger.info("Async enable incomplete, waiting for completion.")
+			asyncInit.loadLock.await()
+		}
 	}
 }
