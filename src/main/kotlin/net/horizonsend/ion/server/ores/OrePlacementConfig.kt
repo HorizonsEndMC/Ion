@@ -4,6 +4,10 @@ import java.util.EnumSet
 import net.horizonsend.ion.common.utilities.enumSetOf
 import org.bukkit.Material
 
+/*
+ TODO: This should be loaded from a configuration file.
+*/
+
 @Suppress("unused")
 enum class OrePlacementConfig(
 	val groundMaterial: EnumSet<Material> = enumSetOf(),
