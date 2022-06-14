@@ -4,6 +4,11 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 
+/*
+ Paper's sendRichMessage is not used as parseFeedback handles MiniMessage deserialization because sendRichMessage does
+ not exist for things like actions and titles.
+*/
+
 /**
  * @param type The type of feedback
  * @param message The feedback message, use "{index}" to insert variables into the message
