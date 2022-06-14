@@ -1,4 +1,4 @@
-main: net.horizonsend.ion.Ion
+main: net.horizonsend.ion.server.Ion
 name: Ion
 version: SNAPSHOT
 api-version: 1.19

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.utilities.feedback
+package net.horizonsend.ion.common.utilities.feedback
 
 /**
  * Represents a type of feedback that can be sent to a player

@@ -1,8 +1,8 @@
-package net.horizonsend.ion.features.ores
+package net.horizonsend.ion.server.ores
 
 import kotlin.random.Random
-import net.horizonsend.ion.Ion
-import net.horizonsend.ion.utilities.Position
+import net.horizonsend.ion.common.utilities.Position
+import net.horizonsend.ion.server.Ion
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey

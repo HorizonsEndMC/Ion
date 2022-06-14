@@ -1,4 +1,4 @@
-package net.horizonsend.ion
+package net.horizonsend.ion.server
 
 import org.bukkit.Material
 import org.bukkit.NamespacedKey

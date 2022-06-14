@@ -1,4 +1,4 @@
-package net.horizonsend.ion.features.ores
+package net.horizonsend.ion.server.ores
 
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
