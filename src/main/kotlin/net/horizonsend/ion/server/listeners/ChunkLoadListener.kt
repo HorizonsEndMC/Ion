@@ -1,22 +1,30 @@
-package net.horizonsend.ion.server.ores
+package net.horizonsend.ion.server.listeners
 
 import kotlin.random.Random
 import net.horizonsend.ion.common.utilities.Position
 import net.horizonsend.ion.server.Ion
+import net.horizonsend.ion.server.ores.Ore
+import net.horizonsend.ion.server.ores.OrePlacementConfig
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
-class OreListener(private val plugin: Ion) : Listener {
+/*
+ TODO: Ore logic should be separated from the Listener, and the Async code should avoid using the scheduler, as well
+       as well as being its own class.
+*/
 
+class ChunkLoadListener(private val plugin: Ion) : Listener {
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
+	@Suppress("Unused")
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		val placementConfiguration = try { OrePlacementConfig.valueOf(event.world.name) } catch (_: IllegalArgumentException) { return }
 		val chunkOreVersion = event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER)
