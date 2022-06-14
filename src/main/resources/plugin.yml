@@ -1,9 +1,0 @@
-main: net.horizonsend.ion.server.Ion
-name: Ion
-version: SNAPSHOT
-api-version: 1.19
-load: POSTWORLD
-author: PeterCrawley
-website: https://horizonsend.net
-libraries:
-  - org.jetbrains.kotlin:kotlin-stdlib:1.7.0
