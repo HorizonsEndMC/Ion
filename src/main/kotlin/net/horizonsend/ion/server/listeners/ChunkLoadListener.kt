@@ -102,6 +102,7 @@ class ChunkLoadListener(private val plugin: Ion) : Listener {
 					}
 				)
 
+				// TODO: I am disappointed with myself for writing this dumb file format.
 				plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}")
 					.apply { mkdirs() }
 					.resolve("${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
