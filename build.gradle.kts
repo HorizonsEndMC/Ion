@@ -23,9 +23,6 @@ dependencies {
 
 	// Provided by us
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") // Annotation Command Framework
-
-	// Provided by Library Loader
-	library("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
 }
 
 bukkit {
