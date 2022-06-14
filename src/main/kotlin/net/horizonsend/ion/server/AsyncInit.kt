@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.listeners.PotionSplashListener
 import net.horizonsend.ion.server.listeners.PrepareAnvilListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 
-class AsyncInit(private val plugin: Ion) : Thread() {
+class AsyncInit(private val plugin: IonServer) : Thread() {
 	val loadLock = CountDownLatch(1)
 
 	override fun run() {
