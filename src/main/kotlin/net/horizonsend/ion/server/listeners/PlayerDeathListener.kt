@@ -16,6 +16,7 @@ class PlayerDeathListener : Listener {
 	private val cooldowns = mutableMapOf<UUID, Long>()
 
 	@EventHandler(priority = EventPriority.MONITOR)
+	@Suppress("Unused")
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
 		if (event.entity.killer !is Player) return
 

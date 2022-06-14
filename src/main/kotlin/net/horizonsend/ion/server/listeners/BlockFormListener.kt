@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.listeners
 import net.horizonsend.ion.common.utilities.enumSetOf
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockFormEvent
 
@@ -26,7 +27,8 @@ class BlockFormListener : Listener {
 		Material.BLACK_CONCRETE_POWDER
 	)
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
+	@Suppress("Unused")
 	fun onBlockFormEvent(event: BlockFormEvent) {
 		if (!cancelTypes.contains(event.block.type)) return
 
