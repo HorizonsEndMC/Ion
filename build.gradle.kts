@@ -29,7 +29,7 @@ dependencies {
 }
 
 bukkit {
-	main = "net.horizonsend.ion.server.Ion"
+	main = "net.horizonsend.ion.server.IonServer"
 	apiVersion = "1.19"
 	load = PluginLoadOrder.STARTUP
 }

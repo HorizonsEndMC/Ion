@@ -10,7 +10,7 @@ import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused") // Plugin entrypoint
-class Ion : JavaPlugin() {
+class IonServer : JavaPlugin() {
 	private val asyncInit = AsyncInit(this)
 
 	override fun onEnable() {
