@@ -2,7 +2,6 @@ package net.horizonsend.ion
 
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.features.ores.OreListener
-import net.horizonsend.ion.miscellaneous.ShrugCommand
 import net.horizonsend.ion.miscellaneous.listeners.BlockFadeListener
 import net.horizonsend.ion.miscellaneous.listeners.BlockFormListener
 import net.horizonsend.ion.miscellaneous.listeners.PlayerDeathListener
@@ -37,8 +36,6 @@ class AsyncInit(private val plugin: Ion) : Thread() {
 		PaperCommandManager(plugin).apply {
 			@Suppress("Deprecation", "RedundantSuppression")
 			enableUnstableAPI("help")
-
-			registerCommand(ShrugCommand())
 		}
 	}
 }
