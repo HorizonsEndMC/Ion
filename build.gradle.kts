@@ -3,6 +3,7 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder
 plugins {
 	id("xyz.jpenilla.run-paper") version "1.0.6" // Run Paper
 	id("org.jetbrains.kotlin.jvm") version "1.7.0" // Kotlin
+	id("org.jetbrains.kotlin.kapt") version "1.7.0" // Kapt
 	id("io.papermc.paperweight.userdev") version "1.3.7" // Paperweight
 	id("com.github.johnrengelman.shadow") version "7.1.2" // ShadowJar
 	id("org.jlleitschuh.gradle.ktlint") version "10.3.0" // KTLint
@@ -12,19 +13,23 @@ plugins {
 repositories {
 	mavenCentral()
 
-	maven("https://repo.papermc.io/repository/maven-public/") // Paper
+	maven("https://repo.papermc.io/repository/maven-public/") // Paper, Velocity
 
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
 }
 
 dependencies {
 	paperDevBundle("1.19-R0.1-SNAPSHOT") // Paper
+	compileOnly("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT") // Velocity
+
+	kapt("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT") // Velocity
 
 	// Provided by other Plugins
 	compileOnly(project(":IonCore")) // IonCore
 
 	// Provided by us
-	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") // Annotation Command Framework
+	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") // Annotation Command Framework (Paper)
+	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT") // Annotation Command Framework (Velocity)
 }
 
 bukkit {
