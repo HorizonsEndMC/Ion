@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server
 
+import net.horizonsend.ion.common.configuration.ConfigurationProvider
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -14,6 +15,8 @@ class IonServer : JavaPlugin() {
 	private val asyncInit = AsyncInit(this)
 
 	override fun onEnable() {
+		ConfigurationProvider.loadConfiguration(dataFolder.toPath())
+
 		asyncInit.start()
 
 		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "prismarine_bricks_recipe"), ItemStack(Material.PRISMARINE_BRICKS), Material.PRISMARINE, 1f, 200))
