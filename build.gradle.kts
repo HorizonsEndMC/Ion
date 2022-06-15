@@ -13,23 +13,27 @@ plugins {
 repositories {
 	mavenCentral()
 
-	maven("https://repo.papermc.io/repository/maven-public/") // Paper, Velocity
+	// Paper and Velocity
+	maven("https://repo.papermc.io/repository/maven-public/")
 
-	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
+	// Annotation Command Framework
+	maven("https://repo.aikar.co/content/groups/aikar/")
 }
 
 dependencies {
-	paperDevBundle("1.19-R0.1-SNAPSHOT") // Paper
-	compileOnly("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT") // Velocity
+	// Paper
+	paperDevBundle("1.19-R0.1-SNAPSHOT")
 
-	kapt("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT") // Velocity
+	// Velocity
+	compileOnly("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT")
+	kapt("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT")
 
-	// Provided by other Plugins
-	compileOnly(project(":IonCore")) // IonCore
+	// IonCore
+	compileOnly(project(":IonCore"))
 
-	// Provided by us
-	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") // Annotation Command Framework (Paper)
-	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT") // Annotation Command Framework (Velocity)
+	// Annotation Command Framework
+	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 }
 
 bukkit {
