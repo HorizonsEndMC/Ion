@@ -10,7 +10,7 @@ object ResourcePackDownloadManager {
 		// Laziest JSON "Parsing" Ever
 		resourcePackTag = URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
 			.readText()
-			.substringAfter("\",\n  \"tag_name\": \"")
-			.substringBefore("\",\n  ")
+			.substringAfter("\",\n\t\"tag_name\": \"")
+			.substringBefore("\",\n\t")
 	}
 }
