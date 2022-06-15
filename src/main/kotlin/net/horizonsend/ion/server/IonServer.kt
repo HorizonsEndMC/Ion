@@ -26,6 +26,13 @@ class IonServer : JavaPlugin() {
 		bellRecipe.setIngredient('z', RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
 		server.addRecipe(bellRecipe)
 
+		val enderpearlrecipe = ShapedRecipe(NamespacedKey(this, "enderpearlrecipe"), ItemStack(Material.ENDER_PEARL))
+		enderpearlrecipe.shape("wow", "oso", "wow")
+		enderpearlrecipe.setIngredient('w', RecipeChoice.MaterialChoice(Material.OBSIDIAN))
+		enderpearlrecipe.setIngredient('o', RecipeChoice.MaterialChoice(Material.EMERALD))
+		enderpearlrecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.DIAMOND_BLOCK))
+		server.addRecipe(enderpearlrecipe)
+
 		arrayOf(
 			Material.WHITE_WOOL,
 			Material.ORANGE_WOOL,
