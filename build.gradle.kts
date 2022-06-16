@@ -36,7 +36,7 @@ dependencies {
 	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 
 	// Configurate
-	implementation("org.spongepowered:configurate-hocon:4.0.0")
+	implementation("org.spongepowered:configurate-hocon:4.1.2")
 	implementation("org.spongepowered:configurate-extra-kotlin:4.1.2")
 }
 
