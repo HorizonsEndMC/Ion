@@ -26,6 +26,7 @@ import net.starlegacy.command.economy.TradeDebugCommand
 import net.starlegacy.command.misc.BatteryCommand
 import net.starlegacy.command.misc.CustomItemCommand
 import net.starlegacy.command.misc.DyeCommand
+import net.starlegacy.command.misc.GToggleCommand
 import net.starlegacy.command.misc.GlobalGameRuleCommand
 import net.starlegacy.command.misc.ListCommand
 import net.starlegacy.command.misc.PlanetSpawnMenuCommand
@@ -66,6 +67,8 @@ import net.starlegacy.database.schema.economy.EcoStation
 import net.starlegacy.database.schema.misc.Shuttle
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
+import net.starlegacy.feature.chat.ChannelSelections
+import net.starlegacy.feature.chat.ChatChannel
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.cargotrade.CrateRestrictions
@@ -140,6 +143,7 @@ import net.starlegacy.listener.gear.PowerArmorListener
 import net.starlegacy.listener.gear.PowerToolListener
 import net.starlegacy.listener.gear.SwordListener
 import net.starlegacy.listener.misc.BlockListener
+import net.starlegacy.listener.misc.ChatListener
 import net.starlegacy.listener.misc.EntityListener
 import net.starlegacy.listener.misc.FurnaceListener
 import net.starlegacy.listener.misc.InteractListener
@@ -201,8 +205,8 @@ class StarLegacy : JavaPlugin() {
 			Levels,
 			SLXP,
 
-			// ChannelSelections,
-			// ChatChannel.ChannelActions,
+			ChannelSelections,
+			ChatChannel.ChannelActions,
 
 			CombatNPCs,
 
@@ -279,7 +283,7 @@ class StarLegacy : JavaPlugin() {
 	private val listeners: List<SLEventListener>
 		get() = listOf(
 			JoinLeaveListener,
-			// ChatListener,
+			ChatListener,
 			MovementListener,
 			FriendlyFireListener,
 			ProtectionListener,
@@ -343,7 +347,7 @@ class StarLegacy : JavaPlugin() {
 
 	private val commands
 		get() = listOf(
-			// GToggleCommand,
+			GToggleCommand,
 			PlayerInfoCommand,
 			DyeCommand,
 			GlobalGameRuleCommand,
