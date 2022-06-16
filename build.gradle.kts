@@ -37,7 +37,7 @@ dependencies {
 
 	// Configurate
 	implementation("org.spongepowered:configurate-hocon:4.0.0")
-	implementation("org.spongepowered:configurate-extra-kotlin:4.0.0")
+	implementation("org.spongepowered:configurate-extra-kotlin:4.1.2")
 }
 
 bukkit {
