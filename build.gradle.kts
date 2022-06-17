@@ -15,9 +15,6 @@ repositories {
 
 	// Paper and Velocity
 	maven("https://repo.papermc.io/repository/maven-public/")
-
-	// Annotation Command Framework
-	maven("https://repo.aikar.co/content/groups/aikar/")
 }
 
 dependencies {
@@ -30,10 +27,6 @@ dependencies {
 
 	// IonCore
 	compileOnly(project(":IonCore"))
-
-	// Annotation Command Framework
-	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 
 	// Configurate
 	implementation("org.spongepowered:configurate-hocon:4.1.2")
