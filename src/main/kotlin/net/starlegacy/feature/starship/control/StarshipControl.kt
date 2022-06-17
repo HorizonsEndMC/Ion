@@ -120,11 +120,6 @@ object StarshipControl : SLComponent() {
 			return
 		}
 
-		if (Hyperspace.isWarmingUp(starship)){
-			starship.pilot?.sendFeedbackMessage(FeedbackType.USER_ERROR, "Cannot move while in hyperspace warmup.")
-			return
-		}
-
 		if (starship.isTeleporting) {
 			return
 		}
@@ -267,6 +262,11 @@ object StarshipControl : SLComponent() {
 	private fun processSneakFlight(pilot: Player, starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
 			pilot.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			return
+		}
+
+		if (Hyperspace.isWarmingUp(starship)) {
+			starship.pilot?.sendFeedbackMessage(FeedbackType.USER_ERROR, "Cannot move while in hyperspace warmup.")
 			return
 		}
 
