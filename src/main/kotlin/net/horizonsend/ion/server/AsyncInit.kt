@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server
 
-import co.aikar.commands.PaperCommandManager
 import java.util.concurrent.CountDownLatch
 import net.horizonsend.ion.server.listeners.BlockFadeListener
 import net.horizonsend.ion.server.listeners.BlockFormListener
@@ -34,11 +33,6 @@ class AsyncInit(private val plugin: IonServer) : Thread() {
 			ChunkLoadListener(plugin)
 		).forEach {
 			plugin.server.pluginManager.registerEvents(it, plugin)
-		}
-
-		PaperCommandManager(plugin).apply {
-			@Suppress("Deprecation", "RedundantSuppression")
-			enableUnstableAPI("help")
 		}
 
 		loadLock.countDown()
