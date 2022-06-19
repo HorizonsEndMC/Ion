@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.listeners
+package net.horizonsend.ion.server.listeners.bukkit
 
 import net.horizonsend.ion.common.utilities.enumSetOf
 import org.bukkit.Material

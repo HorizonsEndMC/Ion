@@ -1,18 +1,18 @@
 package net.horizonsend.ion.server
 
 import java.util.concurrent.CountDownLatch
-import net.horizonsend.ion.server.listeners.BlockFadeListener
-import net.horizonsend.ion.server.listeners.BlockFormListener
-import net.horizonsend.ion.server.listeners.ChunkLoadListener
-import net.horizonsend.ion.server.listeners.PlayerDeathListener
-import net.horizonsend.ion.server.listeners.PlayerFishListener
-import net.horizonsend.ion.server.listeners.PlayerItemConsumeListener
-import net.horizonsend.ion.server.listeners.PlayerJoinListener
-import net.horizonsend.ion.server.listeners.PlayerQuitListener
-import net.horizonsend.ion.server.listeners.PlayerTeleportListener
-import net.horizonsend.ion.server.listeners.PotionSplashListener
-import net.horizonsend.ion.server.listeners.PrepareAnvilListener
-import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
+import net.horizonsend.ion.server.listeners.bukkit.BlockFadeListener
+import net.horizonsend.ion.server.listeners.bukkit.BlockFormListener
+import net.horizonsend.ion.server.listeners.bukkit.ChunkLoadListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerDeathListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerFishListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerItemConsumeListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerJoinListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerQuitListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerTeleportListener
+import net.horizonsend.ion.server.listeners.bukkit.PotionSplashListener
+import net.horizonsend.ion.server.listeners.bukkit.PrepareAnvilListener
+import net.horizonsend.ion.server.listeners.bukkit.PrepareItemEnchantListener
 
 class AsyncInit(private val plugin: IonServer) : Thread() {
 	val loadLock = CountDownLatch(1)
