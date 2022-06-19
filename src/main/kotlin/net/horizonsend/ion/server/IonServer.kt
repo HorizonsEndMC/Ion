@@ -1,6 +1,18 @@
 package net.horizonsend.ion.server
 
 import net.horizonsend.ion.common.configuration.ConfigurationProvider
+import net.horizonsend.ion.server.listeners.bukkit.BlockFadeListener
+import net.horizonsend.ion.server.listeners.bukkit.BlockFormListener
+import net.horizonsend.ion.server.listeners.bukkit.ChunkLoadListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerDeathListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerFishListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerItemConsumeListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerJoinListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerQuitListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerTeleportListener
+import net.horizonsend.ion.server.listeners.bukkit.PotionSplashListener
+import net.horizonsend.ion.server.listeners.bukkit.PrepareAnvilListener
+import net.horizonsend.ion.server.listeners.bukkit.PrepareItemEnchantListener
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -12,12 +24,25 @@ import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused") // Plugin entrypoint
 class IonServer : JavaPlugin() {
-	private val asyncInit = AsyncInit(this)
-
 	override fun onEnable() {
 		ConfigurationProvider.loadConfiguration(dataFolder.toPath())
 
-		asyncInit.start()
+		arrayOf(
+			BlockFadeListener(),
+			BlockFormListener(),
+			PlayerDeathListener(),
+			PlayerFishListener(),
+			PlayerItemConsumeListener(),
+			PlayerJoinListener(),
+			PlayerQuitListener(),
+			PlayerTeleportListener(),
+			PotionSplashListener(),
+			PrepareAnvilListener(),
+			PrepareItemEnchantListener(),
+			ChunkLoadListener(this)
+		).forEach {
+			server.pluginManager.registerEvents(it, this)
+		}
 
 		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "prismarine_bricks_recipe"), ItemStack(Material.PRISMARINE_BRICKS), Material.PRISMARINE, 1f, 200))
 
@@ -68,11 +93,5 @@ class IonServer : JavaPlugin() {
 		gunpowderRecipe.addIngredient(Material.SAND)
 		gunpowderRecipe.addIngredient(Material.CHARCOAL)
 		server.addRecipe(gunpowderRecipe)
-
-		// Ensure loading is actually complete before continuing.
-		if (asyncInit.loadLock.count == 1L) {
-			slF4JLogger.info("Async enable incomplete, waiting for completion.")
-			asyncInit.loadLock.await()
-		}
 	}
 }
