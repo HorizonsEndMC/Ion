@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.listeners
+package net.horizonsend.ion.server.listeners.bukkit
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
