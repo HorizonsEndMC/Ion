@@ -26,6 +26,8 @@ tasks {
 		).forEach { group ->
 			relocate(group, "net.horizonsend.ion.common.libraries.$group")
 		}
+
+		archiveFileName.set("../Ion.jar")
 	}
 
 	runServer { minecraftVersion("1.19") }
