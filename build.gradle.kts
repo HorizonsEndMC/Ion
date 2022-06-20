@@ -43,56 +43,6 @@ dependencies {
 }
 
 tasks {
-	shadowJar {
-		arrayOf(
-			"co.aikar.commands",
-			"co.aikar.locales",
-			"com.daveanthonythomas.moshipack",
-			"com.esotericsoftware.asm",
-			"com.esotericsoftware.kryo",
-			"com.esotericsoftware.minlog",
-			"com.esotericsoftware.reflectasm",
-			"com.fasterxml.jackson.annotation",
-			"com.fasterxml.jackson.core",
-			"com.fasterxml.jackson.databind",
-			"com.fasterxml.jackson.module.kotlin",
-			"com.github.stefvanschie.inventoryframework",
-			"com.googlecode.concurrenttrees.common",
-			"com.googlecode.concurrenttrees.radix",
-			"com.googlecode.concurrenttrees.radixinverted",
-			"com.googlecode.concurrenttrees.radixreversed",
-			"com.googlecode.concurrenttrees.solver",
-			"com.googlecode.concurrenttrees.suffix",
-			"com.googlecode.cqengine",
-			"com.mongodb",
-			"com.squareup.moshi",
-			"com.typesafe.config",
-			"de.javakaffee.kryoserializers",
-			"de.undercouch.bson4jackson",
-			"io.github.config4k",
-			"javassist",
-			"khttp",
-			"net.jodah.typetools",
-			"net.wesjd.anvilgui",
-			"okio",
-			"org.antlr.v4.runtime",
-			"org.apache.commons.pool2",
-			"org.bson",
-			"org.intellij.lang.annotations",
-			"org.jetbrains.annotations",
-			"org.json",
-			"org.litote.jackson",
-			"org.litote.kmongo",
-			"org.litote.kreflect",
-			"org.objenesis",
-			"org.slf4j",
-			"org.sqlite",
-			"redis.clients.jedis"
-		).forEach { group ->
-			relocate(group, "net.starlegacy.libraries.$group")
-		}
-	}
-
 	reobfJar {
 		outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonCore.jar"))
 	}
