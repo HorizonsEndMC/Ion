@@ -26,7 +26,7 @@ dependencies {
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.discordsrv:discordsrv:1.25.1")
 
-	implementation("org.litote.kmongo:kmongo:4.6.0")
+	implementation("org.litote.kmongo:kmongo:4.6.1")
 	implementation("io.github.config4k:config4k:0.4.2")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
