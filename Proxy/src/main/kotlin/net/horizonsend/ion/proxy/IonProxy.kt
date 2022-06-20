@@ -9,10 +9,8 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
-import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.common.configuration.ConfigurationProvider
 import net.horizonsend.ion.proxy.listeners.ServerConnectedListener
-import net.horizonsend.ion.proxy.managers.ResourcePackDownloadManager
 import org.slf4j.Logger
 
 @Suppress("Unused")
@@ -25,16 +23,6 @@ class IonProxy @Inject constructor(
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = async {
 		server.eventManager.register(this, ServerConnectedListener(server))
-
-		server.scheduler
-			.buildTask(
-				this,
-				Runnable {
-					ResourcePackDownloadManager.update()
-				}
-			)
-			.repeat(5, TimeUnit.MINUTES)
-			.schedule()
 
 		ConfigurationProvider.loadConfiguration(pluginDataDirectory)
 	}
