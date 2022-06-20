@@ -10,6 +10,7 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
 import net.horizonsend.ion.common.configuration.ConfigurationProvider
+import net.horizonsend.ion.proxy.listeners.ProxyPingListener
 import net.horizonsend.ion.proxy.listeners.ServerConnectedListener
 import org.slf4j.Logger
 
@@ -23,6 +24,7 @@ class IonProxy @Inject constructor(
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = async {
 		server.eventManager.register(this, ServerConnectedListener(server))
+		server.eventManager.register(this, ProxyPingListener(server))
 
 		ConfigurationProvider.loadConfiguration(pluginDataDirectory)
 	}
