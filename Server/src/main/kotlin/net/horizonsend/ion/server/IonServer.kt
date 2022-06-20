@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.listeners.PlayerDeathListener
 import net.horizonsend.ion.server.listeners.PlayerFishListener
 import net.horizonsend.ion.server.listeners.PlayerItemConsumeListener
 import net.horizonsend.ion.server.listeners.PlayerJoinListener
+import net.horizonsend.ion.server.listeners.PlayerKickListener
 import net.horizonsend.ion.server.listeners.PlayerQuitListener
 import net.horizonsend.ion.server.listeners.PlayerTeleportListener
 import net.horizonsend.ion.server.listeners.PotionSplashListener
@@ -34,6 +35,7 @@ class IonServer : JavaPlugin() {
 			PlayerFishListener(),
 			PlayerItemConsumeListener(),
 			PlayerJoinListener(),
+			PlayerKickListener(),
 			PlayerQuitListener(),
 			PlayerTeleportListener(),
 			PotionSplashListener(),
