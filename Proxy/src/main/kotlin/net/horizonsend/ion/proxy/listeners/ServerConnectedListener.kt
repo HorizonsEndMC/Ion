@@ -7,7 +7,7 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent
 import com.velocitypowered.api.proxy.ProxyServer
 import net.horizonsend.ion.proxy.managers.ResourcePackDownloadManager
 
-class ServerConnectedListener(val server: ProxyServer) {
+class ServerConnectedListener(private val server: ProxyServer) {
 	@Subscribe(order = PostOrder.LAST)
 	@Suppress("Unused")
 	fun onServerConnectedEvent(event: ServerConnectedEvent): EventTask = EventTask.async {
