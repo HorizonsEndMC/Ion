@@ -32,8 +32,7 @@ tasks {
 			"org.jetbrains.annotations",
 			"cloud.commandframework",
 			"io.leangen.geantyref",
-			"com.typesafe.config",
-			"kotlin"
+			"com.typesafe.config"
 		).forEach { group ->
 			ionRelocate(group, "common")
 		}
