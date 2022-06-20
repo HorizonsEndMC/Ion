@@ -72,7 +72,6 @@ tasks {
 			"io.github.config4k",
 			"javassist",
 			"khttp",
-			"kotlin",
 			"net.jodah.typetools",
 			"net.wesjd.anvilgui",
 			"okio",
