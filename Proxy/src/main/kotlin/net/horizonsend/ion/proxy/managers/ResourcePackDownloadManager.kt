@@ -3,6 +3,8 @@ package net.horizonsend.ion.proxy.managers
 import java.net.URL
 
 object ResourcePackDownloadManager {
+	init { update() }
+
 	lateinit var resourcePackTag: String
 		private set
 
