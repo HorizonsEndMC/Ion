@@ -1,74 +1,37 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder
-
 plugins {
-	id("xyz.jpenilla.run-paper") version "1.0.6" // Run Paper
-	id("org.jetbrains.kotlin.jvm") version "1.7.0" // Kotlin
-	id("org.jetbrains.kotlin.kapt") version "1.7.0" // Kapt
-	id("io.papermc.paperweight.userdev") version "1.3.7" // Paperweight
-	id("com.github.johnrengelman.shadow") version "7.1.2" // ShadowJar
-	id("org.jlleitschuh.gradle.ktlint") version "10.3.0" // KTLint
-	id("net.minecrell.plugin-yml.bukkit") version "0.5.2" // Plugin-YML
+	id("com.github.johnrengelman.shadow") version "7.1.2"
+	id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+	id("org.jetbrains.kotlin.jvm") version "1.7.0"
+	id("xyz.jpenilla.run-paper") version "1.0.6"
 }
 
 repositories {
 	mavenCentral()
-
-	// Paper and Velocity
-	maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
-	// Paper
-	paperDevBundle("1.19-R0.1-SNAPSHOT")
-
-	// Velocity
-	compileOnly("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT")
-	kapt("com.velocitypowered:velocity-api:3.1.2-SNAPSHOT")
-
-	// IonCore
-	compileOnly(project(":IonCore"))
-
-	// Configurate
-	implementation("org.spongepowered:configurate-hocon:4.1.2")
-	implementation("org.spongepowered:configurate-extra-kotlin:4.1.2")
-}
-
-bukkit {
-	main = "net.horizonsend.ion.server.IonServer"
-	apiVersion = "1.19"
-	load = PluginLoadOrder.STARTUP
+	implementation(project(":Server"))
+	implementation(project(":Proxy"))
 }
 
 tasks {
-	compileJava {
-		options.compilerArgs.add("-parameters")
-		options.isFork = true
-	}
-
-	compileKotlin {
-		kotlinOptions.javaParameters = true
-		kotlinOptions.jvmTarget = "17"
-	}
-
 	shadowJar {
-		archiveFileName.set("../Ion.jar")
+		arrayOf(
+			"org.spongepowered.configurate",
+			"org.intellij.lang.annotations",
+			"org.jetbrains.annotations",
+			"io.leangen.geantyref",
+			"com.typesafe.config",
+			"kotlin"
+		).forEach { group ->
+			relocate(group, "net.horizonsend.ion.common.libraries.$group")
+		}
 	}
 
-	runServer {
-		minecraftVersion("1.19")
-	}
+	runServer { minecraftVersion("1.19") }
+	ktlint { version.set("0.44.0") }
 
-	build {
-		dependsOn(":shadowJar")
-		dependsOn(":IonCore:build")
-	}
-
-	ktlint {
-		version.set("0.44.0")
-	}
-
-	prepareKotlinBuildScriptModel {
-		dependsOn("addKtlintCheckGitPreCommitHook")
-		dependsOn("addKtlintFormatGitPreCommitHook")
-	}
+	prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
+	addKtlintFormatGitPreCommitHook { dependsOn("shadowJar") }
+	build { dependsOn("shadowJar") }
 }
