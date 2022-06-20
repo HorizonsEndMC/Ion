@@ -16,15 +16,26 @@ dependencies {
 
 tasks {
 	shadowJar {
+		fun ionRelocate(`package`: String, module: String) {
+			relocate(`package`, "net.horizonsend.ion.$module.libraries.${`package`}")
+		}
+
+		ionRelocate("cloud.commandframework.tasks", "server")
+		ionRelocate("cloud.commandframework.bukkit", "server")
+		ionRelocate("cloud.commandframework.paper", "server")
+
+		ionRelocate("cloud.commandframework.velocity", "proxy")
+
 		arrayOf(
 			"org.spongepowered.configurate",
 			"org.intellij.lang.annotations",
 			"org.jetbrains.annotations",
+			"cloud.commandframework",
 			"io.leangen.geantyref",
 			"com.typesafe.config",
 			"kotlin"
 		).forEach { group ->
-			relocate(group, "net.horizonsend.ion.common.libraries.$group")
+			ionRelocate(group, "common")
 		}
 
 		archiveFileName.set("../Ion.jar")

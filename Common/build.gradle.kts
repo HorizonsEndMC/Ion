@@ -17,4 +17,11 @@ dependencies {
 	// Velocity provides 3.7.2, which is so out of date that we will just provide our own.
 	implementation("org.spongepowered:configurate-hocon:4.1.0")
 	implementation("org.spongepowered:configurate-extra-kotlin:4.1.0")
+
+	// Cloud Command Framework
+	implementation("cloud.commandframework:cloud-core:1.7.0")
+	implementation("cloud.commandframework:cloud-annotations:1.7.0")
+	implementation("cloud.commandframework:cloud-brigadier:1.7.0")
+
+	annotationProcessor("cloud.commandframework:cloud-annotations:1.7.0")
 }

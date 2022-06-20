@@ -14,4 +14,7 @@ dependencies {
 	compileOnly(project(":IonCore"))
 
 	implementation(project(":Common"))
+
+	// Cloud Command Framework
+	implementation("cloud.commandframework:cloud-paper:1.7.0")
 }
