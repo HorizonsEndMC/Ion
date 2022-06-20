@@ -1,0 +1,4 @@
+{
+  "id":"ion",
+  "main":"net.horizonsend.ion.proxy.IonProxy"
+}
