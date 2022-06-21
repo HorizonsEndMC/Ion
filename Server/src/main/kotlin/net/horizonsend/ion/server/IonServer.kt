@@ -27,7 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
 		ConfigurationProvider.pluginDirectory = dataFolder.toPath()
-		ConfigurationProvider.reload()
+		ConfigurationProvider.load()
 
 		arrayOf(
 			BlockFadeListener(),
