@@ -1,31 +1,25 @@
 package net.horizonsend.ion.common.configuration
 
 import java.nio.file.Path
-import net.horizonsend.ion.common.configuration.server.ServerConfiguration
-import net.horizonsend.ion.common.configuration.shared.SharedConfiguration
-import org.spongepowered.configurate.CommentedConfigurationNode
+import net.horizonsend.ion.common.Reloadable
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
-import org.spongepowered.configurate.kotlin.extensions.get
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 
-object ConfigurationProvider {
-	private lateinit var sharedConfigurationLoader: HoconConfigurationLoader
-
-	private lateinit var sharedConfigurationNode: CommentedConfigurationNode
+object ConfigurationProvider : Reloadable {
+	lateinit var pluginDirectory: Path
 
 	lateinit var sharedConfiguration: SharedConfiguration
 		private set
 
-	private lateinit var serverConfigurationLoader: HoconConfigurationLoader
+	override fun reload() {
+		sharedConfiguration = load()
+	}
 
-	private lateinit var serverConfigurationNode: CommentedConfigurationNode
+	private inline fun <reified T> load(): T {
+		val configurationName = T::class.annotations.filterIsInstance<ConfigurationName>()[0].name
 
-	lateinit var serverConfiguration: ServerConfiguration
-		private set
-
-	fun loadConfiguration(pluginDirectory: Path) {
-		sharedConfigurationLoader = HoconConfigurationLoader.builder()
-			.path(pluginDirectory.resolve("shared.conf"))
+		val loader = HoconConfigurationLoader.builder()
+			.path(pluginDirectory.resolve("$configurationName.conf"))
 			.defaultOptions { options ->
 				options.serializers { builder ->
 					builder.registerAnnotatedObjects(objectMapperFactory())
@@ -33,25 +27,10 @@ object ConfigurationProvider {
 			}
 			.build()
 
-		sharedConfigurationNode = sharedConfigurationLoader.load()
-		sharedConfiguration = sharedConfigurationNode.get()!!
+		val node = loader.load()
 
-		sharedConfigurationNode.set(sharedConfiguration)
-		sharedConfigurationLoader.save(sharedConfigurationNode)
+		loader.save(node)
 
-		serverConfigurationLoader = HoconConfigurationLoader.builder()
-			.path(pluginDirectory.resolve("server.conf"))
-			.defaultOptions { options ->
-				options.serializers { builder ->
-					builder.registerAnnotatedObjects(objectMapperFactory())
-				}
-			}
-			.build()
-
-		serverConfigurationNode = serverConfigurationLoader.load()
-		serverConfiguration = serverConfigurationNode.get()!!
-
-		serverConfigurationNode.set(serverConfiguration)
-		serverConfigurationLoader.save(serverConfigurationNode)
+		return node.get(T::class.java)!!
 	}
 }
