@@ -6,16 +6,18 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 object ConfigurationProvider : Reloadable {
+	init { load() }
+
+	override fun onLoad() {
+		sharedConfiguration = loadConfiguration()
+	}
+
 	lateinit var pluginDirectory: Path
 
 	lateinit var sharedConfiguration: SharedConfiguration
 		private set
 
-	override fun reload() {
-		sharedConfiguration = load()
-	}
-
-	private inline fun <reified T> load(): T {
+	private inline fun <reified T> loadConfiguration(): T {
 		val configurationName = T::class.annotations.filterIsInstance<ConfigurationName>()[0].name
 
 		val loader = HoconConfigurationLoader.builder()
