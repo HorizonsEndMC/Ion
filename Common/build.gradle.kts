@@ -24,4 +24,7 @@ dependencies {
 	implementation("cloud.commandframework:cloud-brigadier:1.7.0")
 
 	annotationProcessor("cloud.commandframework:cloud-annotations:1.7.0")
+
+	// Kotlin Relfection
+	implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
 }
