@@ -144,7 +144,7 @@ object ProtectionListener : SLEventListener() {
 		}
 	}
 
-	private fun isProtectedCity(location: Location): Boolean = Regions
+	fun isProtectedCity(location: Location): Boolean = Regions
 		.find(location)
 		.any { it is RegionTerritory && it.isProtected }
 
