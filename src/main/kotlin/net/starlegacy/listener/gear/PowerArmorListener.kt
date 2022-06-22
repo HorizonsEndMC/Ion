@@ -12,6 +12,7 @@ import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.getPower
 import net.starlegacy.feature.misc.removePower
 import net.starlegacy.listener.SLEventListener
+import net.starlegacy.listener.misc.ProtectionListener
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.action
 import org.bukkit.Color
@@ -88,6 +89,7 @@ object PowerArmorListener : SLEventListener() {
 
 			if (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
 				&& !player.world.name.lowercase(Locale.getDefault()).contains("arena")
+				&& !ProtectionListener.isProtectedCity(player.location)
 			) {
 				removePower(item, 100)
 			}
