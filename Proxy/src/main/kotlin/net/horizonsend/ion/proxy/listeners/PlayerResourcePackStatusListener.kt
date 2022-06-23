@@ -11,6 +11,6 @@ class PlayerResourcePackStatusListener {
 	@Subscribe(order = PostOrder.LAST)
 	@Suppress("Unused")
 	fun onPlayerResourcePackStatusListener(event: PlayerResourcePackStatusEvent): EventTask = EventTask.async {
-		if (event.status == PlayerResourcePackStatusEvent.Status.ACCEPTED) event.player.sendActionBar(MiniMessage.miniMessage().deserialize("<${FeedbackType.USER_ERROR.colour}>Please consider downloading the resource pack for better login times! ( https://github.com/HorizonsEndMC/ResourcePack )"))
+		if (event.status.toString() == "ALLOW") event.player.sendActionBar(MiniMessage.miniMessage().deserialize("<${FeedbackType.USER_ERROR.colour}>Please consider downloading the resource pack for better login times! ( https://github.com/HorizonsEndMC/ResourcePack )"))
 	}
 }
