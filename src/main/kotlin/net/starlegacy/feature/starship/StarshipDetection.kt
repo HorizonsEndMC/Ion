@@ -12,7 +12,6 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.PlayerStarshipData
-import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
@@ -72,7 +71,7 @@ object StarshipDetection : SLComponent() {
 		// used for avoiding detecting blocks below landing gears
 		var lowestY = computerLocation.y
 
-		var carbyne = 0
+		var concrete = 0
 		var containers = 0
 		var stickyPistons = 0
 
@@ -138,7 +137,7 @@ object StarshipDetection : SLComponent() {
 
 			// Update the various counters
 			when {
-				material.isConcrete -> carbyne++
+				material.isConcrete -> concrete++
 				isInventory(material) -> containers++
 				material == Material.STICKY_PISTON -> stickyPistons++
 			}
@@ -195,10 +194,10 @@ object StarshipDetection : SLComponent() {
 			)
 		}
 
-		val carbynePercent: Double = carbyne.toDouble() / size.toDouble()
-		if (type != PLATFORM && carbynePercent < 0.3) {
+		val concretePercent: Double = concrete.toDouble() / size.toDouble()
+		if (concretePercent < type.concretePercent) {
 			throw DetectionFailedException(
-				"All ships require at least 30% carbyne (concrete) blocks in order to fly. Current %: ${carbynePercent * 100}"
+				"This ship requires at least ${type.concretePercent}% concrete blocks in order to fly. Current %: ${concretePercent * 100}"
 			)
 		}
 

@@ -13,6 +13,7 @@ enum class StarshipType(
 	val maxSize: Int,
 	val minLevel: Int,
 	val containerPercent: Double,
+	val concretePercent: Double = 0.03,
 	val crateLimitMultiplier: Double,
 	val sneakFlyAccelDistance: Int,
 	val maxSneakFlyAccel: Int,
@@ -21,7 +22,9 @@ enum class StarshipType(
 	menuItemMaterial: Material,
 	val isWarship: Boolean,
 	val colour: String,
-	val overridePermission: String
+	val overridePermission: String,
+	val eventship: Boolean = false,
+	val poweroverrider: Double = 1.0
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -133,7 +136,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.PRISMARINE_SHARD,
 		isWarship = false,
 		colour = "#008033",
-		overridePermission = "ion.ships.override.1"
+		overridePermission = "ion.ships.override.1",
+		poweroverrider = 0.7
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -149,7 +153,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.PRISMARINE_CRYSTALS,
 		isWarship = false,
 		colour = "#008066",
-		overridePermission = "ion.ships.override.10"
+		overridePermission = "ion.ships.override.10",
+		poweroverrider = 0.7
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -165,7 +170,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.PRISMARINE_SLAB,
 		isWarship = false,
 		colour = "#008099",
-		overridePermission = "ion.ships.override.20"
+		overridePermission = "ion.ships.override.20",
+		poweroverrider = 0.7
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -181,7 +187,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.PRISMARINE_STAIRS,
 		isWarship = false,
 		colour = "#0080cc",
-		overridePermission = "ion.ships.override.40"
+		overridePermission = "ion.ships.override.40",
+		poweroverrider = 0.7
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -197,7 +204,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.PRISMARINE,
 		isWarship = false,
 		colour = "#0080ff",
-		overridePermission = "ion.ships.override.80"
+		overridePermission = "ion.ships.override.80",
+		poweroverrider = 0.7
 	),
 	PLATFORM(
 		displayName = "Platform",
@@ -206,6 +214,7 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 100.0,
 		crateLimitMultiplier = 100.0,
+		concretePercent = 0.0,
 		sneakFlyAccelDistance = 0,
 		maxSneakFlyAccel = 0,
 		interdictionRange = 0,
@@ -213,7 +222,27 @@ enum class StarshipType(
 		menuItemMaterial = Material.BEDROCK,
 		isWarship = false,
 		colour = "#ffffff",
-		overridePermission = "ion.ships.override.1"
+		overridePermission = "ion.ships.override.1",
+		poweroverrider = 0.0
+	),
+	UNIDENTIFIEDSHIP(
+		displayName = "UnidentifiedShip",
+		minSize = 25,
+		maxSize = 100000,
+		minLevel = 69420,
+		containerPercent = 100.0,
+		concretePercent = 0.0,
+		crateLimitMultiplier = 100.0,
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 2000,
+		hyperspaceRangeMultiplier = 10.0,
+		menuItemMaterial = Material.MUD_BRICKS,
+		isWarship = true,
+		colour = "#d0e39d",
+		overridePermission = "ion.ships.eventship",
+		eventship = true,
+		poweroverrider = 2.0
 	);
 
 	val formatted: String get() = "<$colour>$displayName</$colour>"
@@ -241,6 +270,7 @@ enum class StarshipType(
 	companion object {
 		fun getUnlockedTypes(player: Player): List<StarshipType> = values()
 			.filter { it.canUse(player) }
+			.filter { !it.eventship.and(!player.hasPermission("ion.ships.eventship")) }
 			.sortedBy { it.minLevel }
 	}
 }
