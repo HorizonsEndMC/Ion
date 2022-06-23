@@ -10,6 +10,9 @@ import kotlin.math.sqrt
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.RelationCache
+import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CombatNPCKillEvent
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
@@ -48,6 +51,12 @@ object ShipKillXP : SLComponent() {
 	private val map: Cache<UUID, ShipDamageData> = CacheBuilder.newBuilder()
 		.expireAfterWrite(5L, TimeUnit.MINUTES)
 		.build()
+
+	private fun isAllied(pilot: Player, player: Player): Boolean {
+		val pilotNation = PlayerCache[pilot].nation ?: return false
+		val playerNation = PlayerCache[player].nation ?: return false
+		return RelationCache[pilotNation, playerNation] >= NationRelation.Level.ALLY
+	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onStarshipPilot(event: StarshipPilotedEvent) {
@@ -133,9 +142,10 @@ object ShipKillXP : SLComponent() {
 		killedName: String
 	) {
 		for ((damager, points) in dataMap.entries) {
-			val player = Bukkit.getPlayer(damager.id) ?: continue // shouldn't happen
+			val player = getPlayer(damager.id) ?: continue // shouldn't happen
 			val killedSize = data.size.toDouble()
 			val killerSize = damager.size?.toDouble() ?: killedSize // default to same size
+			if (isAllied(player, getPlayer(killedName)!!)) return
 
 			// xp is directly proportional to killed size and inversely proportional to killer size
 			val sizeFactor = sqrt(killedSize) / sqrt(killerSize)

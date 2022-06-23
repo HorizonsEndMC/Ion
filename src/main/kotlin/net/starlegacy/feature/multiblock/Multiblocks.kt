@@ -2,6 +2,8 @@ package net.starlegacy.feature.multiblock
 
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.core.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
+import net.horizonsend.ion.core.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
@@ -171,6 +173,8 @@ object Multiblocks : SLComponent() {
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,
 			PhaserStarshipWeaponMultiblock,
+			MiniPhaserStarshipWeaponMultiblock,
+			SonicMissileWeaponMultiblock,
 			DecomposerMultiblock
 		)
 	}
