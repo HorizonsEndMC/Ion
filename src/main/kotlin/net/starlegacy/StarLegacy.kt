@@ -34,6 +34,7 @@ import net.starlegacy.command.misc.PlayerInfoCommand
 import net.starlegacy.command.misc.ShuttleCommand
 import net.starlegacy.command.misc.TransportDebugCommand
 import  net.horizonsend.ion.core.commands.RainbowProjectileCommand
+import net.horizonsend.ion.core.listeners.PlayerJoinListener
 import net.starlegacy.command.nations.NationCommand
 import net.starlegacy.command.nations.NationRelationCommand
 import net.starlegacy.command.nations.NationSpaceStationCommand
@@ -287,6 +288,7 @@ class StarLegacy : JavaPlugin() {
 			MovementListener,
 			FriendlyFireListener,
 			ProtectionListener,
+			PlayerJoinListener,
 
 			BlockListener,
 			EntityListener,
