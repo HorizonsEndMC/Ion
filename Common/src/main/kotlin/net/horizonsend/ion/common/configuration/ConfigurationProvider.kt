@@ -6,8 +6,6 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 
 object ConfigurationProvider : Reloadable {
-	init { load() }
-
 	override fun onLoad() {
 		sharedConfiguration = loadConfiguration()
 	}
