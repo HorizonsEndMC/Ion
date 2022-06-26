@@ -108,9 +108,6 @@ fun TextComponent.gold() = style(SLTextStyle.GOLD)
 fun TextComponent.gray() = style(SLTextStyle.GRAY)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.blue() = style(SLTextStyle.BLUE)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.green() = style(SLTextStyle.GREEN)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
@@ -148,9 +145,6 @@ fun gray(s: String) = s.style(SLTextStyle.GRAY)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun darkGray(s: String) = s.style(SLTextStyle.DARK_GRAY)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun blue(s: String) = s.style(SLTextStyle.BLUE)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun green(s: String) = s.style(SLTextStyle.GREEN)

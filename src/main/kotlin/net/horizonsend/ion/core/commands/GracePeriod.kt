@@ -10,11 +10,12 @@ import org.bukkit.command.CommandSender
 @CommandAlias("graceperiodtoggle")
 @CommandPermission("graceperiodtoggle")
 object GracePeriod: BaseCommand() {
-	val graceperiodfile = PLUGIN.dataFolder.resolve("graceperiod")
+	private val graceperiodfile = PLUGIN.dataFolder.resolve("graceperiod")
 
 	val isGracePeriod get() = graceperiodfile.exists()
 
 	@Default
+	@Suppress("unused", "unused_parameter")
 	fun onToggle(sender: CommandSender) {
 		if (isGracePeriod) graceperiodfile.delete()
 		else graceperiodfile.createNewFile()

@@ -2,6 +2,7 @@ package net.starlegacy.cache.nations
 
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.cache.ManualCache
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
@@ -74,7 +75,7 @@ object PlayerCache : ManualCache() {
 		// may not be called if the plugin is not registered when they initiate authentication, like in a restart
 		plugin.listen<PlayerJoinEvent>(priority = EventPriority.LOWEST) { event ->
 			if (!PLAYER_DATA.containsKey(event.player.uniqueId)) {
-				event.player.kickPlayer("Failed to load data! Please try again.")
+				event.player.kick(miniMessage().deserialize("<red>Failed to load data! Please try again."))
 			}
 		}
 
