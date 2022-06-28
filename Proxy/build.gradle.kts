@@ -17,4 +17,3 @@ dependencies {
 	// Annotation Command Framework
 	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 }
-
