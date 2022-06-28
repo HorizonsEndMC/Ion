@@ -6,6 +6,7 @@ repositories {
 	mavenCentral()
 
 	maven("https://repo.papermc.io/repository/maven-public/") // Paper
+	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
 }
 
 dependencies {
@@ -15,6 +16,6 @@ dependencies {
 
 	implementation(project(":Common"))
 
-	// Cloud Command Framework
-	implementation("cloud.commandframework:cloud-paper:1.7.0")
+	// Annotation Command Framework
+	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 }

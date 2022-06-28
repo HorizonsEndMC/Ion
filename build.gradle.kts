@@ -7,6 +7,8 @@ plugins {
 
 repositories {
 	mavenCentral()
+
+	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
 }
 
 dependencies {
@@ -16,25 +18,20 @@ dependencies {
 
 tasks {
 	shadowJar {
-		fun ionRelocate(`package`: String, module: String) {
-			relocate(`package`, "net.horizonsend.ion.$module.libraries.${`package`}")
+		fun ionRelocate(`package`: String) {
+			relocate(`package`, "net.horizonsend.ion.libraries.${`package`}")
 		}
-
-		ionRelocate("cloud.commandframework.tasks", "server")
-		ionRelocate("cloud.commandframework.bukkit", "server")
-		ionRelocate("cloud.commandframework.paper", "server")
-
-		ionRelocate("cloud.commandframework.velocity", "proxy")
 
 		arrayOf(
 			"org.spongepowered.configurate",
 			"org.intellij.lang.annotations",
 			"org.jetbrains.annotations",
-			"cloud.commandframework",
 			"io.leangen.geantyref",
-			"com.typesafe.config"
+			"com.typesafe.config",
+			"co.aikar.commands",
+			"co.aikar.locales"
 		).forEach { group ->
-			ionRelocate(group, "common")
+			ionRelocate(group)
 		}
 
 		archiveFileName.set("../Ion.jar")
