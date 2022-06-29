@@ -32,6 +32,7 @@ class IonServer : JavaPlugin() {
 		arrayOf(
 			BlockFadeListener(),
 			BlockFormListener(),
+			ChunkLoadListener(this),
 			PlayerDeathListener(),
 			PlayerFishListener(),
 			PlayerItemConsumeListener(),
@@ -41,8 +42,7 @@ class IonServer : JavaPlugin() {
 			PlayerTeleportListener(),
 			PotionSplashListener(),
 			PrepareAnvilListener(),
-			PrepareItemEnchantListener(),
-			ChunkLoadListener(this)
+			PrepareItemEnchantListener()
 		).forEach {
 			server.pluginManager.registerEvents(it, this)
 		}
