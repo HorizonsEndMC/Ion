@@ -18,22 +18,6 @@ dependencies {
 
 tasks {
 	shadowJar {
-		fun ionRelocate(`package`: String) {
-			relocate(`package`, "net.horizonsend.ion.libraries.${`package`}")
-		}
-
-		arrayOf(
-			"org.spongepowered.configurate",
-			"org.intellij.lang.annotations",
-			"org.jetbrains.annotations",
-			"io.leangen.geantyref",
-			"com.typesafe.config",
-			"co.aikar.commands",
-			"co.aikar.locales"
-		).forEach { group ->
-			ionRelocate(group)
-		}
-
 		archiveFileName.set("../Ion.jar")
 	}
 
