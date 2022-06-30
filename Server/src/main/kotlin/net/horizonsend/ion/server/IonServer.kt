@@ -1,9 +1,16 @@
 package net.horizonsend.ion.server
 
+import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.configuration.ConfigurationProvider
+import net.horizonsend.ion.server.commands.GuideCommand
 import net.horizonsend.ion.server.listeners.BlockFadeListener
 import net.horizonsend.ion.server.listeners.BlockFormListener
 import net.horizonsend.ion.server.listeners.ChunkLoadListener
+import net.horizonsend.ion.server.listeners.InventoryClickListener
+import net.horizonsend.ion.server.listeners.InventoryCloseListener
+import net.horizonsend.ion.server.listeners.InventoryDragListener
+import net.horizonsend.ion.server.listeners.InventoryInteractListener
+import net.horizonsend.ion.server.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.listeners.PlayerDeathListener
 import net.horizonsend.ion.server.listeners.PlayerFishListener
 import net.horizonsend.ion.server.listeners.PlayerItemConsumeListener
@@ -33,6 +40,11 @@ class IonServer : JavaPlugin() {
 			BlockFadeListener(),
 			BlockFormListener(),
 			ChunkLoadListener(this),
+			InventoryClickListener(),
+			InventoryCloseListener(),
+			InventoryDragListener(),
+			InventoryInteractListener(),
+			InventoryMoveItemListener(),
 			PlayerDeathListener(),
 			PlayerFishListener(),
 			PlayerItemConsumeListener(),
@@ -96,5 +108,9 @@ class IonServer : JavaPlugin() {
 		gunpowderRecipe.addIngredient(Material.SAND)
 		gunpowderRecipe.addIngredient(Material.CHARCOAL)
 		server.addRecipe(gunpowderRecipe)
+
+		PaperCommandManager(this).apply {
+			registerCommand(GuideCommand())
+		}
 	}
 }
