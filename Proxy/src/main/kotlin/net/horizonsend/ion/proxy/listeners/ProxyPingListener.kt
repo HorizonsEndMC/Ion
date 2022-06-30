@@ -37,7 +37,7 @@ class ProxyPingListener(private val server: ProxyServer) {
 	fun onProxyPingEvent(event: ProxyPingEvent): EventTask = EventTask.async {
 		event.ping = ServerPing(
 			version,
-			ServerPing.Players(server.playerCount, server.playerCount, listOf()),
+			ServerPing.Players(server.playerCount, server.playerCount + 1, listOf()),
 			motdLine1.append(miniMessage().deserialize(messages.random())),
 			icon
 		)
