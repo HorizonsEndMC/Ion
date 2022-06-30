@@ -14,9 +14,8 @@ class PlayerJoinListener : Listener {
 		event.joinMessage(null)
 
 		event.player.sendPlayerListHeader(miniMessage().deserialize(
-			"<blue>Horizon's End</blue>\n\n" +
-			ConfigurationProvider.sharedConfiguration.tablistHeaderMessage.run { if (isEmpty()) "" else "$this\n\n" } +
-			"<#7289da>discord.gg/RPvgQsGzKM"
+			"\n<blue>Horizon's End</blue>\n\n" +
+			ConfigurationProvider.sharedConfiguration.tablistHeaderMessage.run { if (isEmpty()) "" else "$this\n\n" }
 		))
 	}
 }
