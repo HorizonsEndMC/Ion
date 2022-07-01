@@ -16,21 +16,28 @@ object ConfigurationProvider : Reloadable {
 		private set
 
 	private inline fun <reified T> loadConfiguration(): T {
-		val configurationName = T::class.annotations.filterIsInstance<ConfigurationName>()[0].name
+		while (true) {
+			try {
+				val configurationName = T::class.annotations.filterIsInstance<ConfigurationName>()[0].name
 
-		val loader = HoconConfigurationLoader.builder()
-			.path(pluginDirectory.resolve("$configurationName.conf"))
-			.defaultOptions { options ->
-				options.serializers { builder ->
-					builder.registerAnnotatedObjects(objectMapperFactory())
-				}
+				val loader = HoconConfigurationLoader.builder()
+					.path(pluginDirectory.resolve("$configurationName.conf"))
+					.defaultOptions { options ->
+						options.serializers { builder ->
+							builder.registerAnnotatedObjects(objectMapperFactory())
+						}
+					}
+					.build()
+
+				val node = loader.load()
+
+				loader.save(node)
+
+				return node.get(T::class.java)!!
 			}
-			.build()
+			catch (_: Exception) {}
 
-		val node = loader.load()
-
-		loader.save(node)
-
-		return node.get(T::class.java)!!
+			Thread.sleep(500)
+		}
 	}
 }
