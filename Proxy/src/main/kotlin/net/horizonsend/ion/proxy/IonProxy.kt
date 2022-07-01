@@ -1,11 +1,13 @@
 package net.horizonsend.ion.proxy
 
+import co.aikar.commands.VelocityCommandManager
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.proxy.ProxyServer
+import net.horizonsend.ion.proxy.commands.LinksCommand
 import net.horizonsend.ion.proxy.listeners.PreLoginListener
 import net.horizonsend.ion.proxy.listeners.ProxyPingListener
 import net.horizonsend.ion.proxy.listeners.ServerConnectedListener
@@ -22,5 +24,9 @@ class IonProxy @Inject constructor(
 		server.eventManager.register(this, ServerConnectedListener(server))
 		server.eventManager.register(this, ProxyPingListener(server))
 		server.eventManager.register(this, PreLoginListener())
+
+		VelocityCommandManager(server, this).apply {
+			registerCommand(LinksCommand())
+		}
 	}
 }
