@@ -10,7 +10,7 @@ object ConfigurationProvider : Reloadable {
 		sharedConfiguration = loadConfiguration()
 	}
 
-	lateinit var pluginDirectory: Path
+	lateinit var configDirectory: Path
 
 	lateinit var sharedConfiguration: SharedConfiguration
 		private set
@@ -21,7 +21,7 @@ object ConfigurationProvider : Reloadable {
 				val configurationName = T::class.annotations.filterIsInstance<ConfigurationName>()[0].name
 
 				val loader = HoconConfigurationLoader.builder()
-					.path(pluginDirectory.resolve("$configurationName.conf"))
+					.path(configDirectory.resolve("$configurationName.conf"))
 					.defaultOptions { options ->
 						options.serializers { builder ->
 							builder.registerAnnotatedObjects(objectMapperFactory())
