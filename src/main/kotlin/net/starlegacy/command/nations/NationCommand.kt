@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.Subcommand
 import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
-import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -198,7 +197,6 @@ internal object NationCommand : SLCommand() {
 		val settlementId = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlementId)
 		requireNotInNation(sender)
-		requireMinLevel(sender, NATIONS_BALANCE.nation.minJoinLevel)
 		val nationId: Oid<Nation> = resolveNation(nation)
 
 		val settlementName = getSettlementName(settlementId)
