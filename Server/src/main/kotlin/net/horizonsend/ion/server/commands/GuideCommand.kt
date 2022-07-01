@@ -18,10 +18,12 @@ class GuideCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
 	fun onCommand(sender: Player, @Default("1") page: Int) {
-		if (1 > page || page > 2) {
+		if (1 > page || page > 3) {
 			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "That page does not exist.")
 			return
 		}
+
+		sender.sendFeedbackMessage(FeedbackType.SERVER_ERROR, "This guide is incomplete, and will be finished at a later date. However it has been left in intentionally as a sort of tech demo. If you are actually looking for a guide, please look at the Wiki: <u><click:open_url:'https://wiki.horizonsend.net/wiki/New_Player_Guide'>New Player Guide</click></u>.")
 
 		val screen = TextScreen(miniMessage().deserialize(
 			when (page) {
@@ -45,9 +47,21 @@ class GuideCommand : BaseCommand() {
 				     "<font:horizonsend:special>\uE094<font:horizonsend:y81>Head there now, and run" +
 				     "<font:horizonsend:special>\uE07B<font:horizonsend:y90><b>/guide 3</b> when you arrive." +
 				     "<font:horizonsend:special>\uE03B<font:horizonsend:y106>2"
+				3 -> "<color:#ffffff><font:horizonsend:special>\uE007\uF8FF\uE0A8</font></color>You will spawn in the rear" +
+				     "<font:horizonsend:special>\uE081<font:horizonsend:y9>section of the ship, so make" +
+				     "<font:horizonsend:special>\uE08B<font:horizonsend:y18>your way to the front. Then," +
+				     "<font:horizonsend:special>\uE08E<font:horizonsend:y27>using your clock (shown on the" +
+				     "<font:horizonsend:special>\uE09D<font:horizonsend:y36>right) left click on the Ship" +
+				     "<font:horizonsend:special>\uE086<font:horizonsend:y45>Computer (see below) and click" +
+				     "<font:horizonsend:special>\uE09A<font:horizonsend:y54>\"Redetect\"." +
+				     "<font:horizonsend:special>\uE035<font:horizonsend:y72>Once redetected, right click on" +
+				     "<font:horizonsend:special>\uE09B<font:horizonsend:y81>the Ship Computer to pilot the" +
+				     "<font:horizonsend:special>\uE094<font:horizonsend:y90>ship." +
+				     "<font:horizonsend:special>\uE000<font:horizonsend:y106>3"
 				else -> throw IndexOutOfBoundsException()
 			}) as TextComponent)
 
+		screen.inventory.setItem(8, ItemStack(Material.CLOCK))
 		screen.inventory.setItem(53, ItemStack(Material.STICK))
 
 		sender.openScreen(screen)
