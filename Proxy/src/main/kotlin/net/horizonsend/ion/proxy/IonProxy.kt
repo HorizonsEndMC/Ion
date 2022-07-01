@@ -15,17 +15,17 @@ import org.slf4j.Logger
 
 @Suppress("Unused")
 class IonProxy @Inject constructor(
-	private val server: ProxyServer,
+	private val proxy: ProxyServer,
 	@Suppress("Unused_Parameter") slF4JLogger: Logger
 ) {
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
-		server.eventManager.register(this, ServerConnectedListener(server))
-		server.eventManager.register(this, ProxyPingListener(server))
-		server.eventManager.register(this, PreLoginListener())
+		proxy.eventManager.register(this, ServerConnectedListener(proxy))
+		proxy.eventManager.register(this, ProxyPingListener(proxy))
+		proxy.eventManager.register(this, PreLoginListener())
 
-		VelocityCommandManager(server, this).apply {
+		VelocityCommandManager(proxy, this).apply {
 			registerCommand(LinksCommand())
 		}
 	}
