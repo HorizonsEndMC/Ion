@@ -33,7 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin
 @Suppress("unused") // Plugin entrypoint
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
-		ConfigurationProvider.pluginDirectory = dataFolder.toPath()
+		ConfigurationProvider.configDirectory = dataFolder.resolve("shared").toPath()
 		ConfigurationProvider.load()
 
 		arrayOf(
