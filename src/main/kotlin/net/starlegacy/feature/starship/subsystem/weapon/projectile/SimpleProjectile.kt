@@ -7,6 +7,7 @@ import net.horizonsend.ion.core.commands.GracePeriod
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
+import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -140,7 +141,7 @@ abstract class SimpleProjectile(
 			addToDamagers(world, block)
 		}
 
-		if (entity != null && entity is LivingEntity) {
+		if (entity != null && entity is LivingEntity && !world.name.contains("Hyperspace")) {
 			entity.damage(10.0, shooter)
 		}
 	}
