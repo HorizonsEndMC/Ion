@@ -47,7 +47,7 @@ services:
       - ./config/paper/plugins/IonCore/config.conf:/data/plugins/IonCore/config.conf
       - ./config/paper/plugins/LuckPerms/config.yml:/data/plugins/LuckPerms/config.yml
       - ./config/paper/world/datapacks/horizonsend:/data/world/datapacks/horizonsend
-      - ./config/paper/server.properties:/data/server.properties
+      - ./config/paper/server.properties:/data/server.properties:ro
       - ./config/paper/bukkit.yml:/data/bukkit.yml
       - ./config/paper/spigot.yml:/data/spigot.yml
       - ./config/paper/config:/data/config
