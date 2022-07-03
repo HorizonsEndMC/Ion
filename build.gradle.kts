@@ -48,8 +48,10 @@ tasks {
 			println("Done!")
 		}
 
-		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts", "paper")
-		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs", "paper")
-		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'velocity/')", "velocity/build/libs", "velocity")
+		doFirst {
+			downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts", "paper")
+			downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs", "paper")
+			downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'velocity/')", "velocity/build/libs", "velocity")
+		}
 	}
 }
