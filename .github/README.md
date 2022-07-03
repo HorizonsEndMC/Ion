@@ -4,6 +4,16 @@ The project can be built by downloading it, navigating into the directory, and r
 
 The compiled jar be `build/Ion.jar` and `build/IonCore.jar`.
 
+### Testing
+
+This repository includes a script that will set up a functioning system comprising of Ion, IonCore, and its critical
+dependencies. To use it simply ensure that Docker and Docker Compose are installed and running, and then use
+`testServer`. This script is a bash script, using it on Windows will require Windows Subsystem for Linux or Git Bash.
+
+Simply run `sh testServer run`, you will be able to send commands in the terminal, but they will not appear as you type.
+
+If the test server breaks, use `sh testServer reset` to reset it back to it's default state.
+
 ### Contributing
 Contributions must follow the following rules:
 1) Lines should be 120 characters long at most, this is not a strict requirement, lines *can* be longer.
