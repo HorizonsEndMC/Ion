@@ -168,7 +168,8 @@ object ShipmentManager : SLComponent() {
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
 		player.input("Select amount of crates:") { _: Player, answer ->
-			val amount = answer.toIntOrNull() ?: return@input "Amount must be an integer"
+			val digit = answer.filter { it.isDigit() }
+			val amount = digit.toIntOrNull() ?: return@input "Amount must be an integer"
 
 			val playerMaxShipSize = StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }.sortedByDescending { it.maxSize }[0].maxSize
 
