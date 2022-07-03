@@ -26,6 +26,7 @@ class HyperspaceWarmup(val ship: ActiveStarship, val warmup: Int, val dest: Loca
 		}
 		if (MassShadows.find(ship.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble())!= null){
 			ship.sendMessage("&cShip is within Gravity Well, jump cancelled")
+			return
 		}
 
 		if (seconds < warmup) {
