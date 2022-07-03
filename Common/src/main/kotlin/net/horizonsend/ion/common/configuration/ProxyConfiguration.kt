@@ -3,7 +3,7 @@ package net.horizonsend.ion.common.configuration
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
-@ConfigurationName("shared/config")
-data class SharedConfiguration(
+@ConfigurationName("proxy")
+data class ProxyConfiguration(
 	val tablistHeaderMessage: String = ""
 )
