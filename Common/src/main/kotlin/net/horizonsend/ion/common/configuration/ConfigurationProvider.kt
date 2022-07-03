@@ -4,15 +4,16 @@ import java.nio.file.Path
 import net.horizonsend.ion.common.Reloadable
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.objectMapperFactory
+import org.spongepowered.configurate.kotlin.toNode
 
 object ConfigurationProvider : Reloadable {
 	override fun onLoad() {
-		sharedConfiguration = loadConfiguration()
+		proxyConfiguration = loadConfiguration()
 	}
 
 	lateinit var configDirectory: Path
 
-	lateinit var sharedConfiguration: SharedConfiguration
+	lateinit var proxyConfiguration: ProxyConfiguration
 		private set
 
 	private inline fun <reified T> loadConfiguration(): T {
@@ -29,8 +30,11 @@ object ConfigurationProvider : Reloadable {
 
 		val node = loader.load()
 
+		val configuration = node.get(T::class.java)!!
+
+		configuration.toNode(node)
 		loader.save(node)
 
-		return node.get(T::class.java)!!
+		return configuration
 	}
 }

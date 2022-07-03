@@ -7,8 +7,12 @@ import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
+import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
+import java.nio.file.Path
+import net.horizonsend.ion.common.configuration.ConfigurationProvider
 import net.horizonsend.ion.proxy.commands.LinksCommand
+import net.horizonsend.ion.proxy.listeners.LoginListener
 import net.horizonsend.ion.proxy.listeners.PreLoginListener
 import net.horizonsend.ion.proxy.listeners.ProxyPingListener
 import net.horizonsend.ion.proxy.listeners.ServerConnectedListener
@@ -18,14 +22,23 @@ import org.slf4j.Logger
 @Plugin(id = "ion", name = "Ion") // While we do not use this for generating velocity-plugin.json, ACF requires it.
 class IonProxy @Inject constructor(
 	private val proxy: ProxyServer,
-	@Suppress("Unused_Parameter") slF4JLogger: Logger
+	@Suppress("Unused_Parameter") slF4JLogger: Logger,
+	@DataDirectory private val dataDirectory: Path
 ) {
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
-		proxy.eventManager.register(this, ServerConnectedListener(proxy))
-		proxy.eventManager.register(this, ProxyPingListener(proxy))
-		proxy.eventManager.register(this, PreLoginListener())
+		ConfigurationProvider.configDirectory = dataDirectory
+		ConfigurationProvider.load()
+
+		arrayOf(
+			ServerConnectedListener(proxy),
+			ProxyPingListener(proxy),
+			PreLoginListener(),
+			LoginListener()
+		).forEach {
+			proxy.eventManager.register(this, it)
+		}
 
 		VelocityCommandManager(proxy, this).apply {
 			registerCommand(LinksCommand())
