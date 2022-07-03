@@ -1,6 +1,6 @@
 .gradle
 .idea
 build
-/config
-/velocity
-/paper
+/config/**
+/velocity/**
+/paper/**
