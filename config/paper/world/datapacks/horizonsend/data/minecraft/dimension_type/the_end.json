@@ -1,0 +1,26 @@
+{
+	"name": "the_end",
+	"min_y": 0,
+	"height": 384,
+	"ultrawarm": false,
+	"respawn_anchor_works": false,
+	"piglin_safe": false,
+	"natural": false,
+	"logical_height": 384,
+	"infiniburn": "#infiniburn_end",
+	"has_skylight": false,
+	"has_raids": false,
+	"has_ceiling": false,
+	"effects": "the_end",
+	"coordinate_scale": 1.0,
+	"bed_works": false,
+	"ambient_light": 0.0,
+	"monster_spawn_block_light_limit": 0,
+	"monster_spawn_light_level": {
+		"type": "minecraft:uniform",
+		"value": {
+			"min_inclusive": 0,
+			"max_inclusive": 7
+		}
+	}
+}

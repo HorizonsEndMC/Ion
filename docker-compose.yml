@@ -1,0 +1,58 @@
+version: "2.6.0"
+
+services:
+  redis:
+    image: redis
+
+  mongo:
+    image: mongo:4.2
+    command: [ "--replSet", "rs0" ]
+    ports: [ 127.0.0.1:27017:27017 ]
+    volumes:
+      - ./config/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    healthcheck:
+      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet --host mongo) -eq 1
+      interval: 1s
+      start_period: 1s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+      MONGO_INITDB_DATABASE: test
+      MONGO_REPLICA_SET_NAME: rs0
+
+  velocity:
+    image: itzg/bungeecord
+    container_name: velocity
+    ports: [25565:25565]
+    volumes:
+      - ./velocity:/server
+      - ./build/Ion.jar:/server/plugins/Ion.jar:ro
+      - ./config/velocity/velocity.toml:/server/velocity.toml
+      - ./config/velocity/forwarding.secret:/server/forwarding.secret
+      - ./config/velocity/plugins/luckperms/config.yml:/server/plugins/luckperms/config.yml
+    environment:
+      TYPE: VELOCITY
+
+  paper:
+    image: itzg/minecraft-server
+    container_name: paper
+    depends_on: ["mongo", "redis"]
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./paper:/data
+      - ./paper/plugins:/data/plugins
+      - ./build/Ion.jar:/data/plugins/Ion.jar
+      - ./build/IonCore.jar:/data/plugins/IonCore.jar
+      - ./config/paper/plugins/IonCore/config.conf:/data/plugins/IonCore/config.conf
+      - ./config/paper/plugins/LuckPerms/config.yml:/data/plugins/LuckPerms/config.yml
+      - ./config/paper/world/datapacks/horizonsend:/data/world/datapacks/horizonsend
+      - ./config/paper/server.properties:/data/server.properties
+      - ./config/paper/bukkit.yml:/data/bukkit.yml
+      - ./config/paper/spigot.yml:/data/spigot.yml
+      - ./config/paper/config:/data/config
+    environment:
+      TYPE: PAPER
+      VERSION: 1.19
+      EULA: TRUE
+      USE_AIKAR_FLAGS: TRUE

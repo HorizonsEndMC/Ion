@@ -1,0 +1,41 @@
+#!/bin/sh
+
+doSudo="true"
+type "sudo" > /dev/null || doSudo="false"
+
+if [ $doSudo = "false" ]; then
+	printf "\u001b[33mSudo is not present on this system, it will not be used, this could prevent the server from running. It may be safe to ignore this.\u001b[0m\n"
+fi
+
+safeSudo() {
+	if [ $doSudo = "true" ]; then
+		sudo "$@"
+	else
+		"$@"
+	fi
+}
+
+case $1 in
+	run)
+    mkdir -p paper/plugins/IonCore paper/plugins/LuckPerms velocity/plugins/luckperms
+    ./gradlew --daemon --build-cache :downloadTestServerDependencies
+    safeSudo sh -c "
+      docker-compose up -d redis mongo paper velocity
+      chmod 777 -R paper velocity
+      docker-compose logs --follow --tail=0 velocity paper | sed \"s/^/\r/\" &
+      docker attach paper &> /dev/null
+      docker-compose stop
+    "
+	;;
+
+	reset)
+		safeSudo sh -c "
+      docker-compose rm -fs
+      rm -rf paper velocity
+    "
+	;;
+
+	*)
+		echo "Usage: server {run|reset}"
+	;;
+esac
