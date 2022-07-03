@@ -16,7 +16,7 @@ class PlayerKickListener : Listener {
 		if (event.reason() == Component.translatable("multiplayer.disconnect.out_of_order_chat")) {
 			event.player.sendFeedbackMessage(
 				FeedbackType.SERVER_ERROR,
-				"The server attempted to kick you for out-of-order chat messages. You may need to retry any recent commands."
+				"Your last message / command was invalid, your system time may be out of sync. Please check that your time is synced at <u><click:open_url:'https://time.is'>time.is</click></u>, and then re-sync it if it is not."
 			)
 			event.isCancelled = true
 		}
