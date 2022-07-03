@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.common.configuration.ConfigurationProvider
 import net.horizonsend.ion.server.commands.GuideCommand
 import net.horizonsend.ion.server.listeners.BlockFadeListener
 import net.horizonsend.ion.server.listeners.BlockFormListener
@@ -33,9 +32,6 @@ import org.bukkit.plugin.java.JavaPlugin
 @Suppress("unused") // Plugin entrypoint
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
-		ConfigurationProvider.configDirectory = dataFolder.toPath()
-		ConfigurationProvider.load()
-
 		arrayOf(
 			BlockFadeListener(),
 			BlockFormListener(),
