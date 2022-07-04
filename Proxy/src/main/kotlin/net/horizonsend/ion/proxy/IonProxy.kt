@@ -10,7 +10,7 @@ import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
-import net.horizonsend.ion.common.configuration.ConfigurationProvider
+import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.LinksCommand
 import net.horizonsend.ion.proxy.listeners.LoginListener
 import net.horizonsend.ion.proxy.listeners.PreLoginListener
@@ -25,17 +25,16 @@ class IonProxy @Inject constructor(
 	@Suppress("Unused_Parameter") slF4JLogger: Logger,
 	@DataDirectory private val dataDirectory: Path
 ) {
+	val proxyConfiguration = loadConfiguration<ProxyConfiguration>(dataDirectory)
+
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
-		ConfigurationProvider.configDirectory = dataDirectory
-		ConfigurationProvider.load()
-
 		arrayOf(
-			ServerConnectedListener(proxy),
-			ProxyPingListener(proxy),
+			LoginListener(this),
 			PreLoginListener(),
-			LoginListener()
+			ProxyPingListener(proxy),
+			ServerConnectedListener(proxy)
 		).forEach {
 			proxy.eventManager.register(this, it)
 		}

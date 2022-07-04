@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.configuration
+package net.horizonsend.ion.proxy
 
 import net.horizonsend.ion.common.annotations.ConfigurationName
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
