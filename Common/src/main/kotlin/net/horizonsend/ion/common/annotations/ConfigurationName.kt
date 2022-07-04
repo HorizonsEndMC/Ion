@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.configuration
+package net.horizonsend.ion.common.annotations
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
