@@ -1,6 +1,8 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
@@ -236,6 +238,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val message = messageColor.toString() + event.message.replace("${SLTextStyle.RESET}", "$messageColor")
 
 			allyAction(NationsChatMessage(nation, format, message, playerInfo(player)))
+			player.sendFeedbackmessage(FeedbackType.USER_ERROR, "{0} You really hoped today would be the day we fixed  this, idiot", player.name())
 		}
 	};
 
