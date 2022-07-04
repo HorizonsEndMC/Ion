@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.listeners
+package net.horizonsend.ion.proxy.listeners.velocity
 
 import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
