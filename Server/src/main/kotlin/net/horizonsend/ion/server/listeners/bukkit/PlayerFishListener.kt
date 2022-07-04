@@ -1,14 +1,14 @@
-package net.horizonsend.ion.server.listeners
+package net.horizonsend.ion.server.listeners.bukkit
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.PotionSplashEvent
+import org.bukkit.event.player.PlayerFishEvent
 
-class PotionSplashListener : Listener {
+class PlayerFishListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	@Suppress("Unused")
-	fun onPotionSplashEvent(event: PotionSplashEvent) {
+	fun onPlayerFishEvent(event: PlayerFishEvent) {
 		event.isCancelled = true
 	}
 }
