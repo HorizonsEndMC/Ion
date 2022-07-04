@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.listeners
+package net.horizonsend.ion.server.listeners.bukkit
 
 import kotlin.random.Random
 import net.horizonsend.ion.common.utilities.Position
