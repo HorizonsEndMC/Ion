@@ -1,14 +1,17 @@
 package net.horizonsend.ion.common
 
-interface Reloadable {
-	fun reload() {
+abstract class Reloadable {
+	private var hasLoaded = false
+
+	fun load() {
 		onLoad()
-		onReload()
+		if (hasLoaded) onReload()
+		hasLoaded = true
 	}
 
-	fun load() = onLoad()
+	fun unload() = onUnload()
 
-	fun onLoad() {}
-
-	fun onReload() {}
+	protected open fun onLoad() {}
+	protected open fun onReload() {}
+	protected open fun onUnload() {}
 }

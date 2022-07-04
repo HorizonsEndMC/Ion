@@ -6,7 +6,7 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.kotlin.toNode
 
-object ConfigurationProvider : Reloadable {
+object ConfigurationProvider : Reloadable() {
 	override fun onLoad() {
 		proxyConfiguration = loadConfiguration()
 	}
