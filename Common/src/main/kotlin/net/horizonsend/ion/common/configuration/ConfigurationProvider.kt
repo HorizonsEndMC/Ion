@@ -2,6 +2,7 @@ package net.horizonsend.ion.common.configuration
 
 import java.nio.file.Path
 import net.horizonsend.ion.common.Reloadable
+import net.horizonsend.ion.common.annotations.ConfigurationName
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.kotlin.toNode
