@@ -12,10 +12,10 @@ import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.LinksCommand
-import net.horizonsend.ion.proxy.listeners.LoginListener
-import net.horizonsend.ion.proxy.listeners.PreLoginListener
-import net.horizonsend.ion.proxy.listeners.ProxyPingListener
-import net.horizonsend.ion.proxy.listeners.ServerConnectedListener
+import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
+import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
+import net.horizonsend.ion.proxy.listeners.velocity.ProxyPingListener
+import net.horizonsend.ion.proxy.listeners.velocity.ServerConnectedListener
 import org.slf4j.Logger
 
 @Suppress("Unused")

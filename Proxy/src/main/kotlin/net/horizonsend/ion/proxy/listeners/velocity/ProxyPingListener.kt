@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.listeners
+package net.horizonsend.ion.proxy.listeners.velocity
 
 import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
@@ -27,7 +27,7 @@ class ProxyPingListener(private val server: ProxyServer) {
 		Favicon(
 			"data:image/png;base64,${
 				Base64.getEncoder().encodeToString(
-					URL("https://github.com/HorizonsEndMC/ResourcePack/raw/main/pack.png").readBytes()		
+					URL("https://github.com/HorizonsEndMC/ResourcePack/raw/main/pack.png").readBytes()
 				)
 			}"
 		)
