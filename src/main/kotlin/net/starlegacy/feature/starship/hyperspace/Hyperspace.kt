@@ -84,7 +84,7 @@ object Hyperspace : SLComponent() {
 			}
 
 			val mass = starship.mass
-			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass)
+			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass) / 10
 			movementTasks[starship] = HyperspaceMovement(starship, speed, warmup.dest)
 		}
 	}

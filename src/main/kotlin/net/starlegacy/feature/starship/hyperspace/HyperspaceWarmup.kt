@@ -17,7 +17,7 @@ class HyperspaceWarmup(val ship: ActiveStarship, var warmup: Int, val dest: Loca
 	BukkitRunnable() {
 	init {
 		if (ship is ActivePlayerStarship) {
-			warmup -= max(min(CapturableStation.count(CapturableStation::nation eq PlayerCache[ship.pilot!!].nation).toInt(), 6) - 1, 0) * 2
+			warmup -= (max(min(CapturableStation.count(CapturableStation::nation eq PlayerCache[ship.pilot!!].nation).toInt(), 6) - 2, 0) * 1.5).toInt()
 			warmup = max(warmup, 0)
 		}
 
