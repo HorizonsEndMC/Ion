@@ -2,8 +2,26 @@ package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.server.commands.GuideCommand
-import net.horizonsend.ion.server.listeners.bukkit.*
-import net.horizonsend.ion.server.listeners.luckperms.NodeMutateListener
+import net.horizonsend.ion.server.listeners.bukkit.BlockFadeListener
+import net.horizonsend.ion.server.listeners.bukkit.BlockFormListener
+import net.horizonsend.ion.server.listeners.bukkit.ChunkLoadListener
+import net.horizonsend.ion.server.listeners.bukkit.InventoryClickListener
+import net.horizonsend.ion.server.listeners.bukkit.InventoryCloseListener
+import net.horizonsend.ion.server.listeners.bukkit.InventoryDragListener
+import net.horizonsend.ion.server.listeners.bukkit.InventoryInteractListener
+import net.horizonsend.ion.server.listeners.bukkit.InventoryMoveItemListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerDeathListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerFishListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerItemConsumeListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerJoinListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerKickListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerLoginListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerQuitListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerTeleportListener
+import net.horizonsend.ion.server.listeners.bukkit.PotionSplashListener
+import net.horizonsend.ion.server.listeners.bukkit.PrepareAnvilListener
+import net.horizonsend.ion.server.listeners.bukkit.PrepareItemEnchantListener
+import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -94,6 +112,6 @@ class IonServer : JavaPlugin() {
 			registerCommand(GuideCommand())
 		}
 
-		NodeMutateListener()
+		UserDataRecalculateListener()
 	}
 }
