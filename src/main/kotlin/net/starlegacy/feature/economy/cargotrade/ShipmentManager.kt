@@ -8,9 +8,12 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.trade.CargoCrates
@@ -373,8 +376,13 @@ object ShipmentManager : SLComponent() {
 
 				val playernationid = PlayerCache[player].nation
 
-				if  (CapturableStation.count(CapturableStation::nation eq playernationid).toInt() > 2)(totalRevenue*1.05)
-				else if (CapturableStation.count(CapturableStation::nation eq playernationid).toInt() > 2)(totalRevenue*1.025)
+				val capturedStationCount = min(CapturableStation.count(CapturableStation::nation eq playernationid).toInt(), 6)
+				val siegeBonusPercent = capturedStationCount * 5
+				val siegeBonus = totalRevenue * siegeBonusPercent / 100
+
+				player.sendFeedbackAction(FeedbackType.INFORMATION, "Received {0}% (C{1}) bonus from {2} captured stations.", siegeBonusPercent, siegeBonus, capturedStationCount)
+
+				totalRevenue += siegeBonus
 
 				if (totalRevenue > 0) {
 					player msg "&1Revenue from all updated shipments, after tax: " +
