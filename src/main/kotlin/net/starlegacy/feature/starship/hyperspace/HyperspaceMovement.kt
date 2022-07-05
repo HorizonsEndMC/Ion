@@ -16,7 +16,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 	private var travelled = 0.0
 
 	init {
-		runTaskTimer(PLUGIN, 20, 20)
+		runTaskTimer(PLUGIN, 2, 2)
 	}
 
 	private fun remainingDistance() = distance(x, 0.0, z, dest.x, 0.0, dest.z)

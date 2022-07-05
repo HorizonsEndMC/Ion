@@ -101,8 +101,8 @@ object Interdiction : SLComponent() {
 				continue
 			}
 
-			cruisingShip.cruiseData.velocity.multiply(0.9)
-			cruisingShip.sendMessage("Quantum fluctuations detected - velocity has been reduced by 10%.")
+			cruisingShip.cruiseData.velocity.multiply(0.8)
+			cruisingShip.sendMessage("Quantum fluctuations detected - velocity has been reduced by 20%.")
 		}
 
 		input.removeItem(CustomItems.MINERAL_CHETHERITE.itemStack(2))
