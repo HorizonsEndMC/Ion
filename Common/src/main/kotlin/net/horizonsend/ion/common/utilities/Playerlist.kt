@@ -22,13 +22,13 @@ fun constructPlayerListName(username: String, prefix: String?, suffix: String?):
 
 	prefix?.let {
 		displayName.append(LegacyComponentSerializer.legacyAmpersand().deserialize(it))
-		if (!it.endsWith(' ')) displayName.append(Component.text(' '))
+		if (!it.endsWith(" &r")) displayName.append(Component.text(' '))
 	}
 
 	displayName.append(Component.text(username))
 
 	suffix?.let {
-		if (!it.startsWith(' ')) displayName.append(Component.text(' '))
+		if (!it.startsWith(" ")) displayName.append(Component.text(' '))
 		displayName.append(LegacyComponentSerializer.legacyAmpersand().deserialize(it))
 	}
 
