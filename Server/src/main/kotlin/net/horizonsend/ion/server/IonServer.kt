@@ -20,8 +20,11 @@ import net.horizonsend.ion.server.listeners.bukkit.PlayerQuitListener
 import net.horizonsend.ion.server.listeners.bukkit.PlayerTeleportListener
 import net.horizonsend.ion.server.listeners.bukkit.PotionSplashListener
 import net.horizonsend.ion.server.listeners.bukkit.PrepareAnvilListener
+import net.horizonsend.ion.server.listeners.bukkit.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.bukkit.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
+import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
+import org.bukkit.Keyed
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
@@ -43,7 +46,7 @@ class IonServer : JavaPlugin() {
 			InventoryCloseListener(), InventoryDragListener(), InventoryInteractListener(), InventoryMoveItemListener(),
 			PlayerDeathListener(), PlayerFishListener(), PlayerItemConsumeListener(), PlayerJoinListener(),
 			PlayerKickListener(), PlayerLoginListener(), PlayerQuitListener(), PlayerTeleportListener(),
-			PotionSplashListener(), PrepareAnvilListener(), PrepareItemEnchantListener()
+			PotionSplashListener(), PrepareAnvilListener(), PrepareItemCraftListener(), PrepareItemEnchantListener()
 		).forEach { server.pluginManager.registerEvents(it, this) }
 
 		// Luckperms
@@ -103,6 +106,13 @@ class IonServer : JavaPlugin() {
 					addIngredient(1, it)
 				}
 			)
+		}
+
+		// Remove Unwanted Vanilla Recipes
+		forbiddenCraftingItems.forEach { material ->
+			server.getRecipesFor(ItemStack(material)).forEach {
+				if (it is Keyed) server.removeRecipe(it.key)
+			}
 		}
 
 		/**
