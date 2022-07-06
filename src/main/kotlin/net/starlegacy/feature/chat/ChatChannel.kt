@@ -230,6 +230,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val playerData = PlayerCache[player]
 			val nation = playerData.nation
 				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
+			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "{0}, you really hoped this would be fixed huh?", player.name())
 
 			val nationName = NationCache[nation].name
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""
@@ -238,7 +239,6 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val message = messageColor.toString() + event.message.replace("${SLTextStyle.RESET}", "$messageColor")
 
 			allyAction(NationsChatMessage(nation, format, message, playerInfo(player)))
-			player.sendFeedbackmessage(FeedbackType.USER_ERROR, "{0} You really hoped today would be the day we fixed  this, idiot", player.name())
 		}
 	};
 
