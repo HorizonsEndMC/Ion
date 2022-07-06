@@ -14,7 +14,7 @@ abstract class AbstractUserDataRecalculateListener {
 					it.user.cachedData.metaData.suffix,
 				)
 			}
-		} catch (_: IllegalStateException) { }
+		} catch (_: NoClassDefFoundError) { }
 	}
 
 	abstract fun onUserDataRecalculateEvent(uuid: UUID, prefix: String?, suffix: String?)
