@@ -26,7 +26,7 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.RecipeChoice
+import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.plugin.java.JavaPlugin
@@ -34,84 +34,82 @@ import org.bukkit.plugin.java.JavaPlugin
 @Suppress("unused") // Plugin entrypoint
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
+		/**
+		 * Listeners
+		 */
+		// Bukkit
 		arrayOf(
-			BlockFadeListener(),
-			BlockFormListener(),
-			ChunkLoadListener(this),
-			InventoryClickListener(),
-			InventoryCloseListener(),
-			InventoryDragListener(),
-			InventoryInteractListener(),
-			InventoryMoveItemListener(),
-			PlayerDeathListener(),
-			PlayerFishListener(),
-			PlayerItemConsumeListener(),
-			PlayerJoinListener(),
-			PlayerKickListener(),
-			PlayerLoginListener(),
-			PlayerQuitListener(),
-			PlayerTeleportListener(),
-			PotionSplashListener(),
-			PrepareAnvilListener(),
-			PrepareItemEnchantListener()
-		).forEach {
-			server.pluginManager.registerEvents(it, this)
-		}
+			BlockFadeListener(), BlockFormListener(), ChunkLoadListener(this), InventoryClickListener(),
+			InventoryCloseListener(), InventoryDragListener(), InventoryInteractListener(), InventoryMoveItemListener(),
+			PlayerDeathListener(), PlayerFishListener(), PlayerItemConsumeListener(), PlayerJoinListener(),
+			PlayerKickListener(), PlayerLoginListener(), PlayerQuitListener(), PlayerTeleportListener(),
+			PotionSplashListener(), PrepareAnvilListener(), PrepareItemEnchantListener()
+		).forEach { server.pluginManager.registerEvents(it, this) }
 
-		server.addRecipe(FurnaceRecipe(NamespacedKey(this, "prismarine_bricks_recipe"), ItemStack(Material.PRISMARINE_BRICKS), Material.PRISMARINE, 1f, 200))
+		// Luckperms
+		UserDataRecalculateListener()
 
-		val bellRecipe = ShapedRecipe(NamespacedKey(this, "bell_recipe"), ItemStack(Material.BELL))
-		bellRecipe.shape("wow", "szs", "zzz")
-		bellRecipe.setIngredient('w', RecipeChoice.MaterialChoice(Material.STICK))
-		bellRecipe.setIngredient('o', RecipeChoice.MaterialChoice(Material.OAK_LOG))
-		bellRecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.IRON_BLOCK))
-		bellRecipe.setIngredient('z', RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
-		server.addRecipe(bellRecipe)
+		/**
+		 * Recipes
+		 */
+		// Prismarine Bricks
+		server.addRecipe(
+			FurnaceRecipe(
+				NamespacedKey(this, "prismarine_bricks_recipe"),
+				ItemStack(Material.PRISMARINE_BRICKS),
+				Material.PRISMARINE,
+				1f,
+				200
+			)
+		)
 
-		val enderpearlRecipe = ShapedRecipe(NamespacedKey(this, "enderpearl_recipe"), ItemStack(Material.ENDER_PEARL))
-		enderpearlRecipe.shape("wow", "oso", "wow")
-		enderpearlRecipe.setIngredient('w', RecipeChoice.MaterialChoice(Material.OBSIDIAN))
-		enderpearlRecipe.setIngredient('o', RecipeChoice.MaterialChoice(Material.EMERALD))
-		enderpearlRecipe.setIngredient('s', RecipeChoice.MaterialChoice(Material.DIAMOND_BLOCK))
-		server.addRecipe(enderpearlRecipe)
+		// Bell
+		server.addRecipe(ShapedRecipe(NamespacedKey(this, "bell_recipe"), ItemStack(Material.BELL)).apply {
+				shape("wow", "szs", "zzz")
+				setIngredient('w', MaterialChoice(Material.STICK))
+				setIngredient('o', MaterialChoice(Material.OAK_LOG))
+				setIngredient('s', MaterialChoice(Material.IRON_BLOCK))
+				setIngredient('z', MaterialChoice(Material.GOLD_BLOCK))
+		})
 
+		// Enderpearl
+		server.addRecipe(ShapedRecipe(NamespacedKey(this, "enderpearl_recipe"), ItemStack(Material.ENDER_PEARL)).apply {
+			shape("wow", "oso", "wow")
+			setIngredient('w', MaterialChoice(Material.OBSIDIAN))
+			setIngredient('o', MaterialChoice(Material.EMERALD))
+			setIngredient('s', MaterialChoice(Material.DIAMOND_BLOCK))
+		})
+
+		// Gunpowder
+		server.addRecipe(ShapelessRecipe(NamespacedKey(this, "gunpowder_recipe"), ItemStack(Material.GUNPOWDER)).apply {
+			addIngredient(Material.REDSTONE)
+			addIngredient(Material.FLINT)
+			addIngredient(Material.SAND)
+			addIngredient(Material.CHARCOAL)
+		})
+
+		// Wool -> String
 		arrayOf(
-			Material.WHITE_WOOL,
-			Material.ORANGE_WOOL,
-			Material.MAGENTA_WOOL,
-			Material.LIGHT_BLUE_WOOL,
-			Material.YELLOW_WOOL,
-			Material.LIME_WOOL,
-			Material.PINK_WOOL,
-			Material.GRAY_WOOL,
-			Material.LIGHT_GRAY_WOOL,
-			Material.CYAN_WOOL,
-			Material.PURPLE_WOOL,
-			Material.BLUE_WOOL,
-			Material.BROWN_WOOL,
-			Material.GREEN_WOOL,
-			Material.RED_WOOL,
+			Material.WHITE_WOOL, Material.ORANGE_WOOL, Material.MAGENTA_WOOL, Material.LIGHT_BLUE_WOOL, Material.YELLOW_WOOL,
+			Material.LIME_WOOL, Material.PINK_WOOL, Material.GRAY_WOOL, Material.LIGHT_GRAY_WOOL, Material.CYAN_WOOL,
+			Material.PURPLE_WOOL, Material.BLUE_WOOL, Material.BROWN_WOOL, Material.GREEN_WOOL, Material.RED_WOOL,
 			Material.BLACK_WOOL
 		).forEach {
-			val woolType = ShapelessRecipe(
-				NamespacedKey(this, "${it.name.lowercase()}_string_recipe"),
-				ItemStack(Material.STRING, 4)
+			server.addRecipe(
+				ShapelessRecipe(
+					NamespacedKey(this, "${it.name.lowercase()}_string_recipe"),
+					ItemStack(Material.STRING, 4)
+				).apply {
+					addIngredient(1, it)
+				}
 			)
-			woolType.addIngredient(1, it)
-			server.addRecipe(woolType)
 		}
 
-		val gunpowderRecipe = ShapelessRecipe(NamespacedKey(this, "gunpowder_recipe"), ItemStack(Material.GUNPOWDER))
-		gunpowderRecipe.addIngredient(Material.REDSTONE)
-		gunpowderRecipe.addIngredient(Material.FLINT)
-		gunpowderRecipe.addIngredient(Material.SAND)
-		gunpowderRecipe.addIngredient(Material.CHARCOAL)
-		server.addRecipe(gunpowderRecipe)
-
+		/**
+		 * Commands
+		 */
 		PaperCommandManager(this).apply {
 			registerCommand(GuideCommand())
 		}
-
-		UserDataRecalculateListener()
 	}
 }
