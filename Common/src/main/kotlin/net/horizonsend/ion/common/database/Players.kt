@@ -8,16 +8,16 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object Players : UUIDTable(columnName = "mcUUID") {
-	val mcUsername: Column<String> = varchar("mcUsername", 16).uniqueIndex()
+object Players : UUIDTable(columnName = "minecraftUUID") {
+	val minecraftUsername: Column<String> = varchar("minecraftUsername", 16).uniqueIndex()
 }
 
-class Player(mcUUID: EntityID<UUID>) : UUIDEntity(mcUUID) {
+class Player(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
 	companion object : UUIDEntityClass<Player>(Players) {
-		fun getOrCreate(mcUUID: UUID, mcUsername: String) = transaction {
-			findById(mcUUID) ?: new(mcUUID) { this.mcUsername = mcUsername }
+		fun getOrCreate(minecraftUUID: UUID, minecraftUsername: String) = transaction {
+			findById(minecraftUUID) ?: new(minecraftUUID) { this.mcUsername = minecraftUsername }
 		}
 	}
 
-	var mcUsername by Players.mcUsername
+	var mcUsername by Players.minecraftUsername
 }
