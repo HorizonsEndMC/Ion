@@ -1,8 +1,14 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import kotlin.reflect.full.createInstance
 import net.horizonsend.ion.common.managers.CommonManager
+import net.horizonsend.ion.common.utilities.loadConfiguration
+import net.horizonsend.ion.server.commands.BlasterColor
 import net.horizonsend.ion.server.commands.GuideCommand
+import net.horizonsend.ion.server.commands.IonCommand
+import net.horizonsend.ion.server.commands.ItemCommand
+import net.horizonsend.ion.server.customitems.CustomItem
 import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import org.bukkit.Keyed
@@ -20,7 +26,19 @@ import org.reflections.scanners.Scanners
 
 @Suppress("unused") // Plugin entrypoint
 class IonServer : JavaPlugin() {
+	companion object {
+		lateinit var plugin: JavaPlugin private set
+
+		var balancingConfiguration = BalancingConfiguration(); private set
+		var customItems = mapOf<Int, CustomItem>(); private set
+
+		fun reloadConfiguration() { balancingConfiguration = loadConfiguration(plugin.dataFolder.toPath()) }
+	}
+
 	override fun onEnable() {
+		plugin = this
+
+		reloadConfiguration()
 		CommonManager.init(dataFolder.toPath())
 
 		val reflectionsScanner = Reflections("net.horizonsend.ion.server")
@@ -38,6 +56,14 @@ class IonServer : JavaPlugin() {
 			.forEach {
 				server.pluginManager.registerEvents(it as Listener, this)
 			}
+
+		customItems = reflectionsScanner
+			.get(Scanners.SubTypes.of(CustomItem::class.java).asClass<CustomItem>())
+			.filter { !it.kotlin.isAbstract }
+			.mapNotNull { it.kotlin.createInstance() as? CustomItem }
+			.associateBy { it.customModelData }
+
+		slF4JLogger.info("Registered ${customItems.size} custom items")
 
 		// Luckperms
 		UserDataRecalculateListener()
@@ -109,7 +135,11 @@ class IonServer : JavaPlugin() {
 		 * Commands
 		 */
 		PaperCommandManager(this).apply {
-			registerCommand(GuideCommand())
+			arrayOf(BlasterColor(), GuideCommand(), IonCommand(), ItemCommand()).forEach {
+				registerCommand(it)
+			}
+
+			commandCompletions.registerStaticCompletion("customItems", customItems.values.map { it::class.simpleName })
 		}
 	}
 }
