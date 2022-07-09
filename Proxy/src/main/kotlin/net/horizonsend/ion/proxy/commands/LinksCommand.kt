@@ -15,7 +15,7 @@ class LinksCommand : BaseCommand() {
 		sender.sendFeedbackMessage(FeedbackType.INFORMATION,
 			"""
 				Survival Web Map: <white><u><click:open_url:'https://survival.horizonsend.net'>survival.horizonsend.net</click></u></white>
-				Creative Web Map: <white><u><click:open_url:'https://survival.horizonsend.net'>creative.horizonsend.net</click></u></white>
+				Creative Web Map: <white><u><click:open_url:'https://creative.horizonsend.net'>creative.horizonsend.net</click></u></white>
 				Discord Server: <white><u><click:open_url:'https://discord.gg/RPvgQsGzKM'>discord.gg/RPvgQsGzKM</click></u></white>
 				Wiki: <white><u><click:open_url:'https://wiki.horizonsend.net'>wiki.horizonsend.net</click></u></white>
 			""".trimIndent()
