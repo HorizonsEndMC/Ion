@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.commands
+package net.horizonsend.ion.proxy.commands.velocity
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias

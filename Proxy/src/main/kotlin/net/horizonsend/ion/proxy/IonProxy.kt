@@ -12,7 +12,7 @@ import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.common.utilities.loadConfiguration
-import net.horizonsend.ion.proxy.commands.InfoCommand
+import net.horizonsend.ion.proxy.commands.velocity.InfoCommand
 import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
 import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
 import net.horizonsend.ion.proxy.listeners.velocity.ProxyPingListener
