@@ -13,7 +13,7 @@ dependencies {
 	// there should be no issues as it is a minor release.
 	compileOnly("net.kyori:adventure-api:4.10.1")
 	compileOnly("net.kyori:adventure-text-minimessage:4.10.1")
-	compileOnly("net.kyori:adventure-text-serializer-legacy:4.10.1")
+	compileOnly("net.kyori:adventure-text-serializer-legacy:4.11.0")
 
 	compileOnly("net.luckperms:api:5.4")
 
