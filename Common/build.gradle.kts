@@ -28,5 +28,5 @@ dependencies {
 	api("co.aikar:acf-core:0.5.1-SNAPSHOT")
 
 	// Kotlin Relfection
-	api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
+	api("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
 }
