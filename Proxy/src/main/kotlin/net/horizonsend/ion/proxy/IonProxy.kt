@@ -10,6 +10,7 @@ import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
+import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.LinksCommand
 import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
@@ -30,6 +31,8 @@ class IonProxy @Inject constructor(
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
+		CommonManager.init(dataDirectory)
+
 		arrayOf(
 			LoginListener(this),
 			PreLoginListener(),
