@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.utilities.feedback.sendFeedbackMessage
 class InfoCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
-	fun onLinksCommand(sender: Player) {
+	fun onInfoCommand(sender: Player) {
 		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Here are a few links of potential use:\n" +
 			"<white><u><click:open_url:'https://survival.horizonsend.net'>Survival Web Map</click></u></white>" +
 			"<white><u><click:open_url:'https://creative.horizonsend.net'>Creative Web Map</click></u></white>" +
