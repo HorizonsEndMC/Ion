@@ -10,6 +10,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class LoginListener(private val plugin: IonProxy) {
 	@Subscribe(order = PostOrder.LAST)
@@ -29,6 +30,6 @@ class LoginListener(private val plugin: IonProxy) {
 		event.player.sendPlayerListHeader(headerComponent)
 
 		// Ensure the player exists in the database
-		Player.getOrCreate(event.player.uniqueId, event.player.username)
+		transaction { Player.getOrCreate(event.player.uniqueId, event.player.username) }
 	}
 }

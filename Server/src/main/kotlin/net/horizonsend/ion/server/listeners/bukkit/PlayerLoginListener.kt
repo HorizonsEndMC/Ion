@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utilities.constructPlayerListNameAsync
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class PlayerLoginListener: Listener {
 	@EventHandler
@@ -14,6 +15,6 @@ class PlayerLoginListener: Listener {
 		}
 
 		// Ensure the player exists in the database
-		Player.getOrCreate(event.player.uniqueId, event.player.name)
+		transaction { Player.getOrCreate(event.player.uniqueId, event.player.name) }
 	}
 }
