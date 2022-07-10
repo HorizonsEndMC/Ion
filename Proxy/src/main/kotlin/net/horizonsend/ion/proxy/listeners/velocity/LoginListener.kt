@@ -16,7 +16,7 @@ class LoginListener(private val plugin: IonProxy) {
 	@Subscribe(order = PostOrder.LAST)
 	@Suppress("Unused")
 	fun onLoginEvent(event: LoginEvent): EventTask = EventTask.async {
-		var headerComponent = Component.text().append(Component.text("\nHorizon's End\n", TextColor.color(255, 127, 63), TextDecoration.BOLD))
+		var headerComponent = Component.text().append(Component.text("\nHorizon's End\n", TextColor.color(0xff7f3f), TextDecoration.BOLD))
 
 		val headerText = plugin.proxyConfiguration.tablistHeaderMessage
 
