@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.utilities.feedback.FeedbackType
 import net.horizonsend.ion.common.utilities.feedback.sendFeedbackMessage
 
 @CommandAlias("info")
-class InfoCommand : BaseCommand() {
+class VelocityInfoCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
 	fun onInfoCommand(sender: Player) {
