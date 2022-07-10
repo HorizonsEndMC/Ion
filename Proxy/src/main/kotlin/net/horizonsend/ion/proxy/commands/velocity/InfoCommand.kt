@@ -13,11 +13,11 @@ class InfoCommand : BaseCommand() {
 	@Suppress("Unused")
 	fun onInfoCommand(sender: Player) {
 		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Here are a few links of potential use:\n" +
-			"<white><u><click:open_url:'https://survival.horizonsend.net'>Survival Web Map</click></u></white>" +
-			"<white><u><click:open_url:'https://creative.horizonsend.net'>Creative Web Map</click></u></white>" +
-			"<white><u><click:open_url:'https://discord.gg/RPvgQsGzKM'>Discord Server</click></u></white>" +
-			"<white><u><click:open_url:'https://wiki.horizonsend.net'>Wiki</click></u></white>" +
-			"<white><u><click:open_url:'https://github.com/HorizonsEndMC/ResourcePack'>Resource Pack</click></u></white>"
+			"<white><u><click:open_url:'https://survival.horizonsend.net'>Survival Web Map</click></u></white>\n" +
+			"<white><u><click:open_url:'https://creative.horizonsend.net'>Creative Web Map</click></u></white>\n" +
+			"<white><u><click:open_url:'https://discord.gg/RPvgQsGzKM'>Discord Server</click></u></white>\n" +
+			"<white><u><click:open_url:'https://github.com/HorizonsEndMC/ResourcePack'>Resource Pack</click></u></white>\n" +
+			"<white><u><click:open_url:'https://wiki.horizonsend.net'>Wiki</click></u></white>"
 		)
 	}
 }
