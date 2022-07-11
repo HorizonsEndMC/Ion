@@ -14,9 +14,8 @@ object PlayerDataTable : UUIDTable(columnName = "minecraftUUID") {
 
 class PlayerData(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
 	companion object : UUIDEntityClass<PlayerData>(PlayerDataTable) {
-		fun getOrCreate(minecraftUUID: UUID, minecraftUsername: String) {
+		fun getOrCreate(minecraftUUID: UUID, minecraftUsername: String) =
 			findById(minecraftUUID) ?: new(minecraftUUID) { this.mcUsername = minecraftUsername }
-		}
 	}
 
 	var mcUsername by PlayerDataTable.minecraftUsername
