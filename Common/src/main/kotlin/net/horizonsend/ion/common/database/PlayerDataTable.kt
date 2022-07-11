@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.Column
 
 object PlayerDataTable : UUIDTable(columnName = "minecraftUUID") {
 	val minecraftUsername: Column<String> = varchar("minecraftUsername", 16).uniqueIndex()
+	val discordUUID: Column<Long?> = long("discordUUID").nullable().uniqueIndex()
 }
 
 class PlayerData(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
@@ -19,4 +20,5 @@ class PlayerData(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
 	}
 
 	var mcUsername by PlayerDataTable.minecraftUsername
+	var discordUUID by PlayerDataTable.discordUUID
 }
