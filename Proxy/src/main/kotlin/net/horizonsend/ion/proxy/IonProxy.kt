@@ -82,7 +82,7 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 		val role = guild.getRoleById(proxyConfiguration.onlineRole) ?: return
 
 		guild.getMembersWithRoles(role).forEach { member ->
-			guild.removeRoleFromMember(member, role)
+			guild.removeRoleFromMember(member, role).queue()
 		}
 	}
 }
