@@ -68,7 +68,7 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 			.filter { it.hasCommandMeta }
 			.map {
 				SubcommandData(it.commandMeta.name, it.commandMeta.description)
-				.addOptions(processCommandMethod(it))
+					.addOptions(processCommandMethod(it))
 			}
 
 	private fun processCommandMethod(commandMethod: Method): Collection<OptionData> {
@@ -89,6 +89,7 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 				IMentionable::class.java -> OptionType.MENTIONABLE
 				Double::class.java,
 				Long::class.java -> OptionType.NUMBER
+
 				Attachment::class.java -> OptionType.ATTACHMENT
 				else -> throw NotImplementedError("Parameter type ${parameter.type.simpleName} is not supported by JDA.")
 			}
@@ -106,20 +107,25 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 		return optionData
 	}
 
-	private inline val <T> Class<T>.defaultCommand get() =
-		methods.filter { it.isAnnotationPresent(Default::class.java) }.getOrNull(0)
+	private inline val <T> Class<T>.defaultCommand
+		get() =
+			methods.filter { it.isAnnotationPresent(Default::class.java) }.getOrNull(0)
 
-	private inline val AnnotatedElement.hasCommandMeta get() =
-		isAnnotationPresent(CommandMeta::class.java)
+	private inline val AnnotatedElement.hasCommandMeta
+		get() =
+			isAnnotationPresent(CommandMeta::class.java)
 
-	private inline val Parameter.commandMeta get() =
-		getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $name.")
+	private inline val Parameter.commandMeta
+		get() =
+			getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $name.")
 
-	private inline val Method.commandMeta get() =
-		getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $name.")
+	private inline val Method.commandMeta
+		get() =
+			getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $name.")
 
-	private inline val <T> Class<T>.commandMeta get() =
-		getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $simpleName.")
+	private inline val <T> Class<T>.commandMeta
+		get() =
+			getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $simpleName.")
 
 	override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
 		commandClasses
@@ -134,7 +140,11 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 						?.filter { it.hasCommandMeta }
 						?.find { it.commandMeta.name == event.subcommandName }
 						?.let {
-							invokeCommand(event, subcommandGroupClass.getConstructor(commandClass::class.java).newInstance(commandClass), it)
+							invokeCommand(
+								event,
+								subcommandGroupClass.getConstructor(commandClass::class.java).newInstance(commandClass),
+								it
+							)
 						}
 
 				} else if (event.subcommandName != null) {

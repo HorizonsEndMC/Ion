@@ -1,5 +1,5 @@
 {
-  "id":"ion",
-  "name": "Ion",
-  "main":"net.horizonsend.ion.proxy.IonProxy"
+	"id": "ion",
+	"name": "Ion",
+	"main": "net.horizonsend.ion.proxy.IonProxy"
 }

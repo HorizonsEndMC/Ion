@@ -11,12 +11,13 @@ class DiscordInfoCommand {
 	@Suppress("Unused")
 	fun onInfoCommand(event: SlashCommandInteractionEvent) {
 		event.replyEmbeds(
-			messageEmbed(title = "Here are a few links of potential use:", description =
+			messageEmbed(
+				title = "Here are a few links of potential use:", description =
 				"[Survival Web Map](https://survival.horizonsend.net)\n" +
-				"[Creative Web Map](https://creative.horizonsend.net)\n" +
-				"[Discord Server](https://discord.gg/RPvgQsGzKM)\n" +
-				"[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack)\n" +
-				"[Wiki](https://wiki.horizonsend.net)"
+					"[Creative Web Map](https://creative.horizonsend.net)\n" +
+					"[Discord Server](https://discord.gg/RPvgQsGzKM)\n" +
+					"[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack)\n" +
+					"[Wiki](https://wiki.horizonsend.net)"
 			)
 		).queue()
 	}

@@ -57,10 +57,12 @@ class DiscordAccountCommand {
 
 			playerData?.discordUUID = event.user.idLong
 
-			event.replyEmbeds(messageEmbed(
+			event.replyEmbeds(
+				messageEmbed(
 					description = "Account linked to ${playerData?.mcUsername}.",
 					color = 0x00ff00
-			))
+				)
+			)
 				.setEphemeral(true)
 				.queue()
 		}
@@ -77,7 +79,10 @@ class DiscordAccountCommand {
 			getRoleById(proxyConfiguration.linkedRole)!!.let {
 				val playerData = PlayerData.find(PlayerDataTable.discordUUID eq event.user.idLong).firstOrNull()
 
-				if (playerData?.discordUUID == null) removeRoleFromMember(event.user, it).queue() else addRoleToMember(event.user, it).queue()
+				if (playerData?.discordUUID == null) removeRoleFromMember(
+					event.user,
+					it
+				).queue() else addRoleToMember(event.user, it).queue()
 			}
 		}
 

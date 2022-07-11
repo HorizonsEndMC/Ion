@@ -47,10 +47,10 @@ private fun parseFeedback(type: FeedbackType, message: String, parameters: Colle
 		newMessage = newMessage.replace(
 			"{$index}",
 			"<white>${
-			when (parameter) {
-				is Number -> parameter.toString()
-				else -> "\"$parameter\""
-			}
+				when (parameter) {
+					is Number -> parameter.toString()
+					else -> "\"$parameter\""
+				}
 			}</white>"
 		)
 	}

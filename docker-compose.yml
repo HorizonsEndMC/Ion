@@ -23,7 +23,7 @@ services:
   velocity:
     image: itzg/bungeecord
     container_name: velocity
-    ports: [25565:25565]
+    ports: [ 25565:25565 ]
     volumes:
       - ./velocity:/server
       - ./build/Ion.jar:/server/plugins/Ion.jar:ro
@@ -36,7 +36,7 @@ services:
   paper:
     image: itzg/minecraft-server
     container_name: paper
-    depends_on: ["mongo", "redis"]
+    depends_on: [ "mongo", "redis" ]
     tty: true
     stdin_open: true
     volumes:

@@ -7,7 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class PlayerLoginListener: Listener {
+class PlayerLoginListener : Listener {
 	@EventHandler
 	fun onPlayerLoginEvent(event: PlayerLoginEvent) {
 		constructPlayerListNameAsync(event.player.name, event.player.uniqueId).thenAcceptAsync {

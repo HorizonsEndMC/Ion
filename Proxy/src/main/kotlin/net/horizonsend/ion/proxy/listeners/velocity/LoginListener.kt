@@ -17,7 +17,8 @@ class LoginListener {
 	@Suppress("Unused")
 	@Subscribe(order = PostOrder.LAST)
 	fun onLoginEvent(event: LoginEvent): EventTask = EventTask.async {
-		var headerComponent = Component.text().append(Component.text("\nHorizon's End\n", TextColor.color(0xff7f3f), TextDecoration.BOLD))
+		var headerComponent =
+			Component.text().append(Component.text("\nHorizon's End\n", TextColor.color(0xff7f3f), TextDecoration.BOLD))
 
 		if (proxyConfiguration.tablistHeaderMessage.isNotEmpty()) {
 			headerComponent = headerComponent
@@ -28,7 +29,8 @@ class LoginListener {
 
 		event.player.sendPlayerListHeader(headerComponent)
 
-		val memberId = transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.username).discordUUID } ?: return@async
+		val memberId =
+			transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.username).discordUUID } ?: return@async
 		val guild = jda.getGuildById(proxyConfiguration.discordServer) ?: return@async
 
 		guild.addRoleToMember(

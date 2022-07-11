@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.common.utilities.loadConfiguration
-import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
