@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
 import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
 import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
@@ -53,7 +54,8 @@ class IonProxy @Inject constructor(
 			JDABuilder.createLight(proxyConfiguration.discordBotToken)
 				.setActivity(Activity.playing("horizonsend.net"))
 				.build(),
-			DiscordInfoCommand()
+			DiscordInfoCommand(),
+			PlayerListCommand(proxy)
 		)
 	}
 }
