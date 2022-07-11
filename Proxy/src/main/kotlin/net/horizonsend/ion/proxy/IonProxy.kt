@@ -10,8 +10,11 @@ import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
+import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.entities.Activity
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.common.utilities.loadConfiguration
+import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
 import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
 import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
@@ -45,5 +48,12 @@ class IonProxy @Inject constructor(
 		VelocityCommandManager(proxy, this).apply {
 			registerCommand(VelocityInfoCommand())
 		}
+
+		JDACommandManager(
+			JDABuilder.createLight(proxyConfiguration.discordBotToken)
+				.setActivity(Activity.playing("horizonsend.net"))
+				.build(),
+			DiscordInfoCommand()
+		)
 	}
 }
