@@ -233,7 +233,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			player.sendFeedbackMessage(
 				FeedbackType.USER_ERROR,
 				"{0}, you really hoped this would be fixed huh?",
-				player.name()
+				player.name
 			)
 
 			val nationName = NationCache[nation].name
