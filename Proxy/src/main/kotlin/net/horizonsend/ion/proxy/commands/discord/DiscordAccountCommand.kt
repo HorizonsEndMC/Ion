@@ -4,14 +4,14 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.horizonsend.ion.common.annotations.CommandMeta
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
-import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.managers.LinkManager
+import net.horizonsend.ion.proxy.proxyConfiguration
 import net.horizonsend.ion.proxy.utilities.messageEmbed
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandMeta("account", "Manage the link between your Minecraft and Discord account.")
-class DiscordAccountCommand(private val plugin: IonProxy) {
+class DiscordAccountCommand {
 	@Suppress("Unused")
 	@CommandMeta("status", "Check linked Minecraft account.")
 	fun onStatusCommand(event: SlashCommandInteractionEvent) {
@@ -65,16 +65,16 @@ class DiscordAccountCommand(private val plugin: IonProxy) {
 				.queue()
 		}
 
-		event.jda.getGuildById(plugin.proxyConfiguration.discordServer)!!.apply {
-			addRoleToMember(event.user, getRoleById(plugin.proxyConfiguration.linkedRole)!!).queue()
+		event.jda.getGuildById(proxyConfiguration.discordServer)!!.apply {
+			addRoleToMember(event.user, getRoleById(proxyConfiguration.linkedRole)!!).queue()
 		}
 	}
 
 	@Suppress("Unused")
 	@CommandMeta("update", "Force update your roles on Discord.")
 	fun onUpdateCommand(event: SlashCommandInteractionEvent) = transaction {
-		event.jda.getGuildById(plugin.proxyConfiguration.discordServer)!!.apply {
-			getRoleById(plugin.proxyConfiguration.linkedRole)!!.let {
+		event.jda.getGuildById(proxyConfiguration.discordServer)!!.apply {
+			getRoleById(proxyConfiguration.linkedRole)!!.let {
 				val playerData = PlayerData.find(PlayerDataTable.discordUUID eq event.user.idLong).firstOrNull()
 
 				if (playerData?.discordUUID == null) removeRoleFromMember(event.user, it).queue() else addRoleToMember(event.user, it).queue()

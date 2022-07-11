@@ -10,6 +10,7 @@ import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
 import net.horizonsend.ion.common.managers.CommonManager
@@ -25,43 +26,44 @@ import net.horizonsend.ion.proxy.listeners.velocity.ProxyPingListener
 import net.horizonsend.ion.proxy.listeners.velocity.ServerConnectedListener
 import org.slf4j.Logger
 
+internal lateinit var proxy: ProxyServer private set
+internal lateinit var logger: Logger private set
+internal lateinit var dataDirectory: Path private set
+internal lateinit var proxyConfiguration: ProxyConfiguration private set
+internal lateinit var jda: JDA private set
+
 @Suppress("Unused")
 @Plugin(id = "ion", name = "Ion") // While we do not use this for generating velocity-plugin.json, ACF requires it.
-class IonProxy @Inject constructor(
-	private val proxy: ProxyServer,
-	@Suppress("Unused_Parameter") slF4JLogger: Logger,
-	@DataDirectory private val dataDirectory: Path
-) {
-	val proxyConfiguration = loadConfiguration<ProxyConfiguration>(dataDirectory)
-
-	val jda = JDABuilder.createLight(proxyConfiguration.discordBotToken)
-		.setActivity(Activity.playing("horizonsend.net"))
-		.build()
+class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDirectory dataDirectory0: Path) {
+	init {
+		proxy = proxy0
+		logger = logger0
+		dataDirectory = dataDirectory0
+		proxyConfiguration = loadConfiguration(dataDirectory)
+		jda = JDABuilder.createLight(proxyConfiguration.discordBotToken)
+			.setActivity(Activity.playing("horizonsend.net"))
+			.build()
+	}
 
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
 		CommonManager.init(dataDirectory)
 
-		arrayOf(
-			LoginListener(this),
-			PreLoginListener(),
-			ProxyPingListener(proxy),
-			ServerConnectedListener(proxy)
-		).forEach {
+		arrayOf(LoginListener(), PreLoginListener(), ProxyPingListener(), ServerConnectedListener()).forEach {
 			proxy.eventManager.register(this, it)
 		}
 
 		VelocityCommandManager(proxy, this).apply {
 			registerCommand(VelocityInfoCommand())
-			registerCommand(VelocityAccountCommand(this@IonProxy))
+			registerCommand(VelocityAccountCommand())
 		}
 
 		JDACommandManager(
 			jda,
 			DiscordInfoCommand(),
-			DiscordAccountCommand(this),
-			PlayerListCommand(proxy)
+			DiscordAccountCommand(),
+			PlayerListCommand()
 		)
 	}
 }
