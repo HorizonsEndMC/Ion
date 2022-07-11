@@ -14,6 +14,10 @@ import java.nio.file.Path
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.ChunkingFilter
+import net.dv8tion.jda.api.utils.MemberCachePolicy
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
@@ -43,6 +47,10 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 		dataDirectory = dataDirectory0
 		proxyConfiguration = loadConfiguration(dataDirectory)
 		jda = JDABuilder.createLight(proxyConfiguration.discordBotToken)
+			.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
+			.setMemberCachePolicy(MemberCachePolicy.ALL)
+			.setChunkingFilter(ChunkingFilter.ALL)
+			.disableCache(CacheFlag.values().toList())
 			.setActivity(Activity.playing("horizonsend.net"))
 			.build()
 	}
