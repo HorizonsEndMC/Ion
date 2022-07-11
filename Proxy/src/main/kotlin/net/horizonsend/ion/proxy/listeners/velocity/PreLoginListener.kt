@@ -10,8 +10,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 class PreLoginListener {
 	private val disconnectMessage = miniMessage().deserialize("<${FeedbackType.USER_ERROR.colour}>Only version 1.19 can be used on Horizon's End.")
 
-	@Subscribe(order = PostOrder.FIRST)
 	@Suppress("Unused")
+	@Subscribe(order = PostOrder.FIRST)
 	fun onPreLoginEvent(event: PreLoginEvent): EventTask = EventTask.async {
 		if (event.connection.protocolVersion.protocol == 759) return@async
 
