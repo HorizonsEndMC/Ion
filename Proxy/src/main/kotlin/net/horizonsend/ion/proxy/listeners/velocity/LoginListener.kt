@@ -34,6 +34,6 @@ class LoginListener {
 		guild.addRoleToMember(
 			guild.getMemberById(memberId) ?: return@async,
 			guild.getRoleById(proxyConfiguration.onlineRole) ?: return@async
-		)
+		).queue()
 	}
 }
