@@ -1,7 +1,5 @@
 package net.starlegacy.feature.starship.control
 
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.util.Collections
 import java.util.LinkedList
 import java.util.UUID
@@ -17,6 +15,8 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.sin
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
@@ -242,6 +242,7 @@ object StarshipControl : SLComponent() {
 			dy < 0 && starship.min.y + dy < 0 -> {
 				dy = -starship.min.y
 			}
+
 			dy > 0 && starship.max.y + dy > starship.world.maxHeight -> {
 				dy = starship.world.maxHeight - starship.max.y
 			}

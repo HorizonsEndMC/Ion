@@ -479,6 +479,7 @@ internal object NationCommand : SLCommand() {
 					else -> resolveNation(nation)
 				}
 			}
+
 			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
 		}
 
@@ -539,14 +540,17 @@ internal object NationCommand : SLCommand() {
 					active++
 					activeStyle
 				}
+
 				isSemiActive(lastSeen) -> {
 					semiActive++
 					semiActiveStyle
 				}
+
 				isInactive(lastSeen) -> {
 					inactive++
 					inactiveStyle
 				}
+
 				else -> error("Impossible!")
 			}
 			names.add(getNationTag(playerId, name, style))

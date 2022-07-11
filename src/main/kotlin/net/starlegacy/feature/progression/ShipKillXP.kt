@@ -2,12 +2,13 @@ package net.starlegacy.feature.progression
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import net.horizonsend.ion.core.feedback.FeedbackType
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.log2
 import kotlin.math.sqrt
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.misc.CombatNPCKillEvent
 import net.starlegacy.feature.nations.region.Regions
@@ -18,7 +19,6 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
 import org.bukkit.Bukkit
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Bukkit.getServer
 import org.bukkit.Location
@@ -145,7 +145,7 @@ object ShipKillXP : SLComponent() {
 			if (xp > 0) {
 				SLXP.addAsync(player, xp)
 				log.info("Gave ${player.name} $xp XP for ship-killing $killedName")
-				}
+			}
 			var pointsrn = 0
 			if (points > pointsrn) {
 				pointsrn = points

@@ -230,7 +230,11 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val playerData = PlayerCache[player]
 			val nation = playerData.nation
 				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
-			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "{0}, you really hoped this would be fixed huh?", player.name())
+			player.sendFeedbackMessage(
+				FeedbackType.USER_ERROR,
+				"{0}, you really hoped this would be fixed huh?",
+				player.name()
+			)
 
 			val nationName = NationCache[nation].name
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""

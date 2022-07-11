@@ -61,6 +61,7 @@ object PowerToolListener : SLEventListener() {
 
 				return
 			}
+
 			"chainsaw" -> {
 				val breakEvent = BlockBreakEvent(block, player)
 				Bukkit.getPluginManager().callEvent(breakEvent)
@@ -82,6 +83,7 @@ object PowerToolListener : SLEventListener() {
 				TreeCutter(event.player, block).runTaskAsynchronously(PLUGIN)
 				return
 			}
+
 			else -> println("Unhandled power tool $type")
 		}
 	}

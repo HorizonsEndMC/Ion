@@ -5,9 +5,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
+import kotlin.math.pow
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
-import kotlin.math.pow
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
@@ -38,7 +38,11 @@ object NewPlayerProtection : BaseCommand() {
 		val lpUser = lpUserManager.getUser(target)
 
 		if (lpUser == null) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Unable to remove new player protection from {0}, the player does not exist.", target)
+			sender.sendFeedbackMessage(
+				FeedbackType.USER_ERROR,
+				"Unable to remove new player protection from {0}, the player does not exist.",
+				target
+			)
 			return
 		}
 
@@ -60,7 +64,6 @@ object NewPlayerProtection : BaseCommand() {
 		lpUser.data().run {
 			if (hasProtection())
 				add(protectionIndicator)
-
 			else
 				remove(protectionIndicator)
 		}

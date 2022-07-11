@@ -14,9 +14,17 @@ import org.bukkit.scheduler.BukkitTask
 object Tasks {
 	fun checkMainThread() = check(Bukkit.isPrimaryThread()) { "Attempted to call non-thread-safe method async!" }
 
-	fun async(block: () -> Unit) { Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, block) }
-	fun asyncDelay(delay: Long, block: () -> Unit) { Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, block, delay) }
-	fun asyncRepeat(delay: Long, interval: Long, block: () -> Unit) { Bukkit.getScheduler().runTaskTimerAsynchronously(PLUGIN, block, delay, interval) }
+	fun async(block: () -> Unit) {
+		Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, block)
+	}
+
+	fun asyncDelay(delay: Long, block: () -> Unit) {
+		Bukkit.getScheduler().runTaskLaterAsynchronously(PLUGIN, block, delay)
+	}
+
+	fun asyncRepeat(delay: Long, interval: Long, block: () -> Unit) {
+		Bukkit.getScheduler().runTaskTimerAsynchronously(PLUGIN, block, delay, interval)
+	}
 
 	inline fun sync(crossinline block: () -> Unit) {; syncTask(block); }
 	inline fun syncTask(crossinline block: () -> Unit): BukkitTask {
@@ -64,10 +72,6 @@ object Tasks {
 	fun bukkitRunnable(block: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunnable() {
 		override fun run(): Unit = block()
 	}
-
-	fun asyncBukkitRunnable(block: BukkitRunnable.() -> Unit): BukkitTask = object : BukkitRunnable() {
-		override fun run(): Unit = block()
-	}.runTaskAsynchronously(PLUGIN)
 
 	fun <T> getSync(block: () -> T): Future<T> = if (Bukkit.isPrimaryThread()) {
 		CompletableFuture.completedFuture(block())

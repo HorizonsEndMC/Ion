@@ -3,7 +3,6 @@ package net.starlegacy.feature.transport
 import co.aikar.timings.Timing
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import net.starlegacy.PLUGIN
 import java.util.Optional
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
@@ -11,6 +10,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
+import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -247,6 +247,7 @@ object Wires : SLComponent() {
 				originComputer != null -> multiblockCache[originComputer.toLocation(world)]
 					.orNull()?.sign
 					?: return
+
 				else -> null
 			}
 

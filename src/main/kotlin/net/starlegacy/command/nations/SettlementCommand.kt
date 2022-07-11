@@ -10,7 +10,6 @@ import java.util.Date
 import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -428,9 +427,11 @@ internal object SettlementCommand : SLCommand() {
 				when (settlement) {
 					null -> PlayerCache[sender].settlement
 						?: SettlementCommand.fail { "You need to specify a settlement. /n info <settlement>" }
+
 					else -> resolveSettlement(settlement)
 				}
 			}
+
 			else -> resolveSettlement(settlement ?: fail { "Non-players must specify a settlement" })
 		}
 
@@ -477,14 +478,17 @@ internal object SettlementCommand : SLCommand() {
 					active++
 					activeStyle
 				}
+
 				isSemiActive(lastSeen) -> {
 					semiActive++
 					semiActiveStyle
 				}
+
 				isInactive(lastSeen) -> {
 					inactive++
 					inactiveStyle
 				}
+
 				else -> error("Impossible!")
 			}
 			names.add(getSettlementTag(playerId, name, style))

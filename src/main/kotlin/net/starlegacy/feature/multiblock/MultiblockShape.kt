@@ -267,6 +267,7 @@ class MultiblockShape {
 			Material.WAXED_WEATHERED_CUT_COPPER,
 			Material.WAXED_OXIDIZED_CUT_COPPER,
 		)
+
 		fun titaniumBlock() = customBlock(CustomBlocks.MINERAL_TITANIUM.block)
 		fun aluminumBlock() = customBlock(CustomBlocks.MINERAL_ALUMINUM.block)
 		fun chetheriteBlock() = customBlock(CustomBlocks.MINERAL_CHETHERITE.block)

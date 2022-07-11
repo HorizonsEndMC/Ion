@@ -26,9 +26,9 @@ import net.starlegacy.util.colorize
 import net.starlegacy.util.msg
 import org.bukkit.World
 import org.bukkit.entity.Player
-import org.litote.kmongo.`in`
 import org.litote.kmongo.and
 import org.litote.kmongo.gte
+import org.litote.kmongo.`in`
 
 object PlanetSpawns : SLComponent() {
 	fun openMenu(player: Player) {
@@ -69,7 +69,8 @@ object PlanetSpawns : SLComponent() {
 			}
 
 			val extraLores: Map<CachedPlanet, List<String>> = orderedPlanets.associateWith { planet ->
-				val file = File(PLUGIN.sharedDataFolder, "planet_spawn_descriptions/${planet.name.lowercase(Locale.getDefault())}")
+				val file =
+					File(PLUGIN.sharedDataFolder, "planet_spawn_descriptions/${planet.name.lowercase(Locale.getDefault())}")
 
 				if (!file.exists()) {
 					file.createNewFile()

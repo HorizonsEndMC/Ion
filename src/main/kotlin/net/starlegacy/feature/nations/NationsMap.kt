@@ -176,6 +176,7 @@ object NationsMap : SLComponent() {
 					fillOpacity = 0.5
 					fillRGB = Color.RED.asRGB()
 				}
+
 				else -> {}
 			}
 			lineThickness = 5

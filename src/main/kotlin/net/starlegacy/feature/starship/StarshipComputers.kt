@@ -116,7 +116,11 @@ object StarshipComputers : SLComponent() {
 		if (!data.isPilot(player) && !player.hasPermission("ion.core.starship.override")) {
 			Tasks.async {
 				val name: String? = SLPlayer.getName(data.captain)
-				if (name != null) (player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this ship! The captain is {0}", name))
+				if (name != null) (player.sendFeedbackActionMessage(
+					USER_ERROR,
+					"You're not a pilot of this ship! The captain is {0}",
+					name
+				))
 			}
 			return
 		}

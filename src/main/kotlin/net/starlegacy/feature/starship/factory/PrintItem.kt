@@ -44,29 +44,37 @@ data class PrintItem(val itemString: String) {
 					val customItem = CustomItems[customBlock.id] ?: return null
 					return PrintItem(customItem)
 				}
+
 				data is Slab -> {
 					return PrintItem(data.material)
 				}
+
 				data.material.isItem -> {
 					return PrintItem(data.material)
 				}
+
 				data is WallSign -> {
 					val itemMat = Material.getMaterial(data.material.name.replace("WALL_SIGN", "SIGN"))
 					checkNotNull(itemMat)
 					return PrintItem(itemMat)
 				}
+
 				data.material == Material.REDSTONE_WIRE -> {
 					return PrintItem(Material.REDSTONE)
 				}
+
 				data.material == Material.WALL_TORCH -> {
 					return PrintItem(Material.TORCH)
 				}
+
 				data.material == Material.SOUL_WALL_TORCH -> {
 					return PrintItem(Material.SOUL_TORCH)
 				}
+
 				data.material == Material.REDSTONE_WALL_TORCH -> {
 					return PrintItem(Material.REDSTONE_TORCH)
 				}
+
 				else -> {
 					log.warn("No item material for $data")
 					return null

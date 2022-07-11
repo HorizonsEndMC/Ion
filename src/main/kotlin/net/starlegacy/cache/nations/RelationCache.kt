@@ -28,7 +28,8 @@ object RelationCache : DbObjectCache<NationRelation, Oid<NationRelation>>(Nation
 					otherAttr
 				)
 			)
-		} catch (_: Exception) {} // Silently fail
+		} catch (_: Exception) {
+		} // Silently fail
 	}
 
 	override fun update(cached: NationRelation, change: ChangeStreamDocument<NationRelation>) {

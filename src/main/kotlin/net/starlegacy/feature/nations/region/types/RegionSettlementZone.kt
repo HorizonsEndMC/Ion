@@ -102,6 +102,7 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 				Settlement.ForeignRelation.NONE -> {
 					return null
 				}
+
 				Settlement.ForeignRelation.ALLY -> {
 					SettlementCache[settlement].nation?.let { nation ->
 						if (playerNation != null && RelationCache[nation, playerNation] >= NationRelation.Level.ALLY) {
@@ -109,6 +110,7 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 						}
 					}
 				}
+
 				Settlement.ForeignRelation.NATION_MEMBER -> {
 					SettlementCache[settlement].nation?.let { nation ->
 						if (playerNation == nation) {
@@ -116,11 +118,13 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 						}
 					}
 				}
+
 				Settlement.ForeignRelation.SETTLEMENT_MEMBER -> {
 					if (playerSettlement == settlement) {
 						return null
 					}
 				}
+
 				Settlement.ForeignRelation.STRICT -> error("WRONG! I ALREADY CHECKED! IT CAN'T BE! WHAT TRICKERY IS THIS?")
 				else -> {}
 			}

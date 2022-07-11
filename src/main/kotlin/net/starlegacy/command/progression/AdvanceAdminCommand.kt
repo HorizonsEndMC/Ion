@@ -7,12 +7,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import com.google.gson.Gson
-import java.io.File
-import java.io.FileReader
 import java.util.UUID
 import kotlin.math.abs
-import kotlin.math.pow
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CargoCrateShipment
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -123,30 +119,6 @@ object AdvanceAdminCommand : SLCommand() {
 
 		sender msg text
 	}
-
-	enum class RankTrack(val refund: Double) { COLONIST(0.8), PRIVATEER(1.0), PIRATE(1.3) }
-
-	data class ProgressionData(val players: Map<UUID, OldPlayerXPLevelCache>) {
-		data class OldPlayerXPLevelCache(val track: RankTrack, val level: Int, val points: Int)
-	}
-
-	private val progressionData: Map<UUID, ProgressionData.OldPlayerXPLevelCache> by lazy {
-		return@lazy FileReader(File(plugin.dataFolder, "progression.json")).use {
-			Gson().fromJson(
-				it,
-				ProgressionData::class.java
-			)
-		}.players
-	}
-
-	private fun getPointsCost(level: Int) = (3.0.pow(level - 1) * 10000).toInt()
-
-	private fun getRefund(level: Int, points: Int) = when (level) {
-		0 -> 0
-		else -> (1..level).sumOf { getPointsCost(it) }
-	} + points
-
-	private const val refundMultiplier = 7.5
 
 	@Subcommand("scanabuse")
 	fun onScanAbuse(sender: CommandSender) = asyncCommand(sender) {

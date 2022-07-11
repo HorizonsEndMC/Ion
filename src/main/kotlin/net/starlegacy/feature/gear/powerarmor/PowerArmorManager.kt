@@ -51,16 +51,19 @@ object PowerArmorManager {
 								removePower(item, 1)
 							}
 						}
+
 						PowerArmorModule.NIGHT_VISION -> {
 							player.addPotionEffect(
 								PotionEffect(PotionEffectType.NIGHT_VISION, 1000, 1)
 							)
 						}
+
 						PowerArmorModule.ROCKET_BOOSTING -> {
 							if (player.isGliding && !player.world.name.lowercase(Locale.getDefault()).contains("arena")) {
 								removePower(item, 5)
 							}
 						}
+
 						else -> {
 						}
 					}

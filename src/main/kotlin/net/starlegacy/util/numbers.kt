@@ -29,17 +29,9 @@ fun Number.toText(): String = NumberFormat.getNumberInstance(Locale.US).format(t
  */
 fun Number.toCreditsString(): String = "C${toDouble().roundToHundredth().toText()}"
 
-fun randomDouble() = ThreadLocalRandom.current().nextDouble()
-
 fun randomDouble(min: Double, max: Double) = ThreadLocalRandom.current().nextDouble(min, max)
 
 fun randomFloat() = ThreadLocalRandom.current().nextFloat()
-
-fun randomLong() = ThreadLocalRandom.current().nextLong()
-
-fun randomLong(min: Long, max: Long) = ThreadLocalRandom.current().nextLong(min, max)
-
-fun randomInt() = ThreadLocalRandom.current().nextInt()
 
 /**
  * @param min Minimum (inclusive)
@@ -52,8 +44,6 @@ fun randomInt(min: Int, max: Int) = ThreadLocalRandom.current().nextInt(min, max
  * @param max Maximum (inclusive)
  */
 fun randomRange(min: Int, max: Int) = randomInt(min, max + 1)
-
-fun ByteArray.fillRandomBytes() = ThreadLocalRandom.current().nextBytes(this)
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun Number.d(): Double = this.toDouble()

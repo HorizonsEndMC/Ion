@@ -11,13 +11,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 class PlayerJoinListener : Listener {
 	@Suppress("Unused")
 	@EventHandler(priority = EventPriority.MONITOR)
-	fun onPlayerJoin(event: PlayerJoinEvent){
+	fun onPlayerJoin(event: PlayerJoinEvent) {
 		if (event.player.hasProtection())
 			event.player.sendFeedbackMessage(
 				FeedbackType.INFORMATION,
 				"You seem to be new here, it is generally recommended to use the Wiki when possible " +
-				"(<white><u><click:open_url:'https://wiki.horizonsend.net'>wiki.horizonsend.net</click></u></white>). Feel " +
-				"free to ask questions in chat if / when needed!"
+					"(<white><u><click:open_url:'https://wiki.horizonsend.net'>wiki.horizonsend.net</click></u></white>). Feel " +
+					"free to ask questions in chat if / when needed!"
 			)
 	}
 }

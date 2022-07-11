@@ -9,7 +9,10 @@ import java.util.Locale
 import net.horizonsend.ion.core.NewPlayerProtection
 import net.horizonsend.ion.core.commands.AdminCommands
 import net.horizonsend.ion.core.commands.GracePeriod
+import net.horizonsend.ion.core.commands.RainbowProjectileCommand
 import net.horizonsend.ion.core.commands.Starships
+import net.horizonsend.ion.core.listeners.BowHitListener
+import net.horizonsend.ion.core.listeners.PlayerJoinListener
 import net.starlegacy.cache.Caches
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -33,9 +36,6 @@ import net.starlegacy.command.misc.PlanetSpawnMenuCommand
 import net.starlegacy.command.misc.PlayerInfoCommand
 import net.starlegacy.command.misc.ShuttleCommand
 import net.starlegacy.command.misc.TransportDebugCommand
-import  net.horizonsend.ion.core.commands.RainbowProjectileCommand
-import net.horizonsend.ion.core.listeners.BowHitListener
-import net.horizonsend.ion.core.listeners.PlayerJoinListener
 import net.starlegacy.command.nations.NationCommand
 import net.starlegacy.command.nations.NationRelationCommand
 import net.starlegacy.command.nations.NationSpaceStationCommand
@@ -81,10 +81,8 @@ import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.collectors.CollectionMissions
 import net.starlegacy.feature.economy.collectors.Collectors
-import net.starlegacy.feature.gas.Gasses
 import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.machine.AreaShields
-import net.starlegacy.feature.machine.BaseShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CombatNPCs
 import net.starlegacy.feature.misc.CryoPods
@@ -232,8 +230,6 @@ class StarLegacy : JavaPlugin() {
 			Multiblocks,
 			PowerMachines,
 			AreaShields,
-			BaseShields,
-			Gasses,
 
 			TransportConfig.Companion,
 			Extractors,

@@ -244,7 +244,8 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun getChunkSection(nmsLevelChunk: LevelChunk, sectionY: Int): LevelChunkSection = nmsLevelChunk.sections[sectionY]
+	private fun getChunkSection(nmsLevelChunk: LevelChunk, sectionY: Int): LevelChunkSection =
+		nmsLevelChunk.sections[sectionY]
 
 //	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection {
 //		var section = nmsLevelChunk.sections[sectionY]
@@ -345,7 +346,8 @@ object OptimizedMovement {
 
 			nmsChunk.isUnsaved = true // Hacky fix to ensure chunks are saved following server restarts.
 
-			val packet = ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.lightEngine, null, BitSet(bitmask), false, true)
+			val packet =
+				ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.lightEngine, null, BitSet(bitmask), false, true)
 			playerChunk.broadcast(packet, false)
 		}
 	}

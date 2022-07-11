@@ -6,7 +6,6 @@ import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.Tasks
 import org.bukkit.DyeColor
-import org.bukkit.GameMode
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
@@ -20,7 +19,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
 import org.bukkit.potion.PotionEffect

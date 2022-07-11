@@ -132,6 +132,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 							passengers.add(entity)
 						}
 					}
+
 					is Animals -> {
 						if (starship.isWithinHitbox(entity)) {
 							passengers.add(entity)

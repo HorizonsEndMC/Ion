@@ -7,7 +7,6 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.factory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
-import net.starlegacy.feature.starship.subsystem.shield.ShieldSubsystem
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.isConcrete
 import net.starlegacy.util.msg

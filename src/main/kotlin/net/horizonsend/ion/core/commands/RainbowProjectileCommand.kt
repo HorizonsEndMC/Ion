@@ -11,13 +11,12 @@ import org.bukkit.entity.Player
 object RainbowProjectileCommand : SLCommand() {
 	@CommandAlias("rainbowweapon")
 	@CommandPermission("ioncore.rainbow")
-	fun onExecute(sender: CommandSender, p: Player) = asyncCommand(sender){
+	fun onExecute(sender: CommandSender, p: Player) = asyncCommand(sender) {
 		val ship = getStarshipPiloting(p)
 		if (!ship.rainbowtoggle) {
-				ship.rainbowtoggle = true
-				sender.sendFeedbackActionMessage(SUCCESS,"Rainbow Weapon Colors activated!")
-		}
-		else {
+			ship.rainbowtoggle = true
+			sender.sendFeedbackActionMessage(SUCCESS, "Rainbow Weapon Colors activated!")
+		} else {
 			ship.rainbowtoggle = !ship.rainbowtoggle
 			sender.sendFeedbackActionMessage(SUCCESS, "Rainbow Weapon Colours De-Activating")
 		}

@@ -7,7 +7,6 @@ import net.horizonsend.ion.core.commands.GracePeriod
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
-import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location

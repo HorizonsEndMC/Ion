@@ -2,7 +2,6 @@ package net.starlegacy.listener.misc
 
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
-import net.starlegacy.feature.machine.BaseShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem
 import net.starlegacy.feature.misc.CustomBlocks
@@ -16,21 +15,20 @@ import net.starlegacy.feature.multiblock.dockingtube.DisconnectedDockingTubeMult
 import net.starlegacy.feature.multiblock.dockingtube.DockingTubeMultiblock
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
-import net.starlegacy.feature.multiblock.misc.GasCollectorMultiblock
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.LegacyBlockUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.axis
-import net.starlegacy.util.getFacing
-import net.starlegacy.util.rightFace
-import net.starlegacy.util.leftFace
-import net.starlegacy.util.msg
 import net.starlegacy.util.colorize
-import net.starlegacy.util.red
+import net.starlegacy.util.getFacing
 import net.starlegacy.util.isBed
 import net.starlegacy.util.isStainedGlass
 import net.starlegacy.util.isWallSign
+import net.starlegacy.util.leftFace
+import net.starlegacy.util.msg
+import net.starlegacy.util.red
+import net.starlegacy.util.rightFace
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -97,7 +95,7 @@ object InteractListener : SLEventListener() {
 		while (distance < maxDistance) {
 			val relative = below.getRelative(BlockFace.DOWN, distance)
 
-			if (relative.type != Material.AIR && !BaseShields.isShieldBlock(relative)) {
+			if (relative.type != Material.AIR) {
 				break
 			}
 
@@ -235,7 +233,6 @@ object InteractListener : SLEventListener() {
 
 	@EventHandler
 	fun onPlayerInteractEventF(event: PlayerInteractEvent) {
-		if (event.isCancelled) return
 		if (event.hand != EquipmentSlot.HAND) return
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
@@ -270,41 +267,6 @@ object InteractListener : SLEventListener() {
 		multiblock.toggle(sign, event.player)
 	}
 
-	// Give information when clicking a gas collector sign
-	@EventHandler(priority = EventPriority.HIGH)
-	fun onPlayerInteractEventG(event: PlayerInteractEvent) {
-		if (event.isCancelled) return
-		if (event.hand != EquipmentSlot.HAND) return
-		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-
-		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
-
-		if (Multiblocks[sign] !is GasCollectorMultiblock) return
-
-		val attachedFace = sign.getFacing().oppositeFace
-		val furnace = sign.block.getRelative(attachedFace)
-		val player = event.player
-		for (face in arrayOf(
-			attachedFace.rightFace,
-			attachedFace.rightFace.oppositeFace,
-			BlockFace.UP,
-			BlockFace.DOWN
-		)) {
-			val endRod = furnace.getRelative(face)
-			if (endRod.type != Material.END_ROD) {
-				player.sendMessage(ChatColor.RED.toString() + "No end rod at direction " + face)
-				continue
-			}
-
-			val air = endRod.getRelative(face)
-			if (LegacyBlockUtils.isInside(air.location, 2)) {
-				player.sendMessage(ChatColor.YELLOW.toString() + "Not exposed at direction " + face)
-				continue
-			}
-
-			player.sendMessage(ChatColor.GREEN.toString() + "All clear at direction " + face)
-		}
-	}
 	// Disable beds
 	@EventHandler
 	fun onPlayerInteractEventH(event: PlayerInteractEvent) {
@@ -314,7 +276,10 @@ object InteractListener : SLEventListener() {
 
 		if (item.type.isBed) {
 			event.isCancelled = true
-			player.sendFeedbackActionMessage(FeedbackType.INFORMATION, "Beds are disabled on this server! Use a cryopod instead")
+			player.sendFeedbackActionMessage(
+				FeedbackType.INFORMATION,
+				"Beds are disabled on this server! Use a cryopod instead"
+			)
 		}
 	}
 
