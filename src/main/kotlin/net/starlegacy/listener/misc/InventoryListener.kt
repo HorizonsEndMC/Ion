@@ -40,10 +40,12 @@ object InventoryListener : SLEventListener() {
 					cursor.amount = 0
 					e.isCancelled = true
 				}
+
 				cursor == null && clickedItem != null -> {
 					e.cursor = clickedItem
 					e.currentItem = null
 				}
+
 				cursor != null && cursor.isSimilar(clickedItem) -> {
 					val amount = clickedItem!!.amount
 
@@ -58,6 +60,7 @@ object InventoryListener : SLEventListener() {
 					e.isCancelled = true
 				}
 			}
+
 			ClickType.RIGHT -> if (cursor != null) when {
 				clickedItem == null -> {
 					val item = cursor.clone()
@@ -66,6 +69,7 @@ object InventoryListener : SLEventListener() {
 					cursor.amount = cursor.amount - 1
 					e.isCancelled = true
 				}
+
 				cursor.isSimilar(clickedItem) -> {
 					val amount = clickedItem.amount
 
@@ -80,6 +84,7 @@ object InventoryListener : SLEventListener() {
 					e.isCancelled = true
 				}
 			}
+
 			else -> return
 		}
 	}

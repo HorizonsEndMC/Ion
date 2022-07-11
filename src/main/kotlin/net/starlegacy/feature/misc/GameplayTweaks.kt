@@ -4,7 +4,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.FLYABLE_BLOCKS
 import net.starlegacy.feature.starship.Mass
-import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers
 import net.starlegacy.util.SLAB_TYPES
 import net.starlegacy.util.STAINED_GLASS_TYPES
 import net.starlegacy.util.STAINED_TERRACOTTA_TYPES
@@ -12,6 +11,7 @@ import net.starlegacy.util.STAIR_TYPES
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockExplodeEvent

@@ -8,7 +8,6 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -29,7 +28,6 @@ import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.feature.economy.city.TradeCityType
 import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -174,10 +172,14 @@ object ShipmentManager : SLComponent() {
 			val digit = answer.filter { it.isDigit() }
 			val amount = digit.toIntOrNull() ?: return@input "Amount must be an integer"
 
-			val playerMaxShipSize = StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }.sortedByDescending { it.maxSize }[0].maxSize
+			val playerMaxShipSize = StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }
+				.sortedByDescending { it.maxSize }[0].maxSize
 
 			val min = balancing.generator.minShipmentSize
-			val max = min(balancing.generator.maxShipmentSize, (min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt())
+			val max = min(
+				balancing.generator.maxShipmentSize,
+				(min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt()
+			)
 			if (amount !in min..max) {
 				return@input "Amount must be between $min and $max"
 			}
@@ -380,7 +382,13 @@ object ShipmentManager : SLComponent() {
 				val siegeBonusPercent = capturedStationCount * 5
 				val siegeBonus = totalRevenue * siegeBonusPercent / 100
 
-				player.sendFeedbackAction(FeedbackType.INFORMATION, "Received {0}% (C{1}) bonus from {2} captured stations.", siegeBonusPercent, siegeBonus, capturedStationCount)
+				player.sendFeedbackAction(
+					FeedbackType.INFORMATION,
+					"Received {0}% (C{1}) bonus from {2} captured stations.",
+					siegeBonusPercent,
+					siegeBonus,
+					capturedStationCount
+				)
 
 				totalRevenue += siegeBonus
 

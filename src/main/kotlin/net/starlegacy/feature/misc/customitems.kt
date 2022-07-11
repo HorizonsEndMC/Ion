@@ -238,7 +238,7 @@ object CustomItems {
 		model: Int
 	) : CustomItem(id, displayName, material, model, true)
 
-//	val POWER_MODULE_SHOCK_ABSORBING = registerModule("shock_absorbing", "Shock Absorbing", 1)
+	//	val POWER_MODULE_SHOCK_ABSORBING = registerModule("shock_absorbing", "Shock Absorbing", 1)
 	val POWER_MODULE_SPEED_BOOSTING = registerModule("speed_boosting", "Speed Boosting", 2)
 	val POWER_MODULE_ROCKET_BOOSTING = registerModule("rocket_boosting", "Rocket Boosting", 3)
 	val POWER_MODULE_NIGHT_VISION = registerModule("night_vision", "Night Vision", 4)

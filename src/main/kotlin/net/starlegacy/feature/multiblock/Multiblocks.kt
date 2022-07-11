@@ -27,7 +27,6 @@ import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
-import net.starlegacy.feature.multiblock.misc.GasCollectorMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.misc.MobDefender
 import net.starlegacy.feature.multiblock.misc.ShipFactoryMultiblock
@@ -88,8 +87,6 @@ object Multiblocks : SLComponent() {
 
 	private fun initMultiblocks() {
 		multiblocks = listOf(
-			GasCollectorMultiblock,
-
 			GeneratorMultiblockTier1,
 			GeneratorMultiblockTier2,
 			GeneratorMultiblockTier3,

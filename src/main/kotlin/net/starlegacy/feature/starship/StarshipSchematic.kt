@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship
 
+import com.sk89q.worldedit.world.World as WEWorld
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.extent.clipboard.Clipboard
@@ -12,7 +13,6 @@ import java.io.ByteArrayOutputStream
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
-import com.sk89q.worldedit.world.World as WEWorld
 
 object StarshipSchematic {
 	fun createSchematic(starship: ActiveStarship): Clipboard {

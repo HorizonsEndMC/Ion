@@ -45,9 +45,11 @@ object Interdiction : SLComponent() {
 				Action.RIGHT_CLICK_BLOCK -> {
 					toggleGravityWell(starship, sign)
 				}
+
 				Action.LEFT_CLICK_BLOCK -> {
 					pulseGravityWell(player, starship, sign)
 				}
+
 				else -> return@subscribe
 			}
 		}
@@ -78,7 +80,10 @@ object Interdiction : SLComponent() {
 		val input = GravityWellMultiblock.getInput(sign)
 
 		if (LegacyItemUtils.getTotalItems(input, CustomItems.MINERAL_CHETHERITE.singleItem()) < 2) {
-			player.sendFeedbackMessage(USER_ERROR,"Not enough hypermatter in the dropper. Two chetherite shards are required!")
+			player.sendFeedbackMessage(
+				USER_ERROR,
+				"Not enough hypermatter in the dropper. Two chetherite shards are required!"
+			)
 			return
 		}
 

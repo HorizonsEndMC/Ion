@@ -1,6 +1,5 @@
 package net.starlegacy.feature.starship
 
-import java.util.Locale
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.util.setDisplayNameAndGet
 import net.starlegacy.util.setLoreAndGet
@@ -240,15 +239,6 @@ enum class StarshipType(
 		player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel
 
 	companion object {
-		private val stringMap = mutableMapOf<String, StarshipType>().apply {
-			putAll(values().associateBy { it.name.lowercase(Locale.getDefault()) })
-			putAll(values().associateBy { it.displayName.lowercase(Locale.getDefault()) })
-
-			println(this)
-		}
-
-		fun getType(name: String): StarshipType? = stringMap[name.lowercase(Locale.getDefault())]
-
 		fun getUnlockedTypes(player: Player): List<StarshipType> = values()
 			.filter { it.canUse(player) }
 			.sortedBy { it.minLevel }

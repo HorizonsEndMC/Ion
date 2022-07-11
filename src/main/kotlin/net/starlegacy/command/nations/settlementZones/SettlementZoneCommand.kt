@@ -326,15 +326,19 @@ internal object SettlementZoneCommand : SLCommand() {
 					owner != null -> {
 						skullItem(owner.uuid, getPlayerName(owner))
 					}
+
 					price != null && rent != null -> {
 						item(Material.GREEN_WOOL)
 					}
+
 					price != null -> {
 						item(Material.LIME_WOOL)
 					}
+
 					rent != null -> {
 						item(Material.RED_WOOL)
 					}
+
 					else -> item(Material.COBWEB)
 				}
 
@@ -412,6 +416,7 @@ internal object SettlementZoneCommand : SLCommand() {
 			oldPrice == null -> "&aPut zone ${zone.name} up for sale for ${newPrice.toCreditsString()}." +
 				" It can now be purchased using /splot buy while standing in it." +
 				" (To make it no longer for sale, use /szone set price ${zone.name} -1)"
+
 			else -> "&aChanged price of ${zone.name} from ${oldPrice.toCreditsString()} to ${newPrice.toCreditsString()}"
 		}
 	}

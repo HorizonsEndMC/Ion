@@ -1,5 +1,7 @@
 package net.starlegacy.util
 
+import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
+import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -20,29 +22,6 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
-import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
-import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
-
-fun loadSchematic(player: Player?, filename: String): Clipboard? {
-	val file: File
-
-	try {
-		val worldEdit = WorldEdit.getInstance()
-		val dir = worldEdit.getWorkingDirectoryPath(worldEdit.configuration.saveDir).toFile()
-		val extension = BuiltInClipboardFormat.SPONGE_SCHEMATIC.primaryFileExtension
-		val actor = if (player == null) null else BukkitAdapter.adapt(player)
-		val extensionArray = ClipboardFormats.getFileExtensionArray()
-		file = worldEdit.getSafeOpenFile(actor, dir, filename, extension, *extensionArray)
-	} catch (e: FilenameException) {
-		return null
-	}
-
-	if (!file.exists()) {
-		return null
-	}
-
-	return readSchematic(file)
-}
 
 fun readSchematic(file: File): Clipboard? {
 	val format = ClipboardFormats.findByFile(file) ?: return null

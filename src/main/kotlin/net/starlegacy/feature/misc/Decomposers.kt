@@ -1,8 +1,8 @@
 package net.starlegacy.feature.misc
 
+import kotlin.math.max
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
-import kotlin.math.max
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -24,6 +24,7 @@ object Decomposers : SLComponent() {
 	private const val MAX_LENGTH = 100
 	private const val BLOCKS_PER_SECOND = 1000
 	private val FRAME_MATERIAL = CHISELED_TYPES
+
 	@EventHandler
 	fun onClick(event: PlayerInteractEvent) {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) {

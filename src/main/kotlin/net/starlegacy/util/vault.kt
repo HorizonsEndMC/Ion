@@ -2,15 +2,11 @@ package net.starlegacy.util
 
 import net.milkbowl.vault.chat.Chat
 import net.milkbowl.vault.economy.Economy
-import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 
 /** Registered vault economy service */
 val VAULT_ECO: Economy = Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)!!.provider
-
-/** Registered vault permissions service */
-val vaultPermission: Permission = Bukkit.getServer().servicesManager.getRegistration(Permission::class.java)!!.provider
 
 /** Registered vault permissions service */
 val vaultChat: Chat = Bukkit.getServer().servicesManager.getRegistration(Chat::class.java)!!.provider

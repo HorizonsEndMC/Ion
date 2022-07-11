@@ -31,7 +31,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.DaylightDetector
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventory
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -293,13 +292,6 @@ object Extractors : SLComponent() {
 				BUSY_PIPE_EXTRACTORS.remove(extractorLocation)
 			}
 		}
-	}
-
-	private fun isInventoryNotEmpty(state: BlockState): Boolean {
-		val inventory = (state as InventoryHolder).inventory
-		val cb = (inventory as CraftInventory)
-		val nms = cb.inventory
-		return nms.contents.any { it != null && !it.isEmpty }
 	}
 
 	private fun handleWire(world: World, x: Int, y: Int, z: Int, computers: Set<Vec3i>, wires: Set<BlockFace>) {

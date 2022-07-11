@@ -1,14 +1,14 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.core.feedback.FeedbackType.INFORMATION
-import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.util.Locale
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import net.horizonsend.ion.core.feedback.FeedbackType.INFORMATION
+import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -197,7 +197,15 @@ object PilotedStarships : SLComponent() {
 			if (blockData.material != foundData.material) {
 				val expected: String = blockData.material.name
 				val found: String = foundData.material.name
-				player.sendFeedbackActionMessage(USER_ERROR, "Block at {0}, {1}, {2} does not match! Expected {3} but found {4}", x, y, z, expected, found)
+				player.sendFeedbackActionMessage(
+					USER_ERROR,
+					"Block at {0}, {1}, {2} does not match! Expected {3} but found {4}",
+					x,
+					y,
+					z,
+					expected,
+					found
+				)
 				return false
 			}
 
@@ -209,7 +217,13 @@ object PilotedStarships : SLComponent() {
 
 				DeactivatedPlayerStarships[world, x, y, z]?.takeIf { it._id != data._id }?.also { carried ->
 					if (!carried.isPilot(player)) {
-						player.sendFeedbackActionMessage(USER_ERROR, "Block at {0} {1} {2} is a ship computer which you are not a pilot of!", x, y, z)
+						player.sendFeedbackActionMessage(
+							USER_ERROR,
+							"Block at {0} {1} {2} is a ship computer which you are not a pilot of!",
+							x,
+							y,
+							z
+						)
 						return false
 					}
 
@@ -232,10 +246,19 @@ object PilotedStarships : SLComponent() {
 			}
 
 			pilot(activePlayerStarship, player)
-			player.sendFeedbackActionMessage(SUCCESS, "Activated and piloted {0} with {1} blocks.", getDisplayName(data), activePlayerStarship.blockCount)
+			player.sendFeedbackActionMessage(
+				SUCCESS,
+				"Activated and piloted {0} with {1} blocks.",
+				getDisplayName(data),
+				activePlayerStarship.blockCount
+			)
 
 			if (carriedShips.any()) {
-				player.sendFeedbackMessage(INFORMATION, "{0} carried ship${if (carriedShips.size != 1) "s" else ""}.", carriedShips.size)
+				player.sendFeedbackMessage(
+					INFORMATION,
+					"{0} carried ship${if (carriedShips.size != 1) "s" else ""}.",
+					carriedShips.size
+				)
 			}
 
 			callback(activePlayerStarship)

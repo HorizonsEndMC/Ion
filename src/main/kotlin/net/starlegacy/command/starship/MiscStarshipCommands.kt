@@ -5,14 +5,14 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.util.Locale
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
 import kotlin.math.ln
 import kotlin.math.roundToInt
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.feature.space.Space
@@ -156,7 +156,12 @@ object MiscStarshipCommands : SLCommand() {
 			"Coords are out of world border."
 		}
 
-		if (MassShadows.find(starship.world, starship.centerOfMass.x.toDouble(), starship.centerOfMass.z.toDouble())!= null) {
+		if (MassShadows.find(
+				starship.world,
+				starship.centerOfMass.x.toDouble(),
+				starship.centerOfMass.z.toDouble()
+			) != null
+		) {
 			sender.sendFeedbackMessage(USER_ERROR, "You're within a MassShadow, jump cancelled.")
 			return
 		}
@@ -179,8 +184,8 @@ object MiscStarshipCommands : SLCommand() {
 			z1 = (normalizedZ * maxRange + origin.z).roundToInt()
 
 			sender msg "&eWarning: You attempted to jump $distance blocks, " +
-					"but your navigation computer only supports jumping up to $maxRange blocks! " +
-					"Automatically shortening jump. New Coordinates: $x1, $z1"
+				"but your navigation computer only supports jumping up to $maxRange blocks! " +
+				"Automatically shortening jump. New Coordinates: $x1, $z1"
 		}
 
 		val offset = ln(distance).toInt()

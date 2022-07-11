@@ -109,10 +109,8 @@ import org.bukkit.Material.REPEATER
 import org.bukkit.Material.SCAFFOLDING
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
-import org.bukkit.Material.SNOW
 import org.bukkit.Material.SPONGE
 import org.bukkit.Material.STICKY_PISTON
-import org.bukkit.Material.TALL_GRASS
 import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.WALL_TORCH
@@ -257,11 +255,6 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	it.addAll(CAKE_TYPES)
 
 }.filter { it.isBlock }.toCollection(EnumSet.noneOf(Material::class.java))
-
-val DESTROYABLE_BLOCKS = setOf(
-	SNOW,
-	TALL_GRASS
-)
 
 private val FLYABLE_BLOCK_DATA_CACHE = CacheBuilder.newBuilder()
 	.build<BlockState, Boolean>(CacheLoader.from { blockData ->

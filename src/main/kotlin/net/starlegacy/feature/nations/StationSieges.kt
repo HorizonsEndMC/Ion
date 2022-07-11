@@ -1,11 +1,11 @@
 package net.starlegacy.feature.nations
 
-import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
@@ -139,12 +139,15 @@ object StationSieges : SLComponent() {
 			station.nation?.id == nation.id -> {
 				return@asyncLocked player msg "&cYour nation already owns this station."
 			}
+
 			station.nation?.let { RelationCache[it, nation] >= NationRelation.Level.ALLY } == true -> {
 				return@asyncLocked player msg "&cThis station is owned by an ally of your nation"
 			}
+
 			isUnderSiege(stationId) -> {
 				return@asyncLocked player msg "&cThis station is already under siege."
 			}
+
 			station.siegeTimeFrame != currentHour() -> {
 				return@asyncLocked player msg "&cThis station can only be besieged in quarter ${station.siegeTimeFrame} " +
 					"of the day (EST timezone), but the current quarter is ${currentHour()}"

@@ -274,7 +274,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	private fun getColor(starship: ActiveStarship?, shooter: Player?): Color {
 		var counter = 0
 		if (starship != null) {
-			if(starship.rainbowtoggle) flagcolors.random()
+			if (starship.rainbowtoggle) flagcolors.random()
 			else return starship.weaponColor
 		}
 

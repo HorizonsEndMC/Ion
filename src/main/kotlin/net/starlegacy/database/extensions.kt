@@ -133,6 +133,7 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 						}
 					}
 				}
+
 				else -> {
 					map[path] = document[path]
 				}

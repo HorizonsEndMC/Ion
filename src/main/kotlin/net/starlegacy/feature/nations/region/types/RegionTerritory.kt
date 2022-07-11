@@ -42,15 +42,17 @@ class RegionTerritory(territory: Territory) : Region<Territory>(territory),
 	var isProtected: Boolean = territory.isProtected; private set
 	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
 
-	val oldCost get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(SETTINGS.territoryCost).toInt()
-	val cost: Int get() {
-		val n = polygon.npoints
-		var sum = 0
-		for (i in 0 until n) {
-			sum += polygon.xpoints[i] * (polygon.ypoints[(i + 1) % n] - polygon.ypoints[(i + n - 1) % n])
+	val oldCost
+		get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(SETTINGS.territoryCost).toInt()
+	val cost: Int
+		get() {
+			val n = polygon.npoints
+			var sum = 0
+			for (i in 0 until n) {
+				sum += polygon.xpoints[i] * (polygon.ypoints[(i + 1) % n] - polygon.ypoints[(i + n - 1) % n])
+			}
+			return abs(sum / 2) / 100
 		}
-		return abs(sum/2)/100
-	}
 
 	var centerX = polygon.xpoints.average().roundToInt(); private set
 	var centerZ = polygon.ypoints.average().roundToInt(); private set
@@ -93,10 +95,10 @@ class RegionTerritory(territory: Territory) : Region<Territory>(territory),
 			nation != null -> {
 				val playerNation: Oid<Nation>? = playerData.nation
 
-/*                // if they're at least an ally they can build
-                if (playerNation != null && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
-                    return null
-                }*/
+				/*                // if they're at least an ally they can build
+												if (playerNation != null && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
+														return null
+												}*/
 
 				// allow nation members
 				if (playerNation == nation) {

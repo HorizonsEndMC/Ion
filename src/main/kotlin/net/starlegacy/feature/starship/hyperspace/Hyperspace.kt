@@ -39,7 +39,14 @@ object Hyperspace : SLComponent() {
 
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
 		if (starship.type == PLATFORM) {
-			starship.onlinePassengers.forEach{ it.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED)) }
+			starship.onlinePassengers.forEach {
+				it.sendMessage(
+					Component.text(
+						"This ship type is not capable of moving.",
+						NamedTextColor.RED
+					)
+				)
+			}
 			return
 		}
 

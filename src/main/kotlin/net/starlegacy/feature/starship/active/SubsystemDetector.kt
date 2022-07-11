@@ -96,18 +96,23 @@ object SubsystemDetector {
 			is SphereShieldMultiblock -> {
 				starship.subsystems += SphereShieldSubsystem(starship, sign, multiblock)
 			}
+
 			is BoxShieldMultiblock -> {
 				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
 			}
+
 			is HyperdriveMultiblock -> {
 				starship.subsystems += HyperdriveSubsystem(starship, sign, multiblock)
 			}
+
 			is NavigationComputerMultiblock -> {
 				starship.subsystems += NavCompSubsystem(starship, sign, multiblock)
 			}
+
 			is MagazineMultiblock -> {
 				starship.subsystems += MagazineSubsystem(starship, sign, multiblock)
 			}
+
 			is CryoPodMultiblock -> {
 				val cryoPod = CryoPods[sign]
 				if (cryoPod != null) {

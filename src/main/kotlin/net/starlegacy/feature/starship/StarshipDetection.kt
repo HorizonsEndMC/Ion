@@ -53,9 +53,9 @@ object StarshipDetection : SLComponent() {
 
 	fun detectNewState(data: PlayerStarshipData): PlayerStarshipState {
 		val world = data.bukkitWorld()
-/*
-        val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
-*/
+		/*
+						val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
+		*/
 		val computerLocation = Vec3i(data.blockKey)
 
 		// blocks that were accepted
@@ -119,12 +119,12 @@ object StarshipDetection : SLComponent() {
 				continue
 			}
 
-/*
-            // Don't allow blocks that have been added to the forbidden blocks list
-            if (forbiddenBlocks.contains(key)) {
-                continue
-            }
-*/
+			/*
+									// Don't allow blocks that have been added to the forbidden blocks list
+									if (forbiddenBlocks.contains(key)) {
+											continue
+									}
+			*/
 
 			//--------------------------------------------------------------------
 			// Past this point, the block has been validated and will be detected
@@ -249,6 +249,7 @@ object StarshipDetection : SLComponent() {
 			Material.DISPENSER,
 			Material.BARREL,
 			Material.DROPPER -> true
+
 			else -> false
 		}
 	}
