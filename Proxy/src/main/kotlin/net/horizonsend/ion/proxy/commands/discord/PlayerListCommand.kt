@@ -13,13 +13,15 @@ class PlayerListCommand(private val proxy: ProxyServer) {
 	@Suppress("Unused")
 	fun onPlayerListCommand(event: SlashCommandInteractionEvent) {
 		event.replyEmbeds(
-			messageEmbed(fields = proxy.allServers.map { server ->
-				MessageEmbed.Field(
-					"${server.serverInfo.name.replaceFirstChar { it.uppercase() }} *(${server.playersConnected.size} online)*",
-					server.playersConnected.joinToString("\n", "", "") { it.username }.ifBlank { "*No players online*" },
-					true
-				)
-			})
+			messageEmbed(fields = proxy.allServers
+				.filter { it.playersConnected.isNotEmpty() }
+				.map { server -> MessageEmbed.Field(
+						"${server.serverInfo.name.replaceFirstChar { it.uppercase() }} *(${server.playersConnected.size} online)*",
+						server.playersConnected.joinToString("\n", "", "") { it.username },
+						true
+				)}
+				.ifEmpty { listOf(MessageEmbed.Field(null, "*No players online*", true)) }
+			)
 		).setEphemeral(true).queue()
 	}
 }
