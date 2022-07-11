@@ -31,11 +31,18 @@ tasks {
 	build { dependsOn("shadowJar") }
 
 	create("downloadTestServerDependencies") {
-		fun downloadJenkinsArtifact(domain: String, project: String, filter: String, location: String, destination: String) {
-			val jarName = URL("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath[$filter]")
-				.readText()
-				.substringAfter("<relativePath>$location/")
-				.substringBefore("</relativePath>")
+		fun downloadJenkinsArtifact(
+			domain: String,
+			project: String,
+			filter: String,
+			location: String,
+			destination: String
+		) {
+			val jarName =
+				URL("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath[$filter]")
+					.readText()
+					.substringAfter("<relativePath>$location/")
+					.substringBefore("</relativePath>")
 
 			print("Downloading $jarName... ")
 
@@ -52,8 +59,20 @@ tasks {
 
 		doFirst {
 			downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts", "paper")
-			downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs", "paper")
-			downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'velocity/')", "velocity/build/libs", "velocity")
+			downloadJenkinsArtifact(
+				"ci.lucko.me",
+				"LuckPerms",
+				"starts-with(.,'bukkit/')",
+				"bukkit/loader/build/libs",
+				"paper"
+			)
+			downloadJenkinsArtifact(
+				"ci.lucko.me",
+				"LuckPerms",
+				"starts-with(.,'velocity/')",
+				"velocity/build/libs",
+				"velocity"
+			)
 		}
 	}
 }

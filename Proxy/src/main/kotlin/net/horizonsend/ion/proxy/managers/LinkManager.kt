@@ -25,7 +25,7 @@ object LinkManager {
 	private fun expireLinkCodes() {
 		// Also cursed
 		linkCodes.filterValues {
-			it.issueTime + 1000*60*5 < System.currentTimeMillis()
+			it.issueTime + 1000 * 60 * 5 < System.currentTimeMillis()
 		}.keys.forEach {
 			linkCodes.remove(it)
 		}

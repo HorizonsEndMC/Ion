@@ -523,7 +523,7 @@ apply-shorthand: true
 # - You can disable context calculators by either:
 #   => specifying the Java class name used by the calculator (e.g. com.example.ExampleCalculator)
 #   => specifying a sub-section of the Java package used by the calculator (e.g. com.example)
-disabled-context-calculators: []
+disabled-context-calculators: [ ]
 
 # Allows you to set "aliases" for the worlds sent forward for context calculation.
 #

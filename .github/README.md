@@ -1,4 +1,5 @@
 ### Building
+
 The project can be built by downloading it, navigating into the directory, and running `./gradlew build` or
 `gradlew.bat build` on Windows.
 
@@ -15,7 +16,9 @@ Simply run `sh testServer run`, you will be able to send commands in the termina
 If the test server breaks, use `sh testServer reset` to reset it back to it's default state.
 
 ### Contributing
+
 Contributions must follow the following rules:
+
 1) Lines should be 120 characters long at most, this is not a strict requirement, lines *can* be longer.
 
 2) Never use wildcard imports.
@@ -33,10 +36,10 @@ Contributions must follow the following rules:
 
 8) All event listeners must specify a priority based on the criteria below:
 	- Does the listener unconditionally cancel the event? If so, use LOWEST.
-    - Does the listener conditionally cancel the event? If so, use LOW.
-    - Does the listener alter the events data? If so, use NORMAL.
-    - Does the listener simply act on the result of the event? If so, use MONITOR.
-    - HIGH and HIGHEST should not be used right now.
+	- Does the listener conditionally cancel the event? If so, use LOW.
+	- Does the listener alter the events data? If so, use NORMAL.
+	- Does the listener simply act on the result of the event? If so, use MONITOR.
+	- HIGH and HIGHEST should not be used right now.
 
 9) To prevent IntelliJ from complaining, please `@Suppress("unused")`for any entry points. Don't just tell IntelliJ to
    ignore them for that class as that only applies to you, not everyone else.
