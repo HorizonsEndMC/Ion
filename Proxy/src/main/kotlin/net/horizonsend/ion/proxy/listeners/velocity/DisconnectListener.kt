@@ -19,6 +19,6 @@ class DisconnectListener {
 		guild.removeRoleFromMember(
 			guild.getMemberById(memberId) ?: return@async,
 			guild.getRoleById(proxyConfiguration.onlineRole) ?: return@async
-		)
+		).queue()
 	}
 }
