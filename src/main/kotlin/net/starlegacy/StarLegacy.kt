@@ -289,7 +289,6 @@ class StarLegacy : JavaPlugin() {
 			MovementListener,
 			FriendlyFireListener,
 			ProtectionListener,
-			PlayerJoinListener,
 
 			BlockListener,
 			EntityListener,
@@ -337,6 +336,8 @@ class StarLegacy : JavaPlugin() {
 		}
 
 		INITIALIZATION_COMPLETE = true
+
+		server.pluginManager.registerEvents(PlayerJoinListener(), this)
 	}
 
 	private fun registerListeners() {
