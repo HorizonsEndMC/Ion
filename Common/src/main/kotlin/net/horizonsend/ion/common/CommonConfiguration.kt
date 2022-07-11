@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.annotations.ConfigurationName
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
-@ConfigurationName("common")
+@ConfigurationName("shared/common")
 data class CommonConfiguration(
 	val databaseType: DatabaseType = DatabaseType.SQLITE,
 	val databaseDetails: DatabaseDetails = DatabaseDetails()
