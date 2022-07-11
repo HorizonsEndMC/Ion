@@ -27,7 +27,7 @@ object CommonManager {
 		}
 
 		transaction {
-			SchemaUtils.create(Players)
+			SchemaUtils.createMissingTablesAndColumns(Players)
 		}
 	}
 }
