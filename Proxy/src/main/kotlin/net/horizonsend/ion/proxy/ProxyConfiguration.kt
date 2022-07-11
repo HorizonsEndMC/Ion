@@ -9,5 +9,6 @@ data class ProxyConfiguration(
 	val tablistHeaderMessage: String = "",
 	val discordBotToken: String = "",
 	val discordServer: Long = 0,
-	val linkedRole: Long = 0
+	val linkedRole: Long = 0,
+	val onlineRole: Long = 0
 )

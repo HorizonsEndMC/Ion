@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.proxy.jda
 import net.horizonsend.ion.proxy.proxyConfiguration
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
@@ -27,7 +28,12 @@ class LoginListener {
 
 		event.player.sendPlayerListHeader(headerComponent)
 
-		// Ensure the player exists in the database
-		transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.username) }
+		val memberId = transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.username).discordUUID } ?: return@async
+		val guild = jda.getGuildById(proxyConfiguration.discordServer) ?: return@async
+
+		guild.addRoleToMember(
+			guild.getMemberById(memberId) ?: return@async,
+			guild.getRoleById(proxyConfiguration.onlineRole) ?: return@async
+		)
 	}
 }
