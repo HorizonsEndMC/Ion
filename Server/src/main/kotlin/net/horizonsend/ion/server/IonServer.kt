@@ -71,11 +71,11 @@ class IonServer : JavaPlugin() {
 
 		// Bell
 		server.addRecipe(ShapedRecipe(NamespacedKey(this, "bell_recipe"), ItemStack(Material.BELL)).apply {
-				shape("wow", "szs", "zzz")
-				setIngredient('w', MaterialChoice(Material.STICK))
-				setIngredient('o', MaterialChoice(Material.OAK_LOG))
-				setIngredient('s', MaterialChoice(Material.IRON_BLOCK))
-				setIngredient('z', MaterialChoice(Material.GOLD_BLOCK))
+			shape("wow", "szs", "zzz")
+			setIngredient('w', MaterialChoice(Material.STICK))
+			setIngredient('o', MaterialChoice(Material.OAK_LOG))
+			setIngredient('s', MaterialChoice(Material.IRON_BLOCK))
+			setIngredient('z', MaterialChoice(Material.GOLD_BLOCK))
 		})
 
 		// Enderpearl

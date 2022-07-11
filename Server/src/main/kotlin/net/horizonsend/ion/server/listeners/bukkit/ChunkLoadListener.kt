@@ -26,7 +26,11 @@ class ChunkLoadListener(private val plugin: IonServer) : Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	@Suppress("Unused")
 	fun onChunkLoad(event: ChunkLoadEvent) {
-		val placementConfiguration = try { OrePlacementConfig.valueOf(event.world.name) } catch (_: IllegalArgumentException) { return }
+		val placementConfiguration = try {
+			OrePlacementConfig.valueOf(event.world.name)
+		} catch (_: IllegalArgumentException) {
+			return
+		}
 		val chunkOreVersion = event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER)
 
 		if (chunkOreVersion == placementConfiguration.currentOreVersion) return
@@ -98,7 +102,11 @@ class ChunkLoadListener(private val plugin: IonServer) : Listener {
 
 						println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
 
-						event.chunk.persistentDataContainer.set(oreCheckNamespace, PersistentDataType.INTEGER, placementConfiguration.currentOreVersion)
+						event.chunk.persistentDataContainer.set(
+							oreCheckNamespace,
+							PersistentDataType.INTEGER,
+							placementConfiguration.currentOreVersion
+						)
 					}
 				)
 
@@ -108,7 +116,13 @@ class ChunkLoadListener(private val plugin: IonServer) : Listener {
 					.resolve("${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 					.writeText(
 						placedOres.map {
-							"${it.key.x},${it.key.y},${it.key.z},${chunkSnapshot.getBlockType(it.key.x, it.key.y, it.key.z)},${it.value}"
+							"${it.key.x},${it.key.y},${it.key.z},${
+								chunkSnapshot.getBlockType(
+									it.key.x,
+									it.key.y,
+									it.key.z
+								)
+							},${it.value}"
 						}.joinToString("\n", "", "")
 					)
 			}

@@ -9,8 +9,11 @@ import net.luckperms.api.LuckPermsProvider
 fun constructPlayerListNameAsync(username: String, uuid: UUID): CompletableFuture<Component> {
 	// Attempt to get the LuckPerms API, and safely fallback if the API is absent
 	val luckPerms =
-		try { LuckPermsProvider.get() }
-		catch (_: NoClassDefFoundError) { return CompletableFuture.completedFuture(Component.text(username)) }
+		try {
+			LuckPermsProvider.get()
+		} catch (_: NoClassDefFoundError) {
+			return CompletableFuture.completedFuture(Component.text(username))
+		}
 
 	return luckPerms.userManager.loadUser(uuid).thenApplyAsync { user ->
 		constructPlayerListName(username, user.cachedData.metaData.prefix, user.cachedData.metaData.suffix)

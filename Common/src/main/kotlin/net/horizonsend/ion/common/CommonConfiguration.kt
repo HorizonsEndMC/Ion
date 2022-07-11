@@ -13,8 +13,8 @@ data class CommonConfiguration(
 
 	@ConfigSerializable
 	data class DatabaseDetails(
-		val host    : String = "localhost",
-		val port    : Int    = 3306,
+		val host: String = "localhost",
+		val port: Int = 3306,
 		val database: String = "ion",
 		val username: String = "ion",
 		val password: String = "password"
