@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
@@ -20,6 +21,7 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
+import net.horizonsend.ion.proxy.listeners.velocity.DisconnectListener
 import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
 import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
 import net.horizonsend.ion.proxy.listeners.velocity.ProxyPingListener
@@ -50,7 +52,9 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
 		CommonManager.init(dataDirectory)
 
-		arrayOf(LoginListener(), PreLoginListener(), ProxyPingListener(), ServerConnectedListener()).forEach {
+		arrayOf(
+			LoginListener(), PreLoginListener(), ProxyPingListener(), ServerConnectedListener(), DisconnectListener()
+		).forEach {
 			proxy.eventManager.register(this, it)
 		}
 
@@ -65,5 +69,20 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 			DiscordAccountCommand(),
 			PlayerListCommand()
 		)
+
+		removeOnlineRoleFromEveryone()
+	}
+
+	@Suppress("Unused_Parameter")
+	@Subscribe(order = PostOrder.LAST)
+	fun onProxyShutdownEvent(event: ProxyShutdownEvent): EventTask = EventTask.async { removeOnlineRoleFromEveryone() }
+
+	private fun removeOnlineRoleFromEveryone() {
+		val guild = jda.getGuildById(proxyConfiguration.discordServer) ?: return
+		val role = guild.getRoleById(proxyConfiguration.onlineRole) ?: return
+
+		guild.getMembersWithRoles(role).forEach { member ->
+			guild.removeRoleFromMember(member, role)
+		}
 	}
 }
