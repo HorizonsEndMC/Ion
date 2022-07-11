@@ -6,5 +6,6 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 @ConfigSerializable
 @ConfigurationName("proxy")
 data class ProxyConfiguration(
-	val tablistHeaderMessage: String = ""
+	val tablistHeaderMessage: String = "",
+	val discordBotToken: String = ""
 )
