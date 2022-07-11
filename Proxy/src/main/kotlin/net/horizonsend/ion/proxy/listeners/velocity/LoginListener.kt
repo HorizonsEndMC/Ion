@@ -4,7 +4,7 @@ import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
-import net.horizonsend.ion.common.database.Player
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.IonProxy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
@@ -30,6 +30,6 @@ class LoginListener(private val plugin: IonProxy) {
 		event.player.sendPlayerListHeader(headerComponent)
 
 		// Ensure the player exists in the database
-		transaction { Player.getOrCreate(event.player.uniqueId, event.player.username) }
+		transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.username) }
 	}
 }

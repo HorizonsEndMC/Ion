@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import net.horizonsend.ion.common.database.Player
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.utilities.constructPlayerListNameAsync
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -15,6 +15,6 @@ class PlayerLoginListener: Listener {
 		}
 
 		// Ensure the player exists in the database
-		transaction { Player.getOrCreate(event.player.uniqueId, event.player.name) }
+		transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.name) }
 	}
 }
