@@ -8,13 +8,14 @@ import com.velocitypowered.api.proxy.Player
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.utilities.feedback.FeedbackType
 import net.horizonsend.ion.common.utilities.feedback.sendFeedbackMessage
-import net.horizonsend.ion.proxy.IonProxy
+import net.horizonsend.ion.proxy.jda
 import net.horizonsend.ion.proxy.managers.LinkManager
+import net.horizonsend.ion.proxy.proxyConfiguration
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("account")
 @Description("Manage the link between your Minecraft and Discord account.")
-class VelocityAccountCommand(private val plugin: IonProxy) : BaseCommand() {
+class VelocityAccountCommand : BaseCommand() {
 	@Suppress("Unused")
 	@Subcommand("status")
 	@Description("Check linked Discord account.")
@@ -26,7 +27,7 @@ class VelocityAccountCommand(private val plugin: IonProxy) : BaseCommand() {
 			return
 		}
 
-		plugin.jda.retrieveUserById(playerData.discordUUID!!).queue {
+		jda.retrieveUserById(playerData.discordUUID!!).queue {
 			sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Linked to {0} ({1}).", it.asTag, playerData.discordUUID!!)
 		}
 	}
@@ -42,9 +43,9 @@ class VelocityAccountCommand(private val plugin: IonProxy) : BaseCommand() {
 			return@transaction
 		}
 
-		plugin.jda.getGuildById(plugin.proxyConfiguration.discordServer)!!.apply {
+		jda.getGuildById(proxyConfiguration.discordServer)!!.apply {
 			getMemberById(playerData.discordUUID!!)?.let { member ->
-				removeRoleFromMember(member, getRoleById(plugin.proxyConfiguration.linkedRole)!!).queue()
+				removeRoleFromMember(member, getRoleById(proxyConfiguration.linkedRole)!!).queue()
 			}
 		}
 
