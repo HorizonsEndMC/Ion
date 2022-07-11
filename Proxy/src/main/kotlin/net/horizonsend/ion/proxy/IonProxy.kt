@@ -15,7 +15,9 @@ import net.dv8tion.jda.api.entities.Activity
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
+import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
 import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
 import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
@@ -31,6 +33,10 @@ class IonProxy @Inject constructor(
 	@DataDirectory private val dataDirectory: Path
 ) {
 	val proxyConfiguration = loadConfiguration<ProxyConfiguration>(dataDirectory)
+
+	val jda = JDABuilder.createLight(proxyConfiguration.discordBotToken)
+		.setActivity(Activity.playing("horizonsend.net"))
+		.build()
 
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
@@ -48,13 +54,13 @@ class IonProxy @Inject constructor(
 
 		VelocityCommandManager(proxy, this).apply {
 			registerCommand(VelocityInfoCommand())
+			registerCommand(VelocityAccountCommand(this@IonProxy))
 		}
 
 		JDACommandManager(
-			JDABuilder.createLight(proxyConfiguration.discordBotToken)
-				.setActivity(Activity.playing("horizonsend.net"))
-				.build(),
+			jda,
 			DiscordInfoCommand(),
+			DiscordAccountCommand(this),
 			PlayerListCommand(proxy)
 		)
 	}
