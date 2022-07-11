@@ -4,7 +4,7 @@ import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import net.horizonsend.ion.common.CommonConfiguration
 import net.horizonsend.ion.common.CommonConfiguration.DatabaseType
-import net.horizonsend.ion.common.database.Players
+import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -27,7 +27,7 @@ object CommonManager {
 		}
 
 		transaction {
-			SchemaUtils.createMissingTablesAndColumns(Players)
+			SchemaUtils.createMissingTablesAndColumns(PlayerDataTable)
 		}
 	}
 }
