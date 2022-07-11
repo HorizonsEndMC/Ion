@@ -127,13 +127,20 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 			?.let { commandClass ->
 				if (event.subcommandGroup != null) {
 					val subcommandGroupClass = commandClass::class.java.classes
+						.filter { it.hasCommandMeta }
 						.find { it.commandMeta.name == event.subcommandGroup }
 
-					subcommandGroupClass?.methods?.find { it.commandMeta.name == event.subcommandName }?.let {
+					subcommandGroupClass?.methods
+						?.filter { it.hasCommandMeta }
+						?.find { it.commandMeta.name == event.subcommandName }
+						?.let {
 							invokeCommand(event, subcommandGroupClass.getConstructor(commandClass::class.java).newInstance(commandClass), it)
-					}
+						}
+
 				} else if (event.subcommandName != null) {
-					commandClass::class.java.methods.find { it.commandMeta.name == event.subcommandName }
+					commandClass::class.java.methods
+						.filter { it.hasCommandMeta }
+						.find { it.commandMeta.name == event.subcommandName }
 						?.let { invokeCommand(event, commandClass, it) }
 
 				} else {
