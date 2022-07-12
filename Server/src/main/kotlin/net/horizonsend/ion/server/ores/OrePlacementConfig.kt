@@ -8,11 +8,13 @@ import org.bukkit.Material
  TODO: This should be loaded from a configuration file.
 */
 
+const val algorithmVersion = 9
+
 @Suppress("unused")
 enum class OrePlacementConfig(
 	val groundMaterial: EnumSet<Material> = enumSetOf(),
 	val options: Map<Ore, Int> = mapOf(),
-	val currentOreVersion: Int = 9
+	val configVersion: Int = 0
 ) {
 	Chandra(
 		enumSetOf(
@@ -205,5 +207,7 @@ enum class OrePlacementConfig(
 			Ore.Lapis to 3,
 			Ore.Emerald to 2
 		)
-	)
+	);
+
+	val currentOreVersion: Int get() = algorithmVersion + configVersion
 }
