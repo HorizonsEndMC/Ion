@@ -9,6 +9,7 @@ import com.velocitypowered.api.util.Favicon
 import java.net.URL
 import java.util.Base64
 import net.horizonsend.ion.proxy.proxy
+import net.horizonsend.ion.proxy.proxyConfiguration
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 
 class ProxyPingListener {
@@ -17,9 +18,6 @@ class ProxyPingListener {
 			.readText()
 			.split('\n')
 			.filterNot { it.isEmpty() }
-
-	private val motdLine1 =
-		miniMessage().deserialize("<b><blue>Horizon's End</blue></b> / <grey>A space server with working ships.</grey>\n")
 
 	private val icon =
 		Favicon(
@@ -36,7 +34,7 @@ class ProxyPingListener {
 		event.ping = ServerPing(
 			ServerPing.Version(759, "1.19"),
 			ServerPing.Players(proxy.playerCount, proxy.playerCount + 1, listOf()),
-			motdLine1.append(miniMessage().deserialize(messages.random())),
+			miniMessage().deserialize("${proxyConfiguration.motdFirstLine}\n").append(miniMessage().deserialize(messages.random())),
 			icon
 		)
 	}
