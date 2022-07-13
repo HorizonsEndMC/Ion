@@ -13,7 +13,7 @@ enum class StarshipType(
 	val maxSize: Int,
 	val minLevel: Int,
 	val containerPercent: Double,
-	val concretePercent: Double = 0.03,
+	val concretePercent: Double = 0.3,
 	val crateLimitMultiplier: Double,
 	val sneakFlyAccelDistance: Int,
 	val maxSneakFlyAccel: Int,
