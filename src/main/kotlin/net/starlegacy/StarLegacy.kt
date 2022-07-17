@@ -60,6 +60,7 @@ import net.starlegacy.command.starship.BlueprintCommand
 import net.starlegacy.command.starship.MiscStarshipCommands
 import net.starlegacy.command.starship.StarshipDebugCommand
 import net.starlegacy.command.starship.StarshipInfoCommand
+import net.starlegacy.command.starship.TutorialStartStopCommand
 import net.starlegacy.database.MongoManager
 import net.starlegacy.database.schema.economy.BazaarItem
 import net.starlegacy.database.schema.economy.CargoCrate
@@ -135,6 +136,7 @@ import net.starlegacy.feature.transport.TransportConfig
 import net.starlegacy.feature.transport.Wires
 import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.feature.transport.pipe.filter.Filters
+import net.starlegacy.feature.tutorial.TutorialManager
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.listener.gear.BlasterListener
 import net.starlegacy.listener.gear.DetonatorListener
@@ -271,6 +273,7 @@ class StarLegacy : JavaPlugin() {
 			Hangars,
 //			Turrets,
 			StarshipFactories,
+			TutorialManager,
 			Interdiction,
 			StarshipDealers,
 			ShipKillXP,
@@ -399,6 +402,7 @@ class StarLegacy : JavaPlugin() {
 			MiscStarshipCommands,
 			BlueprintCommand,
 			StarshipDebugCommand,
+			TutorialStartStopCommand,
 			StarshipInfoCommand,
 
 			Starships(),
