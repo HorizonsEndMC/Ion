@@ -100,7 +100,7 @@ object NationsMasterTasks {
 				Nation.deposit(nationId, stationIncome)
 				Notify.nation(
 					nationId, "&6Your nation received &e${stationIncome.toCreditsString()}&6 credits " +
-						"from captured space station hourly income  with &3$stationCount&6 stations"
+						"from captured space station hourly income with &3$stationCount&6 stations"
 				)
 			}
 
