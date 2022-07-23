@@ -14,6 +14,7 @@ import net.starlegacy.feature.starship.active.ActiveStarshipFactory
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKey
+import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
@@ -29,6 +30,12 @@ object DeactivatedPlayerStarships : SLComponent() {
 	operator fun get(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
 		synchronized(lock) {
 			return getCache(world)[x, y, z]
+		}
+	}
+
+	fun getInChunk(chunk: Chunk): List<PlayerStarshipData> {
+		synchronized(lock) {
+			return getCache(chunk.world).getInChunk(chunk)
 		}
 	}
 
@@ -248,6 +255,16 @@ object DeactivatedPlayerStarships : SLComponent() {
 	fun destroyAsync(data: PlayerStarshipData, callback: () -> Unit = {}): Unit = Tasks.async {
 		synchronized(lock) {
 			destroy(data)
+
+			Tasks.sync(callback)
+		}
+	}
+
+	fun destroyManyAsync(datas: List<PlayerStarshipData>, callback: () -> Unit = {}): Unit = Tasks.async {
+		synchronized(lock) {
+			for (data in datas) {
+				destroy(data)
+			}
 
 			Tasks.sync(callback)
 		}

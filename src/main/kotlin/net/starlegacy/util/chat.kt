@@ -3,6 +3,7 @@ package net.starlegacy.util
 import com.destroystokyo.paper.Title
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.TextComponent
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -55,6 +56,9 @@ fun Player.title(
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun broadcastGlobal(message: String) = Notify.online(message)
+
+@Deprecated("Plugins should not be running commands.")
+fun execConsoleCmd(cmd: String): Boolean = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.colorize(): String = ChatColor.translateAlternateColorCodes('&', this)
