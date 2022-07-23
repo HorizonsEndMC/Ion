@@ -1,5 +1,6 @@
 package net.starlegacy.feature.tutorial
 
+import net.starlegacy.PLUGIN
 import net.starlegacy.feature.starship.StarshipDestruction
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.event.StarshipComputerOpenMenuEvent
@@ -18,12 +19,14 @@ import net.starlegacy.util.action
 import net.starlegacy.util.colorize
 import net.starlegacy.util.msg
 import net.starlegacy.util.setDisplayNameAndGet
-import net.starlegacy.util.subscribe
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
+import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.inventory.ItemStack
@@ -196,20 +199,25 @@ enum class TutorialPhase(vararg val messages: TutorialMessage, val cancel: Boole
 		crossinline getPlayer: (T) -> Player?,
 		crossinline handler: (T, Player) -> Unit
 	) {
-		subscribe<T>(EventPriority.NORMAL).handler { event ->
-			val player: Player = getPlayer(event) ?: return@handler
+		val phase = this
 
-			if (TutorialManager.getPhase(player) == this) {
-				if (TutorialManager.isReading(player)) {
-					if (event is Cancellable && this@TutorialPhase.cancel) {
-						event.isCancelled = true
-						player msg "&cFinish reading the messages! :P"
+		Bukkit.getPluginManager().registerEvents(object : Listener {
+			@EventHandler(priority = EventPriority.NORMAL)
+			fun onEvent(event: T) {
+				val player: Player = getPlayer(event) ?: return
+
+				if (TutorialManager.getPhase(player) == phase) {
+					if (TutorialManager.isReading(player)) {
+						if (event is Cancellable && this@TutorialPhase.cancel) {
+							event.isCancelled = true
+							player msg "&cFinish reading the messages! :P"
+						}
+						return
 					}
-					return@handler
+					handler(event, player)
 				}
-				handler(event, player)
 			}
-		}
+		}, PLUGIN)
 	}
 
 	protected fun nextStep(player: Player) {
