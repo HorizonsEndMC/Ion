@@ -16,7 +16,7 @@ dependencies {
 
 	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
 
-	implementation("net.dv8tion:JDA:5.0.0-alpha.13") {
+	implementation("net.dv8tion:JDA:5.0.0-alpha.17") {
 		exclude("opus-java")
 	}
 }
