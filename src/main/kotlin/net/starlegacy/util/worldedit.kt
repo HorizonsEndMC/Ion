@@ -12,7 +12,6 @@ import com.sk89q.worldedit.function.operation.Operation
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
-import com.sk89q.worldedit.util.io.file.FilenameException
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import java.io.File
 import java.io.FileInputStream
@@ -21,7 +20,6 @@ import net.starlegacy.util.blockplacement.BlockPlacement
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
-import org.bukkit.entity.Player
 
 fun readSchematic(file: File): Clipboard? {
 	val format = ClipboardFormats.findByFile(file) ?: return null

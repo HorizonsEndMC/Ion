@@ -25,6 +25,7 @@ object TutorialStartStopCommand : SLCommand() {
 					.sortedBy { it.location.distance(location) }
 					.firstOrNull() ?: fail { "No nearby players" }
 			}
+
 			else -> fail { "Specify a player" }
 		}
 

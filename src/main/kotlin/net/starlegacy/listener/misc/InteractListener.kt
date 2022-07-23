@@ -29,7 +29,6 @@ import net.starlegacy.util.leftFace
 import net.starlegacy.util.msg
 import net.starlegacy.util.red
 import net.starlegacy.util.rightFace
-import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
