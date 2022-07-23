@@ -54,7 +54,9 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 					commandData = commandData.addOptions(processCommandMethod(it))
 				}
 			} else if (commandClass::class.java.defaultCommand != null) {
-				throw IllegalArgumentException("Command containing subcommands or subcommand groups can not have a default command.")
+				throw IllegalArgumentException(
+					"Command containing subcommands or subcommand groups can not have a default command."
+				)
 			}
 
 			commandData
@@ -176,7 +178,7 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 				Member::class.java -> option.asMember
 				User::class.java -> option.asUser
 				Role::class.java -> option.asRole
-				Channel::class.java -> option.asGuildChannel
+				Channel::class.java -> option.asChannel
 				else -> throw NotImplementedError("Parameter type ${it.type.simpleName} is not supported by JDA.")
 			}
 		}.toTypedArray())
