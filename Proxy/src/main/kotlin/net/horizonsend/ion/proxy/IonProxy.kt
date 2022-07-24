@@ -23,6 +23,7 @@ import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
+import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
 import net.horizonsend.ion.proxy.listeners.velocity.DisconnectListener
@@ -76,7 +77,8 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 			jda,
 			DiscordInfoCommand(),
 			DiscordAccountCommand(),
-			PlayerListCommand()
+			PlayerListCommand(),
+			ResyncCommand()
 		)
 
 		removeOnlineRoleFromEveryone()
