@@ -183,7 +183,7 @@ object OptimizedMovement {
 
 					section.setBlockState(localX, localY, localZ, air, false)
 
-					lightEngine.checkBlock(BlockPos(x, y, z))
+//					lightEngine.checkBlock(BlockPos(x, y, z)) // Lighting is cringe
 				}
 			}
 
