@@ -12,10 +12,14 @@ import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
 import net.starlegacy.SETTINGS
+import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.slPlayerId
+import net.starlegacy.feature.progression.PlayerXPLevelCache
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
 
@@ -72,8 +76,11 @@ object NewPlayerProtection : BaseCommand() {
 	}
 
 	fun Player.hasProtection(): Boolean {
+		val player = PlayerCache[this]
+		val playerLevel = PlayerXPLevelCache[this]
+
 		if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
-		if (SLPlayer[this].nation?.let { Settlement.findById(Nation.findById(it)!!.capital)!!.leader == slPlayerId } == true) return false // If owns nation
-		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - SLPlayer[this].level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+		if (player.nation?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns nation
+		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
 	}
 }
