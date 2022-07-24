@@ -52,6 +52,7 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 			.setChunkingFilter(ChunkingFilter.ALL)
 			.disableCache(CacheFlag.values().toList())
 			.setActivity(Activity.playing("horizonsend.net"))
+			.setEnableShutdownHook(false)
 			.build()
 	}
 
@@ -83,7 +84,11 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
-	fun onProxyShutdownEvent(event: ProxyShutdownEvent): EventTask = EventTask.async { removeOnlineRoleFromEveryone() }
+	fun onProxyShutdownEvent(event: ProxyShutdownEvent): EventTask = EventTask.async {
+		removeOnlineRoleFromEveryone()
+
+		jda.shutdown()
+	}
 
 	private fun removeOnlineRoleFromEveryone() {
 		val guild = jda.getGuildById(proxyConfiguration.discordServer) ?: return
