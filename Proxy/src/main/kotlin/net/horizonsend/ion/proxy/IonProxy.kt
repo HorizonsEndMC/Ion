@@ -26,7 +26,12 @@ import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
-import net.horizonsend.ion.proxy.listeners.velocity.*
+import net.horizonsend.ion.proxy.listeners.velocity.DisconnectListener
+import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
+import net.horizonsend.ion.proxy.listeners.velocity.PlayerResourcePackStatusListener
+import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
+import net.horizonsend.ion.proxy.listeners.velocity.ProxyPingListener
+import net.horizonsend.ion.proxy.listeners.velocity.ServerConnectedListener
 import org.slf4j.Logger
 
 internal lateinit var proxy: ProxyServer private set
