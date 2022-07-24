@@ -3,54 +3,41 @@ package net.horizonsend.ion.server
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.server.commands.GuideCommand
-import net.horizonsend.ion.server.listeners.bukkit.BlockFadeListener
-import net.horizonsend.ion.server.listeners.bukkit.BlockFormListener
-import net.horizonsend.ion.server.listeners.bukkit.ChunkLoadListener
-import net.horizonsend.ion.server.listeners.bukkit.InventoryClickListener
-import net.horizonsend.ion.server.listeners.bukkit.InventoryCloseListener
-import net.horizonsend.ion.server.listeners.bukkit.InventoryDragListener
-import net.horizonsend.ion.server.listeners.bukkit.InventoryInteractListener
-import net.horizonsend.ion.server.listeners.bukkit.InventoryMoveItemListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerDeathListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerFishListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerItemConsumeListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerJoinListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerKickListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerLoginListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerQuitListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerTeleportListener
-import net.horizonsend.ion.server.listeners.bukkit.PotionSplashListener
-import net.horizonsend.ion.server.listeners.bukkit.PrepareAnvilListener
-import net.horizonsend.ion.server.listeners.bukkit.PrepareItemCraftListener
-import net.horizonsend.ion.server.listeners.bukkit.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import org.bukkit.Keyed
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.event.Listener
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.plugin.java.JavaPlugin
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners
 
 @Suppress("unused") // Plugin entrypoint
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
 		CommonManager.init(dataFolder.toPath())
 
-		/**
-		 * Listeners
-		 */
-		// Bukkit
-		arrayOf(
-			BlockFadeListener(), BlockFormListener(), ChunkLoadListener(this), InventoryClickListener(),
-			InventoryCloseListener(), InventoryDragListener(), InventoryInteractListener(), InventoryMoveItemListener(),
-			PlayerDeathListener(), PlayerFishListener(), PlayerItemConsumeListener(), PlayerJoinListener(),
-			PlayerKickListener(), PlayerLoginListener(), PlayerQuitListener(), PlayerTeleportListener(),
-			PotionSplashListener(), PrepareAnvilListener(), PrepareItemCraftListener(), PrepareItemEnchantListener()
-		).forEach { server.pluginManager.registerEvents(it, this) }
+		val reflectionsScanner = Reflections("net.horizonsend.ion.server")
+
+		reflectionsScanner.get(Scanners.SubTypes.of(Listener::class.java).asClass<Listener>())
+			// TODO: Listeners should not be handling state so directly, they should not need the plugin instance.
+			.map {
+				val parameters = it.constructors[0].parameterTypes.map { type -> when (type) {
+					IonServer::class.java -> this
+					else -> throw NotImplementedError("Can not provide ${type.simpleName}")
+				}}.toTypedArray()
+
+				it.constructors[0].newInstance(*parameters)
+			}
+			.forEach {
+				server.pluginManager.registerEvents(it as Listener, this)
+			}
 
 		// Luckperms
 		UserDataRecalculateListener()

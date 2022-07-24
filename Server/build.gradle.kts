@@ -16,6 +16,7 @@ dependencies {
 
 	implementation(project(":Common"))
 
-	// Annotation Command Framework
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+
+	implementation("org.reflections:reflections:0.10.2")
 }
