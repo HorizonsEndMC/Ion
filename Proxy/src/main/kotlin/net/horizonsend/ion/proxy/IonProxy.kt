@@ -26,11 +26,7 @@ import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
-import net.horizonsend.ion.proxy.listeners.velocity.DisconnectListener
-import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
-import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
-import net.horizonsend.ion.proxy.listeners.velocity.ProxyPingListener
-import net.horizonsend.ion.proxy.listeners.velocity.ServerConnectedListener
+import net.horizonsend.ion.proxy.listeners.velocity.*
 import org.slf4j.Logger
 
 internal lateinit var proxy: ProxyServer private set
@@ -63,7 +59,7 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 		CommonManager.init(dataDirectory)
 
 		arrayOf(
-			LoginListener(), PreLoginListener(), ProxyPingListener(), ServerConnectedListener(), DisconnectListener()
+			LoginListener(), PreLoginListener(), ProxyPingListener(), ServerConnectedListener(), DisconnectListener(), PlayerResourcePackStatusListener()
 		).forEach {
 			proxy.eventManager.register(this, it)
 		}
