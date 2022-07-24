@@ -154,7 +154,7 @@ object TutorialManager : SLComponent() {
 			}
 		}
 
-		TutorialPhase.values().forEach(TutorialPhase::setupHandlers)
+//		TutorialPhase.values().forEach(TutorialPhase::setupHandlers)
 	}
 
 	private fun clearChunk(chunkReference: WeakReference<Chunk>) {
