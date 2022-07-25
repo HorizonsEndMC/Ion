@@ -30,5 +30,5 @@ dependencies {
 	api("org.jetbrains.exposed:exposed-dao:0.38.2")
 
 	api("org.xerial:sqlite-jdbc:3.36.0.3")
-	api("mysql:mysql-connector-java:8.0.29")
+	api("mysql:mysql-connector-java:8.0.30")
 }
