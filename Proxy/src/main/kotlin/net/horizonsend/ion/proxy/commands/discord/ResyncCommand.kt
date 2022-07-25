@@ -24,7 +24,7 @@ class ResyncCommand {
 
 		event.deferReply(true).queue()
 
-		val players = transaction { PlayerData.find(PlayerDataTable.discordUUID.isNotNull()) }
+		val players = transaction { PlayerData.find(PlayerDataTable.discordUUID.isNotNull()).toList() }
 
 		val guild = event.jda.getGuildById(proxyConfiguration.discordServer)
 
