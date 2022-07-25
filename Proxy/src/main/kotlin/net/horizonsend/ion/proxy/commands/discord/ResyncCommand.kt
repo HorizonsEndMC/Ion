@@ -26,8 +26,23 @@ class ResyncCommand {
 
 		val players = transaction { PlayerData.find(PlayerDataTable.discordUUID.isNotNull()) }
 
-		val guild = event.jda.getGuildById(proxyConfiguration.discordServer) ?: return
-		val linkedRole = guild.getRoleById(proxyConfiguration.linkedRole) ?: return
+		val guild = event.jda.getGuildById(proxyConfiguration.discordServer)
+
+		if (guild == null) {
+			event.replyEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
+				.setEphemeral(true)
+				.queue()
+			return
+		}
+
+		val linkedRole = guild.getRoleById(proxyConfiguration.linkedRole)
+
+		if (linkedRole == null) {
+			event.replyEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
+				.setEphemeral(true)
+				.queue()
+			return
+		}
 
 		for (player in players) {
 			val user = guild.getMemberById(player.discordUUID!!) ?: continue
