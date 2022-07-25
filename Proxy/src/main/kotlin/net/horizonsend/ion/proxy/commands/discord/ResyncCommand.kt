@@ -29,8 +29,7 @@ class ResyncCommand {
 		val guild = event.jda.getGuildById(proxyConfiguration.discordServer)
 
 		if (guild == null) {
-			event.replyEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
-				.setEphemeral(true)
+			event.hook.editOriginalEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
 				.queue()
 			return
 		}
@@ -38,8 +37,7 @@ class ResyncCommand {
 		val linkedRole = guild.getRoleById(proxyConfiguration.linkedRole)
 
 		if (linkedRole == null) {
-			event.replyEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
-				.setEphemeral(true)
+			event.hook.editOriginalEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
 				.queue()
 			return
 		}
@@ -50,8 +48,7 @@ class ResyncCommand {
 			guild.addRoleToMember(user, linkedRole)
 		}
 
-		event.replyEmbeds(messageEmbed("Done", color = 0x7fff7f))
-			.setEphemeral(true)
+		event.hook.editOriginalEmbeds(messageEmbed("Done", color = 0x7fff7f))
 			.queue()
 	}
 }
