@@ -18,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 
-@Suppress("unused") // Plugin entrypoint
+@Suppress("Unused")
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
 		CommonManager.init(dataFolder.toPath())

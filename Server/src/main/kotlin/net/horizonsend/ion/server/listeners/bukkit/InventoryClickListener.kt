@@ -6,9 +6,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 
+@Suppress("Unused")
 class InventoryClickListener : Listener {
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused")
 	fun onInventoryClickEvent(event: InventoryClickEvent) {
 		if (event.whoClicked.isInScreen) event.isCancelled = true
 	}

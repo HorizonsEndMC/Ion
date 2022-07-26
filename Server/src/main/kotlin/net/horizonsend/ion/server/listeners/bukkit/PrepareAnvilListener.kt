@@ -7,9 +7,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareAnvilEvent
 
+@Suppress("Unused")
 class PrepareAnvilListener : Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
-	@Suppress("Unused")
 	fun onPrepareAnvilEvent(event: PrepareAnvilEvent) {
 		if (event.inventory.firstItem == null) return
 		if (event.inventory.secondItem == null) return

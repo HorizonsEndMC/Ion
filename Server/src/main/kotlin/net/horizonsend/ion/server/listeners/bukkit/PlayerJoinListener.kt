@@ -13,9 +13,9 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
+@Suppress("Unused")
 class PlayerJoinListener(private val plugin: IonServer) : Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
-	@Suppress("Unused")
 	fun onPlayerJoinEvent(event: PlayerJoinEvent) {
 		event.joinMessage(null)
 

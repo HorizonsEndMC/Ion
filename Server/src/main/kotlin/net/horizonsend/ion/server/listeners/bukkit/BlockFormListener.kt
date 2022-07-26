@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockFormEvent
 
+@Suppress("Unused")
 class BlockFormListener : Listener {
 	private val cancelTypes = enumSetOf(
 		Material.WHITE_CONCRETE_POWDER,
@@ -28,7 +29,6 @@ class BlockFormListener : Listener {
 	)
 
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused")
 	fun onBlockFormEvent(event: BlockFormEvent) {
 		if (!cancelTypes.contains(event.block.type)) return
 

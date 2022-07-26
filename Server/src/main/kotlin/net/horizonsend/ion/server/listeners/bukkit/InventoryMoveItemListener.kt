@@ -6,9 +6,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 
+@Suppress("Unused")
 class InventoryMoveItemListener : Listener {
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused")
 	fun onInventoryMoveItemEvent(event: InventoryMoveItemEvent) {
 		if (event.initiator.isScreen) event.isCancelled = true
 		if (event.destination.isScreen) event.isCancelled = true

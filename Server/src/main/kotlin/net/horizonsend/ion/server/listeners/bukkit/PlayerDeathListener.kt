@@ -12,11 +12,11 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
+@Suppress("Unused")
 class PlayerDeathListener : Listener {
 	private val cooldowns = mutableMapOf<UUID, Long>()
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	@Suppress("Unused")
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
 		if (event.entity.killer !is Player) return
 

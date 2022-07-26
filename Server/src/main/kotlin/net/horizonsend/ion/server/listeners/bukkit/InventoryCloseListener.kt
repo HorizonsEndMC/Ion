@@ -6,9 +6,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryCloseEvent
 
+@Suppress("Unused")
 class InventoryCloseListener : Listener {
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused")
 	fun onInventoryCloseEvent(event: InventoryCloseEvent) {
 		event.player.closeScreen()
 	}
