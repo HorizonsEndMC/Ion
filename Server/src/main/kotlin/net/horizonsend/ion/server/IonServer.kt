@@ -16,7 +16,7 @@ import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.plugin.java.JavaPlugin
 import org.reflections.Reflections
-import org.reflections.scanners.Scanners
+import org.reflections.scanners.Scanners.SubTypes
 
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
@@ -25,7 +25,7 @@ class IonServer : JavaPlugin() {
 
 		val reflectionsScanner = Reflections("net.horizonsend.ion.server")
 
-		reflectionsScanner.get(Scanners.SubTypes.of(Listener::class.java).asClass<Listener>())
+		reflectionsScanner.get(SubTypes.of(Listener::class.java).asClass<Listener>())
 			// TODO: Listeners should not be handling state so directly, they should not need the plugin instance.
 			.map {
 				val parameters = it.constructors[0].parameterTypes.map { type -> when (type) {
