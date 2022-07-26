@@ -8,9 +8,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerKickEvent
 
+@Suppress("Unused")
 class PlayerKickListener : Listener {
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused")
 	fun onPlayerKickEvent(event: PlayerKickEvent) {
 		// Really dumb solution for players being kicked due to "out of order chat messages"
 		if (event.reason() == Component.translatable("multiplayer.disconnect.out_of_order_chat")) {

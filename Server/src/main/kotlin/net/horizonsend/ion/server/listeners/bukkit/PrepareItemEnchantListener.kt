@@ -7,9 +7,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
 
+@Suppress("Unused")
 class PrepareItemEnchantListener : Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
-	@Suppress("Unused")
 	fun onPrepareItemEnchantEvent(event: PrepareItemEnchantEvent) {
 		event.offers[0] = EnchantmentOffer(Enchantment.SILK_TOUCH, 1, 120)
 		event.offers[1] = null
