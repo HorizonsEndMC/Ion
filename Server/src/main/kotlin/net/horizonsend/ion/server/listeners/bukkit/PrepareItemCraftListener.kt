@@ -6,9 +6,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 
+@Suppress("Unused")
 class PrepareItemCraftListener : Listener {
 	@EventHandler(priority = EventPriority.LOW)
-	@Suppress("Unused")
 	fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
 		if (forbiddenCraftingItems.contains(event.inventory.result?.type)) event.inventory.result = null
 	}

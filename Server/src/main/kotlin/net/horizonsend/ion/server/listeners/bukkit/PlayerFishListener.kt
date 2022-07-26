@@ -5,9 +5,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerFishEvent
 
+@Suppress("Unused")
 class PlayerFishListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	@Suppress("Unused")
 	fun onPlayerFishEvent(event: PlayerFishEvent) {
 		event.isCancelled = true
 	}

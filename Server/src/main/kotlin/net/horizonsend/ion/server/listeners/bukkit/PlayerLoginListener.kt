@@ -7,6 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@Suppress("Unused")
 class PlayerLoginListener : Listener {
 	@EventHandler
 	fun onPlayerLoginEvent(event: PlayerLoginEvent) {

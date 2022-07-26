@@ -20,11 +20,11 @@ import org.bukkit.persistence.PersistentDataType
        as well as being its own class.
 */
 
+@Suppress("Unused")
 class ChunkLoadListener(private val plugin: IonServer) : Listener {
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	@Suppress("Unused")
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		val placementConfiguration = try {
 			OrePlacementConfig.valueOf(event.world.name)
