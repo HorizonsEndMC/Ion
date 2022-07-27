@@ -2,10 +2,12 @@ package net.starlegacy.feature.progression
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import github.scarsz.discordsrv.DiscordSRV
+import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.log2
+import kotlin.math.pow
 import kotlin.math.sqrt
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
@@ -14,17 +16,15 @@ import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CombatNPCKillEvent
-import net.starlegacy.feature.nations.region.Regions
-import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
+import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Bukkit.getServer
-import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -92,34 +92,17 @@ object ShipKillXP : SLComponent() {
 			val damager = Damager(killer.uniqueId, ActiveStarships.findByPassenger(killer)?.blockCount)
 			data.map.getOrPut(damager, { AtomicInteger() }).incrementAndGet()
 		}
-		val isInStation = killer != null && isInStation(killer.location)
-		onShipKill(killed, killedName, data, isInStation)
+		onShipKill(killed, killedName, data)
 	}
 
 	private fun onShipKill(starship: ActiveStarship) {
 		val data = data(starship)
-		val location = starship.centerOfMass.toLocation(starship.world)
-		val isInStation = isInStation(location)
 		for (id in starship.passengerIDs) {
 			val killedName = Bukkit.getPlayer(id)?.name ?: "UNKNOWN"
-			onShipKill(id, killedName, data, isInStation)
+			onShipKill(id, killedName, data)
 		}
 	}
-
-	private fun isInStation(location: Location): Boolean {
-		return Regions.find(location).any { it is RegionCapturableStation }
-	}
-
-	private fun onShipKill(killed: UUID, killedName: String, data: ShipDamageData, isInStation: Boolean) {
-		var baseXP = log2(data.size.toDouble()) * 200.0
-
-		if (data.type.isWarship) {
-			baseXP *= 2.5
-		}
-
-		if (isInStation) {
-			baseXP *= 1.5
-		}
+	private fun onShipKill(killed: UUID, killedName: String, data: ShipDamageData) {
 
 		val dataMap: Map<Damager, Int> = data.map.filterKeys { damager ->
 			// require they be online to get xp
@@ -129,7 +112,7 @@ object ShipKillXP : SLComponent() {
 
 		val sum = dataMap.values.sum().toDouble()
 
-		processDamagers(dataMap, data, sum, baseXP, killedName)
+		processDamagers(dataMap, data, sum, killedName)
 
 		map.invalidate(killed)
 	}
@@ -138,20 +121,16 @@ object ShipKillXP : SLComponent() {
 		dataMap: Map<Damager, Int>,
 		data: ShipDamageData,
 		sum: Double,
-		baseXP: Double,
 		killedName: String
 	) {
 		for ((damager, points) in dataMap.entries) {
 			val player = getPlayer(damager.id) ?: continue // shouldn't happen
 			val killedSize = data.size.toDouble()
-			val killerSize = damager.size?.toDouble() ?: killedSize // default to same size
 			if (isAllied(player, getPlayer(killedName)!!)) return
 
-			// xp is directly proportional to killed size and inversely proportional to killer size
-			val sizeFactor = sqrt(killedSize) / sqrt(killerSize)
-
 			val percent = points / sum
-			val xp = (baseXP * sizeFactor * percent).toInt()
+			val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize*0.00005)))*percent).toInt()
+
 			if (xp > 0) {
 				SLXP.addAsync(player, xp)
 				log.info("Gave ${player.name} $xp XP for ship-killing $killedName")
@@ -177,5 +156,19 @@ object ShipKillXP : SLComponent() {
 			damager.size!!,
 			damagership
 		)
+		if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
+			Tasks.async {
+				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("global")
+
+				if (channel == null) {
+					System.err.println("ERROR: No global channel found!")
+					return@async
+				}
+
+				val shipkilldiscordmessage = "A ${data.size} block ship piloted by $killedName was sunk by ${getPlayer(damager.id)!!.name} in a ${damager.size} block ship"
+
+				channel.sendMessage(shipkilldiscordmessage).queue()
+			}
+		}
 	}
 }
