@@ -23,7 +23,7 @@ tasks {
 		archiveFileName.set("../Ion.jar")
 	}
 
-	runServer { minecraftVersion("1.19") }
+	runServer { minecraftVersion("1.19.1") }
 	ktlint { version.set("0.44.0") }
 
 	prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
