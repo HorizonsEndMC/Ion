@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-	paperDevBundle("1.19-R0.1-SNAPSHOT")
+	paperDevBundle("1.19.1-R0.1-SNAPSHOT")
 
 	compileOnly("net.luckperms:api:5.4")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
