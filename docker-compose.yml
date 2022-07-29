@@ -53,6 +53,6 @@ services:
       - ./config/paper/config:/data/config
     environment:
       TYPE: PAPER
-      VERSION: 1.19
+      VERSION: 1.19.1
       EULA: TRUE
       USE_AIKAR_FLAGS: TRUE
