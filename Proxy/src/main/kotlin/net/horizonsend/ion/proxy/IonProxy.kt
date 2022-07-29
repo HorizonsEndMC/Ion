@@ -11,6 +11,7 @@ import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
+import javax.security.auth.login.LoginException
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -48,14 +49,18 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 		logger = logger0
 		dataDirectory = dataDirectory0
 		proxyConfiguration = loadConfiguration(dataDirectory)
-		jda = JDABuilder.createLight(proxyConfiguration.discordBotToken)
-			.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
-			.setMemberCachePolicy(MemberCachePolicy.ALL)
-			.setChunkingFilter(ChunkingFilter.ALL)
-			.disableCache(CacheFlag.values().toList())
-			.setActivity(Activity.playing("horizonsend.net"))
-			.setEnableShutdownHook(false)
-			.build()
+		try {
+			jda = JDABuilder.createLight(proxyConfiguration.discordBotToken)
+				.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
+				.setMemberCachePolicy(MemberCachePolicy.ALL)
+				.setChunkingFilter(ChunkingFilter.ALL)
+				.disableCache(CacheFlag.values().toList())
+				.setActivity(Activity.playing("horizonsend.net"))
+				.setEnableShutdownHook(false)
+				.build()
+		} catch (_: LoginException) {
+			logger.warn("Failed to start JDA as it was unable to login to Discord!")
+		}
 	}
 
 	@Suppress("Unused_Parameter")
