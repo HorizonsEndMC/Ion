@@ -4,7 +4,7 @@ doSudo="true"
 type "sudo" > /dev/null || doSudo="false"
 
 if [ $doSudo = "false" ]; then
-	printf "\u001b[33mSudo is not present on this system, it will not be used, this could prevent the server from running. It may be safe to ignore this.\u001b[0m\n"
+	printf "\u1b[33mSudo is not present on this system, it will not be used, this could prevent the server from running. It may be safe to ignore this.\u001b[0m\n"
 fi
 
 safeSudo() {
@@ -17,8 +17,10 @@ safeSudo() {
 
 case $1 in
 	run)
+		rm -rf paper/plugins/FastAsyncWorldEdit*.jar paper/plugins/LuckPerms*.jar velocity/plugins/LuckPerms*.jar
     mkdir -p paper/plugins/IonCore paper/plugins/LuckPerms velocity/plugins/luckperms
     ./gradlew --daemon --build-cache :downloadTestServerDependencies
+    printf "\u1b[34mThe test server does have a console attached to the Paper server, however you can not see as you type.\n"
     safeSudo sh -c "
       docker-compose up -d redis mongo paper velocity
       chmod 777 -R paper velocity
