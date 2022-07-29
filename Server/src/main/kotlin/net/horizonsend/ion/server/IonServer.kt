@@ -98,6 +98,14 @@ class IonServer : JavaPlugin() {
 			)
 		}
 
+		// Saddle
+		server.addRecipe(ShapedRecipe(NamespacedKey(this, "Saddle_Recipe"), ItemStack(Material.SADDLE)).apply {
+			shape("lll", "tat")
+			setIngredient('l', Material.LEATHER)
+			setIngredient('t', Material.TRIPWIRE)
+			setIngredient('a', Material.AIR)
+		})
+
 		// Remove Unwanted Vanilla Recipes
 		forbiddenCraftingItems.forEach { material ->
 			server.getRecipesFor(ItemStack(material)).forEach {
