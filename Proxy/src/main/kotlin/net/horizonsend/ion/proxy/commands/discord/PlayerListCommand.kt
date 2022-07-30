@@ -1,9 +1,9 @@
 package net.horizonsend.ion.proxy.commands.discord
 
+import co.aikar.commands.annotation.Default
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.common.annotations.CommandMeta
-import net.horizonsend.ion.common.annotations.Default
+import net.horizonsend.ion.proxy.annotations.CommandMeta
 import net.horizonsend.ion.proxy.proxy
 import net.horizonsend.ion.proxy.utilities.messageEmbed
 

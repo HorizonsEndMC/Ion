@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.annotations
+package net.horizonsend.ion.proxy.annotations
 
 /**
  * This annotation provides required metadata to the command manager.
