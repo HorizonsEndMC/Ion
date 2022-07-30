@@ -1,5 +1,6 @@
 package net.horizonsend.ion.proxy
 
+import co.aikar.commands.annotation.Default
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -17,8 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
-import net.horizonsend.ion.common.annotations.CommandMeta
-import net.horizonsend.ion.common.annotations.Default
+import net.horizonsend.ion.proxy.annotations.CommandMeta
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 
