@@ -14,7 +14,7 @@ class PreLoginListener {
 	@Suppress("Unused")
 	@Subscribe(order = PostOrder.FIRST)
 	fun onPreLoginEvent(event: PreLoginEvent): EventTask = EventTask.async {
-		if (event.connection.protocolVersion.protocol == 759) return@async
+		if (event.connection.protocolVersion.protocol == 760) return@async
 
 		event.result = PreLoginEvent.PreLoginComponentResult.denied(disconnectMessage)
 	}
