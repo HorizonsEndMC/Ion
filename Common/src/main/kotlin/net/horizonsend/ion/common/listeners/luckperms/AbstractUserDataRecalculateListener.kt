@@ -1,20 +1,19 @@
 package net.horizonsend.ion.common.listeners.luckperms
 
 import java.util.UUID
-import net.luckperms.api.LuckPermsProvider
+import net.horizonsend.ion.common.utilities.luckPerms
 import net.luckperms.api.event.user.UserDataRecalculateEvent
 
 abstract class AbstractUserDataRecalculateListener {
 	init {
-		try {
-			LuckPermsProvider.get().eventBus.subscribe(UserDataRecalculateEvent::class.java) {
+		luckPerms { luckPerms ->
+			luckPerms.eventBus.subscribe(UserDataRecalculateEvent::class.java) {
 				onUserDataRecalculateEvent(
 					it.user.uniqueId,
 					it.user.cachedData.metaData.prefix,
 					it.user.cachedData.metaData.suffix,
 				)
 			}
-		} catch (_: NoClassDefFoundError) {
 		}
 	}
 
