@@ -18,7 +18,7 @@ class PlayerListCommand {
 				.map { server ->
 					MessageEmbed.Field(
 						"${server.serverInfo.name.replaceFirstChar { it.uppercase() }} *(${server.playersConnected.size} online)*",
-						server.playersConnected.joinToString("\n", "", "") { it.username },
+						server.playersConnected.joinToString("\n", "", "") { it.username.replace("_", "\\_") },
 						true
 					)
 				}
