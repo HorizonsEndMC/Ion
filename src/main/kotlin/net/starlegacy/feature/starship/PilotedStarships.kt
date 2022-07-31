@@ -9,6 +9,8 @@ import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -186,6 +188,10 @@ object PilotedStarships : SLComponent() {
 			return false
 		}
 
+		for (player in player.world.getNearbyPlayers(player.location, 500.0)) {
+			player.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
+		}
+
 		val carriedShips = mutableListOf<PlayerStarshipData>()
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
@@ -274,6 +280,9 @@ object PilotedStarships : SLComponent() {
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
+		for (player in player.world.getNearbyPlayers(player.location, 500.0)) {
+		player.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
+		}
 		player.sendFeedbackActionMessage(SUCCESS, "Released {0}", getDisplayName(starship.data))
 		return true
 	}
