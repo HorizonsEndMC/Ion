@@ -32,6 +32,7 @@ services:
       - ./config/velocity/plugins/luckperms/config.yml:/server/plugins/luckperms/config.yml
     environment:
       TYPE: VELOCITY
+      JVM_XX_OPTS: -XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch
 
   paper:
     image: itzg/minecraft-server
