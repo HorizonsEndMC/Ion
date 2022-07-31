@@ -2,9 +2,12 @@ package net.starlegacy.feature.starship.hyperspace
 
 import kotlin.math.log10
 import kotlin.math.sqrt
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
+import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -78,6 +81,29 @@ object Hyperspace : SLComponent() {
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
 		val starship = warmup.ship
+		for (player in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 2500.0)) {
+			player.playSound(
+				Sound.sound(
+					Key.key("minecraft:entity.elder_guardian.hurt"),
+					Sound.Source.AMBIENT,
+					5f,
+					0.05f
+				)
+			)
+		}
+		Space.getPlanets().filter {
+			it.location.toLocation(starship.world).distance(starship.centerOfMass.toLocation(starship.world)) < 2500
+		}
+			.forEach {
+				it.planetWorld?.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.elder_guardian.hurt"),
+						Sound.Source.AMBIENT,
+						5f,
+						0.05f
+					)
+				)
+			}
 		check(warmupTasks.remove(starship, warmup)) { "Warmup wasn't in the map!" }
 		warmup.cancel()
 		val world = getHyperspaceWorld(starship.world)
@@ -127,6 +153,23 @@ object Hyperspace : SLComponent() {
 		movement.cancel()
 
 		StarshipTeleportation.teleportStarship(starship, movement.dest)
+		starship.world.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
+		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
+			player.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
+		}
+		Space.getPlanets().filter {
+			it.location.toLocation(starship.world).distance(starship.centerOfMass.toLocation(starship.world)) < 2500
+		}
+			.forEach {
+				it.planetWorld?.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.warden.sonic_boom"),
+						Sound.Source.AMBIENT,
+						1f,
+						0f
+					)
+				)
+			}
 	}
 
 	private fun calculateSpeed(hyperdriveClass: Int, mass: Double) =
