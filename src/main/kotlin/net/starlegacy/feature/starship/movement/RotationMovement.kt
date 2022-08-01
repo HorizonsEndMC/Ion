@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.movement
 
+import io.papermc.paper.entity.RelativeTeleportFlag
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -10,11 +11,12 @@ import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.thruster.ThrustData
-import net.starlegacy.util.ConnectionUtils
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.util.Vector
 
 class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship) {
@@ -58,7 +60,9 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 	override fun movePassenger(passenger: Entity) {
 		val newLoc = displaceLocation(passenger.location)
 		if (passenger is Player) {
-			ConnectionUtils.teleportRotate(passenger, newLoc, theta.toFloat())
+			newLoc.pitch = passenger.location.pitch
+			newLoc.yaw += passenger.location.yaw
+			passenger.teleport(newLoc, TeleportCause.PLUGIN, true, false, *RelativeTeleportFlag.values())
 		} else {
 			passenger.teleport(newLoc)
 		}
