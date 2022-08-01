@@ -75,4 +75,15 @@ tasks {
 			)
 		}
 	}
+
+	compileKotlin {
+		kotlinOptions {
+			jvmTarget = "17"
+		}
+	}
+
+	compileJava {
+		sourceCompatibility = "17"
+		targetCompatibility = "17"
+	}
 }
