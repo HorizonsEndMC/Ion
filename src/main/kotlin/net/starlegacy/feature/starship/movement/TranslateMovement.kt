@@ -1,12 +1,11 @@
 package net.starlegacy.feature.starship.movement
 
+import io.papermc.paper.entity.RelativeTeleportFlag
 import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 import kotlin.math.min
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.starlegacy.util.ConnectionUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.add
 import org.bukkit.Chunk
@@ -14,6 +13,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerTeleportEvent
 
 class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val dz: Int, newWorld: World? = null) :
 	StarshipMovement(starship, newWorld) {
@@ -85,17 +85,11 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			location.world = newWorld
 		}
 
-		if (passenger !is Player || newWorld != null) {
+		if (passenger is Player) {
+			passenger.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN, true, false, *RelativeTeleportFlag.values())
+		} else {
 			passenger.teleport(location)
-			return
 		}
-
-		if ((starship as? ActivePlayerStarship)?.isDirectControlEnabled == true) {
-			ConnectionUtils.move(passenger, location, dx.toDouble(), dy.toDouble(), dz.toDouble())
-			return
-		}
-
-		ConnectionUtils.teleport(passenger, location)
 	}
 
 	override fun onComplete() {}

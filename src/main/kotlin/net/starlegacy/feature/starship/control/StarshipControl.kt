@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.control
 
+import io.papermc.paper.entity.RelativeTeleportFlag
 import java.util.Collections
 import java.util.LinkedList
 import java.util.UUID
@@ -34,7 +35,6 @@ import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.starlegacy.util.ConnectionUtils
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.d
@@ -57,6 +57,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
+import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
@@ -201,7 +202,10 @@ object StarshipControl : SLComponent() {
 		vectors.add(vector)
 
 		if (vector.x != 0.0 || vector.z != 0.0) {
-			ConnectionUtils.teleport(pilot, center)
+			val newLoc = center.clone()
+			newLoc.pitch = pilot.location.pitch
+			newLoc.yaw = pilot.location.yaw
+			pilot.teleport(newLoc, PlayerTeleportEvent.TeleportCause.PLUGIN, true, false, *RelativeTeleportFlag.values())
 		}
 
 		var highestFrequency = Collections.frequency(vectors, vector)
