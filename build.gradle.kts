@@ -50,4 +50,15 @@ tasks {
 	build {
 		dependsOn("reobfJar")
 	}
+
+	compileKotlin {
+		kotlinOptions {
+			jvmTarget = "17"
+		}
+	}
+
+	compileJava {
+		sourceCompatibility = "17"
+		targetCompatibility = "17"
+	}
 }
