@@ -26,6 +26,7 @@ import org.bukkit.World
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 
 /**
  * Manages NPCs for cities, handles the synchronization of them with the worlds
@@ -162,7 +163,7 @@ object CityNPCs : SLComponent() {
 	/**
 	 * Open shipment dialog when players click importer NPCs.
 	 */
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
 		val player: Player = event.clicker
 		val npc: NPC = event.npc
