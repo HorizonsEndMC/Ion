@@ -143,6 +143,22 @@ object Hyperspace : SLComponent() {
 		dest.z = movement.z
 
 		StarshipTeleportation.teleportStarship(starship, dest)
+		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
+			player.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
+		}
+		Space.getPlanets().filter {
+			it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
+		}
+			.forEach {
+				it.planetWorld?.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.warden.sonic_boom"),
+						Sound.Source.AMBIENT,
+						1f,
+						0f
+					)
+				)
+			}
 	}
 
 	fun completeJumpMovement(movement: HyperspaceMovement) {
@@ -158,7 +174,7 @@ object Hyperspace : SLComponent() {
 			player.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
 		}
 		Space.getPlanets().filter {
-			it.location.toLocation(starship.world).distance(starship.centerOfMass.toLocation(starship.world)) < 2500
+			it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
 		}
 			.forEach {
 				it.planetWorld?.playSound(
