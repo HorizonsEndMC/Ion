@@ -18,6 +18,7 @@ import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.withdrawMoney
 import org.bukkit.Location
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 
 object StarshipDealers : SLComponent() {
 	private const val PRICE = 200.0
@@ -25,7 +26,7 @@ object StarshipDealers : SLComponent() {
 
 	private val lastBuyTimes = mutableMapOf<UUID, Long>()
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
 		val npc = event.npc
 		val player = event.clicker
