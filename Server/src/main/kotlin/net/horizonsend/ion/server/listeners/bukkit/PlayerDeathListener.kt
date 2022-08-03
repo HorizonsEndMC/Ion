@@ -24,16 +24,14 @@ class PlayerDeathListener : Listener {
 		cooldowns[event.player.uniqueId] = currentTimeMillis() + 1000 * 60 * 10
 		if (headCooldownEnd > currentTimeMillis()) return
 
-		val head = ItemStack(Material.PLAYER_HEAD).apply {
-			itemMeta = (itemMeta as SkullMeta).apply {
-				displayName(event.entity.name())
-				owningPlayer = event.entity
-				lore(
-					listOf(
-						miniMessage().deserialize("<#ff8888>Was killed by ${event.entity.killer!!.name}.")
-					)
-				)
-			}
+		val head = ItemStack(Material.PLAYER_HEAD)
+
+		head.editMeta(SkullMeta::class.java) {
+			it.displayName(event.entity.name())
+			it.owningPlayer = event.entity
+			it.lore(listOf(
+				miniMessage().deserialize("<#ff8888>Was killed by ${event.entity.killer!!.name}.")
+			))
 		}
 
 		event.entity.world.dropItem(event.entity.location, head)
