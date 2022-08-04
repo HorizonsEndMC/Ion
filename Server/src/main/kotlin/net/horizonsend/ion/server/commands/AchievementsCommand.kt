@@ -25,7 +25,7 @@ class AchievementsCommand : BaseCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("grant")
-	@CommandCompletion("@players")
+	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.grant")
 	fun onAchievementGrant(sender: CommandSender, achievement: Achievement, target: String) {
 		val playerData = transaction { PlayerData.getByUsername(target) }
@@ -47,7 +47,7 @@ class AchievementsCommand : BaseCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("revoke")
-	@CommandCompletion("@players")
+	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.revoke")
 	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
 		val playerData = transaction { PlayerData.getByUsername(target) }
