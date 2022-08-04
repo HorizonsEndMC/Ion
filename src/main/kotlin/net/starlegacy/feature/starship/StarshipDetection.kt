@@ -197,7 +197,7 @@ object StarshipDetection : SLComponent() {
 		val concretePercent: Double = concrete.toDouble() / size.toDouble()
 		if (concretePercent < type.concretePercent) {
 			throw DetectionFailedException(
-				"This ship requires at least ${type.concretePercent}% concrete blocks in order to fly. Current %: ${concretePercent * 100}"
+				"This ship requires at least ${type.concretePercent * 100}% concrete blocks in order to fly. Current %: ${concretePercent * 100}"
 			)
 		}
 
