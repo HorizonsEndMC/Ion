@@ -25,7 +25,7 @@ dependencies {
 
 	api("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
 
-	api("org.jetbrains.exposed:exposed-core:0.39.1")
+	api("org.jetbrains.exposed:exposed-core:0.39.2")
 	api("org.jetbrains.exposed:exposed-jdbc:0.39.2")
 	api("org.jetbrains.exposed:exposed-dao:0.39.1")
 
