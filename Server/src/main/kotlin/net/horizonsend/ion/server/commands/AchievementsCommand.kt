@@ -27,14 +27,7 @@ class AchievementsCommand : BaseCommand() {
 	@Subcommand("grant")
 	@CommandCompletion("@players")
 	@CommandPermission("ion.achievements.grant")
-	fun onAchievementGrant(sender: CommandSender, achievementString: String, target: String) {
-		val achievement = try {
-			Achievement.valueOf(achievementString)
-		} catch (_: IllegalArgumentException) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Achievement {0} does not exist.", achievementString)
-			return
-		}
-
+	fun onAchievementGrant(sender: CommandSender, achievement: Achievement, target: String) {
 		val playerData = transaction { PlayerData.getByUsername(target) }
 
 		if (playerData == null) {
@@ -56,14 +49,7 @@ class AchievementsCommand : BaseCommand() {
 	@Subcommand("revoke")
 	@CommandCompletion("@players")
 	@CommandPermission("ion.achievements.revoke")
-	fun onAchievementRevoke(sender: CommandSender, achievementString: String, target: String) {
-		val achievement = try {
-			Achievement.valueOf(achievementString)
-		} catch (_: IllegalArgumentException) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Achievement {0} does not exist.", achievementString)
-			return
-		}
-
+	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
 		val playerData = transaction { PlayerData.getByUsername(target) }
 
 		if (playerData == null) {
