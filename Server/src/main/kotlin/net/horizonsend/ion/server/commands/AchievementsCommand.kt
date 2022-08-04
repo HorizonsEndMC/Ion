@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -13,7 +14,7 @@ import org.bukkit.entity.Player
 class AchievementsCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
-	fun onAchievementsList(sender: Player) {
+	fun onAchievementsList(sender: Player, @Optional target: String?) {
 
 	}
 
