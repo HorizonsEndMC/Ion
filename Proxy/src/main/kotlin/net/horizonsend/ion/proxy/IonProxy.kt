@@ -14,6 +14,7 @@ import java.nio.file.Path
 import javax.security.auth.login.LoginException
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
@@ -55,7 +56,6 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setChunkingFilter(ChunkingFilter.ALL)
 				.disableCache(CacheFlag.values().toList())
-				.setActivity(Activity.playing("horizonsend.net"))
 				.setEnableShutdownHook(false)
 				.build()
 		} catch (_: LoginException) {
@@ -88,6 +88,15 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 		)
 
 		removeOnlineRoleFromEveryone()
+
+		Thread {
+			jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("horizonsend.net"))
+			Thread.sleep(5000)
+			jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("Minecraft 1.19.1"))
+			Thread.sleep(5000)
+			jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${proxy.playerCount} players!"))
+			Thread.sleep(5000)
+		}
 	}
 
 	@Suppress("Unused_Parameter")
