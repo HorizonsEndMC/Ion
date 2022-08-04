@@ -44,6 +44,14 @@ class IonServer : JavaPlugin() {
 		UserDataRecalculateListener()
 
 		/**
+		 * Commands
+		 */
+		PaperCommandManager(this).apply {
+			registerCommand(AchievementsCommand())
+			registerCommand(GuideCommand())
+		}
+
+		/**
 		 * Recipes
 		 */
 		// Prismarine Bricks
@@ -112,14 +120,6 @@ class IonServer : JavaPlugin() {
 			server.getRecipesFor(ItemStack(material)).forEach {
 				if (it is Keyed) server.removeRecipe(it.key)
 			}
-		}
-
-		/**
-		 * Commands
-		 */
-		PaperCommandManager(this).apply {
-			registerCommand(AchievementsCommand())
-			registerCommand(GuideCommand())
 		}
 	}
 }
