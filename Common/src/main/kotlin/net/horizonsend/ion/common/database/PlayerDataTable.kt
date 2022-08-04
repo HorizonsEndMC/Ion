@@ -28,9 +28,8 @@ class PlayerData(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
 		fun getOrCreate(minecraftUUID: UUID, minecraftUsername: String) =
 			findById(minecraftUUID) ?: new(minecraftUUID) { this.mcUsername = minecraftUsername }
 
-		fun getByUsername(minecraftUsername: String) {
+		fun getByUsername(minecraftUsername: String) =
 			find { PlayerDataTable.minecraftUsername.lowerCase() eq minecraftUsername.lowercase() }.firstOrNull()
-		}
 	}
 
 	var mcUsername by PlayerDataTable.minecraftUsername
