@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.lowerCase
 
 object PlayerDataTable : UUIDTable(columnName = "minecraftUUID") {
 	val minecraftUsername: Column<String> =
@@ -26,6 +27,10 @@ class PlayerData(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
 	companion object : UUIDEntityClass<PlayerData>(PlayerDataTable) {
 		fun getOrCreate(minecraftUUID: UUID, minecraftUsername: String) =
 			findById(minecraftUUID) ?: new(minecraftUUID) { this.mcUsername = minecraftUsername }
+
+		fun getByUsername(minecraftUsername: String) {
+			find { PlayerDataTable.minecraftUsername.lowerCase() eq minecraftUsername.lowercase() }.firstOrNull()
+		}
 	}
 
 	var mcUsername by PlayerDataTable.minecraftUsername
