@@ -40,8 +40,8 @@ class PlayerData(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
 	val achievements: List<Achievement>
 		get() = _achievements
 			.split(",")
-			.map {
-				Achievement.valueOf(it)
+			.mapNotNull {
+				try { Achievement.valueOf(it) } catch (_: IllegalArgumentException) { null }
 			}
 
 	fun addAchievement(achievement: Achievement) {
