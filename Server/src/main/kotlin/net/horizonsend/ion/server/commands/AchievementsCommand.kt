@@ -56,7 +56,23 @@ class AchievementsCommand : BaseCommand() {
 	@Subcommand("revoke")
 	@CommandCompletion("@players")
 	@CommandPermission("ion.achievements.revoke")
-	fun onAchievementRevoke(sender: CommandSender, target: String) {
+	fun onAchievementRevoke(sender: CommandSender, achievementString: String, target: String) {
+		val achievement = try {
+			Achievement.valueOf(achievementString)
+		} catch (_: IllegalArgumentException) {
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Achievement {0} does not exist.", achievementString)
+			return
+		}
 
+		val playerData = transaction { PlayerData.getByUsername(target) }
+
+		if (playerData == null) {
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} does not exist.", target)
+			return
+		}
+
+		transaction { playerData.removeAchievement(achievement) }
+
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Took achievement {0} from {1}.", achievement.name, target)
 	}
 }
