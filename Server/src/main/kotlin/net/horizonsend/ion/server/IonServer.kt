@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.managers.CommonManager
 import net.horizonsend.ion.server.commands.AchievementsCommand
 import net.horizonsend.ion.server.commands.GuideCommand
@@ -49,6 +50,8 @@ class IonServer : JavaPlugin() {
 		PaperCommandManager(this).apply {
 			registerCommand(AchievementsCommand())
 			registerCommand(GuideCommand())
+
+			commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 		}
 
 		/**
