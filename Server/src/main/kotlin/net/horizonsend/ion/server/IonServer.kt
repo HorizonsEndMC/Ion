@@ -2,6 +2,7 @@ package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.managers.CommonManager
+import net.horizonsend.ion.server.commands.AchievementsCommand
 import net.horizonsend.ion.server.commands.GuideCommand
 import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
@@ -117,6 +118,7 @@ class IonServer : JavaPlugin() {
 		 * Commands
 		 */
 		PaperCommandManager(this).apply {
+			registerCommand(AchievementsCommand())
 			registerCommand(GuideCommand())
 		}
 	}
