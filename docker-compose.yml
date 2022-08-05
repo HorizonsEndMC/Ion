@@ -1,4 +1,4 @@
-version: "2.6.0"
+version: "3.9"
 
 services:
   redis:
@@ -55,5 +55,5 @@ services:
     environment:
       TYPE: PAPER
       VERSION: 1.19.1
-      EULA: TRUE
-      USE_AIKAR_FLAGS: TRUE
+      EULA: "TRUE"
+      USE_AIKAR_FLAGS: "TRUE"
