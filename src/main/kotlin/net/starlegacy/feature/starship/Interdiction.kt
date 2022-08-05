@@ -3,6 +3,8 @@ package net.starlegacy.feature.starship
 import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
@@ -56,6 +58,14 @@ object Interdiction : SLComponent() {
 	}
 
 	private fun toggleGravityWell(starship: ActiveStarship, sign: Sign) {
+		when (starship.isInterdicting){
+			true -> for (player in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), starship.type.interdictionRange.toDouble())) {
+				player.playSound(Sound.sound(Key.key("minecraft:entity.zombie_villager.converted"), Sound.Source.AMBIENT, 5f, 1.00f))
+			}
+			false -> for (player in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), starship.type.interdictionRange.toDouble())) {
+				player.playSound(Sound.sound(Key.key("minecraft:entity.zombie_villager.converted"), Sound.Source.AMBIENT, 5f, 0.05f))
+			}
+		}
 		starship.setIsInterdicting(!starship.isInterdicting)
 	}
 
