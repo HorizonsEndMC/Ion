@@ -63,7 +63,7 @@ data class NationRelation(
 	/** Relation wishes nations can set to other nations */
 	enum class Level(val textStyle: SLTextStyle) {
 		ENEMY(SLTextStyle.RED),
-		UNFRIENDLY(SLTextStyle.YELLOW),
+		UNFRIENDLY(SLTextStyle.GOLD),
 		NONE(SLTextStyle.GRAY),
 		NEUTRAL(SLTextStyle.LIGHT_PURPLE),
 		FRIENDLY(SLTextStyle.AQUA),
