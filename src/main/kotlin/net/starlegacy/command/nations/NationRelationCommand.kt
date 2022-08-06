@@ -17,10 +17,18 @@ internal object NationRelationCommand : SLCommand() {
 	@CommandCompletion("@nations")
 	fun onAlly(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.ALLY)
 
+	@Subcommand("friendly")
+	@CommandCompletion("@nations")
+	fun onFriendly(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.FRIENDLY)
+	
 	@Subcommand("neutral")
 	@CommandCompletion("@nations")
 	fun onNeutral(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.NEUTRAL)
 
+	@Subcommand("unfriendly")
+	@CommandCompletion("@nations")
+	fun onUnfriendly(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.UNFRIENDLY)
+									 
 	@Subcommand("enemy")
 	@CommandCompletion("@nations")
 	fun onEnemy(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.ENEMY)
