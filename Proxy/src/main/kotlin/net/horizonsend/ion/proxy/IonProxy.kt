@@ -93,7 +93,7 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 			while (true) {
 				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("horizonsend.net"))
 				Thread.sleep(5000)
-				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("Minecraft 1.19.1"))
+				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("Minecraft 1.19.1/2"))
 				Thread.sleep(5000)
 				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${proxy.playerCount} players!"))
 				Thread.sleep(5000)
