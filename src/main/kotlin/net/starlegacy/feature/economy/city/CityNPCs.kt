@@ -121,10 +121,10 @@ object CityNPCs : SLComponent() {
 			val spawned = mutableSetOf<Oid<CityNPC>>()
 
 			// create new NPCs and update the ID list
-			npcInfo.forEach { info: NpcInfo ->
+			npcInfo.forEachIndexed { index, info: NpcInfo ->
 				val location = info.location
 
-				val npc = citizensRegistry.createNPC(EntityType.PLAYER, "${SLTextStyle.GOLD}${info.name}")
+				val npc = citizensRegistry.createNPC(EntityType.PLAYER, UUID.randomUUID(), 1000 + index, "${SLTextStyle.GOLD}${info.name}")
 				npcTypeMap[npc.uniqueId] = info.type
 
 				loadChunkAsync(location.world, location) {
