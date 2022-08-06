@@ -32,7 +32,7 @@ class ProxyPingListener {
 	@Subscribe(order = PostOrder.NORMAL)
 	fun onProxyPingEvent(event: ProxyPingEvent): EventTask = EventTask.async {
 		event.ping = ServerPing(
-			ServerPing.Version(760, "1.19.1"),
+			ServerPing.Version(760, "1.19.1/2"),
 			ServerPing.Players(proxy.playerCount, proxy.playerCount + 1, listOf()),
 			miniMessage().deserialize("${proxyConfiguration.motdFirstLine}\n")
 				.append(miniMessage().deserialize(messages.random())),
