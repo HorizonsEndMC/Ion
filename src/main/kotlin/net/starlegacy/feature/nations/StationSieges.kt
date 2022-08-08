@@ -4,6 +4,8 @@ import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import net.horizonsend.ion.core.events.StationCaptureEvent
+import net.horizonsend.ion.core.events.StationSiegeBeginEvent
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.md_5.bungee.api.ChatColor.GOLD
@@ -214,6 +216,9 @@ object StationSieges : SLComponent() {
 
 		Notify.online("$GOLD${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)")
 		Notify.discord("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
+
+		StationSiegeBeginEvent(player).callEvent()
+
 	}
 
 	fun isUnderSiege(stationId: Oid<CapturableStation>) = sieges.any { it.stationId == stationId }
@@ -290,6 +295,7 @@ object StationSieges : SLComponent() {
 				}
 			}
 		}
+		StationCaptureEvent(player).callEvent()
 	}
 
 	private fun isInBigShip(player: Player): Boolean {

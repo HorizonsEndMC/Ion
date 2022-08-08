@@ -9,6 +9,8 @@ import co.aikar.commands.annotation.Subcommand
 import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
+import net.horizonsend.ion.core.events.CreateNationEvent
+import net.horizonsend.ion.core.events.CreateNationOutpostEvent
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -129,6 +131,8 @@ internal object NationCommand : SLCommand() {
 
 		Nation.create(name, settlement, color.asRGB())
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
+
+		CreateNationEvent(sender, name).callEvent()
 
 		Notify all "&e${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!"
 	}
@@ -331,6 +335,8 @@ internal object NationCommand : SLCommand() {
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
 		Territory.setNation(territory.id, nationId)
+
+		CreateNationOutpostEvent(sender, nationId).callEvent()
 
 		val nationName = getNationName(nationId)
 		Notify.online("&6${sender.name}&d claimed the territory &2${territory.name}&d for their nation &c$nationName&d!")
