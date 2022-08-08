@@ -10,6 +10,7 @@ import java.util.Date
 import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
+import net.horizonsend.ion.core.events.CreateSettlementEvent
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -97,6 +98,8 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.create(territory.id, name, sender.slPlayerId)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
+
+		CreateSettlementEvent(sender, name).callEvent()
 
 		Notify all "&a${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!"
 
