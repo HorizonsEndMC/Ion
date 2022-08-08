@@ -4,6 +4,7 @@ import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import kotlin.collections.set
 import kotlin.math.sqrt
+import net.horizonsend.ion.core.events.EnterPlanetEvent
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.misc.CryoPods
@@ -112,6 +113,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			updateSubsystems(world2)
 
 			onComplete()
+		}
+		if (world1 != world2 && !world2.toString().contains("hyperspace")) {
+			EnterPlanetEvent(world1, world2).callEvent()
 		}
 	}
 

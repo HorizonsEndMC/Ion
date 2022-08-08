@@ -4,6 +4,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.max
 import kotlin.math.roundToInt
+import net.horizonsend.ion.core.events.LevelUpEvent
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.util.Tasks
@@ -90,6 +91,7 @@ object Levels : SLComponent() {
 				player msg lightPurple("Leveled up to level $newLevel for ${previousCost + cost} SLXP").italic()
 
 				broadcastGlobal("&6&l$name&a&l leveled up to &5&lLevel $newLevel&a&l!")
+				LevelUpEvent(player, level).callEvent()
 			}
 		}
 

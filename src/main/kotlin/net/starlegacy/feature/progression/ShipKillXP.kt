@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 import kotlin.math.sqrt
+import net.horizonsend.ion.core.events.ShipKillEvent
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
@@ -112,7 +113,7 @@ object ShipKillXP : SLComponent() {
 
 		val sum = dataMap.values.sum().toDouble()
 
-		processDamagers(dataMap, data, sum, killedName)
+		processDamagers(dataMap, data, sum, killedName, killed)
 
 		map.invalidate(killed)
 	}
@@ -121,7 +122,8 @@ object ShipKillXP : SLComponent() {
 		dataMap: Map<Damager, Int>,
 		data: ShipDamageData,
 		sum: Double,
-		killedName: String
+		killedName: String,
+		killed: UUID
 	) {
 		for ((damager, points) in dataMap.entries) {
 			val player = getPlayer(damager.id) ?: continue // shouldn't happen
@@ -140,6 +142,7 @@ object ShipKillXP : SLComponent() {
 				pointsrn = points
 
 				killMessage(killedName, damager, data)
+				ShipKillEvent(getPlayer(killed)!!, getPlayer(damager.id)!!).callEvent()
 			}
 		}
 	}

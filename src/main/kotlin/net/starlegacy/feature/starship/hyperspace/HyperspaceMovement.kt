@@ -1,7 +1,9 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import kotlin.math.roundToInt
+import net.horizonsend.ion.core.events.HyperspaceEnterEvent
 import net.starlegacy.PLUGIN
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.distance
@@ -30,6 +32,8 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 		x += direction.x * speed
 		z += direction.z * speed
 		travelled += speed
+
+		HyperspaceEnterEvent((ship as? ActivePlayerStarship)!!.pilot!!, ship).callEvent()
 
 		val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
 		if (shadow != null) {
