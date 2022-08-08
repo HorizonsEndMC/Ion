@@ -11,6 +11,7 @@ import kotlin.collections.set
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import net.horizonsend.ion.core.events.CompleteCargoRunEvent
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
@@ -400,6 +401,7 @@ object ShipmentManager : SLComponent() {
 				}
 			}
 		}
+		CompleteCargoRunEvent(player).callEvent()
 	}
 
 	private fun giveSettlementProfit(playerName: String, city: TradeCityData, tax: Int) {

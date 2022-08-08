@@ -6,8 +6,10 @@ import java.io.File
 import java.lang.System.currentTimeMillis
 import java.util.UUID
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.horizonsend.ion.core.events.BuySpawnShuttleEvent
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
+import net.starlegacy.feature.starship.event.StarshipPilotEvent
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
@@ -75,6 +77,8 @@ object StarshipDealers : SLComponent() {
 
 			player msg "&aPasted! (Cost: ${PRICE.toCreditsString()}; " +
 				"Remaining Balance: ${player.getMoneyBalance().toCreditsString()})"
+
+			BuySpawnShuttleEvent(player, world).callEvent()
 		}
 	}
 

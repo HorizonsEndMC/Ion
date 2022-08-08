@@ -2,6 +2,7 @@ package net.starlegacy.feature.multiblock
 
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.core.events.MultiblockDetectEvent
 import net.horizonsend.ion.core.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.core.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.starlegacy.SLComponent
@@ -256,5 +257,6 @@ object Multiblocks : SLComponent() {
 		if (lastMatch != null) {
 			player msg "&4Improperly built &c${lastMatch.name}&4. Make sure every block is correctly placed!"
 		}
+		MultiblockDetectEvent(player, lastMatch!!).callEvent()
 	}
 }
