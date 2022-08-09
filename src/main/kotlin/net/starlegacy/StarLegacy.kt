@@ -161,6 +161,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.loadConfig
 import net.starlegacy.util.orNull
 import net.starlegacy.util.redisaction.RedisActions
+import net.wesjd.anvilgui.AnvilGUI
 import net.wesjd.anvilgui.version.Wrapper1_19_R1
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -181,12 +182,14 @@ class StarLegacy : JavaPlugin() {
 	lateinit var redisPool: JedisPool
 
 	init {
-		val field = Wrapper1_19_R1::class.java.getField("IS_ONE_NINETEEN_ONE")
+		val wrapper = Wrapper1_19_R1::class.java.getDeclaredConstructor().newInstance()
+		val field = wrapper::class.java.getDeclaredField("IS_ONE_NINETEEN_ONE")
 		field.isAccessible = true
-		val modifiers = field.javaClass.getDeclaredField("modifiers")
-		modifiers.isAccessible = true
-		modifiers.setInt(field, field.modifiers and Modifier.FINAL.inv())
-		field.set(null, true);
+		field.set(wrapper, true)
+
+		val wrapperField = AnvilGUI::class.java.getDeclaredField("WRAPPER")
+		wrapperField.isAccessible = true
+		wrapperField.set(null, wrapper)
 
 		PLUGIN = this
 	}
