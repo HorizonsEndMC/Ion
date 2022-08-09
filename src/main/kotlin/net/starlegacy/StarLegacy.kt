@@ -5,6 +5,7 @@ import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import java.io.File
+import java.lang.reflect.Modifier
 import java.util.Locale
 import net.horizonsend.ion.core.NewPlayerProtection
 import net.horizonsend.ion.core.commands.AdminCommands
@@ -160,6 +161,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.loadConfig
 import net.starlegacy.util.orNull
 import net.starlegacy.util.redisaction.RedisActions
+import net.wesjd.anvilgui.version.Wrapper1_19_R1
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.event.Event
@@ -179,6 +181,13 @@ class StarLegacy : JavaPlugin() {
 	lateinit var redisPool: JedisPool
 
 	init {
+		val field = Wrapper1_19_R1::class.java.getField("IS_ONE_NINETEEN_ONE")
+		field.isAccessible = true
+		val modifiers = field.javaClass.getDeclaredField("modifiers")
+		modifiers.isAccessible = true
+		modifiers.setInt(field, field.modifiers and Modifier.FINAL.inv())
+		field.set(null, true);
+
 		PLUGIN = this
 	}
 
