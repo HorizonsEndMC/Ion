@@ -5,12 +5,13 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.utilities.feedback.FeedbackType
 import net.horizonsend.ion.common.utilities.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.managers.ScreenManager.openScreen
+import net.horizonsend.ion.server.screens.AchievementsScreen
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -19,8 +20,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class AchievementsCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
-	fun onAchievementsList(sender: Player, @Optional target: String?) {
+	fun onAchievementsList(sender: Player) {
+		sender.openScreen(AchievementsScreen(sender.name))
+	}
 
+	@Suppress("Unused")
+	@Default
+	fun onAchievementsList(sender: Player, target: String) {
+		sender.openScreen(AchievementsScreen(target))
 	}
 
 	@Suppress("Unused")
