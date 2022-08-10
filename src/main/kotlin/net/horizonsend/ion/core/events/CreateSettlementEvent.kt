@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class CreateSettlementEvent(player: Player, settlement: String) :Event() {
+class CreateSettlementEvent(val player: Player, val settlement: String) :Event() {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}

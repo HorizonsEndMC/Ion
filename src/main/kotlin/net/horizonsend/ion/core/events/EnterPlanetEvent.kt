@@ -4,7 +4,7 @@ import org.bukkit.World
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class EnterPlanetEvent(oldworld: World, newworld: World): Event() {
+class EnterPlanetEvent(val oldworld: World, val newworld: World): Event() {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}
