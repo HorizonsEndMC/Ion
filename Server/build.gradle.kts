@@ -1,5 +1,6 @@
 plugins {
-	id("org.jetbrains.kotlin.jvm")
+	id("io.papermc.paperweight.userdev")
+	kotlin("jvm")
 }
 
 repositories {
@@ -11,7 +12,7 @@ repositories {
 }
 
 dependencies {
-	compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
+	paperDevBundle("1.19.2-R0.1-SNAPSHOT")
 
 	compileOnly(project(":IonCore"))
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")

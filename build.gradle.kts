@@ -2,6 +2,7 @@ import java.net.URL
 
 plugins {
 	id("com.github.johnrengelman.shadow") version "7.1.2"
+	id("io.papermc.paperweight.userdev") version "1.3.8"
 	id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 	id("org.jetbrains.kotlin.jvm") version "1.7.10"
 	id("xyz.jpenilla.run-paper") version "1.0.6"
@@ -10,10 +11,13 @@ plugins {
 repositories {
 	mavenCentral()
 
-	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
+	maven("https://repo.papermc.io/repository/maven-public/")
+	maven("https://repo.aikar.co/content/groups/aikar/")
 }
 
 dependencies {
+	paperDevBundle("1.19.2-R0.1-SNAPSHOT") // Userdev needs to be on the root module otherwise run-paper won't work.
+
 	implementation(project(":Server"))
 	implementation(project(":Proxy"))
 }
@@ -23,7 +27,7 @@ tasks {
 		archiveFileName.set("../Ion.jar")
 	}
 
-	runServer { minecraftVersion("1.19.1") }
+	runServer { minecraftVersion("1.19.2") }
 	ktlint { version.set("0.44.0") }
 
 	prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
