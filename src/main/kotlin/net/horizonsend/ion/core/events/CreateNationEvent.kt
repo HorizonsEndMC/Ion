@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class CreateNationEvent(player: Player, nation: String) :Event() {
+class CreateNationEvent(val player: Player, val nation: String) :Event() {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}
