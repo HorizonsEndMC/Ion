@@ -115,7 +115,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			onComplete()
 		}
 		if (world1 != world2 && !world2.toString().contains("hyperspace")) {
-			EnterPlanetEvent(world1, world2).callEvent()
+			EnterPlanetEvent(world1, world2, (starship as? ActivePlayerStarship)!!.pilot!!).callEvent()
 		}
 	}
 

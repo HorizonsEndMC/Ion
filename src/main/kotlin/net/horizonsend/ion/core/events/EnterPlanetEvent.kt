@@ -1,10 +1,11 @@
 package net.horizonsend.ion.core.events
 
 import org.bukkit.World
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class EnterPlanetEvent(val oldworld: World, val newworld: World): Event() {
+class EnterPlanetEvent(val oldworld: World, val newworld: World, val player: Player): Event() {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}
