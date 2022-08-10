@@ -5,7 +5,7 @@ plugins {
 repositories {
 	mavenCentral()
 
-	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework
+	maven("https://repo.aikar.co/content/groups/aikar/")
 }
 
 dependencies {

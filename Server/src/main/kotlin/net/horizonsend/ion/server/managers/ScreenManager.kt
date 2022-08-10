@@ -1,18 +1,18 @@
 package net.horizonsend.ion.server.managers
 
 import net.horizonsend.ion.server.screens.Screen
-import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 object ScreenManager {
-	private val screens = mutableMapOf<HumanEntity, Screen>()
+	private val screens = mutableMapOf<Player, Screen>()
 
-	fun HumanEntity.openScreen(screen: Screen) {
+	fun Player.openScreen(screen: Screen) {
 		screens[this] = screen
 		openInventory(screen.inventory)
 	}
 
-	fun HumanEntity.closeScreen(): Screen? {
+	fun Player.closeScreen(): Screen? {
 		val screen = screens.remove(this)
 
 		screen?.inventory?.close()
@@ -20,7 +20,8 @@ object ScreenManager {
 		return screen
 	}
 
-	val HumanEntity.isInScreen: Boolean get() = screens.containsKey(this)
+	val Player.isInScreen: Boolean get() = screens.containsKey(this)
+	val Player.screen: Screen? get() = screens[this]
 
 	val Inventory.isScreen: Boolean get() = screens.filter { it.value.inventory == this }.isNotEmpty()
 }
