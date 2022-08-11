@@ -168,7 +168,7 @@ object ShipKillXP : SLComponent() {
 					return@async
 				}
 
-				val shipkilldiscordmessage = "A ${data.size} block ship piloted by $killedName was sunk by ${getPlayer(damager.id)!!.name} in a ${damager.size} block ship"
+				val shipkilldiscordmessage = "**A ${data.size} block ship piloted by $killedName was sunk by ${getPlayer(damager.id)!!.name} in a ${damager.size} block ship**"
 
 				channel.sendMessage(shipkilldiscordmessage).queue()
 			}
