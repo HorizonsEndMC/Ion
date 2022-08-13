@@ -14,7 +14,6 @@ import net.starlegacy.util.CONCRETE_TYPES
 import net.starlegacy.util.DOOR_TYPES
 import net.starlegacy.util.FENCE_TYPES
 import net.starlegacy.util.GLAZED_TERRACOTTA_TYPES
-import net.starlegacy.util.PLANKS_TYPES
 import net.starlegacy.util.PRESSURE_PLATE_TYPES
 import net.starlegacy.util.SHULKER_BOX_TYPES
 import net.starlegacy.util.SIGN_TYPES
@@ -250,7 +249,6 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	it.addAll(BED_TYPES)
 	it.addAll(FENCE_TYPES)
 	it.addAll(WALL_TYPES)
-	it.addAll(PLANKS_TYPES)
 	it.addAll(CANDLE_TYPES)
 	it.addAll(CAKE_TYPES)
 
