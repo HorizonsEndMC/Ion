@@ -3,5 +3,4 @@ version: unspecified
 main: net.horizonsend.ion.server.IonServer
 load: STARTUP
 api-version: 1.19
-depend: [ Vault ]
-softdepend: [ LuckPerms ]
+softdepend: [ Vault, LuckPerms ]
