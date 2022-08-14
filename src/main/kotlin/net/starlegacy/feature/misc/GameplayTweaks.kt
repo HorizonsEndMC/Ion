@@ -1,5 +1,6 @@
 package net.starlegacy.feature.misc
 
+import net.horizonsend.ion.common.UpdateUnsafe
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.FLYABLE_BLOCKS
@@ -115,6 +116,7 @@ object GameplayTweaks : SLComponent() {
 		}
 	}
 
+	@UpdateUnsafe
 	private fun setBlastResistance(material: Material, durability: Float) {
 		require(material.isBlock)
 
