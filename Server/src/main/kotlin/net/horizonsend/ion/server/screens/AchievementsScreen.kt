@@ -156,7 +156,7 @@ class AchievementsScreen private constructor(
 				string += "<font:horizonsend:y${y + 9}>" // Switch to line
 				string += achievement.description // Achievement Description
 				string += "<font:horizonsend:special>${creditChetheriteOffsetCode.toChar()}</font>" // Reward offset
-				string += "<green>C${achievement.creditReward}</green>${
+				string += "<dark_green>C${achievement.creditReward}</dark_green>${
 					if (achievement.chetheriteReward != 0)
 						" <dark_purple>${achievement.chetheriteReward}</dark_purple><white><font:horizonsend:special>\uF8FE</font></white>"
 					else
