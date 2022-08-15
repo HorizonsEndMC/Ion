@@ -11,7 +11,7 @@ enum class Achievement(
 	PLANET_AERACH     ("Aerach really rocks!" , "Visit: Aerach"         ,   750,  125, 0, 201 ), // Kwazedilla
 	PLANET_ARET       ("I hate sand"          , "Visit: Aret"           ,   750,  125, 0, 202 ), // Wither
 	PLANET_CHANDRA    ("One small step"       , "Visit: Chandra"        ,   750,  125, 0, 203 ), // Wither
-	PLANET_CHIMGARA   ("Dont get tripophobia" , "Visit: Chimgara"       ,   750,  125, 0, 204 ), // Gutin
+	PLANET_CHIMGARA   ("Dont get trypophobia" , "Visit: Chimgara"       ,   750,  125, 0, 204 ), // Gutin
 	PLANET_DAMKOTH    ("The cheth must flow"  , "Visit: Damkoth"        ,   750,  125, 0, 205 ), // Wither
 	PLANET_GAHARA     ("Ice Ice baby"         , "Visit: Gahara"         ,   750,  125, 0, 206 ), // Sciath
 	PLANET_HERDOLI    ("The red planet"       , "Visit: Herdoli"        ,   750,  125, 0, 207 ), // Wither
