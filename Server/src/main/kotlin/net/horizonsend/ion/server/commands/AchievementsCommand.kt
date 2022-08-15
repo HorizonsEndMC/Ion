@@ -12,6 +12,8 @@ import net.horizonsend.ion.common.utilities.feedback.FeedbackType
 import net.horizonsend.ion.common.utilities.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.managers.ScreenManager.openScreen
 import net.horizonsend.ion.server.screens.AchievementsScreen
+import net.horizonsend.ion.server.utilities.rewardAchievement
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -42,11 +44,18 @@ class AchievementsCommand : BaseCommand() {
 			return
 		}
 
-		transaction { playerData.addAchievement(achievement) }
+		val player = Bukkit.getPlayer(playerData.id.value)
+
+		if (player == null) {
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} must be online.", target)
+			return
+		}
+
+		player.rewardAchievement(achievement)
 
 		sender.sendFeedbackMessage(
 			FeedbackType.SUCCESS,
-			"Gave achievement {0} to {1}. Please note, rewards are not given automatically.",
+			"Gave achievement {0} to {1}.",
 			achievement.name,
 			target
 		)
