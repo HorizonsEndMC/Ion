@@ -76,6 +76,9 @@ object Space : SLComponent() {
 
 				val planetName = mongoPlanet.name
 				val planetWorldName = mongoPlanet.planetWorld
+				val rogue = mongoPlanet.rogue
+				val x = mongoPlanet.x
+				val z =mongoPlanet.z
 				val planetSize = mongoPlanet.size
 				val orbitDistance = mongoPlanet.orbitDistance
 				val orbitSpeed = mongoPlanet.orbitSpeed
@@ -104,6 +107,9 @@ object Space : SLComponent() {
 					name = planetName,
 					sun = star,
 					planetWorldName = planetWorldName,
+					rogue = rogue,
+					x = x,
+					z = z,
 					size = planetSize,
 					orbitDistance = orbitDistance,
 					orbitSpeed = orbitSpeed,

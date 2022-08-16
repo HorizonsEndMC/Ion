@@ -33,7 +33,13 @@ object Orbits : SLComponent() {
 		val elapsedNanos = measureNanoTime {
 			Space.getPlanets().parallelStream()
 				.filter { it.spaceWorld != null }
+				.filter { !it.rogue }
 				.forEach { it.orbit(urgent = urgent, updateDb = false) }
+
+			Space.getPlanets().parallelStream()
+				.filter { it.spaceWorld != null }
+				.filter { it.rogue }
+				.forEach { it.setLocation(urgent = urgent, updateDb = false) }
 
 			SpaceMap.refresh()
 		}

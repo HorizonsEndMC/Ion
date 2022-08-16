@@ -1,5 +1,6 @@
 package net.starlegacy.feature.space
 
+import com.mongodb.client.result.UpdateResult
 import java.util.Locale
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
@@ -12,6 +13,7 @@ import net.starlegacy.util.d
 import net.starlegacy.util.getSphereBlocks
 import net.starlegacy.util.i
 import net.starlegacy.util.nms
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter.Yellow
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
@@ -22,6 +24,9 @@ class CachedPlanet(
 	override val name: String,
 	sun: CachedStar,
 	val planetWorldName: String,
+	val rogue: Boolean,
+	val x: Int,
+	val z: Int,
 	val size: Double,
 	orbitDistance: Int,
 	private val orbitSpeed: Double,
@@ -34,11 +39,11 @@ class CachedPlanet(
 	val cloudDensityNoise: Double,
 	val cloudThreshold: Double,
 	val cloudNoise: Double
-) : CelestialBody(sun.spaceWorldName, calculateLocation(sun, orbitDistance, orbitProgress)), NamedCelestialBody {
+) : CelestialBody(sun.spaceWorldName, calculateOrbitLocation(sun, orbitDistance, orbitProgress)), NamedCelestialBody {
 	companion object {
 		private const val CRUST_RADIUS_MAX = 115
 
-		fun calculateLocation(sun: CachedStar, orbitDistance: Int, orbitProgress: Double): Vec3i {
+		fun calculateOrbitLocation(sun: CachedStar, orbitDistance: Int, orbitProgress: Double): Vec3i {
 			val (x, y, z) = sun.location
 
 			val radians = Math.toRadians(orbitProgress)
@@ -47,6 +52,16 @@ class CachedPlanet(
 				x = x + (Math.cos(radians) * orbitDistance.d()).i(),
 				y = y,
 				z = z + (Math.sin(radians) * orbitDistance.d()).i()
+			)
+		}
+
+		fun calculateLocation(sun: CachedStar, x: Int, z: Int): Vec3i {
+			val (y) = sun.location
+
+			return Vec3i(
+				x = x,
+				y = y,
+				z = z
 			)
 		}
 	}
@@ -66,7 +81,7 @@ class CachedPlanet(
 
 	fun changeSun(newSun: CachedStar) {
 		val world = checkNotNull(newSun.spaceWorld)
-		val newLocation = calculateLocation(newSun, orbitDistance, orbitProgress)
+		val newLocation = calculateOrbitLocation(newSun, orbitDistance, orbitProgress)
 		move(newLocation, world)
 
 		sun = newSun
@@ -74,8 +89,16 @@ class CachedPlanet(
 		Planet.setSun(databaseId, newSun.databaseId)
 	}
 
+	fun toggleRogue(rogue: Boolean): UpdateResult = Planet.setRogue(databaseId, rogue)
+
+	fun changeX(x: Int): UpdateResult = Planet.setX(databaseId, x)
+
+
+	fun changeZ(z: Int): UpdateResult = Planet.setX(databaseId, z)
+
+
 	fun changeOrbitDistance(newDistance: Int) {
-		val newLocation = calculateLocation(sun, newDistance, orbitProgress)
+		val newLocation = calculateOrbitLocation(sun, newDistance, orbitProgress)
 		move(newLocation)
 
 		orbitDistance = newDistance
@@ -87,7 +110,7 @@ class CachedPlanet(
 
 	fun orbit(urgent: Boolean = false, updateDb: Boolean = true) {
 		val newProgress = (orbitProgress + orbitSpeed) % 360
-		val newLocation = calculateLocation(sun, orbitDistance, newProgress)
+		val newLocation = calculateOrbitLocation(sun, orbitDistance, newProgress)
 		move(newLocation, urgent = urgent)
 
 		orbitProgress = newProgress
@@ -95,6 +118,13 @@ class CachedPlanet(
 		if (updateDb) {
 			Planet.setOrbitProgress(databaseId, newProgress)
 		}
+	}
+	fun setLocation(urgent: Boolean = false): Unit = setLocation(urgent, updateDb = true)
+	fun setLocation(urgent: Boolean = false, updateDb: Boolean = true) {
+		val newLocation = calculateLocation(sun, x, z)
+
+		move(newLocation, urgent = urgent)
+
 	}
 
 	val crustRadius = (CRUST_RADIUS_MAX * size).toInt()
