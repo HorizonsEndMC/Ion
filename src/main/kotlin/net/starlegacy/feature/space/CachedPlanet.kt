@@ -94,7 +94,7 @@ class CachedPlanet(
 	fun changeX(x: Int): UpdateResult = Planet.setX(databaseId, x)
 
 
-	fun changeZ(z: Int): UpdateResult = Planet.setX(databaseId, z)
+	fun changeZ(z: Int): UpdateResult = Planet.setZ(databaseId, z)
 
 
 	fun changeOrbitDistance(newDistance: Int) {
