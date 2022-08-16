@@ -39,7 +39,7 @@ object Orbits : SLComponent() {
 			Space.getPlanets().parallelStream()
 				.filter { it.spaceWorld != null }
 				.filter { it.rogue }
-				.forEach { it.setLocation(urgent = urgent) }
+				.forEach { it.setLocation(urgent = urgent, updateDb = false) }
 
 			SpaceMap.refresh()
 		}

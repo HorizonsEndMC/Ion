@@ -6,6 +6,8 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.space.Planet
+import net.starlegacy.database.schema.space.Planet.Companion.setX
+import net.starlegacy.database.schema.space.Planet.Companion.setZ
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.Vec3i
@@ -119,11 +121,18 @@ class CachedPlanet(
 			Planet.setOrbitProgress(databaseId, newProgress)
 		}
 	}
-	fun setLocation(urgent: Boolean = false) {
+
+	fun setLocation(urgent: Boolean = false): Unit = setLocation(urgent, updateDb = true)
+
+	fun setLocation(urgent: Boolean = false, updateDb: Boolean = true) {
 		val newLocation = calculateLocation(sun, x, z)
 
 		move(newLocation, urgent = urgent)
 
+		if (updateDb) {
+			setX(databaseId, x)
+			setZ(databaseId, z)
+		}
 	}
 
 	val crustRadius = (CRUST_RADIUS_MAX * size).toInt()
