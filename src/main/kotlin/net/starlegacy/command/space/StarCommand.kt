@@ -104,7 +104,7 @@ object StarCommand : SLCommand() {
 		for (planet in Space.getPlanets()) {
 			if (planet.sun.databaseId == star.databaseId) {
 				sender msg yellow("Moving ${planet.name}...")
-				val newLoc = CachedPlanet.calculateLocation(star, planet.orbitDistance, planet.orbitProgress)
+				val newLoc = CachedPlanet.calculateOrbitLocation(star, planet.orbitDistance, planet.orbitProgress)
 				planet.move(newLoc, spaceWorld)
 			}
 		}
