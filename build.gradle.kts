@@ -23,8 +23,8 @@ dependencies {
 }
 
 tasks {
-	shadowJar {
-		archiveFileName.set("../Ion.jar")
+	reobfJar {
+		outputJar.set(file(rootProject.projectDir.absolutePath + "/build/Ion.jar"))
 	}
 
 	runServer { minecraftVersion("1.19.2") }
