@@ -119,8 +119,7 @@ class CachedPlanet(
 			Planet.setOrbitProgress(databaseId, newProgress)
 		}
 	}
-	fun setLocation(urgent: Boolean = false): Unit = setLocation(urgent, updateDb = true)
-	fun setLocation(urgent: Boolean = false, updateDb: Boolean = true) {
+	fun setLocation(urgent: Boolean = false) {
 		val newLocation = calculateLocation(sun, x, z)
 
 		move(newLocation, urgent = urgent)
