@@ -26,7 +26,7 @@ import org.bukkit.entity.Player
 @CommandPermission("space.planet")
 object PlanetCommand : SLCommand() {
 	@Subcommand("create")
-	@CommandCompletion("@nothing @true|false @nothing @nothing @stars @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
+	@CommandCompletion("@nothing true|false x z @stars @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
 	fun onCreate(
 		sender: CommandSender,
 		name: String,
@@ -184,15 +184,16 @@ object PlanetCommand : SLCommand() {
 		val oldValue = planet.rogue
 		planet.toggleRogue(newValue)
 		sender msg green("Updated ${planet.name} rogue to $newValue from $oldValue")
+		planet.orbit(true)
 	}
 
 	@Subcommand("set location")
-	@CommandCompletion("@nothing @nothing")
+	@CommandCompletion("@planets x z")
 	fun onSetLocation(sender: CommandSender, planet: CachedPlanet, x: Int, z: Int) {
 		planet.changeX(x)
 		planet.changeZ(z)
 		sender msg green ("Moved ${planet.name} to $x, $z")
-		planet.setLocation(true)
+		planet.setLocation(true, true)
 	}
 
 	@Subcommand("set orbit distance")
