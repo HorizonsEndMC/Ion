@@ -32,7 +32,7 @@ tasks {
 
 	prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
 	addKtlintFormatGitPreCommitHook { dependsOn("shadowJar") }
-	build { dependsOn("shadowJar") }
+	build { dependsOn("reobfJar") }
 
 	create("downloadTestServerDependencies") {
 		fun downloadJenkinsArtifact(
