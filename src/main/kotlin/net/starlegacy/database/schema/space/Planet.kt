@@ -7,6 +7,7 @@ import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.objId
+import org.dynmap.Client.Update
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -33,6 +34,9 @@ import org.litote.kmongo.updateOneById
 data class Planet(
 	override val _id: Oid<Planet> = objId(),
 	val name: String,
+	val rogue: Boolean,
+	val x: Int,
+	val z: Int,
 	val sun: Oid<Star>,
 	val planetWorld: String,
 	val size: Double,
@@ -57,16 +61,25 @@ data class Planet(
 		)
 
 		fun create(
-			name: String, sun: Oid<Star>, planetWorld: String, size: Double,
+			name: String, rogue: Boolean, x: Int, z: Int, sun: Oid<Star>, planetWorld: String, size: Double,
 			orbitDistance: Int, orbitSpeed: Double, orbitProgress: Double, seed: Long
 		) {
 			col.insertOne(
-				Planet(objId(), name, sun, planetWorld, size, orbitDistance, orbitSpeed, orbitProgress, seed)
+				Planet(objId(), name, rogue, x, z, sun, planetWorld, size, orbitDistance, orbitSpeed, orbitProgress, seed)
 			)
 		}
 
 		fun setSun(id: Oid<Planet>, sun: Oid<Star>): UpdateResult =
 			col.updateOneById(id, setValue(Planet::sun, sun))
+
+		fun setRogue(id: Oid<Planet>, rogue: Boolean): UpdateResult =
+			col.updateOneById(id, setValue(Planet::rogue, rogue))
+
+		fun setX(id: Oid<Planet>, x: Int): UpdateResult =
+			col.updateOneById(id, setValue(Planet::x, x))
+
+		fun setZ(id: Oid<Planet>, z: Int): UpdateResult =
+			col.updateOneById(id, setValue(Planet::z, z))
 
 		fun setOrbitDistance(id: Oid<Planet>, orbitDistance: Int): UpdateResult =
 			col.updateOneById(id, setValue(Planet::orbitDistance, orbitDistance))

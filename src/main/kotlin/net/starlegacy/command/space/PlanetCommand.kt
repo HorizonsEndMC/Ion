@@ -26,10 +26,13 @@ import org.bukkit.entity.Player
 @CommandPermission("space.planet")
 object PlanetCommand : SLCommand() {
 	@Subcommand("create")
-	@CommandCompletion("@nothing @stars @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
+	@CommandCompletion("@nothing @true|false @nothing @nothing @stars @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
 	fun onCreate(
 		sender: CommandSender,
 		name: String,
+		rogue: Boolean,
+		x: Int,
+		z: Int,
 		sun: CachedStar,
 		planetWorldName: String,
 		orbitDistance: Int, orbitSpeed: Double,
@@ -46,7 +49,7 @@ object PlanetCommand : SLCommand() {
 		val seed: Long = name.hashCode().toLong()
 		val orbitProgress: Double = randomDouble(0.0, 360.0)
 
-		Planet.create(name, sun.databaseId, planetWorldName, size, orbitDistance, orbitSpeed, orbitProgress, seed)
+		Planet.create(name, rogue, x, z, sun.databaseId, planetWorldName, size, orbitDistance, orbitSpeed, orbitProgress, seed)
 
 		Space.reload()
 
@@ -173,6 +176,23 @@ object PlanetCommand : SLCommand() {
 		val oldSun = planet.sun
 		planet.changeSun(newSun)
 		sender msg green("Updated sun from ${oldSun.name} to ${newSun.name}, moved the planet, and updated database")
+	}
+
+	@Subcommand("set rogue")
+	@CommandCompletion("@planets true|false")
+	fun onSetRogue(sender: CommandSender, planet: CachedPlanet, newValue: Boolean) {
+		val oldValue = planet.rogue
+		planet.toggleRogue(newValue)
+		sender msg green("Updated ${planet.name} rogue to $newValue from $oldValue")
+	}
+
+	@Subcommand("set location")
+	@CommandCompletion("@nothing @nothing")
+	fun onSetLocation(sender: CommandSender, planet: CachedPlanet, x: Int, z: Int) {
+		planet.changeX(x)
+		planet.changeZ(z)
+		sender msg green ("Moved ${planet.name} to $x, $z")
+		planet.setLocation(true)
 	}
 
 	@Subcommand("set orbit distance")
