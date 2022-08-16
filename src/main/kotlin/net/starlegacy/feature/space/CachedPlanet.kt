@@ -56,7 +56,7 @@ class CachedPlanet(
 		}
 
 		fun calculateLocation(sun: CachedStar, x: Int, z: Int): Vec3i {
-			val (y) = sun.location
+			val (_, y, _) = sun.location
 
 			return Vec3i(
 				x = x,
