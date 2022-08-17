@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.proxy.annotations.CommandMeta
 import net.horizonsend.ion.proxy.proxyConfiguration
-import net.horizonsend.ion.proxy.utilities.messageEmbed
+import net.horizonsend.ion.proxy.messageEmbed
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.transactions.transaction
 
