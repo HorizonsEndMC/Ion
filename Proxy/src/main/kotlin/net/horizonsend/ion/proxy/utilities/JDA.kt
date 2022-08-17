@@ -12,7 +12,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail
 import net.dv8tion.jda.api.entities.MessageEmbed.VideoInfo
 
 /**
- * Util Function because I am fed up of putting null a dozen times.
+ * Utility function for creating JDA MessageEmbed's without specifying null a bunch of time.
+ * @see MessageEmbed
  */
 @Suppress("Nothing_To_Inline")
 inline fun messageEmbed(
