@@ -167,7 +167,6 @@ object CollectedItemCommand : SLCommand() {
 			"& refreshed collector missions."
 	}
 
-
 	@Subcommand("set stackrange")
 	@CommandCompletion("@collecteditems 1 10")
 	fun onSetStackRange(sender: CommandSender, item: String, minStacks: Int, maxStacks: Int) {
@@ -185,5 +184,4 @@ object CollectedItemCommand : SLCommand() {
 				"& refreshed collector missions."
 		}
 	}
-
 }

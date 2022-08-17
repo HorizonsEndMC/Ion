@@ -15,7 +15,6 @@ import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.util.Vector
 
@@ -108,5 +107,4 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 			}
 		}
 	}
-
 }

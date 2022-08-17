@@ -205,7 +205,13 @@ object StarshipControl : SLComponent() {
 			val newLoc = center.clone()
 			newLoc.pitch = pilot.location.pitch
 			newLoc.yaw = pilot.location.yaw
-			pilot.teleport(newLoc, PlayerTeleportEvent.TeleportCause.PLUGIN, true, false, *RelativeTeleportFlag.values())
+			pilot.teleport(
+				newLoc,
+				PlayerTeleportEvent.TeleportCause.PLUGIN,
+				true,
+				false,
+				*RelativeTeleportFlag.values()
+			)
 		}
 
 		var highestFrequency = Collections.frequency(vectors, vector)

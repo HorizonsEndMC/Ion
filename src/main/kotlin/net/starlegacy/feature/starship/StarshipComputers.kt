@@ -108,7 +108,10 @@ object StarshipComputers : SLComponent() {
 
 	private fun createComputer(player: Player, block: Block) {
 		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
-			player.sendFeedbackActionMessage(SUCCESS, "Registered starship computer! Left click again to open the menu.")
+			player.sendFeedbackActionMessage(
+				SUCCESS,
+				"Registered starship computer! Left click again to open the menu."
+			)
 		}
 	}
 

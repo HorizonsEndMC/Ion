@@ -33,7 +33,8 @@ open class CustomBlock(
 
 		val isTool = customItem == null && itemUsed.type.name.lowercase(Locale.getDefault()).contains(tool)
 		val isSpecialItem =
-			customItem != null && customItem.id.lowercase(Locale.getDefault()).replace("drill", "pickaxe").contains(tool)
+			customItem != null && customItem.id.lowercase(Locale.getDefault()).replace("drill", "pickaxe")
+				.contains(tool)
 
 		return if (isTool || isSpecialItem) cloneDrops() else arrayOf()
 	}

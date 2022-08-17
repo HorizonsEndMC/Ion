@@ -345,7 +345,14 @@ object OptimizedMovement {
 			val playerChunk: ChunkHolder = nmsChunk.playerChunk ?: continue
 
 			val packet =
-				ClientboundLevelChunkWithLightPacket(nmsChunk, nmsChunk.level.lightEngine, null, BitSet(bitmask), false, true)
+				ClientboundLevelChunkWithLightPacket(
+					nmsChunk,
+					nmsChunk.level.lightEngine,
+					null,
+					BitSet(bitmask),
+					false,
+					true
+				)
 			playerChunk.broadcast(packet, false)
 		}
 	}

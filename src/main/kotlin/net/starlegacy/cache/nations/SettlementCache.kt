@@ -115,7 +115,8 @@ object SettlementCache : ManualCache() {
 			synced {
 				val id: Oid<Settlement> = change.oid
 
-				val name = get(id).name.lowercase(Locale.getDefault()) // get the name first since it's about to be removed
+				val name =
+					get(id).name.lowercase(Locale.getDefault()) // get the name first since it's about to be removed
 				SETTLEMENT_DATA.remove(id)
 				nameCache.remove(name.lowercase(Locale.getDefault()))
 			}

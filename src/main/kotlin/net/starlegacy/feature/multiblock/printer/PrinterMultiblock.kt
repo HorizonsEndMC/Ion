@@ -120,7 +120,6 @@ abstract class PrinterMultiblock : PowerStoringMultiblock(), FurnaceMultiblock {
 		val state = sign.block.getRelative(direction, 5).getState(false)
 			as? InventoryHolder ?: return
 
-
 		val product = sign.block.getRelative(sign.getFacing().oppositeFace, 3).type
 		val output = getOutput(product)
 

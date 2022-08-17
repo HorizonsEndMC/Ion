@@ -47,7 +47,6 @@ object ShipmentBalancing : SLComponent() {
 		}
 	}
 
-
 	override fun onEnable() = reload()
 
 	fun reload() {

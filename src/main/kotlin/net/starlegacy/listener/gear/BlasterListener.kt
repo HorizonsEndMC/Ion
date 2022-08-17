@@ -56,7 +56,6 @@ object BlasterListener : SLEventListener() {
 
 		event.isCancelled = true
 		Blasters.fireBlaster(entity, bow, Blasters.getBlasterType(blaster))
-
 	}
 
 	@EventHandler

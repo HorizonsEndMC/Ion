@@ -15,9 +15,6 @@ import net.starlegacy.SETTINGS
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import org.bukkit.Statistic.PLAY_ONE_MINUTE

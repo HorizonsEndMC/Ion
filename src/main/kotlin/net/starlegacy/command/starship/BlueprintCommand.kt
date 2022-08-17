@@ -102,7 +102,6 @@ object BlueprintCommand : SLCommand() {
 		}
 	}
 
-
 	private fun getBlueprint(sender: Player, name: String): Blueprint {
 		return Blueprint.find(and(Blueprint::owner eq sender.slPlayerId, Blueprint::name eq name)).first()
 			?: fail { "You don't have a blueprint named $name." }
@@ -120,7 +119,6 @@ object BlueprintCommand : SLCommand() {
 		Blueprint.delete(blueprint._id)
 		sender msg "&aDeleted blueprint ${blueprint.name}"
 	}
-
 
 	private fun blueprintInfo(blueprint: Blueprint): List<String> {
 		val list = LinkedList<String>()

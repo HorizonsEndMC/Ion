@@ -443,7 +443,18 @@ object StarshipShields : SLComponent() {
 				val x = x0 + dx + 0.5
 				val y = y0 + dy + 0.5
 				val z = z0 + dz + 0.5
-				world.spawnParticle(Particle.BLOCK_MARKER, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, Material.BARRIER.createBlockData())
+				world.spawnParticle(
+					Particle.BLOCK_MARKER,
+					x,
+					y,
+					z,
+					1,
+					0.0,
+					0.0,
+					0.0,
+					0.0,
+					Material.BARRIER.createBlockData()
+				)
 			}
 
 			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(10L)) {

@@ -86,7 +86,13 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 		}
 
 		if (passenger is Player) {
-			passenger.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN, true, false, *RelativeTeleportFlag.values())
+			passenger.teleport(
+				location,
+				PlayerTeleportEvent.TeleportCause.PLUGIN,
+				true,
+				false,
+				*RelativeTeleportFlag.values()
+			)
 		} else {
 			passenger.teleport(location)
 		}

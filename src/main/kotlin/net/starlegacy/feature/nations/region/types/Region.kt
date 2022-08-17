@@ -10,7 +10,6 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 
-
 abstract class Region<T : DbObject>(dbObject: DbObject) {
 	private val accessCache: MutableMap<UUID, String?> = WeakHashMap()
 	abstract val world: String

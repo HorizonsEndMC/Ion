@@ -36,7 +36,10 @@ object PlanetSpawns : SLComponent() {
 		Tasks.async {
 			val planets = LinkedList(Space.getPlanets())
 			planets.removeAll {
-				!File(PLUGIN.sharedDataFolder, "planet_spawn_descriptions/${it.name.lowercase(Locale.getDefault())}").exists()
+				!File(
+					PLUGIN.sharedDataFolder,
+					"planet_spawn_descriptions/${it.name.lowercase(Locale.getDefault())}"
+				).exists()
 			}
 
 			// check how many active players live on each planet
@@ -70,7 +73,10 @@ object PlanetSpawns : SLComponent() {
 
 			val extraLores: Map<CachedPlanet, List<String>> = orderedPlanets.associateWith { planet ->
 				val file =
-					File(PLUGIN.sharedDataFolder, "planet_spawn_descriptions/${planet.name.lowercase(Locale.getDefault())}")
+					File(
+						PLUGIN.sharedDataFolder,
+						"planet_spawn_descriptions/${planet.name.lowercase(Locale.getDefault())}"
+					)
 
 				if (!file.exists()) {
 					file.createNewFile()

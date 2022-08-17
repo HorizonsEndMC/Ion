@@ -26,7 +26,8 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 	override val projectileExplosionPower: Float = 4f
 	override val projectileShieldDamageMultiplier: Int = 2
 
-	override fun buildFirePointOffsets(): List<Vec3i> = listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))
+	override fun buildFirePointOffsets(): List<Vec3i> =
+		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))
 
 	override fun MultiblockShape.buildStructure() {
 		z(-2) {

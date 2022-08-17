@@ -217,7 +217,13 @@ object PilotedStarships : SLComponent() {
 
 			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
 				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
-					player.sendFeedbackMessage(USER_ERROR, "Block at {0}, {1}, {2} is the computer of a piloted ship!", x, y, z)
+					player.sendFeedbackMessage(
+						USER_ERROR,
+						"Block at {0}, {1}, {2} is the computer of a piloted ship!",
+						x,
+						y,
+						z
+					)
 					return false
 				}
 
@@ -281,7 +287,7 @@ object PilotedStarships : SLComponent() {
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 		for (player in player.world.getNearbyPlayers(player.location, 500.0)) {
-		player.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
+			player.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
 		player.sendFeedbackActionMessage(SUCCESS, "Released {0}", getDisplayName(starship.data))
 		return true

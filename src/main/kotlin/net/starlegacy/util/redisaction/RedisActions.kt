@@ -42,7 +42,6 @@ object RedisActions : SLComponent() {
 			}
 		}).create()
 
-
 	inline fun <reified T, B> register(id: String, runSync: Boolean, noinline function: (T) -> B): RedisAction<T> {
 		val action = object : RedisAction<T>(id, object : TypeToken<T>() {}.type, runSync) {
 			override fun onReceive(data: T) {

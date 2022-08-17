@@ -173,8 +173,9 @@ object ShipmentManager : SLComponent() {
 			val digit = answer.filter { it.isDigit() }
 			val amount = digit.toIntOrNull() ?: return@input "Amount must be an integer"
 
-			val playerMaxShipSize = StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }
-				.sortedByDescending { it.maxSize }[0].maxSize
+			val playerMaxShipSize =
+				StarshipType.values().filter { !it.isWarship && it.canUse(player) && it != PLATFORM }
+					.sortedByDescending { it.maxSize }[0].maxSize
 
 			val min = balancing.generator.minShipmentSize
 			val max = min(
@@ -379,7 +380,8 @@ object ShipmentManager : SLComponent() {
 
 				val playernationid = PlayerCache[player].nation
 
-				val capturedStationCount = min(CapturableStation.count(CapturableStation::nation eq playernationid).toInt(), 6)
+				val capturedStationCount =
+					min(CapturableStation.count(CapturableStation::nation eq playernationid).toInt(), 6)
 				val siegeBonusPercent = capturedStationCount * 5
 				val siegeBonus = totalRevenue * siegeBonusPercent / 100
 

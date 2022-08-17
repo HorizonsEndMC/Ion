@@ -190,7 +190,6 @@ object PlanetCommand : SLCommand() {
 			"Its planet world is &2${planet.planetWorldName}"
 	}
 
-
 	@Subcommand("info")
 	@CommandCompletion("@planets")
 	fun onInfo(sender: CommandSender, planet: CachedPlanet) {

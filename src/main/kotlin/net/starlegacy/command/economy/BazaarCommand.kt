@@ -91,7 +91,6 @@ object BazaarCommand : SLCommand() {
 		BazaarItem.findOne(BazaarItem.matchQuery(territory.id, sender.slPlayerId, itemString))
 			?: fail { "You're not selling $itemString at ${cityName(territory)}" }
 
-
 	@Subcommand("deposit")
 	@Description("Deposit all matching items in your inventory")
 	@CommandCompletion("@bazaarItemStrings")

@@ -53,7 +53,6 @@ object StarCommand : SLCommand() {
 		sender msg green("Created star $name at $x $z in $spaceWorld with material $material and size $size")
 	}
 
-
 	@Subcommand("getpos")
 	@CommandCompletion("@stars")
 	fun onGetPos(sender: CommandSender, star: CachedStar) {

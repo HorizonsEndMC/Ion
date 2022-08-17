@@ -141,7 +141,6 @@ object Wires : SLComponent() {
 		}
 	}
 
-
 	private fun step(world: World, x: Int, y: Int, z: Int, direction: BlockFace, computer: Vec3i?, distance: Int) {
 		if (distance > transportConfig.wires.maxDistance) {
 			return
@@ -192,7 +191,6 @@ object Wires : SLComponent() {
 			}
 			return
 		}
-
 
 		// check computers on the main thread as their signs need to be accessed,
 		// and tile entities aren't as easy to access in a thread-safe manner.

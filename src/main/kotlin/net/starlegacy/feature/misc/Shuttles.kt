@@ -128,7 +128,8 @@ object Shuttles : SLComponent() {
 
 			// only update shuttles with the world loaded on this server
 			val world = Bukkit.getWorld(currentDest.world) ?: continue
-			val currentLoc = Location(world, currentDest.x.toDouble(), currentDest.y.toDouble(), currentDest.z.toDouble())
+			val currentLoc =
+				Location(world, currentDest.x.toDouble(), currentDest.y.toDouble(), currentDest.z.toDouble())
 
 			val minutes = (Instant.now().epochSecond - shuttle.lastMove.toInstant().epochSecond).toInt() / 60
 
@@ -155,7 +156,10 @@ object Shuttles : SLComponent() {
 
 					// run after a second delay so that it doesn't message passengers
 					Tasks.syncDelay(20) {
-						messageNearby(currentLoc, "&6Shuttle &b$shuttleName&6 departed. Scheduled return in $time minutes")
+						messageNearby(
+							currentLoc,
+							"&6Shuttle &b$shuttleName&6 departed. Scheduled return in $time minutes"
+						)
 					}
 				}
 			}

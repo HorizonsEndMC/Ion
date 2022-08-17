@@ -111,7 +111,6 @@ object MobDefender : Multiblock() {
 		} catch (e: IOException) {
 			e.printStackTrace()
 		}
-
 	}
 
 	fun cancelSpawn(location: Location): Boolean {

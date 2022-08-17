@@ -77,8 +77,9 @@ object ChannelSelections : SLComponent() {
 					return@listen
 				} else {
 					localCache[playerID] = channel
-					val info: String = "&f&lSwitched to &l${channel.displayName.uppercase(Locale.getDefault())}&f&l chat! " +
-						"To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'"
+					val info: String =
+						"&f&lSwitched to &l${channel.displayName.uppercase(Locale.getDefault())}&f&l chat! " +
+							"To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'"
 					player action info
 				}
 

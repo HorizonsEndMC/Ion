@@ -24,7 +24,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
-
 object SwordListener : SLEventListener() {
 	@EventHandler
 	fun onSwordBreakBlockCreative(event: PlayerInteractEvent) {
