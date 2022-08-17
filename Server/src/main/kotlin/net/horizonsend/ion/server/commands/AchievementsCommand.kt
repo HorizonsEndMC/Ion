@@ -19,20 +19,18 @@ import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("achievements")
+@Suppress("Unused")
 class AchievementsCommand : BaseCommand() {
 	@Default
-	@Suppress("Unused")
 	fun onAchievementsList(sender: Player) {
 		sender.openScreen(AchievementsScreen(sender.name))
 	}
 
-	@Suppress("Unused")
 	@Default
 	fun onAchievementsList(sender: Player, target: String) {
 		sender.openScreen(AchievementsScreen(target))
 	}
 
-	@Suppress("Unused")
 	@Subcommand("grant")
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.grant")
@@ -61,7 +59,6 @@ class AchievementsCommand : BaseCommand() {
 		)
 	}
 
-	@Suppress("Unused")
 	@Subcommand("revoke")
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.revoke")

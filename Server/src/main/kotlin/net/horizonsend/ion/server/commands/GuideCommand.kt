@@ -14,9 +14,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 @CommandAlias("guide")
+@Suppress("Unused")
 class GuideCommand : BaseCommand() {
 	@Default
-	@Suppress("Unused")
 	fun onCommand(sender: Player, @Default("1") page: Int) {
 		if (1 > page || page > 3) {
 			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "That page does not exist.")

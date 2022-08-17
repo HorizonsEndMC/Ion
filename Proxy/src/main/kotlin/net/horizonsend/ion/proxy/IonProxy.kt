@@ -1,5 +1,6 @@
 package net.horizonsend.ion.proxy
 
+import co.aikar.commands.BaseCommand
 import co.aikar.commands.VelocityCommandManager
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventTask
@@ -27,9 +28,8 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
-import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
-import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
 import org.reflections.Reflections
+import org.reflections.scanners.Scanners.SubTypes
 import org.reflections.scanners.Scanners.TypesAnnotated
 import org.slf4j.Logger
 
@@ -69,10 +69,13 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, val logger: Logger, @Dat
 			.also { logger.info("Loading ${it.size} listeners.") }
 			.forEach { proxy.eventManager.register(this, it) }
 
-		VelocityCommandManager(proxy, this).apply {
-			registerCommand(VelocityInfoCommand())
-			registerCommand(VelocityAccountCommand())
-		}
+		val commandManager = VelocityCommandManager(proxy, this)
+
+		reflections.get(SubTypes.of(BaseCommand::class.java).asClass<Any>())
+			.map { it.constructors[0] }
+			.map { it.newInstance() }
+			.also { logger.info("Loading ${it.size} commands.") }
+			.forEach { commandManager.registerCommand(it as BaseCommand) }
 
 		JDACommandManager(
 			jda,
