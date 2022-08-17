@@ -30,6 +30,7 @@ import net.starlegacy.util.redisaction.RedisAction
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
+import org.litote.kmongo.eq
 
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {
 	GLOBAL("&2Global", listOf("global", "g"), SLTextStyle.RESET) {
@@ -315,6 +316,10 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 
 				if (RelationCache[playerNation, message.id] >= NationRelation.Level.ALLY) {
 					player.sendMessage(*component)
+				}
+				for (relation in NationRelation.find(NationRelation::nation eq message.id)) {
+					if (relation.other == playerNation && relation.actual == NationRelation.Level.ALLY)
+						player.sendMessage(*component)
 				}
 			}
 		}.registerRedisAction("nations-chat-msg-ally", runSync = false)
