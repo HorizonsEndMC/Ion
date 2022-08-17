@@ -15,7 +15,6 @@ import net.starlegacy.util.d
 import net.starlegacy.util.getSphereBlocks
 import net.starlegacy.util.i
 import net.starlegacy.util.nms
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter.Yellow
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
@@ -94,7 +93,6 @@ class CachedPlanet(
 	fun toggleRogue(rogue: Boolean): UpdateResult = Planet.setRogue(databaseId, rogue)
 
 	fun changeX(x: Int): UpdateResult = Planet.setX(databaseId, x)
-
 
 	fun changeZ(z: Int): UpdateResult = Planet.setZ(databaseId, z)
 
