@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class MultiblockDetectEvent(val player: Player, val multiblock: Multiblock) : Event(true) {
+class MultiblockDetectEvent(val player: Player, val multiblock: Multiblock) : Event() {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}
