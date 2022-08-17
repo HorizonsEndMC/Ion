@@ -2,7 +2,7 @@ package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.Achievement
-import net.horizonsend.ion.common.managers.CommonManager
+import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.server.commands.AchievementsCommand
 import net.horizonsend.ion.server.commands.GuideCommand
 import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
@@ -23,7 +23,7 @@ import org.reflections.scanners.Scanners.SubTypes
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
-		CommonManager.init(dataFolder.toPath())
+		initializeCommon(dataFolder.toPath())
 
 		val reflectionsScanner = Reflections("net.horizonsend.ion.server")
 
