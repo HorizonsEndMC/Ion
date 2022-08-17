@@ -8,10 +8,13 @@ import com.velocitypowered.api.proxy.server.ServerPing
 import com.velocitypowered.api.util.Favicon
 import java.net.URL
 import java.util.Base64
+import net.horizonsend.ion.proxy.annotations.VelocityListener
 import net.horizonsend.ion.proxy.proxy
 import net.horizonsend.ion.proxy.proxyConfiguration
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 
+@VelocityListener
+@Suppress("Unused")
 class ProxyPingListener {
 	private val messages =
 		URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")
@@ -28,7 +31,6 @@ class ProxyPingListener {
 			}"
 		)
 
-	@Suppress("Unused")
 	@Subscribe(order = PostOrder.NORMAL)
 	fun onProxyPingEvent(event: ProxyPingEvent): EventTask = EventTask.async {
 		event.ping = ServerPing(

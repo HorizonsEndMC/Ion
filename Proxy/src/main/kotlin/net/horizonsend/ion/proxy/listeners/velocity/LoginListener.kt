@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.proxy.annotations.VelocityListener
 import net.horizonsend.ion.proxy.jda
 import net.horizonsend.ion.proxy.proxyConfiguration
 import net.kyori.adventure.text.Component
@@ -13,8 +14,9 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@VelocityListener
+@Suppress("Unused")
 class LoginListener {
-	@Suppress("Unused")
 	@Subscribe(order = PostOrder.LAST)
 	fun onLoginEvent(event: LoginEvent): EventTask = EventTask.async {
 		var headerComponent =
