@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.utilities
+package net.horizonsend.ion.proxy
 
 import java.time.OffsetDateTime
 import net.dv8tion.jda.api.entities.EmbedType

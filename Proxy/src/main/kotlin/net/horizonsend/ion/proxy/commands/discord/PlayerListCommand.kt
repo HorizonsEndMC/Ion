@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.annotations.CommandMeta
-import net.horizonsend.ion.proxy.utilities.messageEmbed
+import net.horizonsend.ion.proxy.messageEmbed
 
 @CommandMeta("playerlist", "List online players.")
 class PlayerListCommand(private val plugin: IonProxy) {
