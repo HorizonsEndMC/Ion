@@ -111,15 +111,21 @@ class IonProxy @Inject constructor(
 		execute: (Any) -> Unit
 	) {
 		reflections.get(scanner.asClass<T>())
-			.map { it.constructors[0] }
-			.map { constructor ->
-				constructor.newInstance(*constructor.parameterTypes.map {
+			.map clazzMap@ { clazz ->
+				clazz.constructors[0].newInstance(*clazz.constructors[0].parameterTypes.map {
 					when (it) {
+						ProxyConfiguration::class.java -> configuration
+						JDA::class.java -> if (jda != null) jda else {
+							logger.error("${clazz.name} has not been loaded as it requires JDA which is unavailable.")
+							return@clazzMap null
+						}
+						ProxyServer::class.java -> velocity
 						IonProxy::class.java -> this
 						else -> throw NotImplementedError("Can not provide $it")
 					}
 				}.toTypedArray())
 			}
+			.filterNotNull()
 			.also { logger.info("Loading ${it.size} $name.") }
 			.forEach(execute)
 	}
