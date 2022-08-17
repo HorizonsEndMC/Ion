@@ -41,7 +41,11 @@ class PlayerData(minecraftUUID: EntityID<UUID>) : UUIDEntity(minecraftUUID) {
 		get() = _achievements
 			.split(",")
 			.mapNotNull {
-				try { Achievement.valueOf(it) } catch (_: IllegalArgumentException) { null }
+				try {
+					Achievement.valueOf(it)
+				} catch (_: IllegalArgumentException) {
+					null
+				}
 			}
 
 	fun addAchievement(achievement: Achievement) {

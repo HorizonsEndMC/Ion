@@ -32,7 +32,8 @@ class LoginListener {
 		event.player.sendPlayerListHeader(headerComponent)
 
 		val memberId =
-			transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.username).discordUUID } ?: return@async
+			transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.username).discordUUID }
+				?: return@async
 		val guild = jda.getGuildById(proxyConfiguration.discordServer) ?: return@async
 
 		guild.addRoleToMember(

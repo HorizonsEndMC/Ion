@@ -6,12 +6,11 @@ import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("unused")
-class HyperSpaceEnterListener : Listener{
+class HyperSpaceEnterListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onHyperSpaceEnter(event:HyperspaceEnterEvent){
+	fun onHyperSpaceEnter(event: HyperspaceEnterEvent) {
 		event.player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
 	}
 }

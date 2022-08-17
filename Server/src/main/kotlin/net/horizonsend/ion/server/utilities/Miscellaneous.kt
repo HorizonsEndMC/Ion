@@ -12,7 +12,10 @@ val forbiddenCraftingItems = enumSetOf(
 
 inline fun ionCore(execute: () -> Unit) {
 	if (!Bukkit.getPluginManager().isPluginEnabled("IonCore")) return
-	try { execute() } catch (_: NoClassDefFoundError) {}
+	try {
+		execute()
+	} catch (_: NoClassDefFoundError) {
+	}
 }
 
 inline fun vaultEconomy(execute: (Economy) -> Unit) {

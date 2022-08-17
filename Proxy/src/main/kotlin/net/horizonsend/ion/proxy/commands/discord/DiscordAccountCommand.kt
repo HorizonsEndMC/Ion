@@ -1,9 +1,9 @@
 package net.horizonsend.ion.proxy.commands.discord
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.proxy.annotations.CommandMeta
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
+import net.horizonsend.ion.proxy.annotations.CommandMeta
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.proxyConfiguration
 import net.horizonsend.ion.proxy.utilities.messageEmbed

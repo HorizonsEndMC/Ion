@@ -28,7 +28,12 @@ class VelocityAccountCommand : BaseCommand() {
 		}
 
 		jda.retrieveUserById(playerData.discordUUID!!).queue {
-			sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Linked to {0} ({1}).", it.asTag, playerData.discordUUID!!)
+			sender.sendFeedbackMessage(
+				FeedbackType.INFORMATION,
+				"Linked to {0} ({1}).",
+				it.asTag,
+				playerData.discordUUID!!
+			)
 		}
 	}
 

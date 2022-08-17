@@ -24,10 +24,12 @@ fun Player.rewardAchievement(achievement: Achievement) {
 		}
 	}
 
-	showTitle(Title.title(
-		Component.text(achievement.title).color(NamedTextColor.GOLD),
-		Component.text("Achievement Granted: ${achievement.description}").color(NamedTextColor.GRAY)
-	))
+	showTitle(
+		Title.title(
+			Component.text(achievement.title).color(NamedTextColor.GOLD),
+			Component.text("Achievement Granted: ${achievement.description}").color(NamedTextColor.GRAY)
+		)
+	)
 
 	sendRichMessage(
 		"""

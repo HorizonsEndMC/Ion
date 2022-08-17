@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.screens
 
 import io.papermc.paper.adventure.PaperAdventure
-import net.horizonsend.ion.common.annotations.UpdateUnsafe
 import kotlin.math.ceil
 import kotlin.math.min
+import net.horizonsend.ion.common.annotations.UpdateUnsafe
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.database.PlayerData
 import net.kyori.adventure.text.Component
@@ -54,7 +54,7 @@ class AchievementsScreen private constructor(
 	private fun placeAchievementIcons() {
 		val startIndex = pageNumber * 5
 
-		for (achievementIndex in startIndex .. startIndex + 4) {
+		for (achievementIndex in startIndex..startIndex + 4) {
 			val achievement = try {
 				Achievement.values()[achievementIndex]
 			} catch (_: Exception) {
@@ -113,27 +113,33 @@ class AchievementsScreen private constructor(
 	}
 
 	companion object {
-		private val String.minecraftLength: Int get() =
-			this.sumOf {
-				@Suppress("Useless_Cast")
-				when (it) {
-					'i', '!', ',', '.', '\'', ':' -> 2
-					'l' -> 3
-					'I', 't', ' ' -> 4
-					'k', 'f' -> 5
-					else -> 6
-				} as Int
-			}
+		private val String.minecraftLength: Int
+			get() =
+				this.sumOf {
+					@Suppress("Useless_Cast")
+					when (it) {
+						'i', '!', ',', '.', '\'', ':' -> 2
+						'l' -> 3
+						'I', 't', ' ' -> 4
+						'k', 'f' -> 5
+						else -> 6
+					} as Int
+				}
 
 		private val Int.resetCode: Char get() = (0xDFFF + this).toChar()
 
-		private fun buildPageText(target: String, pageNumber: Int, targetAchievements: List<Achievement>): TextComponent {
+		private fun buildPageText(
+			target: String,
+			pageNumber: Int,
+			targetAchievements: List<Achievement>
+		): TextComponent {
 			val header = "$target's Achievements"
-			var string = "<white><font:horizonsend:special>\uE007\uF8FF\uE0A8<reset>$header<font:horizonsend:special>${(header.minecraftLength - 21).resetCode}"
+			var string =
+				"<white><font:horizonsend:special>\uE007\uF8FF\uE0A8<reset>$header<font:horizonsend:special>${(header.minecraftLength - 21).resetCode}"
 
 			val startIndex = pageNumber * 5
 
-			for (achievementIndex in startIndex .. min(startIndex + 4, Achievement.values().size - 1)) {
+			for (achievementIndex in startIndex..min(startIndex + 4, Achievement.values().size - 1)) {
 				val achievement = Achievement.values()[achievementIndex]
 				val hasAchievement = targetAchievements.contains(achievement)
 
@@ -147,7 +153,8 @@ class AchievementsScreen private constructor(
 					// The kk is a hacky fix, it adds up to 10 meaning it matches the length of the icon
 					if (achievement.chetheriteReward != 0) " ${achievement.chetheriteReward}kk" else ""
 				}".minecraftLength
-				val creditChetheriteOffsetCode = 0xE18A - achievement.description.minecraftLength - creditChetheriteStringLength
+				val creditChetheriteOffsetCode =
+					0xE18A - achievement.description.minecraftLength - creditChetheriteStringLength
 
 				string += "<font:horizonsend:y$y>" // Switch to line
 				string += "<$colour>${achievement.title}</$colour>" // Achievement Name

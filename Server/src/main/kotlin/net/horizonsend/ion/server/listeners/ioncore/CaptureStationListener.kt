@@ -6,12 +6,11 @@ import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("unused")
 class CaptureStationListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onCaptureStation(event: StationCaptureEvent){
+	fun onCaptureStation(event: StationCaptureEvent) {
 		event.player.rewardAchievement(Achievement.CAPTURE_STATION)
 	}
 }

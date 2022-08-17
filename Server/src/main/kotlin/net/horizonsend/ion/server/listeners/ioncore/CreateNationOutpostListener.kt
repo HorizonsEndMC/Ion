@@ -8,9 +8,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
 @Suppress("unused")
-class CreateNationOutpostListener : Listener{
+class CreateNationOutpostListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onCreateNationOutpost(event:CreateNationOutpostEvent){
+	fun onCreateNationOutpost(event: CreateNationOutpostEvent) {
 		event.player.rewardAchievement(Achievement.CREATE_OUTPOST)
 	}
 }
