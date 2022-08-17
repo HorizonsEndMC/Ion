@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utilities
+package net.horizonsend.ion.server.utilities
 
 class Position<T : Number>(
 	val x: T,
