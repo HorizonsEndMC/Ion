@@ -8,6 +8,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.abs
+import kotlin.math.min
 import kotlin.math.sqrt
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
@@ -160,7 +161,7 @@ object StarshipShields : SLComponent() {
 
 			val percent = total / amount.toDouble()
 
-			bossBar.progress = percent
+			bossBar.progress = min(percent, 1.0)
 			val titleColor = percentColor(percent)
 
 			val barColor = when {
