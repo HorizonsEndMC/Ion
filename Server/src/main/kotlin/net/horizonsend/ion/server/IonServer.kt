@@ -25,21 +25,18 @@ class IonServer : JavaPlugin() {
 	override fun onEnable() {
 		initializeCommon(dataFolder.toPath())
 
-		val reflectionsScanner = Reflections("net.horizonsend.ion.server")
+		val reflections = Reflections("net.horizonsend.ion.server")
 
-		reflectionsScanner.get(SubTypes.of(Listener::class.java).asClass<Listener>())
-			// TODO: Listeners should not be handling state so directly, they should not need the plugin instance.
-			.map {
-				val parameters = it.constructors[0].parameterTypes.map { type -> when (type) {
+		reflections.get(SubTypes.of(Listener::class.java).asClass<Listener>())
+			.map { it.constructors[0] }
+			.map { constructor ->
+				constructor.newInstance(*constructor.parameterTypes.map { when (it) {
 					IonServer::class.java -> this
-					else -> throw NotImplementedError("Can not provide ${type.simpleName}")
-				}}.toTypedArray()
-
-				it.constructors[0].newInstance(*parameters)
+					else -> throw NotImplementedError("Can not provide $it")
+				}}.toTypedArray())
 			}
-			.forEach {
-				server.pluginManager.registerEvents(it as Listener, this)
-			}
+			.also { logger.info("Loading ${it.size} listeners.") }
+			.forEach { server.pluginManager.registerEvents(it as Listener, this) }
 
 		// Luckperms
 		UserDataRecalculateListener()
