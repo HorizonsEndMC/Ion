@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
 import kotlin.random.Random
-import net.horizonsend.ion.server.utilities.Position
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.ores.Ore
 import net.horizonsend.ion.server.ores.OrePlacementConfig
+import net.horizonsend.ion.server.utilities.Position
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey

@@ -4,13 +4,12 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import net.luckperms.api.LuckPermsProvider
 
 fun constructPlayerListNameAsync(username: String, uuid: UUID): CompletableFuture<Component> = luckPerms {
-		it.userManager.loadUser(uuid).thenApplyAsync { user ->
-			constructPlayerListName(username, user.cachedData.metaData.prefix, user.cachedData.metaData.suffix)
-		}
-	} ?: CompletableFuture.completedFuture(Component.text(username))
+	it.userManager.loadUser(uuid).thenApplyAsync { user ->
+		constructPlayerListName(username, user.cachedData.metaData.prefix, user.cachedData.metaData.suffix)
+	}
+} ?: CompletableFuture.completedFuture(Component.text(username))
 
 fun constructPlayerListName(username: String, prefix: String?, suffix: String?): Component {
 	val displayName = Component.text()

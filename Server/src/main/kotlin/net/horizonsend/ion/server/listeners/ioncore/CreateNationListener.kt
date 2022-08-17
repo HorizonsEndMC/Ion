@@ -6,12 +6,11 @@ import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("unused")
 class CreateNationListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onCreateNation(event: CreateNationEvent){
+	fun onCreateNation(event: CreateNationEvent) {
 		event.player.rewardAchievement(Achievement.CREATE_NATION)
 	}
 }

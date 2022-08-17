@@ -29,9 +29,11 @@ class PlayerDeathListener : Listener {
 		head.editMeta(SkullMeta::class.java) {
 			it.displayName(event.entity.name())
 			it.owningPlayer = event.entity
-			it.lore(listOf(
-				miniMessage().deserialize("<#ff8888>Was killed by ${event.entity.killer!!.name}.")
-			))
+			it.lore(
+				listOf(
+					miniMessage().deserialize("<#ff8888>Was killed by ${event.entity.killer!!.name}.")
+				)
+			)
 		}
 
 		event.entity.world.dropItem(event.entity.location, head)
