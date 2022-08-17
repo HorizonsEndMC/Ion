@@ -4,15 +4,15 @@ import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.ServerConnectedEvent
+import com.velocitypowered.api.proxy.ProxyServer
 import java.net.URL
 import java.security.MessageDigest
-import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.annotations.VelocityListener
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 
 @VelocityListener
 @Suppress("Unused")
-class ServerConnectedListener(private val plugin: IonProxy) {
+class ServerConnectedListener(private val velocity: ProxyServer) {
 	private val resourcePackOffer = kotlin.run {
 		val tag = URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
 			.readText()
@@ -25,7 +25,7 @@ class ServerConnectedListener(private val plugin: IonProxy) {
 			.getInstance("SHA-1")
 			.digest(URL(url).readBytes())
 
-		plugin.velocity.createResourcePackBuilder(url)
+		velocity.createResourcePackBuilder(url)
 			.setHash(fileHash)
 			.setPrompt(miniMessage().deserialize("""
 				Horizon's End uses a Resource Pack to achieve many mod-like features. While you can play on the
