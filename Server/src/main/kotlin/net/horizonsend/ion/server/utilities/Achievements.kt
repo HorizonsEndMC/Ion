@@ -5,12 +5,15 @@ import net.horizonsend.ion.common.database.PlayerData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
+import net.starlegacy.SETTINGS
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Player.rewardAchievement(achievement: Achievement) {
+	ionCore { if (!SETTINGS.master) return }
+
 	val playerData = transaction { PlayerData.findById(this@rewardAchievement.uniqueId) } ?: return
 	if (playerData.achievements.contains(achievement)) return
 
