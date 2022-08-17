@@ -13,22 +13,22 @@ class PlayerListCommand(private val plugin: IonProxy) {
 	@Suppress("Unused")
 	fun onPlayerListCommand(event: SlashCommandInteractionEvent) {
 		event.replyEmbeds(
-			messageEmbed(fields = plugin.velocity.allServers
-				.filter { it.playersConnected.isNotEmpty() }
-				.map { server ->
-					val serverName = server.serverInfo.name.replaceFirstChar { it.uppercase() }
+			messageEmbed(
+				fields = plugin.velocity.allServers
+					.filter { it.playersConnected.isNotEmpty() }
+					.map { server ->
+						val serverName = server.serverInfo.name.replaceFirstChar { it.uppercase() }
 
-					MessageEmbed.Field(
-						"$serverName *(${server.playersConnected.size} online)*",
-						server.playersConnected.joinToString("\n", "", "") {
-							it.username.replace("_", "\\_")
-						},
-						true
-					)
-				}
-				.ifEmpty {
-					listOf(MessageEmbed.Field(null, "*No players online*", true))
-				}
+						MessageEmbed.Field(
+							"$serverName *(${server.playersConnected.size} online)*",
+							server.playersConnected.joinToString("\n", "", "") {
+								it.username.replace("_", "\\_")
+							},
+							true
+						)
+					}
+					.ifEmpty { null },
+				description = if (plugin.velocity.playerCount == 0) "*No players online*" else null
 			)
 		).setEphemeral(true).queue()
 	}
