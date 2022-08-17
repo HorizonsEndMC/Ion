@@ -5,8 +5,12 @@ import net.luckperms.api.LuckPermsProvider
 
 inline fun <T> luckPerms(execute: (LuckPerms) -> T): T? {
 	return execute(
-		try { LuckPermsProvider.get() }
-		catch (_: NoClassDefFoundError) { return null }
-		catch (_: IllegalStateException) { return null }
+		try {
+			LuckPermsProvider.get()
+		} catch (_: NoClassDefFoundError) {
+			return null
+		} catch (_: IllegalStateException) {
+			return null
+		}
 	)
 }

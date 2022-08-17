@@ -148,13 +148,11 @@ class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : Liste
 								it
 							)
 						}
-
 				} else if (event.subcommandName != null) {
 					commandClass::class.java.methods
 						.filter { it.hasCommandMeta }
 						.find { it.commandMeta.name == event.subcommandName }
 						?.let { invokeCommand(event, commandClass, it) }
-
 				} else {
 					commandClass::class.java.defaultCommand?.let { invokeCommand(event, commandClass, it) }
 				}
