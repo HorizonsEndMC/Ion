@@ -79,7 +79,14 @@ class IonProxy @Inject constructor(
 
 		reflections.get(TypesAnnotated.of(VelocityListener::class.java).asClass<Any>())
 			.map { it.constructors[0] }
-			.map { it.newInstance() }
+			.map { constructor ->
+				constructor.newInstance(*constructor.parameterTypes.map {
+					when (it) {
+						IonProxy::class.java -> this
+						else -> throw NotImplementedError("Can not provide $it")
+					}
+				}.toTypedArray())
+			}
 			.also { logger.info("Loading ${it.size} listeners.") }
 			.forEach { velocity.eventManager.register(this, it) }
 
@@ -87,7 +94,14 @@ class IonProxy @Inject constructor(
 
 		reflections.get(SubTypes.of(BaseCommand::class.java).asClass<Any>())
 			.map { it.constructors[0] }
-			.map { it.newInstance() }
+			.map { constructor ->
+				constructor.newInstance(*constructor.parameterTypes.map {
+					when (it) {
+						IonProxy::class.java -> this
+						else -> throw NotImplementedError("Can not provide $it")
+					}
+				}.toTypedArray())
+			}
 			.also { logger.info("Loading ${it.size} commands.") }
 			.forEach { commandManager.registerCommand(it as BaseCommand) }
 
