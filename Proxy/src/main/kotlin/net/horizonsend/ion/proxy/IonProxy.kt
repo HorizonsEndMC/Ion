@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import net.horizonsend.ion.common.managers.CommonManager
+import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
@@ -37,18 +37,14 @@ import net.horizonsend.ion.proxy.listeners.velocity.ServerConnectedListener
 import org.slf4j.Logger
 
 internal lateinit var proxy: ProxyServer private set
-internal lateinit var logger: Logger private set
-internal lateinit var dataDirectory: Path private set
 internal lateinit var proxyConfiguration: ProxyConfiguration private set
 internal lateinit var jda: JDA private set
 
 @Suppress("Unused")
 @Plugin(id = "ion", name = "Ion") // While we do not use this for generating velocity-plugin.json, ACF requires it.
-class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDirectory dataDirectory0: Path) {
+class IonProxy @Inject constructor(proxy0: ProxyServer, logger: Logger, @DataDirectory val dataDirectory: Path) {
 	init {
 		proxy = proxy0
-		logger = logger0
-		dataDirectory = dataDirectory0
 		proxyConfiguration = loadConfiguration(dataDirectory)
 		try {
 			jda = JDABuilder.createLight(proxyConfiguration.discordBotToken)
@@ -66,7 +62,7 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger0: Logger, @DataDi
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
-		CommonManager.init(dataDirectory)
+		initializeCommon(dataDirectory)
 
 		arrayOf(
 			LoginListener(), PreLoginListener(), ProxyPingListener(), ServerConnectedListener(), DisconnectListener(), PlayerResourcePackStatusListener()
