@@ -247,6 +247,7 @@ object Multiblocks : SLComponent() {
 		for (multiblock in multiblocks) {
 			if (multiblock.matchesUndetectedSign(sign)) {
 				if (multiblock.signMatchesStructure(sign, particles = true)) {
+					MultiblockDetectEvent(player, multiblock).callEvent()
 					return multiblock.setupSign(player, sign)
 				} else {
 					lastMatch = multiblock
@@ -257,6 +258,5 @@ object Multiblocks : SLComponent() {
 		if (lastMatch != null) {
 			player msg "&4Improperly built &c${lastMatch.name}&4. Make sure every block is correctly placed!"
 		}
-		MultiblockDetectEvent(player, lastMatch!!).callEvent()
 	}
 }
