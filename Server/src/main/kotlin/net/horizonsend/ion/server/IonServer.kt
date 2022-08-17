@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server
 
+import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.initializeCommon
-import net.horizonsend.ion.server.commands.AchievementsCommand
-import net.horizonsend.ion.server.commands.GuideCommand
 import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import org.bukkit.Keyed
@@ -38,8 +37,18 @@ class IonServer : JavaPlugin() {
 			.also { logger.info("Loading ${it.size} listeners.") }
 			.forEach { server.pluginManager.registerEvents(it as Listener, this) }
 
-		// Luckperms
-		UserDataRecalculateListener()
+		UserDataRecalculateListener() // Luckperms
+
+		val commandManager = PaperCommandManager(this)
+
+		reflections.get(SubTypes.of(BaseCommand::class.java).asClass<Any>())
+			.map { it.constructors[0] }
+			.map { it.newInstance() }
+			.also { logger.info("Loading ${it.size} commands.") }
+			.forEach { commandManager.registerCommand(it as BaseCommand) }
+
+
+		commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 
 		/**
 		 * Recipes
@@ -110,16 +119,6 @@ class IonServer : JavaPlugin() {
 			server.getRecipesFor(ItemStack(material)).forEach {
 				if (it is Keyed) server.removeRecipe(it.key)
 			}
-		}
-
-		/**
-		 * Commands
-		 */
-		PaperCommandManager(this).apply {
-			registerCommand(AchievementsCommand())
-			registerCommand(GuideCommand())
-
-			commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 		}
 	}
 }

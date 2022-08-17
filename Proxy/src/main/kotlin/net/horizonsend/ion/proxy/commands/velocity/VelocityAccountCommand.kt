@@ -13,10 +13,10 @@ import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.proxyConfiguration
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@Suppress("Unused")
 @CommandAlias("account")
 @Description("Manage the link between your Minecraft and Discord account.")
 class VelocityAccountCommand : BaseCommand() {
-	@Suppress("Unused")
 	@Subcommand("status")
 	@Description("Check linked Discord account.")
 	fun onStatusCommand(sender: Player) {
@@ -32,7 +32,6 @@ class VelocityAccountCommand : BaseCommand() {
 		}
 	}
 
-	@Suppress("Unused")
 	@Subcommand("unlink")
 	@Description("Unlink Discord account.")
 	fun onUnlinkCommand(sender: Player) = transaction {
@@ -54,7 +53,6 @@ class VelocityAccountCommand : BaseCommand() {
 		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Your account is no longer linked.")
 	}
 
-	@Suppress("Unused")
 	@Subcommand("link")
 	@Description("Link Discord account.")
 	fun onLinkCommand(sender: Player) {
