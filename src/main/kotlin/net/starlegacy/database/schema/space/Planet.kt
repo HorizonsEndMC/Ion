@@ -76,7 +76,11 @@ data class Planet(
 			col.updateOneById(id, setValue(Planet::sun, sun))
 
 		fun setRogue(id: Oid<Planet>, rogue: Boolean): UpdateResult =
-			col.updateOneById(id, setValue(Planet::rogue, rogue))
+			if (!rogue == null) {
+				col.updateOneById(id, setValue(Planet::rogue, false))
+			} else {
+				col.updateOneById(id, setValue(Planet::rogue, rogue))
+			}
 
 		fun setX(id: Oid<Planet>, x: Int): UpdateResult =
 			col.updateOneById(id, setValue(Planet::x, x))
