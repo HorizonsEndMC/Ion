@@ -1,6 +1,6 @@
 package net.starlegacy.feature.misc
 
-import net.horizonsend.ion.common.UpdateUnsafe
+import net.horizonsend.ion.common.annotations.UpdateUnsafe
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.FLYABLE_BLOCKS
