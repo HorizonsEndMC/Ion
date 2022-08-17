@@ -27,11 +27,8 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.common.utilities.loadConfiguration
+import net.horizonsend.ion.proxy.annotations.CommandMeta
 import net.horizonsend.ion.proxy.annotations.VelocityListener
-import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
-import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import org.reflections.Reflections
 import org.reflections.Store
 import org.reflections.scanners.Scanners.SubTypes
@@ -84,11 +81,17 @@ class IonProxy @Inject constructor(
 			commandManager.registerCommand(it as BaseCommand)
 		}
 
-		jda?.let {
-			JDACommandManager(it, DiscordInfoCommand(), DiscordAccountCommand(), PlayerListCommand(this), ResyncCommand())
+		jda?.let { jda ->
+			val jdaCommandManager = JDACommandManager(jda)
+
+			reflectionsRegister(reflections, TypesAnnotated.of(CommandMeta::class.java), "discord commands") {
+				jdaCommandManager.register(it)
+			}
+
+			jdaCommandManager.build()
 
 			velocity.scheduler.buildTask(this, Runnable {
-				it.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${velocity.playerCount} players!"))
+				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${velocity.playerCount} players!"))
 			}).repeat(5, TimeUnit.SECONDS).schedule()
 		}
 

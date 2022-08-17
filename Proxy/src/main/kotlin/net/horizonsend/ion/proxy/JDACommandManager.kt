@@ -26,10 +26,14 @@ import org.jetbrains.annotations.Nullable
  * ACF's support for JDA is outdated and probably does not support Slash Commands, so here is a horribly thrown together
  * command manager that will act similar to how ACF does.
  */
-class JDACommandManager(jda: JDA, private val commandClasses: List<Any>) : ListenerAdapter() {
-	constructor(jda: JDA, vararg commandClass: Any) : this(jda, commandClass.toList())
+class JDACommandManager(private val jda: JDA) : ListenerAdapter() {
+	private val commandClasses = mutableListOf<Any>()
 
-	init {
+	fun register(command: Any) {
+		commandClasses.add(command)
+	}
+
+	fun build() {
 		jda.updateCommands().addCommands(commandClasses.map { commandClass ->
 			var commandData = Commands.slash(
 				commandClass::class.java.commandMeta.name,
