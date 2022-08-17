@@ -45,6 +45,10 @@ object PlanetCommand : SLCommand() {
 		if (Space.getPlanet(name) != null) {
 			throw InvalidCommandArgument("A star with that name already exists!")
 		}
+		if (Space.getPlanet(name)?.rogue == true) {
+			val planet: CachedPlanet = Space.planetNameCache[name].get()
+			planet.setLocation(true)
+		}
 
 		val seed: Long = name.hashCode().toLong()
 		val orbitProgress: Double = randomDouble(0.0, 360.0)
@@ -182,18 +186,26 @@ object PlanetCommand : SLCommand() {
 	@CommandCompletion("@planets true|false")
 	fun onSetRogue(sender: CommandSender, planet: CachedPlanet, newValue: Boolean) {
 		val oldValue = planet.rogue
+		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
+
 		planet.toggleRogue(newValue)
 		sender msg green("Updated ${planet.name} rogue to $newValue from $oldValue")
-		planet.orbit(true)
+		planet.setLocation(true)
+		spaceWorld.save()
+		SpaceMap.refresh()
 	}
 
 	@Subcommand("set location")
 	@CommandCompletion("@planets x z")
 	fun onSetLocation(sender: CommandSender, planet: CachedPlanet, x: Int, z: Int) {
+		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
+
 		planet.changeX(x)
 		planet.changeZ(z)
 		sender msg green ("Moved ${planet.name} to $x, $z")
 		planet.setLocation(true, true)
+		spaceWorld.save()
+		SpaceMap.refresh()
 	}
 
 	@Subcommand("set orbit distance")
