@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common
+package net.horizonsend.ion.common.annotations
 
 /**
  * This annotation should be used anywhere which heavily relies on net.minecraft.server, reflection, or any other code
