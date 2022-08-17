@@ -40,19 +40,18 @@ import org.reflections.util.QueryFunction
 import org.slf4j.Logger
 
 @Deprecated("Use dependency injection.") internal lateinit var proxyConfiguration: ProxyConfiguration private set
-@Deprecated("Use dependency injection.") internal lateinit var jda: JDA private set
 
 @Suppress("Unused")
 @Plugin(id = "ion", name = "Ion") // While we do not use this for generating velocity-plugin.json, ACF requires it.
 class IonProxy @Inject constructor(
-	val velocity: ProxyServer,
-	val logger: Logger,
+	private val velocity: ProxyServer,
+	private val logger: Logger,
 	@DataDirectory
-	val dataDirectory: Path
+	private val dataDirectory: Path
 ) {
-	val configuration: ProxyConfiguration = loadConfiguration(dataDirectory)
+	private val configuration: ProxyConfiguration = loadConfiguration(dataDirectory)
 
-	val jda = try {
+	private val jda = try {
 		JDABuilder.createLight(configuration.discordBotToken)
 			.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
 			.setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -70,9 +69,6 @@ class IonProxy @Inject constructor(
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
 		@Suppress("Deprecation") // Older code compatibility
 		proxyConfiguration = configuration
-
-		@Suppress("Deprecation") // Older code compatibility
-		if (jda != null) net.horizonsend.ion.proxy.jda = jda
 
 		initializeCommon(dataDirectory)
 
