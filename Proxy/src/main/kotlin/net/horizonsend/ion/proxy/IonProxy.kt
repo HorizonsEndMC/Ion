@@ -14,6 +14,9 @@ import com.velocitypowered.api.proxy.ProxyServer
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
+import kotlin.reflect.full.createType
+import kotlin.reflect.jvm.javaConstructor
+import kotlin.reflect.jvm.javaType
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
@@ -112,15 +115,21 @@ class IonProxy @Inject constructor(
 	) {
 		reflections.get(scanner.asClass<T>())
 			.map clazzMap@ { clazz ->
-				clazz.constructors[0].newInstance(*clazz.constructors[0].parameterTypes.map { when (it) {
-					ProxyConfiguration::class.java -> configuration
-					JDA::class.java -> if (jda != null) jda else {
+				val constructor = clazz.kotlin.constructors.first()
+
+				constructor.javaConstructor?.newInstance(*constructor.parameters.map { when (it.type) {
+					ProxyConfiguration::class.createType() -> configuration
+					ProxyServer::class.createType() -> velocity
+					IonProxy::class.createType() -> this
+					JDA::class.createType(nullable = true) -> jda
+					JDA::class.createType() -> if (jda != null) jda else {
 						logger.error("${clazz.name} has not been loaded as it requires JDA which is unavailable.")
 						return@clazzMap null
 					}
-					ProxyServer::class.java -> velocity
-					IonProxy::class.java -> this
-					else -> throw NotImplementedError("Can not provide $it")
+					else -> {
+						logger.error("Unable to provide ${it.type.javaType.typeName} to ${clazz.simpleName}.")
+						return@clazzMap null
+					}
 				}}.toTypedArray())
 			}
 			.filterNotNull()
