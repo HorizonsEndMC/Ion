@@ -4,19 +4,19 @@ import co.aikar.commands.annotation.Default
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
+import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.annotations.CommandMeta
-import net.horizonsend.ion.proxy.proxyConfiguration
 import net.horizonsend.ion.proxy.messageEmbed
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@Suppress("Unused")
 @CommandMeta("resync", "Resync all roles")
-class ResyncCommand {
+class ResyncCommand(private val configuration: ProxyConfiguration) {
 	@Default
-	@Suppress("Unused")
 	fun onResyncCommand(event: SlashCommandInteractionEvent) {
 		if (event.user.idLong != 521031433972744193) {
-			event.replyEmbeds(messageEmbed("You do not have permission to use this command.", color = 0xff8844))
+			event.replyEmbeds(messageEmbed(title = "You do not have permission to use this command.", color = 0xff8844))
 				.setEphemeral(true)
 				.queue()
 			return
@@ -26,19 +26,17 @@ class ResyncCommand {
 
 		val players = transaction { PlayerData.find(PlayerDataTable.discordUUID.isNotNull()).toList() }
 
-		val guild = event.jda.getGuildById(proxyConfiguration.discordServer)
+		val guild = event.jda.getGuildById(configuration.discordServer)
 
 		if (guild == null) {
-			event.hook.editOriginalEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
-				.queue()
+			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild is not set.", color = 0xff8844)).queue()
 			return
 		}
 
-		val linkedRole = guild.getRoleById(proxyConfiguration.linkedRole)
+		val linkedRole = guild.getRoleById(configuration.linkedRole)
 
 		if (linkedRole == null) {
-			event.hook.editOriginalEmbeds(messageEmbed("Guild is not set.", color = 0xff8844))
-				.queue()
+			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild is not set.", color = 0xff8844)).queue()
 			return
 		}
 
@@ -48,7 +46,6 @@ class ResyncCommand {
 			guild.addRoleToMember(user, linkedRole)
 		}
 
-		event.hook.editOriginalEmbeds(messageEmbed("Done", color = 0x7fff7f))
-			.queue()
+		event.hook.editOriginalEmbeds(messageEmbed(title = "Done", color = 0x7fff7f)).queue()
 	}
 }
