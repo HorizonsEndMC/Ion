@@ -76,7 +76,8 @@ object Space : SLComponent() {
 
 				val planetName = mongoPlanet.name
 				val planetWorldName = mongoPlanet.planetWorld
-				val rogue = mongoPlanet.rogue
+				var rogue = mongoPlanet.rogue
+					if (mongoPlanet.rogue == null) {rogue = false}
 				val x = mongoPlanet.x
 				val z = mongoPlanet.z
 				val planetSize = mongoPlanet.size
