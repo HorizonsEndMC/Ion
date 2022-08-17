@@ -1,20 +1,20 @@
 package net.horizonsend.ion.proxy.commands.discord
 
 import co.aikar.commands.annotation.Default
+import com.velocitypowered.api.proxy.ProxyServer
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.annotations.CommandMeta
 import net.horizonsend.ion.proxy.messageEmbed
 
+@Suppress("Unused")
 @CommandMeta("playerlist", "List online players.")
-class PlayerListCommand(private val plugin: IonProxy) {
+class PlayerListCommand(private val velocity: ProxyServer) {
 	@Default
-	@Suppress("Unused")
 	fun onPlayerListCommand(event: SlashCommandInteractionEvent) {
 		event.replyEmbeds(
 			messageEmbed(
-				fields = plugin.velocity.allServers
+				fields = velocity.allServers
 					.filter { it.playersConnected.isNotEmpty() }
 					.map { server ->
 						val serverName = server.serverInfo.name.replaceFirstChar { it.uppercase() }
@@ -28,7 +28,7 @@ class PlayerListCommand(private val plugin: IonProxy) {
 						)
 					}
 					.ifEmpty { null },
-				description = if (plugin.velocity.playerCount == 0) "*No players online*" else null
+				description = if (velocity.playerCount == 0) "*No players online*" else null
 			)
 		).setEphemeral(true).queue()
 	}
