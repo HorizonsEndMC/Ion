@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class CompleteCargoRunEvent(val player: Player) : Event() {
+class CompleteCargoRunEvent(val player: Player) : Event(true) {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class BuySpawnShuttleEvent(val player: Player, val world: World) : Event() {
+class BuySpawnShuttleEvent(val player: Player, val world: World) : Event(true) {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}
