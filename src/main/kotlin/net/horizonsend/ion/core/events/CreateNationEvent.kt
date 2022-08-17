@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class CreateNationEvent(val player: Player, val nation: String) :Event() {
+class CreateNationEvent(val player: Player, val nation: String) : Event() {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}
@@ -12,6 +12,5 @@ class CreateNationEvent(val player: Player, val nation: String) :Event() {
 	companion object {
 		@JvmStatic
 		val handlerList = HandlerList()
-
 	}
 }

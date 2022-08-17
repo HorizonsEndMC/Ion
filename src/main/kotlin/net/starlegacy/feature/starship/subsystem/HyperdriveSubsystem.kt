@@ -9,7 +9,6 @@ import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.inventory.ItemStack
 
-
 class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: HyperdriveMultiblock) :
 	AbstractMultiblockSubsystem<HyperdriveMultiblock>(starship, sign, multiblock) {
 	private fun getHoppers(): Set<Hopper> {

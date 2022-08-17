@@ -40,7 +40,11 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : SLCommand() {
 		requireCanDeposit(sender, parent)
 
 		failIf(!VAULT_ECO.has(sender, amount.toDouble()))
-		{ "You don't have ${amount.toCreditsString()}! You only have ${VAULT_ECO.getBalance(sender).toCreditsString()}" }
+		{
+			"You don't have ${amount.toCreditsString()}! You only have ${
+				VAULT_ECO.getBalance(sender).toCreditsString()
+			}"
+		}
 
 		deposit(parent, amount)
 		VAULT_ECO.withdrawPlayer(sender, amount.toDouble())

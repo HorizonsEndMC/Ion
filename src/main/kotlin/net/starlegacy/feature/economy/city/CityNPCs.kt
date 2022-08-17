@@ -57,7 +57,6 @@ object CityNPCs : SLComponent() {
 		clearCitizensNpcs()
 	}
 
-
 	fun getCityNpcType(npc: NPC): CityNPC.Type? = npcTypeMap[npc.uniqueId]
 
 	private data class NpcInfo(
@@ -124,7 +123,12 @@ object CityNPCs : SLComponent() {
 			npcInfo.forEachIndexed { index, info: NpcInfo ->
 				val location = info.location
 
-				val npc = citizensRegistry.createNPC(EntityType.PLAYER, UUID.randomUUID(), 1000 + index, "${SLTextStyle.GOLD}${info.name}")
+				val npc = citizensRegistry.createNPC(
+					EntityType.PLAYER,
+					UUID.randomUUID(),
+					1000 + index,
+					"${SLTextStyle.GOLD}${info.name}"
+				)
 				npcTypeMap[npc.uniqueId] = info.type
 
 				loadChunkAsync(location.world, location) {
@@ -163,7 +167,7 @@ object CityNPCs : SLComponent() {
 	/**
 	 * Open shipment dialog when players click importer NPCs.
 	 */
-	@EventHandler (priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
 		val player: Player = event.clicker
 		val npc: NPC = event.npc

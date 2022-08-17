@@ -91,7 +91,6 @@ abstract class SLCommand : BaseCommand() {
 		?: fail { "Player $name not found. Have they joined the server?" }
 	//endregion
 
-
 	@HelpCommand
 	fun onHelp(sender: CommandSender, help: CommandHelp) = help.showHelp()
 

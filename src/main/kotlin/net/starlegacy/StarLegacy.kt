@@ -5,7 +5,6 @@ import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import java.io.File
-import java.lang.reflect.Modifier
 import java.util.Locale
 import net.horizonsend.ion.core.NewPlayerProtection
 import net.horizonsend.ion.core.commands.AdminCommands

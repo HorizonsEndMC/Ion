@@ -28,7 +28,6 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
-
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
 	private val playerShip: ActivePlayerStarship? = starship as? ActivePlayerStarship

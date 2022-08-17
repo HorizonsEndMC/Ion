@@ -13,7 +13,6 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
 
-
 /**
  * @property name The name of the planet
  * @property sun The star the planet orbits

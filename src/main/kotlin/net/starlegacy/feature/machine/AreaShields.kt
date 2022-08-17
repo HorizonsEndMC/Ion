@@ -100,7 +100,6 @@ object AreaShields : SLComponent() {
 		return@filter shieldLoc.world == location.world && shieldLoc.isInRange(location, radius)
 	}
 
-
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	fun onBlockExplode(event: BlockExplodeEvent) {
 		if (bypassShieldEvents.remove(event)) return

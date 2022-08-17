@@ -72,7 +72,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : P
 		}
 	}
 
-
 	abstract val radius: Int
 
 	abstract val coolDown: Int

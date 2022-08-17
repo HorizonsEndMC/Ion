@@ -46,7 +46,8 @@ object StarshipWeapons {
 		val boostPower = AtomicDouble(0.0)
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
-			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
+			val heavyWeaponTypes =
+				queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
 			if (heavyWeaponTypes.count() > 1) {
 				ship.sendMessage("&cYou can only fire one type of heavy weapon at a time!")
 				return

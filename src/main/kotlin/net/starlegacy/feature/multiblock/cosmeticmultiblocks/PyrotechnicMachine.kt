@@ -75,5 +75,4 @@ abstract class PyrotechnicMachine : PowerStoringMultiblock() {
 		line3 = null,
 		line4 = null
 	)
-
 }

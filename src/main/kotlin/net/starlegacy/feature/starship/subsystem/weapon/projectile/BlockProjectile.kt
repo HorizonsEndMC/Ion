@@ -76,7 +76,6 @@ abstract class BlockProjectile(
 
 			sendFakeBlock(block, blockData)
 
-
 			val blockWorld = block.world
 			val blockX = block.x
 			val blockY = block.y

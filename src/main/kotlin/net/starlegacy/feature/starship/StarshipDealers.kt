@@ -9,7 +9,6 @@ import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.horizonsend.ion.core.events.BuySpawnShuttleEvent
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
-import net.starlegacy.feature.starship.event.StarshipPilotEvent
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
@@ -28,7 +27,7 @@ object StarshipDealers : SLComponent() {
 
 	private val lastBuyTimes = mutableMapOf<UUID, Long>()
 
-	@EventHandler (priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
 		val npc = event.npc
 		val player = event.clicker

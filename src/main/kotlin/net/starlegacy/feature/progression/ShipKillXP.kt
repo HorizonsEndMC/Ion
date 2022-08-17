@@ -103,6 +103,7 @@ object ShipKillXP : SLComponent() {
 			onShipKill(id, killedName, data)
 		}
 	}
+
 	private fun onShipKill(killed: UUID, killedName: String, data: ShipDamageData) {
 
 		val dataMap: Map<Damager, Int> = data.map.filterKeys { damager ->
@@ -131,7 +132,7 @@ object ShipKillXP : SLComponent() {
 			if (isAllied(player, getPlayer(killedName)!!)) return
 
 			val percent = points / sum
-			val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize*0.00005)))*percent).toInt()
+			val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005))) * percent).toInt()
 
 			if (xp > 0) {
 				SLXP.addAsync(player, xp)
@@ -168,7 +169,8 @@ object ShipKillXP : SLComponent() {
 					return@async
 				}
 
-				val shipkilldiscordmessage = "**A ${data.size} block ship piloted by $killedName was sunk by ${getPlayer(damager.id)!!.name} in a ${damager.size} block ship**"
+				val shipkilldiscordmessage =
+					"**A ${data.size} block ship piloted by $killedName was sunk by ${getPlayer(damager.id)!!.name} in a ${damager.size} block ship**"
 
 				channel.sendMessage(shipkilldiscordmessage).queue()
 			}

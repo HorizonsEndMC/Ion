@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class CreateNationOutpostEvent(val player: Player, val nationID: Oid<Nation>) :Event() {
+class CreateNationOutpostEvent(val player: Player, val nationID: Oid<Nation>) : Event() {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}
@@ -14,6 +14,5 @@ class CreateNationOutpostEvent(val player: Player, val nationID: Oid<Nation>) :E
 	companion object {
 		@JvmStatic
 		val handlerList = HandlerList()
-
 	}
 }

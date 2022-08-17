@@ -169,8 +169,6 @@ class TreeCutter(private val player: Player, private val startBlock: Block) : Bu
 				stop()
 				super.cancel()
 			}
-
-
 		}.runTaskTimer(PLUGIN, 0L, speed)
 	}
 }

@@ -169,7 +169,14 @@ object Hyperspace : SLComponent() {
 		movement.cancel()
 
 		StarshipTeleportation.teleportStarship(starship, movement.dest)
-		starship.world.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
+		starship.world.playSound(
+			Sound.sound(
+				Key.key("minecraft:entity.warden.sonic_boom"),
+				Sound.Source.AMBIENT,
+				1f,
+				0f
+			)
+		)
 		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
 			player.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
 		}

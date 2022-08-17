@@ -78,7 +78,6 @@ class BlasterProjectile(
 		location.world.playSound(location, enumSound, volume, pitch)
 	}
 
-
 	private fun schedule() {
 		if (GracePeriod.isGracePeriod) return
 

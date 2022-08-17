@@ -58,12 +58,33 @@ object Interdiction : SLComponent() {
 	}
 
 	private fun toggleGravityWell(starship: ActiveStarship, sign: Sign) {
-		when (starship.isInterdicting){
-			true -> for (player in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), starship.type.interdictionRange.toDouble())) {
-				player.playSound(Sound.sound(Key.key("minecraft:entity.zombie_villager.converted"), Sound.Source.AMBIENT, 5f, 1.00f))
+		when (starship.isInterdicting) {
+			true -> for (player in starship.world.getNearbyPlayers(
+				starship.centerOfMass.toLocation(starship.world),
+				starship.type.interdictionRange.toDouble()
+			)) {
+				player.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.zombie_villager.converted"),
+						Sound.Source.AMBIENT,
+						5f,
+						1.00f
+					)
+				)
 			}
-			false -> for (player in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), starship.type.interdictionRange.toDouble())) {
-				player.playSound(Sound.sound(Key.key("minecraft:entity.zombie_villager.converted"), Sound.Source.AMBIENT, 5f, 0.05f))
+
+			false -> for (player in starship.world.getNearbyPlayers(
+				starship.centerOfMass.toLocation(starship.world),
+				starship.type.interdictionRange.toDouble()
+			)) {
+				player.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.zombie_villager.converted"),
+						Sound.Source.AMBIENT,
+						5f,
+						0.05f
+					)
+				)
 			}
 		}
 		starship.setIsInterdicting(!starship.isInterdicting)
