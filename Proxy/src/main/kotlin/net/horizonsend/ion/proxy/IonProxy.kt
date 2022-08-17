@@ -30,8 +30,10 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import org.reflections.Reflections
+import org.reflections.Store
 import org.reflections.scanners.Scanners.SubTypes
 import org.reflections.scanners.Scanners.TypesAnnotated
+import org.reflections.util.QueryFunction
 import org.slf4j.Logger
 
 @Deprecated("Use dependency injection.") internal lateinit var proxy: ProxyServer private set
@@ -77,33 +79,15 @@ class IonProxy @Inject constructor(
 
 		val reflections = Reflections("net.horizonsend.ion.proxy")
 
-		reflections.get(TypesAnnotated.of(VelocityListener::class.java).asClass<Any>())
-			.map { it.constructors[0] }
-			.map { constructor ->
-				constructor.newInstance(*constructor.parameterTypes.map {
-					when (it) {
-						IonProxy::class.java -> this
-						else -> throw NotImplementedError("Can not provide $it")
-					}
-				}.toTypedArray())
-			}
-			.also { logger.info("Loading ${it.size} listeners.") }
-			.forEach { velocity.eventManager.register(this, it) }
-
 		val commandManager = VelocityCommandManager(velocity, this)
 
-		reflections.get(SubTypes.of(BaseCommand::class.java).asClass<Any>())
-			.map { it.constructors[0] }
-			.map { constructor ->
-				constructor.newInstance(*constructor.parameterTypes.map {
-					when (it) {
-						IonProxy::class.java -> this
-						else -> throw NotImplementedError("Can not provide $it")
-					}
-				}.toTypedArray())
-			}
-			.also { logger.info("Loading ${it.size} commands.") }
-			.forEach { commandManager.registerCommand(it as BaseCommand) }
+		reflectionsRegister(reflections, TypesAnnotated.of(VelocityListener::class.java), "listeners") {
+			velocity.eventManager.register(this, it)
+		}
+
+		reflectionsRegister(reflections, SubTypes.of(BaseCommand::class.java), "commands") {
+			commandManager.registerCommand(it as BaseCommand)
+		}
 
 		jda?.let {
 			JDACommandManager(it, DiscordInfoCommand(), DiscordAccountCommand(), PlayerListCommand(), ResyncCommand())
@@ -122,6 +106,26 @@ class IonProxy @Inject constructor(
 		removeOnlineRoleFromEveryone()
 
 		jda?.shutdown()
+	}
+
+	private fun <T> reflectionsRegister(
+		reflections: Reflections,
+		scanner: QueryFunction<Store, T>,
+		name: String,
+		execute: (Any) -> Unit
+	) {
+		reflections.get(scanner.asClass<T>())
+			.map { it.constructors[0] }
+			.map { constructor ->
+				constructor.newInstance(*constructor.parameterTypes.map {
+					when (it) {
+						IonProxy::class.java -> this
+						else -> throw NotImplementedError("Can not provide $it")
+					}
+				}.toTypedArray())
+			}
+			.also { logger.info("Loading ${it.size} $name.") }
+			.forEach(execute)
 	}
 
 	private fun removeOnlineRoleFromEveryone() = jda?.let {
