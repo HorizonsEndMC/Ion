@@ -36,7 +36,6 @@ import org.reflections.scanners.Scanners.TypesAnnotated
 import org.reflections.util.QueryFunction
 import org.slf4j.Logger
 
-@Deprecated("Use dependency injection.") internal lateinit var proxy: ProxyServer private set
 @Deprecated("Use dependency injection.") internal lateinit var proxyConfiguration: ProxyConfiguration private set
 @Deprecated("Use dependency injection.") internal lateinit var jda: JDA private set
 
@@ -67,9 +66,6 @@ class IonProxy @Inject constructor(
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
 		@Suppress("Deprecation") // Older code compatibility
-		proxy = velocity
-
-		@Suppress("Deprecation") // Older code compatibility
 		proxyConfiguration = configuration
 
 		@Suppress("Deprecation") // Older code compatibility
@@ -90,7 +86,7 @@ class IonProxy @Inject constructor(
 		}
 
 		jda?.let {
-			JDACommandManager(it, DiscordInfoCommand(), DiscordAccountCommand(), PlayerListCommand(), ResyncCommand())
+			JDACommandManager(it, DiscordInfoCommand(), DiscordAccountCommand(), PlayerListCommand(this), ResyncCommand())
 
 			velocity.scheduler.buildTask(this, Runnable {
 				it.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${velocity.playerCount} players!"))
