@@ -17,6 +17,9 @@ import org.litote.kmongo.updateOneById
 /**
  * @property name The name of the planet
  * @property sun The star the planet orbits
+ * @property rogue Whether the planet should orbit a star
+ * @property x The x coordinate of a planet, should it be rogue
+ * @property z The x coordinate of a planet, should it be rogue
  * @property planetWorld The name of the world the planet represents
  * @property size The scale of the planet model
  * @property orbitDistance The distance from the star the planet orbits

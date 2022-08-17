@@ -218,6 +218,8 @@ object PlanetCommand : SLCommand() {
 		sender msg "  &7Sun:&b ${planet.sun.name}"
 		sender msg "  &7Space World:&b ${planet.spaceWorldName}"
 		sender msg "  &7Planet World:&b ${planet.planetWorldName}"
+		sender msg "  &7Rogue: &b ${planet.rogue}"
+		sender msg "  $7Fixed location: &b ${planet.x}, ${planet.z}"
 		sender msg "  &7Size:&b ${planet.size}"
 		sender msg "  &7Atmosphere Density:&b ${planet.cloudDensity}"
 		sender msg "  &7Atmosphere Radius:&b ${planet.atmosphereRadius}"
