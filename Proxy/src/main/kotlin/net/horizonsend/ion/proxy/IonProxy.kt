@@ -36,8 +36,6 @@ import org.reflections.scanners.Scanners.TypesAnnotated
 import org.reflections.util.QueryFunction
 import org.slf4j.Logger
 
-@Deprecated("Use dependency injection.") internal lateinit var proxyConfiguration: ProxyConfiguration private set
-
 @Suppress("Unused")
 @Plugin(id = "ion", name = "Ion") // While we do not use this for generating velocity-plugin.json, ACF requires it.
 class IonProxy @Inject constructor(
@@ -64,9 +62,6 @@ class IonProxy @Inject constructor(
 	@Suppress("Unused_Parameter")
 	@Subscribe(order = PostOrder.LAST)
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
-		@Suppress("Deprecation") // Older code compatibility
-		proxyConfiguration = configuration
-
 		initializeCommon(dataDirectory)
 
 		val reflections = Reflections("net.horizonsend.ion.proxy")
