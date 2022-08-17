@@ -22,18 +22,15 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.common.utilities.loadConfiguration
+import net.horizonsend.ion.proxy.annotations.VelocityListener
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityAccountCommand
 import net.horizonsend.ion.proxy.commands.velocity.VelocityInfoCommand
-import net.horizonsend.ion.proxy.listeners.velocity.DisconnectListener
-import net.horizonsend.ion.proxy.listeners.velocity.LoginListener
-import net.horizonsend.ion.proxy.listeners.velocity.PlayerResourcePackStatusListener
-import net.horizonsend.ion.proxy.listeners.velocity.PreLoginListener
-import net.horizonsend.ion.proxy.listeners.velocity.ProxyPingListener
-import net.horizonsend.ion.proxy.listeners.velocity.ServerConnectedListener
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners.TypesAnnotated
 import org.slf4j.Logger
 
 internal lateinit var proxy: ProxyServer private set
@@ -42,7 +39,7 @@ internal lateinit var jda: JDA private set
 
 @Suppress("Unused")
 @Plugin(id = "ion", name = "Ion") // While we do not use this for generating velocity-plugin.json, ACF requires it.
-class IonProxy @Inject constructor(proxy0: ProxyServer, logger: Logger, @DataDirectory val dataDirectory: Path) {
+class IonProxy @Inject constructor(proxy0: ProxyServer, val logger: Logger, @DataDirectory val dataDirectory: Path) {
 	init {
 		proxy = proxy0
 		proxyConfiguration = loadConfiguration(dataDirectory)
@@ -64,11 +61,13 @@ class IonProxy @Inject constructor(proxy0: ProxyServer, logger: Logger, @DataDir
 	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
 		initializeCommon(dataDirectory)
 
-		arrayOf(
-			LoginListener(), PreLoginListener(), ProxyPingListener(), ServerConnectedListener(), DisconnectListener(), PlayerResourcePackStatusListener()
-		).forEach {
-			proxy.eventManager.register(this, it)
-		}
+		val reflections = Reflections("net.horizonsend.ion.proxy")
+
+		reflections.get(TypesAnnotated.of(VelocityListener::class.java).asClass<Any>())
+			.map { it.constructors[0] }
+			.map { it.newInstance() }
+			.also { logger.info("Loading ${it.size} listeners.") }
+			.forEach { proxy.eventManager.register(this, it) }
 
 		VelocityCommandManager(proxy, this).apply {
 			registerCommand(VelocityInfoCommand())
