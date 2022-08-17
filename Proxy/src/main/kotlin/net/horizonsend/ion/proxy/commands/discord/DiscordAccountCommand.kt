@@ -3,16 +3,16 @@ package net.horizonsend.ion.proxy.commands.discord
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
+import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.annotations.CommandMeta
 import net.horizonsend.ion.proxy.managers.LinkManager
-import net.horizonsend.ion.proxy.proxyConfiguration
 import net.horizonsend.ion.proxy.messageEmbed
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@Suppress("Unused")
 @CommandMeta("account", "Manage the link between your Minecraft and Discord account.")
-class DiscordAccountCommand {
-	@Suppress("Unused")
+class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 	@CommandMeta("status", "Check linked Minecraft account.")
 	fun onStatusCommand(event: SlashCommandInteractionEvent) {
 		val playerData = transaction { PlayerData.find(PlayerDataTable.discordUUID eq event.user.idLong).firstOrNull() }
@@ -29,7 +29,6 @@ class DiscordAccountCommand {
 			.queue()
 	}
 
-	@Suppress("Unused")
 	@CommandMeta("unlink", "Unlink Minecraft account.")
 	fun onUnlinkCommand(event: SlashCommandInteractionEvent) {
 		transaction {
@@ -40,7 +39,6 @@ class DiscordAccountCommand {
 			.queue()
 	}
 
-	@Suppress("Unused")
 	@CommandMeta("link", "Link Minecraft account.")
 	fun onLinkCommand(event: SlashCommandInteractionEvent, @CommandMeta("code", "Link Code") code: String) {
 		val playerUUID = LinkManager.validateLinkCode(code)
@@ -67,16 +65,15 @@ class DiscordAccountCommand {
 				.queue()
 		}
 
-		event.jda.getGuildById(proxyConfiguration.discordServer)!!.apply {
-			addRoleToMember(event.user, getRoleById(proxyConfiguration.linkedRole)!!).queue()
+		event.jda.getGuildById(configuration.discordServer)!!.apply {
+			addRoleToMember(event.user, getRoleById(configuration.linkedRole)!!).queue()
 		}
 	}
 
-	@Suppress("Unused")
 	@CommandMeta("update", "Force update your roles on Discord.")
 	fun onUpdateCommand(event: SlashCommandInteractionEvent) = transaction {
-		event.jda.getGuildById(proxyConfiguration.discordServer)!!.apply {
-			getRoleById(proxyConfiguration.linkedRole)!!.let {
+		event.jda.getGuildById(configuration.discordServer)!!.apply {
+			getRoleById(configuration.linkedRole)!!.let {
 				val playerData = PlayerData.find(PlayerDataTable.discordUUID eq event.user.idLong).firstOrNull()
 
 				if (playerData?.discordUUID == null) removeRoleFromMember(
