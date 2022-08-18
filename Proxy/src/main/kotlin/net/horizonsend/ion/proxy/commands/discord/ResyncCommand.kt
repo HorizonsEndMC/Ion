@@ -1,17 +1,21 @@
 package net.horizonsend.ion.proxy.commands.discord
 
+import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.proxy.ProxyConfiguration
-import net.horizonsend.ion.proxy.annotations.CommandMeta
+import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.messageEmbed
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@GuildCommand
 @Suppress("Unused")
-@CommandMeta("resync", "Resync all roles")
+@CommandAlias("resync")
+@Description("Resync all roles")
 class ResyncCommand(private val configuration: ProxyConfiguration) {
 	@Default
 	fun onResyncCommand(event: SlashCommandInteractionEvent) {
