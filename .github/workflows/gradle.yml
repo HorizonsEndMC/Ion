@@ -21,6 +21,6 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2.2.3
+        uses: gradle/gradle-build-action@v2.2.4
         with:
           arguments: :reobfJar
