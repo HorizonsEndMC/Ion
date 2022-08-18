@@ -5,24 +5,24 @@ services:
     image: redis
 
   mongo:
-    image: mongo:4.2
+    image: "mongo:4.2"
     command: [ "--replSet", "rs0" ]
     ports: [ 127.0.0.1:27017:27017 ]
     volumes:
       - ./config/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     healthcheck:
-      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet --host mongo) -eq 1
+      test: "test $$(echo 'rs.initiate().ok' | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --host mongo) -eq 1"
       interval: 1s
       start_period: 1s
     environment:
-      MONGO_INITDB_ROOT_USERNAME: test
-      MONGO_INITDB_ROOT_PASSWORD: test
-      MONGO_INITDB_DATABASE: test
+      MONGO_INITDB_ROOT_USERNAME: "test"
+      MONGO_INITDB_ROOT_PASSWORD: "test"
+      MONGO_INITDB_DATABASE: "test"
       MONGO_REPLICA_SET_NAME: rs0
 
   velocity:
-    image: itzg/bungeecord
-    container_name: velocity
+    image: "itzg/bungeecord"
+    container_name: "velocity"
     ports: [ 25565:25565 ]
     volumes:
       - ./velocity:/server
@@ -31,13 +31,12 @@ services:
       - ./config/velocity/forwarding.secret:/server/forwarding.secret
       - ./config/velocity/plugins/luckperms/config.yml:/server/plugins/luckperms/config.yml
     environment:
-      TYPE: VELOCITY
-      JVM_XX_OPTS: -XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch
+      TYPE: "VELOCITY"
+      JVM_XX_OPTS: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 
   paper:
-    image: itzg/minecraft-server
-    container_name: paper
-    depends_on: [ "mongo", "redis" ]
+    image: "itzg/minecraft-server"
+    container_name: "paper"
     tty: true
     stdin_open: true
     volumes:
@@ -53,7 +52,7 @@ services:
       - ./config/paper/spigot.yml:/data/spigot.yml
       - ./config/paper/config:/data/config
     environment:
-      TYPE: PAPER
-      VERSION: 1.19.1
+      TYPE: "PAPER"
+      VERSION: "1.19.2"
       EULA: "TRUE"
       USE_AIKAR_FLAGS: "TRUE"
