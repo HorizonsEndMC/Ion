@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-@Suppress("unused")
-class HyperSpaceEnterListener : Listener {
+@Suppress("Unused")
+class HyperspaceEnterListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onHyperSpaceEnter(event: HyperspaceEnterEvent) {
-		event.player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
+		event.player.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 }
