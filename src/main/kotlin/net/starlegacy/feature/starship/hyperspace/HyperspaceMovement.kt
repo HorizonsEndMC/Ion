@@ -33,7 +33,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 		z += direction.z * speed
 		travelled += speed
 
-		HyperspaceEnterEvent((ship as? ActivePlayerStarship)!!.pilot!!, ship).callEvent()
+		(ship as? ActivePlayerStarship)?.pilot?.let { HyperspaceEnterEvent(it, ship).callEvent() }
 
 		val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
 		if (shadow != null) {
