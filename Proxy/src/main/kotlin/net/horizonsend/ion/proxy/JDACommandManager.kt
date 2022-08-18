@@ -1,188 +1,148 @@
 package net.horizonsend.ion.proxy
 
+import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
-import java.lang.reflect.AnnotatedElement
-import java.lang.reflect.Method
-import java.lang.reflect.Parameter
+import co.aikar.commands.annotation.Description
+import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.Subcommand
+import kotlin.reflect.KAnnotatedElement
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.createType
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.javaMethod
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Channel
-import net.dv8tion.jda.api.entities.IMentionable
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message.Attachment
-import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
-import net.horizonsend.ion.proxy.annotations.CommandMeta
-import org.jetbrains.annotations.NotNull
-import org.jetbrains.annotations.Nullable
 
 /**
  * ACF's support for JDA is outdated and probably does not support Slash Commands, so here is a horribly thrown together
  * command manager that will act similar to how ACF does.
  */
-class JDACommandManager(private val jda: JDA) : ListenerAdapter() {
-	private val commandClasses = mutableListOf<Any>()
+class JDACommandManager(private val jda: JDA, private val configuration: ProxyConfiguration) : ListenerAdapter() {
+	private val globalCommands = mutableListOf<Any>()
+	private val guildCommands = mutableListOf<Any>()
 
-	fun register(command: Any) {
-		commandClasses.add(command)
-	}
+	fun registerGlobalCommand(command: Any) = globalCommands.add(command)
+	fun registerGuildCommand(command: Any) = guildCommands.add(command)
 
 	fun build() {
-		jda.updateCommands().addCommands(commandClasses.map { commandClass ->
-			var commandData = Commands.slash(
-				commandClass::class.java.commandMeta.name,
-				commandClass::class.java.commandMeta.description
-			)
+		jda.updateCommands()
+			.addCommands(buildCommands(globalCommands))
+			.queue()
 
-			val subcommands = processClassSubcommands(commandClass::class.java)
-
-			commandData = commandData.addSubcommands(subcommands)
-
-			val subcommandGroups = commandClass::class.java.classes
-				.filter { it.hasCommandMeta }
-				.map {
-					SubcommandGroupData(it.commandMeta.name, it.commandMeta.description)
-						.addSubcommands(processClassSubcommands(it))
-				}
-
-			commandData = commandData.addSubcommandGroups(subcommandGroups)
-
-			if (subcommands.isEmpty() && subcommandGroups.isEmpty()) {
-				commandClass::class.java.defaultCommand?.let {
-					commandData = commandData.addOptions(processCommandMethod(it))
-				}
-			} else if (commandClass::class.java.defaultCommand != null) {
-				throw IllegalArgumentException(
-					"Command containing subcommands or subcommand groups can not have a default command."
-				)
-			}
-
-			commandData
-		}).queue()
+		jda.getGuildById(configuration.discordServer)
+			?.updateCommands()
+			?.addCommands(buildCommands(guildCommands))
+			?.queue()
 
 		jda.addEventListener(this)
 	}
 
-	private fun <T> processClassSubcommands(commandClass: Class<T>): Collection<SubcommandData> =
-		commandClass.methods
-			.filter { it.hasCommandMeta }
-			.map {
-				SubcommandData(it.commandMeta.name, it.commandMeta.description)
-					.addOptions(processCommandMethod(it))
-			}
-
-	private fun processCommandMethod(commandMethod: Method): Collection<OptionData> {
-		val optionData = mutableListOf<OptionData>()
-
-		for (parameter in commandMethod.parameters) {
-			if (parameter.type == SlashCommandInteractionEvent::class.java) continue
-
-			val parameterMetadata = parameter.commandMeta
-
-			val optionType = when (parameter.type) {
-				String::class.java -> OptionType.STRING
-				Int::class.java -> OptionType.INTEGER
-				Boolean::class.java -> OptionType.BOOLEAN
-				Member::class.java, User::class.java -> OptionType.USER
-				Channel::class.java -> OptionType.CHANNEL
-				Role::class.java -> OptionType.ROLE
-				IMentionable::class.java -> OptionType.MENTIONABLE
-				Double::class.java,
-				Long::class.java -> OptionType.NUMBER
-
-				Attachment::class.java -> OptionType.ATTACHMENT
-				else -> throw NotImplementedError("Parameter type ${parameter.type.simpleName} is not supported by JDA.")
-			}
-
-			optionData.add(
-				OptionData(
-					optionType,
-					parameterMetadata.name,
-					parameterMetadata.description,
-					!parameter.isAnnotationPresent(Nullable::class.java) || parameter.isAnnotationPresent(NotNull::class.java)
-				)
+	private fun buildCommands(commandList: List<Any>): Collection<SlashCommandData> {
+		return commandList.map commandMap@ { command ->
+			var slashCommandData = Commands.slash(
+				command::class.commandAlias ?: return@commandMap null,
+				command::class.description ?: return@commandMap null
 			)
-		}
 
-		return optionData
+			slashCommandData = slashCommandData.addSubcommands(processClassSubcommands(command::class))
+
+			val subcommandGroups = command::class.nestedClasses.map {
+				val subcommandGroupData = SubcommandGroupData(
+					it::class.subcommand ?: return@map null,
+					it::class.description ?: return@map null
+				)
+
+				subcommandGroupData.addSubcommands(processClassSubcommands(it::class))
+			}.filterNotNull()
+
+			slashCommandData = slashCommandData.addSubcommandGroups(subcommandGroups)
+
+			command::class.declaredFunctions.find { it.hasAnnotation<Default>() }?.let {
+				slashCommandData = slashCommandData.addOptions(processCommandMethod(it))
+			}
+
+			slashCommandData
+		}.filterNotNull()
 	}
 
-	private inline val <T> Class<T>.defaultCommand
-		get() =
-			methods.filter { it.isAnnotationPresent(Default::class.java) }.getOrNull(0)
+	private fun processClassSubcommands(commandClass: KClass<*>): Collection<SubcommandData> =
+		commandClass.declaredFunctions.map {
+			val subcommandData = SubcommandData(
+				it.subcommand ?: return@map null,
+				it.description ?: return@map null
+			)
 
-	private inline val AnnotatedElement.hasCommandMeta
-		get() =
-			isAnnotationPresent(CommandMeta::class.java)
+			subcommandData.addOptions(processCommandMethod(it))
+		}.filterNotNull()
 
-	private inline val Parameter.commandMeta
-		get() =
-			getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $name.")
+	private fun processCommandMethod(commandMethod: KFunction<*>): Collection<OptionData> =
+		commandMethod.parameters.map {
+			if (it.type == SlashCommandInteractionEvent::class.createType()) return@map null
+			if (it.kind != KParameter.Kind.VALUE) return@map null
 
-	private inline val Method.commandMeta
-		get() =
-			getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $name.")
+			val optionType = when (it.type) {
+				String::class.createType() -> OptionType.STRING
+				else -> throw NotImplementedError("$it")
+			}
 
-	private inline val <T> Class<T>.commandMeta
-		get() =
-			getAnnotation(CommandMeta::class.java) ?: throw Exception("Missing CommandMeta annotation on $simpleName.")
+			OptionData(optionType, it.name ?: return@map null, it.description ?: return@map null, it.isOptional)
+		}.filterNotNull()
 
 	override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-		commandClasses
-			.find { it::class.java.commandMeta.name == event.name }
-			?.let { commandClass ->
-				if (event.subcommandGroup != null) {
-					val subcommandGroupClass = commandClass::class.java.classes
-						.filter { it.hasCommandMeta }
-						.find { it.commandMeta.name == event.subcommandGroup }
+		val commandList = if (event.isGlobalCommand) globalCommands else guildCommands
 
-					subcommandGroupClass?.methods
-						?.filter { it.hasCommandMeta }
-						?.find { it.commandMeta.name == event.subcommandName }
-						?.let {
-							invokeCommand(
-								event,
-								subcommandGroupClass.getConstructor(commandClass::class.java).newInstance(commandClass),
-								it
-							)
-						}
-				} else if (event.subcommandName != null) {
-					commandClass::class.java.methods
-						.filter { it.hasCommandMeta }
-						.find { it.commandMeta.name == event.subcommandName }
-						?.let { invokeCommand(event, commandClass, it) }
-				} else {
-					commandClass::class.java.defaultCommand?.let { invokeCommand(event, commandClass, it) }
-				}
-			}
+		val commandClass = commandList.find { it::class.commandAlias == event.name }!!
+
+		if (event.subcommandGroup != null) {
+			val subcommandGroupClass = commandClass::class.nestedClasses
+				.find { it.subcommand == event.subcommandGroup }!!
+
+			val subcommandFunction = subcommandGroupClass.declaredFunctions
+				.find { it.subcommand == event.subcommandName }!!
+
+			invokeCommand(event, subcommandGroupClass.createInstance(), subcommandFunction)
+		}
+		else if (event.subcommandName != null) {
+			val subcommandFunction = commandClass::class.declaredFunctions
+				.find { it.subcommand == event.subcommandName }!!
+
+			invokeCommand(event, commandClass, subcommandFunction)
+		}
+		else {
+			val commandFunction = commandClass::class.declaredFunctions.find { it.hasAnnotation<Default>() }!!
+
+			invokeCommand(event, commandClass, commandFunction)
+		}
 	}
 
-	private fun invokeCommand(event: SlashCommandInteractionEvent, commandClass: Any, commandMethod: Method) {
-		commandMethod.invoke(commandClass, *commandMethod.parameters.map {
-			if (it.type == SlashCommandInteractionEvent::class.java) return@map event
+	private fun invokeCommand(event: SlashCommandInteractionEvent, commandClass: Any, commandMethod: KFunction<*>) {
+		commandMethod.javaMethod!!.invoke(commandClass, *commandMethod.parameters.map {
+			if (it.type == SlashCommandInteractionEvent::class.createType()) return@map event
+			if (it.kind != KParameter.Kind.VALUE) return@map null
 
-			val option = event.getOption(it.commandMeta.name)!!
+			val option = event.getOption(it::class.name!!)!!
 
 			when (it.type) {
-				Attachment::class.java -> option.asAttachment
-				String::class.java -> option.asString
-				Boolean::class.java -> option.asBoolean
-				Long::class.java -> option.asLong
-				Int::class.java -> option.asInt
-				Double::class.java -> option.asDouble
-				IMentionable::class.java -> option.asMentionable
-				Member::class.java -> option.asMember
-				User::class.java -> option.asUser
-				Role::class.java -> option.asRole
-				Channel::class.java -> option.asChannel
-				else -> throw NotImplementedError("Parameter type ${it.type.simpleName} is not supported by JDA.")
+				String::class.createType() -> option.asString
+				else -> throw NotImplementedError("$it")
 			}
-		}.toTypedArray())
+		}.filterNotNull().toTypedArray())
 	}
+
+	private val KAnnotatedElement.commandAlias get() = findAnnotation<CommandAlias>()?.value
+	private val KAnnotatedElement.description get() = findAnnotation<Description>()?.value
+	private val KAnnotatedElement.subcommand get() = findAnnotation<Subcommand>()?.value
+	private val KAnnotatedElement.name get() = findAnnotation<Name>()?.value
 }

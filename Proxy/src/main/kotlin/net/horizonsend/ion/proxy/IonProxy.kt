@@ -27,7 +27,8 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.common.utilities.loadConfiguration
-import net.horizonsend.ion.proxy.annotations.CommandMeta
+import net.horizonsend.ion.proxy.annotations.GlobalCommand
+import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.annotations.VelocityListener
 import org.reflections.Reflections
 import org.reflections.Store
@@ -77,10 +78,14 @@ class IonProxy @Inject constructor(
 		}
 
 		jda?.let { jda ->
-			val jdaCommandManager = JDACommandManager(jda)
+			val jdaCommandManager = JDACommandManager(jda, configuration)
 
-			reflectionsRegister(reflections, TypesAnnotated.of(CommandMeta::class.java), "discord commands") {
-				jdaCommandManager.register(it)
+			reflectionsRegister(reflections, TypesAnnotated.of(GlobalCommand::class.java), "global discord commands") {
+				jdaCommandManager.registerGlobalCommand(it)
+			}
+
+			reflectionsRegister(reflections, TypesAnnotated.of(GuildCommand::class.java), "guild discord commands") {
+				jdaCommandManager.registerGuildCommand(it)
 			}
 
 			jdaCommandManager.build()

@@ -1,19 +1,26 @@
 package net.horizonsend.ion.proxy.commands.discord
 
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Description
+import co.aikar.commands.annotation.Name
+import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.proxy.ProxyConfiguration
-import net.horizonsend.ion.proxy.annotations.CommandMeta
+import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.messageEmbed
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
+@GuildCommand
 @Suppress("Unused")
-@CommandMeta("account", "Manage the link between your Minecraft and Discord account.")
+@CommandAlias("account")
+@Description("Manage the link between your Minecraft and Discord account.")
 class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
-	@CommandMeta("status", "Check linked Minecraft account.")
+	@Subcommand("status")
+	@Description("Check linked Minecraft account.")
 	fun onStatusCommand(event: SlashCommandInteractionEvent) {
 		val playerData = transaction { PlayerData.find(PlayerDataTable.discordUUID eq event.user.idLong).firstOrNull() }
 
@@ -29,7 +36,8 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 			.queue()
 	}
 
-	@CommandMeta("unlink", "Unlink Minecraft account.")
+	@Subcommand("unlink")
+	@Description("Unlink Minecraft account.")
 	fun onUnlinkCommand(event: SlashCommandInteractionEvent) {
 		transaction {
 			PlayerData.find(PlayerDataTable.discordUUID eq event.user.idLong).firstOrNull()?.discordUUID = null
@@ -39,8 +47,9 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 			.queue()
 	}
 
-	@CommandMeta("link", "Link Minecraft account.")
-	fun onLinkCommand(event: SlashCommandInteractionEvent, @CommandMeta("code", "Link Code") code: String) {
+	@Subcommand("link")
+	@Description("Link Minecraft account.")
+	fun onLinkCommand(event: SlashCommandInteractionEvent, @Name("code") @Description("Link Code") code: String) {
 		val playerUUID = LinkManager.validateLinkCode(code)
 
 		if (playerUUID == null) {
@@ -70,7 +79,8 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 		}
 	}
 
-	@CommandMeta("update", "Force update your roles on Discord.")
+	@Subcommand("update")
+	@Description("Force update your roles on Discord.")
 	fun onUpdateCommand(event: SlashCommandInteractionEvent) = transaction {
 		event.jda.getGuildById(configuration.discordServer)!!.apply {
 			getRoleById(configuration.linkedRole)!!.let {

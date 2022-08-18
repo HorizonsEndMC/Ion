@@ -1,11 +1,16 @@
 package net.horizonsend.ion.proxy.commands.discord
 
+import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.proxy.annotations.CommandMeta
+import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.messageEmbed
 
-@CommandMeta("info", "List of useful links.")
+@GuildCommand
+@Suppress("Unused")
+@CommandAlias("info")
+@Description("List of useful links.")
 class DiscordInfoCommand {
 	@Default
 	@Suppress("Unused")
