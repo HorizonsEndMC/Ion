@@ -158,7 +158,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val carriedShipMap = captureCarriedShips(carriedShips, cache)
 
 			Tasks.sync {
-				val starship = ActiveStarshipFactory.createPlayerStarship(data, state.blockMap.keys, carriedShipMap)
+				val starship = ActiveStarshipFactory.createPlayerStarship(data, state.blockMap.keys, carriedShipMap) ?: return@sync
 				ActiveStarships.add(starship)
 				callback.invoke(starship)
 			}
