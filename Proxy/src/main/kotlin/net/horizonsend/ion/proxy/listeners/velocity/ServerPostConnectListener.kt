@@ -30,6 +30,6 @@ class ServerPostConnectListener(private val velocity: ProxyServer) {
 
 	@Subscribe(order = PostOrder.LAST)
 	fun onServerConnectedEvent(event: ServerPostConnectEvent): EventTask = EventTask.async {
-		event.player.sendResourcePackOffer(resourcePackOffer)
+		if (event.previousServer == null) event.player.sendResourcePackOffer(resourcePackOffer)
 	}
 }
