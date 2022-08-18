@@ -18,11 +18,11 @@ object ActiveStarshipFactory {
 		data: PlayerStarshipData,
 		blockCol: Collection<Long>,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
-	): ActivePlayerStarship {
+	): ActivePlayerStarship? {
 		Tasks.checkMainThread()
 
 		val blocks = LongOpenHashSet(blockCol)
-		check(!blocks.isEmpty()) { "Can't have a ship with 0 blocks!" }
+		if (blocks.isEmpty()) return null
 
 		val starship = createStarship(data, blocks, carriedShips)
 
