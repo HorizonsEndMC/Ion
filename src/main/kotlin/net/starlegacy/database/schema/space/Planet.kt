@@ -7,7 +7,6 @@ import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.objId
-import org.dynmap.Client.Update
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq

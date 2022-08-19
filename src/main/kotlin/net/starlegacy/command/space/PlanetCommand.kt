@@ -248,16 +248,14 @@ object PlanetCommand : SLCommand() {
 		val elapsedNanos = measureNanoTime {
 			if(planet.rogue) {
 				planet.setLocation(true)
-				spaceWorld.save()
-				SpaceMap.refresh()
 			}
 
-			if(!planet.rogue) {
+			else {
 			planet.orbit(true)
-			spaceWorld.save()
-			SpaceMap.refresh()
 			}
 		}
+		spaceWorld.save()
+		SpaceMap.refresh()
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
 
