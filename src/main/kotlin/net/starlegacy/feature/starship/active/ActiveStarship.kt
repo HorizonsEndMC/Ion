@@ -132,6 +132,8 @@ abstract class ActiveStarship(
 
 	val damagers = mutableMapOf<ShipKillXP.Damager, AtomicInteger>()
 
+	val combatTag = mutableMapOf<ActiveStarship, Long>()
+
 	val min: Vec3i get() = hitbox.min
 	val max: Vec3i get() = hitbox.max
 
