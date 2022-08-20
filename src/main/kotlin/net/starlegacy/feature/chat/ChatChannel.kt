@@ -1,8 +1,6 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
@@ -12,7 +10,6 @@ import net.starlegacy.SETTINGS
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
@@ -231,11 +228,6 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val playerData = PlayerCache[player]
 			val nation = playerData.nation
 				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
-			player.sendFeedbackMessage(
-				FeedbackType.USER_ERROR,
-				"{0}, you really hoped this would be fixed huh?",
-				player.name
-			)
 
 			val nationName = NationCache[nation].name
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""
@@ -314,11 +306,8 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			for (player in Bukkit.getOnlinePlayers()) {
 				val playerNation = PlayerCache.getIfOnline(player)?.nation ?: continue
 
-				if (RelationCache[playerNation, message.id] >= NationRelation.Level.ALLY) {
-					player.sendMessage(*component)
-				}
 				for (relation in NationRelation.find(NationRelation::nation eq message.id)) {
-					if (relation.other == playerNation && relation.actual == NationRelation.Level.ALLY)
+					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY) || (relation.actual == NationRelation.Level.NATION))
 						player.sendMessage(*component)
 				}
 			}
