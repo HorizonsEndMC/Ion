@@ -41,6 +41,10 @@ object Hyperspace : SLComponent() {
 	}
 
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
+		if(MassShadows.find(starship.world, starship.centerOfMass.x.toDouble(), starship.centerOfMass.z.toDouble()) != null){
+			starship.sendMessage("&cShip is within Gravity Well, jump cancelled")
+			return
+		}
 		if (starship.type == PLATFORM) {
 			starship.onlinePassengers.forEach {
 				it.sendMessage(
