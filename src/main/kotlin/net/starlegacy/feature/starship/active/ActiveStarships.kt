@@ -91,19 +91,6 @@ object ActiveStarships : SLComponent() {
 
 		worldMap[starship.world].remove(starship)
 
-		starship.iterateBlocks { x, y, z ->
-			val block = starship.world.getBlockAt(x, y, z)
-			if (block.type == Material.LAPIS_BLOCK) {
-				val below = block.getRelative(BlockFace.DOWN)
-				val belowData = below.blockData
-				if (belowData.material == Material.PISTON && (belowData as Directional).facing == BlockFace.DOWN) {
-					if (!below.getRelative(BlockFace.DOWN, 2).type.isAir) {
-						block.type = Material.REDSTONE_BLOCK
-					}
-				}
-			}
-		}
-
 		if (starship.world.name == "SpaceArena" && !starship.isExploding) {
 			StarshipDestruction.vanish(starship)
 		}
