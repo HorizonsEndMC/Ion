@@ -2,7 +2,6 @@ package net.starlegacy.listener.nations
 
 import net.starlegacy.SETTINGS
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
@@ -12,6 +11,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.litote.kmongo.eq
 
 object FriendlyFireListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {
@@ -54,9 +54,10 @@ object FriendlyFireListener : SLEventListener() {
 
 		val damagedNation: Oid<Nation> = damagedData.nation ?: return false
 		val damagerNation: Oid<Nation> = damagerData.nation ?: return false
-
-		if (RelationCache[damagerNation, damagedNation] >= NationRelation.Level.ALLY) {
-			return true
+		for (relation in NationRelation.find(NationRelation::nation eq damagedNation)){
+			if (relation.other == damagerNation && (relation.actual == NationRelation.Level.ALLY) || (relation.actual == NationRelation.Level.NATION)){
+				return true
+			}
 		}
 
 		return false

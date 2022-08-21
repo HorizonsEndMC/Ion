@@ -14,7 +14,6 @@ import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CombatNPCKillEvent
 import net.starlegacy.feature.starship.StarshipType
@@ -31,6 +30,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.litote.kmongo.eq
 
 object ShipKillXP : SLComponent() {
 	data class Damager(val id: UUID, val size: Int?)
@@ -56,7 +56,11 @@ object ShipKillXP : SLComponent() {
 	private fun isAllied(pilot: Player, player: Player): Boolean {
 		val pilotNation = PlayerCache[pilot].nation ?: return false
 		val playerNation = PlayerCache[player].nation ?: return false
-		return RelationCache[pilotNation, playerNation] >= NationRelation.Level.ALLY
+		for (relation in NationRelation.find(NationRelation::nation eq pilotNation)) {
+			if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY)||relation.actual == NationRelation.Level.NATION)
+				return true
+		}
+		return false
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

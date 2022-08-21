@@ -12,7 +12,6 @@ import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -136,14 +135,15 @@ object StationSieges : SLComponent() {
 		val station = Regions.findFirstOf<RegionCapturableStation>(player.location)
 			?: return@asyncLocked player msg "&cYou must be within a station's area to siege it"
 
+		for (relation in NationRelation.find(NationRelation::nation eq station.nation)) {
+			if (relation.other == nation && relation.actual == NationRelation.Level.ALLY)
+				return@asyncLocked player.sendFeedbackMessage(USER_ERROR, "This station is owned by an ally of your nation")
+		}
+
 		val stationId = station.id
 		when {
 			station.nation?.id == nation.id -> {
 				return@asyncLocked player msg "&cYour nation already owns this station."
-			}
-
-			station.nation?.let { RelationCache[it, nation] >= NationRelation.Level.ALLY } == true -> {
-				return@asyncLocked player msg "&cThis station is owned by an ally of your nation"
 			}
 
 			isUnderSiege(stationId) -> {
@@ -248,8 +248,16 @@ object StationSieges : SLComponent() {
 				val otherNation = PlayerCache[otherPlayer].nation
 					?: continue
 				// includes NATION relation, so this includes same nation
-				val isOldNationAlly = RelationCache[otherNation, oldNation] >= NationRelation.Level.ALLY
-				val isNotNewNationAlly = RelationCache[otherNation, playerNation] < NationRelation.Level.ALLY
+				var isOldNationAlly = false
+				for (relation in NationRelation.find(NationRelation::nation eq oldNation)) {
+					if (relation.other == otherNation && relation.actual == NationRelation.Level.ALLY)
+						isOldNationAlly = true
+				}
+				var isNotNewNationAlly = false
+				for (relation in NationRelation.find(NationRelation::nation eq playerNation)) {
+					if (relation.other == otherNation && relation.actual == NationRelation.Level.ALLY)
+						isNotNewNationAlly = true
+				}
 				if (isOldNationAlly && isNotNewNationAlly) {
 					count++
 				}
@@ -285,8 +293,9 @@ object StationSieges : SLComponent() {
 						continue
 					}
 					val playerNationId: Oid<Nation> = PlayerCache[otherPlayer].nation ?: continue
-					if (RelationCache[playerNationId, playerNation] < NationRelation.Level.ALLY) {
-						continue
+					for (relation in NationRelation.find(NationRelation::nation eq playerNation)) {
+						if (relation.other == playerNationId && relation.actual == NationRelation.Level.ALLY)
+							continue
 					}
 					if (!station.contains(otherPlayer.location)) {
 						continue
