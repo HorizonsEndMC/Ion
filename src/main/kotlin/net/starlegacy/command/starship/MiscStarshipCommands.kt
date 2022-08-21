@@ -11,7 +11,9 @@ import kotlin.collections.set
 import kotlin.math.ln
 import kotlin.math.roundToInt
 import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.FeedbackType.INFORMATION
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
@@ -216,6 +218,28 @@ object MiscStarshipCommands : SLCommand() {
 			starship.autoTurretTargets[weaponSet] = player.getPlayer().uniqueId
 			sender msg "&7Set target of &b$weaponSet&7 to ${player.getPlayer().name}"
 		}
+	}
+	@CommandAlias("unsettarget|ustarget|ust|unstarget")
+	fun onUnSetTarget(sender: Player, set: String, weapon: String) {
+		val starship = getStarshipRiding(sender)
+		val weaponSet = weapon.lowercase(Locale.getDefault())
+		if (set == "unset")
+		for (weapon in starship.weapons){
+			if (weapon.toString().lowercase().contains(weaponSet)){
+				starship.autoTurretTargets.forEach { starship.autoTurretTargets.forEach { if (it.key == set){ starship.autoTurretTargets.remove(it.key, it.value)} }}
+				sender.sendFeedbackActionMessage(INFORMATION, "Unset targets of weaponssets containing {0}", weaponSet)
+			}
+		}
+	}
+	@CommandAlias("usa|unsetall|unsa")
+	fun onUnSetAll(sender: Player){
+		val starship = getStarshipRiding(sender)
+		if (starship.autoTurretTargets.isEmpty()){
+			sender.sendFeedbackActionMessage(USER_ERROR, "Error no weaponsets with autoturret targets found")
+			return
+		}
+		starship.autoTurretTargets.forEach { starship.autoTurretTargets.remove(it.key, it.value) }
+		sender.sendFeedbackActionMessage(INFORMATION, "Unset target for all weaponsets.")
 	}
 
 	@CommandAlias("powerdivision|powerd|pdivision|pd|powermode|pm")
