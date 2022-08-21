@@ -2,7 +2,6 @@ package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
 import net.starlegacy.database.Oid
@@ -25,6 +24,7 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Vec3i
 import org.bukkit.entity.Player
+import org.litote.kmongo.eq
 
 class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) {
 	override val priority: Int = 1
@@ -104,10 +104,9 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 				}
 
 				Settlement.ForeignRelation.ALLY -> {
-					SettlementCache[settlement].nation?.let { nation ->
-						if (playerNation != null && RelationCache[nation, playerNation] >= NationRelation.Level.ALLY) {
+					for (relation in NationRelation.find(NationRelation::nation eq Settlement.getNation(settlement))) {
+						if (playerNation != null && relation.other == playerNation && relation.actual == NationRelation.Level.ALLY)
 							return null
-						}
 					}
 				}
 

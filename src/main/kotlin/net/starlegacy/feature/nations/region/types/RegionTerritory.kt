@@ -9,7 +9,6 @@ import kotlin.math.sqrt
 import net.starlegacy.SETTINGS
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.binary
@@ -28,6 +27,7 @@ import net.starlegacy.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
+import org.litote.kmongo.eq
 
 class RegionTerritory(territory: Territory) : Region<Territory>(territory),
 	RegionTopLevel, RegionParent {
@@ -152,11 +152,9 @@ class RegionTerritory(territory: Territory) : Region<Territory>(territory),
 						}
 
 						// if the min build access is ally and they're at least an ally, they can build
-						if (minBuildAccess == Settlement.ForeignRelation.ALLY
-							&& settlementNation != null
-							&& RelationCache[settlementNation, playerNation] >= NationRelation.Level.ALLY
-						) {
-							return null
+						for (relation in NationRelation.find(NationRelation::nation eq settlementNation)) {
+							if (minBuildAccess == Settlement.ForeignRelation.ALLY && settlementNation != null && relation.other == playerNation && relation.actual == NationRelation.Level.ALLY)
+								return null
 						}
 					}
 				}

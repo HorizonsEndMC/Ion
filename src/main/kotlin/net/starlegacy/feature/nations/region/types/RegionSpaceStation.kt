@@ -3,7 +3,6 @@ package net.starlegacy.feature.nations.region.types
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.enumValue
 import net.starlegacy.database.get
@@ -21,6 +20,7 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.entity.Player
+import org.litote.kmongo.eq
 
 class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spaceStation), RegionTopLevel {
 	override val priority: Int = 0
@@ -77,8 +77,9 @@ class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spac
 			}
 
 			// if they're at least an ally and trust level is ally (should cover same nation)
-			if (trustLevel == SpaceStation.TrustLevel.ALLY && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
-				return null
+			for (relation in NationRelation.find(NationRelation::nation eq nation)) {
+				if (trustLevel == SpaceStation.TrustLevel.ALLY && relation.other == playerNation && relation.actual == NationRelation.Level.ALLY)
+					return null
 			}
 
 			// if they're in a trusted nation

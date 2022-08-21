@@ -4,7 +4,6 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import java.time.DayOfWeek
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.array
 import net.starlegacy.database.enumValue
@@ -23,6 +22,7 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.entity.Player
+import org.litote.kmongo.eq
 
 class RegionCapturableStation(station: CapturableStation) : Region<CapturableStation>(station),
 	RegionTopLevel {
@@ -64,8 +64,9 @@ class RegionCapturableStation(station: CapturableStation) : Region<CapturableSta
 		val playerNation = PlayerCache[player].nation
 
 		// if they're at least an ally they can build
-		if (playerNation != null && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
-			return null
+		for (relation in NationRelation.find(NationRelation::nation eq nation)) {
+			if (playerNation != null && relation.other == playerNation && relation.actual == NationRelation.Level.ALLY)
+				return null
 		}
 
 		return "$name is a station claimed by ${NationCache[nation].name}".intern()

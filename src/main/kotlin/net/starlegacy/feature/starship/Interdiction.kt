@@ -6,9 +6,6 @@ import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
-import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
@@ -143,11 +140,5 @@ object Interdiction : SLComponent() {
 
 		input.removeItem(CustomItems.MINERAL_CHETHERITE.itemStack(2))
 		starship.sendMessage("&5Gravity pulse has been invoked by ${player.name}.")
-	}
-
-	private fun isAllied(pilot: Player, player: Player): Boolean {
-		val pilotNation = PlayerCache[pilot].nation ?: return false
-		val playerNation = PlayerCache[player].nation ?: return false
-		return RelationCache[pilotNation, playerNation] >= NationRelation.Level.ALLY
 	}
 }
