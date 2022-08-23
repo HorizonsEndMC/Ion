@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.listeners.bukkit
 
 import java.lang.System.currentTimeMillis
 import java.util.UUID
+import net.horizonsend.ion.common.database.Achievement
+import net.horizonsend.ion.server.utilities.rewardAchievement
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -37,5 +39,6 @@ class PlayerDeathListener : Listener {
 		}
 
 		event.entity.world.dropItem(event.entity.location, head)
+		event.player.rewardAchievement(Achievement.KILL_PLAYER)
 	}
 }
