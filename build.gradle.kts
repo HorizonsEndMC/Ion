@@ -3,7 +3,7 @@ import java.net.URL
 plugins {
 	id("com.github.johnrengelman.shadow") version "7.1.2"
 	id("io.papermc.paperweight.userdev") version "1.3.8"
-	id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+	id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
 	id("org.jetbrains.kotlin.jvm") version "1.7.10"
 	id("xyz.jpenilla.run-paper") version "1.0.6"
 }
