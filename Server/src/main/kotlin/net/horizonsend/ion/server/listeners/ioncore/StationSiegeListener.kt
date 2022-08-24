@@ -11,6 +11,6 @@ import org.bukkit.event.Listener
 class StationSiegeListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onStationSiege(event: StationSiegeBeginEvent) {
-		event.player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
+		event.player.rewardAchievement(Achievement.SIEGE_STATION)
 	}
 }
