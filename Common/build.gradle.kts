@@ -29,7 +29,7 @@ dependencies {
 	api("org.jetbrains.exposed:exposed-jdbc:0.39.2")
 	api("org.jetbrains.exposed:exposed-dao:0.39.2")
 
-	api("org.xerial:sqlite-jdbc:3.39.2.0")
+	api("org.xerial:sqlite-jdbc:3.39.2.1")
 	api("mysql:mysql-connector-java:8.0.30")
 
 	api("org.reflections:reflections:0.10.2")
