@@ -3,10 +3,6 @@
 doSudo="true"
 type "sudo" > /dev/null || doSudo="false"
 
-if [ $doSudo = "false" ]; then
-	printf "\u1b[33mSudo is not present on this system, it will not be used, this could prevent the server from running. It may be safe to ignore this.\u001b[0m\n"
-fi
-
 safeSudo() {
 	if [ $doSudo = "true" ]; then
 		sudo "$@"
@@ -15,29 +11,39 @@ safeSudo() {
 	fi
 }
 
+cd run
+
 case $1 in
+	setup)
+		safeSudo docker-compose up --no-start
+		mkdir -p paper/plugins
+		cd ..
+		./gradlew --daemon --build-cache :downloadTestServerDependencies
+	;;
+	reset) safeSudo sh -c "
+		docker-compose rm -fs
+		rm -rf paper waterfall
+	" ;;
+	start) safeSudo docker-compose up -d ;;
+	stop) safeSudo docker-compose stop ;;
+	logs) safeSudo docker-compose logs --tail=0 --follow waterfall paper redis ;;
 	run)
-		rm -rf paper/plugins/FastAsyncWorldEdit*.jar paper/plugins/LuckPerms*.jar velocity/plugins/LuckPerms*.jar
-    mkdir -p paper/plugins/IonCore paper/plugins/LuckPerms velocity/plugins/luckperms
-    ./gradlew --daemon --build-cache :downloadTestServerDependencies
-    printf "\u1b[34mThe test server does have a console attached to the Paper server, however you can not see as you type.\u1b[0m\n"
-    safeSudo sh -c "
-      docker-compose up -d redis mongo paper velocity
-      chmod 777 -R paper velocity
-      docker-compose logs --follow --tail=0 velocity paper | sed \"s/^/\r/\" &
-      docker attach paper &> /dev/null
-      docker-compose stop
-    "
-	;;
-
-	reset)
+		printf "\u1b[34mThe standard run will attach a console to the Paper server, however you will not be able to see what you are typing.\nThis version of the run command is known to be problematic on Windows. In such a case \`run-fallback\` can be used.\u1b[0m\n"
 		safeSudo sh -c "
-      docker-compose rm -fs
-      rm -rf paper velocity
-    "
+			docker-compose up -d
+			docker-compose logs --follow --tail=0 waterfall paper | sed \"s/^/\r/\" &
+			docker attach paper &> /dev/null
+			docker-compose stop
+		"
 	;;
-
+	run-fallback)
+		safeSudo sh -c "
+			docker-compose up -d
+			docker-compose logs --tail=0 --follow waterfall paper redis
+			docker-compose stop
+		"
+	;;
 	*)
-		echo "Usage: server {run|reset}"
+		echo "Usage: server {setup|reset|start|stop|logs|run}"
 	;;
 esac

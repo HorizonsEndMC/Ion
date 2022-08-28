@@ -1,0 +1,8 @@
+servers:
+  paper:
+    address: paper:25565
+listeners:
+  - query_port: 25577
+    priorities:
+      - paper
+ip_forward: true

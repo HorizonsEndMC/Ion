@@ -2,7 +2,7 @@ pluginManagement {
 	repositories {
 		gradlePluginPortal()
 
-		maven("https://repo.papermc.io/repository/maven-public/") // Paperweight Userdev
+		maven("https://repo.papermc.io/repository/maven-public/")
 	}
 }
 

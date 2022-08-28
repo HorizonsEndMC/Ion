@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.screens
 import io.papermc.paper.adventure.PaperAdventure
 import kotlin.math.ceil
 import kotlin.math.min
-import net.horizonsend.ion.common.annotations.UpdateUnsafe
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.database.PlayerData
 import net.kyori.adventure.text.Component
@@ -30,7 +29,7 @@ class AchievementsScreen private constructor(
 		placeAchievementIcons()
 	}
 
-	@UpdateUnsafe
+	@net.horizonsend.ion.common.annotations.UpdateUnsafe
 	override fun handleInventoryClick(event: InventoryClickEvent) {
 		when (event.slot) {
 			45 -> if (pageNumber > 0) pageNumber-- else return
