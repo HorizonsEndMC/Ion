@@ -22,72 +22,45 @@ dependencies {
 	implementation(project(":Proxy"))
 }
 
-tasks {
-	reobfJar {
-		outputJar.set(file(rootProject.projectDir.absolutePath + "/build/Ion.jar"))
-	}
+tasks.reobfJar {
+	outputJar.set(file(rootProject.projectDir.absolutePath + "/build/Ion.jar"))
+}
 
-	runServer { minecraftVersion("1.19.2") }
-	ktlint { version.set("0.44.0") }
+tasks.runServer { minecraftVersion("1.19.2") }
 
-	prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
-	addKtlintFormatGitPreCommitHook { dependsOn("shadowJar") }
-	build { dependsOn("reobfJar") }
+tasks.prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
+tasks.build { dependsOn("reobfJar"); dependsOn("shadowJar") }
 
-	create("downloadTestServerDependencies") {
-		fun downloadJenkinsArtifact(
-			domain: String,
-			project: String,
-			filter: String,
-			location: String,
-			destination: String
-		) {
-			val jarName =
-				URL("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath[$filter]")
-					.readText()
-					.substringAfter("<relativePath>$location/")
-					.substringBefore("</relativePath>")
+tasks.compileKotlin { kotlinOptions { jvmTarget = "17" } }
 
-			print("Downloading $jarName... ")
+tasks.compileJava {
+	sourceCompatibility = "17"
+	targetCompatibility = "17"
+}
 
-			File("./$destination/plugins")
-				.apply { mkdirs() }
-				.resolve(jarName)
-				.writeBytes(
-					URL("https://$domain/job/$project/lastSuccessfulBuild/artifact/$location/$jarName")
-						.readBytes()
-				)
+// TODO: Use Json
+// TODO: Don't redownload every time
+fun downloadJenkinsArtifact(domain: String, project: String, filter: String, location: String) {
+	val jarName =
+		URL("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath[$filter]")
+			.readText()
+			.substringAfter("<relativePath>$location/")
+			.substringBefore("</relativePath>")
 
-			println("Done!")
-		}
+	print("Downloading $jarName... ")
 
-		doFirst {
-			downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts", "paper")
-			downloadJenkinsArtifact(
-				"ci.lucko.me",
-				"LuckPerms",
-				"starts-with(.,'bukkit/')",
-				"bukkit/loader/build/libs",
-				"paper"
-			)
-			downloadJenkinsArtifact(
-				"ci.lucko.me",
-				"LuckPerms",
-				"starts-with(.,'velocity/')",
-				"velocity/build/libs",
-				"velocity"
-			)
-		}
-	}
+	File("./run/paper/plugins/$jarName")
+		.writeBytes(
+			URL("https://$domain/job/$project/lastSuccessfulBuild/artifact/$location/$jarName")
+				.readBytes()
+		)
 
-	compileKotlin {
-		kotlinOptions {
-			jvmTarget = "17"
-		}
-	}
+	println("Done!")
+}
 
-	compileJava {
-		sourceCompatibility = "17"
-		targetCompatibility = "17"
+tasks.create("downloadTestServerDependencies") {
+	doFirst {
+		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts")
+		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs")
 	}
 }

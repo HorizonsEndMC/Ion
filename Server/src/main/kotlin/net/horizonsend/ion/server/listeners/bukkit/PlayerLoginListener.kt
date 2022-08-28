@@ -1,21 +1,26 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.utilities.constructPlayerListNameAsync
+import java.net.URL
+import java.security.MessageDigest
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("Unused")
 class PlayerLoginListener : Listener {
-	@EventHandler
-	fun onPlayerLoginEvent(event: PlayerLoginEvent) {
-		constructPlayerListNameAsync(event.player.name, event.player.uniqueId).thenAcceptAsync {
-			event.player.playerListName(it)
-		}
+	private val url = "https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
+		URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
+			.readText()
+			.substringAfter("\",\"tag_name\":\"")
+			.substringBefore("\",")
+	}/HorizonsEndResourcePack.zip"
 
-		// Ensure the player exists in the database
-		transaction { PlayerData.getOrCreate(event.player.uniqueId, event.player.name) }
+	private val hash = MessageDigest.getInstance("SHA-1")
+		.digest(URL(url).readBytes())
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	fun onPlayerLoginEvent(event: PlayerLoginEvent) {
+		event.player.setResourcePack(url, hash)
 	}
 }

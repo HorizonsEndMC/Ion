@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.initializeCommon
-import net.horizonsend.ion.server.listeners.luckperms.UserDataRecalculateListener
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import org.bukkit.Keyed
 import org.bukkit.Material
@@ -22,7 +21,7 @@ import org.reflections.scanners.Scanners.SubTypes
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
-		initializeCommon(dataFolder.toPath())
+		initializeCommon(dataFolder)
 
 		val reflections = Reflections("net.horizonsend.ion.server")
 
@@ -38,8 +37,6 @@ class IonServer : JavaPlugin() {
 			}
 			.also { logger.info("Loading ${it.size} listeners.") }
 			.forEach { server.pluginManager.registerEvents(it as Listener, this) }
-
-		UserDataRecalculateListener() // Luckperms
 
 		val commandManager = PaperCommandManager(this)
 

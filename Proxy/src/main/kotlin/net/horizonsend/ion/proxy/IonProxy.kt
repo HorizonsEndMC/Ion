@@ -1,17 +1,7 @@
 package net.horizonsend.ion.proxy
 
 import co.aikar.commands.BaseCommand
-import co.aikar.commands.VelocityCommandManager
-import com.google.inject.Inject
-import com.velocitypowered.api.event.EventTask
-import com.velocitypowered.api.event.PostOrder
-import com.velocitypowered.api.event.Subscribe
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
-import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
-import com.velocitypowered.api.plugin.Plugin
-import com.velocitypowered.api.plugin.annotation.DataDirectory
-import com.velocitypowered.api.proxy.ProxyServer
-import java.nio.file.Path
+import co.aikar.commands.BungeeCommandManager
 import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
 import kotlin.reflect.full.createType
@@ -29,23 +19,18 @@ import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.annotations.GlobalCommand
 import net.horizonsend.ion.proxy.annotations.GuildCommand
-import net.horizonsend.ion.proxy.annotations.VelocityListener
+import net.md_5.bungee.api.ProxyServer
+import net.md_5.bungee.api.plugin.Listener
+import net.md_5.bungee.api.plugin.Plugin
 import org.reflections.Reflections
 import org.reflections.Store
 import org.reflections.scanners.Scanners.SubTypes
 import org.reflections.scanners.Scanners.TypesAnnotated
 import org.reflections.util.QueryFunction
-import org.slf4j.Logger
 
 @Suppress("Unused")
-@Plugin(id = "ion", name = "Ion") // While we do not use this for generating velocity-plugin.json, ACF requires it.
-class IonProxy @Inject constructor(
-	private val velocity: ProxyServer,
-	private val logger: Logger,
-	@DataDirectory
-	private val dataDirectory: Path
-) {
-	private val configuration: ProxyConfiguration = loadConfiguration(dataDirectory)
+class IonProxy : Plugin() {
+	private val configuration: ProxyConfiguration = loadConfiguration(dataFolder)
 
 	private val jda = try {
 		JDABuilder.createLight(configuration.discordBotToken)
@@ -56,21 +41,19 @@ class IonProxy @Inject constructor(
 			.setEnableShutdownHook(false)
 			.build()
 	}  catch (_: LoginException) {
-		logger.warn("Failed to start JDA as it was unable to login to Discord!")
+		slF4JLogger.warn("Failed to start JDA as it was unable to login to Discord!")
 		null
 	}
 
-	@Suppress("Unused_Parameter")
-	@Subscribe(order = PostOrder.LAST)
-	fun onProxyInitializeEvent(event: ProxyInitializeEvent): EventTask = EventTask.async {
-		initializeCommon(dataDirectory)
+	override fun onEnable() {
+		initializeCommon(dataFolder)
 
 		val reflections = Reflections("net.horizonsend.ion.proxy")
 
-		val commandManager = VelocityCommandManager(velocity, this)
+		val commandManager = BungeeCommandManager(this)
 
-		reflectionsRegister(reflections, TypesAnnotated.of(VelocityListener::class.java), "listeners") {
-			velocity.eventManager.register(this, it)
+		reflectionsRegister(reflections, SubTypes.of(Listener::class.java), "listeners") {
+			proxy.pluginManager.registerListener(this, it as Listener)
 		}
 
 		reflectionsRegister(reflections, SubTypes.of(BaseCommand::class.java), "commands") {
@@ -90,17 +73,15 @@ class IonProxy @Inject constructor(
 
 			jdaCommandManager.build()
 
-			velocity.scheduler.buildTask(this, Runnable {
-				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${velocity.playerCount} players!"))
-			}).repeat(5, TimeUnit.SECONDS).schedule()
+			proxy.scheduler.schedule(this, {
+				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${proxy.onlineCount} players!"))
+			}, 0, 5, TimeUnit.SECONDS)
 		}
 
 		removeOnlineRoleFromEveryone()
 	}
 
-	@Suppress("Unused_Parameter")
-	@Subscribe(order = PostOrder.LAST)
-	fun onProxyShutdownEvent(event: ProxyShutdownEvent): EventTask = EventTask.async {
+	override fun onDisable() {
 		removeOnlineRoleFromEveryone()
 
 		jda?.shutdown()
@@ -118,15 +99,15 @@ class IonProxy @Inject constructor(
 
 				constructor.javaConstructor?.newInstance(*constructor.parameters.map { when (it.type) {
 					ProxyConfiguration::class.createType() -> configuration
-					ProxyServer::class.createType() -> velocity
+					ProxyServer::class.createType() -> proxy
 					IonProxy::class.createType() -> this
 					JDA::class.createType(nullable = true) -> jda
 					JDA::class.createType() -> if (jda != null) jda else {
-						logger.error("${clazz.name} has not been loaded as it requires JDA which is unavailable.")
+						slF4JLogger.error("${clazz.name} has not been loaded as it requires JDA which is unavailable.")
 						return@clazzMap null
 					}
 					else -> {
-						logger.error("Unable to provide ${it.type.javaType.typeName} to ${clazz.simpleName}.")
+						slF4JLogger.error("Unable to provide ${it.type.javaType.typeName} to ${clazz.simpleName}.")
 						return@clazzMap null
 					}
 				}}.toTypedArray())

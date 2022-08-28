@@ -1,7 +1,6 @@
 package net.horizonsend.ion.common
 
-import java.nio.file.Path
-import kotlin.io.path.absolutePathString
+import java.io.File
 import net.horizonsend.ion.common.CommonConfiguration.DatabaseType
 import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.common.utilities.loadConfiguration
@@ -13,16 +12,16 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Initializes common code including configuration and the database
  * @param dataDirectory Location of the plugin data directory
  * @return Common server configuration
- * @see Path
+ * @see File
  * @see CommonConfiguration
  */
-fun initializeCommon(dataDirectory: Path): CommonConfiguration {
+fun initializeCommon(dataDirectory: File): CommonConfiguration {
 	val configuration: CommonConfiguration = loadConfiguration(dataDirectory)
 
 	when (configuration.databaseType) {
 		DatabaseType.SQLITE ->
 			Database.connect(
-				"jdbc:sqlite:${dataDirectory.resolve("shared/database.db").absolutePathString()}",
+				"jdbc:sqlite:${dataDirectory.resolve("shared/database.db").absolutePath}",
 				"org.sqlite.JDBC"
 			)
 

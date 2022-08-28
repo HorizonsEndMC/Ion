@@ -1,7 +1,5 @@
+/run/waterfall
+/run/paper
 .gradle
-.idea
+/.idea
 build
-/config/**
-/velocity/**
-/paper/**
-/run

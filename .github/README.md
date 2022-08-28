@@ -7,11 +7,15 @@ The compiled jar be `build/Ion.jar` and `build/IonCore.jar`.
 
 ### Testing
 
-This repository includes a script that will set up a functioning system comprising of Ion, IonCore, and its critical
+This repository includes a script that will set up a functioning system comprising of Ion, IonCore, and its required
 dependencies. To use it simply ensure that Docker and Docker Compose are installed and running, and then use
 `testServer`. This script is a bash script, using it on Windows will require Windows Subsystem for Linux or Git Bash.
 
-Simply run `sh testServer run`, you will be able to send commands in the terminal, but they will not appear as you type.
+To use the test server run `sh testServer setup` and then start it with `sh testServer run`, if there are any issues try
+`sh testServer run-fallback`.
+
+You can also start, view logs, and stop the server independently with `sh testServer start`, `sh testServer logs`,
+and `sh testServer stop`.
 
 If the test server breaks, use `sh testServer reset` to reset it back to it's default state.
 
@@ -41,7 +45,7 @@ Contributions must follow the following rules:
 	- Does the listener simply act on the result of the event? If so, use MONITOR.
 	- HIGH and HIGHEST should not be used right now.
 
-9) To prevent IntelliJ from complaining, please `@Suppress("unused")`for any entry points. Don't just tell IntelliJ to
+9) To prevent IntelliJ from complaining, please `@Suppress("Unused")`for any entry points. Don't just tell IntelliJ to
    ignore them for that class as that only applies to you, not everyone else.
 
 10) These rules are more relaxed with IonCore, but should still be kept to if possible.
