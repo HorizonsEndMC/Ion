@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
 import net.horizonsend.ion.common.database.Achievement
-import net.horizonsend.ion.server.annotations.IonCore
 import net.horizonsend.ion.server.utilities.ionCore
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import net.starlegacy.feature.misc.CustomItems
@@ -14,7 +13,7 @@ import org.bukkit.event.player.PlayerAttemptPickupItemEvent
 class PlayerPickUpItemListener : Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerPickUpItem(event: PlayerAttemptPickupItemEvent) {
-		@IonCore
+		@net.horizonsend.ion.server.annotations.IonCore
 		ionCore {
 			event.player.rewardAchievement(
 				when (event.item) {
