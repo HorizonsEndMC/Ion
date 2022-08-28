@@ -30,7 +30,7 @@ data class Config(
 ) {
 	data class Mongo(
 		//@Comment("The host IP address of the MongoDB database")
-		val host: String = "localhost",
+		val host: String = "mongo",
 
 		//@Comment("The host port of the MongoDB database")
 		val port: Int = 27017,
@@ -46,7 +46,7 @@ data class Config(
 	)
 
 	data class Redis(
-		val host: String = "localhost",
+		val host: String = "redis",
 
 		val channel: String = "starlegacytest"
 	)
