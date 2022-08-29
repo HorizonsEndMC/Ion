@@ -72,7 +72,8 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 		}
 
 		event.hook.editOriginalEmbeds(messageEmbed(
-			title = changeLog.joinToString("\n", "Done, the following changes were made:", ""),
+			title = "Done, the following changes were made.",
+			description = changeLog.joinToString("\n", "", ""),
 			color = 0x7fff7f
 		)).queue()
 	}
