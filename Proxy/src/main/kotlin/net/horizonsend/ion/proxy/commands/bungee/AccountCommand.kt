@@ -33,8 +33,12 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 
 		jda.retrieveUserById(playerData.discordUUID!!).queue {
 			sender.sendMessage(
-				ComponentBuilder("Linked to ")
-					.color(ChatColor.of("#8888ff"))
+				ComponentBuilder()
+					.append(
+						ComponentBuilder("Linked to ")
+							.color(ChatColor.of("#8888ff"))
+							.create()
+					)
 					.append(
 						ComponentBuilder("\"${it.asTag}\"")
 							.color(ChatColor.WHITE)
@@ -90,8 +94,12 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 	@Subcommand("link")
 	@Description("Link Discord account.")
 	fun onLinkCommand(sender: ProxiedPlayer) = sender.sendMessage(
-		ComponentBuilder("Run /account link ")
-			.color(ChatColor.of("#8888ff"))
+		ComponentBuilder()
+			.append(
+				ComponentBuilder("Run /account link ")
+					.color(ChatColor.of("#8888ff"))
+					.create()
+			)
 			.append(
 				ComponentBuilder("\"${LinkManager.createLinkCode(sender.uniqueId)}\"")
 					.color(ChatColor.WHITE)
