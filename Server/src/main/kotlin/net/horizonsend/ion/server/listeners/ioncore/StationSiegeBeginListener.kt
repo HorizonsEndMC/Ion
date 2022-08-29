@@ -1,16 +1,16 @@
 package net.horizonsend.ion.server.listeners.ioncore
 
 import net.horizonsend.ion.common.database.Achievement
-import net.horizonsend.ion.core.events.MultiblockDetectEvent
+import net.horizonsend.ion.core.events.StationSiegeBeginEvent
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-@Suppress("unused")
-class DetectMultiblockListener : Listener {
+@Suppress("Unused")
+class StationSiegeBeginListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onDetectMultiblock(event: MultiblockDetectEvent) {
-		event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
+	fun onStationSiegeBeginEvent(event: StationSiegeBeginEvent) {
+		event.player.rewardAchievement(Achievement.SIEGE_STATION)
 	}
 }
