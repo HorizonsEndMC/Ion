@@ -142,7 +142,6 @@ abstract class SimpleProjectile(
 
 		if (block != null && shooter != null) {
 			addToDamagers(world, block)
-			combatTag(world, block)
 		}
 
 		if (entity != null && entity is LivingEntity && !world.name.contains("Hyperspace")) {
@@ -160,13 +159,6 @@ abstract class SimpleProjectile(
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship != starship && otherStarship.contains(x, y, z)) {
 				otherStarship.damagers.getOrPut(damager, { AtomicInteger() }).incrementAndGet()
-			}
-		}
-	}
-	fun combatTag(world: World, block: Block){
-		for (otherStarship in ActiveStarships.getInWorld(world)) {
-			if (otherStarship != starship && otherStarship.contains(block.x, block.y, block.z)) {
-				 otherStarship.combatTag.put(starship!!, System.currentTimeMillis())
 			}
 		}
 	}
