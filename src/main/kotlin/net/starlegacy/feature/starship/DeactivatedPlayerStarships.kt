@@ -4,24 +4,18 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import java.io.File
 import java.util.UUID
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.database.slPlayerId
-import net.starlegacy.feature.nations.region.Regions
-import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarshipFactory
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKey
 import org.bukkit.Chunk
-import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.entity.Player
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.litote.kmongo.addToSet
@@ -186,31 +180,8 @@ object DeactivatedPlayerStarships : SLComponent() {
 		return carriedShipMap
 	}
 
-	fun isCombatLeavableCity(location: Location, player: Player): Boolean = Regions
-		.find(location)
-		.any { it is RegionTerritory && it.isClaimed && (it.isProtected || it.cacheAccess(player).equals(true))}
-
 	fun deactivateAsync(starship: ActivePlayerStarship, callback: () -> Unit = {}) {
 		Tasks.checkMainThread()
-		if (isCombatLeavableCity(starship.centerOfMass.toLocation(starship.world), starship.pilot!!) && (starship.combatTag.all { it.value <= System.currentTimeMillis()-120000 })) {
-			starship.pilot!!.sendFeedbackMessage(
-				FeedbackType.INFORMATION,
-				"Please Note: You are in combat and as such your ship will be unpiloted, you will be able to release it after its out of combat. Combat tag time is 2 minutes after last weapon hit"
-			)
-			starship.pilot = null
-			return
-		}
-		var distance = 0.0
-
-		starship.combatTag.keys.forEach { if (it.centerOfMass.toLocation(it.world).distance(starship.centerOfMass.toLocation(starship.world)) > distance)(
-				it.centerOfMass.toLocation(it.world).distance(starship.centerOfMass.toLocation(starship.world)) == distance
-		)
-		}
-		if (distance < 1000.0){
-			starship.pilot!!.sendFeedbackMessage(FeedbackType.INFORMATION, "You are within 1000.0 of a starship that has engaged you in combat, leave this zone or your ship wont release.")
-			starship.pilot = null
-			return
-		}
 
 		if (PilotedStarships.isPiloted(starship)) {
 			PilotedStarships.unpilot(starship)
