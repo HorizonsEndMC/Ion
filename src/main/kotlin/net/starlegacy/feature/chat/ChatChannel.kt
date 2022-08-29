@@ -307,7 +307,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 				val playerNation = PlayerCache.getIfOnline(player)?.nation ?: continue
 
 				for (relation in NationRelation.find(NationRelation::nation eq message.id)) {
-					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY) || (relation.actual == NationRelation.Level.NATION))
+					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY) || (message.id == playerNation	))
 						player.sendMessage(*component)
 				}
 			}
