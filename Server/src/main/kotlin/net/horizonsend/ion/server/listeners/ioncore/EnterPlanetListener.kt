@@ -15,7 +15,7 @@ class EnterPlanetListener {
 		val playerData = transaction { PlayerData[event.player.uniqueId] }
 
 		event.player.rewardAchievement(
-			when (event.newworld.toString().lowercase()) {
+			when (event.newworld.name.lowercase()) {
 				"chimgara" -> Achievement.PLANET_CHIMGARA
 				"chandra" -> Achievement.PLANET_CHANDRA
 				"damkoth" -> Achievement.PLANET_DAMKOTH
