@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.messageEmbed
+import org.jetbrains.exposed.sql.transactions.transaction
 
 @GuildCommand
 @Suppress("Unused")
@@ -47,7 +48,7 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 		val membersWithUnlinked = guild.getMembersWithRoles(unlinkedRole)
 
 		for (member in guild.members) {
-			val playerData = PlayerData.find { PlayerDataTable.discordUUID eq member.idLong }.firstOrNull()
+			val playerData = transaction { PlayerData.find { PlayerDataTable.discordUUID eq member.idLong }.firstOrNull() }
 
 			if (playerData == null) {
 				if (membersWithLinked.contains(member)) {
