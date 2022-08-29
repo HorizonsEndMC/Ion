@@ -24,16 +24,16 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 
 		if (playerData?.discordUUID == null) {
 			sender.sendMessage(
-				ComponentBuilder("Your Minecraft account is not linked.")
+				*ComponentBuilder("Your Minecraft account is not linked.")
 					.color(ChatColor.of("#8888ff"))
-					.create()[0]
+					.create()
 			)
 			return
 		}
 
 		jda.retrieveUserById(playerData.discordUUID!!).queue {
 			sender.sendMessage(
-				ComponentBuilder()
+				*ComponentBuilder()
 					.append(
 						ComponentBuilder("Linked to ")
 							.color(ChatColor.of("#8888ff"))
@@ -57,7 +57,7 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 							.color(ChatColor.of("#8888ff"))
 							.create()
 					)
-					.create()[0]
+					.create()
 			)
 		}
 	}
@@ -69,9 +69,9 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 
 		if (playerData?.discordUUID == null) {
 			sender.sendMessage(
-				ComponentBuilder("Your account is not linked.")
+				*ComponentBuilder("Your account is not linked.")
 					.color(ChatColor.of("#ff8844"))
-					.create()[0]
+					.create()
 			)
 			return@transaction
 		}
@@ -85,16 +85,16 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 		playerData.discordUUID = null
 
 		sender.sendMessage(
-			ComponentBuilder("Your account is no longer linked.")
+			*ComponentBuilder("Your account is no longer linked.")
 				.color(ChatColor.of("#88ff88"))
-				.create()[0]
+				.create()
 		)
 	}
 
 	@Subcommand("link")
 	@Description("Link Discord account.")
 	fun onLinkCommand(sender: ProxiedPlayer) = sender.sendMessage(
-		ComponentBuilder()
+		*ComponentBuilder()
 			.append(
 				ComponentBuilder("Run /account link ")
 					.color(ChatColor.of("#8888ff"))
@@ -110,6 +110,6 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 					.color(ChatColor.of("#8888ff"))
 					.create()
 			)
-			.create()[0]
+			.create()
 	)
 }
