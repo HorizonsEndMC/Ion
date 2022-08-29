@@ -12,8 +12,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Initializes common code including configuration and the database
  * @param dataDirectory Location of the plugin data directory
  * @return Common server configuration
- * @see File
  * @see CommonConfiguration
+ * @see File
  */
 fun initializeCommon(dataDirectory: File): CommonConfiguration {
 	val configuration: CommonConfiguration = loadConfiguration(dataDirectory)
