@@ -8,6 +8,7 @@ import net.kyori.adventure.title.Title
 import net.starlegacy.SETTINGS
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -42,4 +43,5 @@ fun Player.rewardAchievement(achievement: Achievement) {
 			Experience: ${achievement.experienceReward}
 		""".trimIndent() + if (achievement.chetheriteReward != 0) "\nChetherite: ${achievement.chetheriteReward}" else ""
 	)
+	this.playSound(this.location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f)
 }
