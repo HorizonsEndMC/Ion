@@ -1,18 +1,15 @@
 package net.horizonsend.ion.common.utilities
 
 import java.io.File
-import net.horizonsend.ion.common.annotations.ConfigurationName
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.kotlin.toNode
 
-inline fun <reified T> loadConfiguration(directory: File): T {
+inline fun <reified T> loadConfiguration(directory: File, fileName: String): T {
 	directory.mkdirs()
 
-	val configurationName = T::class.annotations.filterIsInstance<ConfigurationName>()[0].name
-
 	val loader = HoconConfigurationLoader.builder()
-		.path(directory.resolve("$configurationName.conf").toPath())
+		.path(directory.resolve(fileName).toPath())
 		.defaultOptions { options ->
 			options.serializers { builder ->
 				builder.registerAnnotatedObjects(objectMapperFactory())
