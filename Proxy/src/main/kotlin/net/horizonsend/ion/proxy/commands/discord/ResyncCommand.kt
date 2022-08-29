@@ -9,8 +9,6 @@ import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.messageEmbed
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @GuildCommand
 @Suppress("Unused")
@@ -28,28 +26,53 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 
 		event.deferReply(true).queue()
 
-		val players = transaction { PlayerData.find(PlayerDataTable.discordUUID.isNotNull()).toList() }
-
-		val guild = event.jda.getGuildById(configuration.discordServer)
-
-		if (guild == null) {
+		val guild = event.jda.getGuildById(configuration.discordServer) ?: run {
 			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild is not set.", color = 0xff8844)).queue()
 			return
 		}
 
-		val linkedRole = guild.getRoleById(configuration.linkedRole)
-
-		if (linkedRole == null) {
-			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild is not set.", color = 0xff8844)).queue()
+		val linkedRole = guild.getRoleById(configuration.linkedRole) ?: run {
+			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild linked role is not set.", color = 0xff8844)).queue()
 			return
 		}
 
-		for (player in players) {
-			val user = guild.getMemberById(player.discordUUID!!) ?: continue
-
-			guild.addRoleToMember(user, linkedRole)
+		val unlinkedRole = guild.getRoleById(configuration.unlinkedRole) ?: run {
+			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild unlinked role is not set.", color = 0xff8844)).queue()
+			return
 		}
 
-		event.hook.editOriginalEmbeds(messageEmbed(title = "Done", color = 0x7fff7f)).queue()
+		val changeLog = mutableListOf<String>()
+
+		val membersWithLinked = guild.getMembersWithRoles(linkedRole)
+		val membersWithUnlinked = guild.getMembersWithRoles(unlinkedRole)
+
+		for (member in guild.members) {
+			val playerData = PlayerData.find { PlayerDataTable.discordUUID eq member.idLong }.firstOrNull()
+
+			if (playerData == null) {
+				if (membersWithLinked.contains(member)) {
+					guild.removeRoleFromMember(member, linkedRole).queue()
+					changeLog += "Removed ${linkedRole.asMention} from ${member.asMention}"
+				}
+				if (!membersWithUnlinked.contains(member)) {
+					guild.addRoleToMember(member, unlinkedRole).queue()
+					changeLog += "Added ${unlinkedRole.asMention} from ${member.asMention}"
+				}
+			} else {
+				if (!membersWithLinked.contains(member)) {
+					guild.addRoleToMember(member, linkedRole).queue()
+					changeLog += "Added ${linkedRole.asMention} from ${member.asMention}"
+				}
+				if (membersWithUnlinked.contains(member)) {
+					guild.removeRoleFromMember(member, unlinkedRole).queue()
+					changeLog += "Removed ${unlinkedRole.asMention} from ${member.asMention}"
+				}
+			}
+		}
+
+		event.hook.editOriginalEmbeds(messageEmbed(
+			title = changeLog.joinToString("\n", "Done, the following changes were made:", ""),
+			color = 0x7fff7f
+		)).queue()
 	}
 }
