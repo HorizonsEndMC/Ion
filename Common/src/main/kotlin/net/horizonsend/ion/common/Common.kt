@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * @see File
  */
 fun initializeCommon(dataDirectory: File): CommonConfiguration {
-	val configuration: CommonConfiguration = loadConfiguration(dataDirectory)
+	val configuration: CommonConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "common.conf")
 
 	when (configuration.databaseType) {
 		DatabaseType.SQLITE ->
