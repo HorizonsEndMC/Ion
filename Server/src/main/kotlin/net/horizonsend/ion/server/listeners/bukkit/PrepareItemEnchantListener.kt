@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.enchantments.EnchantmentOffer
 import org.bukkit.event.EventHandler
@@ -13,7 +12,7 @@ class PrepareItemEnchantListener : Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	fun onPrepareItemEnchantEvent(event: PrepareItemEnchantEvent) {
 		event.offers[0] =
-			if (Enchantment.SILK_TOUCH.canEnchantItem(event.item) || event.item.type == Material.BOOK)
+			if (Enchantment.SILK_TOUCH.canEnchantItem(event.item))
 				EnchantmentOffer(Enchantment.SILK_TOUCH, 1, 120)
 			else null
 		event.offers[1] = null
