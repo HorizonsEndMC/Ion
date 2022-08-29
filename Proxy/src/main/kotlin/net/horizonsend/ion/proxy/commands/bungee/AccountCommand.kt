@@ -10,7 +10,7 @@ import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.connection.ConnectedPlayer
+import net.md_5.bungee.api.connection.ProxiedPlayer
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("Unused")
@@ -19,7 +19,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class AccountCommand(private val jda: JDA, private val configuration: ProxyConfiguration) : BaseCommand() {
 	@Subcommand("status")
 	@Description("Check linked Discord account.")
-	fun onStatusCommand(sender: ConnectedPlayer) {
+	fun onStatusCommand(sender: ProxiedPlayer) {
 		val playerData = transaction { PlayerData.findById(sender.uniqueId) }
 
 		if (playerData?.discordUUID == null) {
@@ -60,7 +60,7 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 
 	@Subcommand("unlink")
 	@Description("Unlink Discord account.")
-	fun onUnlinkCommand(sender: ConnectedPlayer) = transaction {
+	fun onUnlinkCommand(sender: ProxiedPlayer) = transaction {
 		val playerData = PlayerData.findById(sender.uniqueId)
 
 		if (playerData?.discordUUID == null) {
@@ -89,7 +89,7 @@ class AccountCommand(private val jda: JDA, private val configuration: ProxyConfi
 
 	@Subcommand("link")
 	@Description("Link Discord account.")
-	fun onLinkCommand(sender: ConnectedPlayer) = sender.sendMessage(
+	fun onLinkCommand(sender: ProxiedPlayer) = sender.sendMessage(
 		ComponentBuilder("Run /account link ")
 			.color(ChatColor.of("#8888ff"))
 			.append(
