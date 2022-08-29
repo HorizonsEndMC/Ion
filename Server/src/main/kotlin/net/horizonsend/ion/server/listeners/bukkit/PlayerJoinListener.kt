@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
+import java.net.URL
+import java.security.MessageDigest
 import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -15,6 +17,16 @@ import org.bukkit.persistence.PersistentDataType
 
 @Suppress("Unused")
 class PlayerJoinListener(private val plugin: IonServer) : Listener {
+	private val url = "https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
+		URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
+			.readText()
+			.substringAfter("\",\"tag_name\":\"")
+			.substringBefore("\",")
+	}/HorizonsEndResourcePack.zip"
+
+	private val hash = MessageDigest.getInstance("SHA-1")
+		.digest(URL(url).readBytes())
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	fun onPlayerJoinEvent(event: PlayerJoinEvent) {
 		event.joinMessage(null)
@@ -44,5 +56,7 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 			event.player.inventory.addItem(ItemStack(Material.CLOCK))
 			event.player.inventory.addItem(kitstarterasking)
 		}
+
+		event.player.setResourcePack(url, hash)
 	}
 }
