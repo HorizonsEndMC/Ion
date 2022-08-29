@@ -30,7 +30,7 @@ import org.reflections.util.QueryFunction
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
-	private val configuration: ProxyConfiguration = loadConfiguration(dataFolder)
+	private val configuration: ProxyConfiguration = loadConfiguration(dataFolder, "proxy.conf")
 
 	private val jda = try {
 		JDABuilder.createLight(configuration.discordBotToken)
