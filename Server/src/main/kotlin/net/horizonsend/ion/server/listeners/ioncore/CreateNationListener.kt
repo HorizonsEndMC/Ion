@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-@Suppress("unused")
+@Suppress("Unused")
 class CreateNationListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onCreateNation(event: CreateNationEvent) {
+	fun onCreateNationEvent(event: CreateNationEvent) {
 		event.player.rewardAchievement(Achievement.CREATE_NATION)
 	}
 }

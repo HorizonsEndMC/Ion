@@ -9,8 +9,8 @@ import org.bukkit.event.Listener
 
 @Suppress("unused")
 class DetectShipListener : Listener {
-	@EventHandler(priority =  EventPriority.MONITOR)
-	fun onDetectShip(event: StarshipDetectEvent){
+	@EventHandler(priority = EventPriority.MONITOR)
+	fun onDetectShip(event: StarshipDetectEvent) {
 		event.player.rewardAchievement(Achievement.DETECT_SHIP)
 	}
 }

@@ -10,6 +10,7 @@ val forbiddenCraftingItems = enumSetOf(
 	Material.NETHERITE_PICKAXE, Material.NETHERITE_SHOVEL
 )
 
+@Deprecated("Safety wrapper for code using IonCore, should be replaced to not do so if possible.")
 inline fun ionCore(execute: () -> Unit) {
 	if (!Bukkit.getPluginManager().isPluginEnabled("IonCore")) return
 	try {

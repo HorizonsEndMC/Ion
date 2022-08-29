@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-@Suppress("unused")
+@Suppress("Unused")
 class BuySpawnShuttleListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onBuySpawnShuttle(event: BuySpawnShuttleEvent) {
+	fun onBuySpawnShuttleEvent(event: BuySpawnShuttleEvent) {
 		event.player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
 	}
 }

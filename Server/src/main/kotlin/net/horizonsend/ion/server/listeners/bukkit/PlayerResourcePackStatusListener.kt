@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent
 @Suppress("Unused")
 class PlayerResourcePackStatusListener : Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
-	fun onPlayerResourcePackStatusListener(event: PlayerResourcePackStatusEvent) {
+	fun onPlayerResourcePackStatusEvent(event: PlayerResourcePackStatusEvent) {
 		if (event.status != PlayerResourcePackStatusEvent.Status.ACCEPTED) return
 
 		event.player.sendMessage(

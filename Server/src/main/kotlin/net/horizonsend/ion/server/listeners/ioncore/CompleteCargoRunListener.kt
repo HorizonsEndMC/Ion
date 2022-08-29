@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-@Suppress("unused")
+@Suppress("Unused")
 class CompleteCargoRunListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onCompleteCargoRun(event: CompleteCargoRunEvent) {
+	fun onCompleteCargoRunEvent(event: CompleteCargoRunEvent) {
 		event.player.rewardAchievement(Achievement.COMPLETE_CARGO_RUN)
 	}
 }
