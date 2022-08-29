@@ -132,7 +132,7 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 			if (it.type == SlashCommandInteractionEvent::class.createType()) return@map event
 			if (it.kind != KParameter.Kind.VALUE) return@map null
 
-			val option = event.getOption(it::class.name!!)!!
+			val option = event.getOption(it.findAnnotation<Name>()?.value ?: return@map null)!!
 
 			when (it.type) {
 				String::class.createType() -> option.asString
@@ -144,5 +144,4 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 	private val KAnnotatedElement.commandAlias get() = findAnnotation<CommandAlias>()?.value
 	private val KAnnotatedElement.description get() = findAnnotation<Description>()?.value
 	private val KAnnotatedElement.subcommand get() = findAnnotation<Subcommand>()?.value
-	private val KAnnotatedElement.name get() = findAnnotation<Name>()?.value
 }
