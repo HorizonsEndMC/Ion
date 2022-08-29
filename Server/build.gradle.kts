@@ -16,7 +16,6 @@ dependencies {
 
 	compileOnly(project(":IonCore"))
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-	compileOnly("net.luckperms:api:5.4")
 
 	implementation(project(":Common"))
 
