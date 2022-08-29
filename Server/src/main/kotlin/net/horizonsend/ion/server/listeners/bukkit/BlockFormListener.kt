@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import net.horizonsend.ion.common.utilities.enumSetOf
+import net.horizonsend.ion.server.utilities.enumSetOf
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
