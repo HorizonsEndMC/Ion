@@ -10,7 +10,7 @@ import org.bukkit.event.Listener
 @Suppress("Unused")
 class HyperspaceEnterListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onHyperSpaceEnter(event: HyperspaceEnterEvent) {
+	fun onHyperspaceEnterEvent(event: HyperspaceEnterEvent) {
 		event.player.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 }

@@ -9,11 +9,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent
 
-@Suppress("unused")
+@Suppress("Unused")
 class PlayerPickUpItemListener : Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
-	fun onPlayerPickUpItem(event: PlayerAttemptPickupItemEvent) {
-		@net.horizonsend.ion.server.annotations.IonCore
+	fun onPlayerAttemptPickupItemEvent(event: PlayerAttemptPickupItemEvent) {
 		ionCore {
 			event.player.rewardAchievement(
 				when (event.item) {

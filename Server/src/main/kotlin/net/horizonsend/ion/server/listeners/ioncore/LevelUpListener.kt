@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 
-@Suppress("unused")
+@Suppress("Unused")
 class LevelUpListener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onLevelUp(event: LevelUpEvent) {
+	fun onLevelUpEvent(event: LevelUpEvent) {
 		event.player.rewardAchievement(
 			when (event.level) {
 				10 -> Achievement.LEVEL_10

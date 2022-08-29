@@ -32,8 +32,8 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 			kitstarterasking.itemMeta.displayName(
 				MiniMessage.miniMessage()
 					.deserialize("Please do /kit starter if you run out of steak or need a new set!").color(
-					TextColor.color(0, 255, 255)
-				)
+						TextColor.color(0, 255, 255)
+					)
 			)
 			kitstarterasking.itemMeta.persistentDataContainer.set(
 				NamespacedKey(plugin, "SpawnPaper"),

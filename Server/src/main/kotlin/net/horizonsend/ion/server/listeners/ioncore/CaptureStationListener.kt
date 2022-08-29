@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-@Suppress("unused")
+@Suppress("Unused")
 class CaptureStationListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onCaptureStation(event: StationCaptureEvent) {
+	fun onStationCaptureEvent(event: StationCaptureEvent) {
 		event.player.rewardAchievement(Achievement.CAPTURE_STATION)
 	}
 }

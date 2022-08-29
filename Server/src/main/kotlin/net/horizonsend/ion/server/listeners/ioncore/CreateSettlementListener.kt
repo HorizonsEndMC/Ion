@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-@Suppress("unused")
+@Suppress("Unused")
 class CreateSettlementListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onCreateSettlement(event: CreateSettlementEvent) {
+	fun onCreateSettlementEvent(event: CreateSettlementEvent) {
 		event.player.rewardAchievement(Achievement.CREATE_SETTLEMENT)
 	}
 }

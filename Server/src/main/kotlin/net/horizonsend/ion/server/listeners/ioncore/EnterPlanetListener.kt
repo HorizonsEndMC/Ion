@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.jetbrains.exposed.sql.transactions.transaction
 
-@Suppress("unused")
+@Suppress("Unused")
 class EnterPlanetListener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onEnterPlanetEvent(event: EnterPlanetEvent) {
