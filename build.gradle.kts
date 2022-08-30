@@ -27,7 +27,7 @@ dependencies {
 	compileOnly("com.discordsrv:discordsrv:1.25.1")
 
 	implementation("org.litote.kmongo:kmongo:4.7.0")
-	implementation("io.github.config4k:config4k:0.4.2")
+	implementation("io.github.config4k:config4k:0.5.0")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	implementation("redis.clients:jedis:3.7.1")
