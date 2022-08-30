@@ -109,12 +109,12 @@ object InteractListener : SLEventListener() {
 		}
 	}
 
-	// Bring the player up if they right click the air while facing up with a clock
+	// Bring the player up if they right click while facing up with a clock
 	// and there's a tractor beam above them
 	@EventHandler
 	fun onPlayerInteractEventC(event: PlayerInteractEvent) {
 		if (event.item?.type != Material.CLOCK) return
-		if (event.action != Action.RIGHT_CLICK_AIR) return
+		if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 		if (event.player.location.pitch > -60) return
 
 		val original = event.player.location.block
