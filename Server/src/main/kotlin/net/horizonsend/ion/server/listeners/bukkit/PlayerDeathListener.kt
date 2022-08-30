@@ -39,6 +39,6 @@ class PlayerDeathListener : Listener {
 		}
 
 		event.entity.world.dropItem(event.entity.location, head)
-		event.player.rewardAchievement(Achievement.KILL_PLAYER)
+		event.player.killer!!.rewardAchievement(Achievement.KILL_PLAYER)
 	}
 }
