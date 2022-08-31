@@ -61,16 +61,6 @@ object ChannelSelections : SLComponent() {
 
 				val oldChannel = get(player)
 
-				if (args.size > 1) {
-					localCache[playerID] = channel
-					try {
-						player.chat(message.removePrefix("/").removePrefix("$command "))
-					} finally {
-						localCache[playerID] = oldChannel
-					}
-					return@let
-				}
-
 				if (oldChannel == channel) {
 					player action "&cYou're already in chat ${channel.displayName.uppercase(Locale.getDefault())}&c! " +
 						"&o(Hint: To get back to global, use /global)"
