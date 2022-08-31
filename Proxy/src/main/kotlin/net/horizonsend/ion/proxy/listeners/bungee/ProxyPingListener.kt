@@ -30,8 +30,8 @@ class ProxyPingListener(private val proxy: ProxyServer, private val configuratio
 	fun onProxyPingEvent(event: ProxyPingEvent) {
 		event.response.version = version
 		event.response.players = ServerPing.Players(
-			proxy.onlineCount,
 			proxy.onlineCount + 1,
+			proxy.onlineCount,
 			proxy.players.map { ServerPing.PlayerInfo(it.name, it.uniqueId) }.toTypedArray()
 		)
 		event.response.descriptionComponent = TextComponent(
