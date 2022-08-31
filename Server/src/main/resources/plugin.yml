@@ -4,3 +4,4 @@ main: net.horizonsend.ion.server.IonServer
 load: STARTUP
 api-version: 1.19
 softdepend: [ Vault ]
+loadbefore: [ WorldEdit ] # WorldEdit also registers a /info command, which we want to overwrite
