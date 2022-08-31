@@ -305,10 +305,11 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val component = message.buildChatComponent()
 			for (player in Bukkit.getOnlinePlayers()) {
 				val playerNation = PlayerCache.getIfOnline(player)?.nation ?: continue
-
+				var hasRecieved = false
 				for (relation in NationRelation.find(NationRelation::nation eq message.id)) {
-					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY) || (relation.nation == playerNation))
+					if (hasRecieved && relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY) || (relation.nation == playerNation))
 						player.sendMessage(*component)
+					!hasRecieved
 				}
 			}
 		}.registerRedisAction("nations-chat-msg-ally", runSync = false)
