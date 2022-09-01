@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.hyperspace
 
 import kotlin.math.log10
 import kotlin.math.sqrt
+import net.horizonsend.ion.core.events.HyperspaceEnterEvent
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -10,6 +11,7 @@ import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipActivatedEvent
@@ -73,6 +75,8 @@ object Hyperspace : SLComponent() {
 		val speed = calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive)
+
+		(starship as? ActivePlayerStarship)?.pilot?.let { HyperspaceEnterEvent(it, starship).callEvent() }
 	}
 
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
