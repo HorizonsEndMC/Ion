@@ -1,9 +1,7 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import kotlin.math.roundToInt
-import net.horizonsend.ion.core.events.HyperspaceEnterEvent
 import net.starlegacy.PLUGIN
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.distance
@@ -18,8 +16,6 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 	private var travelled = 0.0
 
 	init {
-		(ship as? ActivePlayerStarship)?.pilot?.let { HyperspaceEnterEvent(it, ship).callEvent() }
-
 		runTaskTimer(PLUGIN, 2, 2)
 	}
 
