@@ -15,7 +15,7 @@ class PlayerPickUpItemListener : Listener {
 	fun onPlayerAttemptPickupItemEvent(event: PlayerAttemptPickupItemEvent) {
 		ionCore {
 			event.player.rewardAchievement(
-				when (event.item) {
+				when (event.item.itemStack) {
 					CustomItems.MINERAL_TITANIUM.singleItem() -> Achievement.ACQUIRE_TITANIUM
 					CustomItems.MINERAL_ALUMINUM.singleItem() -> Achievement.ACQUIRE_ALUMINIUM
 					CustomItems.MINERAL_CHETHERITE.singleItem() -> Achievement.ACQUIRE_CHETHERITE
