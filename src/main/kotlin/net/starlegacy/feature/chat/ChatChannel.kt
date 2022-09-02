@@ -309,7 +309,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY))
 						player.sendMessage(*component)
 				}
-				if (playerNation == message.id) {
+				if (playerNation == message.id && !message.playerInfo.contains("Player: ${player.name}")) {
 					player.sendMessage(*component)
 				}
 			}
@@ -327,6 +327,7 @@ private fun playerInfo(player: Player): String =
     XP: ${SLXP[player]}
     Nation: ${PlayerCache[player].nation?.let(NationCache::get)?.name}
     Settlement: ${PlayerCache[player].settlement?.let(SettlementCache::get)?.name}
+	Player: ${player.name}
     """.trimIndent()
 
 private abstract class ChatMessage {
