@@ -327,7 +327,7 @@ private fun playerInfo(player: Player): String =
     XP: ${SLXP[player]}
     Nation: ${PlayerCache[player].nation?.let(NationCache::get)?.name}
     Settlement: ${PlayerCache[player].settlement?.let(SettlementCache::get)?.name}
-	Player: ${player.name}
+    Player: ${player.name}
     """.trimIndent()
 
 private abstract class ChatMessage {
