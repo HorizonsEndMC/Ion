@@ -3,6 +3,9 @@ package net.starlegacy.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
@@ -33,10 +36,24 @@ internal object NationRelationCommand : SLCommand() {
 	@CommandCompletion("@nations")
 	fun onEnemy(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.ENEMY)
 
+	@Subcommand("nation")
+	@CommandCompletion("@nations")
+	fun onNation(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.NATION)
+
 	private fun setRelationWish(sender: Player, nation: String, wish: NationRelation.Level) = asyncCommand(sender) {
 		val senderNation = requireNationIn(sender)
 		requireNationPermission(sender, senderNation, NationRole.Permission.MANAGE_RELATIONS)
 		val otherNation = resolveNation(nation)
+
+		if (senderNation == otherNation && wish != NationRelation.Level.NATION){
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Error: Cannot {0} your own nation", wish.name)
+			return@asyncCommand
+		}
+
+		if (wish == NationRelation.Level.NATION && senderNation != otherNation){
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Error: Cannot nation another nation")
+			return@asyncCommand
+		}
 
 		val otherWish = NationRelation.getRelationWish(otherNation, senderNation)
 
