@@ -25,8 +25,6 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 			return
 		}
 
-		event.deferReply(true).queue()
-
 		val guild = event.jda.getGuildById(configuration.discordServer) ?: run {
 			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild is not set.", color = 0xff8844)).queue()
 			return
@@ -42,39 +40,59 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 			return
 		}
 
+		val linkBypassRole = guild.getRoleById(configuration.linkBypassRole) ?: run {
+			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild link bypass role is not set.", color = 0xff8844)).queue()
+			return
+		}
+
+		event.deferReply(true).queue()
+
 		val changeLog = mutableListOf<String>()
 
 		val membersWithLinked = guild.getMembersWithRoles(linkedRole)
 		val membersWithUnlinked = guild.getMembersWithRoles(unlinkedRole)
+		val membersWithLinkBypass = guild.getMembersWithRoles(linkBypassRole)
 
 		for (member in guild.members) {
 			val playerData = transaction { PlayerData.find { PlayerDataTable.discordUUID eq member.idLong }.firstOrNull() }
 
-			if (playerData == null) {
-				if (membersWithLinked.contains(member)) {
-					guild.removeRoleFromMember(member, linkedRole).queue()
-					changeLog += "Removed ${linkedRole.asMention} from ${member.asMention}"
-				}
-				if (!membersWithUnlinked.contains(member)) {
-					guild.addRoleToMember(member, unlinkedRole).queue()
-					changeLog += "Added ${unlinkedRole.asMention} from ${member.asMention}"
-				}
-			} else {
-				if (!membersWithLinked.contains(member)) {
-					guild.addRoleToMember(member, linkedRole).queue()
-					changeLog += "Added ${linkedRole.asMention} from ${member.asMention}"
-				}
-				if (membersWithUnlinked.contains(member)) {
-					guild.removeRoleFromMember(member, unlinkedRole).queue()
-					changeLog += "Removed ${unlinkedRole.asMention} from ${member.asMention}"
-				}
+			val isOverridden = member.user.isBot || membersWithLinkBypass.contains(member)
+
+			val shouldHaveUnlinked = !isOverridden && playerData == null
+			val shouldHaveLinked = !isOverridden && playerData != null
+
+			if (shouldHaveLinked && !membersWithLinked.contains(member)) {
+				guild.addRoleToMember(member, linkedRole).queue()
+				changeLog += "- Granted ${linkedRole.asMention} to ${member.asMention}"
+			}
+
+			if (!shouldHaveLinked && membersWithLinked.contains(member)) {
+				guild.removeRoleFromMember(member, linkedRole).queue()
+				changeLog += "- Removed ${linkedRole.asMention} from ${member.asMention}"
+			}
+
+			if (shouldHaveUnlinked && !membersWithUnlinked.contains(member)) {
+				guild.addRoleToMember(member, unlinkedRole).queue()
+				changeLog += "- Granted ${unlinkedRole.asMention} to ${member.asMention}"
+			}
+
+			if (!shouldHaveLinked && membersWithLinked.contains(member)) {
+				guild.removeRoleFromMember(member, unlinkedRole).queue()
+				changeLog += "- Removed ${unlinkedRole.asMention} from ${member.asMention}"
 			}
 		}
 
-		event.hook.editOriginalEmbeds(messageEmbed(
-			title = "Done, the following changes were made.",
-			description = changeLog.joinToString("\n", "", ""),
-			color = 0x7fff7f
-		)).queue()
+		if (changeLog.isEmpty()) {
+			event.hook.editOriginalEmbeds(messageEmbed(
+				title = "Done - No changes were made.",
+				color = 0x7fff7f
+			)).queue()
+		} else {
+			event.hook.editOriginalEmbeds(messageEmbed(
+				title = "Done, the following changes were made:",
+				description = changeLog.joinToString("\n", "", ""),
+				color = 0x7fff7f
+			)).queue()
+		}
 	}
 }
