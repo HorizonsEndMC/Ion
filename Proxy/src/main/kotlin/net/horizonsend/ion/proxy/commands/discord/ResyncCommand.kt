@@ -76,7 +76,7 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 				changeLog += "- Granted ${unlinkedRole.asMention} to ${member.asMention}"
 			}
 
-			if (!shouldHaveLinked && membersWithLinked.contains(member)) {
+			if (!shouldHaveUnlinked && membersWithUnlinked.contains(member)) {
 				guild.removeRoleFromMember(member, unlinkedRole).queue()
 				changeLog += "- Removed ${unlinkedRole.asMention} from ${member.asMention}"
 			}
