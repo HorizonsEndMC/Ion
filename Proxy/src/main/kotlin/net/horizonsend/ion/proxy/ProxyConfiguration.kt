@@ -6,6 +6,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class ProxyConfiguration(
 	val discordBotToken: String = "",
 	val motdFirstLine: String = "",
+	val linkBypassRole: Long = 0,
 	val discordServer: Long = 0,
 	val unlinkedRole: Long = 0,
 	val linkedRole: Long = 0,
