@@ -111,7 +111,7 @@ object StarshipFactories : SLComponent() {
 			val inventory = ShipFactoryMultiblock.getStorage(sign)
 			val availableCredits = player.getMoneyBalance()
 
-			val printer = StarshipFactoryPrinter(world, inventory, blocks, signs, creditPrint, availableCredits)
+			val printer = StarshipFactoryPrinter(world, inventory, blocks, signs, availableCredits)
 
 			printer.print()
 

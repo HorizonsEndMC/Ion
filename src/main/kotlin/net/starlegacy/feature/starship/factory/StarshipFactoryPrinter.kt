@@ -5,6 +5,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.min
+import net.horizonsend.ion.core.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.util.blockKeyX
@@ -24,7 +25,6 @@ class StarshipFactoryPrinter(
 	private val inventory: Inventory,
 	private val blocks: Long2ObjectOpenHashMap<BlockData>,
 	private val signs: Long2ObjectOpenHashMap<Array<String>>,
-	private val creditPrint: Boolean,
 	private var availableCredits: Double = 0.0
 ) {
 	private val availableItems = mutableMapOf<PrintItem, Int>()
@@ -100,15 +100,11 @@ class StarshipFactoryPrinter(
 		val count = getAvailable(item)
 
 		if (count < amount) {
-			val price = StarshipFactories.getPrice(data)
-
-			if (price != null && creditPrint) {
-				return tryCreditPrint(data, price)
-			}
-
 			incrementMissing(item, amount)
 			return false
 		}
+
+		if (availableCredits<ShipFactoryMaterialCosts.getPrice(data)) return false
 
 		decrementAvailable(item, count, amount)
 		incrementUsed(item, amount)
@@ -130,7 +126,7 @@ class StarshipFactoryPrinter(
 		usedItems[item] = usedItems.getOrDefault(item, 0) + delta
 	}
 
-	private fun tryCreditPrint(data: BlockData, price: Double): Boolean {
+	private fun tryCreditCost(price: Double): Boolean {
 		if (price > availableCredits) {
 			missingCredits += price
 			return false
@@ -176,6 +172,8 @@ class StarshipFactoryPrinter(
 
 	private fun flushBlockQueue() {
 		for ((key, data) in queue) {
+			val price = ShipFactoryMaterialCosts.getPrice(data.createCraftBlockData())
+			tryCreditCost(price)
 			world.setNMSBlockData(blockKeyX(key), blockKeyY(key), blockKeyZ(key), data)
 		}
 	}
