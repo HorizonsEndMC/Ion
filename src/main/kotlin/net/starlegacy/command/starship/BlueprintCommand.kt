@@ -14,6 +14,8 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import kotlin.collections.set
+import kotlin.math.roundToInt
+import net.horizonsend.ion.core.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
@@ -40,6 +42,7 @@ import net.starlegacy.util.nms
 import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.toBukkitBlockData
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
@@ -122,13 +125,39 @@ object BlueprintCommand : SLCommand() {
 
 	private fun blueprintInfo(blueprint: Blueprint): List<String> {
 		val list = LinkedList<String>()
+		var blueprintcost = calculateBlueprintCost(blueprint)
 		list.add("&7Size&8: &6${blueprint.size}")
+		list.add("&7Cost&8: &6$${blueprintcost.toInt()}")
 		list.add("&7Class&8: &d${blueprint.type}")
 		if (blueprint.trustedNations.isNotEmpty()) {
 			list.add("&7Trusted Players&8: &b${blueprint.trustedPlayers.joinToString { getPlayerName(it) }}}")
 			list.add("&7Trusted Nations&8: &a${blueprint.trustedNations.joinToString { NationCache[it].name }}")
 		}
 		return list
+	}
+
+	private fun calculateBlueprintCost(blueprint: Blueprint) : Double {
+		val clipboard = blueprint.loadClipboard()
+
+		var PriceAmmount = 0.0
+
+		val materialmap = mutableMapOf<BlockData, Int>()
+
+		clipboard.region.map {it}.forEach {
+			var amount = 0
+			val state = clipboard.getBlock(it)
+			val blockData = state.toBukkitBlockData()
+
+			if (blockData.material.isAir) {
+				return@forEach
+			}
+
+			amount += StarshipFactories.getRequiredAmount(blockData)
+
+			materialmap[blockData] = materialmap.getOrDefault(blockData, 0) + amount
+		}
+		materialmap.forEach { PriceAmmount += (ShipFactoryMaterialCosts.getPrice(it.key)*it.value) }
+		return PriceAmmount
 	}
 
 	@Subcommand("list")
