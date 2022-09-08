@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
 import net.horizonsend.ion.common.database.Achievement
+import net.horizonsend.ion.server.annotations.BukkitListener
 import net.horizonsend.ion.server.utilities.ionCore
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import net.starlegacy.feature.misc.CustomItems
@@ -9,6 +10,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent
 
+@BukkitListener
 @Suppress("Unused")
 class PlayerPickUpItemListener : Listener {
 	@EventHandler(priority = EventPriority.MONITOR)

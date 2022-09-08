@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
+import net.horizonsend.ion.server.annotations.BukkitListener
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
@@ -8,6 +9,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.enchantment.EnchantItemEvent
 import org.bukkit.inventory.ItemStack
 
+@BukkitListener
 @Suppress("Unused")
 class EnchantItemListener : Listener {
 	@EventHandler(priority = EventPriority.NORMAL)

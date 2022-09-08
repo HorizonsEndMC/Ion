@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.listeners.bukkit
 
 import kotlin.random.Random
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.annotations.BukkitListener
 import net.horizonsend.ion.server.ores.Ore
 import net.horizonsend.ion.server.ores.OrePlacementConfig
 import net.horizonsend.ion.server.utilities.Position
@@ -20,6 +21,7 @@ import org.bukkit.persistence.PersistentDataType
        as well as being its own class.
 */
 
+@BukkitListener
 @Suppress("Unused")
 class ChunkLoadListener(private val plugin: IonServer) : Listener {
 	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
