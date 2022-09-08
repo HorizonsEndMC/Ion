@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.listeners.bukkit
 import java.net.URL
 import java.security.MessageDigest
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.annotations.BukkitListener
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.GameMode
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
+@BukkitListener
 @Suppress("Unused")
 class PlayerJoinListener(private val plugin: IonServer) : Listener {
 	private val url = "https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
@@ -24,8 +26,7 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 			.substringBefore("\",")
 	}/HorizonsEndResourcePack.zip"
 
-	private val hash = MessageDigest.getInstance("SHA-1")
-		.digest(URL(url).readBytes())
+	private val hash = try { MessageDigest.getInstance("SHA-1").digest(URL(url).readBytes()) } catch (_: Exception) { null }
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	fun onPlayerJoinEvent(event: PlayerJoinEvent) {

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
+import net.horizonsend.ion.server.annotations.BukkitListener
 import net.horizonsend.ion.server.managers.ScreenManager.isInScreen
 import net.horizonsend.ion.server.managers.ScreenManager.screen
 import org.bukkit.entity.Player
@@ -8,6 +9,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 
+@BukkitListener
 @Suppress("Unused")
 class InventoryClickListener : Listener {
 	@EventHandler(priority = EventPriority.LOW)

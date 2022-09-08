@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.initializeCommon
+import net.horizonsend.ion.server.annotations.BukkitListener
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import org.bukkit.Keyed
 import org.bukkit.Material
@@ -17,7 +18,7 @@ import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.plugin.java.JavaPlugin
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.SubTypes
-
+import org.reflections.scanners.Scanners.TypesAnnotated
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
@@ -25,7 +26,7 @@ class IonServer : JavaPlugin() {
 
 		val reflections = Reflections("net.horizonsend.ion.server")
 
-		reflections.get(SubTypes.of(Listener::class.java).asClass<Listener>())
+		reflections.get(TypesAnnotated.of(BukkitListener::class.java).asClass<Listener>())
 			.map { it.constructors[0] }
 			.map { constructor ->
 				constructor.newInstance(*constructor.parameterTypes.map {
