@@ -14,7 +14,7 @@ repositories {
 	maven("https://repo.codemc.io/repository/maven-snapshots/") // AnvilGUI
 	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 	maven("https://m2.dv8tion.net/releases") // JDA (Required by DiscordSRV)
-	maven("https://repo.citizensnpcs.co/") // Citizens
+	maven("https://maven.citizensnpcs.co/repo") // Citizens
 }
 
 dependencies {
@@ -22,7 +22,7 @@ dependencies {
 
 	compileOnly("net.luckperms:api:5.4")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-	compileOnly("net.citizensnpcs:citizens:2.0.27-SNAPSHOT")
+	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.discordsrv:discordsrv:1.25.1")
 
