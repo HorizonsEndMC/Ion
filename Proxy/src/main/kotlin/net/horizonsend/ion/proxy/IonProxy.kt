@@ -61,6 +61,10 @@ class IonProxy : Plugin() {
 		}
 
 		jda?.let { jda ->
+			jda.getRoleById(configuration.unlinkedRole)?.let {
+				jda.getGuildById(configuration.discordServer)?.prune(30, it)
+			}
+
 			val jdaCommandManager = JDACommandManager(jda, configuration)
 
 			reflectionsRegister(reflections, TypesAnnotated.of(GlobalCommand::class.java), "global discord commands") {
