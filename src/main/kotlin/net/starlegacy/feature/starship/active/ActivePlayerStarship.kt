@@ -46,18 +46,15 @@ class ActivePlayerStarship(
 	override val type: StarshipType = data.type
 	override val interdictionRange: Int = data.type.interdictionRange
 
-	private var lastUnpilotTime = System.nanoTime()
+	var lastUnpilotTime: Long = 0
+
 	var pilot: Player? = null
-		set(value) {
-			if (value == null) {
-				lastUnpilotTime = System.nanoTime()
-			}
-			field = value
-		}
 
 	val minutesUnpiloted = if (pilot != null) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 
 	var speedLimit = -1
+
+
 
 	private data class PendingRotation(val clockwise: Boolean)
 
