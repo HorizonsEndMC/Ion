@@ -228,7 +228,7 @@ enum class StarshipType(
 	UNIDENTIFIEDSHIP(
 		displayName = "UnidentifiedShip",
 		minSize = 25,
-		maxSize = 100000,
+		maxSize = 200000,
 		minLevel = 69420,
 		containerPercent = 100.0,
 		concretePercent = 0.0,
