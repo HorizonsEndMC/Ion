@@ -121,9 +121,11 @@ object PilotedStarships : SLComponent() {
 		val player = starship.pilot ?: error("Starship $starship is not piloted")
 		map.remove(player)
 		starship.pilot = null
+		starship.lastUnpilotTime = System.nanoTime()
 		starship.clearPassengers()
 		starship.shieldBars.values.forEach { it.removeAll() }
 		starship.shieldBars.clear()
+
 
 		starship.iterateBlocks { x, y, z ->
 			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {

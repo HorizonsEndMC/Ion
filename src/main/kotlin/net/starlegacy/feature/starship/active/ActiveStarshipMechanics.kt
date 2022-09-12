@@ -42,11 +42,16 @@ object ActiveStarshipMechanics : SLComponent() {
 
 	private fun deactivateUnpilotedPlayerStarships() {
 		for (ship in ActiveStarships.allPlayerShips()) {
-			if (ship.pilot == null && ship.minutesUnpiloted >= 5) {
-				DeactivatedPlayerStarships.deactivateAsync(ship)
+			val minutesUnpiloted =
+				if (ship.pilot != null) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - ship.lastUnpilotTime)
+			if (!PilotedStarships.isPiloted(ship) && minutesUnpiloted >= 10) {
+				if (ship.pilot == null && ship.minutesUnpiloted >= 5) {
+					DeactivatedPlayerStarships.deactivateAsync(ship)
+				}
 			}
 		}
 	}
+
 
 	private fun chargeSubsystems() {
 		for (ship in ActiveStarships.all()) {
