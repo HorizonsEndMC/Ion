@@ -14,7 +14,6 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import kotlin.collections.set
-import kotlin.math.roundToInt
 import net.horizonsend.ion.core.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
@@ -42,7 +41,6 @@ import net.starlegacy.util.nms
 import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.toBukkitBlockData
 import org.bukkit.Material
-import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
@@ -136,28 +134,14 @@ object BlueprintCommand : SLCommand() {
 		return list
 	}
 
-	private fun calculateBlueprintCost(blueprint: Blueprint) : Double {
+	private fun calculateBlueprintCost(blueprint: Blueprint) : Int {
 		val clipboard = blueprint.loadClipboard()
 
-		var PriceAmmount = 0.0
-
-		val materialmap = mutableMapOf<BlockData, Int>()
-
-		clipboard.region.map {it}.forEach {
-			var amount = 0
-			val state = clipboard.getBlock(it)
-			val blockData = state.toBukkitBlockData()
-
-			if (blockData.material.isAir) {
-				return@forEach
-			}
-
-			amount += StarshipFactories.getRequiredAmount(blockData)
-
-			materialmap[blockData] = materialmap.getOrDefault(blockData, 0) + amount
-		}
-		materialmap.forEach { PriceAmmount += (ShipFactoryMaterialCosts.getPrice(it.key)*it.value) }
-		return PriceAmmount
+		return clipboard.region
+			.map { clipboard.getBlock(it).toBukkitBlockData() }
+			.filter { !it.material.isAir }
+			.sumOf { ShipFactoryMaterialCosts.getPrice(it) }
+			.toInt()
 	}
 
 	@Subcommand("list")
