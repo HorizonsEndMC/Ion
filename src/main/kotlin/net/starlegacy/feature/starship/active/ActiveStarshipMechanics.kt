@@ -155,7 +155,7 @@ object ActiveStarshipMechanics : SLComponent() {
 		Tasks.sync {
 			if (!starship.isWithinHitbox(player)) {
 				if (PilotedStarships[player] == starship) {
-					PilotedStarships.unpilot(starship)
+					PilotedStarships.unpilot(starship, true)
 					player msg "&cYou got outside of the ship, so it was unpiloted!"
 				} else {
 					starship.removePassenger(player.uniqueId)

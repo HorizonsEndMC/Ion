@@ -50,6 +50,8 @@ class ActivePlayerStarship(
 
 	var pilot: Player? = null
 
+	var oldpilot: Player? = null
+
 	val minutesUnpiloted = if (pilot != null) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 
 	var speedLimit = -1
