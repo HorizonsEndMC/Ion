@@ -53,7 +53,6 @@ import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.feature.transport.TransportConfig
-import net.starlegacy.feature.transport.Wires
 import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.feature.transport.pipe.filter.Filters
 import net.starlegacy.feature.tutorial.TutorialManager
@@ -100,7 +99,6 @@ val components = listOf(
 	Extractors,
 	Pipes,
 	Filters,
-	Wires,
 
 	Gear,
 

@@ -9,7 +9,6 @@ import net.starlegacy.feature.misc.CustomBlock
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.multiblock.areashield.AreaShield10.buildStructure
 import net.starlegacy.feature.transport.Extractors
-import net.starlegacy.feature.transport.Wires
 import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.CONCRETE_TYPES
@@ -271,7 +270,7 @@ class LegacyMultiblockShape {
 		fun titaniumBlock() = customBlock(CustomBlocks.MINERAL_TITANIUM.block)
 		fun aluminumBlock() = customBlock(CustomBlocks.MINERAL_ALUMINUM.block)
 		fun chetheriteBlock() = customBlock(CustomBlocks.MINERAL_CHETHERITE.block)
-		fun wireInputComputer() = type(Wires.INPUT_COMPUTER_BLOCK)
+		fun wireInputComputer() = type(Material.NOTE_BLOCK)
 
 		fun redstoneLamp() = filteredTypes { it.isRedstoneLamp }
 

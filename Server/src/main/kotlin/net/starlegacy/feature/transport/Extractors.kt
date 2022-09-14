@@ -17,12 +17,10 @@ import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.coordinates
-import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.getStateIfLoaded
 import net.starlegacy.util.gzip
 import net.starlegacy.util.randomEntry
-import net.starlegacy.util.randomFloat
 import net.starlegacy.util.timing
 import net.starlegacy.util.ungzip
 import org.bukkit.Bukkit.shutdown
@@ -31,8 +29,6 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
-import org.bukkit.block.data.BlockData
-import org.bukkit.block.data.type.DaylightDetector
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -153,9 +149,6 @@ object Extractors : SLComponent() {
 	private fun tickExtractors(world: World) {
 		val extractorLocations: Set<Vec3i> = worldDataMap[world] ?: return
 
-		// used to ensure solar panels are processed only at day
-		val isDay: Boolean = world.environment != World.Environment.NORMAL || world.time < 12300 || world.time > 23850
-
 		extractorLoop@ for (extractorLocation: Vec3i in extractorLocations) {
 			val (x: Int, y: Int, z: Int) = extractorLocation
 
@@ -170,12 +163,8 @@ object Extractors : SLComponent() {
 				continue
 			}
 
-			val computers: MutableSet<Vec3i> = mutableSetOf() // list of note block power machine computers
-			val wires: MutableSet<BlockFace> = mutableSetOf() // list of end rod wires
 			val inventories: MutableSet<Vec3i> = mutableSetOf() // list of inventories to extract from to pipes
 			val pipes: MutableSet<BlockFace> = mutableSetOf() // list of pipes to extract to
-
-			var solarSensor: BlockData? = null
 
 			// check adjacent blocks & fill the lists with them
 			adjacentCheck@
@@ -195,37 +184,12 @@ object Extractors : SLComponent() {
 					Pipes.isAnyPipe(adjacentType) -> {
 						pipes.add(face)
 					}
-
-					adjacentType == Wires.INPUT_COMPUTER_BLOCK -> {
-						computers.add(Vec3i(adjacentX, adjacentY, adjacentZ))
-					}
-
-					Wires.isAnyWire(adjacentType) -> {
-						wires.add(face)
-					}
-
-					isDay && adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP -> {
-						val sensor: BlockData = getBlockDataSafe(world, adjacentX, adjacentY + 1, adjacentZ)
-							?: continue@extractorLoop
-
-						if (sensor.material == Material.DAYLIGHT_DETECTOR) {
-							solarSensor = sensor
-						}
-					}
 				}
 			}
 
 			// if there is an inventory and a pipe and it was not already busy, handle it
 			if (inventories.isNotEmpty() && pipes.isNotEmpty() && BUSY_PIPE_EXTRACTORS.add(extractorLocation)) {
 				handlePipe(world, extractorLocation, inventories, pipes)
-			}
-
-			if (computers.isNotEmpty() && wires.isNotEmpty()) {
-				handleWire(world, x, y, z, computers, wires)
-			}
-
-			if (solarSensor != null) {
-				handleSolarPanel(world, x, y, z, wires, solarSensor)
 			}
 		}
 	}
@@ -294,37 +258,6 @@ object Extractors : SLComponent() {
 				BUSY_PIPE_EXTRACTORS.remove(extractorLocation)
 			}
 		}
-	}
-
-	private fun handleWire(world: World, x: Int, y: Int, z: Int, computers: Set<Vec3i>, wires: Set<BlockFace>) {
-		val wire: BlockFace = wires.randomEntry()
-		val computer: Vec3i = computers.randomEntry()
-
-		Wires.startWireChain(world, x, y, z, wire, computer)
-	}
-
-	private const val SOLAR_PANEL_CHANCE = 0.05
-
-	private fun handleSolarPanel(world: World, x: Int, y: Int, z: Int, wires: Set<BlockFace>, sensor: BlockData) {
-		if (wires.isEmpty()) {
-			return
-		}
-
-		if (randomFloat() > (SOLAR_PANEL_CHANCE / extractorTicksPerSecond)) {
-			return
-		}
-
-		sensor as DaylightDetector
-		val inverted: Boolean = sensor.isInverted
-		val power: Int = sensor.power
-
-		// make it so it works in the day only, whether it be a night sensor or a day sensor,
-		// and also only if it has sky light. tldr; based on the power
-		if ((power < 4 && !inverted) || (power > 2 && inverted)) {
-			return
-		}
-
-		Wires.startWireChain(world, x, y, z, wires.randomEntry(), null)
 	}
 
 	private fun getExtractorSet(world: World): MutableSet<Vec3i> {
