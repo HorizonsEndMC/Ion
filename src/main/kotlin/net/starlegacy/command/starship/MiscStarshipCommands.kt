@@ -54,7 +54,7 @@ object MiscStarshipCommands : SLCommand() {
 	@CommandAlias("unpilot")
 	fun onUnpilot(sender: Player) {
 		val starship = getStarshipPiloting(sender)
-		PilotedStarships.unpilot(starship)
+		PilotedStarships.unpilot(starship, true)
 		sender msg "&bUnpiloted ship, but left it activated"
 	}
 

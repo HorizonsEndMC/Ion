@@ -44,7 +44,7 @@ object PilotedStarships : SLComponent() {
 
 	override fun onEnable() {
 		subscribe<PlayerQuitEvent> { event ->
-			map[event.player]?.let(::unpilot) // release the player's starship if they are piloting one
+			map[event.player]?.let { unpilot(it, true) } // release the player's starship if they are piloting one
 		}
 	}
 
@@ -62,6 +62,7 @@ object PilotedStarships : SLComponent() {
 		saveLoadshipData(starship, player)
 		removeExtractors(starship)
 		StarshipPilotedEvent(starship, player).callEvent()
+		starship.oldpilot = null
 	}
 
 	private fun removeFromCurrentlyRidingShip(player: Player) {
@@ -116,10 +117,24 @@ object PilotedStarships : SLComponent() {
 		return starship.pilot != null
 	}
 
-	fun unpilot(starship: ActivePlayerStarship) {
+	fun unpilot(starship: ActivePlayerStarship, normal: Boolean = false) {
 		Tasks.checkMainThread()
 		val player = starship.pilot ?: error("Starship $starship is not piloted")
+		if (normal){
+		ActiveStarships.allPlayerShips().filter { it.oldpilot == player }.forEach {
+			player.sendFeedbackActionMessage(
+				INFORMATION,
+				"You already have a ship unpiloted, on {0} at {1} {2} {3}, that ship will now be released.",
+				it.world.name,
+				it.centerOfMass.x,
+				it.centerOfMass.y,
+				it.centerOfMass.z
+			)
+			DeactivatedPlayerStarships.deactivateAsync(it)
+			}
+		}
 		map.remove(player)
+		starship.oldpilot = player
 		starship.pilot = null
 		starship.lastUnpilotTime = System.nanoTime()
 		starship.clearPassengers()
