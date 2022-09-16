@@ -13,6 +13,8 @@ import net.horizonsend.ion.core.commands.RainbowProjectileCommand
 import net.horizonsend.ion.core.commands.Starships
 import net.horizonsend.ion.core.listeners.BowHitListener
 import net.horizonsend.ion.core.listeners.PlayerJoinListener
+import net.horizonsend.ion.core.listeners.PlayerJumpListener
+import net.horizonsend.ion.core.listeners.PlayerToggleSneakListener
 import net.starlegacy.cache.Caches
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -306,6 +308,8 @@ class StarLegacy : JavaPlugin() {
 			InteractListener,
 			InventoryListener,
 			BowHitListener,
+			PlayerToggleSneakListener,
+			PlayerJumpListener,
 
 			BlasterListener,
 			DetonatorListener,
