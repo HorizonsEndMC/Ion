@@ -56,6 +56,13 @@ class InfoCommand : BaseCommand() {
 						.underlined(true)
 						.create()
 				)
+				.append(
+					ComponentBuilder("Rules\n")
+						.event(ClickEvent(Action.OPEN_URL, "https://docs.google.com/document/d/14CspgBExAxQQIHEODjyAFVbuJdJcM9ryhtuQjeLvGtA"))
+						.color(ChatColor.WHITE)
+						.underlined(true)
+						.create()
+				)
 				.create()
 		)
 	}

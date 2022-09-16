@@ -22,7 +22,8 @@ class InfoCommand {
 					"[Creative Web Map](https://creative.horizonsend.net)\n" +
 					"[Discord Server](https://discord.gg/RPvgQsGzKM)\n" +
 					"[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack)\n" +
-					"[Wiki](https://wiki.horizonsend.net)"
+					"[Wiki](https://wiki.horizonsend.net)\n" +
+					"[Rules](https://docs.google.com/document/d/14CspgBExAxQQIHEODjyAFVbuJdJcM9ryhtuQjeLvGtA)"
 			)
 		).queue()
 	}
