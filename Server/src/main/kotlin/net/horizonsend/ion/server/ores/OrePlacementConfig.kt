@@ -8,7 +8,7 @@ import org.bukkit.Material
  TODO: This should be loaded from a configuration file.
 */
 
-const val algorithmVersion = 9
+const val algorithmVersion = 10
 
 @Suppress("unused")
 enum class OrePlacementConfig(

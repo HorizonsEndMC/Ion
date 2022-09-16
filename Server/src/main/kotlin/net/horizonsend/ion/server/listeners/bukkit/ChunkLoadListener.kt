@@ -78,12 +78,6 @@ class ChunkLoadListener(private val plugin: IonServer) : Listener {
 
 						if (!placementConfiguration.groundMaterial.contains(blockData.material)) continue
 
-						if (x < 15) if (chunkSnapshot.getBlockType(x + 1, y, z).isAir) continue
-						if (z < 15) if (chunkSnapshot.getBlockType(x, y, z + 1).isAir) continue
-
-						if (x > 0) if (chunkSnapshot.getBlockType(x - 1, y, z).isAir) continue
-						if (z > 0) if (chunkSnapshot.getBlockType(x, y, z - 1).isAir) continue
-
 						if (y < maxBlockY) if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
 						if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
 
