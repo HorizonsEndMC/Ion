@@ -43,7 +43,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	}
 
 	override val name: String = "turret"
-	override val signText: List<String> = createSignText("&8Turret", null, null, null)
+	override val signText = createSignText("&8Turret", null, null, null)
 
 	abstract val cooldownNanos: Long
 	abstract val range: Double

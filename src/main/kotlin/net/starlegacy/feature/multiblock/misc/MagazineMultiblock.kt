@@ -6,7 +6,7 @@ import org.bukkit.Material
 
 object MagazineMultiblock : Multiblock() {
 	override val name: String = "magazine"
-	override val signText: List<String> = createSignText(
+	override val signText = createSignText(
 		"&7-=[&c=&a=&b=&7]=-",
 		"&0Starship",
 		"&0Magazine",

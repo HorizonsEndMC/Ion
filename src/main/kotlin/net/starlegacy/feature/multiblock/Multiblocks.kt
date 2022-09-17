@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.core.events.MultiblockDetectEvent
 import net.horizonsend.ion.core.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.core.starshipweapon.multiblock.SonicMissileWeaponMultiblock
+import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
@@ -78,12 +79,14 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.time
 import net.starlegacy.util.timing
 import org.bukkit.Location
+import org.bukkit.NamespacedKey
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.persistence.PersistentDataType
 
 object Multiblocks : SLComponent() {
 	private lateinit var multiblocks: List<Multiblock>
@@ -202,12 +205,20 @@ object Multiblocks : SLComponent() {
 		sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true
 	): Multiblock? = gettingTiming.time {
 		val location: Location = sign.location
-		val lines: Array<String> = sign.lines
+
+		val pdc = sign.persistentDataContainer.get(NamespacedKey(PLUGIN, "multiblock"), PersistentDataType.STRING)
 
 		val cached: Multiblock? = multiblockCache[location]
 		if (cached != null) {
+			val matchesSign = if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
+
 			// one was already cached before
-			if (cached.matchesSign(lines) && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
+			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
+				if (pdc == null) {
+					sign.persistentDataContainer.set(NamespacedKey(PLUGIN, "multiblock"), PersistentDataType.STRING, cached::class.simpleName!!)
+					sign.update(false, false)
+				}
+
 				// it still matches so returned the cached one
 				return@time cached
 			} else {
@@ -217,8 +228,13 @@ object Multiblocks : SLComponent() {
 		}
 
 		for (multiblock in multiblocks) {
-			val matchesSign = multiblock.matchesSign(lines)
+			val matchesSign = if (pdc != null) pdc == multiblock::class.simpleName else multiblock.matchesSign(sign.lines().toTypedArray())
 			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
+				if (pdc == null) {
+					sign.persistentDataContainer.set(NamespacedKey(PLUGIN, "multiblock"), PersistentDataType.STRING, multiblock::class.simpleName!!)
+					sign.update(false, false)
+				}
+
 				if (checkStructure) {
 					multiblockCache[location] = multiblock
 				}
