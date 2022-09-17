@@ -199,6 +199,8 @@ object Multiblocks : SLComponent() {
 
 	fun all(): List<Multiblock> = multiblocks
 
+	private val multiblockNamespacedKey = NamespacedKey(PLUGIN, "multiblock")
+
 	@JvmStatic
 	@JvmOverloads
 	operator fun get(
@@ -206,7 +208,7 @@ object Multiblocks : SLComponent() {
 	): Multiblock? = gettingTiming.time {
 		val location: Location = sign.location
 
-		val pdc = sign.persistentDataContainer.get(NamespacedKey(PLUGIN, "multiblock"), PersistentDataType.STRING)
+		val pdc = sign.persistentDataContainer.get(multiblockNamespacedKey, PersistentDataType.STRING)
 
 		val cached: Multiblock? = multiblockCache[location]
 		if (cached != null) {
@@ -215,7 +217,7 @@ object Multiblocks : SLComponent() {
 			// one was already cached before
 			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
 				if (pdc == null) {
-					sign.persistentDataContainer.set(NamespacedKey(PLUGIN, "multiblock"), PersistentDataType.STRING, cached::class.simpleName!!)
+					sign.persistentDataContainer.set(multiblockNamespacedKey, PersistentDataType.STRING, cached::class.simpleName!!)
 					sign.update(false, false)
 				}
 
@@ -231,7 +233,7 @@ object Multiblocks : SLComponent() {
 			val matchesSign = if (pdc != null) pdc == multiblock::class.simpleName else multiblock.matchesSign(sign.lines().toTypedArray())
 			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
 				if (pdc == null) {
-					sign.persistentDataContainer.set(NamespacedKey(PLUGIN, "multiblock"), PersistentDataType.STRING, multiblock::class.simpleName!!)
+					sign.persistentDataContainer.set(multiblockNamespacedKey, PersistentDataType.STRING, multiblock::class.simpleName!!)
 					sign.update(false, false)
 				}
 

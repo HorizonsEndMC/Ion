@@ -44,6 +44,9 @@ object PowerMachines : SLComponent() {
 		}
 	}
 
+	private val powerNamespacedKey = NamespacedKey(PLUGIN, "power")
+	private val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
+
 	@JvmOverloads
 	fun setPower(sign: Sign, power: Int, fast: Boolean = true): Int = powerSettingTiming.time {
 		val correctedPower: Int = if (!fast) {
@@ -53,8 +56,8 @@ object PowerMachines : SLComponent() {
 			power.coerceAtLeast(0)
 		}
 
-		sign.persistentDataContainer.set(NamespacedKey(PLUGIN, "power"), PersistentDataType.INTEGER, correctedPower)
-		sign.line(2, Component.text().append(Component.text("E: ", NamedTextColor.YELLOW), Component.text(correctedPower, NamedTextColor.GREEN)).build())
+		sign.persistentDataContainer.set(powerNamespacedKey, PersistentDataType.INTEGER, correctedPower)
+		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
 		sign.update(false, false)
 		return@time power
 	}
@@ -65,7 +68,7 @@ object PowerMachines : SLComponent() {
 			return 0
 		}
 
-		return sign.persistentDataContainer.get(NamespacedKey(PLUGIN, "power"), PersistentDataType.INTEGER)
+		return sign.persistentDataContainer.get(powerNamespacedKey, PersistentDataType.INTEGER)
 			?: return setPower(sign, sign.getLine(2).removePrefix(prefix).toIntOrNull() ?: 0)
 	}
 
