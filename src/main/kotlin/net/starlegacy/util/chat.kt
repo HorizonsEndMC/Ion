@@ -8,14 +8,14 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @Deprecated(
-	"Use Ion MiniMessage Extension Functions",
-	ReplaceWith("sendMiniMessage(text)", "net.horizonsend.ion.core.extensions.sendMiniMessage")
+	"Use Paper's MiniMessage Function",
+	ReplaceWith("sendRichMessage(text)")
 )
 infix fun CommandSender.msg(text: String) = this.sendMessage(text.colorize())
 
 @Deprecated(
-	"Use Ion MiniMessage Extension Functions",
-	ReplaceWith("sendMiniMessage(text)", "net.horizonsend.ion.core.extensions.sendMiniMessage")
+	"Use Paper's MiniMessage Function",
+	ReplaceWith("sendRichMessage(text)")
 )
 infix fun CommandSender.msg(text: TextComponent) = sendMessage(text)
 
