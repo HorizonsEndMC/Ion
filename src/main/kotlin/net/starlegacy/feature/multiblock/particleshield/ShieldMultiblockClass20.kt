@@ -1,5 +1,6 @@
 package net.starlegacy.feature.multiblock.particleshield
 
+import net.kyori.adventure.text.Component
 import net.starlegacy.feature.multiblock.MultiblockShape
 
 object ShieldMultiblockClass20 : SphereShieldMultiblock() {
@@ -12,9 +13,9 @@ object ShieldMultiblockClass20 : SphereShieldMultiblock() {
 	)
 
 	// particle shields in 1.12 are broken and have 2.0 instead of the correct line 2, this is to automatically replace it
-	override fun matchesSign(lines: Array<String>): Boolean {
+	override fun matchesSign(lines: Array<Component>): Boolean {
 		val modified = lines.clone()
-		modified[1] = signText[1]
+		modified[1] = signText[1]!!
 		return super.matchesSign(modified)
 	}
 

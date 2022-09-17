@@ -256,7 +256,7 @@ object InteractListener : SLEventListener() {
 				}
 			}
 
-			if (sign.getLine(0) == ConnectedDockingTubeMultiblock.signText.first()) {
+			if (sign.line(0) == ConnectedDockingTubeMultiblock.signText[0]) {
 				event.player msg "&cInvalid docking tube."
 			}
 

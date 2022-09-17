@@ -1,6 +1,8 @@
 package net.starlegacy.feature.machine
 
 import co.aikar.timings.Timing
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -10,9 +12,11 @@ import net.starlegacy.util.timing
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
 object PowerMachines : SLComponent() {
 	private lateinit var powerSettingTiming: Timing
@@ -49,22 +53,20 @@ object PowerMachines : SLComponent() {
 			power.coerceAtLeast(0)
 		}
 
-		val line = "$prefix$correctedPower"
-		if (line == sign.getLine(2)) return@time power
-		sign.setLine(2, line)
+		sign.persistentDataContainer.set(NamespacedKey(PLUGIN, "power"), PersistentDataType.INTEGER, correctedPower)
+		sign.line(2, Component.text().append(Component.text("E: ", NamedTextColor.YELLOW), Component.text(correctedPower, NamedTextColor.GREEN)).build())
 		sign.update(false, false)
 		return@time power
 	}
 
 	@JvmOverloads
 	fun getPower(sign: Sign, fast: Boolean = true): Int {
-		if (sign.lines == null) return 0
-
 		if (!fast && Multiblocks[sign] !is PowerStoringMultiblock) {
 			return 0
 		}
 
-		return sign.getLine(2).removePrefix(prefix).toIntOrNull() ?: 0
+		return sign.persistentDataContainer.get(NamespacedKey(PLUGIN, "power"), PersistentDataType.INTEGER)
+			?: return setPower(sign, sign.getLine(2).removePrefix(prefix).toIntOrNull() ?: 0)
 	}
 
 	fun addPower(sign: Sign, amount: Int) {

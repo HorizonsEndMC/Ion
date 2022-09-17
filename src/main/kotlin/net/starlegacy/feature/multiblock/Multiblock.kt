@@ -1,10 +1,10 @@
 package net.starlegacy.feature.multiblock
 
-import net.starlegacy.util.colorize
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isValidYLevel
-import net.starlegacy.util.stripColor
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -14,11 +14,11 @@ import org.bukkit.entity.Player
 abstract class Multiblock {
 	abstract val name: String
 
-	abstract val signText: List<String>
+	abstract val signText: Array<Component?>
 
-	open fun matchesSign(lines: Array<String>): Boolean {
+	open fun matchesSign(lines: Array<Component>): Boolean {
 		for (i in 0..3) {
-			if (signText[i].isNotEmpty() && signText[i] != lines[i]) {
+			if (signText[i] != null && signText[i] != lines[i]) {
 				return false
 			}
 		}
@@ -71,16 +71,24 @@ abstract class Multiblock {
 
 		for (i in 0..3) {
 			val text = signText[i]
-			if (text.stripColor().trim().isNotEmpty()) {
-				sign.setLine(i, text)
+			if (text != null) {
+				sign.line(i, text)
 			}
 		}
 
 		sign.update()
 	}
 
-	protected fun createSignText(line1: String?, line2: String?, line3: String?, line4: String?): List<String> =
-		sequenceOf(line1 ?: "", line2 ?: "", line3 ?: "", line4 ?: "").map { it.colorize() }.toList()
+	protected fun createSignText(line1: String?, line2: String?, line3: String?, line4: String?): Array<Component?> {
+		val serializer = LegacyComponentSerializer.legacyAmpersand()
+
+		return arrayOf(
+			if (line1 != null) serializer.deserialize(line1) else null,
+			if (line2 != null) serializer.deserialize(line2) else null,
+			if (line3 != null) serializer.deserialize(line3) else null,
+			if (line4 != null) serializer.deserialize(line4) else null
+		)
+	}
 
 	protected open fun onTransformSign(player: Player, sign: Sign) {}
 }
