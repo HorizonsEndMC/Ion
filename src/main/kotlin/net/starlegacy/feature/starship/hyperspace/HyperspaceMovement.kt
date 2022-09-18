@@ -33,11 +33,11 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 
 		val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
 		if (shadow != null) {
-			ship.sendMessage("&cShip caught by a mass shadow! Mass shadow info: $shadow")
+			ship.sendMessage("&cShip caught by a mass shadow! Mass Shadow: ${shadow.description} at ${shadow.x}, ${shadow.z} " +
+					"with radius ${shadow.radius} (${shadow.distance} blocks away)")
 			cancel()
 			return
 		}
-
 		if (travelled < totalDistance) {
 			val percent = (travelled / totalDistance * 100).roundToInt()
 			ship.sendActionBar("&bHyperspace Progress: ${travelled.roundToInt()}/${totalDistance.roundToInt()} ($percent%)")
