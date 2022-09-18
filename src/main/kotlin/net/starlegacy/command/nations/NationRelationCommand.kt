@@ -3,8 +3,7 @@ package net.starlegacy.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.nations.NationRelation
@@ -14,6 +13,7 @@ import net.starlegacy.util.msg
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
+@Suppress("Unused")
 @CommandAlias("nation|n")
 internal object NationRelationCommand : SLCommand() {
 	@Subcommand("ally")
@@ -46,12 +46,12 @@ internal object NationRelationCommand : SLCommand() {
 		val otherNation = resolveNation(nation)
 
 		if (senderNation == otherNation && wish != NationRelation.Level.NATION){
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Error: Cannot {0} your own nation", wish.name)
+			sender.sendFeedbackMessage(USER_ERROR, "Error: Cannot {0} your own nation", wish.name)
 			return@asyncCommand
 		}
 
 		if (wish == NationRelation.Level.NATION && senderNation != otherNation){
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Error: Cannot nation another nation")
+			sender.sendFeedbackMessage(USER_ERROR, "Error: Cannot nation another nation")
 			return@asyncCommand
 		}
 
