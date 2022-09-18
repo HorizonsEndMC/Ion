@@ -12,6 +12,7 @@ import kotlin.math.ln
 import kotlin.math.roundToInt
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.FeedbackType.INFORMATION
+import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
@@ -190,6 +191,8 @@ object MiscStarshipCommands : SLCommand() {
 				"Automatically shortening jump. New Coordinates: $x1, $z1"
 		}
 
+		sender.sendFeedbackMessage(SUCCESS, "Initiating Hyperspace Jump to approximately ({0}, {1})", x1, z1)
+		
 		val offset = ln(distance).toInt()
 
 		// don't let it be perfectly accurate
