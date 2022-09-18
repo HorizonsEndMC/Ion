@@ -3,6 +3,7 @@ package net.starlegacy.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import kotlin.math.round
 import kotlin.math.roundToInt
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.factory.StarshipFactories
@@ -80,7 +81,7 @@ object StarshipInfoCommand : SLCommand() {
 			p msg "   &7Shields:"
 			for (shield in ship.shields) {
 				val percent = createPercent(shield.power, shield.maxPower)
-				val shieldClass = shield.multiblock.signText[3]
+				val shieldClass = shield.multiblock.signText[3]?.let { legacyAmpersand().serialize(it) }
 				p msg "      &7${shield.name}:&b $percent ($shieldClass&b)"
 			}
 			p msg "   &7Shield Regen Efficiency:&b ${ship.shieldEfficiency}"
