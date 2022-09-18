@@ -10,7 +10,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
 @Suppress("Unused")
-@CommandAlias("info")
+@CommandAlias("info|map|wiki")
 class InfoCommand : BaseCommand() {
 	@Default
 	fun onInfoCommand(sender: ProxiedPlayer) {
