@@ -505,7 +505,7 @@ object ShipmentManager : SLComponent() {
 		return itemStack.withNBTString("shipment_oid", shipmentId)
 	}
 
-	private fun getShipmentItemId(item: ItemStack): String? {
+	fun getShipmentItemId(item: ItemStack): String? {
 		return item.getNBTString("shipment_oid") ?: item.getNBTInt("shipment_id")?.toString()
 	}
 
