@@ -2,6 +2,8 @@ package net.starlegacy.command.progression
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
+import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.progression.LEVEL_BALANCING
 import net.starlegacy.feature.progression.SLXP
@@ -9,6 +11,7 @@ import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.toCreditsString
 import org.bukkit.entity.Player
 
+@Suppress("Unused")
 object BuyXPCommand : SLCommand() {
 	@CommandAlias("buyxp")
 	fun onExecute(sender: Player, amount: Int, @Optional cost: Double?) {
@@ -17,8 +20,12 @@ object BuyXPCommand : SLCommand() {
 		val realCost = LEVEL_BALANCING.creditsPerXP * amount
 		requireMoney(sender, realCost, "purchase $amount SLXP")
 
-		failIf(realCost != cost) {
-			"Purchase $amount SLXP for ${realCost.toCreditsString()}? To confirm, do /buyxp $amount $cost"
+		if (realCost != cost) {
+			sender.sendFeedbackMessage(USER_ERROR,
+				"Purchase {0} SLXP for {1}?\n" +
+						"To confirm, do <u><click:run_command:/buyxp $amount $realCost>/buyxp $amount $realCost</click>",
+				amount, realCost.toCreditsString())
+			return
 		}
 
 		VAULT_ECO.withdrawPlayer(sender, realCost)
