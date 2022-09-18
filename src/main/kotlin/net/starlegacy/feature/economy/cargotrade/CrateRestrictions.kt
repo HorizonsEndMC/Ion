@@ -1,7 +1,11 @@
 package net.starlegacy.feature.economy.cargotrade
 
+import java.time.Instant
+import java.util.Date
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.CargoCrates
+import net.starlegacy.database.schema.economy.CargoCrateShipment
+import net.starlegacy.feature.economy.cargotrade.ShipmentManager.getShipmentItemId
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
@@ -278,7 +282,16 @@ object CrateRestrictions : SLComponent() {
 	 */
 	@EventHandler
 	fun onDespawn(event: ItemDespawnEvent) {
-		if (CargoCrates[event.entity.itemStack] != null && event.entity.ticksLived < 20 * 60 * 60) {
+		CargoCrates[event.entity.itemStack] ?: return // if it's not a crate, it can despawn
+
+		// warning: database nonsense on main thread!
+		val shipment = CargoCrateShipment.getByItemId(
+			getShipmentItemId(event.entity.itemStack) ?: return
+		) ?: return // if it's not a valid shipment, it can despawn
+
+		if (shipment.expireTime.before(Date.from(Instant.now()))) return;  // if it's expired, it can despawn
+
+		if (event.entity.ticksLived < 20 * 60 * 60) {
 			event.isCancelled = true
 		}
 	}
