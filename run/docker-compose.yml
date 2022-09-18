@@ -36,6 +36,7 @@ services:
   paper:
     image: "itzg/minecraft-server"
     container_name: "paper"
+    ports: [ 5005:5005 ]
     tty: true
     stdin_open: true
     volumes:
@@ -50,3 +51,4 @@ services:
       USE_AIKAR_FLAGS: "TRUE"
       COPY_CONFIG_DEST: "/data"
       SYNC_SKIP_NEWER_IN_DESTINATION: "FALSE"
+      JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
