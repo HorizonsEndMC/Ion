@@ -187,7 +187,7 @@ object MiscStarshipCommands : SLCommand() {
 			x1 = (normalizedX * maxRange + origin.x).roundToInt()
 			z1 = (normalizedZ * maxRange + origin.z).roundToInt()
 
-			sender msg "&eWarning: You attempted to jump $distance blocks, " +
+			sender msg "&eWarning: You attempted to jump ${distance.toInt()} blocks, " +
 				"but your navigation computer only supports jumping up to $maxRange blocks! " +
 				"Automatically shortening jump. New Coordinates: $x1, $z1"
 		}
