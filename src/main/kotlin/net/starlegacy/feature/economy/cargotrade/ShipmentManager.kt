@@ -469,7 +469,7 @@ object ShipmentManager : SLComponent() {
 			val expires = shipment.expireTime
 
 			if (expires.before(Date.from(Instant.now()))) {
-				player msg red("Shipment $id already expired! Expire time: ${formateDate(expires)}")
+				player msg red("Shipment $id already expired! Expire time: $expires")
 				return@mapNotNull null
 			}
 
@@ -550,7 +550,7 @@ object ShipmentManager : SLComponent() {
 		val lore = listOf(
 			"&3Shipping From: &b${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)})",
 			"&5Shipping To: &d${shipment.to.displayName}&7 ($destination)",
-			"&cExpires: &e${formateDate(expires)}",
+			"&cExpires: &e$expires",
 			"&2Shipment ID: &a$shipmentId"/*,
             "&6Shipment Route Value: &e${shipment.routeValue.roundToHundredth()}"*/
 		).map(String::colorize)
@@ -571,8 +571,6 @@ object ShipmentManager : SLComponent() {
 		itemStack.itemMeta = itemMeta
 		return itemStack
 	}
-
-	private fun formateDate(date: Date): String = date.toString()
 
 	private fun unboxDroppedCrate(itemStack: ItemStack): ItemStack {
 		val itemMeta = itemStack.itemMeta as? BlockStateMeta ?: return itemStack
