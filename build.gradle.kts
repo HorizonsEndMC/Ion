@@ -24,7 +24,7 @@ dependencies {
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
-	compileOnly("com.discordsrv:discordsrv:1.25.1")
+	compileOnly("com.discordsrv:discordsrv:1.26.0")
 
 	implementation("org.litote.kmongo:kmongo:4.7.1")
 	implementation("io.github.config4k:config4k:0.5.0")
