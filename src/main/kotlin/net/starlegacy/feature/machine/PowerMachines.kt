@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
+import net.starlegacy.feature.multiblock.Multiblocks.multiblockNamespacedKey
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.time
 import net.starlegacy.util.timing
@@ -55,6 +56,8 @@ object PowerMachines : SLComponent() {
 		} else {
 			power.coerceAtLeast(0)
 		}
+
+		if (!sign.persistentDataContainer.has(multiblockNamespacedKey)) return@time power
 
 		sign.persistentDataContainer.set(powerNamespacedKey, PersistentDataType.INTEGER, correctedPower)
 		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())

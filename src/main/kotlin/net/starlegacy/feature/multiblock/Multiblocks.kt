@@ -199,7 +199,7 @@ object Multiblocks : SLComponent() {
 
 	fun all(): List<Multiblock> = multiblocks
 
-	private val multiblockNamespacedKey = NamespacedKey(PLUGIN, "multiblock")
+	val multiblockNamespacedKey = NamespacedKey(PLUGIN, "multiblock")
 
 	@JvmStatic
 	@JvmOverloads
