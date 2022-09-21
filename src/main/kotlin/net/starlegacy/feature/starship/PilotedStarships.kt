@@ -192,7 +192,7 @@ object PilotedStarships : SLComponent() {
 			}
 
 			pilot(activeStarship, player)
-			player.sendFeedbackActionMessage(USER_ERROR, "Piloted already activated starship")
+			player.sendFeedbackActionMessage(SUCCESS, "Piloted already activated starship")
 			return false
 		}
 
