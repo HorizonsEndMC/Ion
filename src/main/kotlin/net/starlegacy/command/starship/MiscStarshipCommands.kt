@@ -48,7 +48,7 @@ object MiscStarshipCommands : SLCommand() {
 	@CommandAlias("release")
 	fun onRelease(sender: Player) {
 		DeactivatedPlayerStarships.deactivateAsync(getStarshipPiloting(sender)) {
-			sender msg "&bReleased starship"
+			sender.sendFeedbackMessage(SUCCESS, "Released starship")
 		}
 	}
 
@@ -68,7 +68,7 @@ object MiscStarshipCommands : SLCommand() {
 		}
 
 		starship.removePassenger(sender.uniqueId)
-		sender action "&eStopped riding ship"
+		sender.sendFeedbackMessage(SUCCESS, "Stopped riding ship")
 	}
 
 	@CommandAlias("loadship")
