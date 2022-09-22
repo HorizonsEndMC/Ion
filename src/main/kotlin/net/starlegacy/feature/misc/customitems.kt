@@ -33,6 +33,7 @@ import org.bukkit.Material.LEATHER_LEGGINGS
 import org.bukkit.Material.SHEARS
 import org.bukkit.Material.SHIELD
 import org.bukkit.Material.SNOWBALL
+import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.inventory.ItemStack
 
 open class CustomItem(
@@ -304,25 +305,27 @@ object CustomItems {
 	private fun registerPlanetIcon(name: String, model: Int): CustomItem = makeItem(
 		id = "planet_icon_${name.lowercase(Locale.getDefault()).replace(" ", "")}",
 		name = name,
-		mat = APPLE,
+		mat = WARPED_FUNGUS_ON_A_STICK,
 		model = model
 	)
 
-//	val PLANET_ICON_AECOR = registerPlanetIcon("Aecor", 1)
-//	val PLANET_ICON_ARBUSTO = registerPlanetIcon("Arbusto", 2)
-//	val PLANET_ICON_CERUS_ALPHA = registerPlanetIcon("Cerus Alpha", 3)
-//	val PLANET_ICON_CERUS_BETA = registerPlanetIcon("Cerus Beta", 4)
-//	val PLANET_ICON_COLLIS = registerPlanetIcon("Collis", 5)
-//	val PLANET_ICON_HARENUM = registerPlanetIcon("Harenum", 6)
-//	val PLANET_ICON_KORYZA = registerPlanetIcon("Koryza", 7)
-//	val PLANET_ICON_ORCUS = registerPlanetIcon("Orcus", 8)
-//	val PLANET_ICON_PORRUS = registerPlanetIcon("Porrus", 9)
-//	val PLANET_ICON_QUOD_CANIS = registerPlanetIcon("Quod Canis", 10)
-//	val PLANET_ICON_SAKARO = registerPlanetIcon("Sakaro", 11)
-//	val PLANET_ICON_SYRE = registerPlanetIcon("Syre", 12)
-//	val PLANET_ICON_TERRAM = registerPlanetIcon("Terram", 13)
-//	val PLANET_ICON_TITUS = registerPlanetIcon("Titus", 14)
-//	val PLANET_ICON_TRUNKADIS = registerPlanetIcon("Trunkadis", 15)
+	val PLANET_ICON_AERACH = registerPlanetIcon("Aerach", 201)
+	val PLANET_ICON_ARET = registerPlanetIcon("Aret", 202)
+	val PLANET_ICON_CHANDRA = registerPlanetIcon("Chandra", 203)
+	val PLANET_ICON_CHIMGARA = registerPlanetIcon("Chimgara", 204)
+	val PLANET_ICON_DAMKOTH = registerPlanetIcon("Damkoth", 205)
+	val PLANET_ICON_GAHARA = registerPlanetIcon("Gahara", 206)
+	val PLANET_ICON_HERDOLI = registerPlanetIcon("Herdoli", 207)
+	val PLANET_ICON_ILIUS = registerPlanetIcon("Ilius", 208)
+	val PLANET_ICON_ISIK = registerPlanetIcon("Isik", 209)
+	val PLANET_ICON_KOVFEFE = registerPlanetIcon("Kovfefe", 210)
+	val PLANET_ICON_KRIO = registerPlanetIcon("Krio", 211)
+	val PLANET_ICON_LIODA = registerPlanetIcon("Lioda", 212)
+	val PLANET_ICON_LUXITERNA = registerPlanetIcon("Luxiterna", 213)
+	val PLANET_ICON_QATRA = registerPlanetIcon("Qatra", 214)
+	val PLANET_ICON_RUBACIEA = registerPlanetIcon("Rubaciea", 215)
+	val PLANET_ICON_TURMS = registerPlanetIcon("Turms", 216)
+	val PLANET_ICON_VASK = registerPlanetIcon("Vask", 217)
 	//endregion
 
 	//region Rockets
