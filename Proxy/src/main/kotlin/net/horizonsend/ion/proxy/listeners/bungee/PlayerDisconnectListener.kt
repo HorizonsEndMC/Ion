@@ -1,7 +1,7 @@
 package net.horizonsend.ion.proxy.listeners.bungee
 
 import net.dv8tion.jda.api.JDA
-import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.sql.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.plugin.Listener
