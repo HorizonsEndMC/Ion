@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.utilities
 
 import net.horizonsend.ion.common.database.Achievement
-import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.sql.PlayerData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
