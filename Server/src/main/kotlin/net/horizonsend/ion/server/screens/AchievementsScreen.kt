@@ -4,7 +4,7 @@ import io.papermc.paper.adventure.PaperAdventure
 import kotlin.math.ceil
 import kotlin.math.min
 import net.horizonsend.ion.common.database.Achievement
-import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.sql.PlayerData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage

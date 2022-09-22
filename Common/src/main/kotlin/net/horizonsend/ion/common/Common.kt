@@ -2,7 +2,7 @@ package net.horizonsend.ion.common
 
 import java.io.File
 import net.horizonsend.ion.common.CommonConfiguration.DatabaseType
-import net.horizonsend.ion.common.database.PlayerDataTable
+import net.horizonsend.ion.common.database.sql.PlayerDataTable
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils

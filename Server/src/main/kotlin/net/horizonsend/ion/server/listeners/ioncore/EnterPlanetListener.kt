@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.listeners.ioncore
 
 import net.horizonsend.ion.common.database.Achievement
-import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.sql.PlayerData
 import net.horizonsend.ion.core.events.EnterPlanetEvent
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
