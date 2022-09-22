@@ -7,11 +7,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerDataTable
 import net.horizonsend.ion.proxy.ProxyConfiguration
-import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.messageEmbed
 import org.jetbrains.exposed.sql.transactions.transaction
 
-@GuildCommand
 @Suppress("Unused")
 @CommandAlias("resync")
 @Description("Resync all roles")

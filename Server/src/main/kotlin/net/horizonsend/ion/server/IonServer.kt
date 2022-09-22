@@ -1,52 +1,61 @@
 package net.horizonsend.ion.server
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.initializeCommon
-import net.horizonsend.ion.server.annotations.BukkitListener
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
+import net.horizonsend.ion.server.utilities.ionCore
 import org.bukkit.Keyed
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.event.Listener
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.plugin.java.JavaPlugin
-import org.reflections.Reflections
-import org.reflections.scanners.Scanners.SubTypes
-import org.reflections.scanners.Scanners.TypesAnnotated
+
+// Special Exception Wildcard Imports
+import net.horizonsend.ion.server.listeners.bukkit.*
+import net.horizonsend.ion.server.listeners.ioncore.*
+
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
 		initializeCommon(dataFolder)
 
-		val reflections = Reflections("net.horizonsend.ion.server")
+		val pluginManager = server.pluginManager
 
-		reflections.get(TypesAnnotated.of(BukkitListener::class.java).asClass<Listener>())
-			.map { it.constructors[0] }
-			.map { constructor ->
-				constructor.newInstance(*constructor.parameterTypes.map {
-					when (it) {
-						IonServer::class.java -> this
-						else -> throw NotImplementedError("Can not provide $it")
-					}
-				}.toTypedArray())
+		// Bukkit Listener Registration
+		val listeners = arrayOf(
+			BlockFadeListener(), BlockFormListener(), ChunkLoadListener(this), EnchantItemListener(),
+			InventoryClickListener(), InventoryCloseListener(), InventoryDragListener(), InventoryMoveItemListener(),
+			PlayerDeathListener(), PlayerFishListener(), PlayerItemConsumeListener(), PlayerJoinListener(this),
+			PlayerPickUpItemListener(), PlayerQuitListener(), PlayerResourcePackStatusListener(),
+			PlayerTeleportListener(), PotionSplashListener(), PrepareItemCraftListener(), PrepareItemEnchantListener()
+		)
+
+		for (listener in listeners) {
+			pluginManager.registerEvents(listener, this)
+		}
+
+		// IonCore Listener Registration
+		ionCore {
+			val ionCoreListeners = arrayOf(
+				BuySpawnShuttleListener(), CaptureStationListener(), CompleteCargoRunListener(), CreateNationListener(),
+				CreateNationOutpostListener(), CreateSettlementListener(), DetectShipListener(), EnterPlanetListener(),
+				HyperspaceEnterListener(), LevelUpListener(), MultiblockDetectListener(), ShipKillListener(),
+				StationSiegeBeginListener()
+			)
+
+			for (listener in ionCoreListeners) {
+				pluginManager.registerEvents(listener, this)
 			}
-			.also { logger.info("Loading ${it.size} listeners.") }
-			.forEach { server.pluginManager.registerEvents(it as Listener, this) }
+		}
 
 		val commandManager = PaperCommandManager(this)
 
-		reflections.get(SubTypes.of(BaseCommand::class.java).asClass<Any>())
-			.map { it.constructors[0] }
-			.map { it.newInstance() }
-			.also { logger.info("Loading ${it.size} commands.") }
-			.forEach { commandManager.registerCommand(it as BaseCommand) }
-
+		commandManager.registerCommand(AchievementsCommand())
 
 		commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 
@@ -91,22 +100,10 @@ class IonServer : JavaPlugin() {
 
 		// Wool -> String
 		arrayOf(
-			Material.WHITE_WOOL,
-			Material.ORANGE_WOOL,
-			Material.MAGENTA_WOOL,
-			Material.LIGHT_BLUE_WOOL,
-			Material.YELLOW_WOOL,
-			Material.LIME_WOOL,
-			Material.PINK_WOOL,
-			Material.GRAY_WOOL,
-			Material.LIGHT_GRAY_WOOL,
-			Material.CYAN_WOOL,
-			Material.PURPLE_WOOL,
-			Material.BLUE_WOOL,
-			Material.BROWN_WOOL,
-			Material.GREEN_WOOL,
-			Material.RED_WOOL,
-			Material.BLACK_WOOL
+			Material.WHITE_WOOL, Material.ORANGE_WOOL, Material.MAGENTA_WOOL, Material.LIGHT_BLUE_WOOL,
+			Material.YELLOW_WOOL, Material.LIME_WOOL, Material.PINK_WOOL, Material.GRAY_WOOL, Material.LIGHT_GRAY_WOOL,
+			Material.CYAN_WOOL, Material.PURPLE_WOOL, Material.BLUE_WOOL, Material.BROWN_WOOL, Material.GREEN_WOOL,
+			Material.RED_WOOL, Material.BLACK_WOOL
 		).forEach {
 			server.addRecipe(
 				ShapelessRecipe(

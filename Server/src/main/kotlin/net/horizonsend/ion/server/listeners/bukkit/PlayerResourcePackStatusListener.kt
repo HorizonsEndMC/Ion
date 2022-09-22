@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import net.horizonsend.ion.server.annotations.BukkitListener
 import net.horizonsend.ion.server.utilities.feedback.FeedbackType
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.event.EventHandler
@@ -8,7 +7,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
 
-@BukkitListener
 @Suppress("Unused")
 class PlayerResourcePackStatusListener : Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
