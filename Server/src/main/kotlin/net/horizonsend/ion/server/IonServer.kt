@@ -2,7 +2,7 @@ package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.Achievement
-import net.horizonsend.ion.common.initializeCommon
+import net.horizonsend.ion.common.initializeDatabase
 import net.horizonsend.ion.core.bridge
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import net.horizonsend.ion.server.utilities.ionCore
@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.listeners.ioncore.*
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
-		initializeCommon(dataFolder)
+		initializeDatabase(dataFolder)
 
 		bridge = BridgeImplementation()
 

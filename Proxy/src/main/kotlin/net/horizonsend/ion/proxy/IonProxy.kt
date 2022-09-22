@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import net.horizonsend.ion.common.initializeCommon
+import net.horizonsend.ion.common.initializeDatabase
 import net.horizonsend.ion.common.utilities.loadConfiguration
 import net.horizonsend.ion.proxy.commands.bungee.BungeeAccountCommand
 import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
@@ -40,7 +40,7 @@ class IonProxy : Plugin() {
 	}
 
 	override fun onEnable() {
-		initializeCommon(dataFolder)
+		initializeDatabase(dataFolder)
 
 		// Listener Registration
 		val pluginManager = proxy.pluginManager
