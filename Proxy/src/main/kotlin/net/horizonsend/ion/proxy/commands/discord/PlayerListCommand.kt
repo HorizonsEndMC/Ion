@@ -5,11 +5,9 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ProxyServer
 
-@GuildCommand
 @Suppress("Unused")
 @CommandAlias("playerlist")
 @Description("List online players.")

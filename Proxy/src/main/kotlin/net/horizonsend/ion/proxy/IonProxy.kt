@@ -1,13 +1,8 @@
 package net.horizonsend.ion.proxy
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.BungeeCommandManager
 import java.util.concurrent.TimeUnit
 import javax.security.auth.login.LoginException
-import kotlin.reflect.full.createType
-import kotlin.reflect.jvm.javaConstructor
-import kotlin.reflect.jvm.javaType
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
@@ -17,16 +12,14 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.common.utilities.loadConfiguration
-import net.horizonsend.ion.proxy.annotations.GlobalCommand
-import net.horizonsend.ion.proxy.annotations.GuildCommand
-import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.plugin.Listener
+import net.horizonsend.ion.proxy.commands.bungee.AccountCommand
+import net.horizonsend.ion.proxy.commands.bungee.InfoCommand
+import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
+import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
+import net.horizonsend.ion.proxy.listeners.bungee.LoginListener
+import net.horizonsend.ion.proxy.listeners.bungee.PlayerDisconnectListener
+import net.horizonsend.ion.proxy.listeners.bungee.ProxyPingListener
 import net.md_5.bungee.api.plugin.Plugin
-import org.reflections.Reflections
-import org.reflections.Store
-import org.reflections.scanners.Scanners.SubTypes
-import org.reflections.scanners.Scanners.TypesAnnotated
-import org.reflections.util.QueryFunction
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
@@ -48,35 +41,43 @@ class IonProxy : Plugin() {
 	override fun onEnable() {
 		initializeCommon(dataFolder)
 
-		val reflections = Reflections("net.horizonsend.ion.proxy")
+		// Listener Registration
+		val pluginManager = proxy.pluginManager
 
+		pluginManager.registerListener(this, LoginListener(configuration, jda))
+		pluginManager.registerListener(this, ProxyPingListener(proxy, configuration))
+
+		jda?.let {
+			pluginManager.registerListener(this, PlayerDisconnectListener(jda, configuration))
+		}
+
+		// Minecraft Command Registration
 		val commandManager = BungeeCommandManager(this)
 
-		reflectionsRegister(reflections, SubTypes.of(Listener::class.java), "listeners") {
-			proxy.pluginManager.registerListener(this, it as Listener)
+		commandManager.registerCommand(InfoCommand())
+
+		jda?.let {
+			commandManager.registerCommand(AccountCommand(jda, configuration))
 		}
 
-		reflectionsRegister(reflections, SubTypes.of(BaseCommand::class.java), "commands") {
-			commandManager.registerCommand(it as BaseCommand)
-		}
-
-		jda?.let { jda ->
+		// Java Discord API
+		jda?.let {
+			// Prune Inactive Members
 			jda.getRoleById(configuration.unlinkedRole)?.let {
 				jda.getGuildById(configuration.discordServer)?.prune(30, it)
 			}
 
+			// Discord Commands
 			val jdaCommandManager = JDACommandManager(jda, configuration)
 
-			reflectionsRegister(reflections, TypesAnnotated.of(GlobalCommand::class.java), "global discord commands") {
-				jdaCommandManager.registerGlobalCommand(it)
-			}
-
-			reflectionsRegister(reflections, TypesAnnotated.of(GuildCommand::class.java), "guild discord commands") {
-				jdaCommandManager.registerGuildCommand(it)
-			}
+			jdaCommandManager.registerGuildCommand(AccountCommand(jda, configuration))
+			jdaCommandManager.registerGuildCommand(InfoCommand())
+			jdaCommandManager.registerGuildCommand(PlayerListCommand(proxy))
+			jdaCommandManager.registerGuildCommand(ResyncCommand(configuration))
 
 			jdaCommandManager.build()
 
+			// Live Player Count
 			proxy.scheduler.schedule(this, {
 				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${proxy.onlineCount} players!"))
 			}, 0, 5, TimeUnit.SECONDS)
@@ -89,36 +90,6 @@ class IonProxy : Plugin() {
 		removeOnlineRoleFromEveryone()
 
 		jda?.shutdown()
-	}
-
-	private fun <T> reflectionsRegister(
-		reflections: Reflections,
-		scanner: QueryFunction<Store, T>,
-		name: String,
-		execute: (Any) -> Unit
-	) {
-		reflections.get(scanner.asClass<T>())
-			.map clazzMap@ { clazz ->
-				val constructor = clazz.kotlin.constructors.first()
-
-				constructor.javaConstructor?.newInstance(*constructor.parameters.map { when (it.type) {
-					ProxyConfiguration::class.createType() -> configuration
-					ProxyServer::class.createType() -> proxy
-					IonProxy::class.createType() -> this
-					JDA::class.createType(nullable = true) -> jda
-					JDA::class.createType() -> if (jda != null) jda else {
-						slF4JLogger.error("${clazz.name} has not been loaded as it requires JDA which is unavailable.")
-						return@clazzMap null
-					}
-					else -> {
-						slF4JLogger.error("Unable to provide ${it.type.javaType.typeName} to ${clazz.simpleName}.")
-						return@clazzMap null
-					}
-				}}.toTypedArray())
-			}
-			.filterNotNull()
-			.also { logger.info("Loading ${it.size} $name.") }
-			.forEach(execute)
 	}
 
 	private fun removeOnlineRoleFromEveryone() = jda?.let {

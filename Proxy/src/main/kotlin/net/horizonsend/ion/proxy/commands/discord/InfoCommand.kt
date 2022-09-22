@@ -4,10 +4,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.proxy.annotations.GuildCommand
 import net.horizonsend.ion.proxy.messageEmbed
 
-@GuildCommand
 @Suppress("Unused")
 @CommandAlias("info")
 @Description("List of useful links.")

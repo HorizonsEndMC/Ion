@@ -22,6 +22,4 @@ dependencies {
 
 	api("org.xerial:sqlite-jdbc:3.39.3.0")
 	api("mysql:mysql-connector-java:8.0.30")
-
-	api("org.reflections:reflections:0.10.2")
 }

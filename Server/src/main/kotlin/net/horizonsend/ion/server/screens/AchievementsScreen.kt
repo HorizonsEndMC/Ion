@@ -29,7 +29,6 @@ class AchievementsScreen private constructor(
 		placeAchievementIcons()
 	}
 
-	@net.horizonsend.ion.server.annotations.UpdateUnsafe
 	override fun handleInventoryClick(event: InventoryClickEvent) {
 		when (event.slot) {
 			45 -> if (pageNumber > 0) pageNumber-- else return
