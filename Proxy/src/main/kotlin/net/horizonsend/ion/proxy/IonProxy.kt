@@ -2,7 +2,6 @@ package net.horizonsend.ion.proxy
 
 import co.aikar.commands.BungeeCommandManager
 import java.util.concurrent.TimeUnit
-import javax.security.auth.login.LoginException
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
@@ -33,7 +32,7 @@ class IonProxy : Plugin() {
 			.disableCache(CacheFlag.values().toList())
 			.setEnableShutdownHook(false)
 			.build()
-	}  catch (_: LoginException) {
+	}  catch (_: Exception) {
 		slF4JLogger.warn("Failed to start JDA as it was unable to login to Discord!")
 		null
 	}
