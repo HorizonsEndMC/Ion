@@ -16,7 +16,7 @@ dependencies {
 
 	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
 
-	implementation("net.dv8tion:JDA:5.0.0-alpha.18") {
+	implementation("net.dv8tion:JDA:5.0.0-alpha.20") {
 		exclude("opus-java")
 	}
 }
