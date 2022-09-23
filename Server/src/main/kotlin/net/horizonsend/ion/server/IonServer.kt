@@ -53,9 +53,16 @@ class IonServer : JavaPlugin() {
 			}
 		}
 
+
 		val commandManager = PaperCommandManager(this)
 
-		commandManager.registerCommand(AchievementsCommand())
+		val commands = arrayOf(
+			AchievementsCommand(), VoteCommand()
+		)
+
+		for (command in commands){
+			commandManager.registerCommand(command)
+		}
 
 		commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 
