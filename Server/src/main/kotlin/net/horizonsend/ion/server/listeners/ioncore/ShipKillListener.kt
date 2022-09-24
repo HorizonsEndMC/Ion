@@ -11,6 +11,6 @@ import org.bukkit.event.Listener
 class ShipKillListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onShipKillEvent(event: ShipKillEvent) {
-		event.player.rewardAchievement(Achievement.KILL_SHIP)
+		if(event.killer != event.player)event.player.rewardAchievement(Achievement.KILL_SHIP)
 	}
 }
