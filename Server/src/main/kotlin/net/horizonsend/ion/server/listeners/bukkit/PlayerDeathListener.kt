@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.listeners.bukkit
 
 import java.lang.System.currentTimeMillis
 import java.util.UUID
-import net.horizonsend.ion.common.database.Achievement
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Material
