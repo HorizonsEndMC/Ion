@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utilities
+package net.horizonsend.ion.common
 
 import java.io.File
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
