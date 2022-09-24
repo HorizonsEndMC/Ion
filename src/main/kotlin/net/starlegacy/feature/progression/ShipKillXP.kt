@@ -166,10 +166,10 @@ object ShipKillXP : SLComponent() {
 		)
 		if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
 			Tasks.async {
-				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("global")
+				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("events")
 
 				if (channel == null) {
-					System.err.println("ERROR: No global channel found!")
+					System.err.println("ERROR: No events channel found!")
 					return@async
 				}
 
