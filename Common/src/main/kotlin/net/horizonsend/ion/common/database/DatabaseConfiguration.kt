@@ -9,5 +9,7 @@ data class DatabaseConfiguration(
 	val useJsonFile: Boolean = true,
 
 	@Comment("See https://www.mongodb.com/docs/manual/reference/connection-string/")
-	val mongoConnectionUri: String
+	val mongoConnectionUri: String,
+
+	val databaseName: String
 )

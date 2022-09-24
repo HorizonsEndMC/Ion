@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import net.horizonsend.ion.common.database.Achievement
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.utilities.ionCore
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import net.starlegacy.feature.misc.CustomItems

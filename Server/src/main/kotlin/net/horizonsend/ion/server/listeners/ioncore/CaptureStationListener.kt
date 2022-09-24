@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listeners.ioncore
 
-import net.horizonsend.ion.common.database.Achievement
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.core.events.StationCaptureEvent
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
