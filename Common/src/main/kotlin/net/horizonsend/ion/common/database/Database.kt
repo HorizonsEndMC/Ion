@@ -4,11 +4,13 @@ import net.horizonsend.ion.common.database.OriginalDatabaseConfiguration.Databas
 import java.io.File
 import net.horizonsend.ion.common.loadConfiguration
 import org.jetbrains.exposed.sql.Database
+import org.litote.kmongo.KMongo.createClient
+import java.lang.System.setProperty
 
 fun initializeDatabase(dataDirectory: File) {
 	val originalConfiguration: OriginalDatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "common.conf")
 
-	val databaseConfiguration: DatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "database.conf")
+	val configuration: DatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "database.conf")
 
 	when (originalConfiguration.databaseType) {
 		DatabaseType.SQLITE ->
@@ -21,4 +23,8 @@ fun initializeDatabase(dataDirectory: File) {
 			Database.connect("jdbc:mysql://$host:$port/$database", "com.mysql.cj.jdbc.Driver", username, password)
 		}
 	}
+
+	setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
+
+	createClient(configuration.mongoConnectionUri).getDatabase(configuration.databaseName)
 }

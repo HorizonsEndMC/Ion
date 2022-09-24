@@ -1,6 +1,6 @@
 package net.horizonsend.ion.common.database.sql
 
-import net.horizonsend.ion.common.database.Achievement
+import net.horizonsend.ion.common.database.enums.Achievement
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
