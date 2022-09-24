@@ -62,8 +62,8 @@ class IonProxy : Plugin() {
 		// Minecraft Command Registration
 		val commandManager = BungeeCommandManager(this)
 
-		commandManager.registerCommand(VoteCommand(configuration))
 		commandManager.registerCommand(BungeeInfoCommand())
+		commandManager.registerCommand(VoteCommand(configuration))
 
 		// Discord
 		jda?.let {
