@@ -236,8 +236,8 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val format = "&5&lAlly &e$nationName$roleString &b${player.name} &8»".colorize()
 			val message = messageColor.toString() + event.message.replace("${SLTextStyle.RESET}", "$messageColor")
 
+			player.sendMessage("$format $message")
 			allyAction(NationsChatMessage(nation, format, message, playerInfo(player)))
-			player.sendMessage(MiniMessage.miniMessage().deserialize("$format ${message.trimStart()}"))
 		}
 	};
 
