@@ -35,7 +35,8 @@ class IonServer : JavaPlugin() {
 			InventoryClickListener(), InventoryCloseListener(), InventoryDragListener(), InventoryMoveItemListener(),
 			PlayerDeathListener(), PlayerFishListener(), PlayerItemConsumeListener(), PlayerJoinListener(this),
 			PlayerLoginListener(), PlayerPickUpItemListener(), PlayerQuitListener(), PlayerResourcePackStatusListener(),
-			PlayerTeleportListener(), PotionSplashListener(), PrepareItemCraftListener(), PrepareItemEnchantListener()
+			PlayerTeleportListener(), PotionSplashListener(), PrepareItemCraftListener(), PrepareItemEnchantListener(),
+			RanktrackMigrationListener()
 		)
 
 		for (listener in listeners) {
@@ -59,6 +60,7 @@ class IonServer : JavaPlugin() {
 		val commandManager = PaperCommandManager(this)
 
 		commandManager.registerCommand(AchievementsCommand())
+		commandManager.registerCommand(RanktrackCommands())
 
 		commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 
