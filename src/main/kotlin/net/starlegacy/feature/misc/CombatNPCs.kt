@@ -44,7 +44,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 object CombatNPCs : SLComponent() {
-	private const val remainTimeMinutes = 1L
+	private const val remainTimeMinutes = 4L
 	private val helmetText = "${SLTextStyle.OBFUSCATED}COMBAT NPC"
 
 	/** Map of NPC entity ID to player ID */
@@ -83,6 +83,8 @@ object CombatNPCs : SLComponent() {
 		subscribe<PlayerQuitEvent> { event ->
 			val player = event.player
 			val playerId = player.uniqueId
+			val chunk = player.chunk
+			chunk.addPluginChunkTicket(plugin)
 
 			inventories.remove(playerId)
 			// attempt to remove entity from map based on player id.
@@ -97,7 +99,6 @@ object CombatNPCs : SLComponent() {
 			if (player.hasPermission("starlegacy.combatnpc.bypass")) {
 				return@subscribe
 			}
-
 			// if they joined less than a second ago, don't do it
 			if (System.currentTimeMillis() - (lastJoinMap[playerId] ?: 0) < 1000) {
 				return@subscribe
@@ -117,6 +118,7 @@ object CombatNPCs : SLComponent() {
 				entityToPlayer.remove(entityId, playerId)
 				plugin.server.getEntity(entityId)?.remove()
 				inventories.remove(entityId)
+				chunk.removePluginChunkTicket(plugin)
 			}
 		}
 
