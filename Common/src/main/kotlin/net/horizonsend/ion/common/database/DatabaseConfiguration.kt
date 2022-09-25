@@ -9,7 +9,7 @@ internal data class DatabaseConfiguration(
 	internal val useJsonFile: Boolean = true,
 
 	@Comment("See https://www.mongodb.com/docs/manual/reference/connection-string/")
-	internal val mongoConnectionUri: String,
+	internal val mongoConnectionUri: String = "mongodb://test:test@mongo",
 
-	internal val databaseName: String
+	internal val databaseName: String = "ion"
 )

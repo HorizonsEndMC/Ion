@@ -42,7 +42,7 @@ class AchievementsCommand : BaseCommand() {
 			return
 		}
 
-		val player = Bukkit.getPlayer(playerData._id)
+		val player = Bukkit.getPlayer(playerData.uuid)
 
 		if (player == null) {
 			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} must be online.", target)
