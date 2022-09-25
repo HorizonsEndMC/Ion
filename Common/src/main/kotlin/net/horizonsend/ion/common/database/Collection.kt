@@ -5,24 +5,23 @@ import com.mongodb.client.MongoDatabase
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.replaceOneById
 import org.litote.kmongo.util.KMongoUtil
+import java.util.UUID
 import kotlin.reflect.KClass
 
-abstract class Collection<D : Document<T>, T: Any>(
-	private val kClass: KClass<D>
-) {
-	internal fun initialize(database: MongoDatabase) {
-		database.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
-	}
-
+abstract class Collection<D : Document>(private val kClass: KClass<D>) {
 	protected lateinit var collection: MongoCollection<D>
 
-	protected abstract fun construct(id: T): D
-
-	protected fun update(document: D) {
-		collection.replaceOneById(document._id, document)
+	internal fun initialize(database: MongoDatabase) {
+		collection = database.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
 	}
 
-	operator fun get(id: T): D {
+	protected abstract fun construct(id: UUID): D
+
+	protected fun update(document: D) {
+		collection.replaceOneById(document.uuid, document)
+	}
+
+	operator fun get(id: UUID): D {
 		var document = collection.findOneById(id)
 
 		if (document == null) {
