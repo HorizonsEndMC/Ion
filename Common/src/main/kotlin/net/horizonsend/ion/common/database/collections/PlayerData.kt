@@ -8,12 +8,12 @@ import org.litote.kmongo.findOne
 import java.util.UUID
 
 class PlayerData private constructor(
-	override val _id: UUID,
-	var minecraftUsername: String? = null,
+	minecraftUUID: UUID,
 	var discordId: Long? = null,
+	var minecraftUsername: String? = null,
 	var achievements: MutableList<Achievement> = mutableListOf()
-) : Document<UUID>() {
-	companion object : Collection<PlayerData, UUID>(PlayerData::class) {
+) : Document(minecraftUUID) {
+	companion object : Collection<PlayerData>(PlayerData::class) {
 		override fun construct(id: UUID): PlayerData = PlayerData(id)
 
 		operator fun get(minecraftUsername: String): PlayerData? {
