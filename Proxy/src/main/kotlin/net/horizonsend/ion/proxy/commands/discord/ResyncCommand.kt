@@ -4,11 +4,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.common.database.sql.PlayerData
-import net.horizonsend.ion.common.database.sql.PlayerDataTable
+import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.messageEmbed
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("Unused")
 @CommandAlias("resync")
@@ -52,7 +50,7 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 		val membersWithLinkBypass = guild.getMembersWithRoles(linkBypassRole)
 
 		for (member in guild.members) {
-			val playerData = transaction { PlayerData.find { PlayerDataTable.discordUUID eq member.idLong }.firstOrNull() }
+			val playerData = PlayerData[member.idLong]
 
 			val isOverridden = member.user.isBot || membersWithLinkBypass.contains(member)
 

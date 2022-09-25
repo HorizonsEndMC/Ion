@@ -1,6 +1,7 @@
 package net.horizonsend.ion.common.database
 
 import net.horizonsend.ion.common.database.OriginalDatabaseConfiguration.DatabaseType
+import net.horizonsend.ion.common.database.collections.PlayerData
 import java.io.File
 import net.horizonsend.ion.common.loadConfiguration
 import org.jetbrains.exposed.sql.Database
@@ -26,5 +27,7 @@ fun initializeDatabase(dataDirectory: File) {
 
 	setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
-	createClient(configuration.mongoConnectionUri).getDatabase(configuration.databaseName)
+	val database = createClient(configuration.mongoConnectionUri).getDatabase(configuration.databaseName)
+
+	PlayerData.initialize(database)
 }

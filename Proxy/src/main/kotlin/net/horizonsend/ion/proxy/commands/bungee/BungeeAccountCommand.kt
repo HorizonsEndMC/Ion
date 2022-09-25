@@ -5,7 +5,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.JDA
-import net.horizonsend.ion.common.database.sql.PlayerData
+import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.md_5.bungee.api.ChatColor
@@ -20,9 +21,9 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 	@Subcommand("status")
 	@Description("Check linked Discord account.")
 	fun onStatusCommand(sender: ProxiedPlayer) {
-		val playerData = transaction { PlayerData.findById(sender.uniqueId) }
+		val playerData = PlayerData[sender.uniqueId]
 
-		if (playerData?.discordUUID == null) {
+		if (playerData.discordId == null) {
 			sender.sendMessage(
 				*ComponentBuilder("Your Minecraft account is not linked.")
 					.color(ChatColor.of("#8888ff"))
@@ -31,7 +32,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 			return
 		}
 
-		jda.retrieveUserById(playerData.discordUUID!!).queue {
+		jda.retrieveUserById(playerData.discordId!!).queue {
 			sender.sendMessage(
 				*ComponentBuilder()
 					.append(
@@ -48,7 +49,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 							.color(ChatColor.of("#8888ff"))
 							.create())
 					.append(
-						ComponentBuilder("\"${playerData.discordUUID!!}\"")
+						ComponentBuilder("\"${playerData.discordId!!}\"")
 							.color(ChatColor.WHITE)
 							.create()
 					)
@@ -65,9 +66,9 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 	@Subcommand("unlink")
 	@Description("Unlink Discord account.")
 	fun onUnlinkCommand(sender: ProxiedPlayer) = transaction {
-		val playerData = PlayerData.findById(sender.uniqueId)
+		val playerData = PlayerData[sender.uniqueId]
 
-		if (playerData?.discordUUID == null) {
+		if (playerData.discordId == null) {
 			sender.sendMessage(
 				*ComponentBuilder("Your account is not linked.")
 					.color(ChatColor.of("#ff8844"))
@@ -77,12 +78,14 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 		}
 
 		jda.getGuildById(configuration.discordServer)!!.apply {
-			getMemberById(playerData.discordUUID!!)?.let { member ->
+			getMemberById(playerData.discordId!!)?.let { member ->
 				removeRoleFromMember(member, getRoleById(configuration.linkedRole)!!).queue()
 			}
 		}
 
-		playerData.discordUUID = null
+		playerData.update {
+			discordId = null
+		}
 
 		sender.sendMessage(
 			*ComponentBuilder("Your account is no longer linked.")
