@@ -6,8 +6,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.database.sql.PlayerData
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.managers.ScreenManager.openScreen
 import net.horizonsend.ion.server.screens.AchievementsScreen
 import net.horizonsend.ion.server.utilities.feedback.FeedbackType
@@ -16,7 +17,6 @@ import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("achievements")
 @Suppress("Unused")
@@ -35,14 +35,14 @@ class AchievementsCommand : BaseCommand() {
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.grant")
 	fun onAchievementGrant(sender: CommandSender, achievement: Achievement, target: String) {
-		val playerData = transaction { PlayerData.getByUsername(target) }
+		val playerData = PlayerData[target]
 
 		if (playerData == null) {
 			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} does not exist.", target)
 			return
 		}
 
-		val player = Bukkit.getPlayer(playerData.id.value)
+		val player = Bukkit.getPlayer(playerData._id)
 
 		if (player == null) {
 			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} must be online.", target)
@@ -63,14 +63,16 @@ class AchievementsCommand : BaseCommand() {
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.revoke")
 	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
-		val playerData = transaction { PlayerData.getByUsername(target) }
+		val playerData = PlayerData[target]
 
 		if (playerData == null) {
 			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} does not exist.", target)
 			return
 		}
 
-		transaction { playerData.removeAchievement(achievement) }
+		playerData.update {
+			achievements.remove(achievement)
+		}
 
 		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Took achievement {0} from {1}.", achievement.name, target)
 	}

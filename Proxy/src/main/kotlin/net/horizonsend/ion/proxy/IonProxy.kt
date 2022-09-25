@@ -45,10 +45,10 @@ class IonProxy : Plugin() {
 		// Listener Registration
 		val pluginManager = proxy.pluginManager
 
-		pluginManager.registerListener(this, LoginListener(configuration, jda))
 		pluginManager.registerListener(this, ProxyPingListener(proxy, configuration))
 
 		jda?.let {
+			pluginManager.registerListener(this, LoginListener(configuration, jda))
 			pluginManager.registerListener(this, PlayerDisconnectListener(jda, configuration))
 		}
 
