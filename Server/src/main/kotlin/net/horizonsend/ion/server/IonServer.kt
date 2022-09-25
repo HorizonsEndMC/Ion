@@ -34,7 +34,7 @@ class IonServer : JavaPlugin() {
 			BlockFadeListener(), BlockFormListener(), ChunkLoadListener(this), EnchantItemListener(),
 			InventoryClickListener(), InventoryCloseListener(), InventoryDragListener(), InventoryMoveItemListener(),
 			PlayerDeathListener(), PlayerFishListener(), PlayerItemConsumeListener(), PlayerJoinListener(this),
-			PlayerPickUpItemListener(), PlayerQuitListener(), PlayerResourcePackStatusListener(),
+			PlayerLoginListener(), PlayerPickUpItemListener(), PlayerQuitListener(), PlayerResourcePackStatusListener(),
 			PlayerTeleportListener(), PotionSplashListener(), PrepareItemCraftListener(), PrepareItemEnchantListener()
 		)
 

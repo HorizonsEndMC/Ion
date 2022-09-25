@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.utilities
 
+import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.database.sql.PlayerData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
@@ -10,15 +11,16 @@ import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Player.rewardAchievement(achievement: Achievement) {
 	ionCore { if (!SETTINGS.master) return }
 
-	val playerData = transaction { PlayerData.findById(this@rewardAchievement.uniqueId) } ?: return
+	val playerData = PlayerData[this.uniqueId]
 	if (playerData.achievements.contains(achievement)) return
 
-	transaction { playerData.addAchievement(achievement) }
+	playerData.update {
+		achievements.add(achievement)
+	}
 
 	vaultEconomy { it.depositPlayer(this, achievement.creditReward.toDouble()) }
 	ionCore {
@@ -43,5 +45,6 @@ fun Player.rewardAchievement(achievement: Achievement) {
 			Experience: ${achievement.experienceReward}
 		""".trimIndent() + if (achievement.chetheriteReward != 0) "\nChetherite: ${achievement.chetheriteReward}" else ""
 	)
+
 	this.playSound(this.location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f)
 }

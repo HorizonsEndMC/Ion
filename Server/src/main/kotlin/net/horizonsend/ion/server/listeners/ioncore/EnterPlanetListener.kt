@@ -1,19 +1,18 @@
 package net.horizonsend.ion.server.listeners.ioncore
 
+import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.database.sql.PlayerData
 import net.horizonsend.ion.core.events.EnterPlanetEvent
 import net.horizonsend.ion.server.utilities.rewardAchievement
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("Unused")
 class EnterPlanetListener: Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onEnterPlanetEvent(event: EnterPlanetEvent) {
-		val playerData = transaction { PlayerData[event.player.uniqueId] }
+		val playerData = PlayerData[event.player.uniqueId]
 
 		event.player.rewardAchievement(
 			when (event.newworld.name.lowercase()) {
