@@ -4,6 +4,8 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.initializeDatabase
 import net.horizonsend.ion.core.bridge
+import net.horizonsend.ion.server.commands.AchievementsCommand
+import net.horizonsend.ion.server.commands.RanktrackCommands
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import net.horizonsend.ion.server.utilities.ionCore
 import org.bukkit.Keyed

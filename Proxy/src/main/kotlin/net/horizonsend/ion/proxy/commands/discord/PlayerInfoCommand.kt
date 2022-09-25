@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.proxy.calculateRanktrack
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ProxyServer
+import net.md_5.bungee.api.ServerPing.PlayerInfo
 
 @Suppress("Unused")
 @CommandAlias("playerinfo")
@@ -35,7 +36,7 @@ class PlayerInfoCommand(private val proxy: ProxyServer) {
 					|RanktrackType: ${playerData.ranktracktype.displayName}
 					|XP: ${playerData.xp}
 					|Rank: ${calculateRanktrack(playerData)}
-					|${if (playerData.lastLoggofftime.isEmpty()) ("Player Online") else	"LastLogOffTime: ${TimeUnit.MILLISECONDS.toDays(playerData.lastLoggofftime.toList().first().second-System.currentTimeMillis())} on (${playerData.lastLoggofftime.toList().first().first})"}
+					|LastLogOffTime: ${if(playerData.lastLoggofftime.isNotEmpty()){playerData.lastLoggofftime.toList().first().first} else("Player is Online")}
 				""".trimMargin(),
 			)
 		)
