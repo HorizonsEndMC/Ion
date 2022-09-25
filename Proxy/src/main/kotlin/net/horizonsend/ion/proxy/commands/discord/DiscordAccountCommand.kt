@@ -27,7 +27,7 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 			return
 		}
 
-		event.replyEmbeds(messageEmbed(description = "Linked to ${playerData.minecraftUsername} (${playerData.uuid})."))
+		event.replyEmbeds(messageEmbed(description = "Linked to ${playerData.minecraftUsername} (${playerData.minecraftUUID})."))
 			.setEphemeral(true)
 			.queue()
 	}
