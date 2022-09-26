@@ -123,6 +123,11 @@ class IonServer : JavaPlugin() {
 			setIngredient('a', Material.AIR)
 		})
 
+		//black dye
+		server.addRecipe(ShapelessRecipe(NamespacedKey(this, "Coal_Black_Dye_Recipe"), ItemStack(Material.BLACK_DYE)).apply {
+			addIngredient(1, Material.COAL)
+		})
+
 		// Remove Unwanted Vanilla Recipes
 		forbiddenCraftingItems.forEach { material ->
 			server.getRecipesFor(ItemStack(material)).forEach {
