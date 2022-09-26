@@ -12,7 +12,8 @@ class PlayerData private constructor(
 	@BsonId val minecraftUUID: UUID,
 	var discordId: Long? = null,
 	var minecraftUsername: String? = null,
-	var achievements: MutableList<Achievement> = mutableListOf()
+	var achievements: MutableList<Achievement> = mutableListOf(),
+	var voteTimes: MutableMap<String, Long> = mutableMapOf("Minecraft-MP" to 0, "Planet-Minecraft" to 0, "Minecraft-Server-List" to 0)
 ) : Document() {
 	companion object : Collection<PlayerData>(PlayerData::class) {
 		override fun construct(id: UUID): PlayerData = PlayerData(id)
