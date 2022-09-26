@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.database.initializeDatabase
 import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.proxy.commands.bungee.BungeeAccountCommand
 import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
+import net.horizonsend.ion.proxy.commands.bungee.VoteCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
@@ -20,6 +21,7 @@ import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.listeners.bungee.LoginListener
 import net.horizonsend.ion.proxy.listeners.bungee.PlayerDisconnectListener
 import net.horizonsend.ion.proxy.listeners.bungee.ProxyPingListener
+import net.horizonsend.ion.proxy.listeners.bungee.VoteListener
 import net.md_5.bungee.api.plugin.Plugin
 
 @Suppress("Unused")
@@ -50,11 +52,13 @@ class IonProxy : Plugin() {
 		jda?.let {
 			pluginManager.registerListener(this, LoginListener(configuration, jda))
 			pluginManager.registerListener(this, PlayerDisconnectListener(jda, configuration))
+			pluginManager.registerListener(this, VoteListener(configuration))
 		}
 
 		// Minecraft Command Registration
 		val commandManager = BungeeCommandManager(this)
 
+		commandManager.registerCommand(VoteCommand(configuration))
 		commandManager.registerCommand(BungeeInfoCommand())
 
 		jda?.let {
