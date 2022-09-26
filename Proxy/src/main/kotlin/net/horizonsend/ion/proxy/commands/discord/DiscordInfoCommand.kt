@@ -9,7 +9,7 @@ import net.horizonsend.ion.proxy.messageEmbed
 @Suppress("Unused")
 @CommandAlias("info")
 @Description("List of useful links.")
-class InfoCommand {
+class DiscordInfoCommand {
 	@Default
 	@Suppress("Unused")
 	fun onInfoCommand(event: SlashCommandInteractionEvent) {

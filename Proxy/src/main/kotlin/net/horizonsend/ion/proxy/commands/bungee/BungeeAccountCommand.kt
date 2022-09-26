@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 @Suppress("Unused")
 @CommandAlias("account")
 @Description("Manage the link between your Minecraft and Discord account.")
-class AccountCommand(private val jda: JDA, private val configuration: ProxyConfiguration) : BaseCommand() {
+class BungeeAccountCommand(private val jda: JDA, private val configuration: ProxyConfiguration) : BaseCommand() {
 	@Subcommand("status")
 	@Description("Check linked Discord account.")
 	fun onStatusCommand(sender: ProxiedPlayer) {
