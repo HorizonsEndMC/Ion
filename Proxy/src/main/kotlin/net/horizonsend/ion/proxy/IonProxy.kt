@@ -11,8 +11,10 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.initializeCommon
 import net.horizonsend.ion.common.utilities.loadConfiguration
-import net.horizonsend.ion.proxy.commands.bungee.AccountCommand
-import net.horizonsend.ion.proxy.commands.bungee.InfoCommand
+import net.horizonsend.ion.proxy.commands.bungee.BungeeAccountCommand
+import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.listeners.bungee.LoginListener
@@ -53,10 +55,10 @@ class IonProxy : Plugin() {
 		// Minecraft Command Registration
 		val commandManager = BungeeCommandManager(this)
 
-		commandManager.registerCommand(InfoCommand())
+		commandManager.registerCommand(BungeeInfoCommand())
 
 		jda?.let {
-			commandManager.registerCommand(AccountCommand(jda, configuration))
+			commandManager.registerCommand(BungeeAccountCommand(jda, configuration))
 		}
 
 		// Java Discord API
@@ -69,8 +71,8 @@ class IonProxy : Plugin() {
 			// Discord Commands
 			val jdaCommandManager = JDACommandManager(jda, configuration)
 
-			jdaCommandManager.registerGuildCommand(AccountCommand(jda, configuration))
-			jdaCommandManager.registerGuildCommand(InfoCommand())
+			jdaCommandManager.registerGuildCommand(DiscordAccountCommand(configuration))
+			jdaCommandManager.registerGuildCommand(DiscordInfoCommand())
 			jdaCommandManager.registerGuildCommand(PlayerListCommand(proxy))
 			jdaCommandManager.registerGuildCommand(ResyncCommand(configuration))
 

@@ -11,7 +11,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 
 @Suppress("Unused")
 @CommandAlias("info|map|wiki")
-class InfoCommand : BaseCommand() {
+class BungeeInfoCommand : BaseCommand() {
 	@Default
 	fun onInfoCommand(sender: ProxiedPlayer) {
 		sender.sendMessage(

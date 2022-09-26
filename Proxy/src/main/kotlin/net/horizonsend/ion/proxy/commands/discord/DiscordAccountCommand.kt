@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 @Suppress("Unused")
 @CommandAlias("account")
 @Description("Manage the link between your Minecraft and Discord account.")
-class AccountCommand(private val configuration: ProxyConfiguration) {
+class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 	@Subcommand("status")
 	@Description("Check linked Minecraft account.")
 	fun onStatusCommand(event: SlashCommandInteractionEvent) {
