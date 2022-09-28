@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
 	compileOnly("io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT")
+
 	compileOnly("com.github.NuVotifier.NuVotifier:nuvotifier-api:2.7.2")
 	compileOnly("com.github.NuVotifier.NuVotifier:nuvotifier-bungeecord:2.7.2")
 

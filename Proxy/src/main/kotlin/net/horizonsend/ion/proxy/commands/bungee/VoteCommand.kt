@@ -15,24 +15,23 @@ import net.md_5.bungee.api.chat.HoverEvent
 @Suppress("Unused")
 @CommandAlias("vote|votes|votesites")
 class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand() {
-
 	@Default
 	fun onVoteCommand(sender: CommandSender) {
 		val siteList = ComponentBuilder("Voting Websites").color(ChatColor.DARK_GREEN)
 
 		PlayerData[sender.name]?.voteTimes?.forEach {
-			val siteName = configuration.voteSites[it.key]
-			val color = if ((it.value - System.currentTimeMillis()) <= 8400000) { ChatColor.GREEN } else ChatColor.RED
-
-			siteList
-				.append(
-					ComponentBuilder("$siteName/n")
+			siteList.append(
+					ComponentBuilder(configuration.voteSites[it.key] + "/n")
 						.event(HoverEvent(HoverEvent.Action.valueOf(it.key)))
 						.event(ClickEvent(ClickEvent.Action.OPEN_URL, it.key))
-						.color(color)
+						//Get last vote time from current configuration value.
+						.color(if ((PlayerData[sender.name]?.voteTimes?.getValue(it.toString())?.minus(System.currentTimeMillis()))!! <= 8400000)
+						//Color chat if >24 hours.
+						{ ChatColor.GREEN } else ChatColor.RED)
 						.create()
 				)
 			}
+
 		sender.sendMessage(*siteList.create())
 	}
 }
