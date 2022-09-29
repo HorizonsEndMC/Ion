@@ -14,7 +14,7 @@ dependencies {
 
 	api("co.aikar:acf-core:0.5.1-SNAPSHOT")
 
-	api("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
+	api("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
 
 	api("org.jetbrains.exposed:exposed-core:0.39.2")
 	api("org.jetbrains.exposed:exposed-jdbc:0.39.2")
