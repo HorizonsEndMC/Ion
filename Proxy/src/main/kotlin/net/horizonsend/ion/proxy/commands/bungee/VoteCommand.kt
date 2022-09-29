@@ -10,6 +10,7 @@ import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.hover.content.Text
 
 
 @Suppress("Unused")
@@ -17,17 +18,21 @@ import net.md_5.bungee.api.chat.HoverEvent
 class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand() {
 	@Default
 	fun onVoteCommand(sender: CommandSender) {
-		val siteList = ComponentBuilder("Voting Websites").color(ChatColor.DARK_GREEN)
+		val siteList = ComponentBuilder("Voting Websites" + ChatColor.GOLD).color(ChatColor.GOLD).underlined(true)
 
-		PlayerData[sender.name]?.voteTimes?.forEach {
+		configuration.voteSites.forEach {
 			siteList.append(
-					ComponentBuilder(configuration.voteSites[it.key] + "/n")
-						.event(HoverEvent(HoverEvent.Action.valueOf(it.key)))
+					ComponentBuilder("\n\n"+ it.value + "\n")
+						.color(ChatColor.YELLOW).underlined(false)
+						.append(it.key + "\n").underlined(true)
+						.event(HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(it.key)))
 						.event(ClickEvent(ClickEvent.Action.OPEN_URL, it.key))
 						//Get last vote time from current configuration value.
-						.color(if ((PlayerData[sender.name]?.voteTimes?.getValue(it.toString())?.minus(System.currentTimeMillis()))!! <= 8400000)
-						//Color chat if >24 hours.
-						{ ChatColor.GREEN } else ChatColor.RED)
+						.color(if (PlayerData[sender.name]?.voteTimes?.containsKey(it.toString()) == true) {
+							if ((PlayerData[sender.name]?.voteTimes?.getValue(it.key)?.minus(System.currentTimeMillis()))!! <= 8400000)
+						//Color chat red if >24 hours.
+						{ ChatColor.GREEN } else ChatColor.RED
+						} else {ChatColor.RED})
 						.create()
 				)
 			}
