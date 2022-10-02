@@ -7,27 +7,12 @@ import net.horizonsend.ion.common.database.collections.PlayerData
 import java.io.File
 import net.horizonsend.ion.common.loadConfiguration
 import org.bson.UuidRepresentation
-import org.jetbrains.exposed.sql.Database
 import org.litote.kmongo.KMongo.createClient
 import org.litote.kmongo.util.KMongoJacksonFeature
 import java.lang.System.setProperty
 
 fun initializeDatabase(dataDirectory: File) {
-	val originalConfiguration: OriginalDatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "common.conf")
-
 	val configuration: DatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "database.conf")
-
-	when (originalConfiguration.databaseType) {
-		DatabaseType.SQLITE ->
-			Database.connect(
-				"jdbc:sqlite:${dataDirectory.resolve("shared/database.db").absolutePath}",
-				"org.sqlite.JDBC"
-			)
-
-		DatabaseType.MYSQL -> originalConfiguration.databaseDetails.run {
-			Database.connect("jdbc:mysql://$host:$port/$database", "com.mysql.cj.jdbc.Driver", username, password)
-		}
-	}
 
 	setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
@@ -44,4 +29,24 @@ fun initializeDatabase(dataDirectory: File) {
 	val database = client.getDatabase(configuration.databaseName)
 
 	PlayerData.initialize(database)
+
+	// Begin Temporary Migration Code
+	val originalConfiguration: OriginalDatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "common.conf")
+
+	if (originalConfiguration.databaseType == DatabaseType.MYSQL) {
+		originalConfiguration.databaseDetails.run {
+			org.jetbrains.exposed.sql.Database.connect("jdbc:mysql://$host:$port/$database", "com.mysql.cj.jdbc.Driver", username, password)
+		}
+
+		org.jetbrains.exposed.sql.transactions.transaction {
+			for (playerData in net.horizonsend.ion.common.database.sql.PlayerData.all()) {
+				PlayerData[playerData.id.value].update {
+					discordId = playerData.discordUUID
+					minecraftUsername = playerData.mcUsername
+					achievements = playerData.achievements.toMutableList()
+				}
+			}
+		}
+	}
+	// End Temporary Migration Code
 }
