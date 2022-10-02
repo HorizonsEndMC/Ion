@@ -17,6 +17,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.sin
 import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackAction
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -117,7 +118,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processManualFlight(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot?.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			starship.pilot?.sendFeedbackAction(FeedbackType.USER_ERROR,"This ship type is not capable of moving.")
 			return
 		}
 
@@ -136,7 +137,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processDirectControl(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot!!.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			starship.pilot!!.sendFeedbackAction(FeedbackType.USER_ERROR,"This ship type is not capable of moving.")
 			return
 		}
 
@@ -272,7 +273,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processSneakFlight(pilot: Player, starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			pilot.sendMessage(Component.text("This ship type is not capable of moving.", NamedTextColor.RED))
+			pilot.sendFeedbackAction(FeedbackType.USER_ERROR,"This ship type is not capable of moving.")
 			return
 		}
 
