@@ -3,6 +3,8 @@ package net.starlegacy.feature.starship.hyperspace
 import kotlin.math.log10
 import kotlin.math.sqrt
 import net.horizonsend.ion.core.events.HyperspaceEnterEvent
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackAction
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -49,12 +51,7 @@ object Hyperspace : SLComponent() {
 		}
 		if (starship.type == PLATFORM) {
 			starship.onlinePassengers.forEach {
-				it.sendMessage(
-					Component.text(
-						"This ship type is not capable of moving.",
-						NamedTextColor.RED
-					)
-				)
+				it.sendFeedbackAction(FeedbackType.USER_ERROR,"This ship type is not capable of moving.")
 			}
 			return
 		}

@@ -3,6 +3,8 @@ package net.starlegacy.feature.starship.control
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackAction
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.starlegacy.SLComponent
@@ -142,7 +144,7 @@ object StarshipCruising : SLComponent() {
 
 	fun startCruising(player: Player, starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			player.sendMessage(text("This ship type is not capable of moving.", RED))
+			player.sendFeedbackAction(FeedbackType.USER_ERROR,"This ship type is not capable of moving.")
 			return
 		}
 
@@ -186,7 +188,7 @@ object StarshipCruising : SLComponent() {
 
 	fun stopCruising(player: Player, starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			player.sendMessage(text("This ship type is not capable of moving.", RED))
+			player.sendFeedbackAction(FeedbackType.USER_ERROR,"This ship type is not capable of moving.")
 			return
 		}
 
