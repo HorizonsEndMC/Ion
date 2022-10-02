@@ -12,7 +12,6 @@ import net.horizonsend.ion.proxy.managers.LinkManager
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("Unused")
 @CommandAlias("account")
@@ -65,7 +64,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 
 	@Subcommand("unlink")
 	@Description("Unlink Discord account.")
-	fun onUnlinkCommand(sender: ProxiedPlayer) = transaction {
+	fun onUnlinkCommand(sender: ProxiedPlayer) {
 		val playerData = PlayerData[sender.uniqueId]
 
 		if (playerData.discordId == null) {
@@ -74,7 +73,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 					.color(ChatColor.of("#ff8844"))
 					.create()
 			)
-			return@transaction
+			return
 		}
 
 		jda.getGuildById(configuration.discordServer)!!.apply {
