@@ -3,6 +3,7 @@ package net.horizonsend.ion.server
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.Achievement
 import net.horizonsend.ion.common.initializeCommon
+import net.horizonsend.ion.core.bridge
 import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
 import net.horizonsend.ion.server.utilities.ionCore
 import org.bukkit.Keyed
@@ -23,6 +24,8 @@ import net.horizonsend.ion.server.listeners.ioncore.*
 class IonServer : JavaPlugin() {
 	override fun onEnable() {
 		initializeCommon(dataFolder)
+
+		bridge = BridgeImplementation()
 
 		val pluginManager = server.pluginManager
 
