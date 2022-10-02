@@ -16,12 +16,5 @@ dependencies {
 
 	api("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
 
-	api("org.jetbrains.exposed:exposed-core:0.39.2")
-	api("org.jetbrains.exposed:exposed-jdbc:0.39.2")
-	api("org.jetbrains.exposed:exposed-dao:0.39.2")
-
-	api("org.xerial:sqlite-jdbc:3.39.3.0")
-	api("mysql:mysql-connector-java:8.0.30")
-
 	implementation("org.litote.kmongo:kmongo:4.7.1")
 }

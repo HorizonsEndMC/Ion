@@ -13,24 +13,6 @@ import java.lang.System.setProperty
 fun initializeDatabase(dataDirectory: File) {
 	val configuration: DatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "database.conf")
 
-	// Begin Temporary Migration Code
-	val originalConfiguration: OriginalDatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "common.conf")
-
-	val allPlayerData = mutableListOf<net.horizonsend.ion.common.database.sql.PlayerData>()
-
-	if (originalConfiguration.databaseType == OriginalDatabaseConfiguration.DatabaseType.MYSQL) {
-		val database = originalConfiguration.databaseDetails.run {
-			org.jetbrains.exposed.sql.Database.connect("jdbc:mysql://$host:$port/$database", "com.mysql.cj.jdbc.Driver", username, password)
-		}
-
-		org.jetbrains.exposed.sql.transactions.transaction(database) {
-			for (playerData in net.horizonsend.ion.common.database.sql.PlayerData.all()) {
-				allPlayerData.add(playerData)
-			}
-		}
-	}
-	// End Temporary Migration Code
-
 	setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
 	KMongoJacksonFeature.setUUIDRepresentation(UuidRepresentation.STANDARD)
@@ -46,14 +28,4 @@ fun initializeDatabase(dataDirectory: File) {
 	val database = client.getDatabase(configuration.databaseName)
 
 	PlayerData.initialize(database)
-
-	// Begin Temporary Migration Code
-	for (playerData in allPlayerData) {
-		PlayerData[playerData.id.value].update {
-			discordId = playerData.discordUUID
-			minecraftUsername = playerData.mcUsername
-			achievements = playerData.achievements.toMutableList()
-		}
-	}
-	// End Temporary Migration Code
 }
