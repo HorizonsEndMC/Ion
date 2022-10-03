@@ -13,10 +13,10 @@ import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-@Suppress("Unused")
 @CommandAlias("account")
 @Description("Manage the link between your Minecraft and Discord account.")
 class BungeeAccountCommand(private val jda: JDA, private val configuration: ProxyConfiguration) : BaseCommand() {
+	@Suppress("Unused")
 	@Subcommand("status")
 	@Description("Check linked Discord account.")
 	fun onStatusCommand(sender: ProxiedPlayer) {
@@ -62,6 +62,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("unlink")
 	@Description("Unlink Discord account.")
 	fun onUnlinkCommand(sender: ProxiedPlayer) {
@@ -93,6 +94,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("link")
 	@Description("Link Discord account.")
 	fun onLinkCommand(sender: ProxiedPlayer) = sender.sendMessage(

@@ -9,10 +9,10 @@ import net.md_5.bungee.api.chat.ClickEvent.Action
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-@Suppress("Unused")
 @CommandAlias("info|map|wiki")
 class BungeeInfoCommand : BaseCommand() {
 	@Default
+	@Suppress("Unused")
 	fun onInfoCommand(sender: ProxiedPlayer) {
 		sender.sendMessage(
 			*ComponentBuilder()

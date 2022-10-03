@@ -18,17 +18,21 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
-import net.horizonsend.ion.proxy.listeners.bungee.LoginListener
-import net.horizonsend.ion.proxy.listeners.bungee.PlayerDisconnectListener
-import net.horizonsend.ion.proxy.listeners.bungee.ProxyPingListener
-import net.horizonsend.ion.proxy.listeners.bungee.VoteListener
+import net.horizonsend.ion.proxy.listeners.LoginListener
+import net.horizonsend.ion.proxy.listeners.PlayerDisconnectListener
+import net.horizonsend.ion.proxy.listeners.ProxyPingListener
+import net.horizonsend.ion.proxy.listeners.VotifierListener
 import net.md_5.bungee.api.plugin.Plugin
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
-	private val configuration: ProxyConfiguration = loadConfiguration(dataFolder, "proxy.conf")
+	// Static accessors because we're evil
+	companion object { lateinit var plugin: IonProxy }
+	init { plugin = this }
 
-	private val jda = try {
+	val configuration: ProxyConfiguration = loadConfiguration(dataFolder, "proxy.conf")
+
+	val jda = try {
 		JDABuilder.createLight(configuration.discordBotToken)
 			.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
 			.setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -36,7 +40,7 @@ class IonProxy : Plugin() {
 			.disableCache(CacheFlag.values().toList())
 			.setEnableShutdownHook(false)
 			.build()
-	}  catch (_: Exception) {
+	}  catch (e: Exception) {
 		slF4JLogger.warn("Failed to start JDA as it was unable to login to Discord!")
 		null
 	}
@@ -52,7 +56,7 @@ class IonProxy : Plugin() {
 		jda?.let {
 			pluginManager.registerListener(this, LoginListener(configuration, jda))
 			pluginManager.registerListener(this, PlayerDisconnectListener(jda, configuration))
-			pluginManager.registerListener(this, VoteListener(configuration))
+			pluginManager.registerListener(this, VotifierListener(configuration))
 		}
 
 		// Minecraft Command Registration

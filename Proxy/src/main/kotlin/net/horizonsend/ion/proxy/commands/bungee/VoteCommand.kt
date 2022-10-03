@@ -10,10 +10,10 @@ import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-@Suppress("Unused")
 @CommandAlias("vote|votes|votesites")
 class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand() {
 	@Default
+	@Suppress("Unused")
 	fun onVoteCommand(sender: ProxiedPlayer) {
 		val playerData = PlayerData[sender.uniqueId]
 

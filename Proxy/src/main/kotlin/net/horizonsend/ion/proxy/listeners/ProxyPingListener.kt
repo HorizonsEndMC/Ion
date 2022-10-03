@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.listeners.bungee
+package net.horizonsend.ion.proxy.listeners
 
 import java.net.URL
 import javax.imageio.ImageIO
@@ -12,7 +12,6 @@ import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
-@Suppress("Unused")
 class ProxyPingListener(private val proxy: ProxyServer, private val configuration: ProxyConfiguration) : Listener {
 	private val version = ServerPing.Protocol("1.19.2", 760)
 

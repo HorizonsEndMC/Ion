@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.proxy.messageEmbed
 
-@Suppress("Unused")
 @CommandAlias("info")
 @Description("List of useful links.")
 class DiscordInfoCommand {

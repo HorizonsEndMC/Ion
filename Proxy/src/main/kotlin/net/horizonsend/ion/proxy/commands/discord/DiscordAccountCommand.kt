@@ -11,10 +11,10 @@ import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.messageEmbed
 
-@Suppress("Unused")
 @CommandAlias("account")
 @Description("Manage the link between your Minecraft and Discord account.")
 class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
+	@Suppress("Unused")
 	@Subcommand("status")
 	@Description("Check linked Minecraft account.")
 	fun onStatusCommand(event: SlashCommandInteractionEvent) {
@@ -32,6 +32,7 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 			.queue()
 	}
 
+	@Suppress("Unused")
 	@Subcommand("unlink")
 	@Description("Unlink Minecraft account.")
 	fun onUnlinkCommand(event: SlashCommandInteractionEvent) {
@@ -44,6 +45,7 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 			.queue()
 	}
 
+	@Suppress("Unused")
 	@Subcommand("link")
 	@Description("Link Minecraft account.")
 	fun onLinkCommand(event: SlashCommandInteractionEvent, @Name("code") @Description("Link Code") code: String) {

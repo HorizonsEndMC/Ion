@@ -8,11 +8,11 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ProxyServer
 
-@Suppress("Unused")
 @CommandAlias("playerlist")
 @Description("List online players.")
 class PlayerListCommand(private val proxy: ProxyServer) {
 	@Default
+	@Suppress("Unused")
 	fun onPlayerListCommand(event: SlashCommandInteractionEvent) {
 		event.replyEmbeds(
 			messageEmbed(
