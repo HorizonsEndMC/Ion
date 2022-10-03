@@ -27,7 +27,7 @@ class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand()
 			siteList.append(
 				ComponentBuilder("\n\n$name\n")
 					.color(ChatColor.YELLOW).underlined(false)
-					.append("$url\n").underlined(true)
+					.append(url).underlined(true)
 					.event(ClickEvent(ClickEvent.Action.OPEN_URL, url))
 					.color(colour)
 					.create()
