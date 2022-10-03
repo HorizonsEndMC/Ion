@@ -8,11 +8,11 @@ import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.messageEmbed
 
-@Suppress("Unused")
 @CommandAlias("resync")
 @Description("Resync all roles")
 class ResyncCommand(private val configuration: ProxyConfiguration) {
 	@Default
+	@Suppress("Unused")
 	fun onResyncCommand(event: SlashCommandInteractionEvent) {
 		if (event.user.idLong != 521031433972744193) {
 			event.replyEmbeds(messageEmbed(title = "You do not have permission to use this command.", color = 0xff8844))

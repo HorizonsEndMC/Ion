@@ -1,25 +1,20 @@
-package net.horizonsend.ion.proxy.listeners.bungee
+package net.horizonsend.ion.proxy.listeners
 
 import net.dv8tion.jda.api.JDA
 import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.proxy.ProxyConfiguration
-import net.md_5.bungee.api.event.LoginEvent
+import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
-@Suppress("Unused")
-class LoginListener(private val configuration: ProxyConfiguration, private val jda: JDA) : Listener {
+class PlayerDisconnectListener(private val jda: JDA, private val configuration: ProxyConfiguration) : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onLoginEvent(event: LoginEvent) {
-		val memberId = PlayerData[event.connection.uniqueId]
-			.update { minecraftUsername = event.connection.name }
-			.discordId ?: return
-
+	fun onPlayerDisconnectEvent(event: PlayerDisconnectEvent) {
+		val memberId = PlayerData[event.player.uniqueId].discordId ?: return
 		val guild = jda.getGuildById(configuration.discordServer) ?: return
 
-		guild.addRoleToMember(
+		guild.removeRoleFromMember(
 			guild.getMemberById(memberId) ?: return,
 			guild.getRoleById(configuration.onlineRole) ?: return
 		).queue()
