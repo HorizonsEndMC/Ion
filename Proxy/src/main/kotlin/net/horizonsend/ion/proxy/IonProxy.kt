@@ -46,11 +46,11 @@ class IonProxy : Plugin() {
 		val pluginManager = proxy.pluginManager
 
 		pluginManager.registerListener(this, ProxyPingListener(proxy, configuration))
+		pluginManager.registerListener(this, VotifierListener(configuration))
 
 		jda?.let {
 			pluginManager.registerListener(this, LoginListener(configuration, jda))
 			pluginManager.registerListener(this, PlayerDisconnectListener(jda, configuration))
-			pluginManager.registerListener(this, VotifierListener(configuration))
 		}
 
 		// Minecraft Command Registration
