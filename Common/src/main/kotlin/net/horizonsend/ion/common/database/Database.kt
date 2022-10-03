@@ -2,7 +2,6 @@ package net.horizonsend.ion.common.database
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
-import net.horizonsend.ion.common.database.OriginalDatabaseConfiguration.DatabaseType
 import net.horizonsend.ion.common.database.collections.PlayerData
 import java.io.File
 import net.horizonsend.ion.common.loadConfiguration
@@ -33,12 +32,12 @@ fun initializeDatabase(dataDirectory: File) {
 	// Begin Temporary Migration Code
 	val originalConfiguration: OriginalDatabaseConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "common.conf")
 
-	if (originalConfiguration.databaseType == DatabaseType.MYSQL) {
-		originalConfiguration.databaseDetails.run {
+	if (originalConfiguration.databaseType == OriginalDatabaseConfiguration.DatabaseType.MYSQL) {
+		val database = originalConfiguration.databaseDetails.run {
 			org.jetbrains.exposed.sql.Database.connect("jdbc:mysql://$host:$port/$database", "com.mysql.cj.jdbc.Driver", username, password)
 		}
 
-		org.jetbrains.exposed.sql.transactions.transaction {
+		org.jetbrains.exposed.sql.transactions.transaction(database) {
 			for (playerData in net.horizonsend.ion.common.database.sql.PlayerData.all()) {
 				PlayerData[playerData.id.value].update {
 					discordId = playerData.discordUUID
