@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.database.initializeDatabase
 import net.horizonsend.ion.common.loadConfiguration
 import net.md_5.bungee.api.plugin.Plugin
+import net.md_5.bungee.api.ProxyServer
 
 // Special Exception Wildcard Imports
 import net.horizonsend.ion.proxy.commands.bungee.*
@@ -24,6 +25,8 @@ class IonProxy : Plugin() {
 	// Static accessors because we're evil
 	companion object {
 		lateinit var plugin: IonProxy
+
+		val proxy: ProxyServer get() = plugin.proxy
 
 		val configuration get() = plugin.configuration
 		val jda: JDA? get() = plugin.jda
@@ -52,7 +55,7 @@ class IonProxy : Plugin() {
 		val pluginManager = proxy.pluginManager
 
 		pluginManager.registerListener(this, LoginListener())
-		pluginManager.registerListener(this, ProxyPingListener(proxy, configuration))
+		pluginManager.registerListener(this, ProxyPingListener())
 		pluginManager.registerListener(this, VotifierListener(configuration))
 
 		jda?.let {
