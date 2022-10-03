@@ -8,6 +8,7 @@ data class ProxyConfiguration(
 	val motdFirstLine: String = "",
 	val linkBypassRole: Long = 0,
 	val discordServer: Long = 0,
+	val globalChannel: Long = 0,
 	val unlinkedRole: Long = 0,
 	val linkedRole: Long = 0,
 	val onlineRole: Long = 0,
