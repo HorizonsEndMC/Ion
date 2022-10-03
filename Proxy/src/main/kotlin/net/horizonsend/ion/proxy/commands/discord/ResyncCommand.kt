@@ -78,12 +78,18 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 			}
 
 			playerData?.let {
-				if (member.user.name != it.minecraftUsername && member.nickname != it.minecraftUsername) {
-					member.modifyNickname(it.minecraftUsername).queue()
-					changeLog += "- Set nickname of ${member.asMention} to \"${it.minecraftUsername}\""
-				} else {
-					member.modifyNickname(null).queue()
-					changeLog += "- Removed nickname of ${member.asMention}"
+				try {
+					if (member.effectiveName != it.minecraftUsername) {
+						member.modifyNickname(it.minecraftUsername).queue()
+						changeLog += "- Updated name of ${member.asMention}"
+					} else {
+						if (member.nickname != null) {
+							member.modifyNickname(null).queue()
+							changeLog += "- Updated name of ${member.asMention}"
+						}
+					}
+				} catch (exception: Exception) {
+					exception.printStackTrace()
 				}
 			}
 		}
