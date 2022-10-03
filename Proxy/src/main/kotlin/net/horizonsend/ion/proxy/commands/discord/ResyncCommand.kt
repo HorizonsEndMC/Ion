@@ -76,6 +76,13 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 				guild.removeRoleFromMember(member, unlinkedRole).queue()
 				changeLog += "- Removed ${unlinkedRole.asMention} from ${member.asMention}"
 			}
+
+			playerData?.let {
+				if (member.user.name != it.minecraftUsername && member.nickname != it.minecraftUsername) {
+					member.modifyNickname(it.minecraftUsername).queue()
+					changeLog += "- Set nickname of ${member.asMention} to \"${it.minecraftUsername}\""
+				}
+			}
 		}
 
 		if (changeLog.isEmpty()) {
