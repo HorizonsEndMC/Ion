@@ -31,7 +31,7 @@ class ServerConnectListener : Listener {
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
-							title = "Welcome ${event.player.name} to the server!",
+							description = "Welcome ${event.player.name} to the server!",
 							color = ChatColor.GOLD.color.rgb
 						)
 					).queue()
@@ -52,7 +52,7 @@ class ServerConnectListener : Listener {
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
-							title = "[+ ${event.target.name}] ${event.player.name}",
+							description = "[+ ${event.target.name}] ${event.player.name}",
 							color = ChatColor.GREEN.color.rgb
 						)
 					).queue()
@@ -89,7 +89,7 @@ class ServerConnectListener : Listener {
 
 				globalChannel.sendMessageEmbeds(
 					messageEmbed(
-						title = "[> ${event.target.name}] ${event.player.name}",
+						description = "[> ${event.target.name}] ${event.player.name}",
 						color = ChatColor.BLUE.color.rgb
 					)
 				).queue()
