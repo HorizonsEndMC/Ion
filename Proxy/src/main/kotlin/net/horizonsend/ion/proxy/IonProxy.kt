@@ -11,18 +11,12 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.database.initializeDatabase
 import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.proxy.commands.bungee.BungeeAccountCommand
-import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
-import net.horizonsend.ion.proxy.commands.bungee.VoteCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
-import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
-import net.horizonsend.ion.proxy.listeners.LoginListener
-import net.horizonsend.ion.proxy.listeners.PlayerDisconnectListener
-import net.horizonsend.ion.proxy.listeners.ProxyPingListener
-import net.horizonsend.ion.proxy.listeners.VotifierListener
 import net.md_5.bungee.api.plugin.Plugin
+
+// Special Exception Wildcard Imports
+import net.horizonsend.ion.proxy.commands.bungee.*
+import net.horizonsend.ion.proxy.commands.discord.*
+import net.horizonsend.ion.proxy.listeners.*
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
