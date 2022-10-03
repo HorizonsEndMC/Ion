@@ -2,6 +2,7 @@ package net.horizonsend.ion.proxy.listeners
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.proxy.IonProxy
+import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.event.PlayerDisconnectEvent
@@ -21,6 +22,17 @@ class PlayerDisconnectListener : Listener {
 				.append(ComponentBuilder(event.player.displayName).color(ChatColor.WHITE).create())
 				.create()
 		)
+
+		IonProxy.jda?.let { jda ->
+			val globalChannel = jda.getTextChannelById(IonProxy.configuration.globalChannel) ?: return@let
+
+			globalChannel.sendMessageEmbeds(
+				messageEmbed(
+					title = "[- ${event.player.server.info.name}] ${event.player.name}",
+					color = ChatColor.RED.color.rgb
+				)
+			).queue()
+		}
 
 		IonProxy.jda?.let { jda ->
 			val discordId = PlayerData[event.player.uniqueId].discordId ?: return
