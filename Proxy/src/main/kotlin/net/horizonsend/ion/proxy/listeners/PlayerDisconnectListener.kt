@@ -1,22 +1,21 @@
 package net.horizonsend.ion.proxy.listeners
 
-import net.dv8tion.jda.api.JDA
 import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.proxy.ProxyConfiguration
+import net.horizonsend.ion.proxy.IonProxy
 import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
-class PlayerDisconnectListener(private val jda: JDA, private val configuration: ProxyConfiguration) : Listener {
+class PlayerDisconnectListener : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onPlayerDisconnectEvent(event: PlayerDisconnectEvent) {
-		val memberId = PlayerData[event.player.uniqueId].discordId ?: return
-		val guild = jda.getGuildById(configuration.discordServer) ?: return
+		val discordId = PlayerData[event.player.uniqueId].discordId ?: return
+		val guild = IonProxy.jda!!.getGuildById(IonProxy.configuration.discordServer) ?: return
 
 		guild.removeRoleFromMember(
-			guild.getMemberById(memberId) ?: return,
-			guild.getRoleById(configuration.onlineRole) ?: return
+			guild.getMemberById(discordId) ?: return,
+			guild.getRoleById(IonProxy.configuration.onlineRole) ?: return
 		).queue()
 	}
 }

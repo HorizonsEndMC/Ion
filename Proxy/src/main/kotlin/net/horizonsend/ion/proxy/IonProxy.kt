@@ -56,7 +56,7 @@ class IonProxy : Plugin() {
 		pluginManager.registerListener(this, VotifierListener(configuration))
 
 		jda?.let {
-			pluginManager.registerListener(this, PlayerDisconnectListener(jda, configuration))
+			pluginManager.registerListener(this, PlayerDisconnectListener())
 		}
 
 		// Minecraft Command Registration
