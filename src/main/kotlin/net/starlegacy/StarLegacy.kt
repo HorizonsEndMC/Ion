@@ -34,7 +34,6 @@ import net.starlegacy.command.misc.DyeCommand
 import net.starlegacy.command.misc.GToggleCommand
 import net.starlegacy.command.misc.GlobalGameRuleCommand
 import net.starlegacy.command.misc.ListCommand
-import net.starlegacy.command.misc.PlanetSpawnMenuCommand
 import net.starlegacy.command.misc.PlayerInfoCommand
 import net.starlegacy.command.misc.ShuttleCommand
 import net.starlegacy.command.misc.TransportDebugCommand
@@ -94,7 +93,6 @@ import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.CustomRecipes
 import net.starlegacy.feature.misc.Decomposers
 import net.starlegacy.feature.misc.GameplayTweaks
-import net.starlegacy.feature.misc.PlanetSpawns
 import net.starlegacy.feature.misc.Shuttles
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.nations.NationsBalancing
@@ -270,8 +268,6 @@ class StarLegacy : JavaPlugin() {
 			Bazaars,
 			Merchants,
 
-			PlanetSpawns,
-
 			Hyperspace,
 			DeactivatedPlayerStarships,
 			ActiveStarships,
@@ -375,7 +371,6 @@ class StarLegacy : JavaPlugin() {
 			CustomItemCommand,
 			ListCommand,
 			TransportDebugCommand,
-			PlanetSpawnMenuCommand,
 			ShuttleCommand,
 			BuyXPCommand,
 			RainbowProjectileCommand,
