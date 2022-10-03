@@ -1,6 +1,7 @@
 package net.horizonsend.ion.proxy
 
 import co.aikar.commands.BungeeCommandManager
+import net.dv8tion.jda.api.JDA
 import java.util.concurrent.TimeUnit
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
@@ -21,7 +22,12 @@ import net.horizonsend.ion.proxy.listeners.*
 @Suppress("Unused")
 class IonProxy : Plugin() {
 	// Static accessors because we're evil
-	companion object { lateinit var plugin: IonProxy }
+	companion object {
+		lateinit var plugin: IonProxy
+
+		val configuration get() = plugin.configuration
+		val jda: JDA? get() = plugin.jda
+	}
 	init { plugin = this }
 
 	val configuration: ProxyConfiguration = loadConfiguration(dataFolder, "proxy.conf")
@@ -45,11 +51,11 @@ class IonProxy : Plugin() {
 		// Listener Registration
 		val pluginManager = proxy.pluginManager
 
+		pluginManager.registerListener(this, LoginListener())
 		pluginManager.registerListener(this, ProxyPingListener(proxy, configuration))
 		pluginManager.registerListener(this, VotifierListener(configuration))
 
 		jda?.let {
-			pluginManager.registerListener(this, LoginListener(configuration, jda))
 			pluginManager.registerListener(this, PlayerDisconnectListener(jda, configuration))
 		}
 
