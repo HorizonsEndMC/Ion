@@ -58,22 +58,20 @@ class IonProxy : Plugin() {
 		pluginManager.registerListener(this, ProxyPingListener())
 		pluginManager.registerListener(this, VotifierListener())
 
-		jda?.let {
-			pluginManager.registerListener(this, PlayerDisconnectListener())
-		}
-
 		// Minecraft Command Registration
 		val commandManager = BungeeCommandManager(this)
 
 		commandManager.registerCommand(VoteCommand(configuration))
 		commandManager.registerCommand(BungeeInfoCommand())
 
+		// Discord
 		jda?.let {
-			commandManager.registerCommand(BungeeAccountCommand(jda, configuration))
-		}
+			// Listeners
+			pluginManager.registerListener(this, PlayerDisconnectListener())
 
-		// Java Discord API
-		jda?.let {
+			// Commands
+			commandManager.registerCommand(BungeeAccountCommand(jda, configuration))
+
 			// Discord Commands
 			val jdaCommandManager = JDACommandManager(jda, configuration)
 
@@ -88,20 +86,21 @@ class IonProxy : Plugin() {
 			proxy.scheduler.schedule(this, {
 				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${proxy.onlineCount} players!"))
 			}, 0, 5, TimeUnit.SECONDS)
-		}
 
-		removeOnlineRoleFromEveryone()
+			removeOnlineRoleFromEveryone()
+		}
 	}
 
 	override fun onDisable() {
-		removeOnlineRoleFromEveryone()
-
-		jda?.shutdown()
+		jda?.run {
+			removeOnlineRoleFromEveryone()
+			shutdown()
+		}
 	}
 
-	private fun removeOnlineRoleFromEveryone() = jda?.let {
-		val guild = jda.getGuildById(configuration.discordServer) ?: return@let
-		val role = guild.getRoleById(configuration.onlineRole) ?: return@let
+	private fun removeOnlineRoleFromEveryone() {
+		val guild = jda!!.getGuildById(configuration.discordServer) ?: return
+		val role = guild.getRoleById(configuration.onlineRole) ?: return
 
 		guild.getMembersWithRoles(role).forEach { member ->
 			guild.removeRoleFromMember(member, role).queue()
