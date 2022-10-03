@@ -74,11 +74,6 @@ class IonProxy : Plugin() {
 
 		// Java Discord API
 		jda?.let {
-			// Prune Inactive Members
-			jda.getRoleById(configuration.unlinkedRole)?.let {
-				jda.getGuildById(configuration.discordServer)?.prune(30, it)
-			}
-
 			// Discord Commands
 			val jdaCommandManager = JDACommandManager(jda, configuration)
 
