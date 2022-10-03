@@ -56,7 +56,7 @@ class IonProxy : Plugin() {
 
 		pluginManager.registerListener(this, LoginListener())
 		pluginManager.registerListener(this, ProxyPingListener())
-		pluginManager.registerListener(this, VotifierListener(configuration))
+		pluginManager.registerListener(this, VotifierListener())
 
 		jda?.let {
 			pluginManager.registerListener(this, PlayerDisconnectListener())
