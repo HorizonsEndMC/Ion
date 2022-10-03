@@ -83,7 +83,7 @@ class ResyncCommand(private val configuration: ProxyConfiguration) {
 						member.modifyNickname(it.minecraftUsername).queue()
 						changeLog += "- Updated name of ${member.asMention}"
 					} else {
-						if (member.nickname != null) {
+						if (member.nickname == member.user.name) {
 							member.modifyNickname(null).queue()
 							changeLog += "- Updated name of ${member.asMention}"
 						}
