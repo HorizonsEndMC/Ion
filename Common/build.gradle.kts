@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-	api("org.spongepowered:configurate-hocon:4.1.0")
+	api("org.spongepowered:configurate-hocon:4.1.2")
 	api("org.spongepowered:configurate-extra-kotlin:4.1.2")
 
 	api("co.aikar:acf-core:0.5.1-SNAPSHOT")
