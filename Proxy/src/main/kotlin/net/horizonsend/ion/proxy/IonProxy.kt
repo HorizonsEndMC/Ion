@@ -55,7 +55,9 @@ class IonProxy : Plugin() {
 		val pluginManager = proxy.pluginManager
 
 		pluginManager.registerListener(this, LoginListener())
+		pluginManager.registerListener(this, PlayerDisconnectListener())
 		pluginManager.registerListener(this, ProxyPingListener())
+		pluginManager.registerListener(this, ServerConnectListener())
 		pluginManager.registerListener(this, VotifierListener())
 
 		// Minecraft Command Registration
@@ -66,9 +68,6 @@ class IonProxy : Plugin() {
 
 		// Discord
 		jda?.let {
-			// Listeners
-			pluginManager.registerListener(this, PlayerDisconnectListener())
-
 			// Commands
 			commandManager.registerCommand(BungeeAccountCommand(jda, configuration))
 
