@@ -44,7 +44,7 @@ object PowerArmorManager {
 					when (module) {
 						PowerArmorModule.SPEED_BOOSTING -> {
 							player.addPotionEffect(
-								PotionEffect(PotionEffectType.SPEED, 20, 2)
+								PotionEffect(PotionEffectType.SPEED, 20, 2, true, true)
 							)
 
 							if (hasMovedInLastSecond(player) && !player.world.name.lowercase(Locale.getDefault())
@@ -56,7 +56,7 @@ object PowerArmorManager {
 
 						PowerArmorModule.NIGHT_VISION -> {
 							player.addPotionEffect(
-								PotionEffect(PotionEffectType.NIGHT_VISION, 1000, 1)
+								PotionEffect(PotionEffectType.NIGHT_VISION, 1000, 1, true, true)
 							)
 						}
 
