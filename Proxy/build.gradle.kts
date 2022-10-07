@@ -20,7 +20,7 @@ dependencies {
 
 	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
 
-	implementation("net.dv8tion:JDA:5.0.0-alpha.20") {
+	implementation("net.dv8tion:JDA:5.0.0-alpha.21") {
 		exclude("opus-java")
 	}
 }
