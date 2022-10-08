@@ -16,7 +16,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
 object PlayerToggleSneakListener : SLEventListener() {
-	@EventHandler(priority = EventPriority.MONITOR)
+	if(ActiveStarships.findByPilot(event.player) != null) return 
 	fun onPlayerToggleSneakEvent(event: PlayerToggleSneakEvent) {
 		ActiveStarships.findByPilot(event.player) ?: return
 		if (event.player.inventory.itemInMainHand.type != Material.CLOCK && !event.isSneaking) return
