@@ -31,7 +31,7 @@ class ServerConnectListener : Listener {
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
-							description = "Welcome ${event.player.name} to the server!",
+							description = "Welcome ${event.player.name.replace("_", "\\_")} to the server!",
 							color = ChatColor.GOLD.color.rgb
 						)
 					).queue()
@@ -52,7 +52,7 @@ class ServerConnectListener : Listener {
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
-							description = "[+ ${event.target.name}] ${event.player.name}",
+							description = "[+ ${event.target.name}] ${event.player.name.replace("_", "\\_")}",
 							color = ChatColor.GREEN.color.rgb
 						)
 					).queue()
@@ -89,7 +89,7 @@ class ServerConnectListener : Listener {
 
 				globalChannel.sendMessageEmbeds(
 					messageEmbed(
-						description = "[> ${event.target.name}] ${event.player.name}",
+						description = "[> ${event.target.name}] ${event.player.name.replace("_", "\\_")}",
 						color = ChatColor.BLUE.color.rgb
 					)
 				).queue()
