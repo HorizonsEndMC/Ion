@@ -28,7 +28,7 @@ class PlayerDisconnectListener : Listener {
 
 			globalChannel.sendMessageEmbeds(
 				messageEmbed(
-					description = "[- ${event.player.server.info.name}] ${event.player.name}",
+					description = "[- ${event.player.server.info.name}] ${event.player.name.replace("_", "\\_")}",
 					color = ChatColor.RED.color.rgb
 				)
 			).queue()
