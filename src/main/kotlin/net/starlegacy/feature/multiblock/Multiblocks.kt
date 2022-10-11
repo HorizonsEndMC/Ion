@@ -3,8 +3,11 @@ package net.starlegacy.feature.multiblock
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.core.events.MultiblockDetectEvent
-import net.horizonsend.ion.core.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
+import net.horizonsend.ion.core.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
+import net.horizonsend.ion.core.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
+import net.horizonsend.ion.core.starshipweapon.multiblock.CthulhuBeamMultiblockSide
 import net.horizonsend.ion.core.starshipweapon.multiblock.SonicMissileWeaponMultiblock
+import net.horizonsend.ion.core.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.starlegacy.PLUGIN
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
@@ -66,9 +69,7 @@ import net.starlegacy.feature.multiblock.starshipweapon.heavy.HorizontalRocketSt
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.PhaserStarshipWeaponMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.UpwardRocketStarshipWeaponMultiblock
-import net.starlegacy.feature.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockBottom
-import net.starlegacy.feature.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockSide
-import net.starlegacy.feature.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockTop
+import net.starlegacy.feature.multiblock.starshipweapon.misc.*
 import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomHeavyTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomLightTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomTriTurretMultiblock
@@ -167,6 +168,9 @@ object Multiblocks : SLComponent() {
 			PointDefenseStarshipWeaponMultiblockTop,
 			PointDefenseStarshipWeaponMultiblockSide,
 			PointDefenseStarshipWeaponMultiblockBottom,
+			CthulhuBeamMultiblockBottom,
+			EnderCrystalStarshipWeaponMultiblockTop,
+			CthulhuBeamMultiblockSide,
 			TopLightTurretMultiblock,
 			BottomLightTurretMultiblock,
 			TopHeavyTurretMultiblock,

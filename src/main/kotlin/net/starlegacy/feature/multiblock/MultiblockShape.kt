@@ -297,6 +297,8 @@ class MultiblockShape {
 
 		fun furnace() = type(Material.FURNACE)
 		fun dispenser() = type(Material.DISPENSER)
+		fun lodestone() = type(Material.LODESTONE)
+		fun noteBlock() = type(Material.NOTE_BLOCK)
 
 		fun machineFurnace() = complete { block, inward ->
 			val blockData = block.getNMSBlockData()
