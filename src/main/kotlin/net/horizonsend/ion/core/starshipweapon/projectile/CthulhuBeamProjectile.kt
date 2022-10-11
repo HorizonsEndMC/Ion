@@ -2,8 +2,10 @@ package net.horizonsend.ion.core.starshipweapon.projectile
 
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
-import org.bukkit.*
-import org.bukkit.entity.*
+import org.bukkit.Location
+import org.bukkit.entity.EnderCrystal
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class CthulhuBeamProjectile(
