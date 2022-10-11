@@ -278,7 +278,7 @@ object StarshipControl : SLComponent() {
 		}
 
 		if (Hyperspace.isWarmingUp(starship)) {
-			starship.pilot?.sendFeedbackMessage(FeedbackType.USER_ERROR, "Cannot move while in hyperspace warmup.")
+			starship.pilot?.sendFeedbackAction(FeedbackType.USER_ERROR, "Cannot move while in hyperspace warmup.")
 			return
 		}
 
