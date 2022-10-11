@@ -69,7 +69,9 @@ import net.starlegacy.feature.multiblock.starshipweapon.heavy.HorizontalRocketSt
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.PhaserStarshipWeaponMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.UpwardRocketStarshipWeaponMultiblock
-import net.starlegacy.feature.multiblock.starshipweapon.misc.*
+import net.starlegacy.feature.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockBottom
+import net.starlegacy.feature.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockSide
+import net.starlegacy.feature.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockTop
 import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomHeavyTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomLightTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomTriTurretMultiblock
