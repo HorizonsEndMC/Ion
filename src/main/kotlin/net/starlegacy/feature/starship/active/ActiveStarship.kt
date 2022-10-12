@@ -105,6 +105,10 @@ abstract class ActiveStarship(
 
 	var rainbowtoggle = false
 
+	var randomTarget = false
+
+	var randomTargetBlacklist: MutableSet<UUID> = mutableSetOf()
+
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
 		isInterdicting = value
