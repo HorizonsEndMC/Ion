@@ -68,7 +68,6 @@ abstract class RayTracedProjectile(
 
 		visualize(loc, targetLocation)
 		if (tryImpact(result)) impact(targetLocation, block, entity)
-		loc.world.sendMessage(MiniMessage.miniMessage().deserialize("$result"))
 	}
 
 	abstract fun visualize(loc: Location, targetLocation: Location)
