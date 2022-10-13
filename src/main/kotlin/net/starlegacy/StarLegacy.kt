@@ -10,6 +10,7 @@ import net.horizonsend.ion.core.NewPlayerProtection
 import net.horizonsend.ion.core.commands.AdminCommands
 import net.horizonsend.ion.core.commands.GracePeriod
 import net.horizonsend.ion.core.commands.RainbowProjectileCommand
+import net.horizonsend.ion.core.commands.RandomTargetCommand
 import net.horizonsend.ion.core.commands.Starships
 import net.horizonsend.ion.core.listeners.BowHitListener
 import net.horizonsend.ion.core.listeners.PlayerJoinListener
@@ -374,6 +375,7 @@ class StarLegacy : JavaPlugin() {
 			ShuttleCommand,
 			BuyXPCommand,
 			RainbowProjectileCommand,
+			RandomTargetCommand,
 
 			SettlementCommand,
 			NationCommand,
