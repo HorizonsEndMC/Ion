@@ -7,99 +7,90 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
+// Special Exception Wildcard Imports
+import org.bukkit.Material.*
+
 val forbiddenCraftingItems = enumSetOf(
-	Material.WARPED_FUNGUS_ON_A_STICK, Material.NETHERITE_AXE, Material.NETHERITE_HOE, Material.NETHERITE_SWORD,
-	Material.NETHERITE_PICKAXE, Material.NETHERITE_SHOVEL
+	WARPED_FUNGUS_ON_A_STICK, NETHERITE_PICKAXE, NETHERITE_SHOVEL, NETHERITE_SWORD, NETHERITE_AXE, NETHERITE_HOE
 )
 
 fun initializeCrafting() {
-	/**
-	 * Recipes
-	 */
 	// Prismarine Bricks
-	Bukkit.addRecipe(
-		FurnaceRecipe(
-			NamespacedKey(plugin, "prismarine_bricks_recipe"),
-			ItemStack(Material.PRISMARINE_BRICKS),
-			Material.PRISMARINE,
-			1f,
-			200
-		)
-	)
+	furnaceRecipe("prismarine_bricks", PRISMARINE_BRICKS, PRISMARINE, 1f, 200)
 
 	// Bell
-	Bukkit.addRecipe(ShapedRecipe(NamespacedKey(plugin, "bell_recipe"), ItemStack(Material.BELL)).apply {
-		shape("wow", "szs", "zzz")
-		setIngredient('w', RecipeChoice.MaterialChoice(Material.STICK))
-		setIngredient('o', RecipeChoice.MaterialChoice(Material.OAK_LOG))
-		setIngredient('s', RecipeChoice.MaterialChoice(Material.IRON_BLOCK))
-		setIngredient('z', RecipeChoice.MaterialChoice(Material.GOLD_BLOCK))
-	})
+	shapedRecipe("bell", BELL, "sos", "igi", "ggg") {
+		setIngredient('g', GOLD_BLOCK)
+		setIngredient('i', IRON_BLOCK)
+		setIngredient('o', OAK_LOG)
+		setIngredient('s', STICK)
+	}
 
 	// Enderpearl
-	Bukkit.addRecipe(ShapedRecipe(NamespacedKey(plugin, "enderpearl_recipe"), ItemStack(Material.ENDER_PEARL)).apply {
-		shape("wow", "oso", "wow")
-		setIngredient('w', RecipeChoice.MaterialChoice(Material.OBSIDIAN))
-		setIngredient('o', RecipeChoice.MaterialChoice(Material.EMERALD))
-		setIngredient('s', RecipeChoice.MaterialChoice(Material.DIAMOND_BLOCK))
-	})
+	shapedRecipe("enderpearl", ENDER_PEARL, "oeo", "ede", "oeo") {
+		setIngredient('d', DIAMOND_BLOCK)
+		setIngredient('o', OBSIDIAN)
+		setIngredient('e', EMERALD)
+	}
 
 	// Gunpowder
-	Bukkit.addRecipe(ShapelessRecipe(NamespacedKey(plugin, "gunpowder_recipe"), ItemStack(Material.GUNPOWDER)).apply {
-		addIngredient(Material.REDSTONE)
-		addIngredient(Material.FLINT)
-		addIngredient(Material.SAND)
-		addIngredient(Material.CHARCOAL)
-	})
+	shapelessRecipe(
+		"gunpowder",
+		GUNPOWDER,
+		arrayOf(REDSTONE, FLINT, SAND, CHARCOAL)
+	)
 
 	// Wool -> String
-	arrayOf(
-		Material.WHITE_WOOL, Material.ORANGE_WOOL, Material.MAGENTA_WOOL, Material.LIGHT_BLUE_WOOL,
-		Material.YELLOW_WOOL, Material.LIME_WOOL, Material.PINK_WOOL, Material.GRAY_WOOL, Material.LIGHT_GRAY_WOOL,
-		Material.CYAN_WOOL, Material.PURPLE_WOOL, Material.BLUE_WOOL, Material.BROWN_WOOL, Material.GREEN_WOOL,
-		Material.RED_WOOL, Material.BLACK_WOOL
-	).forEach {
-		Bukkit.addRecipe(
-			ShapelessRecipe(
-				NamespacedKey(plugin, "${it.name.lowercase()}_string_recipe"),
-				ItemStack(Material.STRING, 4)
-			).apply {
-				addIngredient(1, it)
-			}
-		)
+	val wool = arrayOf(
+		LIGHT_BLUE_WOOL, LIGHT_GRAY_WOOL, MAGENTA_WOOL, ORANGE_WOOL, PURPLE_WOOL, YELLOW_WOOL, BLACK_WOOL, BROWN_WOOL,
+		GREEN_WOOL, WHITE_WOOL, BLUE_WOOL, CYAN_WOOL, GRAY_WOOL, LIME_WOOL, PINK_WOOL, RED_WOOL
+	)
+
+	for (material in wool) {
+		shapelessRecipe(material.name.lowercase(), ItemStack(STRING, 4), arrayOf(material))
 	}
 
 	// Saddle
-	Bukkit.addRecipe(ShapedRecipe(NamespacedKey(plugin, "Saddle_Recipe"), ItemStack(Material.SADDLE)).apply {
-		shape("lll", "tat")
-		setIngredient('l', Material.LEATHER)
-		setIngredient('t', Material.TRIPWIRE)
-		setIngredient('a', Material.AIR)
-	})
+	shapedRecipe("saddle", SADDLE, "lll", "tat") {
+		setIngredient('l', LEATHER)
+		setIngredient('t', TRIPWIRE)
+		setIngredient('a', AIR)
+	}
 
-	//black dye
-	Bukkit.addRecipe(ShapelessRecipe(NamespacedKey(plugin, "Coal_Black_Dye_Recipe"), ItemStack(Material.BLACK_DYE)).apply {
-		addIngredient(1, Material.COAL)
-	})
+	// Black Dye
+	shapelessRecipe("black_dye", BLACK_DYE, arrayOf(COAL))
 
-	// Sea Lanterns -> Prismarine Crystals
-	val recipe = ShapelessRecipe(
-		NamespacedKey(plugin, "prismarine_crystals"),
-		ItemStack(Material.PRISMARINE_CRYSTALS, 4)
-	)
-
-	recipe.addIngredient(Material.SEA_LANTERN)
-
-	Bukkit.addRecipe(recipe)
+	// Prismarine Crystals
+	shapelessRecipe("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), arrayOf(SEA_LANTERN))
 
 	// Remove Unwanted Vanilla Recipes
-	forbiddenCraftingItems.forEach { material ->
-		Bukkit.getRecipesFor(ItemStack(material)).forEach {
-			if (it is Keyed) Bukkit.removeRecipe(it.key)
+	for (material in forbiddenCraftingItems) {
+		for (recipe in Bukkit.getRecipesFor(ItemStack(material))) {
+			if (recipe is Keyed) Bukkit.removeRecipe(recipe.key)
 		}
 	}
+}
+
+private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {
+	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(plugin, name), ItemStack(result), source, experience, cookingTime))
+}
+
+private fun shapedRecipe(name: String, result: Material, vararg shape: String, execute: ShapedRecipe.() -> Unit) {
+	val recipe = ShapedRecipe(NamespacedKey(plugin, name), ItemStack(result))
+	execute(recipe)
+	recipe.shape(*shape)
+	Bukkit.addRecipe(recipe)
+}
+
+private fun shapelessRecipe(name: String, result: ItemStack, ingredients: Array<Material>) {
+	val recipe = ShapelessRecipe(NamespacedKey(plugin, name), result)
+	for (ingredient in ingredients) recipe.addIngredient(ingredient)
+	Bukkit.addRecipe(recipe)
+}
+
+private fun shapelessRecipe(name: String, result: Material, ingredients: Array<Material>) {
+	shapelessRecipe(name, ItemStack(result), ingredients)
 }
