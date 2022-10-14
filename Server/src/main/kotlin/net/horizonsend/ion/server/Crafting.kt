@@ -22,7 +22,9 @@ fun initializeCrafting() {
 	furnaceRecipe("prismarine_bricks", PRISMARINE_BRICKS, PRISMARINE, 1f, 200)
 
 	// Bell
-	shapedRecipe("bell", BELL, "sos", "igi", "ggg") {
+	shapedRecipe("bell", BELL) {
+		shape("sos", "igi", "ggg")
+
 		setIngredient('g', GOLD_BLOCK)
 		setIngredient('i', IRON_BLOCK)
 		setIngredient('o', OAK_LOG)
@@ -30,18 +32,16 @@ fun initializeCrafting() {
 	}
 
 	// Enderpearl
-	shapedRecipe("enderpearl", ENDER_PEARL, "oeo", "ede", "oeo") {
+	shapedRecipe("enderpearl", ENDER_PEARL) {
+		shape("oeo", "ede", "oeo")
+
 		setIngredient('d', DIAMOND_BLOCK)
 		setIngredient('o', OBSIDIAN)
 		setIngredient('e', EMERALD)
 	}
 
 	// Gunpowder
-	shapelessRecipe(
-		"gunpowder",
-		GUNPOWDER,
-		arrayOf(REDSTONE, FLINT, SAND, CHARCOAL)
-	)
+	shapelessRecipe("gunpowder", GUNPOWDER, arrayOf(REDSTONE, FLINT, SAND, CHARCOAL))
 
 	// Wool -> String
 	val wool = arrayOf(
@@ -54,7 +54,9 @@ fun initializeCrafting() {
 	}
 
 	// Saddle
-	shapedRecipe("saddle", SADDLE, "lll", "tat") {
+	shapedRecipe("saddle", SADDLE) {
+		shape("lll", "tat")
+
 		setIngredient('l', LEATHER)
 		setIngredient('t', TRIPWIRE)
 		setIngredient('a', AIR)
@@ -78,10 +80,9 @@ private fun furnaceRecipe(name: String, result: Material, source: Material, expe
 	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(plugin, name), ItemStack(result), source, experience, cookingTime))
 }
 
-private fun shapedRecipe(name: String, result: Material, vararg shape: String, execute: ShapedRecipe.() -> Unit) {
+private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
 	val recipe = ShapedRecipe(NamespacedKey(plugin, name), ItemStack(result))
 	execute(recipe)
-	recipe.shape(*shape)
 	Bukkit.addRecipe(recipe)
 }
 
