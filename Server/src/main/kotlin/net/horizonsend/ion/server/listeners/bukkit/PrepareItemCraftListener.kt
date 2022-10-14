@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import net.horizonsend.ion.server.utilities.forbiddenCraftingItems
+import net.horizonsend.ion.server.forbiddenCraftingItems
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
