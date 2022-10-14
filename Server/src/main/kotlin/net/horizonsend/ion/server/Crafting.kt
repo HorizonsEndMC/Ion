@@ -86,6 +86,16 @@ fun initializeCrafting() {
 		addIngredient(1, Material.COAL)
 	})
 
+	// Sea Lanterns -> Prismarine Crystals
+	val recipe = ShapelessRecipe(
+		NamespacedKey(plugin, "prismarine_crystals"),
+		ItemStack(Material.PRISMARINE_CRYSTALS, 4)
+	)
+
+	recipe.addIngredient(Material.SEA_LANTERN)
+
+	Bukkit.addRecipe(recipe)
+
 	// Remove Unwanted Vanilla Recipes
 	forbiddenCraftingItems.forEach { material ->
 		Bukkit.getRecipesFor(ItemStack(material)).forEach {
