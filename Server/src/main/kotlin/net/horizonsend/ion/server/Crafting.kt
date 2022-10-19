@@ -31,18 +31,6 @@ fun initializeCrafting() {
 		setIngredient('s', STICK)
 	}
 
-	// Enderpearl
-	shapedRecipe("enderpearl", ENDER_PEARL) {
-		shape("oeo", "ede", "oeo")
-
-		setIngredient('d', DIAMOND_BLOCK)
-		setIngredient('o', OBSIDIAN)
-		setIngredient('e', EMERALD)
-	}
-
-	// Gunpowder
-	shapelessRecipe("gunpowder", GUNPOWDER, arrayOf(REDSTONE, FLINT, SAND, CHARCOAL))
-
 	// Wool -> String
 	val wool = arrayOf(
 		LIGHT_BLUE_WOOL, LIGHT_GRAY_WOOL, MAGENTA_WOOL, ORANGE_WOOL, PURPLE_WOOL, YELLOW_WOOL, BLACK_WOOL, BROWN_WOOL,
@@ -61,9 +49,6 @@ fun initializeCrafting() {
 		setIngredient('t', TRIPWIRE)
 		setIngredient('a', AIR)
 	}
-
-	// Black Dye
-	shapelessRecipe("black_dye", BLACK_DYE, arrayOf(COAL))
 
 	// Prismarine Crystals
 	shapelessRecipe("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), arrayOf(SEA_LANTERN))
@@ -90,8 +75,4 @@ private fun shapelessRecipe(name: String, result: ItemStack, ingredients: Array<
 	val recipe = ShapelessRecipe(NamespacedKey(plugin, name), result)
 	for (ingredient in ingredients) recipe.addIngredient(ingredient)
 	Bukkit.addRecipe(recipe)
-}
-
-private fun shapelessRecipe(name: String, result: Material, ingredients: Array<Material>) {
-	shapelessRecipe(name, ItemStack(result), ingredients)
 }
