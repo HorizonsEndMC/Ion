@@ -2,14 +2,6 @@ plugins {
 	id("org.jetbrains.kotlin.jvm")
 }
 
-repositories {
-	mavenCentral()
-
-	maven("https://repo.papermc.io/repository/maven-public/")
-	maven("https://repo.aikar.co/content/groups/aikar/")
-	maven("https://jitpack.io") // Votifier
-}
-
 dependencies {
 	compileOnly("io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT")
 

@@ -13,7 +13,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 
 fun Player.rewardAchievement(achievement: Achievement) {
-	ionCore { if (!SETTINGS.master) return }
+	if (!SETTINGS.master) return
 
 	val playerData = PlayerData[this.uniqueId]
 	if (playerData.achievements.contains(achievement)) return
@@ -23,11 +23,11 @@ fun Player.rewardAchievement(achievement: Achievement) {
 	}
 
 	vaultEconomy { it.depositPlayer(this, achievement.creditReward.toDouble()) }
-	ionCore {
-		SLXP.addAsync(this, achievement.experienceReward, false)
-		if (achievement.chetheriteReward > 0) {
-			inventory.addItem(CustomItems.MINERAL_CHETHERITE.itemStack(achievement.chetheriteReward))
-		}
+
+	SLXP.addAsync(this, achievement.experienceReward, false)
+
+	if (achievement.chetheriteReward > 0) {
+		inventory.addItem(CustomItems.MINERAL_CHETHERITE.itemStack(achievement.chetheriteReward))
 	}
 
 	showTitle(

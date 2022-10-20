@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server
 
+import net.horizonsend.ion.server.IonServer.Companion.plugin
 import net.horizonsend.ion.server.utilities.enumSetOf
 import org.bukkit.Bukkit
 import org.bukkit.Keyed

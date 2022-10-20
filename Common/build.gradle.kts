@@ -2,12 +2,6 @@ plugins {
 	id("org.jetbrains.kotlin.jvm")
 }
 
-repositories {
-	mavenCentral()
-
-	maven("https://repo.aikar.co/content/groups/aikar/")
-}
-
 dependencies {
 	api("org.spongepowered:configurate-hocon:4.1.2")
 	api("org.spongepowered:configurate-extra-kotlin:4.1.2")

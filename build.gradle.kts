@@ -4,32 +4,36 @@ plugins {
 	id("com.github.johnrengelman.shadow") version "7.1.2"
 	id("io.papermc.paperweight.userdev") version "1.3.8"
 	id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-	id("org.jetbrains.kotlin.jvm") version "1.7.20"
-	id("xyz.jpenilla.run-paper") version "1.0.6"
+	kotlin("jvm") version "1.7.20"
 }
 
-repositories {
-	mavenCentral()
+allprojects {
+	repositories {
+		mavenCentral()
 
-	maven("https://repo.papermc.io/repository/maven-public/")
-	maven("https://repo.aikar.co/content/groups/aikar/")
+		maven("https://repo.codemc.io/repository/maven-snapshots/")
+		maven("https://repo.papermc.io/repository/maven-public/")
+		maven("https://nexus.scarsz.me/content/groups/public/")
+		maven("https://repo.aikar.co/content/groups/aikar/")
+		maven("https://maven.citizensnpcs.co/repo")
+		maven("https://m2.dv8tion.net/releases")
+		maven("https://jitpack.io")
+	}
 }
 
 dependencies {
-	paperDevBundle("1.19.2-R0.1-SNAPSHOT") // Userdev needs to be on the root module otherwise run-paper won't work.
+	paperDevBundle("1.19.2-R0.1-SNAPSHOT")
 
-	implementation(project(":Server"))
 	implementation(project(":Proxy"))
+	implementation(project(":Server"))
 }
 
 tasks.reobfJar {
 	outputJar.set(file(rootProject.projectDir.absolutePath + "/build/Ion.jar"))
 }
 
-tasks.runServer { minecraftVersion("1.19.2") }
-
 tasks.prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
-tasks.build { dependsOn("reobfJar"); dependsOn("shadowJar") }
+tasks.build { dependsOn(":reobfJar"); dependsOn("shadowJar") }
 
 tasks.compileKotlin { kotlinOptions { jvmTarget = "17" } }
 

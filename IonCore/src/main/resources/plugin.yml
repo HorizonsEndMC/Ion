@@ -1,9 +1,0 @@
-main: net.starlegacy.StarLegacy
-name: IonCore
-version: SNAPSHOT
-api-version: 1.19
-load: POSTWORLD
-authors: [ PeterCrawley, MicleBrick ]
-website: https://horizonsend.net/
-depend: [ WorldEdit ]
-softdepend: [ LuckPerms, Vault, Citizens, DiscordSRV, dynmap ]
