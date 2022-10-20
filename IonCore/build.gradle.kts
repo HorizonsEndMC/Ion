@@ -30,7 +30,7 @@ dependencies {
 	implementation("io.github.config4k:config4k:0.5.0")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("redis.clients:jedis:3.7.1")
+	implementation("redis.clients:jedis:4.3.1")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.5.8")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
