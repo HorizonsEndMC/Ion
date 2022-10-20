@@ -8,7 +8,6 @@ pluginManagement {
 
 rootProject.name = "Ion"
 
-include("IonCore")
 include("Proxy")
 include("Server")
 include("Common")

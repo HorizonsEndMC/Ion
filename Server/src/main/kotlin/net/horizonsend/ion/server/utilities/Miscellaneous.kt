@@ -4,15 +4,6 @@ import java.util.EnumSet
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 
-@Deprecated("IonCore Compatibility")
-inline fun ionCore(execute: () -> Unit) {
-	if (!Bukkit.getPluginManager().isPluginEnabled("IonCore")) return
-	try {
-		execute()
-	} catch (_: NoClassDefFoundError) {
-	}
-}
-
 inline fun vaultEconomy(execute: (Economy) -> Unit) {
 	execute(Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider ?: return)
 }
