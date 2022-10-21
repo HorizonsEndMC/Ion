@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.starshipweapon.turret
 
 import java.util.concurrent.TimeUnit
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
@@ -32,7 +32,7 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 		Vec3i(+2, getYFactor() * 4, +3)
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		y(getYFactor() * 2) {
 			z(-1) {
 				x(+0).sponge()

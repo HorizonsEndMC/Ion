@@ -7,7 +7,7 @@ import kotlin.math.max
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.Tasks
@@ -85,7 +85,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) : P
 		line4 = null
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
 				x(-1).anyPipedInventory()

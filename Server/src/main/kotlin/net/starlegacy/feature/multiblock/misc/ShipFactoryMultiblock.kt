@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.misc
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
@@ -26,7 +26,7 @@ object ShipFactoryMultiblock : PowerStoringMultiblock() {
 		sign.setLine(1, player.uniqueId.toString())
 	}
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(+0).ironBlock()

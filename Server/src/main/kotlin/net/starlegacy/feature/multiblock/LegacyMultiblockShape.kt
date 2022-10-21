@@ -43,7 +43,7 @@ import org.bukkit.block.data.type.Slab
 /** Parameters: block, inward */
 private typealias BlockRequirement = (Block, BlockFace) -> Boolean
 
-class MultiblockShape {
+class LegacyMultiblockShape {
 	// Cache of direction to requirement, so it doesn't need to be calculated every time based on the direction
 	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, BlockRequirement>>()
 
@@ -89,7 +89,7 @@ class MultiblockShape {
 		}
 	}
 
-	class Z(private val shape: MultiblockShape, val z: Int) {
+	class Z(private val shape: LegacyMultiblockShape, val z: Int) {
 		fun y(y: Int, block: ZY.() -> Unit) = ZY(shape, z, y).block()
 
 		fun y(yValues: IntProgression, block: ZY.() -> Unit) {
@@ -98,7 +98,7 @@ class MultiblockShape {
 			}
 		}
 
-		class ZY(private val shape: MultiblockShape, val z: Int, val y: Int) {
+		class ZY(private val shape: LegacyMultiblockShape, val z: Int, val y: Int) {
 			fun x(x: Int) = shape.at(x, y, z)
 
 			fun x(xValues: IntProgression, block: RequirementBuilder.() -> Unit) {
@@ -117,7 +117,7 @@ class MultiblockShape {
 		}
 	}
 
-	class Y(private val shape: MultiblockShape, val y: Int) {
+	class Y(private val shape: LegacyMultiblockShape, val y: Int) {
 		fun z(z: Int, block: YZ.() -> Unit) = YZ(shape, y, z).block()
 
 		fun z(zValues: IntProgression, block: YZ.() -> Unit) {
@@ -126,7 +126,7 @@ class MultiblockShape {
 			}
 		}
 
-		class YZ(private val shape: MultiblockShape, val y: Int, val z: Int) {
+		class YZ(private val shape: LegacyMultiblockShape, val y: Int, val z: Int) {
 			fun x(x: Int) = shape.at(x, y, z)
 
 			fun x(xValues: IntProgression, block: RequirementBuilder.() -> Unit) {
@@ -196,7 +196,7 @@ class MultiblockShape {
 	}
 
 	@Suppress("unused")
-	class RequirementBuilder(val shape: MultiblockShape, val right: Int, val upward: Int, val inward: Int) {
+	class RequirementBuilder(val shape: LegacyMultiblockShape, val right: Int, val upward: Int, val inward: Int) {
 		private fun complete(requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, requirement)
 
 		fun type(type: Material) {

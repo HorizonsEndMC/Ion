@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
 import net.starlegacy.feature.multiblock.Multiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.rightFace
 import org.bukkit.Location
 import org.bukkit.block.Block
@@ -19,7 +19,7 @@ abstract class DockingTubeMultiblock(val stateText: String) : Multiblock() {
 		line4 = stateText
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		at(0, 0, 0).anyDoor()
 
 		z(+1) {
@@ -43,7 +43,7 @@ abstract class DockingTubeMultiblock(val stateText: String) : Multiblock() {
 		}
 	}
 
-	abstract fun MultiblockShape.RequirementBuilder.tubeStateExtension()
+	abstract fun LegacyMultiblockShape.RequirementBuilder.tubeStateExtension()
 
 	abstract fun toggle(sign: Sign, player: Player)
 

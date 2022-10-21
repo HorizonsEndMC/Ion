@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.thruster
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.isGlass
 import net.starlegacy.util.isGlassPane
@@ -9,19 +9,19 @@ import org.bukkit.block.BlockFace
 
 enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 	PLASMA(0.75, 2.5, 1) {
-		override fun MultiblockShape.buildStructure() {
+		override fun LegacyMultiblockShape.buildStructure() {
 			at(0, 0, 0).type(Material.REDSTONE_LAMP)
 			at(0, 0, 1).type(Material.REDSTONE_BLOCK)
 		}
 	},
 	ION(0.05, 4.00, 1) {
-		override fun MultiblockShape.buildStructure() {
+		override fun LegacyMultiblockShape.buildStructure() {
 			at(0, 0, 0).type(Material.SEA_LANTERN)
 			at(0, 0, 1).type(Material.SPONGE)
 		}
 	},
 	AFTERBURNER(3.0, 17.5, 5) {
-		override fun MultiblockShape.buildStructure() {
+		override fun LegacyMultiblockShape.buildStructure() {
 			at(0, 0, 0).type(Material.MAGMA_BLOCK)
 			at(0, 0, 1).type(Material.GOLD_BLOCK)
 			at(0, 0, 2).type(Material.SPONGE)
@@ -58,6 +58,6 @@ enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 		return true
 	}
 
-	protected abstract fun MultiblockShape.buildStructure()
-	private val shape by lazy { MultiblockShape().apply { buildStructure() } }
+	protected abstract fun LegacyMultiblockShape.buildStructure()
+	private val shape by lazy { LegacyMultiblockShape().apply { buildStructure() } }
 }

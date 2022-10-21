@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.powerbank
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.Vec3i
 
@@ -18,7 +18,7 @@ object PowerCellMultiblock : PowerStoringMultiblock() {
 
 	override val inputComputerOffset = Vec3i(0, 0, 0)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
 				x(-1).anyGlassPane()

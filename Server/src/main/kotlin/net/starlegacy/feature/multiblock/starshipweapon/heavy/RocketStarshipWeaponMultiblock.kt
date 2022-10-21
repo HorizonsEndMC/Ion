@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.starshipweapon.heavy
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.RocketWeaponSubsystem
@@ -21,7 +21,7 @@ object HorizontalRocketStarshipWeaponMultiblock : RocketStarshipWeaponMultiblock
 		return originalFace
 	}
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
 				x(+0).ironBlock()
@@ -150,7 +150,7 @@ object HorizontalRocketStarshipWeaponMultiblock : RocketStarshipWeaponMultiblock
 sealed class VerticalRocketStarshipWeaponMultiblock : RocketStarshipWeaponMultiblock() {
 	protected abstract fun getYFactor(): Int
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		val yFactor = getYFactor()
 
 		y(yFactor * 0) {

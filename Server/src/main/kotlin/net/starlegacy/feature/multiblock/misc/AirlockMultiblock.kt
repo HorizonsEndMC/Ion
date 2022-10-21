@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.Multiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.block.Sign
@@ -17,7 +17,7 @@ object AirlockMultiblock : Multiblock() {
 		line4 = "&bSolutions, Inc."
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		val xOffset = 1 // sign is a block to the left
 		z(+0) {
 			y(-2) {

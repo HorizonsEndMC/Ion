@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.hyperdrive
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.Vec3i
 
 object HyperdriveMultiblockClass1 : HyperdriveMultiblock() {
@@ -15,7 +15,7 @@ object HyperdriveMultiblockClass1 : HyperdriveMultiblock() {
 
 	override val hyperdriveClass = 1
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		addHoppers(this)
 
 		z(+0) {

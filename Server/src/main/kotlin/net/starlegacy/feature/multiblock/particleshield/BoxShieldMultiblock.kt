@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.particleshield
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.msg
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -58,7 +58,7 @@ object BoxShieldMultiblock : ShieldMultiblock() {
 		line4 = null
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()

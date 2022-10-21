@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.Multiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import org.bukkit.Material
 
 object MagazineMultiblock : Multiblock() {
@@ -13,7 +13,7 @@ object MagazineMultiblock : Multiblock() {
 		"&7-=[&c=&a=&b=&7]=-",
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		y(+0) {
 			z(+0) {
 				x(+0).type(Material.END_PORTAL_FRAME)

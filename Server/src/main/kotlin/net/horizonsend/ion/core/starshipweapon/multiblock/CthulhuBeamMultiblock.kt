@@ -1,6 +1,6 @@
 package net.horizonsend.ion.core.starshipweapon.multiblock
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.horizonsend.ion.core.starshipweapon.primary.CthulhuBeamSubsystem
@@ -19,7 +19,7 @@ sealed class CthulhuBeamMutliblock : SignlessStarshipWeaponMultiblock<CthulhuBea
 object EnderCrystalStarshipWeaponMultiblockTop : CthulhuBeamMutliblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.UP
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		at(+0, +0, +0).noteBlock()
 		at(+0, +1, +0).ironBlock()
 		at(+0, +2, +0).lodestone()
@@ -29,7 +29,7 @@ object EnderCrystalStarshipWeaponMultiblockTop : CthulhuBeamMutliblock() {
 object CthulhuBeamMultiblockBottom : CthulhuBeamMutliblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.DOWN
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		at(+0, +0, +0).noteBlock()
 		at(+0, -1, +0).ironBlock()
 		at(+0, -2, +0).lodestone()
@@ -39,7 +39,7 @@ object CthulhuBeamMultiblockBottom : CthulhuBeamMutliblock() {
 object CthulhuBeamMultiblockSide : CthulhuBeamMutliblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = originalFace
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		at(+0, +0, +0).noteBlock()
 		at(+0, +0, +1).ironBlock()
 		at(+0, +0, +2).lodestone()

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.gravitywell
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 
 object StandardGravityWellMultiblock : GravityWellMultiblock() {
 	override val name = "gravitywell"
@@ -12,7 +12,7 @@ object StandardGravityWellMultiblock : GravityWellMultiblock() {
 		line4 = null
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) { x(+0).anyPipedInventory() }
 

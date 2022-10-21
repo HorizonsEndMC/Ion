@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.powerbank
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
 
@@ -16,7 +16,7 @@ abstract class PowerBankMultiblock(tierText: String) : PowerStoringMultiblock() 
 		line4 = tierText
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).extractor()

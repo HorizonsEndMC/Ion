@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.starshipweapon.heavy
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.TorpedoWeaponSubsystem
@@ -12,7 +12,7 @@ object TorpedoStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Torped
 		return TorpedoWeaponSubsystem(starship, pos, face)
 	}
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		at(+0, +0, +0).sponge()
 		at(+0, +0, +1).sponge()
 		at(+0, +0, +2).dispenser()
