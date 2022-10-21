@@ -5,7 +5,7 @@ import java.io.File
 import java.io.IOException
 import kotlin.math.abs
 import net.starlegacy.feature.multiblock.Multiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.msg
@@ -25,7 +25,7 @@ object MobDefender : Multiblock() {
 		line4 = "MobDefender Co"
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(-1) {
 			y(-1) {
 				x(-1).anyStairs()

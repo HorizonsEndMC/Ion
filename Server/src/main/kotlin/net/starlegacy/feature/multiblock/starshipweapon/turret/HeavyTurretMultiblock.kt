@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.starshipweapon.turret
 
 import java.util.concurrent.TimeUnit
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
@@ -29,7 +29,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(-2) {
 			y(getSign() * 3) {
 				x(-1).anyStairs()

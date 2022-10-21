@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.misc
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -17,7 +17,7 @@ object DecomposerMultiblock : PowerStoringMultiblock() {
 		null
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		at(0, 0, 0).ironBlock()
 		at(0, -1, -1).anyPipedInventory()
 	}

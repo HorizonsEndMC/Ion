@@ -1,7 +1,7 @@
 package net.horizonsend.ion.core.starshipweapon.multiblock
 
 import net.horizonsend.ion.core.starshipweapon.secondary.SonicMissileWeaponSubsystem
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
@@ -9,7 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object SonicMissileWeaponMultiblock : SignlessStarshipWeaponMultiblock<SonicMissileWeaponSubsystem>() {
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
 				x(+0).sponge()

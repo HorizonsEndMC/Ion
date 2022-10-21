@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.particleshield
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 
 object ShieldMultiblockClass08i : SphereShieldMultiblock() {
 	override val signText = createSignText(
@@ -13,7 +13,7 @@ object ShieldMultiblockClass08i : SphereShieldMultiblock() {
 	override val maxRange = 10
 	override val isReinforced: Boolean = true
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).sponge()

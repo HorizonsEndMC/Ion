@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.action
@@ -19,7 +19,7 @@ import org.bukkit.block.data.type.Switch
 import org.bukkit.entity.Player
 
 object ConnectedDockingTubeMultiblock : DockingTubeMultiblock("&2[Connected]".colorize()) {
-	override fun MultiblockShape.RequirementBuilder.tubeStateExtension() = anyGlass()
+	override fun LegacyMultiblockShape.RequirementBuilder.tubeStateExtension() = anyGlass()
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {

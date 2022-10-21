@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.Multiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 
 object TractorBeamMultiblock : Multiblock() {
 	override val name = "tractorbeam"
@@ -13,7 +13,7 @@ object TractorBeamMultiblock : Multiblock() {
 		line4 = "[:->:]"
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		at(+0, +0, +0).anySlab()
 		at(-1, +0, +1).anySlab()
 		at(+1, +0, +1).anySlab()

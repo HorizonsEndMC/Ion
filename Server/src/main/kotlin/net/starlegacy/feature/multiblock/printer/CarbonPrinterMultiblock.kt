@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.printer
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.isConcretePowder
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -15,7 +15,7 @@ object CarbonPrinterMultiblock : PrinterMultiblock() {
 
 	override fun getOutput(product: Material): ItemStack = ItemStack(product, 2)
 
-	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
-	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = type(Material.MAGMA_BLOCK)
-	override fun MultiblockShape.RequirementBuilder.printerProductBlock() = filteredTypes { it.isConcretePowder }
+	override fun LegacyMultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
+	override fun LegacyMultiblockShape.RequirementBuilder.printerCoreBlock() = type(Material.MAGMA_BLOCK)
+	override fun LegacyMultiblockShape.RequirementBuilder.printerProductBlock() = filteredTypes { it.isConcretePowder }
 }

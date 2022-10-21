@@ -6,7 +6,7 @@ import net.starlegacy.feature.misc.getMaxPower
 import net.starlegacy.feature.misc.getPower
 import net.starlegacy.feature.misc.isPowerable
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
 import org.bukkit.block.Furnace
@@ -18,7 +18,7 @@ abstract class ChargerMultiblock(val tierText: String) : PowerStoringMultiblock(
 
 	protected abstract val powerPerSecond: Int
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyGlassPane()

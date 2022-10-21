@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.navigationcomputer
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 
 object NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
 	override val signText = createSignText(
@@ -12,7 +12,7 @@ object NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
 
 	override val baseRange: Int = 150000
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
 				x(-2).anyStairs()

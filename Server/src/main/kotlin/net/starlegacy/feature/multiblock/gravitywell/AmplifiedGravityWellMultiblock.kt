@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.gravitywell
 
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import org.bukkit.Material
 
 object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
@@ -12,7 +12,7 @@ object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
 		line4 = "&8&o[&d&lAmplified&8&o]"
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-2).anyStairs()

@@ -2,7 +2,7 @@ package net.starlegacy.feature.multiblock.misc
 
 import java.util.UUID
 import net.starlegacy.feature.multiblock.Multiblock
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import org.bukkit.ChatColor
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -17,7 +17,7 @@ object CryoPodMultiblock : Multiblock() {
 		line4 = null
 	)
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(-2) {
 			y(-1) {
 				x(0).anyDoor()

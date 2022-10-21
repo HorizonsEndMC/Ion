@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.particleshield
 
 import net.kyori.adventure.text.Component
-import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 
 object ShieldMultiblockClass20 : SphereShieldMultiblock() {
 	override val maxRange = 14
@@ -19,7 +19,7 @@ object ShieldMultiblockClass20 : SphereShieldMultiblock() {
 		return super.matchesSign(modified)
 	}
 
-	override fun MultiblockShape.buildStructure() {
+	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()
