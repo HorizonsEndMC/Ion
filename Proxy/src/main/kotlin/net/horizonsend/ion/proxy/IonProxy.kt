@@ -10,7 +10,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import net.horizonsend.ion.common.database.initializeDatabase
+import net.horizonsend.ion.common.database.closeDatabase
+import net.horizonsend.ion.common.database.openDatabase
 import net.horizonsend.ion.common.loadConfiguration
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.ProxyServer
@@ -49,7 +50,7 @@ class IonProxy : Plugin() {
 	}
 
 	override fun onEnable() {
-		initializeDatabase(dataFolder)
+		openDatabase(dataFolder)
 
 		// Listener Registration
 		val pluginManager = proxy.pluginManager
@@ -90,6 +91,8 @@ class IonProxy : Plugin() {
 	}
 
 	override fun onDisable() {
+		closeDatabase()
+
 		jda?.run {
 			removeOnlineRoleFromEveryone()
 			shutdown()

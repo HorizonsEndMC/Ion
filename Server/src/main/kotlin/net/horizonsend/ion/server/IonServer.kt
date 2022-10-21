@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import net.horizonsend.ion.common.database.closeDatabase
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.database.initializeDatabase
+import net.horizonsend.ion.common.database.openDatabase
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.concurrent.ForkJoinPool
 
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
@@ -15,8 +17,12 @@ class IonServer : JavaPlugin() {
 		@JvmStatic lateinit var plugin: IonServer private set
 	}
 
+	private val openDatabaseFuture = ForkJoinPool.commonPool().submit {
+		openDatabase(dataFolder)
+	}
+
 	override fun onEnable() {
-		initializeDatabase(dataFolder) // Common Database
+		openDatabaseFuture.join()
 
 		val pluginManager = server.pluginManager
 		val commandManager = PaperCommandManager(this)
@@ -31,5 +37,9 @@ class IonServer : JavaPlugin() {
 		legacyEnable(commandManager)
 	}
 
-	override fun onDisable() = legacyDisable()
+	override fun onDisable() {
+		closeDatabase()
+
+		legacyDisable()
+	}
 }
