@@ -22,11 +22,7 @@ data class Config(
 	val redis: Redis = Redis(),
 
 	//@Comment("Settings for chat channels")
-	val chat: Chat = Chat(),
-
-	val vanilla: Boolean = false,
-
-	val dutyModeMonitorWebhook: String? = null,
+	val chat: Chat = Chat()
 ) {
 	data class Mongo(
 		//@Comment("The host IP address of the MongoDB database")
