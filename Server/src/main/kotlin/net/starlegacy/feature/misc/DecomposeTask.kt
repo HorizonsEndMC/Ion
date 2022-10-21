@@ -1,6 +1,7 @@
 package net.starlegacy.feature.misc
 
 import java.util.UUID
+import net.horizonsend.ion.server.ores.Ore
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.starship.isFlyable
@@ -106,7 +107,15 @@ class DecomposeTask(
 				PowerMachines.removePower(sign, 10)
 
 				// get drops BEFORE breaking
-				val drops: Collection<ItemStack> = block.drops
+				var drops: Collection<ItemStack> = block.drops
+
+				val customBlock = CustomBlocks[block] != null
+				var customOre = false
+				Ore.values().forEach { Ore -> if (Ore.blockData == (CustomBlocks[block]?.blockData ?: false)) customOre = true }
+
+				if (customBlock && !customOre) {
+					drops = CustomBlocks[block]?.getDrops()?.toList()!!
+				}
 
 				block.setType(Material.AIR, false)
 
