@@ -42,7 +42,6 @@ services:
     volumes:
       - ./paper:/data
       - ../build/Ion.jar:/plugins/Ion.jar
-      - ../build/IonCore.jar:/plugins/IonCore.jar
       - ./config/paper:/config
     environment:
       TYPE: "PAPER"
