@@ -1,12 +1,13 @@
 package net.starlegacy.feature.misc
 
 import java.util.UUID
+import net.horizonsend.ion.core.feedback.FeedbackType
+import net.horizonsend.ion.core.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.ores.Ore
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.starship.isFlyable
 import net.starlegacy.util.getBlockIfLoaded
-import net.starlegacy.util.msg
 import net.starlegacy.util.nms
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -45,7 +46,7 @@ class DecomposeTask(
 
 		cancel()
 
-		Bukkit.getPlayer(playerID)?.msg("&7Decomposer broke &c${blocksBroken} blocks")
+		Bukkit.getPlayer(playerID)?.sendFeedbackMessage(FeedbackType.INFORMATION, "&7Decomposer broke &c${blocksBroken} blocks.")
 	}
 
 	override fun cancel() {
@@ -73,7 +74,7 @@ class DecomposeTask(
 
 		val storage = DecomposerMultiblock.getStorage(sign)
 
-		var power = PowerMachines.getPower(sign, fast = true)
+		val power = PowerMachines.getPower(sign, fast = true)
 
 		for (offsetUp: Int in 0 until height) {
 			for (offsetForward: Int in 0 until length) {
@@ -100,7 +101,7 @@ class DecomposeTask(
 				}
 
 				if (power < 10) {
-					player msg "&cDecomposer out of power"
+					player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer out of power!")
 					return false
 				}
 
@@ -128,7 +129,7 @@ class DecomposeTask(
 							sign.world.dropItemNaturally(sign.location.toCenterLocation(), drop)
 						}
 
-						player msg "&cDecomposer out of space, dropping items and cancelling decomposition."
+						player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer out of space, dropping items and cancelling decomposition.")
 						return false
 					}
 				}
