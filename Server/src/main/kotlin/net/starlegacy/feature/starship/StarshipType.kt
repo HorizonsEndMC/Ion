@@ -121,7 +121,6 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#800000",
 		overridePermission = "ion.ships.override.80",
-		poweroverrider = 0.0
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
