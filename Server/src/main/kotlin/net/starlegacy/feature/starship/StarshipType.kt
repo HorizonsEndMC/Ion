@@ -225,6 +225,48 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		poweroverrider = 0.0
 	),
+	BATTLECRUISER(
+        	displayName = "Battlecruiser",
+       		minSize = 12000,
+        	maxSize = 20000,
+        	minLevel = 69420,
+        	containerPercent = 0.025,
+        	crateLimitMultiplier = 0.5,
+        	sneakFlyAccelDistance = 5,
+        	maxSneakFlyAccel = 5,
+        	interdictionRange = 2400,
+        	hyperspaceRangeMultiplier = 2.5,
+        	menuItemMaterial = Material.DIAMOND_BLOCK,
+        	isWarship = true
+    ),
+    	BATTLESHIP(
+        	displayName = "Battleship",
+        	minSize = 20000,
+        	maxSize = 32000,
+        	minLevel = 69420,
+        	containerPercent = 0.025,
+        	crateLimitMultiplier = 0.5,
+        	sneakFlyAccelDistance = 5,
+        	maxSneakFlyAccel = 3,
+        	interdictionRange = 2800,
+        	hyperspaceRangeMultiplier = 2.6,
+        	menuItemMaterial = Material.MAGMA_BLOCK,
+        	isWarship = true
+    ),
+    	DREADNOUGHT(
+        	displayName = "Dreadnought",
+        	minSize = 32000,
+        	maxSize = 48000,
+        	minLevel = 69420,
+        	containerPercent = 0.025,
+        	crateLimitMultiplier = 0.5,
+        	sneakFlyAccelDistance = 10,
+        	maxSneakFlyAccel = 2,
+        	interdictionRange = 3200,
+        	hyperspaceRangeMultiplier = 2.7,
+        	menuItemMaterial = Material.EMERALD_BLOCK,
+        	isWarship = true
+    ),
 	UNIDENTIFIEDSHIP(
 		displayName = "UnidentifiedShip",
 		minSize = 25,
