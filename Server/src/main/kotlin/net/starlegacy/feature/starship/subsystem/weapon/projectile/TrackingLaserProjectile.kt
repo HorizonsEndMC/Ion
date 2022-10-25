@@ -34,7 +34,7 @@ abstract class TrackingLaserProjectile(
 	private fun processTarget() {
 		val targetShip = ActiveStarships.findByBlock(originalTarget.toLocation(loc.world))
 		getTargetOrigin = {
-			targetShip?.centerOfMass?.toCenterVector() ?: originalTarget
+			targetShip?.centerOfMassVec3i?.toCenterVector() ?: originalTarget
 		}
 		targetBase = originalTarget.clone().subtract(getTargetOrigin())
 	}

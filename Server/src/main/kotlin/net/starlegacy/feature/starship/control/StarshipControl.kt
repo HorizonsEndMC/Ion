@@ -315,7 +315,7 @@ object StarshipControl : SLComponent() {
 
 	fun locationCheck(starship: ActivePlayerStarship, dx: Int, dy: Int, dz: Int): Boolean {
 		val world = starship.world
-		val newCenter = starship.centerOfMass.toLocation(world).add(dx.d(), dy.d(), dz.d())
+		val newCenter = starship.centerOfMassVec3i.toLocation(world).add(dx.d(), dy.d(), dz.d())
 
 		val planet = Space.getPlanets().asSequence()
 			.filter { it.spaceWorld == world }

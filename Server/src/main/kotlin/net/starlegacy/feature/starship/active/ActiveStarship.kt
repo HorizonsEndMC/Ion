@@ -4,6 +4,8 @@ import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.minecraft.core.BlockPos
+import net.minecraft.server.level.ServerLevel
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -50,24 +52,40 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 
 abstract class ActiveStarship(
-	world: World,
+	serverLevel: ServerLevel,
+
 	var blocks: LongOpenHashSet,
 	val mass: Double,
-	var centerOfMass: Vec3i,
+	var centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
 ) {
 	abstract val type: StarshipType
 
-	var world: World = world
+	var serverLevel: ServerLevel = serverLevel
 		set(value) {
-			ActiveStarships.updateWorld(this, field, value)
+			ActiveStarships.updateWorld(this, field.world, value.world)
 			field = value
+		}
+
+	@Deprecated("Prefer Minecraft - `net.minecraft.server.level.ServerLevel`")
+	var world: World
+		get() = serverLevel.world
+		set(value) {
+			serverLevel = (value as CraftWorld).handle
+		}
+
+	@Deprecated("Prefer Minecraft - `net.minecraft.core.BlockPos`")
+	var centerOfMassVec3i: Vec3i
+		get() = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
+		set(value) {
+			centerOfMass = BlockPos(value.x, value.y, value.z)
 		}
 
 	var isTeleporting: Boolean = false

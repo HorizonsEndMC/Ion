@@ -269,7 +269,7 @@ object StarshipShields : SLComponent() {
 		nmsLevel: Level
 	) {
 		// ignore if it's over 500 blocks away
-		if (starship.centerOfMass.toLocation(world).distanceSquared(location) > 250_000) {
+		if (starship.centerOfMassVec3i.toLocation(world).distanceSquared(location) > 250_000) {
 			return
 		}
 

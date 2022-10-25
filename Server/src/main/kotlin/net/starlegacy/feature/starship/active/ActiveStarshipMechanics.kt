@@ -100,7 +100,7 @@ object ActiveStarshipMechanics : SLComponent() {
 					}
 
 					val targetVec = targetLoc.toVector()
-					val direct = targetVec.clone().subtract(ship.centerOfMass.toCenterVector()).normalize()
+					val direct = targetVec.clone().subtract(ship.centerOfMassVec3i.toCenterVector()).normalize()
 
 					if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > weapon.range.squared()) {
 						continue
@@ -146,7 +146,7 @@ object ActiveStarshipMechanics : SLComponent() {
 					}
 
 					val targetVec = targetLoc.toVector()
-					val direct = targetVec.clone().subtract(ship.centerOfMass.toCenterVector()).normalize()
+					val direct = targetVec.clone().subtract(ship.centerOfMassVec3i.toCenterVector()).normalize()
 					val dir = weapon.getAdjustedDir(direct, targetVec)
 
 					if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > autoWeapon.range.squared() &&

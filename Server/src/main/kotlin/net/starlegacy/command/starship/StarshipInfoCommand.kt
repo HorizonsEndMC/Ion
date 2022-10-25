@@ -89,7 +89,7 @@ object StarshipInfoCommand : SLCommand() {
 		}
 
 		p msg "   &7Hull Integrity:&f ${ship.hullIntegrity().times(100).roundToInt()}%"
-		p msg "   &7Center of Mass:&f ${ship.centerOfMass}"
+		p msg "   &7Center of Mass:&f ${ship.centerOfMassVec3i}"
 
 		val worth = blocks.values
 			.sumOf { StarshipFactories.getPrice(it.blockData) ?: 0.0 }
