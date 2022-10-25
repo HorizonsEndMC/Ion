@@ -145,7 +145,7 @@ object StarshipComputers : SLComponent() {
 
 			pane.addItem(guiButton(Material.GHAST_TEAR) {
 				openTypeMenu(playerClicker, data)
-			}.setName("&fType (${data.type})".colorize()), 2, 0)
+			}.setName("&fType (${data.starshipType})".colorize()), 2, 0)
 
 			val lockDisplayTag = if (data.isLockEnabled) "&aLock Enabled" else "&cLock Disabled"
 

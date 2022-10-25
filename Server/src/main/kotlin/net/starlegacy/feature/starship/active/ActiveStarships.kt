@@ -119,7 +119,7 @@ object ActiveStarships : SLComponent() {
 		}
 
 		playerStarshipData.blockKey = newKey
-		playerStarshipData.world = newWorld.name
+		playerStarshipData.levelName = newWorld.name
 		newMap[newKey] = playerStarshipData
 	}
 

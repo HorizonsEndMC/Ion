@@ -24,7 +24,7 @@ object StarshipInfoCommand : SLCommand() {
 
 		val size = ship.blockCount
 
-		p msg "&b${ship.data.type.displayName} &f($size blocks)"
+		p msg "&b${ship.data.starshipType.displayName} &f($size blocks)"
 		p msg "   &7Mass:&f ${ship.mass}"
 		p msg "   &7World:&f ${ship.world.name}"
 		p msg "   &7Pilot:&f ${ship.pilot?.name}"

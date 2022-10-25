@@ -87,13 +87,13 @@ object BlueprintCommand : SLCommand() {
 			failIf(Blueprint.count(Blueprint::owner eq slPlayerId) > getMaxBlueprints(sender)) {
 				"You can only have up to ${getMaxBlueprints(sender)} blueprints."
 			}
-			Blueprint.create(slPlayerId, name, starship.data.type, pilotLoc, starship.blockCount, data)
+			Blueprint.create(slPlayerId, name, starship.data.starshipType, pilotLoc, starship.blockCount, data)
 			sender msg "&aSaved blueprint $name"
 		} else {
 			val blueprint = getBlueprint(sender, name)
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
-			blueprint.type = starship.data.type
+			blueprint.type = starship.data.starshipType
 			saveBlueprint(blueprint)
 			sender msg "&aUpdated blueprint $name"
 		}

@@ -35,7 +35,6 @@ import net.starlegacy.feature.starship.subsystem.NavCompSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.redis
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.action
 import net.starlegacy.util.distance
 import net.starlegacy.util.msg
 import net.starlegacy.util.normalize
@@ -96,7 +95,7 @@ object MiscStarshipCommands : SLCommand() {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
-		val maxRange: Int = (navComp.multiblock.baseRange * starship.data.type.hyperspaceRangeMultiplier).roundToInt()
+		val maxRange: Int = (navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -118,7 +117,7 @@ object MiscStarshipCommands : SLCommand() {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
-		val maxRange: Int = (navComp.multiblock.baseRange * starship.data.type.hyperspaceRangeMultiplier).roundToInt()
+		val maxRange: Int = (navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
 
 		val cachedPlanet = Space.getPlanet(planet)
 

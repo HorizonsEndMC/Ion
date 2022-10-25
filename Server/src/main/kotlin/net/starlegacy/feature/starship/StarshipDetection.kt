@@ -176,7 +176,7 @@ object StarshipDetection : SLComponent() {
 			if (maxZ == null || maxZ < z) maxZ = z
 		}
 
-		val type = data.type
+		val type = data.starshipType
 
 		// Validate the size
 		val size = blockTypes.size

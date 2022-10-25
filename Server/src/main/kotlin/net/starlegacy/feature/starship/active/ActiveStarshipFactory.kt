@@ -36,7 +36,7 @@ object ActiveStarshipFactory {
 		blocks: LongOpenHashSet,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 	): ActivePlayerStarship {
-		val world = checkNotNull(Bukkit.getWorld(data.world))
+		val world = checkNotNull(Bukkit.getWorld(data.levelName))
 
 		val first = blocks.first()
 		var minX = blockKeyX(first)
