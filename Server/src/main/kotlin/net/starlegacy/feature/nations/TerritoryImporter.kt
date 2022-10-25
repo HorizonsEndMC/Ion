@@ -1,6 +1,6 @@
 package net.starlegacy.feature.nations
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.awt.Point
 import java.awt.Polygon
 import java.io.File
@@ -16,7 +16,7 @@ object TerritoryImporter {
 	private data class ImportData(val label: String, val worldName: String, val polygonData: ByteArray)
 
 	fun importOldTerritories(sender: CommandSender) {
-		val territoryFolder = File(plugin.dataFolder, "territories")
+		val territoryFolder = File(Ion.dataFolder, "territories")
 		if (!territoryFolder.exists()) {
 			sender msg "${territoryFolder.absolutePath} doesn't exist"
 			return

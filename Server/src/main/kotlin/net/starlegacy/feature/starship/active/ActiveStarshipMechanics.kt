@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.active
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -229,7 +229,7 @@ object ActiveStarshipMechanics : SLComponent() {
 	}
 
 	private fun tickPlayers() {
-		for (player in plugin.server.onlinePlayers) {
+		for (player in Ion.server.onlinePlayers) {
 			val starship = ActiveStarships.findByPilot(player)
 			updateDynmapVisibility(player, starship)
 			updateGlowing(player, starship)
@@ -242,7 +242,7 @@ object ActiveStarshipMechanics : SLComponent() {
 		val isNoStarship = starship == null
 		val isHoldingController = StarshipControl.isHoldingController(player)
 		val isInvisible = isNoStarship && !isHoldingController
-		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, plugin)
+		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, Ion)
 	}
 
 	private fun updateGlowing(player: Player, starship: ActivePlayerStarship?) {

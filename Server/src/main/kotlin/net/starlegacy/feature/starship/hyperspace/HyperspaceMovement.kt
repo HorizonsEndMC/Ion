@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import kotlin.math.roundToInt
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -16,7 +16,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 	private var travelled = 0.0
 
 	init {
-		runTaskTimer(plugin, 2, 2)
+		runTaskTimer(Ion, 2, 2)
 	}
 
 	private fun remainingDistance() = distance(x, 0.0, z, dest.x, 0.0, dest.z)

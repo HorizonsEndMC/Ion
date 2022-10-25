@@ -1,6 +1,6 @@
 package net.starlegacy.feature.misc
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
@@ -36,7 +36,7 @@ object CustomRecipes : SLComponent() {
 		vararg shape: String,
 		ingredients: Map<Char, RecipeChoice>
 	): ShapedRecipe {
-		val key = NamespacedKey(plugin, id)
+		val key = NamespacedKey(Ion, id)
 
 		val recipe = ShapedRecipe(key, output)
 
@@ -58,7 +58,7 @@ object CustomRecipes : SLComponent() {
 	): ShapelessRecipe {
 		check(ingredients.isNotEmpty())
 
-		val key = NamespacedKey(plugin, id)
+		val key = NamespacedKey(Ion, id)
 
 		val recipe = ShapelessRecipe(key, output)
 

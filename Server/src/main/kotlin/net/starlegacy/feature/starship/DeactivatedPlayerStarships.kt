@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.util.UUID
 import net.starlegacy.SLComponent
@@ -113,7 +113,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 	}
 
 	override fun onEnable() {
-		for (world in plugin.server.worlds) {
+		for (world in Ion.server.worlds) {
 			load(world)
 		}
 

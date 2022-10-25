@@ -8,7 +8,7 @@ import net.horizonsend.ion.core.events.StationCaptureEvent
 import net.horizonsend.ion.core.events.StationSiegeBeginEvent
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
@@ -90,12 +90,12 @@ object StationSieges : SLComponent() {
 		log.info("Siege quarter change: $lastQuarter -> $newQuarter")
 		lastQuarter = newQuarter
 		lastStations.forEach { lastStationName ->
-			plugin.server.broadcastMessage("&7Space Station &b$lastStationName&7's siege quarter has ended.".colorize())
+			Ion.server.broadcastMessage("&7Space Station &b$lastStationName&7's siege quarter has ended.".colorize())
 		}
 		val stations = Regions.getAllOf<RegionCapturableStation>()
 			.filter { station -> station.siegeTimeFrame == lastQuarter }
 		for (station in stations) {
-			plugin.server.broadcastMessage("&7Space Station &b${station.name}&7's siege quarter has began! It can be besieged for the rest of the hour with /siege".colorize())
+			Ion.server.broadcastMessage("&7Space Station &b${station.name}&7's siege quarter has began! It can be besieged for the rest of the hour with /siege".colorize())
 		}
 		lastStations = stations.map { it.name }
 	}

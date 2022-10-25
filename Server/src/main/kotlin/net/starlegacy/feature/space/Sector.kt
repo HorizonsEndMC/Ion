@@ -1,6 +1,6 @@
 package net.starlegacy.feature.space
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -37,7 +37,7 @@ data class Sector(val angle: Int, val distance: Int) {
 			}
 
 			if (string != "Andromeda") {
-				plugin.logger.warning("Invalid sector $worldName, defaulting to 7b")
+				Ion.logger.warning("Invalid sector $worldName, defaulting to 7b")
 			}
 
 			return Sector(7, getDistance('b'))

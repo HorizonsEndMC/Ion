@@ -8,7 +8,7 @@ import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.CityNPC
@@ -33,7 +33,7 @@ import org.bukkit.event.EventPriority
  * Manages NPCs for cities, handles the synchronization of them with the worlds
  */
 object CityNPCs : SLComponent() {
-	private val isCitizensLoaded get() = plugin.server.pluginManager.isPluginEnabled("Citizens")
+	private val isCitizensLoaded get() = Ion.server.pluginManager.isPluginEnabled("Citizens")
 
 	private lateinit var citizensRegistry: NPCRegistry
 	private val npcTypeMap = mutableMapOf<UUID, CityNPC.Type>()

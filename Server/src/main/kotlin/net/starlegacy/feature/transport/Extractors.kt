@@ -1,7 +1,7 @@
 package net.starlegacy.feature.transport
 
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.nio.file.Files
 import java.util.Timer
@@ -52,7 +52,7 @@ object Extractors : SLComponent() {
 	val BUSY_PIPE_EXTRACTORS: MutableSet<Vec3i> = ConcurrentHashMap.newKeySet()
 
 	override fun onEnable() {
-		plugin.server.worlds.forEach(Extractors::loadExtractors)
+		Ion.server.worlds.forEach(Extractors::loadExtractors)
 
 		Tasks.asyncRepeat(20 * 2, 20 * 2) {
 			worldDataMap.keys.forEach { saveExtractors(it) }
@@ -88,7 +88,7 @@ object Extractors : SLComponent() {
 	}
 
 	override fun onDisable() {
-		plugin.server.worlds.forEach(Extractors::unloadExtractors)
+		Ion.server.worlds.forEach(Extractors::unloadExtractors)
 		timer.cancel()
 	}
 

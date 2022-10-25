@@ -1,7 +1,7 @@
 package net.starlegacy.feature.tutorial
 
 import com.destroystokyo.paper.Title
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.UUID
@@ -255,7 +255,7 @@ object TutorialManager : SLComponent() {
 	}
 
 	private fun loadShip(loc: Location) {
-		val file = File(plugin.dataFolder, "tutorial_ship.schematic")
+		val file = File(Ion.dataFolder, "tutorial_ship.schematic")
 
 		if (!file.exists()) {
 			error("${file.absolutePath} doesn't exist!")

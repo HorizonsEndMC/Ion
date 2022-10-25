@@ -8,7 +8,7 @@ import net.horizonsend.ion.core.starshipweapon.multiblock.CthulhuBeamMultiblockB
 import net.horizonsend.ion.core.starshipweapon.multiblock.CthulhuBeamMultiblockSide
 import net.horizonsend.ion.core.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.core.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
@@ -205,7 +205,7 @@ object Multiblocks : SLComponent() {
 
 	fun all(): List<Multiblock> = multiblocks
 
-	val multiblockNamespacedKey = NamespacedKey(plugin, "multiblock")
+	val multiblockNamespacedKey = NamespacedKey(Ion, "multiblock")
 
 	@JvmStatic
 	@JvmOverloads

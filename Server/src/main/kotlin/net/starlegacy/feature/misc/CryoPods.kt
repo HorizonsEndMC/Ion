@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -28,7 +28,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerRespawnEvent
 
 object CryoPods : SLComponent() {
-	private val folder = File(plugin.dataFolder, "cryopods")
+	private val folder = File(Ion.dataFolder, "cryopods")
 
 	override fun onEnable() {
 		folder.mkdir()

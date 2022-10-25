@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -461,7 +461,7 @@ object StarshipShields : SLComponent() {
 			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(10L)) {
 				cancel()
 			}
-		}.runTaskTimer(plugin, 20, 20)
+		}.runTaskTimer(Ion, 20, 20)
 	}
 
 	private fun getBoxShieldBlocks(sign: Sign): List<Vec3i> {
