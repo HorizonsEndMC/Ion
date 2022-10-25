@@ -1,5 +1,6 @@
 package net.horizonsend.ion.common
 
+import io.leangen.geantyref.TypeToken
 import java.io.File
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.objectMapperFactory
@@ -19,7 +20,7 @@ inline fun <reified T> loadConfiguration(directory: File, fileName: String): T {
 
 	val node = loader.load()
 
-	val configuration = node.get(T::class.java)!!
+	val configuration = node.get(object : TypeToken<T>() {})!!
 
 	configuration.toNode(node)
 	loader.save(node)
