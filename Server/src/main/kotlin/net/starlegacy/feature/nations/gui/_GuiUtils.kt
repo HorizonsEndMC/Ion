@@ -10,7 +10,7 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -85,7 +85,7 @@ fun skullItem(uuid: UUID, name: String): ItemStack =
 		item.itemMeta = meta
 	}.ensureServerConversions()
 
-fun gui(rows: Int, title: String) = Gui(plugin, rows, color(title))
+fun gui(rows: Int, title: String) = Gui(Ion, rows, color(title))
 
 fun Gui.withPane(pane: Pane): Gui {
 	addPane(pane); return this
@@ -108,7 +108,7 @@ class AnvilInput(val question: String, action: AnvilInputAction) {
 
 fun Player.input(question: String, action: AnvilInputAction) = Tasks.sync {
 	AnvilGUI.Builder()
-		.plugin(plugin)
+		.plugin(Ion)
 		.text(question)
 		.onComplete { player, field ->
 			AnvilGUI.Response.text(action(player, field))

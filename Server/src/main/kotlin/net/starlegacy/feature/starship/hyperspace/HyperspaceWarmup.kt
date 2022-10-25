@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import kotlin.math.max
 import kotlin.math.min
 import net.starlegacy.cache.nations.PlayerCache
@@ -25,7 +25,7 @@ class HyperspaceWarmup(val ship: ActiveStarship, var warmup: Int, val dest: Loca
 			warmup = max(warmup, 0)
 		}
 
-		runTaskTimer(plugin, 20L, 20L)
+		runTaskTimer(Ion, 20L, 20L)
 	}
 
 	private var seconds = 0

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.gear
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.util.EnumSet
 import java.util.UUID
 import java.util.stream.Collectors
@@ -105,7 +105,7 @@ class TreeCutter(private val player: Player, private val startBlock: Block) : Bu
 					startBlock.type = Material.AIR
 					stop()
 				}
-			}.runTask(plugin)
+			}.runTask(Ion)
 		}
 	}
 
@@ -169,6 +169,6 @@ class TreeCutter(private val player: Player, private val startBlock: Block) : Bu
 				stop()
 				super.cancel()
 			}
-		}.runTaskTimer(plugin, 0L, speed)
+		}.runTaskTimer(Ion, 0L, speed)
 	}
 }

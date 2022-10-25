@@ -1,6 +1,6 @@
 package net.starlegacy.listener.gear
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.feature.gear.TreeCutter
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.getPower
@@ -83,7 +83,7 @@ object PowerToolListener : SLEventListener() {
 
 				removePower(item, 1000)
 
-				TreeCutter(event.player, block).runTaskAsynchronously(plugin)
+				TreeCutter(event.player, block).runTaskAsynchronously(Ion)
 				return
 			}
 

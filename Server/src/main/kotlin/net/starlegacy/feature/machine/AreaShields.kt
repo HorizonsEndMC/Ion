@@ -1,6 +1,6 @@
 package net.starlegacy.feature.machine
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
@@ -41,7 +41,7 @@ object AreaShields : SLComponent() {
 
 	//region File data
 	private fun loadData() {
-		val areaShieldFile = File(plugin.dataFolder, "areashields.yml")
+		val areaShieldFile = File(Ion.dataFolder, "areashields.yml")
 		if (!areaShieldFile.exists()) {
 			return
 		}
@@ -65,7 +65,7 @@ object AreaShields : SLComponent() {
 	}
 
 	private fun saveData() {
-		val file = File(plugin.dataFolder, "areashields.yml")
+		val file = File(Ion.dataFolder, "areashields.yml")
 
 		val configuration = YamlConfiguration()
 		for (world in Bukkit.getWorlds()) {

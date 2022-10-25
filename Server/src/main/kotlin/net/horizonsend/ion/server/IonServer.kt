@@ -11,10 +11,10 @@ import java.util.concurrent.ForkJoinPool
 
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
-	init { plugin = this }
+	init { Ion = this }
 
 	companion object {
-		@JvmStatic lateinit var plugin: IonServer private set
+		@JvmStatic lateinit var Ion: IonServer private set
 	}
 
 	private val openDatabaseFuture = ForkJoinPool.commonPool().submit {

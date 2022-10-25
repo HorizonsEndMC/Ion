@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.awt.Rectangle
 import java.util.Locale
 import kotlin.math.abs
@@ -128,7 +128,7 @@ internal object SettlementZoneCommand : SLCommand() {
 				val count = 0
 				sender.world.spawnParticle(particle, x.d(), y.d(), z.d(), count, dustOptions)
 			}
-		}.runTaskTimerAsynchronously(plugin, 2, 2)
+		}.runTaskTimerAsynchronously(Ion, 2, 2)
 	}
 
 	// https://www.spigotmc.org/threads/create-particles-in-cube-outline-shape.65991/

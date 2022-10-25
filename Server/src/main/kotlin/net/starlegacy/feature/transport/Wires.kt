@@ -3,7 +3,7 @@ package net.starlegacy.feature.transport
 import co.aikar.timings.Timing
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.util.Optional
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
@@ -112,7 +112,7 @@ object Wires : SLComponent() {
 				}
 
 				if (System.nanoTime() - start > maxTime) {
-					plugin.slF4JLogger.warn("Power update took too long!")
+					Ion.slF4JLogger.warn("Power update took too long!")
 				}
 			}
 

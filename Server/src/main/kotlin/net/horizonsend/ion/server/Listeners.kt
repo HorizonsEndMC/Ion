@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.listeners.bukkit.BlockFadeListener
 import net.horizonsend.ion.server.listeners.bukkit.BlockFormListener
 import net.horizonsend.ion.server.listeners.bukkit.ChunkLoadListener
@@ -38,7 +38,7 @@ import net.horizonsend.ion.server.listeners.ioncore.StationSiegeBeginListener
 val listeners = arrayOf(
 	BlockFadeListener(),
 	BlockFormListener(),
-	ChunkLoadListener(plugin),
+	ChunkLoadListener(Ion),
 	EnchantItemListener(),
 	InventoryClickListener(),
 	InventoryCloseListener(),
@@ -47,7 +47,7 @@ val listeners = arrayOf(
 	PlayerDeathListener(),
 	PlayerFishListener(),
 	PlayerItemConsumeListener(),
-	PlayerJoinListener(plugin),
+	PlayerJoinListener(Ion),
 	PlayerLoginListener(),
 	PlayerPickUpItemListener(),
 	PlayerQuitListener(),

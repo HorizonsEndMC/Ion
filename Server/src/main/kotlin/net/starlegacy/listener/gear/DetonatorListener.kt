@@ -1,6 +1,6 @@
 package net.starlegacy.listener.gear
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.util.Locale
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.misc.CustomItems
@@ -101,7 +101,7 @@ object DetonatorListener : SLEventListener() {
 					.stream().map { it as? LivingEntity }
 					.forEach { it?.damage(80.0 / it.location.distance(detonator.location), player) }
 			}
-		}.runTaskTimer(plugin, 1, 1)
+		}.runTaskTimer(Ion, 1, 1)
 		item.amount = 0
 	}
 }

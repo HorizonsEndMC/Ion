@@ -8,7 +8,7 @@ import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.EcoStation
@@ -20,7 +20,7 @@ import org.bukkit.Location
 import org.bukkit.entity.EntityType
 
 object Collectors : SLComponent() {
-	private val isCitizensLoaded get() = plugin.server.pluginManager.isPluginEnabled("Citizens")
+	private val isCitizensLoaded get() = Ion.server.pluginManager.isPluginEnabled("Citizens")
 
 	private lateinit var citizensRegistry: NPCRegistry
 

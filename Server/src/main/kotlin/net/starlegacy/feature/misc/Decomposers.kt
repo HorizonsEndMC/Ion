@@ -3,7 +3,7 @@ package net.starlegacy.feature.misc
 import kotlin.math.max
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
@@ -70,7 +70,7 @@ object Decomposers : SLComponent() {
 			forward,
 			event.player.uniqueId,
 			multiblock
-		).runTaskTimer(plugin, delay, delay)
+		).runTaskTimer(Ion, delay, delay)
 	}
 
 	private fun getDimension(origin: Location, direction: BlockFace): Int {

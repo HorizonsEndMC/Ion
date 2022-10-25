@@ -10,7 +10,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.lang.reflect.Type
 import java.util.UUID
 import java.util.concurrent.Executors
@@ -106,7 +106,7 @@ object RedisActions : SLComponent() {
 
 	@EventHandler
 	private fun onPluginDisable(event: PluginDisableEvent) {
-		map.values.removeIf { plugin == event.plugin }
+		map.values.removeIf { Ion == event.plugin }
 	}
 
 	private object PubSubListener : JedisPubSub() {

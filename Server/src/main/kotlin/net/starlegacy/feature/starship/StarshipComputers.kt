@@ -7,7 +7,7 @@ import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -197,7 +197,7 @@ object StarshipComputers : SLComponent() {
 			items.add(guiButton(Material.BEACON) {
 				player.closeInventory()
 				player.beginConversation(
-					Conversation(plugin, player, object : StringPrompt() {
+					Conversation(Ion, player, object : StringPrompt() {
 						override fun getPromptText(context: ConversationContext): String {
 							return "Enter player name:"
 						}

@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -123,7 +123,7 @@ object StarshipDestruction {
 			} else {
 				newSinking.clear()
 			}
-		}.runTaskTimerAsynchronously(plugin, 20L, 20L)
+		}.runTaskTimerAsynchronously(Ion, 20L, 20L)
 	}
 
 	private fun processQueue(

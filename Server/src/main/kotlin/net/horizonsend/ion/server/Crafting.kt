@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.utilities.enumSetOf
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
@@ -63,17 +63,17 @@ fun initializeCrafting() {
 }
 
 private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {
-	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(plugin, name), ItemStack(result), source, experience, cookingTime))
+	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(Ion, name), ItemStack(result), source, experience, cookingTime))
 }
 
 private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
-	val recipe = ShapedRecipe(NamespacedKey(plugin, name), ItemStack(result))
+	val recipe = ShapedRecipe(NamespacedKey(Ion, name), ItemStack(result))
 	execute(recipe)
 	Bukkit.addRecipe(recipe)
 }
 
 private fun shapelessRecipe(name: String, result: ItemStack, ingredients: Array<Material>) {
-	val recipe = ShapelessRecipe(NamespacedKey(plugin, name), result)
+	val recipe = ShapelessRecipe(NamespacedKey(Ion, name), result)
 	for (ingredient in ingredients) recipe.addIngredient(ingredient)
 	Bukkit.addRecipe(recipe)
 }

@@ -7,7 +7,7 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import kotlin.math.min
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
 object MenuHelper {
-	fun gui(rows: Int, title: String) = Gui(plugin, rows, ACFBukkitUtil.color(title)).apply {
+	fun gui(rows: Int, title: String) = Gui(Ion, rows, ACFBukkitUtil.color(title)).apply {
 		setOnLocalClick { event: InventoryClickEvent ->
 			val item = event.currentItem
 			if (item?.type?.isAir != false) {

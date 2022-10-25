@@ -1,6 +1,6 @@
 package net.starlegacy.feature.tutorial
 
-import net.horizonsend.ion.server.IonServer.Companion.plugin
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.feature.starship.StarshipDestruction
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.event.StarshipComputerOpenMenuEvent
@@ -217,7 +217,7 @@ enum class TutorialPhase(vararg val messages: TutorialMessage, val cancel: Boole
 					handler(event, player)
 				}
 			}
-		}, plugin)
+		}, Ion)
 	}
 
 	protected fun nextStep(player: Player) {
