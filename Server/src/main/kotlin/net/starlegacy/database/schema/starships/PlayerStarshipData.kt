@@ -27,9 +27,10 @@ data class PlayerStarshipData(
 	override val _id: Oid<PlayerStarshipData>,
 	/** Player UUID of the captain of the ship */
 	var captain: SLPlayerId,
-	var type: StarshipType,
 
-	var world: String,
+	var starshipType: StarshipType,
+
+	var levelName: String,
 	var blockKey: Long,
 
 	/** UUIDs of players who have been added to the ship by the captain. Should never include the captain. */
@@ -45,8 +46,8 @@ data class PlayerStarshipData(
 		ensureIndex(PlayerStarshipData::captain)
 		ensureIndex(PlayerStarshipData::pilots)
 		ensureIndex(PlayerStarshipData::name)
-		ensureIndex(PlayerStarshipData::world)
-		ensureUniqueIndex(PlayerStarshipData::world, PlayerStarshipData::blockKey)
+		ensureIndex(PlayerStarshipData::levelName)
+		ensureUniqueIndex(PlayerStarshipData::levelName, PlayerStarshipData::blockKey)
 	}) {
 		const val LOCK_TIME_MS = 1_000 * 300
 
@@ -62,8 +63,8 @@ data class PlayerStarshipData(
 			find(or(PlayerStarshipData::captain eq playerId, PlayerStarshipData::pilots contains playerId))
 	}
 
-	fun bukkitWorld(): World = requireNotNull(Bukkit.getWorld(world)) {
-		"World $world is not loaded, but tried getting it for computer $_id"
+	fun bukkitWorld(): World = requireNotNull(Bukkit.getWorld(levelName)) {
+		"World $levelName is not loaded, but tried getting it for computer $_id"
 	}
 
 	fun isPilot(player: Player): Boolean {

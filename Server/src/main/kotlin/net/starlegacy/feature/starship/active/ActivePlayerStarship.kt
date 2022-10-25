@@ -43,8 +43,8 @@ class ActivePlayerStarship(
 	carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 ) : ActiveStarship(data.bukkitWorld(), blocks, mass, centerOfMass, hitbox) {
 	val carriedShips: MutableMap<PlayerStarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
-	override val type: StarshipType = data.type
-	override val interdictionRange: Int = data.type.interdictionRange
+	override val type: StarshipType = data.starshipType
+	override val interdictionRange: Int = data.starshipType.interdictionRange
 
 	var lastUnpilotTime: Long = 0
 

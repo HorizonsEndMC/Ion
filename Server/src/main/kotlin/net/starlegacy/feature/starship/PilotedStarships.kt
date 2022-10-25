@@ -158,7 +158,7 @@ object PilotedStarships : SLComponent() {
 			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this!")
 			return false
 		}
-		if (!data.type.canUse(player)) {
+		if (!data.starshipType.canUse(player)) {
 			player.sendFeedbackActionMessage(USER_ERROR, "You are not high enough level to pilot this!")
 			return false
 		}
@@ -312,6 +312,6 @@ object PilotedStarships : SLComponent() {
 	}
 
 	private fun getDisplayName(data: PlayerStarshipData): String {
-		return data.name ?: data.type.displayName.lowercase(Locale.getDefault())
+		return data.name ?: data.starshipType.displayName.lowercase(Locale.getDefault())
 	}
 }

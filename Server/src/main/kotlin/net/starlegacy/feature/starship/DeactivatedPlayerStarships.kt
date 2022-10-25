@@ -87,10 +87,10 @@ object DeactivatedPlayerStarships : SLComponent() {
 	}
 
 	fun updateType(data: PlayerStarshipData, newType: StarshipType) {
-		data.type = newType
+		data.starshipType = newType
 
 		Tasks.async {
-			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::type, newType))
+			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::starshipType, newType))
 		}
 
 		// remove the current state in case the new type no longer matches the ship's state
@@ -129,7 +129,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 	private fun load(world: World) {
 		val cache = DeactivatedShipWorldCache(world)
 		// retrieve all starship data from the database and add it to the cache
-		PlayerStarshipData.find(PlayerStarshipData::world eq world.name).forEach { cache.add(it) }
+		PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name).forEach { cache.add(it) }
 		DEACTIVATED_SHIP_WORLD_CACHES[world] = cache
 	}
 

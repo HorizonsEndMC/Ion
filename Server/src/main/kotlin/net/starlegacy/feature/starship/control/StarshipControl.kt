@@ -18,9 +18,6 @@ import kotlin.math.sign
 import kotlin.math.sin
 import net.horizonsend.ion.core.feedback.FeedbackType
 import net.horizonsend.ion.core.feedback.sendFeedbackAction
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
@@ -296,8 +293,8 @@ object StarshipControl : SLComponent() {
 		starship.sneakMovements++
 		val sneakMovements = starship.sneakMovements
 
-		val maxAccel = starship.data.type.maxSneakFlyAccel
-		val accelDistance = starship.data.type.sneakFlyAccelDistance
+		val maxAccel = starship.data.starshipType.maxSneakFlyAccel
+		val accelDistance = starship.data.starshipType.sneakFlyAccelDistance
 
 		val yawRadians = Math.toRadians(pilot.location.yaw.toDouble())
 		val pitchRadians = Math.toRadians(pilot.location.pitch.toDouble())

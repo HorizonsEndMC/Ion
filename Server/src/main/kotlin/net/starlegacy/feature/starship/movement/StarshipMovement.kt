@@ -202,7 +202,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		for (data: PlayerStarshipData in playerShip.carriedShips.keys) {
 			data.blockKey = displacedKey(data.blockKey)
-			data.world = world2.name
+			data.levelName = world2.name
 
 			val blocks = playerShip.carriedShips[data] ?: continue // the rest is only for the carried ships
 			playerShip.carriedShips[data] = blocks.mapTo(LongOpenHashSet(blocks.size)) { key: Long ->

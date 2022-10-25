@@ -21,7 +21,7 @@ internal class Starships : BaseCommand() {
 				val y = blockKeyY(it.blockKey)
 				val z = blockKeyZ(it.blockKey)
 
-				"${it.type.formatted} in world <gold>${it.world}</gold> at <green>$x</green>, <green>$y</green>, <green>$z</green> owned by <aqua>${SLPlayer[it.captain]?.lastKnownName}</aqua>"
+				"${it.starshipType.formatted} in world <gold>${it.levelName}</gold> at <green>$x</green>, <green>$y</green>, <green>$z</green> owned by <aqua>${SLPlayer[it.captain]?.lastKnownName}</aqua>"
 
 			}.joinToString("\n", "<bold>Starships:</bold><gray>")
 		)
