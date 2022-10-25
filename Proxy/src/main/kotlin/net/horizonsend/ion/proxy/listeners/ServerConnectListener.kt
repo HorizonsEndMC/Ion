@@ -2,7 +2,7 @@ package net.horizonsend.ion.proxy.listeners
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.proxy.IonProxy
+import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
@@ -14,11 +14,13 @@ import net.md_5.bungee.event.EventPriority
 class ServerConnectListener : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onServerConnectEvent(event: ServerConnectEvent) {
+		Ion.playerServerMap[event.player] = event.target
+
 		if (event.reason == ServerConnectEvent.Reason.JOIN_PROXY) {
 			val playerData = PlayerData[event.player.uniqueId]
 
 			if (playerData.minecraftUsername == null) {
-				IonProxy.proxy.broadcast(
+				Ion.proxy.broadcast(
 					*ComponentBuilder()
 						.append(ComponentBuilder("Welcome ").color(ChatColor.GOLD).create())
 						.append(ComponentBuilder(event.player.name).color(ChatColor.WHITE).create())
@@ -26,8 +28,8 @@ class ServerConnectListener : Listener {
 						.create()
 				)
 
-				IonProxy.jda?.let { jda ->
-					val globalChannel = jda.getTextChannelById(IonProxy.configuration.globalChannel) ?: return@let
+				Ion.jda?.let { jda ->
+					val globalChannel = jda.getTextChannelById(Ion.configuration.globalChannel) ?: return@let
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
@@ -37,7 +39,7 @@ class ServerConnectListener : Listener {
 					).queue()
 				}
 			} else {
-				IonProxy.proxy.broadcast(
+				Ion.proxy.broadcast(
 					*ComponentBuilder()
 						.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
 						.append(ComponentBuilder("+ ").color(ChatColor.GREEN).create())
@@ -47,8 +49,8 @@ class ServerConnectListener : Listener {
 						.create()
 				)
 
-				IonProxy.jda?.let { jda ->
-					val globalChannel = jda.getTextChannelById(IonProxy.configuration.globalChannel) ?: return@let
+				Ion.jda?.let { jda ->
+					val globalChannel = jda.getTextChannelById(Ion.configuration.globalChannel) ?: return@let
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
@@ -63,18 +65,18 @@ class ServerConnectListener : Listener {
 				playerData.update { minecraftUsername = event.player.name }
 			}
 
-			IonProxy.jda?.let { jda ->
+			Ion.jda?.let { jda ->
 				val discordId = playerData.discordId ?: return
 
-				val guild = jda.getGuildById(IonProxy.configuration.discordServer) ?: return
+				val guild = jda.getGuildById(Ion.configuration.discordServer) ?: return
 
 				guild.addRoleToMember(
 					guild.getMemberById(discordId) ?: return,
-					guild.getRoleById(IonProxy.configuration.onlineRole) ?: return
+					guild.getRoleById(Ion.configuration.onlineRole) ?: return
 				).queue()
 			}
 		} else {
-			IonProxy.proxy.broadcast(
+			Ion.proxy.broadcast(
 				*ComponentBuilder()
 					.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
 					.append(ComponentBuilder("> ").color(ChatColor.BLUE).create())
@@ -84,8 +86,8 @@ class ServerConnectListener : Listener {
 					.create()
 			)
 
-			IonProxy.jda?.let { jda ->
-				val globalChannel = jda.getTextChannelById(IonProxy.configuration.globalChannel) ?: return@let
+			Ion.jda?.let { jda ->
+				val globalChannel = jda.getTextChannelById(Ion.configuration.globalChannel) ?: return@let
 
 				globalChannel.sendMessageEmbeds(
 					messageEmbed(

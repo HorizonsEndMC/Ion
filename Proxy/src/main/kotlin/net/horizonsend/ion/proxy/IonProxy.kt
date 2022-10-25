@@ -1,7 +1,11 @@
 package net.horizonsend.ion.proxy
 
+// Special Exception Wildcard Imports
+import net.horizonsend.ion.proxy.commands.bungee.*
+import net.horizonsend.ion.proxy.commands.discord.*
+import net.horizonsend.ion.proxy.listeners.*
+
 import co.aikar.commands.BungeeCommandManager
-import net.dv8tion.jda.api.JDA
 import java.util.concurrent.TimeUnit
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
@@ -13,26 +17,22 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.database.closeDatabase
 import net.horizonsend.ion.common.database.openDatabase
 import net.horizonsend.ion.common.loadConfiguration
+import net.md_5.bungee.api.config.ServerInfo
+import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Plugin
-import net.md_5.bungee.api.ProxyServer
-
-// Special Exception Wildcard Imports
-import net.horizonsend.ion.proxy.commands.bungee.*
-import net.horizonsend.ion.proxy.commands.discord.*
-import net.horizonsend.ion.proxy.listeners.*
+import java.util.concurrent.ForkJoinPool
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
-	// Static accessors because we're evil
+	init { Ion = this }
+
 	companion object {
-		lateinit var plugin: IonProxy
-
-		val proxy: ProxyServer get() = plugin.proxy
-
-		val configuration get() = plugin.configuration
-		val jda: JDA? get() = plugin.jda
+		@JvmStatic lateinit var Ion: IonProxy private set
 	}
-	init { plugin = this }
+
+	private val openDatabaseFuture = ForkJoinPool.commonPool().submit {
+		openDatabase(dataFolder)
+	}
 
 	val configuration: ProxyConfiguration = loadConfiguration(dataFolder, "proxy.conf")
 
@@ -49,8 +49,10 @@ class IonProxy : Plugin() {
 		null
 	}
 
+	val playerServerMap = mutableMapOf<ProxiedPlayer, ServerInfo>()
+
 	override fun onEnable() {
-		openDatabase(dataFolder)
+		openDatabaseFuture.join()
 
 		// Listener Registration
 		val pluginManager = proxy.pluginManager

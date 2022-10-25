@@ -1,6 +1,6 @@
 package net.horizonsend.ion.proxy.listeners
 
-import net.horizonsend.ion.proxy.IonProxy
+import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
 import java.net.URL
 import javax.imageio.ImageIO
 import net.md_5.bungee.api.Favicon
@@ -26,12 +26,12 @@ class ProxyPingListener : Listener {
 	fun onProxyPingEvent(event: ProxyPingEvent) = event.response.run {
 		version = protocol
 		players = ServerPing.Players(
-			IonProxy.proxy.onlineCount + 1,
-			IonProxy.proxy.onlineCount,
-			IonProxy.proxy.players.map { ServerPing.PlayerInfo(it.name, it.uniqueId) }.toTypedArray()
+			Ion.proxy.onlineCount + 1,
+			Ion.proxy.onlineCount,
+			Ion.proxy.players.map { ServerPing.PlayerInfo(it.name, it.uniqueId) }.toTypedArray()
 		)
 		descriptionComponent = TextComponent(
-			*TextComponent.fromLegacyText("${IonProxy.configuration.motdFirstLine}\n${messages.random()}")
+			*TextComponent.fromLegacyText("${Ion.configuration.motdFirstLine}\n${messages.random()}")
 		)
 		setFavicon(icon)
 	}
