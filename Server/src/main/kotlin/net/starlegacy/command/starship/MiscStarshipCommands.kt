@@ -97,8 +97,8 @@ object MiscStarshipCommands : SLCommand() {
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int = (navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
 
-		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
-		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
+		val x = parseNumber(xCoordinate, starship.centerOfMassVec3i.x)
+		val z = parseNumber(zCoordinate, starship.centerOfMassVec3i.z)
 
 		tryJump(starship, x, z, maxRange, sender)
 	}
@@ -161,8 +161,8 @@ object MiscStarshipCommands : SLCommand() {
 
 		if (MassShadows.find(
 				starship.world,
-				starship.centerOfMass.x.toDouble(),
-				starship.centerOfMass.z.toDouble()
+				starship.centerOfMassVec3i.x.toDouble(),
+				starship.centerOfMassVec3i.z.toDouble()
 			) != null
 		) {
 			sender.sendFeedbackMessage(USER_ERROR, "You're within a MassShadow, jump cancelled.")
@@ -178,7 +178,7 @@ object MiscStarshipCommands : SLCommand() {
 		var x1: Int = x
 		var z1: Int = z
 
-		val origin: Vector = starship.centerOfMass.toVector()
+		val origin: Vector = starship.centerOfMassVec3i.toVector()
 		val distance: Double = distance(origin.x, 0.0, origin.z, x1.toDouble(), 0.0, z1.toDouble())
 
 		if (distance > maxRange) {

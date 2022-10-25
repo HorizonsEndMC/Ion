@@ -217,10 +217,10 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun updateCenter() {
-		val oldCenter = starship.centerOfMass
+		val oldCenter = starship.centerOfMassVec3i
 		val newCenterX = displaceX(oldCenter.x, oldCenter.z)
 		val newCenterZ = displaceZ(oldCenter.z, oldCenter.x)
-		starship.centerOfMass = Vec3i(newCenterX, displaceY(oldCenter.y), newCenterZ)
+		starship.centerOfMassVec3i = Vec3i(newCenterX, displaceY(oldCenter.y), newCenterZ)
 	}
 
 	private fun updateSubsystems(world2: World) {

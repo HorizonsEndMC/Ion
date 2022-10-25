@@ -1,13 +1,13 @@
 package net.starlegacy.feature.starship.active
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.minecraft.core.BlockPos
 import kotlin.math.min
 import kotlin.math.roundToInt
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.Mass
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
@@ -80,7 +80,7 @@ object ActiveStarshipFactory {
 		val avgY = weightY / mass
 		val avgZ = weightZ / mass
 
-		val centerOfMass = Vec3i(avgX.roundToInt(), avgY.roundToInt(), avgZ.roundToInt())
+		val centerOfMass = BlockPos(avgX.roundToInt(), avgY.roundToInt(), avgZ.roundToInt())
 
 		val hitbox = ActiveStarshipHitbox(blocks)
 

@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.active
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.minecraft.core.BlockPos
 import java.lang.Math.cbrt
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -21,7 +22,6 @@ import net.starlegacy.feature.starship.movement.RotationMovement
 import net.starlegacy.feature.starship.movement.StarshipMovement
 import net.starlegacy.feature.starship.movement.TranslateMovement
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.msg
 import net.starlegacy.util.rightFace
@@ -30,6 +30,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.boss.BossBar
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
@@ -37,11 +38,17 @@ class ActivePlayerStarship(
 	val data: PlayerStarshipData,
 	blocks: LongOpenHashSet,
 	mass: Double,
-	centerOfMass: Vec3i,
+	centerOfMass: BlockPos,
 	hitbox: ActiveStarshipHitbox,
 	// map of carried ship to its blocks
 	carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
-) : ActiveStarship(data.bukkitWorld(), blocks, mass, centerOfMass, hitbox) {
+) : ActiveStarship(
+	(data.bukkitWorld() as CraftWorld).handle,
+	blocks,
+	mass,
+	centerOfMass,
+	hitbox
+) {
 	val carriedShips: MutableMap<PlayerStarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
 	override val type: StarshipType = data.starshipType
 	override val interdictionRange: Int = data.starshipType.interdictionRange
@@ -55,8 +62,6 @@ class ActivePlayerStarship(
 	val minutesUnpiloted = if (pilot != null) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 
 	var speedLimit = -1
-
-
 
 	private data class PendingRotation(val clockwise: Boolean)
 

@@ -127,9 +127,9 @@ object PilotedStarships : SLComponent() {
 					INFORMATION,
 					"You already have a ship unpiloted, on {0} at {1} {2} {3}, that ship will now be released.",
 					it.world.name,
-					it.centerOfMass.x,
-					it.centerOfMass.y,
-					it.centerOfMass.z
+					it.centerOfMassVec3i.x,
+					it.centerOfMassVec3i.y,
+					it.centerOfMassVec3i.z
 				)
 				DeactivatedPlayerStarships.deactivateAsync(it)
 			}

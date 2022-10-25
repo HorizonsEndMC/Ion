@@ -9,7 +9,7 @@ import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 
 class ReactorSubsystem(
 	starship: ActiveStarship
-) : StarshipSubsystem(starship, starship.centerOfMass) {
+) : StarshipSubsystem(starship, starship.centerOfMassVec3i) {
 	val output: Double =
 		Math.cbrt(starship.blockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.poweroverrider)
 	val powerDistributor = PowerDistributor()
