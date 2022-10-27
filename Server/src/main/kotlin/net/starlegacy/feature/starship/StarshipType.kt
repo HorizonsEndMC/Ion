@@ -173,23 +173,6 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.dreadnought",
 		
 	),
-	SuperCapital(
-		displayName = "SuperCapital",
-		minSize = 48000,
-		maxSize = 200000,
-		minLevel = 1000,
-		containerPercent = 0.025,
-		crateLimitMultiplier = 0.5,
-		sneakFlyAccelDistance = 10,
-		maxSneakFlyAccel = 2,
-		interdictionRange = 3200,
-		hyperspaceRangeMultiplier = 2.7,
-		menuItemMaterial = Material.CHISELED_DEEPSLATE,
-		isWarship = true,
-		colour = "#320385",
-		overridePermission = "ion.ships.override.supercapital",
-		
-	),
 	SHUTTLE(
 		displayName = "Shuttle",
 		minSize = 100,
