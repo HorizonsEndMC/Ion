@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.openDatabase
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("Unused")
@@ -39,10 +40,16 @@ class IonServer : JavaPlugin() {
 		// Same deal as listeners.
 		initializeCrafting()
 
+		// Currently Ion needs to be loaded POSTWORLD due to older Star Legacy code, this means some worlds will already
+		// be loaded by the time we get to plugin enable. In the future we will change to load on STARTUP, but for the
+		// time being we need to check for worlds on start up. This additionally serves to allow Ion to handle reloads.
+		for (world in server.worlds) IonLevelData.register((world as CraftWorld).handle)
+
 		legacyEnable(commandManager)
 	}
 
 	override fun onDisable() {
+		IonLevelData.unregisterAll()
 		closeDatabase()
 		legacyDisable()
 	}

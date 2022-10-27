@@ -21,6 +21,8 @@ import net.horizonsend.ion.server.listeners.bukkit.PlayerTeleportListener
 import net.horizonsend.ion.server.listeners.bukkit.PotionSplashListener
 import net.horizonsend.ion.server.listeners.bukkit.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.bukkit.PrepareItemEnchantListener
+import net.horizonsend.ion.server.listeners.bukkit.WorldInitListener
+import net.horizonsend.ion.server.listeners.bukkit.WorldUnloadListener
 import net.horizonsend.ion.server.listeners.ioncore.BuySpawnShuttleListener
 import net.horizonsend.ion.server.listeners.ioncore.CaptureStationListener
 import net.horizonsend.ion.server.listeners.ioncore.CompleteCargoRunListener
@@ -56,6 +58,9 @@ val listeners = arrayOf(
 	PotionSplashListener(),
 	PrepareItemCraftListener(),
 	PrepareItemEnchantListener(),
+	WorldInitListener(),
+	WorldUnloadListener(),
+
 	BuySpawnShuttleListener(),
 	CaptureStationListener(),
 	CompleteCargoRunListener(),
