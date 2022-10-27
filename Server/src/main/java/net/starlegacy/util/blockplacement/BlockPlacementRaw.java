@@ -223,7 +223,7 @@ class BlockPlacementRaw {
 		nmsChunk.setUnsaved(true);
 
 		if (!wasLoaded) {
-			Bukkit.getServer().getScheduler().runTask(IonServer.getIon(), () -> world.unloadChunkRequest(cx, cz));
+			Bukkit.getServer().getScheduler().runTask(IonServer.Companion.getIon(), () -> world.unloadChunkRequest(cx, cz));
 		}
 
 		int placedNow = placed.addAndGet(localPlaced);

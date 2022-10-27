@@ -7,31 +7,36 @@ import net.horizonsend.ion.common.database.openDatabase
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.concurrent.ForkJoinPool
 
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
 	init { Ion = this }
 
 	companion object {
-		@JvmStatic lateinit var Ion: IonServer private set
-	}
-
-	private val openDatabaseFuture = ForkJoinPool.commonPool().submit {
-		openDatabase(dataFolder)
+		lateinit var Ion: IonServer private set
 	}
 
 	override fun onEnable() {
-		openDatabaseFuture.join()
+		openDatabase(dataFolder)
 
 		val pluginManager = server.pluginManager
+
+		// Commands
 		val commandManager = PaperCommandManager(this)
 
-		for (listener in listeners) pluginManager.registerEvents(listener, this) // Listeners
+		val commands = arrayOf(
+			AchievementsCommand()
+		)
 
-		commandManager.registerCommand(AchievementsCommand())
+		for (command in commands) commandManager.registerCommand(command)
+
+		// TODO: This is messy, we should have individual classes which contain the completions.
 		commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 
+		// The listeners are defined in a separate file for the sake of keeping the main class clean.
+		for (listener in listeners) pluginManager.registerEvents(listener, this)
+
+		// Same deal as listeners.
 		initializeCrafting()
 
 		legacyEnable(commandManager)
@@ -39,7 +44,6 @@ class IonServer : JavaPlugin() {
 
 	override fun onDisable() {
 		closeDatabase()
-
 		legacyDisable()
 	}
 }
