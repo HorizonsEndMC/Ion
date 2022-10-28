@@ -10,5 +10,5 @@ dependencies {
 
 	api("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
 
-	implementation("org.litote.kmongo:kmongo:4.7.1")
+	implementation("org.litote.kmongo:kmongo:4.7.2")
 }
