@@ -25,7 +25,7 @@ dependencies {
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("io.github.config4k:config4k:0.5.0")
 	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
-	implementation("org.litote.kmongo:kmongo:4.7.1")
+	implementation("org.litote.kmongo:kmongo:4.7.2")
 	implementation("redis.clients:jedis:3.7.1")
 
 	implementation("com.github.jkcclemens:khttp:0.1.0") {
