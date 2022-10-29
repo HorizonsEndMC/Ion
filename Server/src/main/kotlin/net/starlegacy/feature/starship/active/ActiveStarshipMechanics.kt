@@ -124,38 +124,57 @@ object ActiveStarshipMechanics : SLComponent() {
 				}
 			}
 		} else {
-			ship.weaponSets.forEach { set, weapon ->
-				if (ship.weaponSets[set].any { it is AutoWeaponSubsystem } && weapon.isIntact()) {
-					val validTargets: MutableList<Player> = mutableListOf()
-					val autoWeapon = weapon as AutoWeaponSubsystem
+			val weaponSets = ship.weaponSets.asMap()
+			for (set in weaponSets) {
+				val weapons = set.component2()
+
+				for (weapon in weapons) {
+					val validTargets: MutableSet<Player> = mutableSetOf()
+
+					if (weapon !is AutoWeaponSubsystem) {
+						continue
+					}
 
 					for (p: Player in ship.world.players) {
-						if ((p.location.isInRange(weapon.pos.toLocation(weapon.starship.world), autoWeapon.range))
-							&& p.world == ship.world
-							&& !ship.randomTargetBlacklist.contains(p.uniqueId)
-						) {
-							validTargets.add(p)
-						}
+						if (!p.location.isInRange(weapon.pos.toLocation(weapon.starship.world), weapon.range)) continue
+						if (p.world != ship.world) continue
+						if (ship.randomTargetBlacklist.contains(p.uniqueId)) continue
+						validTargets.add(p)
 					}
 					val target = validTargets.randomEntry()
+
+					if (!weapon.isIntact()) {
+						continue
+					}
+
 					var targetLoc: Location = target.eyeLocation
 
 					val targetRiding = ActiveStarships.findByPassenger(target)
-					if (targetRiding != null && autoWeapon.shouldTargetRandomBlock(target)) {
+					if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
 						targetLoc = Vec3i(targetRiding.blocks.randomEntry()).toLocation(ship.world).toCenterLocation()
 					}
 
 					val targetVec = targetLoc.toVector()
 					val direct = targetVec.clone().subtract(ship.centerOfMassVec3i.toCenterVector()).normalize()
+
+					if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > weapon.range.squared()) {
+						continue
+					}
+
 					val dir = weapon.getAdjustedDir(direct, targetVec)
 
-					if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > autoWeapon.range.squared() &&
-						(autoWeapon is TurretWeaponSubsystem && !autoWeapon.ensureOriented(dir)) &&
-						(!weapon.isCooledDown()) &&
-						(!weapon.canFire(dir, targetVec))) {
-
-						queuedShots.add(StarshipWeapons.AutoQueuedShot(weapon, target, dir))
+					if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(dir)) {
+						continue
 					}
+
+					if (!weapon.isCooledDown()) {
+						continue
+					}
+
+					if (!weapon.canFire(dir, targetVec)) {
+						continue
+					}
+					queuedShots.add(StarshipWeapons.AutoQueuedShot(weapon, target, dir))
 				}
 			}
 		}

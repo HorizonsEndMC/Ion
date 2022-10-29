@@ -24,7 +24,7 @@ object RandomTargetCommand : SLCommand()  {
 			ship.randomTarget = true
 			sender.sendFeedbackActionMessage(SUCCESS, "Random Turret Targeting activated!")
 		} else {
-			ship.randomTarget = !ship.rainbowtoggle
+			ship.randomTarget = false
 			sender.sendFeedbackActionMessage(SUCCESS, "Random Turret Targeting De-Activating")
 		}
 	}
@@ -36,6 +36,7 @@ object RandomTargetCommand : SLCommand()  {
 		val ship = getStarshipPiloting(p)
 		if (add.lowercase().contains("add")) ship.randomTargetBlacklist.add(player.getPlayer().uniqueId)
 		else ship.randomTargetBlacklist.remove(player.getPlayer().uniqueId)
+		sender.sendFeedbackActionMessage(SUCCESS, "Added $p to Random Target Blacklist")
 	}
 
 	@Subcommand("clearblacklist")
@@ -43,5 +44,6 @@ object RandomTargetCommand : SLCommand()  {
 	fun onClearBlacklist(sender: CommandSender, p: Player) = asyncCommand(sender) {
 		val ship = getStarshipPiloting(p)
 		ship.randomTargetBlacklist.clear()
+		sender.sendFeedbackActionMessage(SUCCESS, "Cleared Random Target Blacklist")
 	}
 }
