@@ -14,14 +14,15 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import kotlin.collections.set
+import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.core.ShipFactoryMaterialCosts
+import net.horizonsend.ion.server.utilities.calculateRank
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.nations.gui.playerClicker
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipComputers
@@ -51,7 +52,7 @@ import org.litote.kmongo.save
 object BlueprintCommand : SLCommand() {
 
 	private fun getMaxBlueprints(player: Player): Int {
-		return Levels[player] * 3 + 20
+		return calculateRank(PlayerData[player.uniqueId]).maxBlueprints
 	}
 
 	private fun validateName(name: String) {

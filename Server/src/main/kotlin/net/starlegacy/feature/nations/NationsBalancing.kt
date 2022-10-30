@@ -24,8 +24,8 @@ object NationsBalancing : SLComponent() {
 		)
 
 		data class Nations(
-			val minCreateLevel: Int = 12,
-			val minJoinLevel: Int = 7,
+			val minCreateLevel: Int = 2,
+			val minJoinLevel: Int = 1,
 			val hourlyActivityCredits: Int = 4,
 			val createCost: Int = 20000,
 			val renameCost: Int = 3000,

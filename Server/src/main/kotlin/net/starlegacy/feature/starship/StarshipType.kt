@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship
 
-import net.starlegacy.feature.progression.Levels
+import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.server.utilities.calculateRank
 import net.starlegacy.util.setDisplayNameAndGet
 import net.starlegacy.util.setLoreAndGet
 import org.bukkit.Material
@@ -30,7 +31,7 @@ enum class StarshipType(
 		displayName = "Speeder",
 		minSize = 25,
 		maxSize = 100,
-		minLevel = 1,
+		minLevel = 0,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.25,
 		sneakFlyAccelDistance = 5,
@@ -62,7 +63,7 @@ enum class StarshipType(
 		displayName = "Gunship",
 		minSize = 500,
 		maxSize = 2000,
-		minLevel = 10,
+		minLevel = 2,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 5,
@@ -78,7 +79,7 @@ enum class StarshipType(
 		displayName = "Corvette",
 		minSize = 2000,
 		maxSize = 4000,
-		minLevel = 20,
+		minLevel = 3,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 6,
@@ -94,7 +95,7 @@ enum class StarshipType(
 		displayName = "Frigate",
 		minSize = 4000,
 		maxSize = 8000,
-		minLevel = 40,
+		minLevel = 4,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 6,
@@ -110,7 +111,7 @@ enum class StarshipType(
 		displayName = "Destroyer",
 		minSize = 8000,
 		maxSize = 12000,
-		minLevel = 80,
+		minLevel = 5,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 5,
@@ -194,7 +195,7 @@ enum class StarshipType(
 		displayName = "Transport",
 		minSize = 500,
 		maxSize = 2000,
-		minLevel = 10,
+		minLevel = 2,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -211,7 +212,7 @@ enum class StarshipType(
 		displayName = "Light Freighter",
 		minSize = 2000,
 		maxSize = 4000,
-		minLevel = 20,
+		minLevel = 3,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -228,7 +229,7 @@ enum class StarshipType(
 		displayName = "Medium Freighter",
 		minSize = 4000,
 		maxSize = 8000,
-		minLevel = 40,
+		minLevel = 4,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -245,7 +246,7 @@ enum class StarshipType(
 		displayName = "Heavy Freighter",
 		minSize = 8000,
 		maxSize = 12000,
-		minLevel = 80,
+		minLevel = 5,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
 		sneakFlyAccelDistance = 10,
@@ -262,7 +263,7 @@ enum class StarshipType(
 		displayName = "Platform",
 		minSize = 25,
 		maxSize = 100000,
-		minLevel = 1,
+		minLevel = 0,
 		containerPercent = 100.0,
 		crateLimitMultiplier = 100.0,
 		concretePercent = 0.0,
@@ -316,7 +317,7 @@ enum class StarshipType(
 		)
 
 	fun canUse(player: Player): Boolean =
-		player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel
+		player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || (isWarship && calculateRank(PlayerData[player.uniqueId]).maxWarShipLevel >= minLevel) || (!isWarship && calculateRank(PlayerData[player.uniqueId]).maxTradeShipLevel >= minLevel)
 
 	companion object {
 		fun getUnlockedTypes(player: Player): List<StarshipType> = values()

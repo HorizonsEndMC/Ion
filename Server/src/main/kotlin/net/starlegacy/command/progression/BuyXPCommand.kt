@@ -4,9 +4,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.core.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.utilities.addRanktrackXP
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.progression.LEVEL_BALANCING
-import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.toCreditsString
 import org.bukkit.entity.Player
@@ -29,6 +29,6 @@ object BuyXPCommand : SLCommand() {
 		}
 
 		VAULT_ECO.withdrawPlayer(sender, realCost)
-		SLXP.addAsync(sender, amount)
+		sender.addRanktrackXP(amount)
 	}
 }

@@ -6,6 +6,8 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.HelpCommand
 import java.util.UUID
 import java.util.concurrent.Executors
+import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.server.utilities.calculateRank
 import net.md_5.bungee.api.ChatColor
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -24,7 +26,6 @@ import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks
@@ -149,8 +150,8 @@ abstract class SLCommand : BaseCommand() {
 	protected fun resolveNation(name: String): Oid<Nation> = NationCache.getByName(name)
 		?: fail { "Nation $name not found" }
 
-	protected fun requireMinLevel(sender: Player, level: Int) = failIf(Levels[sender] < level)
-	{ "You need to be at least level $level to do that" }
+	protected fun requireMinLevel(sender: Player, level: Int) = failIf(calculateRank(PlayerData[sender.uniqueId]).levelPriority < level)
+	{ "You need to be a higher ranktrack level to do that" }
 
 	protected fun requireTerritoryIn(sender: Player): RegionTerritory = Regions.findFirstOf(sender.location)
 		?: fail { "You're not in a territory on a planet" }

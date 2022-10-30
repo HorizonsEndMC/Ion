@@ -4,6 +4,8 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.closeDatabase
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.openDatabase
+import net.horizonsend.ion.server.commands.AchievementsCommand
+import net.horizonsend.ion.server.commands.RanktrackCommands
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
@@ -26,7 +28,8 @@ class IonServer : JavaPlugin() {
 		val commandManager = PaperCommandManager(this)
 
 		val commands = arrayOf(
-			AchievementsCommand()
+			AchievementsCommand(),
+			RanktrackCommands()
 		)
 
 		for (command in commands) commandManager.registerCommand(command)

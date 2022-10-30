@@ -1,7 +1,8 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.server.utilities.calculateRank
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
@@ -18,8 +19,6 @@ import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.utils.hover
-import net.starlegacy.feature.progression.Levels
-import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.feature.space.Space
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.colorize
@@ -325,8 +324,8 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 
 private fun playerInfo(player: Player): String =
 	"""
-    Level: ${Levels[player]}
-    XP: ${SLXP[player]}
+    RankTrack: ${calculateRank(PlayerData[player.uniqueId]).displayName}
+    XP: ${calculateRank(PlayerData[player.uniqueId]).displayName}
     Nation: ${PlayerCache[player].nation?.let(NationCache::get)?.name}
     Settlement: ${PlayerCache[player].settlement?.let(SettlementCache::get)?.name}
     Player: ${player.name}

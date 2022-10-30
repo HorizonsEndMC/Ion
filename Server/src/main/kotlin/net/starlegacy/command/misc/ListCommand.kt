@@ -1,12 +1,12 @@
 package net.starlegacy.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
+import net.horizonsend.ion.common.database.collections.PlayerData
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.util.msg
 import net.starlegacy.util.multimapOf
@@ -42,7 +42,7 @@ object ListCommand : SLCommand() {
 			sender msg "$nationText &8&l:(&d${members.count()}&8&l):&7 ${
 				members.joinToString { player ->
 					val nationPrefix = PlayerCache[player].nationTag?.let { "&r$it " } ?: ""
-					return@joinToString "&7[&b${Levels[player]}&7] $nationPrefix&7${player.name}"
+					return@joinToString "&7[&b${PlayerData[player.uniqueId].ranktracktype}&7] $nationPrefix&7${player.name}"
 				}
 			}"
 		}

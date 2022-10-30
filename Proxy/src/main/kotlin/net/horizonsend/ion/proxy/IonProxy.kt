@@ -67,6 +67,7 @@ class IonProxy : Plugin() {
 
 		commandManager.registerCommand(VoteCommand(configuration))
 		commandManager.registerCommand(BungeeInfoCommand())
+		commandManager.registerCommand(BungeePlayerInfoCommand())
 
 		// Discord
 		jda?.let {
@@ -80,6 +81,7 @@ class IonProxy : Plugin() {
 			jdaCommandManager.registerGuildCommand(DiscordInfoCommand())
 			jdaCommandManager.registerGuildCommand(PlayerListCommand(proxy))
 			jdaCommandManager.registerGuildCommand(ResyncCommand(configuration))
+			jdaCommandManager.registerGuildCommand(PlayerInfoCommand(proxy))
 
 			jdaCommandManager.build()
 

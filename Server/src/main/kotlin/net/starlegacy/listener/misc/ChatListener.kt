@@ -1,9 +1,10 @@
 package net.starlegacy.listener.misc
 
+import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.core.NewPlayerProtection.updateProtection
+import net.horizonsend.ion.server.utilities.calculateRank
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.chat.ChatChannel
-import net.starlegacy.feature.progression.Levels
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.colorize
@@ -33,7 +34,7 @@ object ChatListener : SLEventListener() {
 	@EventHandler(priority = EventPriority.HIGH)
 	fun onAsyncPlayerChatEventB(event: AsyncPlayerChatEvent) {
 		event.player.updateProtection()
-		event.format = "&8[&b${Levels[event.player]}&8]&7 ".colorize() + event.format
+		event.format = "&8[&b${calculateRank(PlayerData[event.player.uniqueId]).displayName}&8]&7 ".colorize() + event.format
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
