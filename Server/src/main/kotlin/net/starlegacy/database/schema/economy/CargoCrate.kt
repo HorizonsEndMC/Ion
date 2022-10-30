@@ -39,34 +39,15 @@ data class CargoCrate(
 		WHITE(SLTextStyle.WHITE, Material.WHITE_SHULKER_BOX),
 		ORANGE(SLTextStyle.GOLD, Material.ORANGE_SHULKER_BOX),
 		MAGENTA(SLTextStyle.RED, Material.MAGENTA_SHULKER_BOX),
-		LIGHT_BLUE(SLTextStyle.AQUA, Material.LIGHT_BLUE_SHULKER_BOX),
 		YELLOW(SLTextStyle.YELLOW, Material.YELLOW_SHULKER_BOX),
-		LIME(SLTextStyle.GREEN, Material.LIME_SHULKER_BOX),
-		PINK(SLTextStyle.LIGHT_PURPLE, Material.PINK_SHULKER_BOX),
 		GRAY(SLTextStyle.DARK_GRAY, Material.GRAY_SHULKER_BOX),
 		LIGHT_GRAY(SLTextStyle.GRAY, Material.LIGHT_GRAY_SHULKER_BOX),
 		CYAN(SLTextStyle.DARK_AQUA, Material.CYAN_SHULKER_BOX),
-		PURPLE(SLTextStyle.DARK_PURPLE, Material.PURPLE_SHULKER_BOX),
 		BLUE(SLTextStyle.BLUE, Material.BLUE_SHULKER_BOX),
 		BROWN(SLTextStyle.GOLD, Material.BROWN_SHULKER_BOX),
 		GREEN(SLTextStyle.DARK_GREEN, Material.GREEN_SHULKER_BOX),
-		RED(SLTextStyle.DARK_RED, Material.RED_SHULKER_BOX),
-		BLACK(SLTextStyle.BLACK, Material.BLACK_SHULKER_BOX),
+		BLACK(SLTextStyle.BLACK, Material.BLACK_SHULKER_BOX)
 	}
 
 	fun getValue(planet: String): Double = values.getOrDefault(planet, 0.0)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
