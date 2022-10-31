@@ -2,21 +2,21 @@ package net.horizonsend.ion.server
 
 import net.minecraft.server.level.ServerLevel
 
-/** A data which Ion needs on a per-level basis. */
-class IonLevelData private constructor(
+/** A data which Ion needs on a per-world basis. */
+class IonWorld private constructor(
 	val serverLevel: ServerLevel
 ) {
 	companion object {
-		private val ionWorlds = mutableMapOf<ServerLevel, IonLevelData>()
+		private val ionWorlds = mutableMapOf<ServerLevel, IonWorld>()
 
-		operator fun get(serverLevel: ServerLevel): IonLevelData = ionWorlds[serverLevel]!!
+		operator fun get(serverLevel: ServerLevel): IonWorld = ionWorlds[serverLevel]!!
 
 		fun register(serverLevel: ServerLevel) {
 			if (ionWorlds.contains(serverLevel)) {
 				throw IllegalStateException("Attempted to register server level which is already registered!")
 			}
 
-			ionWorlds[serverLevel] = IonLevelData(serverLevel)
+			ionWorlds[serverLevel] = IonWorld(serverLevel)
 		}
 
 		fun unregister(serverLevel: ServerLevel) {
