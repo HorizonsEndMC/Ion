@@ -25,7 +25,7 @@ class SonicMissileWeaponSubsystem(
 	override val length: Int = 10
 	override val convergeDist: Double = 0.0
 	override val extraDistance: Int = 0
-	override val angleRadians: Double = Math.toRadians(5.0)
+	override val angleRadians: Double = Math.toRadians(180.0)
 	override val powerUsage: Int = 70000
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(5L)
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000L)

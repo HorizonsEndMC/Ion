@@ -106,6 +106,7 @@ import org.bukkit.Material.REDSTONE_WALL_TORCH
 import org.bukkit.Material.REDSTONE_WIRE
 import org.bukkit.Material.REPEATER
 import org.bukkit.Material.SCAFFOLDING
+import org.bukkit.Material.SCULK
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
 import org.bukkit.Material.SPONGE
@@ -228,6 +229,8 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	POTTED_WARPED_ROOTS,
 	POTTED_WHITE_TULIP,
 	POTTED_WITHER_ROSE,
+
+	SCULK
 
 	).also {
 	it.addAll(CONCRETE_TYPES)

@@ -19,7 +19,7 @@ class CthulhuBeamProjectile(
 	override val shieldDamageMultiplier: Int = 10
 	override val thickness: Double = 1.0
 	override val explosionPower: Float = 1.0f
-	override val volume: Float = 5f
+	override val volume: Float = 0.25f
 	override val pitch: Float = 2.0f
 	override val soundName: String = "minecraft:block.beacon.power_select"
 
