@@ -63,29 +63,47 @@ abstract class ActiveStarship(
 
 	var blocks: LongOpenHashSet,
 	val mass: Double,
-	var centerOfMass: BlockPos,
+	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
 ) {
 	abstract val type: StarshipType
 
-	var serverLevel: ServerLevel = serverLevel
+	private var _centerOfMass: BlockPos = centerOfMass
+	private var _centerOfMassVec3i: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
+
+	private var _serverLevel: ServerLevel = serverLevel
+	private var _world: World = serverLevel.world
+
+	var serverLevel: ServerLevel
+		get() = _serverLevel
 		set(value) {
-			ActiveStarships.updateWorld(this, field.world, value.world)
-			field = value
+			ActiveStarships.updateWorld(this, value.world, value.world)
+			_serverLevel = value
+			_world = value.world
 		}
 
 	@Deprecated("Prefer Minecraft - `net.minecraft.server.level.ServerLevel`")
 	var world: World
-		get() = serverLevel.world
+		get() = _world
 		set(value) {
-			serverLevel = (value as CraftWorld).handle
+			ActiveStarships.updateWorld(this, value, value)
+			_serverLevel = (value as CraftWorld).handle
+			_world = value
+		}
+
+	var centerOfMass: BlockPos
+		get() = _centerOfMass
+		set(value) {
+			_centerOfMass = value
+			_centerOfMassVec3i = Vec3i(value.x, value.y, value.z)
 		}
 
 	@Deprecated("Prefer Minecraft - `net.minecraft.core.BlockPos`")
 	var centerOfMassVec3i: Vec3i
-		get() = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
+		get() = _centerOfMassVec3i
 		set(value) {
-			centerOfMass = BlockPos(value.x, value.y, value.z)
+			_centerOfMass = BlockPos(value.x, value.y, value.z)
+			_centerOfMassVec3i = value
 		}
 
 	var isTeleporting: Boolean = false
