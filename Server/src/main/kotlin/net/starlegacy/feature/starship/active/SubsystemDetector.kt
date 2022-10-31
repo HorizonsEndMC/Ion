@@ -9,6 +9,7 @@ import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblock
 import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
+import net.starlegacy.feature.multiblock.particleshield.EventShieldMultiblock
 import net.starlegacy.feature.multiblock.particleshield.SphereShieldMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
@@ -94,6 +95,7 @@ object SubsystemDetector {
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
+				if (multiblock is EventShieldMultiblock && !starship.pilot?.hasPermission("ion.core.eventship")!!){return}
 				starship.subsystems += SphereShieldSubsystem(starship, sign, multiblock)
 			}
 
