@@ -43,13 +43,13 @@ class IonServer : JavaPlugin() {
 		// Currently Ion needs to be loaded POSTWORLD due to older Star Legacy code, this means some worlds will already
 		// be loaded by the time we get to plugin enable. In the future we will change to load on STARTUP, but for the
 		// time being we need to check for worlds on start up. This additionally serves to allow Ion to handle reloads.
-		for (world in server.worlds) IonLevelData.register((world as CraftWorld).handle)
+		for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
 
 		legacyEnable(commandManager)
 	}
 
 	override fun onDisable() {
-		IonLevelData.unregisterAll()
+		IonWorld.unregisterAll()
 		closeDatabase()
 		legacyDisable()
 	}
