@@ -41,6 +41,7 @@ import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblockAdvanced
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblockBasic
 import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
+import net.starlegacy.feature.multiblock.particleshield.EventShieldMultiblock
 import net.starlegacy.feature.multiblock.particleshield.ShieldMultiblockClass08Left
 import net.starlegacy.feature.multiblock.particleshield.ShieldMultiblockClass08Right
 import net.starlegacy.feature.multiblock.particleshield.ShieldMultiblockClass08i
@@ -130,6 +131,7 @@ object Multiblocks : SLComponent() {
 			ShieldMultiblockClass85,
 			ShieldMultiblockClass08i,
 			BoxShieldMultiblock,
+			EventShieldMultiblock,
 
 			CarbonProcessorMultiblock,
 

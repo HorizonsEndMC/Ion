@@ -16,7 +16,7 @@ import org.bukkit.util.Vector
 class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
 	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
 	override val powerUsage: Int = 1
-	override val range: Double = 200.0
+	override val range: Double = 300.0
 
 	override fun getMaxPerShot(): Int {
 		return (sqrt(starship.blockCount.toDouble()) / 32).toInt()
