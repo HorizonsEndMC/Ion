@@ -62,7 +62,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val id = objId<PlayerStarshipData>()
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
-			val data = PlayerStarshipData(id, captain, type, worldName, blockKey)
+			val data = PlayerStarshipData(id, captain, type, worldName, Ion.configuration.serverName, blockKey)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
 

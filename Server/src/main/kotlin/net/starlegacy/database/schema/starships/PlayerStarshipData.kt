@@ -30,6 +30,7 @@ data class PlayerStarshipData(
 
 	var starshipType: StarshipType,
 
+	var serverName: String?,
 	var levelName: String,
 	var blockKey: Long,
 
@@ -46,6 +47,7 @@ data class PlayerStarshipData(
 		ensureIndex(PlayerStarshipData::captain)
 		ensureIndex(PlayerStarshipData::pilots)
 		ensureIndex(PlayerStarshipData::name)
+		ensureIndex(PlayerStarshipData::serverName)
 		ensureIndex(PlayerStarshipData::levelName)
 		ensureUniqueIndex(PlayerStarshipData::levelName, PlayerStarshipData::blockKey)
 	}) {
