@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.database.closeDatabase
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.openDatabase
+import net.horizonsend.ion.common.loadConfiguration
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
@@ -16,6 +17,8 @@ class IonServer : JavaPlugin() {
 	companion object {
 		lateinit var Ion: IonServer private set
 	}
+
+	val configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
 
 	override fun onEnable() {
 		openDatabase(dataFolder)
