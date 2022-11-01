@@ -5,10 +5,17 @@ import net.horizonsend.ion.common.database.closeDatabase
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.openDatabase
 import net.horizonsend.ion.common.loadConfiguration
+import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
+import net.starlegacy.util.blockKeyX
+import net.starlegacy.util.blockKeyY
+import net.starlegacy.util.blockKeyZ
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
 import org.bukkit.plugin.java.JavaPlugin
+import org.litote.kmongo.eq
 
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
@@ -49,6 +56,41 @@ class IonServer : JavaPlugin() {
 		for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
 
 		legacyEnable(commandManager)
+
+		// Missing Ship Purge
+		var shipsRemoved = 0
+		var chunksRemaining = 0
+
+		for (world in server.worlds) {
+			for (starship in PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name)) {
+				val x = blockKeyX(starship.blockKey)
+				val y = blockKeyY(starship.blockKey)
+				val z = blockKeyZ(starship.blockKey)
+
+				val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+
+				world.getChunkAtAsync(location, false) { chunk ->
+					val cX = x.rem(16)
+					val cY = y.rem(16)
+					val cZ = z.rem(16)
+
+					if (chunk.getBlock(cX, cY, cZ).type != Material.JUKEBOX) {
+						println("Removed missing ${starship.starshipType} at $cX, $cY, $cZ @ ${world.name}.")
+						PlayerStarshipData.remove(starship._id)
+						shipsRemoved++
+					}
+
+					chunk.isForceLoaded = false
+					chunksRemaining--
+
+					if (chunksRemaining == 0) {
+						println("$shipsRemoved missing ships were removed.")
+					}
+				}
+
+				chunksRemaining++
+			}
+		}
 	}
 
 	override fun onDisable() {

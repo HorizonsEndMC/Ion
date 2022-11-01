@@ -25,5 +25,6 @@ softdepend:
   - Citizens
   - DiscordSRV
   - LuckPerms
+  - Multiverse-Core
   - Vault
   - dynmap
