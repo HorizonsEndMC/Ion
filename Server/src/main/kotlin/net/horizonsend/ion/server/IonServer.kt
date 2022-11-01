@@ -73,8 +73,14 @@ class IonServer : JavaPlugin() {
 					val cX = gX.rem(16)
 					val cZ = gZ.rem(16)
 
-					if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
-						println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
+					try {
+						if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
+							println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
+							PlayerStarshipData.remove(starship._id)
+							shipsRemoved++
+						}
+					} catch (e: Exception) {
+						println("Removed corrupt ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
 						PlayerStarshipData.remove(starship._id)
 						shipsRemoved++
 					}
@@ -83,7 +89,7 @@ class IonServer : JavaPlugin() {
 					chunksRemaining--
 
 					if (chunksRemaining == 0) {
-						println("$shipsRemoved missing ships were removed.")
+						println("$shipsRemoved missing / corrupted ships were removed.")
 					}
 				}
 
