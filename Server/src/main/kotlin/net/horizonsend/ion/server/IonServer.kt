@@ -63,19 +63,18 @@ class IonServer : JavaPlugin() {
 
 		for (world in server.worlds) {
 			for (starship in PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name)) {
-				val x = blockKeyX(starship.blockKey)
-				val y = blockKeyY(starship.blockKey)
-				val z = blockKeyZ(starship.blockKey)
+				val gX = blockKeyX(starship.blockKey)
+				val gY = blockKeyY(starship.blockKey)
+				val gZ = blockKeyZ(starship.blockKey)
 
-				val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+				val location = Location(world, gX.toDouble(), gY.toDouble(), gZ.toDouble())
 
 				world.getChunkAtAsync(location, false) { chunk ->
-					val cX = x.rem(16)
-					val cY = y.rem(16)
-					val cZ = z.rem(16)
+					val cX = gX.rem(16)
+					val cZ = gZ.rem(16)
 
-					if (chunk.getBlock(cX, cY, cZ).type != Material.JUKEBOX) {
-						println("Removed missing ${starship.starshipType} at $cX, $cY, $cZ @ ${world.name}.")
+					if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
+						println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
 						PlayerStarshipData.remove(starship._id)
 						shipsRemoved++
 					}
