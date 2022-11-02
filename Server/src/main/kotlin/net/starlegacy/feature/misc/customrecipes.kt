@@ -290,6 +290,25 @@ object CustomRecipes : SLComponent() {
 		)
 	}
 
+	private fun registerNetherWartRecipe() {
+		registerShapelessRecipe(
+			"nether_wart",
+			ItemStack(Material.NETHER_WART, 4),
+			materialChoice(Material.NETHER_WART_BLOCK)
+		)
+	}
+
+	private fun registerNetherWartBlockRecipe() {
+		registerShapelessRecipe(
+			"nether_wart_block",
+			ItemStack(Material.NETHER_WART_BLOCK, 1),
+			materialChoice(Material.NETHER_WART),
+			materialChoice(Material.NETHER_WART),
+			materialChoice(Material.NETHER_WART),
+			materialChoice(Material.NETHER_WART)
+		)
+	}
+
 	private fun registerEndPortalFrameRecipe() {
 		registerShapedRecipe(
 			"end_portal_frame",
