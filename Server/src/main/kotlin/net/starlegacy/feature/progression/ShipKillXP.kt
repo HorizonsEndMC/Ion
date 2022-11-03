@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 import kotlin.math.sqrt
+import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.legacy.events.ShipKillEvent
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
@@ -148,6 +150,9 @@ object ShipKillXP : SLComponent() {
 
 				killMessage(killedName, damager, data)
 				ShipKillEvent(getPlayer(killed)!!, getPlayer(damager.id)!!).callEvent()
+				PlayerData[damager.id].update {
+					bounty += xp
+				}
 			}
 		}
 	}

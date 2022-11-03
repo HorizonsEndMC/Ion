@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.closeDatabase
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.openDatabase
 import net.horizonsend.ion.common.loadConfiguration
+import net.horizonsend.ion.server.commands.BountyCommands
 import net.horizonsend.ion.server.legacy.commands.AchievementsCommand
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.legacyDisable
@@ -42,7 +43,8 @@ class IonServer : JavaPlugin() {
 			commandManager.enableUnstableAPI("help")
 
 			val commands = arrayOf(
-				AchievementsCommand()
+				AchievementsCommand(),
+				BountyCommands()
 			)
 
 			for (command in commands) commandManager.registerCommand(command)
