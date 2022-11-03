@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.legacy.utilities
 
-import java.util.EnumSet
+import net.horizonsend.ion.server.vaultEconomy
 import net.milkbowl.vault.economy.Economy
-import org.bukkit.Bukkit
+import java.util.EnumSet
 
 inline fun vaultEconomy(execute: (Economy) -> Unit) {
-	execute(Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider ?: return)
+	execute(vaultEconomy ?: return)
 }
 
 inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =

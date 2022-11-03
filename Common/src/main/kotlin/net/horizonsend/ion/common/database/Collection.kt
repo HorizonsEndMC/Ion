@@ -14,7 +14,11 @@ abstract class Collection<D : Document>(private val kClass: KClass<D>) {
 
 	internal fun initialize(database: MongoDatabase) {
 		collection = database.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
+
+		postInitialize()
 	}
+
+	protected open fun postInitialize() {}
 
 	protected abstract fun construct(id: UUID): D
 
