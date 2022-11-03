@@ -48,7 +48,7 @@ data class CityNPC(
 
 	enum class Type(val displayName: String) {
 		IMPORTER("Importer"), EXPORTER("Exporter"), BAZAAR("Bazaar"),
-		MERCHANT("Merchant")
+		MERCHANT("Merchant"), BOUNTYBROKER("Bounty Broker")
 	}
 
 	override fun equals(other: Any?): Boolean {
