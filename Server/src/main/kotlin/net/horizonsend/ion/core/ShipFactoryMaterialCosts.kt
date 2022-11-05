@@ -54,6 +54,52 @@ object ShipFactoryMaterialCosts {
 		Material.OBSERVER to 5.0,
 		Material.TRAPPED_CHEST to 5.0,
 		Material.BARREL to 5.0
+		
+		Material.OAK_PLANKS to 0.1
+		Material.SPRUCE_PLANKS to 0.1
+		Material.BIRCH_PLANKS to 0.1
+		Material.JUNGLE_PLANKS to 0.1
+		Material.ACACIA_PLANKS to 0.1
+		Material.DARK_OAK_PLANKS to 0.1
+		Material.MANGROVE_PLANKS to 0.1
+		Material.CRIMSON_PLANKS to 0.1
+		Material.WARPED_PLANKS to 0.1
+		Material.STONE to 0.1
+		Material.SMOOTH_STONE to 0.1
+		Material.SANDSTONE to 0.1
+		Material.CUT_SANDSTONE to 0.1
+		Material.COBBLESTONE to 0.1
+		Material.BRICKS to 0.1
+		Material.STONE_BRICKS to 0.1
+		Material.MUD_BRICKS to 0.1
+		Material.NETHER_BRICKS to 0.1
+		Material.QUARTZ_BLOCK to 0.1
+		Material.RED_SANDSTONE to 0.1
+		Material.CUT_RED_SANDSTONE to 0.1
+		Material.PURPUR_BLOCK to 0.1
+		Material.PRISMARINE to 0.1
+		Material.PRISMARINE_BRICKS to 0.1
+		Material.DARK_PRISMARINE to 0.1
+		Material.POLISHED_GRANITE to 0.1
+		Material.SMOOTH_RED_SANDSTONE to 0.1
+		Material.MOSSY_STONE_BRICKS to 0.1
+		Material.POLISHED_DIORITE to 0.1
+		Material.MOSSY_COBBLESTONE to 0.1
+		Material.END_STONE_BRICKS to 0.1
+		Material.SMOOTH_SANDSTONE to 0.1
+		Material.SMOOTH_QUARTZ to 0.1
+		Material.GRANITE to 0.1
+		Material.ANDESITE to 0.1
+		Material.RED_NETHER_BRICKS to 0.1
+		Material.POLISHED_ANDESITE to 0.1
+		Material.DIORITE to 0.1
+		Material.COBBLED_DEEPSLATE to 0.1
+		Material.POLISHED_DEEPSLATE to 0.1
+		Material.DEEPSLATE_BRICKS to 0.1
+		Material.DEEPSLATE_TILES to 0.1
+		Material.BLACKSTONE to 0.1
+		Material.POLISHED_BLACKSTONE to 0.1
+		Material.POLISHED_BLACKSTONE_BRICKS to 0.1
 	)
 	fun getPrice(data: BlockData) : Double {
 		when(data){
