@@ -54,6 +54,9 @@ fun initializeCrafting() {
 	// Prismarine Crystals
 	shapelessRecipe("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), arrayOf(SEA_LANTERN))
 
+	// Nether Wart Block -> Nether Warts
+	shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
+
 	// Remove Unwanted Vanilla Recipes
 	for (material in forbiddenCraftingItems) {
 		for (recipe in Bukkit.getRecipesFor(ItemStack(material))) {
