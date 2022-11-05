@@ -8,6 +8,7 @@ import net.starlegacy.util.isGlazedTerracotta
 import net.starlegacy.util.isSign
 import net.starlegacy.util.isSlab
 import net.starlegacy.util.isStainedTerracotta
+import net.starlegacy.util.isStairs
 import net.starlegacy.util.isWall
 import net.starlegacy.util.isWallSign
 import org.bukkit.Material
@@ -65,6 +66,7 @@ object ShipFactoryMaterialCosts {
 		else if(data.material.isConcrete) return 0.1
 		else if(data.material.isGlassPane) return 0.1
 		else if(data.material.isSlab) return 0.1
+		else if(data.material.isStairs) return 0.1
 		else if(data.material.isStainedTerracotta) return 0.1
 		else if(data.material.isGlazedTerracotta) return 0.1
 		else if(data.material.isConcrete) return 0.1
