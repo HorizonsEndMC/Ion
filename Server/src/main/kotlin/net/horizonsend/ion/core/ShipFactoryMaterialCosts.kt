@@ -100,6 +100,22 @@ object ShipFactoryMaterialCosts {
 		Material.BLACKSTONE to 0.1
 		Material.POLISHED_BLACKSTONE to 0.1
 		Material.POLISHED_BLACKSTONE_BRICKS to 0.1
+		
+		Material.CHISELED_DEEPSLATE to 0.1
+		Material.CHISELED_NETHER_BRICKS to 0.1
+		Material.CHISELED_POLISHED_BLACKSTONE to 0.1
+		Material.CHISELED_QUARTZ_BLOCK to 0.1
+		Material.CHISELED_RED_SANDSTONE to 0.1
+		Material.CHISELED_SANDSTONE to 0.1
+		Material.CHISELED_STONE_BRICKS to 0.1
+		Material.QUARTZ_BRICKS to 0.1
+		Material.QUARTZ_PILLAR to 0.1
+		Material.PURPUR_PILLAR to 0.1
+		Material.CRACKED_STONE_BRICKS to 0.1
+		Material.CRACKED_DEEPSLATE_BRICKS to 0.1
+		Material.CRACKED_DEEPSLATE_TILES to 0.1
+		Material.CRACKED_NETHER_BRICKS to 0.1
+		Material.CRACKED_POLISHED_BLACKSTONE_BRICKS to 0.1	
 	)
 	fun getPrice(data: BlockData) : Double {
 		when(data){
