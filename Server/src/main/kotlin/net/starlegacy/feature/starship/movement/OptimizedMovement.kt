@@ -188,6 +188,7 @@ object OptimizedMovement {
 			}
 
 			updateHeightMaps(nmsChunk)
+			nmsChunk.isUnsaved = true
 		}
 	}
 
@@ -226,6 +227,7 @@ object OptimizedMovement {
 			}
 
 			updateHeightMaps(nmsChunk)
+			nmsChunk.isUnsaved = true
 		}
 
 		for ((index, tile) in capturedTiles) {
