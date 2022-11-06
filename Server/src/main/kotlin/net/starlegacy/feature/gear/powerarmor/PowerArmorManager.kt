@@ -71,9 +71,8 @@ object PowerArmorManager {
 						PowerArmorModule.ENVIRONMENT -> {
 							player.addPotionEffect(
 								PotionEffect(PotionEffectType.WATER_BREATHING, 20, 1, true, true)
-							) {
+							)
 								removePower(item, 1)
-							}
 						}
 
 						else -> {
