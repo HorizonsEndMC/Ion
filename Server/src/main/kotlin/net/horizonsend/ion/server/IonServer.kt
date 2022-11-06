@@ -4,6 +4,8 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
+import net.horizonsend.ion.server.commands.IonCustomItemCommands
+import net.horizonsend.ion.server.commands.PatreonCommands
 import net.horizonsend.ion.server.commands.BountyCommands
 import net.horizonsend.ion.server.legacy.commands.AchievementsCommand
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -28,6 +30,8 @@ class IonServer : JavaPlugin() {
 	}
 
 	val configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
+	val balancing = loadConfiguration<BalancingConfiguration>(dataFolder, "balancing.conf")
+
 
 	override fun onEnable() { try {
 		Connectivity.open(dataFolder)
@@ -37,13 +41,14 @@ class IonServer : JavaPlugin() {
 		// Commands
 		val commandManager = PaperCommandManager(this)
 
-		@Suppress("Deprecation")
-		commandManager.enableUnstableAPI("help")
-
 		val commands = arrayOf(
 			AchievementsCommand(),
+			PatreonCommands(),
 			BountyCommands()
+			IonCustomItemCommands()
 		)
+			@Suppress("Deprecation")
+			commandManager.enableUnstableAPI("help")
 
 		for (command in commands) commandManager.registerCommand(command)
 

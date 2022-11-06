@@ -63,6 +63,8 @@ fun initializeCrafting() {
 			if (recipe is Keyed) Bukkit.removeRecipe(recipe.key)
 		}
 	}
+
+	//
 }
 
 private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {
