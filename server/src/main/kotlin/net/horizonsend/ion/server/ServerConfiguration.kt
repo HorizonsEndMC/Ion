@@ -9,6 +9,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 @ConfigSerializable
 data class ServerConfiguration(
 	val serverName: String? = null,
+	val ParticleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(
 		HyperspaceBeacon(
 			"test", 100.0, Pos("space2", 100000, 128, 100000),
