@@ -1,5 +1,6 @@
 package net.horizonsend.ion.common.database.collections
 
+import java.awt.Color
 import com.mongodb.client.model.Collation
 import com.mongodb.client.model.IndexOptions
 import net.horizonsend.ion.common.database.Collection
@@ -10,6 +11,7 @@ import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.UUID
+import net.horizonsend.ion.common.database.enums.Particle
 
 class PlayerData private constructor(
 	@BsonId val minecraftUUID: UUID,
@@ -19,6 +21,10 @@ class PlayerData private constructor(
 	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
 	var acceptedBounty: UUID? = null,
 	var bounty: Int = 0
+	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
+	var patreonMoney: Double = 0.0,
+	var chosenParticle: Particle = Particle.REDSTONE_PARTICLE,
+	var chosenColour: Color? = null
 ) : Document() {
 	companion object : Collection<PlayerData>(PlayerData::class) {
 		init {
