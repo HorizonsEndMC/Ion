@@ -2,12 +2,6 @@ package net.horizonsend.ion.server.commands
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Default
-import co.aikar.commands.annotation.Optional
-import net.horizonsend.ion.server.customitems.CustomItemList
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import org.bukkit.entity.Player
 
 @CommandAlias("IonCustomItem")
