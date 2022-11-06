@@ -83,5 +83,6 @@ enum class CustomItemList(val itemStack: ItemStack) {
 		), org.bukkit.persistence.PersistentDataType.INTEGER, 30
 	)
 		it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 2/2")))
+	)
 	});
 }
