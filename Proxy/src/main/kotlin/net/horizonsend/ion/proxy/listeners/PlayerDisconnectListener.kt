@@ -35,15 +35,5 @@ class PlayerDisconnectListener : Listener {
 				)
 			).queue()
 		}
-
-		Ion.jda?.let { jda ->
-			val discordId = PlayerData[event.player.uniqueId].discordId ?: return
-			val guild = jda.getGuildById(Ion.configuration.discordServer) ?: return
-
-			guild.removeRoleFromMember(
-				guild.getMemberById(discordId) ?: return,
-				guild.getRoleById(Ion.configuration.onlineRole) ?: return
-			).queue()
-		}
 	}
 }
