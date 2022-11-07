@@ -87,26 +87,11 @@ class IonProxy : Plugin() {
 			proxy.scheduler.schedule(this, {
 				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${proxy.onlineCount} players!"))
 			}, 0, 5, TimeUnit.SECONDS)
-
-			removeOnlineRoleFromEveryone()
 		}
 	}
 
 	override fun onDisable() {
 		closeDatabase()
-
-		jda?.run {
-			removeOnlineRoleFromEveryone()
-			shutdown()
-		}
-	}
-
-	private fun removeOnlineRoleFromEveryone() {
-		val guild = jda!!.getGuildById(configuration.discordServer) ?: return
-		val role = guild.getRoleById(configuration.onlineRole) ?: return
-
-		guild.getMembersWithRoles(role).forEach { member ->
-			guild.removeRoleFromMember(member, role).queue()
-		}
+		jda?.shutdown()
 	}
 }

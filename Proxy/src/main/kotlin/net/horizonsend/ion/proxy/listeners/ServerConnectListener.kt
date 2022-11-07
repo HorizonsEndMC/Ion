@@ -64,17 +64,6 @@ class ServerConnectListener : Listener {
 			if (playerData.minecraftUsername != event.player.name) {
 				playerData.update { minecraftUsername = event.player.name }
 			}
-
-			Ion.jda?.let { jda ->
-				val discordId = playerData.discordId ?: return
-
-				val guild = jda.getGuildById(Ion.configuration.discordServer) ?: return
-
-				guild.addRoleToMember(
-					guild.getMemberById(discordId) ?: return,
-					guild.getRoleById(Ion.configuration.onlineRole) ?: return
-				).queue()
-			}
 		} else {
 			Ion.proxy.broadcast(
 				*ComponentBuilder()
