@@ -4,7 +4,7 @@ plugins {
 	id("com.github.johnrengelman.shadow") version "7.1.2"
 	id("io.papermc.paperweight.userdev") version "1.3.9"
 	id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-	kotlin("jvm") version "1.7.20"
+	kotlin("jvm") version "1.7.21"
 }
 
 allprojects {

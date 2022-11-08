@@ -8,7 +8,7 @@ dependencies {
 
 	api("co.aikar:acf-core:0.5.1-SNAPSHOT")
 
-	api("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
+	api("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
 
 	implementation("org.litote.kmongo:kmongo:4.7.2")
 }
