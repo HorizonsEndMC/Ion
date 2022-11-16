@@ -35,6 +35,9 @@ class IonServer : JavaPlugin() {
 		// Commands
 		val commandManager = PaperCommandManager(this)
 
+		@Suppress("Deprecation")
+		commandManager.enableUnstableAPI("help")
+
 		val commands = arrayOf(
 			AchievementsCommand()
 		)
