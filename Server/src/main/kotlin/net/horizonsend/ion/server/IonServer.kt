@@ -64,40 +64,39 @@ class IonServer : JavaPlugin() {
 		var shipsRemoved = 0
 		var chunksRemaining = 0
 
-		for (world in server.worlds) {
-			for (starship in PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name)) {
-				val gX = blockKeyX(starship.blockKey)
-				val gY = blockKeyY(starship.blockKey)
-				val gZ = blockKeyZ(starship.blockKey)
+		for (world in server.worlds)
+		for (starship in PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name)) {
+			val gX = blockKeyX(starship.blockKey)
+			val gY = blockKeyY(starship.blockKey)
+			val gZ = blockKeyZ(starship.blockKey)
 
-				val location = Location(world, gX.toDouble(), gY.toDouble(), gZ.toDouble())
+			val location = Location(world, gX.toDouble(), gY.toDouble(), gZ.toDouble())
 
-				world.getChunkAtAsync(location, false) { chunk ->
-					val cX = gX.rem(16)
-					val cZ = gZ.rem(16)
+			world.getChunkAtAsync(location, false) { chunk ->
+				val cX = gX.rem(16)
+				val cZ = gZ.rem(16)
 
-					try {
-						if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
-							println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
-							PlayerStarshipData.remove(starship._id)
-							shipsRemoved++
-						}
-					} catch (e: Exception) {
-						println("Removed corrupt ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
+				try {
+					if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
+						println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
 						PlayerStarshipData.remove(starship._id)
 						shipsRemoved++
 					}
-
-					chunk.isForceLoaded = false
-					chunksRemaining--
-
-					if (chunksRemaining == 0) {
-						println("$shipsRemoved missing / corrupted ships were removed.")
-					}
+				} catch (e: Exception) {
+					println("Removed corrupt ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
+					PlayerStarshipData.remove(starship._id)
+					shipsRemoved++
 				}
 
-				chunksRemaining++
+				chunk.isForceLoaded = false
+				chunksRemaining--
+
+				if (chunksRemaining == 0) {
+					println("$shipsRemoved missing / corrupted ships were removed.")
+				}
 			}
+
+			chunksRemaining++
 		}
 	}
 
