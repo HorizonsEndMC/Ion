@@ -110,8 +110,14 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 					.create()
 			)
 			.append(
-				ComponentBuilder(" in Discord to link your accounts. The code will expire in 5 minutes.")
+				ComponentBuilder(" in Discord to link your accounts. The code will expire in 5 minutes.\n")
 					.color(ChatColor.of("#8888ff"))
+					.create()
+			)
+			.append(
+				ComponentBuilder("Please note, this is a slash command, not a text command, make sure Discord recognises it as such before sending otherwise it will be automatically deleted.")
+					.color(ChatColor.of("#3f3f3f"))
+					.italic(true)
 					.create()
 			)
 			.create()
