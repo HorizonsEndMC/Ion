@@ -15,6 +15,7 @@ allprojects {
 		maven("https://repo.papermc.io/repository/maven-public/")
 		maven("https://nexus.scarsz.me/content/groups/public/")
 		maven("https://repo.aikar.co/content/groups/aikar/")
+		maven("https://repo.alessiodp.com/releases")
 		maven("https://maven.citizensnpcs.co/repo")
 		maven("https://m2.dv8tion.net/releases")
 		maven("https://jitpack.io")
