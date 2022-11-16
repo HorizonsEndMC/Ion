@@ -84,8 +84,8 @@ object PlayerXPLevelCache : SLComponent() {
 
 	/** Dispose of a player's cache when they log out */
 	@EventHandler
-	fun onQuit(event: PlayerQuitEvent): CachedAdvancePlayer? {
-		return map.remove(event.player.uniqueId)
+	fun onQuit(event: PlayerQuitEvent) {
+		map.remove(event.player.uniqueId)
 	}
 
 	/** Retrieve an online player's cached player data. Throws an exception if it is missing */
