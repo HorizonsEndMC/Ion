@@ -4,7 +4,7 @@ import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import kotlin.collections.set
 import kotlin.math.sqrt
-import net.horizonsend.ion.core.events.EnterPlanetEvent
+import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.misc.CryoPods

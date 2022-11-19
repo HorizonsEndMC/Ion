@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.closeDatabase
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.openDatabase
 import net.horizonsend.ion.common.loadConfiguration
+import net.horizonsend.ion.server.legacy.commands.AchievementsCommand
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable

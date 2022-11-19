@@ -16,8 +16,8 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.sin
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships

@@ -2,12 +2,12 @@ package net.starlegacy.feature.multiblock
 
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.core.events.MultiblockDetectEvent
-import net.horizonsend.ion.core.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
-import net.horizonsend.ion.core.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
-import net.horizonsend.ion.core.starshipweapon.multiblock.CthulhuBeamMultiblockSide
-import net.horizonsend.ion.core.starshipweapon.multiblock.SonicMissileWeaponMultiblock
-import net.horizonsend.ion.core.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
+import net.horizonsend.ion.server.legacy.events.MultiblockDetectEvent
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockSide
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10

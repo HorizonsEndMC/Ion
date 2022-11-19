@@ -1,9 +1,9 @@
 package net.starlegacy.feature.misc
 
 import java.util.UUID
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.ores.Ore
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.legacy.ores.Ore
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.starship.isFlyable

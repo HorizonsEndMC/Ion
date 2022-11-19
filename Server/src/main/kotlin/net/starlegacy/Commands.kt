@@ -1,11 +1,11 @@
 package net.starlegacy
 
-import net.horizonsend.ion.core.NewPlayerProtection
-import net.horizonsend.ion.core.commands.AdminCommands
-import net.horizonsend.ion.core.commands.GracePeriod
-import net.horizonsend.ion.core.commands.RainbowProjectileCommand
-import net.horizonsend.ion.core.commands.RandomTargetCommand
-import net.horizonsend.ion.core.commands.Starships
+import net.horizonsend.ion.server.legacy.NewPlayerProtection
+import net.horizonsend.ion.server.legacy.commands.AdminCommands
+import net.horizonsend.ion.server.legacy.commands.GracePeriod
+import net.horizonsend.ion.server.legacy.commands.RainbowProjectileCommand
+import net.horizonsend.ion.server.legacy.commands.RandomTargetCommand
+import net.horizonsend.ion.server.legacy.commands.Starships
 import net.starlegacy.command.economy.BazaarCommand
 import net.starlegacy.command.economy.CityNpcCommand
 import net.starlegacy.command.economy.CollectedItemCommand

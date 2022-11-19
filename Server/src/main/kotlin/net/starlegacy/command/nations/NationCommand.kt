@@ -9,8 +9,8 @@ import co.aikar.commands.annotation.Subcommand
 import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
-import net.horizonsend.ion.core.events.CreateNationEvent
-import net.horizonsend.ion.core.events.CreateNationOutpostEvent
+import net.horizonsend.ion.server.legacy.events.CreateNationEvent
+import net.horizonsend.ion.server.legacy.events.CreateNationOutpostEvent
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache

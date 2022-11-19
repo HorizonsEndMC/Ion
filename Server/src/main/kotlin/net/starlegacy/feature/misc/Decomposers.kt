@@ -1,8 +1,8 @@
 package net.starlegacy.feature.misc
 
 import kotlin.math.max
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks

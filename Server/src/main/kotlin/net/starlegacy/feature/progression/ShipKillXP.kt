@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 import kotlin.math.sqrt
-import net.horizonsend.ion.core.events.ShipKillEvent
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.legacy.events.ShipKillEvent
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.schema.nations.NationRelation

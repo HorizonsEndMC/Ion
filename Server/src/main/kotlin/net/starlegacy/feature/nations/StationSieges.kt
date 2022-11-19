@@ -4,10 +4,10 @@ import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.concurrent.TimeUnit
-import net.horizonsend.ion.core.events.StationCaptureEvent
-import net.horizonsend.ion.core.events.StationSiegeBeginEvent
-import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.legacy.events.StationCaptureEvent
+import net.horizonsend.ion.server.legacy.events.StationSiegeBeginEvent
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent

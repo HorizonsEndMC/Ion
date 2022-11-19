@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.utilities.enumSetOf
+import net.horizonsend.ion.server.legacy.utilities.enumSetOf
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.Material

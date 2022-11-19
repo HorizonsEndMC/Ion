@@ -2,11 +2,11 @@ package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.GuiItem
 import java.util.LinkedList
-import net.horizonsend.ion.core.feedback.FeedbackType.SERVER_ERROR
-import net.horizonsend.ion.core.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.core.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.core.feedback.sendFeedbackActionMessage
-import net.horizonsend.ion.core.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SERVER_ERROR
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
