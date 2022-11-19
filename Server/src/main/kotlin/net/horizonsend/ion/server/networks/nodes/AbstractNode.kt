@@ -47,7 +47,7 @@ abstract class AbstractNode : Validatable() {
 	inline val y @JsonIgnore get() = position.y
 	inline val z @JsonIgnore get() = position.z
 
-	final override fun checkIsLoaded(): Boolean = ionChunk.isLoaded
+	final override fun checkIsLoaded(): Boolean = ionChunk.levelChunk != null
 
 	override fun checkIsValid(): Boolean {
 		val block = ionChunk.ionWorld.serverLevel.getBlockIfLoaded(position)

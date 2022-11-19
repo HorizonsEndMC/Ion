@@ -20,26 +20,23 @@ class IonChunk(
 	@JsonBackReference("IonWorld")
 	lateinit var ionWorld: IonWorld private set
 
-	val chunkX @JsonIgnore get() = ChunkPos(chunkKey).x
-	val chunkZ @JsonIgnore get() = ChunkPos(chunkKey).z
+	@JsonIgnore val chunkX: Int
+	@JsonIgnore val chunkZ: Int
 
-	private var cachedLevelChunk: LevelChunk? = null
-	private var cachedLoadedCheck = false
-
-	private var lastCacheUpdate = Int.MIN_VALUE
-
-	val isLoaded: Boolean @JsonIgnore get() {
-		if (lastCacheUpdate < Bukkit.getCurrentTick()) {
-			cachedLoadedCheck = ionWorld.serverLevel.chunkSource.isChunkLoaded(chunkX, chunkZ)
-			lastCacheUpdate = Bukkit.getCurrentTick()
-		}
-
-		return cachedLoadedCheck
+	init {
+		val chunkPos = ChunkPos(chunkKey)
+		chunkX = chunkPos.x
+		chunkZ = chunkPos.z
 	}
 
+	private var cachedLevelChunk: LevelChunk? = null
+	private var lastCacheUpdate = Int.MIN_VALUE
+
 	val levelChunk: LevelChunk? @JsonIgnore get() {
-		if (!isLoaded) cachedLevelChunk = null
-		else if (cachedLevelChunk == null) cachedLevelChunk = ionWorld.serverLevel.getChunk(chunkX, chunkZ)
+		if (lastCacheUpdate < Bukkit.getCurrentTick()) {
+			cachedLevelChunk = ionWorld.serverLevel.getChunk(chunkX, chunkZ)
+			lastCacheUpdate = Bukkit.getCurrentTick()
+		}
 
 		return cachedLevelChunk
 	}
@@ -47,6 +44,8 @@ class IonChunk(
 	@JsonManagedReference("IonChunk") val tickableNodes = mutableListOf<ExtractorNode>()
 	@JsonManagedReference("IonChunk") val otherNodes = mutableListOf<AbstractNode>()
 	@JsonManagedReference("IonChunk") val savableNodes = mutableListOf<ComputerNode>()
+
+	val isEmpty @JsonIgnore get() = tickableNodes.isEmpty() && otherNodes.isEmpty() && savableNodes.isEmpty()
 
 	fun addNode(node: AbstractNode) {
 		when (node) {
@@ -84,6 +83,4 @@ class IonChunk(
 		otherNodes.clear()
 		savableNodes.clear()
 	}
-
-	val isEmpty @JsonIgnore get() = tickableNodes.isEmpty() && otherNodes.isEmpty() && savableNodes.isEmpty()
 }
