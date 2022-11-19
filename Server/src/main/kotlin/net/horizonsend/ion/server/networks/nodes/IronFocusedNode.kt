@@ -1,11 +1,9 @@
 package net.horizonsend.ion.server.networks.nodes
 
-import org.bukkit.Material
+import net.minecraft.world.level.block.Blocks
 
 class IronFocusedNode : FocusedNode() {
-	override val companion: AbstractNodeCompanion<IronFocusedNode> = Companion
-
-	companion object : AbstractNodeCompanion<IronFocusedNode>(Material.IRON_BLOCK) {
+	companion object : AbstractNodeCompanion<IronFocusedNode>(Blocks.IRON_BLOCK) {
 		override fun construct(): IronFocusedNode = IronFocusedNode()
 	}
 }

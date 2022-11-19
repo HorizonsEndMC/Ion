@@ -6,19 +6,17 @@ import net.horizonsend.ion.server.networks.connections.WiredConnection
 import net.horizonsend.ion.server.utilities.Position
 import net.minecraft.core.BlockPos
 import net.minecraft.tags.BlockTags
+import net.minecraft.world.level.block.Blocks
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlockStates
 import kotlin.math.min
 
 class ComputerNode : AbstractNode() {
-	override val companion: AbstractNodeCompanion<ComputerNode> = Companion
-
 	override fun canStepFrom(lastNode: AbstractNode, lastConnection: AbstractConnection): Boolean {
 		return lastConnection is WiredConnection || lastNode !is ExtractorNode
 	}
@@ -101,7 +99,7 @@ class ComputerNode : AbstractNode() {
 		PowerMachines.setPower(sign ?: return, _powerValue)
 	}
 
-	companion object : AbstractNodeCompanion<ComputerNode>(Material.NOTE_BLOCK) {
+	companion object : AbstractNodeCompanion<ComputerNode>(Blocks.NOTE_BLOCK) {
 		override fun construct(): ComputerNode = ComputerNode()
 
 		private val signOffsets = arrayOf(

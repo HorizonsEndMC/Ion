@@ -1,11 +1,9 @@
 package net.horizonsend.ion.server.networks.nodes
 
-import org.bukkit.Material
+import net.minecraft.world.level.block.Blocks
 
 class Node : AbstractNode() {
-	override val companion: AbstractNodeCompanion<Node> = Companion
-
-	companion object : AbstractNodeCompanion<Node>(Material.SPONGE) {
+	companion object : AbstractNodeCompanion<Node>(Blocks.SPONGE) {
 		override fun construct(): Node = Node()
 	}
 }

@@ -13,13 +13,12 @@ import net.horizonsend.ion.server.networks.removalQueue
 import net.horizonsend.ion.server.networks.tickId
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Block
-import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers
+import kotlin.reflect.full.companionObjectInstance
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "key")
 @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 abstract class AbstractNode : Validatable() {
-	protected abstract val companion: AbstractNodeCompanion<*>
+	@JsonIgnore val companion = this::class.companionObjectInstance as AbstractNodeCompanion<*>
 
 	@JsonBackReference("IonChunk") lateinit var ionChunk: IonChunk
 
@@ -110,10 +109,8 @@ abstract class AbstractNode : Validatable() {
 	}
 
 	abstract class AbstractNodeCompanion<T: AbstractNode>(
-		nodeMaterial: Material
+		val nodeBlock: Block
 	) {
-		val nodeBlock: Block = CraftMagicNumbers.getBlock(nodeMaterial)
-
 		protected abstract fun construct(): T
 
 		fun build(ionChunk: IonChunk, blockPos: BlockPos): T {

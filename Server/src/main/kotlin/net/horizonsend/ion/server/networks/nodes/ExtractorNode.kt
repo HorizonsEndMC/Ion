@@ -2,12 +2,10 @@ package net.horizonsend.ion.server.networks.nodes
 
 import net.horizonsend.ion.server.networks.connections.AbstractConnection
 import net.horizonsend.ion.server.networks.connections.DirectConnection
-import org.bukkit.Material
+import net.minecraft.world.level.block.Blocks
 import kotlin.math.min
 
 class ExtractorNode : AbstractNode() {
-	override val companion: AbstractNodeCompanion<ExtractorNode> = Companion
-
 	// Extractors do not allow power to transfer through them
 	override fun canStepFrom(lastNode: AbstractNode, lastConnection: AbstractConnection): Boolean = false
 
@@ -40,7 +38,7 @@ class ExtractorNode : AbstractNode() {
 		}
 	}
 
-	companion object : AbstractNodeCompanion<ExtractorNode>(Material.CRAFTING_TABLE) {
+	companion object : AbstractNodeCompanion<ExtractorNode>(Blocks.CRAFTING_TABLE) {
 		override fun construct(): ExtractorNode = ExtractorNode()
 	}
 }
