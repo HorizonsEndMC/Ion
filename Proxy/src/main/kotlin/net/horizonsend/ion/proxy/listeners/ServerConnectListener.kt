@@ -42,9 +42,9 @@ class ServerConnectListener : Listener {
 				Ion.proxy.broadcast(
 					*ComponentBuilder()
 						.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
-						.append(ComponentBuilder("-f-f-f-fsssbbb ").color(ChatColor.GREEN).create())
+						.append(ComponentBuilder("+ ").color(ChatColor.GREEN).create())
 						.append(ComponentBuilder(event.target.name).color(ChatColor.GRAY).create())
-						.append(ComponentBuilder("] \n\n\n").color(ChatColor.DARK_GRAY).create())
+						.append(ComponentBuilder("] ").color(ChatColor.DARK_GRAY).create())
 						.append(ComponentBuilder(event.player.displayName).color(ChatColor.WHITE).create())
 						.create()
 				)
@@ -62,7 +62,7 @@ class ServerConnectListener : Listener {
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
-							description = "[+ MAYBE THIS??? ${event.target.name}] ${event.player.name.replace("_", "\\_")}",
+							description = "[+ ${event.target.name}] ${event.player.name.replace("_", "\\_")}",
 							color = ChatColor.GREEN.color.rgb
 						)
 					).queue()
