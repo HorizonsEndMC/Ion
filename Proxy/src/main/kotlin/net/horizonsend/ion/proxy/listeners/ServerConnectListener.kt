@@ -42,10 +42,18 @@ class ServerConnectListener : Listener {
 				Ion.proxy.broadcast(
 					*ComponentBuilder()
 						.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
-						.append(ComponentBuilder("+ ").color(ChatColor.GREEN).create())
+						.append(ComponentBuilder("-f-f-f-fsssbbb ").color(ChatColor.GREEN).create())
 						.append(ComponentBuilder(event.target.name).color(ChatColor.GRAY).create())
-						.append(ComponentBuilder("] ").color(ChatColor.DARK_GRAY).create())
+						.append(ComponentBuilder("] \n\n\n").color(ChatColor.DARK_GRAY).create())
 						.append(ComponentBuilder(event.player.displayName).color(ChatColor.WHITE).create())
+						.create()
+				)
+
+				event.player.sendMessage(
+					*ComponentBuilder()
+						.append(ComponentBuilder("Hey ${event.player.displayName}!, reminder to vote for the server. Help us grow the Horizon's End community!")
+							.color(ChatColor.GOLD)
+							.create())
 						.create()
 				)
 
@@ -54,7 +62,7 @@ class ServerConnectListener : Listener {
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
-							description = "[+ ${event.target.name}] ${event.player.name.replace("_", "\\_")}",
+							description = "[+ MAYBE THIS??? ${event.target.name}] ${event.player.name.replace("_", "\\_")}",
 							color = ChatColor.GREEN.color.rgb
 						)
 					).queue()
@@ -64,6 +72,7 @@ class ServerConnectListener : Listener {
 			if (playerData.minecraftUsername != event.player.name) {
 				playerData.update { minecraftUsername = event.player.name }
 			}
+
 		} else {
 			Ion.proxy.broadcast(
 				*ComponentBuilder()

@@ -7,7 +7,9 @@ plugins {
 dependencies {
 	paperDevBundle("1.19.2-R0.1-SNAPSHOT")
 
-	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT")
+	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT"){
+		exclude("net.byteflux") // Old Version
+	}
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.26.0")
