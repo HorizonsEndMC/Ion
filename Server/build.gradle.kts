@@ -1,5 +1,6 @@
 plugins {
 	id("io.papermc.paperweight.userdev")
+	id("com.diffplug.spotless")
 	kotlin("jvm")
 	java
 }
