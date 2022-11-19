@@ -3,7 +3,7 @@ import java.net.URL
 plugins {
 	id("com.github.johnrengelman.shadow") version "7.1.2"
 	id("io.papermc.paperweight.userdev") version "1.3.9"
-	id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+	id("com.diffplug.spotless") version "6.11.0"
 	kotlin("jvm") version "1.7.21"
 }
 
@@ -33,15 +33,23 @@ tasks.reobfJar {
 	outputJar.set(file(rootProject.projectDir.absolutePath + "/build/Ion.jar"))
 }
 
-tasks.prepareKotlinBuildScriptModel { dependsOn("addKtlintFormatGitPreCommitHook") }
-tasks.build { dependsOn(":reobfJar"); dependsOn("shadowJar") }
-
-tasks.compileKotlin { kotlinOptions { jvmTarget = "17" } }
-
-tasks.compileJava {
-	sourceCompatibility = "17"
-	targetCompatibility = "17"
+tasks.build {
+	dependsOn(":Server:reobfJar")
+	dependsOn(":spotlessApply")
+	dependsOn("shadowJar")
 }
+
+spotless {
+	kotlin {
+		ktlint("0.47.1")
+
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+}
+
+kotlin.jvmToolchain(17)
 
 // TODO: Use Json
 // TODO: Don't redownload every time

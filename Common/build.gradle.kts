@@ -1,5 +1,6 @@
 plugins {
 	id("org.jetbrains.kotlin.jvm")
+	id("com.diffplug.spotless")
 }
 
 dependencies {
