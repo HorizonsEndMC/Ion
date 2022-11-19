@@ -2,7 +2,7 @@ import java.net.URL
 
 plugins {
 	id("com.github.johnrengelman.shadow") version "7.1.2"
-	id("io.papermc.paperweight.userdev") version "1.3.9"
+	id("io.papermc.paperweight.userdev") version "1.3.11"
 	id("com.diffplug.spotless") version "6.11.0"
 	kotlin("jvm") version "1.7.21"
 }
