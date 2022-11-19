@@ -6,7 +6,7 @@ import java.io.File
 import java.lang.System.currentTimeMillis
 import java.util.UUID
 import net.citizensnpcs.api.event.NPCRightClickEvent
-import net.horizonsend.ion.core.events.BuySpawnShuttleEvent
+import net.horizonsend.ion.server.legacy.events.BuySpawnShuttleEvent
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.util.Vec3i

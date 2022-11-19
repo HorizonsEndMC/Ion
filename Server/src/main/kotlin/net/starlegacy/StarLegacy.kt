@@ -4,7 +4,7 @@ import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.core.listeners.PlayerJoinListener
+import net.horizonsend.ion.server.legacy.listeners.PlayerJoinListener
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.util.Locale

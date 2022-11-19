@@ -1,8 +1,8 @@
 package net.starlegacy
 
-import net.horizonsend.ion.core.listeners.BowHitListener
-import net.horizonsend.ion.core.listeners.PlayerJumpListener
-import net.horizonsend.ion.core.listeners.PlayerToggleSneakListener
+import net.horizonsend.ion.server.legacy.listeners.BowHitListener
+import net.horizonsend.ion.server.legacy.listeners.PlayerJumpListener
+import net.horizonsend.ion.server.legacy.listeners.PlayerToggleSneakListener
 import net.starlegacy.listener.gear.BlasterListener
 import net.starlegacy.listener.gear.DetonatorListener
 import net.starlegacy.listener.gear.DoubleJumpListener

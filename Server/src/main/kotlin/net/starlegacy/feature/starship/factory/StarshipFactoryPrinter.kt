@@ -5,7 +5,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.min
-import net.horizonsend.ion.core.ShipFactoryMaterialCosts
+import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.util.blockKeyX
@@ -104,7 +104,7 @@ class StarshipFactoryPrinter(
 			return false
 		}
 
-		if (availableCredits<ShipFactoryMaterialCosts.getPrice(data)) return false
+		if (availableCredits< ShipFactoryMaterialCosts.getPrice(data)) return false
 
 		decrementAvailable(item, count, amount)
 		incrementUsed(item, amount)

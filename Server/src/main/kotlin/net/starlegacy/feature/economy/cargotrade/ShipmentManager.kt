@@ -11,9 +11,9 @@ import kotlin.collections.set
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
-import net.horizonsend.ion.core.events.CompleteCargoRunEvent
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.legacy.events.CompleteCargoRunEvent
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.trade.CargoCrates

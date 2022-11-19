@@ -3,10 +3,8 @@ package net.starlegacy.feature.starship.control
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
-import net.horizonsend.ion.core.feedback.FeedbackType
-import net.horizonsend.ion.core.feedback.sendFeedbackAction
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType.PLATFORM

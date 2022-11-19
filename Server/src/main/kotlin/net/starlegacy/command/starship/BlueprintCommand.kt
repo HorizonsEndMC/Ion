@@ -14,7 +14,7 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 import kotlin.collections.set
-import net.horizonsend.ion.core.ShipFactoryMaterialCosts
+import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand

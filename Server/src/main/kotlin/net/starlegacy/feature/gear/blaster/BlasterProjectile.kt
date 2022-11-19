@@ -2,7 +2,7 @@ package net.starlegacy.feature.gear.blaster
 
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import net.horizonsend.ion.core.commands.GracePeriod
+import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.enumValueOfOrNull

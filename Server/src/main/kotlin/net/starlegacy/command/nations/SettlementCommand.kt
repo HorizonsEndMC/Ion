@@ -10,7 +10,7 @@ import java.util.Date
 import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
-import net.horizonsend.ion.core.events.CreateSettlementEvent
+import net.horizonsend.ion.server.legacy.events.CreateSettlementEvent
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache

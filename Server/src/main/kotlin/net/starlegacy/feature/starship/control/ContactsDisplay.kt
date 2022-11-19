@@ -4,7 +4,7 @@ import java.util.Collections
 import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.max
-import net.horizonsend.ion.core.commands.GracePeriod
+import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.listen

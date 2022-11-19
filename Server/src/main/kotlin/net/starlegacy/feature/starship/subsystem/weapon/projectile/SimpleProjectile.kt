@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship.subsystem.weapon.projectile
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
-import net.horizonsend.ion.core.commands.GracePeriod
+import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
