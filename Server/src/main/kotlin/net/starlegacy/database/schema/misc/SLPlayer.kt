@@ -46,7 +46,6 @@ data class SLPlayer(
 	var lastSeen: Date = Date.from(Instant.now()),
 	var xp: Int = 0,
 	val level: Int = 1,
-	val unlockedAdvancements: List<String> = listOf(),
 	/** The settlement they're current a member of */
 	var settlement: Oid<Settlement>? = null,
 	/** The nation their settlement is currently in. Needs to be updated whenever the settlement nation updates. */
@@ -109,15 +108,6 @@ data class SLPlayer(
 
 		fun setXP(id: SLPlayerId, xp: Int): UpdateResult =
 			updateById(id, org.litote.kmongo.setValue(SLPlayer::xp, xp))
-
-		fun addAdvancement(id: SLPlayerId, vararg advancements: String): UpdateResult =
-			updateById(id, addEachToSet(SLPlayer::unlockedAdvancements, advancements.toList()))
-
-		fun removeAdvancement(id: SLPlayerId, advancement: String): UpdateResult =
-			updateById(id, pull(SLPlayer::unlockedAdvancements, advancement))
-
-		fun removeAdvancementGlobally(advancement: String): UpdateResult =
-			col.updateAll(pull(SLPlayer::unlockedAdvancements, advancement))
 
 		fun isSettlementLeader(slPlayerId: SLPlayerId): Boolean = !Settlement.none(Settlement::leader eq slPlayerId)
 
