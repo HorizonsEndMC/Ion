@@ -21,9 +21,15 @@ abstract class AmmoRequiringMultiShotBlaster : multiShotBlaster(){
 		if(reload(itemStack, source)) return
 		source.location.world.playSound(source.location,"laser", 1f, multiShotWeaponBalancing.pitch)
 		for (i in 1..multiShotWeaponBalancing.shotCount) {
-			val offset = randomDouble(-1*multiShotWeaponBalancing.offsetmax, multiShotWeaponBalancing.offsetmax)
-			val location = source.eyeLocation
-			location.direction.multiply(Vector(offset, offset, offset))
+			val offsetX = randomDouble(-1*multiShotWeaponBalancing.offsetmax, multiShotWeaponBalancing.offsetmax)
+			val offsetY = randomDouble(-1*multiShotWeaponBalancing.offsetmax, multiShotWeaponBalancing.offsetmax)
+			val offsetZ = randomDouble(-1*multiShotWeaponBalancing.offsetmax, multiShotWeaponBalancing.offsetmax)
+
+			val location = source.eyeLocation.clone()
+
+			location.direction = location.direction.add(Vector(offsetX, offsetY, offsetZ))
+
+			location.direction.multiply(Vector(offsetX, offsetY, offsetZ))
 			ProjectileManager.addProjectile(
 				Projectile(
 					location,
@@ -41,7 +47,7 @@ abstract class AmmoRequiringMultiShotBlaster : multiShotBlaster(){
 			)
 		}
 	}
-	fun reload(itemStack: ItemStack, source: LivingEntity): Boolean{
+	fun reload(itemStack: ItemStack, source: LivingEntity): Boolean {
 		if ((source as? Player)!!.hasCooldown(itemStack.type)) return true
 		if (itemStack.itemMeta.persistentDataContainer == null){
 			itemStack.editMeta {
