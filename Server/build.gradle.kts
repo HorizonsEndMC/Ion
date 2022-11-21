@@ -1,33 +1,62 @@
 plugins {
-	id("io.papermc.paperweight.userdev")
+	id("com.github.johnrengelman.shadow") version "7.1.2"
+	id("io.papermc.paperweight.userdev") version "1.3.11"
+	java
+
 	id("com.diffplug.spotless")
 	kotlin("jvm")
-	java
+}
+
+repositories {
+	mavenCentral()
+
+	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper)
+	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
+	maven("https://repo.codemc.io/repository/maven-snapshots/") // WorldEdit
+	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
+	maven("https://jitpack.io") // Dynmap (Spigot), Vault, khttp
+	maven("https://maven.citizensnpcs.co/repo") // Citizens
 }
 
 dependencies {
+	implementation(project(":Common"))
+
+	// Platform
 	paperDevBundle("1.19.2-R0.1-SNAPSHOT")
 
+	// Plugin Dependencies
+	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }
 	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+	compileOnly("com.discordsrv:discordsrv:1.26.0")
 	compileOnly("net.luckperms:api:5.4")
 
-	// To be removed
-	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }
-	compileOnly("com.discordsrv:discordsrv:1.26.0")
-
-	implementation(project(":Common"))
-
-	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-	implementation("org.litote.kmongo:kmongo:4.7.2")
-
-	// To be removed
+	// Included Dependencies
 	implementation("com.github.jkcclemens:khttp:0.1.0") { exclude("org.jetbrains.kotlin") /* Old Version */ }
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.5.8")
-	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("com.googlecode.cqengine:cqengine:3.6.0")
-	implementation("io.github.config4k:config4k:0.5.0")
-	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
-	implementation("redis.clients:jedis:4.3.1")
+	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+
+	// Library Loaded Dependencies
+	compileOnly("com.github.stefvanschie.inventoryframework:IF:0.5.8")
+	compileOnly("com.daveanthonythomas.moshipack:moshipack:1.0.1")
+	compileOnly("com.googlecode.cqengine:cqengine:3.6.0")
+	compileOnly("io.github.config4k:config4k:0.5.0")
+	compileOnly("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
+
+	// Common Library Loaded Dependencies
+	compileOnly("org.spongepowered:configurate-extra-kotlin:4.1.2")
+	compileOnly("org.spongepowered:configurate-hocon:4.1.2")
+
+	compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
+	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.21")
+
+	compileOnly("org.litote.kmongo:kmongo:4.7.2")
+	compileOnly("redis.clients:jedis:4.3.1")
+}
+
+tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }
+
+tasks.build {
+	dependsOn("spotlessApply")
+	dependsOn("reobfJar")
 }

@@ -27,7 +27,7 @@ services:
     ports: [ 25565:25577 ]
     volumes:
       - ./waterfall:/server
-      - ../build/Ion.jar:/server/plugins/Ion.jar
+      - ../build/IonProxy.jar:/server/plugins/Ion.jar
       - ./config/waterfall/config.yml:/server/config.yml:ro
     environment:
       TYPE: "Waterfall"
@@ -41,7 +41,7 @@ services:
     stdin_open: true
     volumes:
       - ./paper:/data
-      - ../build/Ion.jar:/plugins/Ion.jar
+      - ../build/IonServer.jar:/plugins/Ion.jar
       - ./config/paper:/config
     environment:
       TYPE: "PAPER"
