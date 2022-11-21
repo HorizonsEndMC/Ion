@@ -6,12 +6,11 @@ import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.kotlin.toNode
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.createDirectories
 
 inline fun <reified T> loadConfiguration(file: File, fileName: String): T = loadConfiguration(file.toPath(), fileName)
 
 inline fun <reified T> loadConfiguration(path: Path, fileName: String): T {
-	path.createDirectories()
+	path.toFile().mkdirs()
 
 	val loader = HoconConfigurationLoader.builder()
 		.path(path.resolve(fileName))

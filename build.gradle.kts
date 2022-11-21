@@ -1,43 +1,15 @@
 import java.net.URL
 
 plugins {
-	id("com.github.johnrengelman.shadow") version "7.1.2"
-	id("io.papermc.paperweight.userdev") version "1.3.11"
 	id("com.diffplug.spotless") version "6.11.0"
 	kotlin("jvm") version "1.7.21"
 }
 
-allprojects {
-	repositories {
-		mavenCentral()
-
-		maven("https://repo.codemc.io/repository/maven-snapshots/")
-		maven("https://repo.papermc.io/repository/maven-public/")
-		maven("https://nexus.scarsz.me/content/groups/public/")
-		maven("https://repo.aikar.co/content/groups/aikar/")
-		maven("https://repo.alessiodp.com/releases")
-		maven("https://maven.citizensnpcs.co/repo")
-		maven("https://m2.dv8tion.net/releases")
-		maven("https://jitpack.io")
-	}
+repositories {
+	mavenCentral()
 }
 
-dependencies {
-	paperDevBundle("1.19.2-R0.1-SNAPSHOT")
-
-	implementation(project(":Proxy"))
-	implementation(project(":Server"))
-}
-
-tasks.reobfJar {
-	outputJar.set(file(rootProject.projectDir.absolutePath + "/build/Ion.jar"))
-}
-
-tasks.build {
-	dependsOn(":Server:reobfJar")
-	dependsOn(":spotlessApply")
-	dependsOn("shadowJar")
-}
+kotlin.jvmToolchain(17)
 
 spotless {
 	kotlin {
@@ -48,8 +20,6 @@ spotless {
 		endWithNewline()
 	}
 }
-
-kotlin.jvmToolchain(17)
 
 // TODO: Use Json
 // TODO: Don't redownload every time
