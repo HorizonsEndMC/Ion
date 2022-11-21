@@ -45,7 +45,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPoolConfig
+import redis.clients.jedis.Protocol
 
 lateinit var SETTINGS: Config
 lateinit var redisPool: JedisPool
@@ -56,7 +56,7 @@ val sharedDataFolder by lazy { File(SETTINGS.sharedFolder).apply { mkdirs() } }
 fun legacyEnable(commandManager: PaperCommandManager) {
 	SETTINGS = loadConfig(Ion.dataFolder, "config") // Settings
 	MongoManager.onEnable() // Database
-	redisPool = JedisPool(JedisPoolConfig(), SETTINGS.redis.host) // Redis
+	redisPool = JedisPool(SETTINGS.redis.host, Protocol.DEFAULT_PORT) // Redis
 	for (component in components) { // Components
 		component.onEnable()
 		Ion.server.pluginManager.registerEvents(component, Ion)
