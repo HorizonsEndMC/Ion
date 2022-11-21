@@ -1,7 +1,7 @@
 package net.horizonsend.ion.common.database
 
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
+import net.horizonsend.ion.common.Connectivity
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.replaceOneById
 import org.litote.kmongo.util.KMongoUtil
@@ -9,16 +9,9 @@ import org.litote.kmongo.util.idValue
 import java.util.UUID
 import kotlin.reflect.KClass
 
-abstract class Collection<D : Document>(private val kClass: KClass<D>) {
-	protected lateinit var collection: MongoCollection<D>
-
-	internal fun initialize(database: MongoDatabase) {
-		collection = database.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
-
-		postInitialize()
-	}
-
-	protected open fun postInitialize() {}
+abstract class Collection<D : Document>(kClass: KClass<D>) {
+	protected var collection: MongoCollection<D> =
+		Connectivity.database.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
 
 	protected abstract fun construct(id: UUID): D
 

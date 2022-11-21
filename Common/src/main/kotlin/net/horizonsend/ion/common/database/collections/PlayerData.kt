@@ -21,7 +21,7 @@ class PlayerData private constructor(
 	var bounty: Int = 0
 ) : Document() {
 	companion object : Collection<PlayerData>(PlayerData::class) {
-		override fun postInitialize() {
+		init {
 			collection.ensureIndex(PlayerData::minecraftUUID)
 			collection.ensureIndex(PlayerData::discordId)
 			collection.ensureIndex(

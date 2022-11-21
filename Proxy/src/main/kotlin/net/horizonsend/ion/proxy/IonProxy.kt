@@ -14,13 +14,11 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import net.horizonsend.ion.common.database.closeDatabase
-import net.horizonsend.ion.common.database.openDatabase
+import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.loadConfiguration
 import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Plugin
-import java.util.concurrent.ForkJoinPool
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
@@ -28,10 +26,6 @@ class IonProxy : Plugin() {
 
 	companion object {
 		@JvmStatic lateinit var Ion: IonProxy private set
-	}
-
-	private val openDatabaseFuture = ForkJoinPool.commonPool().submit {
-		openDatabase(dataFolder)
 	}
 
 	val configuration: ProxyConfiguration = loadConfiguration(dataFolder, "proxy.conf")
@@ -44,15 +38,15 @@ class IonProxy : Plugin() {
 			.disableCache(CacheFlag.values().toList())
 			.setEnableShutdownHook(false)
 			.build()
-	}  catch (e: Exception) {
+	} catch (e: Exception) {
 		slF4JLogger.warn("Failed to start JDA as it was unable to login to Discord!")
 		null
 	}
 
 	val playerServerMap = mutableMapOf<ProxiedPlayer, ServerInfo>()
 
-	override fun onEnable() {
-		openDatabaseFuture.join()
+	override fun onEnable() { try {
+		Connectivity.open(dataFolder)
 
 		// Listener Registration
 		val pluginManager = proxy.pluginManager
@@ -60,7 +54,7 @@ class IonProxy : Plugin() {
 		pluginManager.registerListener(this, PlayerDisconnectListener())
 		pluginManager.registerListener(this, ProxyPingListener())
 		pluginManager.registerListener(this, ServerConnectListener())
-		pluginManager.registerListener(this, VotifierListener())
+		try { pluginManager.registerListener(this, VotifierListener()) } catch (_: NoClassDefFoundError) {}
 
 		// Minecraft Command Registration
 		val commandManager = BungeeCommandManager(this)
@@ -88,10 +82,14 @@ class IonProxy : Plugin() {
 				jda.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${proxy.onlineCount} players!"))
 			}, 0, 5, TimeUnit.SECONDS)
 		}
-	}
+	} catch (exception: Exception) {
+		slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
+		proxy.stop()
+	}}
 
 	override fun onDisable() {
-		closeDatabase()
 		jda?.shutdown()
+
+		Connectivity.close()
 	}
 }
