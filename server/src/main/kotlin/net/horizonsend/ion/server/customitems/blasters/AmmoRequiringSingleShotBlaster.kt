@@ -21,8 +21,8 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 			it.lore()?.clear()
 			it.lore(customItemlist.itemStack.lore())
 		}
-		item.itemMeta.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo"))
-		item.itemMeta.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] = singleShotWeaponBalancing.magazineSize
+		item.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo"))}
+		item.editMeta { it.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] = singleShotWeaponBalancing.magazineSize}
 		(source as? Player)?.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
 	}
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
@@ -40,7 +40,8 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 				entity,
 				singleShotWeaponBalancing.damage,
 				singleShotWeaponBalancing.shouldPassThroughEntities,
-				singleShotWeaponBalancing.shotSize.toDouble()
+				singleShotWeaponBalancing.shotSize.toDouble(),
+				singleShotWeaponBalancing.shouldBypassHitTicks
 			)
 		)
 	}
@@ -51,28 +52,17 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 			PersistentDataType.INTEGER
 		)
 		if (pdc != 0 && pdc != null) {
+			val ammoValue: Int = pdc-1
 			item.editMeta {
 				it.lore()?.clear()
-				it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo:${pdc.minus(1)}/${singleShotWeaponBalancing.magazineSize}")))
+				it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo:${ammoValue}/${singleShotWeaponBalancing.magazineSize}")))
 			}
 			(source as? Player)?.setCooldown(item.type, this.singleShotWeaponBalancing.timeBetweenShots)
-			item.itemMeta.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo"))
-			item.itemMeta.persistentDataContainer.set(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER, pdc.minus(1))
-
-
+			item.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo"))}
+			item.editMeta { it.persistentDataContainer.set(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER,
+				ammoValue
+			)}
 			return false
-		}
-		if (pdc == 0) {
-			(source as? Player)?.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
-			if (!(source as? Player)?.inventory!!.contains(this.requiredAmmo)) return true
-			(source as? Player)?.inventory?.remove(this.requiredAmmo)
-			item.editMeta {
-				it.lore()?.clear()
-				it.lore(customItemlist.itemStack.lore())
-			}
-			item.itemMeta.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo"))
-			item.itemMeta.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] = singleShotWeaponBalancing.magazineSize
-			return true
 		}
 		return true
 	}

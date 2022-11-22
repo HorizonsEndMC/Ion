@@ -42,7 +42,8 @@ abstract class AmmoRequiringMultiShotBlaster : multiShotBlaster(){
 					source,
 					multiShotWeaponBalancing.damage,
 					multiShotWeaponBalancing.shouldPassThroughEntities,
-					multiShotWeaponBalancing.shotSize.toDouble()
+					multiShotWeaponBalancing.shotSize.toDouble(),
+					multiShotWeaponBalancing.shouldBypassHitTicks
 				)
 			)
 		}
