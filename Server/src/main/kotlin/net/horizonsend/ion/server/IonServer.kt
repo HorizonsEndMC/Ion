@@ -44,7 +44,7 @@ class IonServer : JavaPlugin() {
 		val commands = arrayOf(
 			AchievementsCommand(),
 			PatreonCommands(),
-			BountyCommands()
+			BountyCommands(),
 			IonCustomItemCommands()
 		)
 			@Suppress("Deprecation")
