@@ -7,6 +7,9 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 enum class CustomItemList(val itemStack: ItemStack) {
+	/**
+	 * This is the list of all the custom items
+	 */
 	SNIPER(ItemStack(Material.SPYGLASS).updateMeta {
 		it.setCustomModelData(1); it.displayName(
 		MiniMessage.miniMessage().deserialize("<bold><red>Blaster Sniper")
@@ -54,7 +57,13 @@ enum class CustomItemList(val itemStack: ItemStack) {
 		org.bukkit.NamespacedKey(
 			IonServer.Ion, "Blaster"
 		), org.bukkit.persistence.PersistentDataType.INTEGER, 3
-	); it.lore(
+	)
+		it.persistentDataContainer.set(
+			org.bukkit.NamespacedKey(
+				net.horizonsend.ion.server.IonServer.Ion, "ammo"
+			), org.bukkit.persistence.PersistentDataType.INTEGER, 15
+		)
+		it.lore(
 		kotlin.collections.mutableListOf(
 			net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 15/15")
 		)
@@ -67,6 +76,12 @@ enum class CustomItemList(val itemStack: ItemStack) {
 		org.bukkit.NamespacedKey(IonServer.Ion, "Blaster"),
 		org.bukkit.persistence.PersistentDataType.INTEGER,
 		4
-	); it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 2/2")))
+	);
+		it.persistentDataContainer.set(
+		org.bukkit.NamespacedKey(
+			net.horizonsend.ion.server.IonServer.Ion, "ammo"
+		), org.bukkit.persistence.PersistentDataType.INTEGER, 30
+	)
+		it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 2/2")))
 	});
 }
