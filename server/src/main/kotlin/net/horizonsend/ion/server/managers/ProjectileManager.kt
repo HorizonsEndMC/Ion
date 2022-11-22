@@ -1,22 +1,22 @@
 package net.horizonsend.ion.server.managers
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.projectiles.Projectile
+import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
 
 
 object ProjectileManager {
-	private val projectiles = mutableListOf<Projectile>()
+	private val rayTracedParticleProjectiles = mutableListOf<RayTracedParticleProjectile>()
 
 	init {
 		IonServer.Ion.server.scheduler.runTaskTimer(IonServer.Ion, Runnable {
-			projectiles.removeIf { projectile ->
+			rayTracedParticleProjectiles.removeIf { projectile ->
 				projectile.tick()
 				projectile.rayCastTick()
 			}
 		}, 0, 0)
 	}
 
-	fun addProjectile(projectile: Projectile) {
-		projectiles.add(projectile)
+	fun addProjectile(rayTracedParticleProjectile: RayTracedParticleProjectile) {
+		rayTracedParticleProjectiles.add(rayTracedParticleProjectile)
 	}
 }
