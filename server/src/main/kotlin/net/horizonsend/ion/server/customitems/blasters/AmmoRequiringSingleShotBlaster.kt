@@ -15,8 +15,14 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	abstract val requiredAmmo: ItemStack
 
 	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
-		if (!(source as? Player)?.inventory!!.contains(this.requiredAmmo)) return
-		(source as? Player)?.inventory?.remove(this.requiredAmmo)
+		val player = (source as? Player)
+		//if (player?.inventory!!.contains(requiredAmmo)) return
+		val inventory = player?.inventory
+		if (inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) {
+			inventory.removeItemAnySlot(requiredAmmo)
+			player.updateInventory()
+		} else return
+
 		item.editMeta {
 			it.lore()?.clear()
 			it.lore(customItemlist.itemStack.lore())
@@ -26,7 +32,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 			it.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] =
 				singleShotWeaponBalancing.magazineSize
 		}
-		(source as? Player)?.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
+		player.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
 	}
 
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
@@ -68,7 +74,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 					.deserialize("<bold><gray>Ammo:${ammoValue}/${singleShotWeaponBalancing.magazineSize}")))
 			}
 
-			(source as? Player)?.setCooldown(item.type, this.singleShotWeaponBalancing.timeBetweenShots)
+			(source as? Player)?.setCooldown(item.type, singleShotWeaponBalancing.timeBetweenShots)
 			item.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo")) }
 			item.editMeta {
 				it.persistentDataContainer.set(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER,
