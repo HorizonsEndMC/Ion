@@ -8,6 +8,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Flying
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 
 class Projectile(
@@ -19,11 +20,17 @@ class Projectile(
 	val shooter: Entity,
 	val damage: Double,
 	private val shouldPassThroughEntities: Boolean,
-	private val size: Double
+	private val size: Double,
+	val shouldBypassHitTicks: Boolean
 ) {
 	private var directionVector = location.direction.multiply(distancePerIteration)
 
 	fun tick(): Boolean {
+		/**
+		 * Every tick, this function will repeat the code below
+		 * for however many iterationsPerTick there are, which is
+		 * It will delete the projecile if it goes out of loaded chunks
+		 */
 		repeat(iterationsPerTick) {
 			location.add(directionVector)
 			if (!location.isChunkLoaded) return true
@@ -35,16 +42,35 @@ class Projectile(
 		return false
 	}
 
-	fun rayCastTick() : Boolean {
-		val rayTraceResult = location.world.rayTrace(location, location.direction, location.world.viewDistance.toDouble() , FluidCollisionMode.NEVER, true, size, null)
-		val rayFlyingTraceResult = location.world.rayTrace(location, location.direction, location.world.viewDistance.toDouble() , FluidCollisionMode.NEVER, true, 2.0, null)
-		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null){
-			location.world.playSound(location, rayTraceResult?.hitBlock!!.blockSoundGroup.breakSound, 0.5f, 1f)
+	fun rayCastTick(): Boolean {
+		val rayTraceResult = location.world.rayTrace(
+			location,
+			location.direction,
+			location.world.viewDistance.toDouble(),
+			FluidCollisionMode.NEVER,
+			true,
+			size,
+			null
+		)
+		val rayFlyingTraceResult = location.world.rayTrace(
+			location,
+			location.direction,
+			location.world.viewDistance.toDouble(),
+			FluidCollisionMode.NEVER,
+			true,
+			2.0,
+			null
+		)
+		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null) {
+			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
+				location.world.playSound(location,
+					it, 0.5f, 1f)
+			}
 			return true
 		}
-		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying){
+		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying) {
 			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
-			if (!shouldPassThroughEntities){
+			if (!shouldPassThroughEntities) {
 				return true
 			}
 			return false
@@ -55,14 +81,16 @@ class Projectile(
 
 			val raycast = rayTraceResult.hitPosition
 			val playereye = (playerHit as? Player)?.eyeLocation?.toVector()
-			if (playereye != null && raycast.distance(playereye) < 0.5){
-					(rayTraceResult.hitEntity as? Damageable)?.damage(damage * 1.5, shooter)
-					hitLocation.createExplosion(0.01f)
-					hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 1f)
-					return true
+			if (playereye != null && raycast.distance(playereye) < 0.5) {
+				if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
+				(rayTraceResult.hitEntity as? Damageable)?.damage(damage * 1.5, shooter)
+				hitLocation.createExplosion(0.01f)
+				hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 1f)
+				return true
 			}
+			if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
 			(rayTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
-			if (!shouldPassThroughEntities){
+			if (!shouldPassThroughEntities) {
 				return true
 			}
 			return false
