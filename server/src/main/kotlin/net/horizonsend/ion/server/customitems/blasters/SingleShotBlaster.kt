@@ -21,7 +21,8 @@ abstract class SingleShotBlaster : Blaster() {
 				source,
 				singleShotWeaponBalancing.damage,
 				singleShotWeaponBalancing.shouldPassThroughEntities,
-				singleShotWeaponBalancing.shotSize.toDouble()
+				singleShotWeaponBalancing.shotSize.toDouble(),
+				singleShotWeaponBalancing.shouldBypassHitTicks
 			)
 		)
 	}
