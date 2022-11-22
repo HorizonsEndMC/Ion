@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeaponBalancing.S
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.customitems.CustomItemList
 import net.starlegacy.feature.misc.CustomItems
+import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 
 @Suppress("Unused")
@@ -13,4 +14,8 @@ object Sniper : AmmoRequiringSingleShotBlaster() {
 
 	override val singleShotWeaponBalancing: SingleShotWeaponBalancing
 		get() = IonServer.Ion.balancing.energyWeapons.sniper
+
+	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
+		//source.setMetadata()
+	}
 }

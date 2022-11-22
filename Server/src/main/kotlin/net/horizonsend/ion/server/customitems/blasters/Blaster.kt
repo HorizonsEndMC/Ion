@@ -11,7 +11,7 @@ import org.bukkit.Particle
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
-abstract class Blaster : CustomItem(){
+abstract class Blaster : CustomItem() {
 
 	protected fun getParticleType(entity: Entity) : Particle{
 		return if (entity	is Player) {
