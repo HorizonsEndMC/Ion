@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerInteractListener
 
 val listeners = arrayOf(
 	BlockFadeListener(),

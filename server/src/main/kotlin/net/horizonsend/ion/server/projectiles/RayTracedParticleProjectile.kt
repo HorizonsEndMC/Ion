@@ -65,7 +65,7 @@ class RayTracedParticleProjectile(
 			null
 		)
 
-		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null) {
+		if (rayTraceResult?.hitBlock != null) {
 			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
 				location.world.playSound(location,
 					it, 0.5f, 1f)
@@ -75,6 +75,7 @@ class RayTracedParticleProjectile(
 		}
 
 		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying) {
+			if (shouldBypassHitTicks) (rayFlyingTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
 			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
 
 			if (!shouldPassThroughEntities) {
@@ -101,7 +102,6 @@ class RayTracedParticleProjectile(
 
 			if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
 			(rayTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
-
 			if (!shouldPassThroughEntities) {
 				return true
 			}

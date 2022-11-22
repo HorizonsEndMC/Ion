@@ -20,8 +20,7 @@ class PlayerData private constructor(
 	var achievements: MutableList<Achievement> = mutableListOf(),
 	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
 	var acceptedBounty: UUID? = null,
-	var bounty: Int = 0
-	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
+	var bounty: Int = 0,
 	var patreonMoney: Double = 0.0,
 	var chosenParticle: Particle = Particle.REDSTONE_PARTICLE,
 	var chosenColour: Color? = null
