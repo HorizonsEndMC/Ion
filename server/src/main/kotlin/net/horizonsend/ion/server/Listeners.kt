@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
 import net.horizonsend.ion.server.managers.HyperspaceBeaconManager
+import net.horizonsend.ion.server.listeners.bukkit.PlayerInteractListener
 
 val listeners = arrayOf(
 	BlockFadeListener(),
@@ -53,6 +54,7 @@ val listeners = arrayOf(
 	PlayerDeathListener(),
 	PlayerFishListener(),
 	PlayerItemConsumeListener(),
+	PlayerInteractListener(),
 	PlayerJoinListener(),
 	PlayerLoginListener(),
 	PlayerQuitListener(),
