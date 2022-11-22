@@ -9,8 +9,9 @@ import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Particle
 import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.utilities.feedback.FeedbackType
-import net.horizonsend.ion.server.utilities.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import org.bukkit.entity.Player
 
 @CommandAlias("patreon")
@@ -25,7 +26,7 @@ class PatreonCommands : BaseCommand(){
 				chosenParticle = particle
 			}
 			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Chosen Particle now equals ${particle.name}")
-		}else sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Error: Need <gray>${particle.patreonMoneyNeeded}$ donared<gray><reset> to use this particle")
+		}else sender.sendUserError("Error: Need <gray>${particle.patreonMoneyNeeded}$ donared<gray><reset> to use this particle")
 	}
 
 	@Subcommand("chooseColour")
@@ -35,7 +36,7 @@ class PatreonCommands : BaseCommand(){
 				chosenColour = Color(r, g, b)
 			}
 			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Chosen Particle Colour change to ${PlayerData[sender.uniqueId].chosenColour}")
-		}else sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Error: Need <gray>${IonServer.Ion.configuration.ParticleColourChoosingMoneyRequirement}$ donated<gray><reset> to change particle colour")
+		}else sender.sendUserError("Error: Need <gray>${IonServer.Ion.configuration.ParticleColourChoosingMoneyRequirement}$ donated<gray><reset> to change particle colour")
 	}
 
 	@Subcommand("clearColour")
