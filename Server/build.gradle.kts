@@ -35,13 +35,13 @@ dependencies {
 	// Included Dependencies
 	implementation("com.github.jkcclemens:khttp:0.1.0") { exclude("org.jetbrains.kotlin") /* Old Version */ }
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+	compileOnly("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 
 	// Library Loaded Dependencies
 	compileOnly("com.github.stefvanschie.inventoryframework:IF:0.5.8")
 	compileOnly("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	compileOnly("com.googlecode.cqengine:cqengine:3.6.0")
 	compileOnly("io.github.config4k:config4k:0.5.0")
-	compileOnly("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 
 	// Common Library Loaded Dependencies
 	compileOnly("org.spongepowered:configurate-extra-kotlin:4.1.2")
