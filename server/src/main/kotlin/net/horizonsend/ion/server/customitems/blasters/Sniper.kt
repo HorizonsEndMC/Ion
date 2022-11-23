@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.customitems.blasters
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeaponBalancing.SingleShotWeaponBalancing
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.customitems.CustomItemList
+import net.horizonsend.ion.server.customitems.blasters.constructors.AmmoRequiringSingleShotBlaster
 import net.starlegacy.feature.misc.CustomItems
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack

@@ -1,6 +1,5 @@
-package net.horizonsend.ion.server.customitems.blasters
+package net.horizonsend.ion.server.customitems.blasters.constructors
 
-import kotlin.math.absoluteValue
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.managers.ProjectileManager
 import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
@@ -39,9 +38,9 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		entity.location.world.playSound(entity.location, "laser", 1f, multiShotWeaponBalancing.pitch)
 
 		for (i in 1..multiShotWeaponBalancing.shotCount) {
-			val offsetX = randomDouble(-1 * multiShotWeaponBalancing.offsetmax, multiShotWeaponBalancing.offsetmax)
-			val offsetY = randomDouble(-1 * multiShotWeaponBalancing.offsetmax, multiShotWeaponBalancing.offsetmax)
-			val offsetZ = randomDouble(-1 * multiShotWeaponBalancing.offsetmax, multiShotWeaponBalancing.offsetmax)
+			val offsetX = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
+			val offsetY = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
+			val offsetZ = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
 
 			val location = entity.eyeLocation.clone()
 
@@ -52,13 +51,14 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 			ProjectileManager.addProjectile(
 				RayTracedParticleProjectile(
 					location,
-					multiShotWeaponBalancing.iterationsPerTick,
-					multiShotWeaponBalancing.distancePerIteration,
+					multiShotWeaponBalancing.speed,
 					entity,
 					multiShotWeaponBalancing.damage,
+					multiShotWeaponBalancing.damageFalloffMultiplier,
 					multiShotWeaponBalancing.shouldPassThroughEntities,
 					multiShotWeaponBalancing.shotSize.toDouble(),
 					multiShotWeaponBalancing.shouldBypassHitTicks,
+					multiShotWeaponBalancing.range,
 					getParticleType(entity),
 					if (getParticleType(entity) == Particle.REDSTONE) {
 						Particle.DustOptions(getParticleColour(entity), multiShotWeaponBalancing.shotSize)
