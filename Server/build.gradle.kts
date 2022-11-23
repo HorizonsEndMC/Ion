@@ -35,7 +35,7 @@ dependencies {
 	// Included Dependencies
 	implementation("com.github.jkcclemens:khttp:0.1.0") { exclude("org.jetbrains.kotlin") /* Old Version */ }
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-	compileOnly("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
+	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 
 	// Library Loaded Dependencies
 	compileOnly("com.github.stefvanschie.inventoryframework:IF:0.5.8")
