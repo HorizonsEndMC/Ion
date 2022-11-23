@@ -16,12 +16,11 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 
 	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
 		val player = (source as? Player)
-		//if (player?.inventory!!.contains(requiredAmmo)) return
-		val inventory = player?.inventory
-		if (inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) {
-			inventory.removeItemAnySlot(requiredAmmo)
-			player.updateInventory()
-		} else return
+		if (player?.hasCooldown(item.type) == true) return
+		val inventory = (source as? Player)?.inventory
+		if (!inventory!!.containsAtLeast(requiredAmmo, 1)) return
+		inventory.removeItemAnySlot(requiredAmmo.clone())
+		source.updateInventory()
 
 		item.editMeta {
 			it.lore()?.clear()
@@ -32,7 +31,8 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 			it.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] =
 				singleShotWeaponBalancing.magazineSize
 		}
-		player.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
+		player?.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
+		player?.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: ${singleShotWeaponBalancing.magazineSize}/${singleShotWeaponBalancing.magazineSize}"))
 	}
 
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
@@ -82,6 +82,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 					ammoValue
 				)
 			}
+			(source as? Player)?.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: $ammoValue/${singleShotWeaponBalancing.magazineSize}"))
 
 			return false
 		}

@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.legacy.listeners.LevelUpListener
 import net.horizonsend.ion.server.legacy.listeners.MultiblockDetectListener
 import net.horizonsend.ion.server.legacy.listeners.ShipKillListener
 import net.horizonsend.ion.server.legacy.listeners.StationSiegeBeginListener
+import net.horizonsend.ion.server.listeners.PlayerItemHeldListener
 import net.horizonsend.ion.server.listeners.bukkit.PlayerInteractListener
 
 val listeners = arrayOf(
@@ -51,6 +52,7 @@ val listeners = arrayOf(
 	PlayerDeathListener(),
 	PlayerFishListener(),
 	PlayerItemConsumeListener(),
+	PlayerItemHeldListener(),
 	PlayerInteractListener(),
 	PlayerJoinListener(Ion),
 	PlayerLoginListener(),
