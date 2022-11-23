@@ -1,113 +1,55 @@
 package net.horizonsend.ion.server.projectiles
 
-import org.bukkit.FluidCollisionMode
+import net.horizonsend.ion.server.projectiles.constructors.RayTracedProjectile
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
-import org.bukkit.Sound
-import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
-import org.bukkit.entity.Flying
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 
 class RayTracedParticleProjectile(
 	override val location: Location,
-	override val iterationsPerTick: Int,
-	override val distancePerIteration: Double,
+	override val speed: Double,
 	override val shooter: Entity,
-	override val damage: Double,
+	override var damage: Double,
+	override val damageFalloffMultiplier: Double,
 	override val shouldPassThroughEntities: Boolean,
 	override val size: Double,
 	override val shouldBypassHitTicks: Boolean,
+	override val range: Double,
 	val particle: Particle,
-	val dustOptions: DustOptions?
-): Projectile() {
-	private var directionVector = location.direction.clone().multiply(distancePerIteration)
+	private val dustOptions: DustOptions?,
+) : RayTracedProjectile() {
+	private var directionVector = location.direction.clone().multiply(speed)
 
 	override fun tick(): Boolean {
 		/**
-		 * Every tick, this function will repeat the code below
-		 * for however many iterationsPerTick there are, which is
-		 * It will delete the projecile if it goes out of loaded chunks
-		 */
-		repeat(iterationsPerTick) {
-			location.add(directionVector)
+		 * Every tick, this function will repeat the code below.
+		 * If it returns true, the projectile manager will delete the projectile.
+		 *
+		 * True if:
+		 * Distance > Range
+		 * Location is unloaded
+		 * Projectile collides
+		 **/
 
-			if (!location.isChunkLoaded) return true
-			if (dustOptions != null) {
-				location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-			} else location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+		ticks += 1
 
-		}
+		if (ticks * speed > range) return true
 
-		return false
-	}
+		location.add(directionVector)
 
-	fun rayCastTick(): Boolean {
-		val rayTraceResult = location.world.rayTrace(
-			location,
-			location.direction,
-			location.world.viewDistance.toDouble(),
-			FluidCollisionMode.NEVER,
-			true,
-			size,
-			null
-		)
+		if (!location.isChunkLoaded) return true
 
-		val rayFlyingTraceResult = location.world.rayTrace(
-			location,
-			location.direction,
-			location.world.viewDistance.toDouble(),
-			FluidCollisionMode.NEVER,
-			true,
-			2.0,
-			null
-		)
+		if (dustOptions != null) {
+			location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+		} else location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 
-		if (rayTraceResult?.hitBlock != null) {
-			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
-				location.world.playSound(location,
-					it, 0.5f, 1f)
-			}
+		if (rayCastTick()) return true
 
-			return true
-		}
+		calculateDamage()
 
-		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying) {
-			if (shouldBypassHitTicks) (rayFlyingTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
-			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
+		println("Tick: $ticks, Damage: $damage")
 
-			if (!shouldPassThroughEntities) {
-				return true
-			}
-
-			return false
-		}
-
-		if (rayTraceResult?.hitEntity != null) {
-			val playerHit = rayTraceResult.hitEntity
-			val hitLocation = rayTraceResult.hitPosition.toLocation(rayTraceResult.hitEntity!!.world)
-
-			val rayHitPosition = rayTraceResult.hitPosition
-			val playerEye = (playerHit as? Player)?.eyeLocation?.toVector()
-
-			if (playerEye != null && rayHitPosition.distance(playerEye) < 0.5) {
-				if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
-				(rayTraceResult.hitEntity as? Damageable)?.damage(damage * 1.5, shooter)
-				hitLocation.createExplosion(0.01f)
-				hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 1f)
-				return true
-			}
-
-			if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
-			(rayTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
-			if (!shouldPassThroughEntities) {
-				return true
-			}
-
-			return false
-		}
 		return false
 	}
 }
