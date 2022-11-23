@@ -151,7 +151,7 @@ object CityNPCs : SLComponent() {
 	}
 
 	private fun spawnNPC(location: Location, npc: NPC, info: NpcInfo) {
-		check(location.isChunkLoaded)
+		location.world.addPluginChunkTicket(location.blockX shr 4, location.blockZ shr 4, Ion) // Load it and keep it loaded
 
 		npc.getTrait(SkinTrait::class.java).apply {
 			setSkinPersistent(info.name, info.skin.signature, info.skin.value)
