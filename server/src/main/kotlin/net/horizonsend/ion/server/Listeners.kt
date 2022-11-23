@@ -27,6 +27,8 @@ import net.horizonsend.ion.server.listeners.PlayerAttemptPickupItemListener
 import net.horizonsend.ion.server.listeners.PlayerDeathListener
 import net.horizonsend.ion.server.listeners.PlayerFishListener
 import net.horizonsend.ion.server.listeners.PlayerItemConsumeListener
+import net.horizonsend.ion.server.listeners.PlayerItemHeldListener
+import net.horizonsend.ion.server.listeners.bukkit.PlayerInteractListener
 import net.horizonsend.ion.server.listeners.PlayerJoinListener
 import net.horizonsend.ion.server.listeners.PlayerLoginListener
 import net.horizonsend.ion.server.listeners.PlayerQuitListener
@@ -38,7 +40,6 @@ import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerInteractListener
 
 val listeners = arrayOf(
 	BlockFadeListener(),
@@ -54,6 +55,7 @@ val listeners = arrayOf(
 	PlayerDeathListener(),
 	PlayerFishListener(),
 	PlayerItemConsumeListener(),
+	PlayerItemHeldListener(),
 	PlayerInteractListener(),
 	PlayerJoinListener(Ion),
 	PlayerLoginListener(),
