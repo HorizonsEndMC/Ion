@@ -17,8 +17,12 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 	abstract val requiredAmmo: ItemStack
 
 	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
-		if (!(source as? Player)?.inventory!!.contains(requiredAmmo)) return
-		(source as? Player)?.inventory
+		val player = (source as? Player)
+		if (player?.hasCooldown(item.type) == true) return
+		val inventory = (source as? Player)?.inventory
+		if (!inventory!!.containsAtLeast(requiredAmmo, 1)) return
+		inventory.removeItemAnySlot(requiredAmmo.clone())
+		source.updateInventory()
 		item.editMeta {
 			it.lore()?.clear()
 			it.lore(customItemlist.itemStack.lore())
@@ -29,6 +33,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 				multiShotWeaponBalancing.magazineSize
 		}
 		(source as? Player)?.setCooldown(item.type, this.multiShotWeaponBalancing.reload)
+		player?.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: ${multiShotWeaponBalancing.magazineSize}/${multiShotWeaponBalancing.magazineSize}"))
 	}
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
 		if ((entity as? Player)?.hasCooldown(item.type) == true) return
