@@ -1,20 +1,17 @@
 package net.horizonsend.ion.server.listeners.bukkit
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.customitems.CustomItem
 import net.horizonsend.ion.server.customitems.CustomItemList
-import net.horizonsend.ion.server.customitems.blasters.AmmoRequiringSingleShotBlaster
+import net.horizonsend.ion.server.customitems.blasters.AutoRifle
 import net.horizonsend.ion.server.customitems.blasters.Pistol
 import net.horizonsend.ion.server.customitems.blasters.Rifle
 import net.horizonsend.ion.server.customitems.blasters.Shotgun
 import net.horizonsend.ion.server.customitems.blasters.Sniper
-import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.persistence.PersistentDataContainer
 
 class PlayerInteractListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -26,6 +23,7 @@ class PlayerInteractListener : Listener {
 				mapOf(
 					Sniper.customItemlist.itemStack.itemMeta.customModelData to Sniper,
 					Rifle.customItemlist.itemStack.itemMeta.customModelData to Rifle,
+					AutoRifle.customItemlist.itemStack.itemMeta.customModelData to AutoRifle,
 					Pistol.customItemlist.itemStack.itemMeta.customModelData to Pistol,
 					Shotgun.customItemlist.itemStack.itemMeta.customModelData to Shotgun
 				)
@@ -33,6 +31,7 @@ class PlayerInteractListener : Listener {
 			val itemMap = when (CustomItemList.values().find { it.itemStack.itemMeta.customModelData == item.itemMeta.customModelData && item.type == it.itemStack.type }){
 				CustomItemList.SNIPER -> { arrayOfWeapon }
 				CustomItemList.RIFLE ->  { arrayOfWeapon }
+				CustomItemList.AUTO_RIFLE -> { arrayOfWeapon }
 				CustomItemList.PISTOL -> { arrayOfWeapon }
 				CustomItemList.SHOTGUN -> { arrayOfWeapon }
 				else -> return
