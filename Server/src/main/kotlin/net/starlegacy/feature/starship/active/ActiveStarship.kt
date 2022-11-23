@@ -4,6 +4,8 @@ import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import java.util.LinkedList
@@ -65,7 +67,9 @@ abstract class ActiveStarship(
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
-) {
+) : ForwardingAudience {
+	override fun audiences(): Iterable<Audience> = onlinePassengers
+
 	abstract val type: StarshipType
 
 	private var _centerOfMass: BlockPos = centerOfMass
@@ -296,16 +300,19 @@ abstract class ActiveStarship(
 
 	abstract fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean>
 
+	@Deprecated("Deprecated in favour of Adventure text components.")
 	fun sendActionBar(message: String) {
 		for (player in onlinePassengers) {
 			player action message
 		}
 	}
 
+	@Deprecated("Deprecated in favour of Adventure text components.")
 	fun sendTitle(title: Title) {
 		onlinePassengers.asSequence().forEach { it title title }
 	}
 
+	@Deprecated("Deprecated in favour of Adventure text components.")
 	fun sendMessage(message: String) {
 		onlinePassengers.asSequence().forEach { it msg message }
 	}
