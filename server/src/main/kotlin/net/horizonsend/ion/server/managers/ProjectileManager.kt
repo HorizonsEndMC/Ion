@@ -11,7 +11,6 @@ object ProjectileManager {
 		IonServer.Ion.server.scheduler.runTaskTimer(IonServer.Ion, Runnable {
 			rayTracedParticleProjectiles.removeIf { projectile ->
 				projectile.tick()
-				projectile.rayCastTick()
 			}
 		}, 0, 0)
 	}
