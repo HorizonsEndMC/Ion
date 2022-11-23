@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.customitems.blasters
+package net.horizonsend.ion.server.customitems.blasters.constructors
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.managers.ProjectileManager
@@ -42,13 +42,14 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 		ProjectileManager.addProjectile(
 			RayTracedParticleProjectile(
 				entity.eyeLocation,
-				singleShotWeaponBalancing.iterationsPerTick,
-				singleShotWeaponBalancing.distancePerIteration,
+				singleShotWeaponBalancing.speed,
 				entity,
 				singleShotWeaponBalancing.damage,
+				singleShotWeaponBalancing.damageFalloffMultiplier,
 				singleShotWeaponBalancing.shouldPassThroughEntities,
 				singleShotWeaponBalancing.shotSize.toDouble(),
 				singleShotWeaponBalancing.shouldBypassHitTicks,
+				singleShotWeaponBalancing.range,
 				getParticleType(entity),
 				if (getParticleType(entity) == Particle.REDSTONE) {
 					Particle.DustOptions(getParticleColour(entity), singleShotWeaponBalancing.shotSize)

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.customitems.blasters
+package net.horizonsend.ion.server.customitems.blasters.constructors
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.server.IonServer
