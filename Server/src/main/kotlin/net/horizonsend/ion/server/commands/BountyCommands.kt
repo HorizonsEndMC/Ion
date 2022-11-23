@@ -112,7 +112,7 @@ class BountyCommands : BaseCommand() {
 			bounty = amount
 		}
 
-		sender.sendRichMessage("<gray>Set </gray>${targetData.minecraftUsername}'s<gray> to </gray>$amount<gray>.")
+		sender.sendRichMessage("<gray>Set </gray>${targetData.minecraftUsername}'s<gray> bounty to </gray>$amount<gray>.")
 	}
 
 	@Subcommand("admin clear")
