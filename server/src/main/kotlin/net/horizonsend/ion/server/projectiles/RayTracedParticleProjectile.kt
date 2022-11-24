@@ -48,8 +48,6 @@ class RayTracedParticleProjectile(
 
 		calculateDamage()
 
-		println("Tick: $ticks, Damage: $damage")
-
 		return false
 	}
 }
