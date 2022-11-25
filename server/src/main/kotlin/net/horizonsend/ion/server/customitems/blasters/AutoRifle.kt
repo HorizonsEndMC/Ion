@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.customitems.CustomItemList
 import net.horizonsend.ion.server.customitems.blasters.constructors.AmmoRequiringSingleShotBlaster
 import net.starlegacy.feature.misc.CustomItems
-import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 
 
@@ -16,8 +15,4 @@ object AutoRifle : AmmoRequiringSingleShotBlaster() {
 
 	override val singleShotWeaponBalancing: BalancingConfiguration.EnergyWeaponBalancing.SingleShotWeaponBalancing
 		get() = IonServer.Ion.balancing.energyWeapons.autoRifle
-
-	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
-		source.fireTicks = 10
-	}
 }
