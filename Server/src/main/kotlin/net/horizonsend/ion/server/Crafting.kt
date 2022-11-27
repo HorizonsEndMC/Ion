@@ -3,6 +3,7 @@ package net.horizonsend.ion.server
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.customitems.CustomItemList
 import net.horizonsend.ion.server.legacy.utilities.enumSetOf
+import net.starlegacy.feature.misc.CustomItems
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.Material
@@ -66,8 +67,41 @@ fun initializeCrafting() {
 	}
 
 	// Rifle Crafting
-	itemStackShapeRecipe("ammo_rifle", CustomItemList.RIFLE.itemStack){
-		shape()
+	itemStackShapeRecipe("rifle", CustomItemList.RIFLE.itemStack){
+		shape("a", "igi", "ggg")
+	}
+
+	// Blaster Barrel Crafting
+	itemStackShapeRecipe("rifle", CustomItemList.BLASTER_BARREL.itemStack){
+		shape("tct", "ppp", "tct")
+
+		setIngredient('t', CustomItems.MINERAL_TITANIUM.singleItem())
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('p', PRISMARINE_CRYSTALS)
+	}
+
+	// Circuitry Crafting 1
+	itemStackShapeRecipe("rifle", CustomItemList.CIRCUITRY.itemStack) {
+		shape("qdq", "arg", "ccc")
+
+		setIngredient('a', CustomItems.MINERAL_ALUMINUM.singleItem())
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
+	}
+
+	// Circuitry Crafting 2
+	itemStackShapeRecipe("rifle", CustomItemList.CIRCUITRY.itemStack) {
+		shape("qdq", "gra", "ccc")
+
+		setIngredient('a', CustomItems.MINERAL_ALUMINUM.singleItem())
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
 	}
 }
 
