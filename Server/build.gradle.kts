@@ -50,7 +50,7 @@ dependencies {
 	compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
 	compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.21")
 
-	compileOnly("org.litote.kmongo:kmongo:4.7.2")
+	compileOnly("org.litote.kmongo:kmongo:4.8.0")
 	compileOnly("redis.clients:jedis:4.3.1")
 }
 
