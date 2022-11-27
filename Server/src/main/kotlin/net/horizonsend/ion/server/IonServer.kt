@@ -32,7 +32,6 @@ class IonServer : JavaPlugin() {
 	val configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
 	val balancing = loadConfiguration<BalancingConfiguration>(dataFolder, "balancing.conf")
 
-
 	override fun onEnable() { try {
 		Connectivity.open(dataFolder)
 
