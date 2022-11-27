@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.listeners.bukkit
+package net.horizonsend.ion.server.listeners
 
 import net.horizonsend.ion.server.customitems.getCustomItem
 import org.bukkit.event.EventHandler

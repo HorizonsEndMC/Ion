@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 
 abstract class Blaster : CustomItem() {
 
-	protected fun getParticleType(entity: Entity) : Particle{
+	protected fun getParticleType(entity: Entity) : Particle {
 		return if (entity	is Player) {
 			PlayerData[entity.uniqueId].chosenParticle.getBukkitEquivalent()
 		} else Particle.REDSTONE
