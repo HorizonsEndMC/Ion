@@ -27,7 +27,7 @@ dependencies {
 	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
 
 	// Library Loaded Dependencies
-	compileOnly("net.dv8tion:JDA:5.0.0-alpha.22")
+	compileOnly("net.dv8tion:JDA:5.0.0-beta.1")
 
 	// Common Library Loaded Dependencies
 	compileOnly("org.spongepowered:configurate-extra-kotlin:4.1.2")
