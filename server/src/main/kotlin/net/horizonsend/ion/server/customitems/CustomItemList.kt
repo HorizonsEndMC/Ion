@@ -24,7 +24,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Sniper"))
 			it.persistentDataContainer.set(
-				NamespacedKey(IonServer.Ion, "BlasterType"),
+				NamespacedKey(IonServer.Ion, "CustomID"),
 				PersistentDataType.STRING, "SNIPER"
 			)
 
@@ -42,7 +42,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Rifle"))
 			it.persistentDataContainer.set(
-				NamespacedKey(IonServer.Ion, "BlasterType"),
+				NamespacedKey(IonServer.Ion, "CustomID"),
 				PersistentDataType.STRING, "RIFLE"
 			)
 
@@ -60,7 +60,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Pistol"))
 			it.persistentDataContainer.set(
-				NamespacedKey(IonServer.Ion, "BlasterType"),
+				NamespacedKey(IonServer.Ion, "CustomID"),
 				PersistentDataType.STRING, "PISTOL"
 			)
 
@@ -78,7 +78,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Shotgun"))
 			it.persistentDataContainer.set(
-				NamespacedKey(IonServer.Ion, "BlasterType"),
+				NamespacedKey(IonServer.Ion, "CustomID"),
 				PersistentDataType.STRING, "SHOTGUN"
 			)
 
@@ -96,7 +96,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 			MiniMessage.miniMessage().deserialize("<bold><red>Auto Rifle"))
 			it.persistentDataContainer.set(
-				NamespacedKey(IonServer.Ion, "BlasterType"),
+				NamespacedKey(IonServer.Ion, "CustomID"),
 				PersistentDataType.STRING, "AUTO_RIFLE"
 			)
 
@@ -109,20 +109,26 @@ enum class CustomItemList(val itemStack: ItemStack) {
 	)
 }
 
-fun ItemStack.getBlasterType(): String? = this.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "BlasterType"), PersistentDataType.STRING)
+fun ItemStack.getItemName(): String? =
+	this.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)
 
 fun ItemStack.getCustomItem(): CustomItem? {
 	val arrayOfWeapon: Map<String, CustomItem> =
 		mapOf(
-			Sniper.customItemlist.itemStack.getBlasterType()!! to Sniper,
-			Rifle.customItemlist.itemStack.getBlasterType()!! to Rifle,
-			AutoRifle.customItemlist.itemStack.getBlasterType()!! to AutoRifle,
-			Pistol.customItemlist.itemStack.getBlasterType()!! to Pistol,
-			Shotgun.customItemlist.itemStack.getBlasterType()!! to Shotgun
+			Sniper.customItemlist.itemStack.getItemName()!! to Sniper,
+			Rifle.customItemlist.itemStack.getItemName()!! to Rifle,
+			AutoRifle.customItemlist.itemStack.getItemName()!! to AutoRifle,
+			Pistol.customItemlist.itemStack.getItemName()!! to Pistol,
+			Shotgun.customItemlist.itemStack.getItemName()!! to Shotgun,
 		)
 
 	val itemMap = when (CustomItemList.values()
-		.find { it.itemStack.itemMeta.customModelData == this.itemMeta.customModelData && this.type == it.itemStack.type }) {
+		.find {
+			it.itemStack.itemMeta.persistentDataContainer.get(
+				NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING) == this.itemMeta.persistentDataContainer.get(
+				NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING) && this.type == it.itemStack.type
+			}
+		) {
 
 		CustomItemList.SNIPER -> {
 			arrayOfWeapon
@@ -142,5 +148,5 @@ fun ItemStack.getCustomItem(): CustomItem? {
 		else -> return null
 	}
 
-	return itemMap[this.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "BlasterType"), PersistentDataType.STRING)]
+	return itemMap[this.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)]
 }
