@@ -23,6 +23,8 @@ import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
+import net.horizonsend.ion.server.listeners.PlayerItemHeldListener
+import net.horizonsend.ion.server.listeners.PlayerInteractListener
 import net.horizonsend.ion.server.legacy.listeners.BuySpawnShuttleListener
 import net.horizonsend.ion.server.legacy.listeners.CaptureStationListener
 import net.horizonsend.ion.server.legacy.listeners.CompleteCargoRunListener
@@ -36,8 +38,6 @@ import net.horizonsend.ion.server.legacy.listeners.LevelUpListener
 import net.horizonsend.ion.server.legacy.listeners.MultiblockDetectListener
 import net.horizonsend.ion.server.legacy.listeners.ShipKillListener
 import net.horizonsend.ion.server.legacy.listeners.StationSiegeBeginListener
-import net.horizonsend.ion.server.listeners.PlayerItemHeldListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerInteractListener
 
 val listeners = arrayOf(
 	BlockFadeListener(),
