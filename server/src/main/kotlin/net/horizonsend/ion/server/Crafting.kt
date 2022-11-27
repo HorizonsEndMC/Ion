@@ -2,6 +2,8 @@ package net.horizonsend.ion.server
 
 // Special Exception Wildcard Imports
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.customitems.CustomItemList
+import net.horizonsend.ion.server.legacy.utilities.enumSetOf
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.Material
@@ -99,7 +101,10 @@ fun initializeCrafting() {
 		}
 	}
 
-	//
+	// Rifle Crafting
+	itemStackShapeRecipe("ammo_rifle", CustomItemList.RIFLE.itemStack){
+		shape()
+	}
 }
 
 private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {
@@ -108,6 +113,12 @@ private fun furnaceRecipe(name: String, result: Material, source: Material, expe
 
 private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
 	val recipe = ShapedRecipe(NamespacedKey(Ion, name), ItemStack(result))
+	execute(recipe)
+	Bukkit.addRecipe(recipe)
+}
+
+private fun itemStackShapeRecipe(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit){
+	val recipe = ShapedRecipe(NamespacedKey(Ion, name), result)
 	execute(recipe)
 	Bukkit.addRecipe(recipe)
 }

@@ -19,7 +19,6 @@ import org.bukkit.entity.Player
 class PatreonCommands : BaseCommand(){
 
 	@Subcommand("chooseParticle")
-	@CommandCompletion("@particles")
 	fun onChooseParticle(sender: Player, particle: Particle){
 		if (PlayerData[sender.uniqueId].patreonMoney >= particle.patreonMoneyNeeded || sender.hasPermission(("patreon.changeParticle"))){
 			PlayerData[sender.uniqueId].update {

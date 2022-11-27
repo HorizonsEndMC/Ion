@@ -4,12 +4,14 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.managers.ProjectileManager
 import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.starlegacy.util.randomDouble
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.Vector
 
 abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	abstract val requiredAmmo: ItemStack
