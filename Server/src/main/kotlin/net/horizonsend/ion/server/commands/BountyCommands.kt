@@ -17,10 +17,10 @@ import net.starlegacy.listener.misc.ProtectionListener
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-@Suppress("Unused")
 @CommandAlias("bounty")
 class BountyCommands : BaseCommand() {
 	@Default
+	@Suppress("Unused")
 	@CommandPermission("ion.bounty.gui")
 	fun onBounty(sender: Player) {
 		if (!ProtectionListener.isProtectedCity(sender.location)) {
@@ -32,6 +32,7 @@ class BountyCommands : BaseCommand() {
 	}
 
 	@Subcommand("info")
+	@Suppress("Unused")
 	@CommandCompletion("@players")
 	@CommandPermission("ion.bounty.info")
 	fun onBountyInfo(sender: CommandSender, target: String) {
@@ -46,6 +47,7 @@ class BountyCommands : BaseCommand() {
 	}
 
 	@Subcommand("add")
+	@Suppress("Unused")
 	@CommandCompletion("@players")
 	@CommandPermission("ion.bounty.add")
 	fun onBountyAdd(sender: Player, target: String, amount: Int) {
@@ -81,6 +83,7 @@ class BountyCommands : BaseCommand() {
 	}
 
 	@Subcommand("clear")
+	@Suppress("Unused")
 	@CommandCompletion("@players")
 	@CommandPermission("ion.bounty.clear")
 	fun onBountyClear(sender: Player) {
@@ -91,12 +94,14 @@ class BountyCommands : BaseCommand() {
 		sender.sendRichMessage("<gray>Cleared accepted bounty.")
 	}
 
+	@Suppress("Unused")
 	@Subcommand("admin gui")
 	@CommandPermission("ion.bounty.admin.gui")
 	fun onBountyAdminGui(sender: Player) {
 		sender.openScreen(BountyScreen())
 	}
 
+	@Suppress("Unused")
 	@Subcommand("admin set")
 	@CommandCompletion("@players")
 	@CommandPermission("ion.bounty.admin.set")
@@ -115,6 +120,7 @@ class BountyCommands : BaseCommand() {
 		sender.sendRichMessage("<gray>Set </gray>${targetData.minecraftUsername}'s<gray> bounty to </gray>$amount<gray>.")
 	}
 
+	@Suppress("Unused")
 	@Subcommand("admin clear")
 	@CommandPermission("ion.bounty.admin.clear")
 	@CommandCompletion("@players")
