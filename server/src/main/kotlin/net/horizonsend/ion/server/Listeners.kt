@@ -27,7 +27,7 @@ import net.horizonsend.ion.server.listeners.PlayerDeathListener
 import net.horizonsend.ion.server.listeners.PlayerFishListener
 import net.horizonsend.ion.server.listeners.PlayerItemConsumeListener
 import net.horizonsend.ion.server.listeners.PlayerItemHeldListener
-import net.horizonsend.ion.server.listeners.bukkit.PlayerInteractListener
+import net.horizonsend.ion.server.listeners.PlayerInteractListener
 import net.horizonsend.ion.server.listeners.PlayerJoinListener
 import net.horizonsend.ion.server.listeners.PlayerLoginListener
 import net.horizonsend.ion.server.listeners.PlayerQuitListener
