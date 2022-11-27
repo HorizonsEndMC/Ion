@@ -3,6 +3,7 @@ package net.horizonsend.ion.server
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.customitems.CustomItemList
 import net.horizonsend.ion.server.legacy.utilities.enumSetOf
+import net.starlegacy.feature.misc.CustomItems
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.Material
@@ -13,8 +14,11 @@ import org.bukkit.Material.BLACK_WOOL
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
 import org.bukkit.Material.CYAN_WOOL
+import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.GOLD_BLOCK
+import org.bukkit.Material.GOLD_INGOT
 import org.bukkit.Material.GRAY_WOOL
+import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
@@ -39,7 +43,9 @@ import org.bukkit.Material.PRISMARINE
 import org.bukkit.Material.PRISMARINE_BRICKS
 import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.PURPLE_WOOL
+import org.bukkit.Material.QUARTZ
 import org.bukkit.Material.RED_WOOL
+import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
@@ -54,6 +60,7 @@ import org.bukkit.Material.YELLOW_WOOL
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
@@ -134,10 +141,44 @@ fun initializeCrafting() {
 		}
 	}
 
-	// Rifle Crafting
-	//itemStackShapeRecipe("ammo_rifle", CustomItemList.RIFLE.itemStack){
-	//	shape()
-	//}
+	/* Rifle Crafting
+		itemStackShapeRecipe("rifle", CustomItemList.RIFLE.itemStack){
+			shape("a", "igi", "ggg")
+		}
+	*/
+
+	// Blaster Barrel Crafting
+	itemStackShapeRecipe("blaster_barrel", CustomItemList.BLASTER_BARREL.itemStack){
+		shape("tct", "ppp", "tct")
+
+		setIngredient('t', RecipeChoice.ExactChoice(CustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('p', PRISMARINE_CRYSTALS)
+	}
+
+	// Circuitry Crafting 1
+	itemStackShapeRecipe("circuitry_1", CustomItemList.CIRCUITRY.itemStack) {
+		shape("qdq", "arg", "ccc")
+
+		setIngredient('a', RecipeChoice.ExactChoice(CustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
+	}
+
+	// Circuitry Crafting 2
+	itemStackShapeRecipe("circuitry_2", CustomItemList.CIRCUITRY.itemStack) {
+		shape("qdq", "gra", "ccc")
+
+		setIngredient('a', RecipeChoice.ExactChoice(CustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
+	}
 }
 
 private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {

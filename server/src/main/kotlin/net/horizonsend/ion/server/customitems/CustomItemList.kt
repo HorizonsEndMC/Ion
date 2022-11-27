@@ -106,6 +106,32 @@ enum class CustomItemList(val itemStack: ItemStack) {
 			)
 			it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 30/30")))
 		}
+	),
+
+	BLASTER_BARREL(
+		ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+			it.setCustomModelData(500); it.displayName(
+
+			MiniMessage.miniMessage().deserialize("<bold><gray>Blaster Barrel")
+		)
+			it.persistentDataContainer.set(
+				NamespacedKey(IonServer.Ion, "CustomID"),
+				PersistentDataType.STRING, "BLASTER_BARREL"
+			)
+		}
+	),
+
+	CIRCUITRY(
+		ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+			it.setCustomModelData(501); it.displayName(
+
+			MiniMessage.miniMessage().deserialize("<bold><dark_green>Circuitry")
+		)
+			it.persistentDataContainer.set(
+				NamespacedKey(IonServer.Ion, "CustomID"),
+				PersistentDataType.STRING, "CIRCUITRY"
+			)
+		}
 	)
 }
 
