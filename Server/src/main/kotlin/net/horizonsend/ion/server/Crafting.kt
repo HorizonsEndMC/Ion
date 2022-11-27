@@ -3,6 +3,7 @@ package net.horizonsend.ion.server
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.customitems.CustomItemList
 import net.horizonsend.ion.server.legacy.utilities.enumSetOf
+import net.starlegacy.feature.misc.CustomItems
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.Material
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ShapelessRecipe
 
 // Special Exception Wildcard Imports
 import org.bukkit.Material.*
+import org.bukkit.inventory.RecipeChoice
 
 val forbiddenCraftingItems = enumSetOf(
 	WARPED_FUNGUS_ON_A_STICK, NETHERITE_PICKAXE, NETHERITE_SHOVEL, NETHERITE_SWORD, NETHERITE_AXE, NETHERITE_HOE
@@ -65,6 +67,43 @@ fun initializeCrafting() {
 		}
 	}
 
+	/* Rifle Crafting
+	itemStackShapeRecipe("rifle", CustomItemList.RIFLE.itemStack){
+		shape("a", "igi", "ggg")
+	}
+*/
+	// Blaster Barrel Crafting
+	itemStackShapeRecipe("blaster_barrel", CustomItemList.BLASTER_BARREL.itemStack){
+		shape("tct", "ppp", "tct")
+
+		setIngredient('t', RecipeChoice.ExactChoice(CustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('p', PRISMARINE_CRYSTALS)
+	}
+
+	// Circuitry Crafting 1
+	itemStackShapeRecipe("circuitry_1", CustomItemList.CIRCUITRY.itemStack) {
+		shape("qdq", "arg", "ccc")
+
+		setIngredient('a', RecipeChoice.ExactChoice(CustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
+	}
+
+	// Circuitry Crafting 2
+	itemStackShapeRecipe("circuitry_2", CustomItemList.CIRCUITRY.itemStack) {
+		shape("qdq", "gra", "ccc")
+
+		setIngredient('a', RecipeChoice.ExactChoice(CustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
+	}
 	// Rifle Crafting
 	//itemStackShapeRecipe("ammo_rifle", CustomItemList.RIFLE.itemStack){
 	//	shape()
