@@ -17,6 +17,5 @@ object Sniper : AmmoRequiringSingleShotBlaster() {
 		get() = IonServer.Ion.balancing.energyWeapons.sniper
 
 	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
-		//source.setMetadata()
 	}
 }
