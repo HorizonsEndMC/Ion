@@ -109,9 +109,9 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		return true
 	}
 
-	fun recoil(entity: LivingEntity){
-		val recoil = multiShotWeaponBalancing.recoil/10
-		for (i in 1..10){
+	private fun recoil(entity: LivingEntity){
+		val recoil = multiShotWeaponBalancing.recoil/multiShotWeaponBalancing.packetsPerShot
+		for (i in 1..multiShotWeaponBalancing.packetsPerShot){
 			Tasks.syncDelay(i.toLong()) {
 				val loc = entity.location
 				loc.pitch -= recoil

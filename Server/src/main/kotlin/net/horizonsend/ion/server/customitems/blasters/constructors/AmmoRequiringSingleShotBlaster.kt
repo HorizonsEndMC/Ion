@@ -95,8 +95,8 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	}
 
 	private fun recoil(entity: LivingEntity){
-		val recoil = singleShotWeaponBalancing.recoil/10
-		for (i in 1..10){
+		val recoil = singleShotWeaponBalancing.recoil/singleShotWeaponBalancing.packetsPerShot
+		for (i in 1..singleShotWeaponBalancing.packetsPerShot){
 			Tasks.syncDelay(i.toLong()) {
 				val loc = entity.location
 				loc.pitch -= recoil
