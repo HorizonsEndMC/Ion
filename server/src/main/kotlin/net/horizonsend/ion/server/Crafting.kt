@@ -102,9 +102,9 @@ fun initializeCrafting() {
 	}
 
 	// Rifle Crafting
-	itemStackShapeRecipe("ammo_rifle", CustomItemList.RIFLE.itemStack){
-		shape()
-	}
+	//itemStackShapeRecipe("ammo_rifle", CustomItemList.RIFLE.itemStack){
+	//	shape()
+	//}
 }
 
 private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {
