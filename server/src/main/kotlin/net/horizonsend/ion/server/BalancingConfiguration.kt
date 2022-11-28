@@ -20,7 +20,8 @@ data class BalancingConfiguration(
 			15,
 			true,
 			100.0,
-			5.0f
+			3.0f,
+			5
 		),
 		val rifle: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
 			0.75f,
@@ -34,7 +35,8 @@ data class BalancingConfiguration(
 			15,
 			true,
 			100.0,
-			10.0f
+			2.0f,
+			5
 		),
 		val autoRifle: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
 			0.5f,
@@ -48,7 +50,8 @@ data class BalancingConfiguration(
 			30,
 			true,
 			100.0,
-			3.0f
+			1.0f,
+			1
 		),
 		val sniper: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
 			1f,
@@ -62,7 +65,8 @@ data class BalancingConfiguration(
 			5,
 			false,
 			100.0,
-			25.0f
+			10.0f,
+			5
 		),
 
 		val shotGun: MultiShotWeaponBalancing = MultiShotWeaponBalancing(
@@ -80,7 +84,8 @@ data class BalancingConfiguration(
 			2,
 			true,
 			100.0,
-			25.0f
+			10.0f,
+			10
 		)
 	) {
 		@ConfigSerializable
@@ -97,6 +102,7 @@ data class BalancingConfiguration(
 			val shouldBypassHitTicks: Boolean,
 			val range: Double,
 			val recoil: Float, //degrees
+			val packetsPerShot: Int
 		)
 
 		@ConfigSerializable
@@ -115,7 +121,8 @@ data class BalancingConfiguration(
 			val magazineSize: Int,
 			val shouldBypassHitTicks: Boolean,
 			val range: Double,
-			val recoil: Float //degrees
+			val recoil: Float, //degrees
+			val packetsPerShot: Int
 		)
 	}
 }
