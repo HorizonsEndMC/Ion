@@ -1,17 +1,18 @@
 package net.horizonsend.ion.server.customitems.blasters.constructors
 
+import io.papermc.paper.entity.RelativeTeleportFlag
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.managers.ProjectileManager
 import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.util.randomDouble
+import net.starlegacy.util.Tasks
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.util.Vector
 
 abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	abstract val requiredAmmo: ItemStack
@@ -58,6 +59,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 				} else null
 			)
 		)
+		recoil(entity)
 	}
 
 	fun reload(item: ItemStack, source: LivingEntity): Boolean {
@@ -90,5 +92,22 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 		}
 
 		return true
+	}
+
+	private fun recoil(entity: LivingEntity){
+		val recoil = singleShotWeaponBalancing.recoil/10
+		for (i in 1..10){
+			Tasks.syncDelay(i.toLong()) {
+				val loc = entity.location
+				loc.pitch -= recoil
+				(entity as? Player)?.teleport(
+					loc,
+					PlayerTeleportEvent.TeleportCause.PLUGIN,
+					true,
+					false,
+					*RelativeTeleportFlag.values()
+				)
+			}
+		}
 	}
 }
