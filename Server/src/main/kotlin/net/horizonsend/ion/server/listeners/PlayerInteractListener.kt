@@ -13,6 +13,7 @@ class PlayerInteractListener : Listener {
 	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
 		val item = event.item // If material is valid, then item is not null
 		if (item != null) {
+			if (item.getCustomItem() == null) return
 			item.getCustomItem().apply {
 				when (event.action) {
 					Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> this?.onPrimaryInteract(event.player, item)
