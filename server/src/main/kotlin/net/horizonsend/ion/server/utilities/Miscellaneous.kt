@@ -1,16 +1,10 @@
 package net.horizonsend.ion.server.utilities
 
-import java.util.EnumSet
+import java.util.*
 import net.horizonsend.ion.common.database.enums.Particle
-import net.milkbowl.vault.economy.Economy
-import org.bukkit.Bukkit
 
-inline fun vaultEconomy(execute: (Economy) -> Unit) {
-	execute(Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider ?: return)
-}
-
-fun org.bukkit.Particle.getIonEquivalent() : Particle{
-	return when(this){
+fun org.bukkit.Particle.getIonEquivalent() : Particle {
+	return when (this) {
 		org.bukkit.Particle.SPIT -> Particle.SPIT
 		org.bukkit.Particle.ELECTRIC_SPARK -> Particle.ELECTRIC_SPARK
 		org.bukkit.Particle.GLOW -> Particle.GLOW
@@ -29,8 +23,6 @@ fun org.bukkit.Particle.getIonEquivalent() : Particle{
 		else -> Particle.REDSTONE_PARTICLE
 	}
 }
-inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
-	EnumSet.noneOf(T::class.java).apply { addAll(elems) }
 
 fun Particle.getBukkitEquivalent() : org.bukkit.Particle {
 	return when(this){
