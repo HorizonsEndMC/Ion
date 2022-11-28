@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.listeners
 
+import net.horizonsend.ion.server.customitems.getCustomItem
 import net.horizonsend.ion.server.forbiddenCraftingItems
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -10,6 +11,6 @@ class PrepareItemCraftListener : Listener {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
-		if (forbiddenCraftingItems.contains(event.inventory.result?.type)) event.inventory.result = null
+		if (event.inventory.result?.getCustomItem() == null && forbiddenCraftingItems.contains(event.inventory.result?.type)) event.inventory.result = null
 	}
 }
