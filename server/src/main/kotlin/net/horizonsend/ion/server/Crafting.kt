@@ -64,10 +64,6 @@ import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
-val forbiddenCraftingItems = enumSetOf(
-	WARPED_FUNGUS_ON_A_STICK, NETHERITE_PICKAXE, NETHERITE_SHOVEL, NETHERITE_SWORD, NETHERITE_AXE, NETHERITE_HOE
-)
-
 fun initializeCrafting() {
 	// Prismarine Bricks
 	furnaceRecipe("prismarine_bricks", PRISMARINE_BRICKS, PRISMARINE, 1f, 200)
@@ -133,13 +129,6 @@ fun initializeCrafting() {
 
 	// Nether Wart Block -> Nether Warts
 	shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
-
-	// Remove Unwanted Vanilla Recipes
-	for (material in forbiddenCraftingItems) {
-		for (recipe in Bukkit.getRecipesFor(ItemStack(material))) {
-			if (recipe is Keyed) Bukkit.removeRecipe(recipe.key)
-		}
-	}
 
 	/* Rifle Crafting
 		itemStackShapeRecipe("rifle", CustomItemList.RIFLE.itemStack){
