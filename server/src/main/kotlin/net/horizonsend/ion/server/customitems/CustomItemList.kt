@@ -38,7 +38,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 	RIFLE(
 		ItemStack(Material.NETHERITE_HOE).updateMeta {
-			it.setCustomModelData(2)
+			it.setCustomModelData(1)
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Rifle"))
 			it.persistentDataContainer.set(
@@ -55,8 +55,8 @@ enum class CustomItemList(val itemStack: ItemStack) {
 	),
 
 	PISTOL(
-		ItemStack(Material.NETHERITE_HOE).updateMeta {
-			it.setCustomModelData(3)
+		ItemStack(Material.NETHERITE_SHOVEL).updateMeta {
+			it.setCustomModelData(1)
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Pistol"))
 			it.persistentDataContainer.set(
@@ -74,7 +74,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 	SHOTGUN(
 		ItemStack(Material.NETHERITE_HOE).updateMeta {
-			it.setCustomModelData(4)
+			it.setCustomModelData(2)
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Shotgun"))
 			it.persistentDataContainer.set(
@@ -86,13 +86,13 @@ enum class CustomItemList(val itemStack: ItemStack) {
 				NamespacedKey(IonServer.Ion, "ammo"),
 				PersistentDataType.INTEGER, 2
 			)
-			it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 2/2")))
+			it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 4/4")))
 		}
 	),
 
 	AUTO_RIFLE(
 		ItemStack(Material.NETHERITE_HOE).updateMeta {
-			it.setCustomModelData(2); it.displayName(
+			it.setCustomModelData(3); it.displayName(
 
 			MiniMessage.miniMessage().deserialize("<bold><red>Auto Rifle"))
 			it.persistentDataContainer.set(
