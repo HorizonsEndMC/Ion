@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.listeners.InventoryDragListener
 import net.horizonsend.ion.server.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.listeners.PlayerAttemptPickupItemListener
 import net.horizonsend.ion.server.listeners.PlayerDeathListener
+import net.horizonsend.ion.server.listeners.PlayerDropItemListener
 import net.horizonsend.ion.server.listeners.PlayerFishListener
 import net.horizonsend.ion.server.listeners.PlayerItemConsumeListener
 import net.horizonsend.ion.server.listeners.PlayerItemHeldListener
@@ -52,6 +53,7 @@ val listeners = arrayOf(
 	InventoryMoveItemListener(),
 	PlayerAttemptPickupItemListener(),
 	PlayerDeathListener(),
+	PlayerDropItemListener(),
 	PlayerFishListener(),
 	PlayerItemConsumeListener(),
 	PlayerItemHeldListener(),
