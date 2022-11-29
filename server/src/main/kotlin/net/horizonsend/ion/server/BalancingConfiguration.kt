@@ -89,7 +89,7 @@ data class BalancingConfiguration(
 			true,
 			100.0,
 			5.0f,
-			10,
+			2,
 			false
 		)
 	) {
