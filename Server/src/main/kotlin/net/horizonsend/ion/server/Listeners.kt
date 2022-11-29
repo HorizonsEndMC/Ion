@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.listeners.PlayerQuitListener
 import net.horizonsend.ion.server.listeners.PlayerResourcePackStatusListener
 import net.horizonsend.ion.server.listeners.PlayerTeleportListener
 import net.horizonsend.ion.server.listeners.PotionSplashListener
-import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
@@ -60,7 +59,6 @@ val listeners = arrayOf(
 	PlayerResourcePackStatusListener(),
 	PlayerTeleportListener(),
 	PotionSplashListener(),
-	PrepareItemCraftListener(),
 	PrepareItemEnchantListener(),
 	WorldInitListener(),
 	WorldUnloadListener(),

@@ -17,10 +17,6 @@ import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.Material.*
 import org.bukkit.inventory.RecipeChoice
 
-val forbiddenCraftingItems = enumSetOf(
-	WARPED_FUNGUS_ON_A_STICK, NETHERITE_PICKAXE, NETHERITE_SHOVEL, NETHERITE_SWORD, NETHERITE_AXE, NETHERITE_HOE
-)
-
 fun initializeCrafting() {
 	// Prismarine Bricks
 	furnaceRecipe("prismarine_bricks", PRISMARINE_BRICKS, PRISMARINE, 1f, 200)
@@ -60,18 +56,6 @@ fun initializeCrafting() {
 	// Nether Wart Block -> Nether Warts
 	shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
-	// Remove Unwanted Vanilla Recipes
-	for (material in forbiddenCraftingItems) {
-		for (recipe in Bukkit.getRecipesFor(ItemStack(material))) {
-			if (recipe is Keyed) Bukkit.removeRecipe(recipe.key)
-		}
-	}
-
-	/* Rifle Crafting
-	itemStackShapeRecipe("rifle", CustomItemList.RIFLE.itemStack){
-		shape("a", "igi", "ggg")
-	}
-*/
 	// Blaster Barrel Crafting
 	itemStackShapeRecipe("blaster_barrel", CustomItemList.BLASTER_BARREL.itemStack){
 		shape("tct", "ppp", "tct")
@@ -104,10 +88,6 @@ fun initializeCrafting() {
 		setIngredient('d', GREEN_DYE)
 		setIngredient('r', REDSTONE)
 	}
-	// Rifle Crafting
-	//itemStackShapeRecipe("ammo_rifle", CustomItemList.RIFLE.itemStack){
-	//	shape()
-	//}
 }
 
 private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {
