@@ -56,7 +56,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 				singleShotWeaponBalancing.range,
 				getParticleType(entity),
 				if (getParticleType(entity) == Particle.REDSTONE) {
-					Particle.DustOptions(getParticleColour(entity), singleShotWeaponBalancing.shotSize)
+					Particle.DustOptions(getParticleColour(entity), 1f)
 				} else null
 			)
 		)
