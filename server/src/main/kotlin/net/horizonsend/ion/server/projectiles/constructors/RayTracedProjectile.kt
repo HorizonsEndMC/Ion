@@ -72,24 +72,27 @@ abstract class RayTracedProjectile : Projectile() {
 		}
 
 		if (rayTraceResult?.hitEntity != null && rayTraceResult.hitEntity != shooter) {
-			val playerHit = rayTraceResult.hitEntity
-			val hitLocation = rayTraceResult.hitPosition.toLocation(rayTraceResult.hitEntity!!.world)
+			val entityHit = rayTraceResult.hitEntity
+			val hitLocation = rayTraceResult.hitPosition.toLocation(entityHit!!.world)
 
 			val rayHitPosition = rayTraceResult.hitPosition
-			val playerEye = (playerHit as? Player)?.eyeLocation?.toVector()
-
+			val playerEye = (entityHit as? Player)?.eyeLocation?.toVector()
+			/**
+			 * This code is for headshots, it only works on players for now, as I couldnt be bothered to figure out
+			 * entity.location's location relative to the body
+			 */
 			if (playerEye != null && (playerEye.y-rayHitPosition.y) < 0.3) {
-				if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
-				(rayTraceResult.hitEntity as? Damageable)?.damage(damage * 1.5, shooter)
+				if (shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = 0
+				(entityHit as? Damageable)?.damage(damage * 1.5, shooter)
 				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 2)
 				hitLocation.world.playSound(hitLocation, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f)
 				hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 1f)
 				shooter.sendActionBar(MiniMessage.miniMessage().deserialize("<red><bold>Bullseye!"))
 				return true
 			}
-
-			if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
-			(rayTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
+			//no damage ticks is for hitting multiple times in 1 damage tick
+			if (shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = 0
+			(entityHit as? Damageable)?.damage(damage, shooter)
 
 			if (!shouldPassThroughEntities) {
 				return true

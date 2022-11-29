@@ -11,7 +11,7 @@ class PlayerInteractListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	@Suppress("Unused")
 	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
-		val item = event.item // If material is valid, then item is not null
+		val item = event.item
 		if (item != null) {
 			if (item.getCustomItem() == null) return
 			item.getCustomItem().apply {
