@@ -22,7 +22,8 @@ data class BalancingConfiguration(
 			100.0,
 			3.0f,
 			5,
-			false
+			false,
+			true
 		),
 		val rifle: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
 			1f,
@@ -108,7 +109,8 @@ data class BalancingConfiguration(
 			val range: Double,
 			val recoil: Float, //degrees
 			val packetsPerShot: Int,
-			val shouldHeadshot: Boolean
+			val shouldHeadshot: Boolean,
+			val shouldAkimbo: Boolean = false
 		)
 
 		@ConfigSerializable
@@ -129,7 +131,8 @@ data class BalancingConfiguration(
 			val range: Double,
 			val recoil: Float, //degrees
 			val packetsPerShot: Int,
-			val shouldHeadshot: Boolean
+			val shouldHeadshot: Boolean,
+			val shouldAkimbo: Boolean = false
 		)
 	}
 }

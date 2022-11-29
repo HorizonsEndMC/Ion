@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.customitems.blasters.constructors
 
 import io.papermc.paper.entity.RelativeTeleportFlag
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.customitems.getCustomItem
 import net.horizonsend.ion.server.managers.ProjectileManager
 import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -25,7 +26,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		if (player?.hasCooldown(item.type) == true) return
 		val inventory = (source as? Player)?.inventory
 		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER) == multiShotWeaponBalancing.magazineSize) return
-		if (!inventory!!.containsAtLeast(requiredAmmo, 1)) return
+		if (!inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) return
 		inventory.removeItemAnySlot(requiredAmmo.clone())
 		source.updateInventory()
 		item.editMeta {
@@ -41,7 +42,8 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		player?.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: ${multiShotWeaponBalancing.magazineSize}/${multiShotWeaponBalancing.magazineSize}"))
 	}
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
-		if ((entity as? Player)?.hasCooldown(item.type) == true) return
+		val player = entity as? Player
+		if (player?.hasCooldown(item.type) == true) return
 
 		if (reload(item, entity)) return
 
@@ -77,11 +79,87 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 			)
 			recoil(entity)
 		}
+		/**
+		 * I thought it'd be funny to add in akimbo for pistols
+		 */
+		val itemInOffHand = player?.inventory?.itemInOffHand
+		//customId for the offhand item
+		val offHandPDC = itemInOffHand?.itemMeta?.persistentDataContainer?.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)
+		//customId for the item in main hand
+		val itemPDC = item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)
+		//if the item in offhand is a custom item
+		if (itemInOffHand?.getCustomItem() != null){
+			//if the weapon does not want akimbo, set the cooldown for that item
+			if (!multiShotWeaponBalancing.shouldAkimbo){
+				player.setCooldown(itemInOffHand.type, multiShotWeaponBalancing.timeBetweenShots)
+			}
+			/**
+			 * if akimbo is allowed and the two customId's are equal, and the item does not equal the item in offhand
+			 * I did that because I was lazy and didnt want to repeat the above code, but the above code would loop this
+			 */
+			else if (multiShotWeaponBalancing.shouldAkimbo && itemPDC == offHandPDC){
+				if (itemInOffHand.getCustomItem() is SingleShotBlaster) {
+					if (reload(item, entity)) return
+					(itemInOffHand.getCustomItem() as SingleShotBlaster).apply {
+						ProjectileManager.addProjectile(
+							RayTracedParticleProjectile(
+								entity.eyeLocation,
+								singleShotWeaponBalancing.speed,
+								entity,
+								singleShotWeaponBalancing.damage,
+								singleShotWeaponBalancing.damageFalloffMultiplier,
+								singleShotWeaponBalancing.shouldPassThroughEntities,
+								singleShotWeaponBalancing.shotSize.toDouble(),
+								singleShotWeaponBalancing.shouldBypassHitTicks,
+								singleShotWeaponBalancing.range,
+								getParticleType(entity),
+								if (getParticleType(entity) == Particle.REDSTONE) {
+									Particle.DustOptions(getParticleColour(entity), 1f)
+								} else null
+							)
+						)
+						reload(itemInOffHand, entity)
+					}
+				}
+				else if (itemInOffHand.getCustomItem() is MultiShotBlaster){
+					(itemInOffHand.getCustomItem() as MultiShotBlaster).apply {
+						if (reload(item, entity)) return
+						for (i in 1..multiShotWeaponBalancing.shotCount) {
+							val offsetX = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
+							val offsetY = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
+							val offsetZ = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
+
+							val location = entity.eyeLocation.clone()
+
+							location.direction = location.direction.normalize()
+
+							location.direction = location.direction.add(Vector(offsetX, offsetY, offsetZ))
+
+							ProjectileManager.addProjectile(
+								RayTracedParticleProjectile(
+									location,
+									multiShotWeaponBalancing.speed,
+									entity,
+									multiShotWeaponBalancing.damage,
+									multiShotWeaponBalancing.damageFalloffMultiplier,
+									multiShotWeaponBalancing.shouldPassThroughEntities,
+									multiShotWeaponBalancing.shotSize.toDouble(),
+									multiShotWeaponBalancing.shouldBypassHitTicks,
+									multiShotWeaponBalancing.range,
+									getParticleType(entity),
+									if (getParticleType(entity) == Particle.REDSTONE) {
+										Particle.DustOptions(getParticleColour(entity), 1f)
+									} else null,
+								)
+							)
+						}
+					}
+				}
+			}
+		}
 	}
 
 	fun reload(item: ItemStack, source: LivingEntity): Boolean {
-		if ((source as? Player)!!.hasCooldown(item.type)) return true
-
 		val pdc = item.itemMeta.persistentDataContainer.get(
 			NamespacedKey(IonServer.Ion, "ammo"),
 			PersistentDataType.INTEGER
