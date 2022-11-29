@@ -70,7 +70,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 					multiShotWeaponBalancing.range,
 					getParticleType(entity),
 					if (getParticleType(entity) == Particle.REDSTONE) {
-						Particle.DustOptions(getParticleColour(entity), multiShotWeaponBalancing.shotSize)
+						Particle.DustOptions(getParticleColour(entity), 1f)
 					} else null,
 				)
 			)
