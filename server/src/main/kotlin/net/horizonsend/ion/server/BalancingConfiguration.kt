@@ -9,7 +9,7 @@ data class BalancingConfiguration(
 	@ConfigSerializable
 	data class EnergyWeaponBalancing(
 		val pistol: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
-			0.5f,
+			0.9f,
 			2.0,
 			15,
 			6,
@@ -21,10 +21,11 @@ data class BalancingConfiguration(
 			true,
 			100.0,
 			3.0f,
-			5
+			5,
+			false
 		),
 		val rifle: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
-			0.75f,
+			1f,
 			2.0,
 			15,
 			10,
@@ -36,7 +37,8 @@ data class BalancingConfiguration(
 			true,
 			100.0,
 			2.0f,
-			5
+			5,
+			true
 		),
 		val autoRifle: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
 			0.5f,
@@ -51,7 +53,8 @@ data class BalancingConfiguration(
 			true,
 			100.0,
 			1.0f,
-			1
+			1,
+			false
 		),
 		val sniper: SingleShotWeaponBalancing = SingleShotWeaponBalancing(
 			1f,
@@ -66,11 +69,12 @@ data class BalancingConfiguration(
 			false,
 			100.0,
 			10.0f,
-			5
+			5,
+			true
 		),
 
 		val shotGun: MultiShotWeaponBalancing = MultiShotWeaponBalancing(
-			0.1f,
+			1f,
 			2.0,
 			120,
 			80,
@@ -81,11 +85,12 @@ data class BalancingConfiguration(
 			5,
 			0.05,
 			0.0,
-			2,
+			4,
 			true,
 			100.0,
-			10.0f,
-			10
+			5.0f,
+			10,
+			false
 		)
 	) {
 		@ConfigSerializable
@@ -102,7 +107,8 @@ data class BalancingConfiguration(
 			val shouldBypassHitTicks: Boolean,
 			val range: Double,
 			val recoil: Float, //degrees
-			val packetsPerShot: Int
+			val packetsPerShot: Int,
+			val shouldHeadshot: Boolean
 		)
 
 		@ConfigSerializable
@@ -122,7 +128,8 @@ data class BalancingConfiguration(
 			val shouldBypassHitTicks: Boolean,
 			val range: Double,
 			val recoil: Float, //degrees
-			val packetsPerShot: Int
+			val packetsPerShot: Int,
+			val shouldHeadshot: Boolean
 		)
 	}
 }
