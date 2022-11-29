@@ -1,5 +1,6 @@
 package net.starlegacy.listener.gear
 
+import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -175,6 +176,19 @@ object PowerArmorListener : SLEventListener() {
 			for (module in PowerArmorManager.getModules(item)) {
 				if (module == PowerArmorModule.ROCKET_BOOSTING) {
 					PowerArmorManager.toggleGliding(player)
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	fun onEntityKnockBackEvent(event: EntityKnockbackByEntityEvent){
+		val player = event.entity as? Player
+		for (item in player?.inventory?.armorContents!!) {
+			if (!PowerArmorManager.isPowerArmor(item) || getPower(item!!) == 0) continue
+			for (module in PowerArmorManager.getModules(item)) {
+				if (module == PowerArmorModule.SHOCK_ABSORBING) {
+					event.isCancelled = true
 				}
 			}
 		}
