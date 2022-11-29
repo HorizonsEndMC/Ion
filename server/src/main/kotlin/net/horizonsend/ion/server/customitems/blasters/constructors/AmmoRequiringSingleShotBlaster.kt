@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.randomDouble
-import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.entity.Flying
@@ -198,6 +197,8 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 
 		return true
 	}
+
+	@Suppress("UnstableApiUsage")
 
 	private fun recoil(entity: LivingEntity){
 		if (entity is Flying) return
