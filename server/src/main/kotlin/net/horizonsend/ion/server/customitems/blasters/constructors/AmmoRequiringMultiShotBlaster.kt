@@ -9,6 +9,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.randomDouble
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
+import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -112,6 +113,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 	private fun recoil(entity: LivingEntity){
 		val recoil = multiShotWeaponBalancing.recoil/multiShotWeaponBalancing.packetsPerShot
 		for (i in 1..multiShotWeaponBalancing.packetsPerShot){
+			if (entity is Flying) return
 			Tasks.syncDelay(i.toLong()) {
 				val loc = entity.location
 				loc.pitch -= recoil
