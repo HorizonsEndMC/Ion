@@ -202,7 +202,7 @@ object CustomRecipes : SLComponent() {
 	}
 
 	private fun registerModuleRecipes() = mapOf(
-// 		CustomItems.POWER_MODULE_SHOCK_ABSORBING to customItemChoice(CustomItems.MINERAL_TITANIUM),
+		CustomItems.POWER_MODULE_SHOCK_ABSORBING to customItemChoice(CustomItems.MINERAL_TITANIUM),
 		CustomItems.POWER_MODULE_SPEED_BOOSTING to materialChoice(Material.FEATHER),
 		CustomItems.POWER_MODULE_ROCKET_BOOSTING to materialChoice(Material.FIREWORK_ROCKET),
 		CustomItems.POWER_MODULE_NIGHT_VISION to materialChoice(Material.SPIDER_EYE),
