@@ -24,6 +24,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		val player = (source as? Player)
 		if (player?.hasCooldown(item.type) == true) return
 		val inventory = (source as? Player)?.inventory
+		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER) == multiShotWeaponBalancing.magazineSize) return
 		if (!inventory!!.containsAtLeast(requiredAmmo, 1)) return
 		inventory.removeItemAnySlot(requiredAmmo.clone())
 		source.updateInventory()
