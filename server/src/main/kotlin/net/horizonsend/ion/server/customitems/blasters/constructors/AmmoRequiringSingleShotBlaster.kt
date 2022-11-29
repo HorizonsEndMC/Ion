@@ -8,6 +8,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.util.Tasks
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
+import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -95,6 +96,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	}
 
 	private fun recoil(entity: LivingEntity){
+		if (entity is Flying) return
 		val recoil = singleShotWeaponBalancing.recoil/singleShotWeaponBalancing.packetsPerShot
 		for (i in 1..singleShotWeaponBalancing.packetsPerShot){
 			Tasks.syncDelay(i.toLong()) {
