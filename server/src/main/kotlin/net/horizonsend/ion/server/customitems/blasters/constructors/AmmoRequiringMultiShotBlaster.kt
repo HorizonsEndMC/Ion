@@ -189,6 +189,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		return true
 	}
 
+	@Suppress("UnstableApiUsage")
 	private fun recoil(entity: LivingEntity){
 		val recoil = multiShotWeaponBalancing.recoil/multiShotWeaponBalancing.packetsPerShot
 		for (i in 1..multiShotWeaponBalancing.packetsPerShot){
