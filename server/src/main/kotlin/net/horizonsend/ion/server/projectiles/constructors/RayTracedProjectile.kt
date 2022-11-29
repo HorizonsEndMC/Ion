@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.projectiles.constructors
 
 import kotlin.math.pow
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.FluidCollisionMode
+import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Flying
@@ -59,7 +61,7 @@ abstract class RayTracedProjectile : Projectile() {
 			return true
 		}
 
-		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying) {
+		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying && rayFlyingTraceResult.hitEntity != shooter) {
 			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
 
 			if (!shouldPassThroughEntities) {
@@ -69,18 +71,20 @@ abstract class RayTracedProjectile : Projectile() {
 			return false
 		}
 
-		if (rayTraceResult?.hitEntity != null) {
+		if (rayTraceResult?.hitEntity != null && rayTraceResult.hitEntity != shooter) {
 			val playerHit = rayTraceResult.hitEntity
 			val hitLocation = rayTraceResult.hitPosition.toLocation(rayTraceResult.hitEntity!!.world)
 
 			val rayHitPosition = rayTraceResult.hitPosition
 			val playerEye = (playerHit as? Player)?.eyeLocation?.toVector()
 
-			if (playerEye != null && rayHitPosition.distance(playerEye) < 0.5) {
+			if (playerEye != null && (playerEye.y-rayHitPosition.y) < 0.3) {
 				if (shouldBypassHitTicks) (rayTraceResult.hitEntity as? LivingEntity)?.noDamageTicks = 0
 				(rayTraceResult.hitEntity as? Damageable)?.damage(damage * 1.5, shooter)
-				hitLocation.createExplosion(0.01f)
+				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 2)
+				hitLocation.world.playSound(hitLocation, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f)
 				hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 1f)
+				shooter.sendActionBar(MiniMessage.miniMessage().deserialize("<red><bold>Bullseye!"))
 				return true
 			}
 
