@@ -16,6 +16,8 @@ class PlayerQuitListener : Listener {
 
 		// Log if player has potentially combat logged
 		for (otherPlayer in player.world.players) {
+			if (player == otherPlayer) continue
+
 			val distance = player.location.distance(otherPlayer.location)
 
 			if (distance <= 1_000) {
