@@ -30,13 +30,13 @@ enum class StarshipType(
 		displayName = "Speeder",
 		minSize = 25,
 		maxSize = 100,
-		minLevel = 1,
-		containerPercent = 0.025,
-		crateLimitMultiplier = 0.25,
-		sneakFlyAccelDistance = 5,
-		maxSneakFlyAccel = 5,
-		interdictionRange = 10,
-		hyperspaceRangeMultiplier = 3.0,
+		minLevel = 1000,
+		containerPercent = 0.0,
+		crateLimitMultiplier = 0.0,
+		sneakFlyAccelDistance = 0,
+		maxSneakFlyAccel = 0,
+		interdictionRange = 0,
+		hyperspaceRangeMultiplier = 0,
 		menuItemMaterial = Material.DEAD_BUSH,
 		isWarship = false,
 		colour = "#ffff32",
@@ -137,7 +137,7 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#0c5ce8",
 		overridePermission = "ion.ships.override.battlecruiser",
-		
+
 	),
 	BATTLESHIP(
 		displayName = "Battleship",
@@ -154,7 +154,7 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#0c5ce8",
 		overridePermission = "ion.ships.override.battleship",
-		
+
 	),
 	DREADNOUGHT(
 		displayName = "Dreadnought",
@@ -171,7 +171,7 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#320385",
 		overridePermission = "ion.ships.override.dreadnought",
-		
+
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
