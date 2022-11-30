@@ -20,7 +20,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 	 */
 
 	SNIPER(
-		ItemStack(Material.SPYGLASS).updateMeta {
+		ItemStack(Material.NETHERITE_HOE).updateMeta {
 			it.setCustomModelData(1)
 
 			it.displayName(MiniMessage.miniMessage().deserialize("<bold><red>Blaster Sniper"))
