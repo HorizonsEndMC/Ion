@@ -21,30 +21,6 @@ import org.bukkit.util.Vector
 abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 	abstract val requiredAmmo: ItemStack
 
-	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
-		val player = (source as? Player)
-		if (player?.hasCooldown(item.type) == true) return
-		val inventory = (source as? Player)?.inventory
-		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"),
-				PersistentDataType.INTEGER) == multiShotWeaponBalancing.magazineSize
-		) return
-		if (!inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) return
-		inventory.removeItemAnySlot(requiredAmmo.clone())
-		source.updateInventory()
-		item.editMeta {
-			it.lore()?.clear()
-			it.lore(customItemlist.itemStack.lore())
-		}
-		item.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo")) }
-		item.editMeta {
-			it.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] =
-				multiShotWeaponBalancing.magazineSize
-		}
-		(source as? Player)?.setCooldown(item.type, this.multiShotWeaponBalancing.reload)
-		player?.sendActionBar(MiniMessage.miniMessage()
-			.deserialize("<red>Ammo: ${multiShotWeaponBalancing.magazineSize}/${multiShotWeaponBalancing.magazineSize}"))
-	}
-
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
 		val player = entity as? Player
 		if (player?.hasCooldown(item.type) == true) return
@@ -165,6 +141,30 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 				}
 			}
 		}
+	}
+
+	override fun onTertiaryInteract(source: LivingEntity, item: ItemStack) {
+		val player = (source as? Player)
+		if (player?.hasCooldown(item.type) == true) return
+		val inventory = (source as? Player)?.inventory
+		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"),
+				PersistentDataType.INTEGER) == multiShotWeaponBalancing.magazineSize
+		) return
+		if (!inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) return
+		inventory.removeItemAnySlot(requiredAmmo.clone())
+		source.updateInventory()
+		item.editMeta {
+			it.lore()?.clear()
+			it.lore(customItemlist.itemStack.lore())
+		}
+		item.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo")) }
+		item.editMeta {
+			it.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] =
+				multiShotWeaponBalancing.magazineSize
+		}
+		(source as? Player)?.setCooldown(item.type, this.multiShotWeaponBalancing.reload)
+		player?.sendActionBar(MiniMessage.miniMessage()
+			.deserialize("<red>Ammo: ${multiShotWeaponBalancing.magazineSize}/${multiShotWeaponBalancing.magazineSize}"))
 	}
 
 	fun reload(item: ItemStack, source: LivingEntity): Boolean {
