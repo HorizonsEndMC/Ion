@@ -5,7 +5,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.customitems.CustomItemList
 import net.horizonsend.ion.server.customitems.blasters.constructors.AmmoRequiringSingleShotBlaster
 import net.starlegacy.feature.misc.CustomItems
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 @Suppress("Unused")
@@ -17,5 +19,11 @@ object Sniper : AmmoRequiringSingleShotBlaster() {
 		get() = IonServer.Ion.balancing.energyWeapons.sniper
 
 	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
+		super.onSecondaryInteract(source, item)
+	}
+
+	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
+		val player = entity as? Player
+		val craftPlayer = player as? CraftPlayer
 	}
 }
