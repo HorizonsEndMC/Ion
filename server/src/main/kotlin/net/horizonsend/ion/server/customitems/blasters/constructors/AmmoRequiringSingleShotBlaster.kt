@@ -21,35 +21,6 @@ import org.bukkit.util.Vector
 abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	abstract val requiredAmmo: ItemStack
 
-	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
-		val player = (source as? Player)
-		//if the player has already reloaded/is shooting
-		if (player?.hasCooldown(item.type) == true) return
-		val inventory = (source as? Player)?.inventory
-		//this is so if you reload, while your magazine is full, it will stop you
-		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER) == singleShotWeaponBalancing.magazineSize) return
-		//make sure they have the correct ammo
-		if (!inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) return
-		//remove the ammo
-		inventory.removeItemAnySlot(requiredAmmo.clone())
-		source.updateInventory()
-
-		item.editMeta {
-			it.lore()?.clear()
-			it.lore(customItemlist.itemStack.lore())
-		}
-		//removing the pdc for ammo
-		item.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo")) }
-		//adding back the pdc for ammo
-		item.editMeta {
-			it.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] =
-				singleShotWeaponBalancing.magazineSize
-		}
-		//add in the reload cooldown
-		player?.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
-		player?.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: ${singleShotWeaponBalancing.magazineSize}/${singleShotWeaponBalancing.magazineSize}"))
-	}
-
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
 		val player = entity as? Player
 		if ((entity as? Player)!!.hasCooldown(item.type)) return
@@ -166,6 +137,35 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 				}
 			}
 		}
+	}
+
+	override fun onTertiaryInteract(source: LivingEntity, item: ItemStack) {
+		val player = (source as? Player)
+		//if the player has already reloaded/is shooting
+		if (player?.hasCooldown(item.type) == true) return
+		val inventory = (source as? Player)?.inventory
+		//this is so if you reload, while your magazine is full, it will stop you
+		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER) == singleShotWeaponBalancing.magazineSize) return
+		//make sure they have the correct ammo
+		if (!inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) return
+		//remove the ammo
+		inventory.removeItemAnySlot(requiredAmmo.clone())
+		source.updateInventory()
+
+		item.editMeta {
+			it.lore()?.clear()
+			it.lore(customItemlist.itemStack.lore())
+		}
+		//removing the pdc for ammo
+		item.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo")) }
+		//adding back the pdc for ammo
+		item.editMeta {
+			it.persistentDataContainer[NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER] =
+				singleShotWeaponBalancing.magazineSize
+		}
+		//add in the reload cooldown
+		player?.setCooldown(item.type, this.singleShotWeaponBalancing.reload)
+		player?.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: ${singleShotWeaponBalancing.magazineSize}/${singleShotWeaponBalancing.magazineSize}"))
 	}
 
 	fun reload(item: ItemStack, source: LivingEntity): Boolean {
