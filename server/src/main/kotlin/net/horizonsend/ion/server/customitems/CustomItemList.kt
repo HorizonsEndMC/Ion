@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.customitems.blasters.Pistol
 import net.horizonsend.ion.server.customitems.blasters.Rifle
 import net.horizonsend.ion.server.customitems.blasters.Shotgun
 import net.horizonsend.ion.server.customitems.blasters.Sniper
+import net.horizonsend.ion.server.customitems.blasters.StandardMagazine
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.util.updateMeta
 import org.bukkit.Material
@@ -132,6 +133,24 @@ enum class CustomItemList(val itemStack: ItemStack) {
 				PersistentDataType.STRING, "CIRCUITRY"
 			)
 		}
+	),
+
+	STANDARD_MAGAZINE(
+	ItemStack(Material.NETHERITE_HOE).updateMeta {
+		it.setCustomModelData(3); it.displayName(
+
+			MiniMessage.miniMessage().deserialize("<red>Standard Magazine"))
+		it.persistentDataContainer.set(
+			NamespacedKey(IonServer.Ion, "CustomID"),
+			PersistentDataType.STRING, "STANDARD_MAGAZINE"
+		)
+
+		it.persistentDataContainer.set(
+			NamespacedKey(IonServer.Ion, "ammo"),
+			PersistentDataType.INTEGER, 30
+		)
+		it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 30/30")))
+		}
 	)
 }
 
@@ -146,6 +165,7 @@ fun ItemStack.getCustomItem(): CustomItem? {
 			AutoRifle.customItemlist.itemStack.getItemName()!! to AutoRifle,
 			Pistol.customItemlist.itemStack.getItemName()!! to Pistol,
 			Shotgun.customItemlist.itemStack.getItemName()!! to Shotgun,
+			StandardMagazine.customItemlist.itemStack.getItemName()!! to StandardMagazine
 		)
 
 	val itemMap = when (CustomItemList.values()
@@ -169,6 +189,9 @@ fun ItemStack.getCustomItem(): CustomItem? {
 			arrayOfWeapon
 		}
 		CustomItemList.SHOTGUN -> {
+			arrayOfWeapon
+		}
+		CustomItemList.STANDARD_MAGAZINE -> {
 			arrayOfWeapon
 		}
 		else -> return null
