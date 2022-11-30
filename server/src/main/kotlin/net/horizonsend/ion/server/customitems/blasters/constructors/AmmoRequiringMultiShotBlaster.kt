@@ -25,7 +25,9 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		val player = (source as? Player)
 		if (player?.hasCooldown(item.type) == true) return
 		val inventory = (source as? Player)?.inventory
-		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER) == multiShotWeaponBalancing.magazineSize) return
+		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"),
+				PersistentDataType.INTEGER) == multiShotWeaponBalancing.magazineSize
+		) return
 		if (!inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) return
 		inventory.removeItemAnySlot(requiredAmmo.clone())
 		source.updateInventory()
@@ -39,8 +41,10 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 				multiShotWeaponBalancing.magazineSize
 		}
 		(source as? Player)?.setCooldown(item.type, this.multiShotWeaponBalancing.reload)
-		player?.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: ${multiShotWeaponBalancing.magazineSize}/${multiShotWeaponBalancing.magazineSize}"))
+		player?.sendActionBar(MiniMessage.miniMessage()
+			.deserialize("<red>Ammo: ${multiShotWeaponBalancing.magazineSize}/${multiShotWeaponBalancing.magazineSize}"))
 	}
+
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
 		val player = entity as? Player
 		if (player?.hasCooldown(item.type) == true) return
@@ -84,20 +88,22 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		 */
 		val itemInOffHand = player?.inventory?.itemInOffHand
 		//customId for the offhand item
-		val offHandPDC = itemInOffHand?.itemMeta?.persistentDataContainer?.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)
+		val offHandPDC = itemInOffHand?.itemMeta?.persistentDataContainer?.get(NamespacedKey(IonServer.Ion, "CustomID"),
+			PersistentDataType.STRING)
 		//customId for the item in main hand
-		val itemPDC = item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)
+		val itemPDC = item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"),
+			PersistentDataType.STRING)
 		//if the item in offhand is a custom item
-		if (itemInOffHand?.getCustomItem() != null){
+		if (itemInOffHand?.getCustomItem() != null) {
 			//if the weapon does not want akimbo, set the cooldown for that item
-			if (!multiShotWeaponBalancing.shouldAkimbo){
+			if (!multiShotWeaponBalancing.shouldAkimbo) {
 				player.setCooldown(itemInOffHand.type, multiShotWeaponBalancing.timeBetweenShots)
 			}
 			/**
 			 * if akimbo is allowed and the two customId's are equal, and the item does not equal the item in offhand
 			 * I did that because I was lazy and didnt want to repeat the above code, but the above code would loop this
 			 */
-			else if (multiShotWeaponBalancing.shouldAkimbo && itemPDC == offHandPDC){
+			else if (multiShotWeaponBalancing.shouldAkimbo && itemPDC == offHandPDC) {
 				if (itemInOffHand.getCustomItem() is SingleShotBlaster) {
 					if (reload(item, entity)) return
 					(itemInOffHand.getCustomItem() as SingleShotBlaster).apply {
@@ -120,14 +126,16 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 						)
 						reload(itemInOffHand, entity)
 					}
-				}
-				else if (itemInOffHand.getCustomItem() is MultiShotBlaster){
+				} else if (itemInOffHand.getCustomItem() is MultiShotBlaster) {
 					(itemInOffHand.getCustomItem() as MultiShotBlaster).apply {
 						if (reload(item, entity)) return
 						for (i in 1..multiShotWeaponBalancing.shotCount) {
-							val offsetX = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
-							val offsetY = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
-							val offsetZ = randomDouble(-1 * multiShotWeaponBalancing.offsetMax, multiShotWeaponBalancing.offsetMax)
+							val offsetX = randomDouble(-1 * multiShotWeaponBalancing.offsetMax,
+								multiShotWeaponBalancing.offsetMax)
+							val offsetY = randomDouble(-1 * multiShotWeaponBalancing.offsetMax,
+								multiShotWeaponBalancing.offsetMax)
+							val offsetZ = randomDouble(-1 * multiShotWeaponBalancing.offsetMax,
+								multiShotWeaponBalancing.offsetMax)
 
 							val location = entity.eyeLocation.clone()
 
@@ -172,7 +180,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 				it.lore()?.clear()
 				it.lore(mutableListOf(
 					MiniMessage.miniMessage()
-					.deserialize("<bold><gray>Ammo:${ammoValue}/${multiShotWeaponBalancing.magazineSize}")))
+						.deserialize("<bold><gray>Ammo:${ammoValue}/${multiShotWeaponBalancing.magazineSize}")))
 			}
 
 			(source as? Player)?.setCooldown(item.type, multiShotWeaponBalancing.timeBetweenShots)
@@ -190,9 +198,9 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 	}
 
 	@Suppress("UnstableApiUsage")
-	private fun recoil(entity: LivingEntity){
-		val recoil = multiShotWeaponBalancing.recoil/multiShotWeaponBalancing.packetsPerShot
-		for (i in 1..multiShotWeaponBalancing.packetsPerShot){
+	private fun recoil(entity: LivingEntity) {
+		val recoil = multiShotWeaponBalancing.recoil / multiShotWeaponBalancing.packetsPerShot
+		for (i in 1..multiShotWeaponBalancing.packetsPerShot) {
 			if (entity is Flying) return
 			Tasks.syncDelay(i.toLong()) {
 				val loc = entity.location
