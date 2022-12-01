@@ -184,11 +184,13 @@ object PowerArmorListener : SLEventListener() {
 	@EventHandler
 	fun onEntityKnockBackEvent(event: EntityKnockbackByEntityEvent){
 		val player = event.entity as? Player
-		for (item in player?.inventory?.armorContents!!) {
-			if (!PowerArmorManager.isPowerArmor(item) || getPower(item!!) == 0) continue
-			for (module in PowerArmorManager.getModules(item)) {
-				if (module == PowerArmorModule.SHOCK_ABSORBING) {
-					event.isCancelled = true
+		if (player != null) {
+			for (item in player.inventory.armorContents) {
+				if (!PowerArmorManager.isPowerArmor(item) || getPower(item!!) == 0) continue
+				for (module in PowerArmorManager.getModules(item)) {
+					if (module == PowerArmorModule.SHOCK_ABSORBING) {
+						event.isCancelled = true
+					}
 				}
 			}
 		}
