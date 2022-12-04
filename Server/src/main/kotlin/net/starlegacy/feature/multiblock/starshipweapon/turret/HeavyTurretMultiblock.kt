@@ -85,7 +85,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-1).endRod()
-				x(+0).anySlabOrTrapdoor()
+				x(+0).type(IRON_TRAPDOOR)
 				x(+1).endRod()
 			}
 		}

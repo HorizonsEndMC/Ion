@@ -104,11 +104,11 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 			}
 
 			z(-2) {
-				x(-2).anySlabOrTrapdoor()
+				x(-2).anySlab()
 				x(-1).anyStairs()
 				x(+0).stainedTerracotta()
 				x(+1).anyStairs()
-				x(+2).anySlabOrTrapdoor()
+				x(+2).anySlab()
 			}
 
 			z(-1) {
@@ -131,17 +131,17 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 
 			z(+1) {
 				x(-2).endRod()
-				x(-1).anySlabOrTrapdoor()
+				x(-1).type(IRON_TRAPDOOR)
 				x(+0).type(GRINDSTONE)
-				x(+1).anySlabOrTrapdoor()
+				x(+1).type(IRON_TRAPDOOR)
 				x(+2).endRod()
 			}
 
 			z(+2) {
 				x(-2).endRod()
-				x(-1).anySlabOrTrapdoor()
+				x(-1).type(IRON_TRAPDOOR)
 				x(+0).endRod()
-				x(+1).anySlabOrTrapdoor()
+				x(+1).type(IRON_TRAPDOOR)
 				x(+2).endRod()
 			}
 
