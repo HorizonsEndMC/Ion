@@ -48,9 +48,9 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 				x(+1).stainedTerracotta()
 			}
 			y(getSign() * 4) {
-				x(-1).anySlab()
+				x(-1).anySlabOrTrapdoor()
 				x(+0).type(GRINDSTONE)
-				x(+1).anySlab()
+				x(+1).anySlabOrTrapdoor()
 			}
 		}
 		z(+1) {
