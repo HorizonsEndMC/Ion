@@ -8,11 +8,13 @@ import org.bukkit.event.player.PlayerDropItemEvent
 class PlayerDropItemListener : Listener{
 	@EventHandler
 	@Suppress("unused")
-	fun onPlayerDropItem(event: PlayerDropItemEvent){
-		if (event.itemDrop.itemStack.getCustomItem() != null){
+	fun onPlayerDropItem(event: PlayerDropItemEvent) {
+		if (event.itemDrop.itemStack.getCustomItem() != null) {
+
 			event.itemDrop.itemStack.getCustomItem().apply {
-				this?.onPrimaryInteract(event.player, event.itemDrop.itemStack)
+				this?.onTertiaryInteract(event.player, event.itemDrop.itemStack)
 			}
+
 			event.isCancelled = true
 		}
 	}
