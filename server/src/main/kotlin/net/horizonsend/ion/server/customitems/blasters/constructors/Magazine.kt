@@ -39,6 +39,6 @@ abstract class Magazine : CustomItem() {
 		}
 	}
 
-	fun getAmmo(magazine: ItemStack): Int? =
+	open fun getAmmo(magazine: ItemStack): Int? =
 		magazine.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER)
 }
