@@ -85,7 +85,7 @@ enum class CustomItemList(val itemStack: ItemStack) {
 
 			it.persistentDataContainer.set(
 				NamespacedKey(IonServer.Ion, "ammo"),
-				PersistentDataType.INTEGER, 2
+				PersistentDataType.INTEGER, 4
 			)
 			it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: 4/4")))
 		}
@@ -136,8 +136,8 @@ enum class CustomItemList(val itemStack: ItemStack) {
 	),
 
 	STANDARD_MAGAZINE(
-	ItemStack(Material.NETHERITE_HOE).updateMeta {
-		it.setCustomModelData(3); it.displayName(
+	ItemStack(Material.DIAMOND_SHOVEL).updateMeta {
+		it.setCustomModelData(0); it.displayName(
 
 			MiniMessage.miniMessage().deserialize("<red>Standard Magazine"))
 		it.persistentDataContainer.set(
@@ -154,18 +154,19 @@ enum class CustomItemList(val itemStack: ItemStack) {
 	)
 }
 
-fun ItemStack.getItemName(): String? =
-	this.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)
+fun ItemStack.getCustomID(): String? = this.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"), PersistentDataType.STRING)
 
-fun ItemStack.getCustomItem(): CustomItem? {
+fun ItemStack?.getCustomItem(): CustomItem? {
+	if (this == null) return null
+
 	val arrayOfWeapon: Map<String, CustomItem> =
 		mapOf(
-			Sniper.customItemlist.itemStack.getItemName()!! to Sniper,
-			Rifle.customItemlist.itemStack.getItemName()!! to Rifle,
-			AutoRifle.customItemlist.itemStack.getItemName()!! to AutoRifle,
-			Pistol.customItemlist.itemStack.getItemName()!! to Pistol,
-			Shotgun.customItemlist.itemStack.getItemName()!! to Shotgun,
-			StandardMagazine.customItemlist.itemStack.getItemName()!! to StandardMagazine
+			Sniper.customItemlist.itemStack.getCustomID()!! to Sniper,
+			Rifle.customItemlist.itemStack.getCustomID()!! to Rifle,
+			AutoRifle.customItemlist.itemStack.getCustomID()!! to AutoRifle,
+			Pistol.customItemlist.itemStack.getCustomID()!! to Pistol,
+			Shotgun.customItemlist.itemStack.getCustomID()!! to Shotgun,
+			StandardMagazine.customItemlist.itemStack.getCustomID()!! to StandardMagazine
 		)
 
 	val itemMap = when (CustomItemList.values()
