@@ -139,18 +139,18 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 		}
 	}
 
-	override fun onTertiaryInteract(source: LivingEntity, item: ItemStack) {
-		val player = (source as? Player)
+	override fun onTertiaryInteract(entity: LivingEntity, item: ItemStack) {
+		val player = (entity as? Player)
 		//if the player has already reloaded/is shooting
 		if (player?.hasCooldown(item.type) == true) return
-		val inventory = (source as? Player)?.inventory
+		val inventory = (entity as? Player)?.inventory
 		//this is so if you reload, while your magazine is full, it will stop you
 		if (item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER) == singleShotWeaponBalancing.magazineSize) return
 		//make sure they have the correct ammo
 		if (!inventory!!.containsAtLeast(requiredAmmo, requiredAmmo.amount)) return
 		//remove the ammo
 		inventory.removeItemAnySlot(requiredAmmo.clone())
-		source.updateInventory()
+		entity.updateInventory()
 
 		item.editMeta {
 			it.lore()?.clear()
@@ -199,7 +199,6 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	}
 
 	@Suppress("UnstableApiUsage")
-
 	private fun recoil(entity: LivingEntity){
 		if (entity is Flying) return
 		val recoil = singleShotWeaponBalancing.recoil/singleShotWeaponBalancing.packetsPerShot
