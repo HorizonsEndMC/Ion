@@ -26,6 +26,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 	// Fires the gun.
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
 		val player = entity as? Player
+
 		if (player?.hasCooldown(item.type) == true) return
 
 		if (canFire(item, entity)) return
@@ -80,7 +81,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 			}
 			/**
 			 * if akimbo is allowed and the two customId's are equal, and the item does not equal the item in offhand
-			 * I did that because I was lazy and didnt want to repeat the above code, but the above code would loop this
+			 * I did that because I was lazy and didn't want to repeat the above code, but the above code would loop this
 			 */
 			else if (multiShotWeaponBalancing.shouldAkimbo && itemPDC == offHandPDC) {
 				if (itemInOffHand.getCustomItem() is SingleShotBlaster) {
@@ -157,9 +158,9 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 
 		if (ammoCount == multiShotWeaponBalancing.magazineSize) return // Cancels reload if the magazine is full.
 
-		val magazine = player.inventory.find { inventoryItem -> inventoryItem.getCustomItem() is Magazine } ?: return // Fail if no ammo
+		val magazine = player.inventory.find { inventoryItem -> inventoryItem.getCustomItem() is Magazine } ?: return // Return if no mags
 
-		val magAmmo = getAmmo(magazine)!! //Can't be null
+		val magAmmo = getAmmo(magazine) ?: return // Shouldn't be null, will return if the PDC was broken.
 
 		// Calculate the maximum the gun can be filled to from the first available magazine.
 		val maxFilled: Int = if (magAmmo > multiShotWeaponBalancing.magazineSize - ammoCount) {
@@ -177,7 +178,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 
 		item.editMeta {
 			it.lore()?.clear()
-			it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: $maxFilled/4")))
+			it.lore(mutableListOf(MiniMessage.miniMessage().deserialize("<bold><gray>Ammo: $maxFilled/${multiShotWeaponBalancing.magazineSize}")))
 		}
 
 		player.setCooldown(item.type, this.multiShotWeaponBalancing.reload)
