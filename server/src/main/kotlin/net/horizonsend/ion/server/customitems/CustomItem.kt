@@ -7,6 +7,7 @@ abstract class CustomItem : ItemStack() {
 	abstract val customItemlist: CustomItemList
 
 	open fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {}
+
 	open fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {}
 
 	open fun onTertiaryInteract(entity: LivingEntity, item: ItemStack) {}
