@@ -22,9 +22,9 @@ class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand()
 			.underlined(true)
 
 		for (site in configuration.voteSites) {
-			val siteTime: Boolean = if (playerData.voteTimes[site.serviceName] != null) { // roundabout way of setting the color to red if null.
+			val siteTime: Boolean = playerData.voteTimes[site.serviceName]?.let {
 				playerData.voteTimes[site.serviceName]!! - System.currentTimeMillis() >= 86400000
-			} else false
+			} ?: false
 
 			val color = if (siteTime) ChatColor.GREEN else ChatColor.RED
 

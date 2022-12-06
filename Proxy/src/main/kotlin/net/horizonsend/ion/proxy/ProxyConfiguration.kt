@@ -12,14 +12,14 @@ data class ProxyConfiguration(
 	val unlinkedRole: Long = 0,
 	val linkedRole: Long = 0,
 	val voteSites: List<VoteSite> = listOf(
-		VoteSite("TESTNET",  "Test Server List", "https://Test.net/HorizonsEnd"),
-		VoteSite("TESTNET2",  "Test Server List2", "https://Test2.net/HorizonsEnd")
+		VoteSite("TESTNET", "Test Server List", "https://Test.net/HorizonsEnd"),
+		VoteSite("TESTNET2", "Test Server List2", "https://Test2.net/HorizonsEnd")
+	),
+) {
+	@ConfigSerializable
+	data class VoteSite(
+		val serviceName: String,
+		val displayName: String,
+		val displayAddress: String,
 	)
-)
-
-@ConfigSerializable
-data class VoteSite(
-	val serviceName: String,
-	val displayName: String,
-	val displayAddress: String
-)
+}
