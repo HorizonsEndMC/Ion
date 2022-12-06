@@ -11,7 +11,7 @@ import org.bukkit.World
 
 object StarshipTeleportation {
 	fun teleportStarship(starship: ActiveStarship, destination: Location): CompletableFuture<Boolean> {
-		val origin = starship.centerOfMassVec3i
+		val origin = starship.centerOfMass
 		val (x, y, z) = Vec3i(destination)
 		val dx = x - origin.x
 		val dy = y - origin.y
