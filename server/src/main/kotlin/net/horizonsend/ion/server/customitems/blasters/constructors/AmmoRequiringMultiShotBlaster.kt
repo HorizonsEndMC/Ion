@@ -173,7 +173,7 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 			player.inventory.removeItemAnySlot(magazine.clone())
 			player.updateInventory()
 
-			magAmmo
+			magAmmo + ammoCount
 		}
 
 		item.editMeta {
@@ -218,6 +218,8 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 					ammoValue
 				) // Reflect the new ammo count in the item PDC
 			}
+
+			source.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: $ammoValue/${multiShotWeaponBalancing.magazineSize}"))
 
 			(source as? Player)?.setCooldown(item.type, multiShotWeaponBalancing.timeBetweenShots) // Set the cooldown for the next shot
 

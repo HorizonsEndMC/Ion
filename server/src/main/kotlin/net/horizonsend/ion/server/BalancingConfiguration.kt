@@ -75,22 +75,22 @@ data class BalancingConfiguration(
 		),
 
 		val shotGun: MultiShotWeaponBalancing = MultiShotWeaponBalancing(
-			1f,
-			2.0,
+			0.25f,
+			4.0,
 			120,
-			80,
-			5.0,
-			0.0,
+			20,
+			2.0,
+			0.25,
 			false,
 			0f,
-			5,
+			10,
 			0.05,
 			0.0,
 			4,
 			true,
-			100.0,
-			5.0f,
-			2,
+			25.0,
+			2.0f,
+			4,
 			false
 		)
 	) {
