@@ -170,7 +170,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 			player.inventory.removeItemAnySlot(magazine.clone())
 			player.updateInventory()
 
-			magAmmo
+			magAmmo + ammoCount
 		}
 
 		item.editMeta {
@@ -214,6 +214,8 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 					ammoValue
 				) // Reflect the new ammo count in the item PDC
 			}
+
+			source.sendActionBar(MiniMessage.miniMessage().deserialize("<red>Ammo: $ammoValue/${singleShotWeaponBalancing.magazineSize}"))
 
 			(source as? Player)?.setCooldown(item.type, singleShotWeaponBalancing.timeBetweenShots) // Set the cooldown for the next shot
 
