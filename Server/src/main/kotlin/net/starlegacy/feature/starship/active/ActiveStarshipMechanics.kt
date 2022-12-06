@@ -96,7 +96,7 @@ object ActiveStarshipMechanics : SLComponent() {
 
 					val targetRiding = ActiveStarships.findByPassenger(target)
 					if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
-						targetLoc = Vec3i(targetRiding.blocks.randomEntry()).toLocation(ship.world).toCenterLocation()
+						targetLoc = Vec3i(targetRiding.blocks.random()).toLocation(ship.world).toCenterLocation()
 					}
 
 					val targetVec = targetLoc.toVector()

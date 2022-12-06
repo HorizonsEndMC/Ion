@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import kotlin.collections.set
 import kotlin.math.sqrt
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.misc.CryoPods
@@ -217,10 +218,10 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun updateCenter() {
-		val oldCenter = starship.centerOfMassVec3i
+		val oldCenter = starship.centerOfMass
 		val newCenterX = displaceX(oldCenter.x, oldCenter.z)
 		val newCenterZ = displaceZ(oldCenter.z, oldCenter.x)
-		starship.centerOfMassVec3i = Vec3i(newCenterX, displaceY(oldCenter.y), newCenterZ)
+		starship.centerOfMass = BlockPos(newCenterX, displaceY(oldCenter.y), newCenterZ)
 	}
 
 	private fun updateSubsystems(world2: World) {

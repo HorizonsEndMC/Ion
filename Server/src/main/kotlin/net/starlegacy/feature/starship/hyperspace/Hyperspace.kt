@@ -43,7 +43,7 @@ object Hyperspace : SLComponent() {
 	}
 
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
-		if(MassShadows.find(starship.world, starship.centerOfMassVec3i.x.toDouble(), starship.centerOfMassVec3i.z.toDouble()) != null){
+		if(MassShadows.find(starship.world, starship.centerOfMass.x.toDouble(), starship.centerOfMass.z.toDouble()) != null){
 			starship.sendMessage("&cShip is within Gravity Well, jump cancelled")
 			return
 		}
@@ -110,9 +110,9 @@ object Hyperspace : SLComponent() {
 		check(warmupTasks.remove(starship, warmup)) { "Warmup wasn't in the map!" }
 		warmup.cancel()
 		val world = getHyperspaceWorld(starship.world)
-		val x = starship.centerOfMassVec3i.x.toDouble()
-		val y = starship.centerOfMassVec3i.y.toDouble()
-		val z = starship.centerOfMassVec3i.z.toDouble()
+		val x = starship.centerOfMass.x.toDouble()
+		val y = starship.centerOfMass.y.toDouble()
+		val z = starship.centerOfMass.z.toDouble()
 		val loc = Location(world, x, y, z)
 		StarshipTeleportation.teleportStarship(starship, loc).thenAccept { success ->
 			if (!success) {

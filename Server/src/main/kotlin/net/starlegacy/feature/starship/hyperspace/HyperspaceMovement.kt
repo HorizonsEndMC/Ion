@@ -9,8 +9,8 @@ import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
 
 class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Location) : BukkitRunnable() {
-	var x = ship.centerOfMassVec3i.x.toDouble()
-	var z = ship.centerOfMassVec3i.z.toDouble()
+	var x = ship.centerOfMass.x.toDouble()
+	var z = ship.centerOfMass.z.toDouble()
 	private val direction = dest.toVector().subtract(ship.centerOfMassVec3i.toVector()).normalize()
 	private val totalDistance = remainingDistance()
 	private var travelled = 0.0
