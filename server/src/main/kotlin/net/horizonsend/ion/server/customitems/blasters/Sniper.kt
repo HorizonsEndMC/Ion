@@ -17,13 +17,4 @@ object Sniper : AmmoRequiringSingleShotBlaster() {
 
 	override val singleShotWeaponBalancing: SingleShotWeaponBalancing
 		get() = IonServer.Ion.balancing.energyWeapons.sniper
-
-	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
-		super.onSecondaryInteract(source, item)
-	}
-
-	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
-		val player = entity as? Player
-		val craftPlayer = player as? CraftPlayer
-	}
 }
