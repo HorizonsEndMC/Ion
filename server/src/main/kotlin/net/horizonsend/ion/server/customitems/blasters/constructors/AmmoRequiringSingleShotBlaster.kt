@@ -23,6 +23,10 @@ import org.bukkit.util.Vector
 abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 	abstract val requiredAmmo: Magazine
 
+	override fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {
+		return
+	}
+
 	// Fires the gun.
 	override fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {
 		val player = entity as? Player
