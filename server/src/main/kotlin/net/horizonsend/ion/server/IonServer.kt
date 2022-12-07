@@ -25,8 +25,8 @@ class IonServer : JavaPlugin() {
 		lateinit var Ion: IonServer private set
 	}
 
-	val configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
-	val balancing = loadConfiguration<BalancingConfiguration>(dataFolder, "balancing.conf")
+	var configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
+	var balancing = loadConfiguration<BalancingConfiguration>(dataFolder, "balancing.conf")
 
 	override fun onEnable() {
 		try {
