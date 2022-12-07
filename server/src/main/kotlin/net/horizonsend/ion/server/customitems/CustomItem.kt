@@ -9,6 +9,5 @@ abstract class CustomItem : ItemStack() {
 	open fun onPrimaryInteract(source: LivingEntity, item: ItemStack) {}
 
 	open fun onSecondaryInteract(entity: LivingEntity, item: ItemStack) {}
-
 	open fun onTertiaryInteract(entity: LivingEntity, item: ItemStack) {}
 }
