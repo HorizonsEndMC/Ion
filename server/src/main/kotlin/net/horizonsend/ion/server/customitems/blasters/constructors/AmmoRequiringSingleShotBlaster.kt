@@ -57,9 +57,9 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 		/**
 		 * I thought it'd be funny to add in akimbo for pistols
 		 */
-		val itemInOffHand = player?.inventory?.itemInOffHand
+		val itemInOffHand = player?.inventory?.itemInOffHand ?: return
 		//customId for the offhand item
-		val offHandPDC = itemInOffHand?.itemMeta?.persistentDataContainer?.get(
+		val offHandPDC = itemInOffHand.itemMeta?.persistentDataContainer?.get(
 			NamespacedKey(IonServer.Ion, "CustomID"),
 			PersistentDataType.STRING
 		)
@@ -70,7 +70,7 @@ abstract class AmmoRequiringSingleShotBlaster : SingleShotBlaster() {
 		)
 		//if the item in offhand is a custom item
 		Tasks.syncDelay((singleShotWeaponBalancing.timeBetweenShots / 2).toLong()) {
-			if (itemInOffHand?.getCustomItem() != null) {
+			if (itemInOffHand.getCustomItem() != null) {
 				//if the weapon does not want akimbo, set the cooldown for that item
 				if (!singleShotWeaponBalancing.shouldAkimbo) {
 					player.setCooldown(itemInOffHand.type, singleShotWeaponBalancing.timeBetweenShots)
