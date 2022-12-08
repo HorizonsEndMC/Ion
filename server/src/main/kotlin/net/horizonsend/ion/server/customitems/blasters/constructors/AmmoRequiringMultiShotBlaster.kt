@@ -69,15 +69,15 @@ abstract class AmmoRequiringMultiShotBlaster : MultiShotBlaster() {
 		/**
 		 * I thought it'd be funny to add in akimbo for pistols
 		 */
-		val itemInOffHand = player?.inventory?.itemInOffHand
+		val itemInOffHand = player?.inventory?.itemInOffHand ?: return
 		//customId for the offhand item
-		val offHandPDC = itemInOffHand?.itemMeta?.persistentDataContainer?.get(NamespacedKey(IonServer.Ion, "CustomID"),
+		val offHandPDC = itemInOffHand.itemMeta?.persistentDataContainer?.get(NamespacedKey(IonServer.Ion, "CustomID"),
 			PersistentDataType.STRING)
 		//customId for the item in main hand
 		val itemPDC = item.itemMeta.persistentDataContainer.get(NamespacedKey(IonServer.Ion, "CustomID"),
 			PersistentDataType.STRING)
 		//if the item in offhand is a custom item
-		if (itemInOffHand?.getCustomItem() != null) {
+		if (itemInOffHand.getCustomItem() != null) {
 			//if the weapon does not want akimbo, set the cooldown for that item
 			if (!multiShotWeaponBalancing.shouldAkimbo) {
 				player.setCooldown(itemInOffHand.type, multiShotWeaponBalancing.timeBetweenShots)
