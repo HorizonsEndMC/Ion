@@ -1,17 +1,13 @@
 package net.starlegacy.feature.starship.movement
 
 import co.aikar.commands.ConditionFailedException
-import java.util.BitSet
 import java.util.LinkedList
-import java.util.UUID
 import java.util.concurrent.ExecutionException
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket
-import net.minecraft.server.level.ChunkHolder
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.StainedGlassBlock
@@ -180,6 +176,7 @@ object OptimizedMovement {
 						processOldTile(blockKey, chunk, capturedTiles, index, world1, world2)
 					}
 
+					nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
 					section.setBlockState(localX, localY, localZ, air, false)
 
 //					lightEngine.checkBlock(BlockPos(x, y, z)) // Lighting is cringe
@@ -220,6 +217,7 @@ object OptimizedMovement {
 
 					// TODO: Save hangars
 					val data = blockDataTransform(capturedStates[index])
+					nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
 					section.setBlockState(localX, localY, localZ, data, false)
 					lightEngine.checkBlock(BlockPos(x, y, z))
 				}
@@ -315,34 +313,11 @@ object OptimizedMovement {
 	}
 
 	private fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
-		val bitmasks = mutableMapOf<Pair<UUID, Long>, Int>()
-
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
-			for ((chunkKey, sectionMap) in chunkMap) {
-				var bitmask = bitmasks.getOrPut(world to chunkKey) { 0 }
-				for (sectionY in sectionMap.keys) {
-					bitmask = bitmask or (1 shl sectionY)
-				}
-				bitmasks[world to chunkKey] = bitmask
+			for ((chunkKey, _) in chunkMap) {
+				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).nms
+				nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
 			}
-		}
-
-		for ((key, bitmask: Int) in bitmasks) {
-			val (worldID, chunkKey) = key
-			val chunk = Bukkit.getWorld(worldID)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
-			val nmsChunk = chunk.nms
-			val playerChunk: ChunkHolder = nmsChunk.playerChunk ?: continue
-
-			val packet =
-				ClientboundLevelChunkWithLightPacket(
-					nmsChunk,
-					nmsChunk.level.lightEngine,
-					null,
-					BitSet(bitmask),
-					false,
-					true
-				)
-			playerChunk.broadcast(packet, false)
 		}
 	}
 }
