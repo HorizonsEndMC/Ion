@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.legacy.listeners.ShipKillListener
 import net.horizonsend.ion.server.legacy.listeners.StationSiegeBeginListener
 import net.horizonsend.ion.server.listeners.BlockFadeListener
 import net.horizonsend.ion.server.listeners.BlockFormListener
+import net.horizonsend.ion.server.listeners.CraftingListener
 import net.horizonsend.ion.server.listeners.EnchantItemListener
 import net.horizonsend.ion.server.listeners.EntityDamageListener
 import net.horizonsend.ion.server.listeners.InventoryClickListener
@@ -70,6 +71,7 @@ val listeners = arrayOf(
 	BuySpawnShuttleListener(),
 	CaptureStationListener(),
 	CompleteCargoRunListener(),
+	CraftingListener(),
 	CreateNationListener(),
 	CreateNationOutpostListener(),
 	CreateSettlementListener(),

@@ -12,8 +12,10 @@ class PlayerInteractListener : Listener {
 	@Suppress("Unused")
 	fun onPlayerInteractEvent(event: PlayerInteractEvent) {
 		val item = event.item
+
 		if (item != null) {
 			if (item.getCustomItem() == null) return
+
 			item.getCustomItem().apply {
 				when (event.action) {
 					Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> this?.onPrimaryInteract(event.player, item)
@@ -21,6 +23,7 @@ class PlayerInteractListener : Listener {
 					else -> return // Unknown Action Enum - We probably don't care, silently fail
 				}
 			}
+
 			event.isCancelled = true
 		}
 	}
