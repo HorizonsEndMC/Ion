@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.StainedGlassBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
-import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.feature.starship.Hangars
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -113,7 +112,7 @@ object OptimizedMovement {
 			val nmsChunk = chunk.nms
 
 			for ((sectionKey, positionMap) in sectionMap) {
-				val section = getChunkSection(nmsChunk, sectionKey)
+				val section = nmsChunk.getSection(sectionKey)
 
 				for ((blockKey, index) in positionMap) {
 					check(newPositionArray[index] == blockKey)
@@ -163,7 +162,7 @@ object OptimizedMovement {
 			val nmsChunk = chunk.nms
 
 			for ((sectionKey, positionMap) in sectionMap) {
-				val section = getChunkSection(nmsChunk, sectionKey)
+				val section = nmsChunk.getSection(sectionKey)
 
 				for ((blockKey, index) in positionMap) {
 					val x = blockKeyX(blockKey)
@@ -208,7 +207,7 @@ object OptimizedMovement {
 			val nmsChunk = chunk.nms
 
 			for ((sectionKey, positionMap) in sectionMap) {
-				val section = getChunkSection(nmsChunk, sectionKey)
+				val section = nmsChunk.getSection(sectionKey)
 
 				for ((blockKey, index) in positionMap) {
 					val x = blockKeyX(blockKey)
@@ -245,18 +244,6 @@ object OptimizedMovement {
 			chunk.nms.addAndRegisterBlockEntity(blockEntity)
 		}
 	}
-
-	private fun getChunkSection(nmsLevelChunk: LevelChunk, sectionY: Int): LevelChunkSection =
-		nmsLevelChunk.sections[sectionY]
-
-//	private fun getChunkSection(nmsLevelChunk: NMSLevelChunk, sectionY: Int): LevelChunkSection {
-//		var section = nmsLevelChunk.sections[sectionY]
-//		if (section == null) {
-//			section = LevelChunkSection(sectionY shl 4, nmsLevelChunk, nmsLevelChunk.world, true)
-//			nmsLevelChunk.sections[sectionY] = section
-//		}
-//		return section
-//	}
 
 	private fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
 		Heightmap.primeHeightmaps(nmsLevelChunk, Heightmap.Types.values().toSet())
