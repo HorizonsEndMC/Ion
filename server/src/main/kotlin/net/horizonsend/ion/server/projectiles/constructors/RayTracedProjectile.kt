@@ -44,7 +44,7 @@ abstract class RayTracedProjectile : Projectile() {
 
 		val rayFlyingTraceResult = location.world.rayTrace(
 			location,
-			location.direction,
+			location.direction.normalize().multiply(speed),
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
