@@ -19,7 +19,7 @@ authors:
 libraries:
   - "net.dv8tion:JDA:5.0.0-beta.1"
 
-  - "org.spongepowered:configurate-extra-kotlin:4.1.2"
+  - "org.spongepowered:configurate-extra-kotlin:7.6"
   - "org.spongepowered:configurate-hocon:4.1.2"
 
   - "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
