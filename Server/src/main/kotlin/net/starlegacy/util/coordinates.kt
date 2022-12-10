@@ -26,17 +26,21 @@ fun Location.add(face: BlockFace): Location = add(face.modX, face.modY, face.mod
 
 fun isValidYLevel(y: Int) = y in 0..Bukkit.getServer().getWorlds()[0].maxHeight
 
+@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 fun blockKey(x: Int, y: Int, z: Int): Long =
 	x.toLong() and 134217727L or (z.toLong() and 134217727L shl 27) or (y.toLong() shl 54)
 
 // the reason i'm suppressing nothing to inline is that I thing it might have *some* performance benefits to inline the math
 @Suppress("NOTHING_TO_INLINE")
+@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 inline fun blockKeyX(key: Long): Int = (key shl 37 shr 37).toInt()
 
 @Suppress("NOTHING_TO_INLINE")
+@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 inline fun blockKeyY(key: Long): Int = (key ushr 54).toInt()
 
 @Suppress("NOTHING_TO_INLINE")
+@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 inline fun blockKeyZ(key: Long): Int = (key shl 10 shr 37).toInt()
 
 fun distanceSquared(fromX: Double, fromY: Double, fromZ: Double, toX: Double, toY: Double, toZ: Double): Double =
