@@ -97,3 +97,14 @@ val WALL_TYPES = getMatchingMaterials { it.name.endsWith("_WALL") }
 val Material.isWall: Boolean get() = WALL_TYPES.contains(this)
 
 val CHISELED_TYPES = getMatchingMaterials { it.name.startsWith("CHISELED_") }
+
+val FROGLIGHT_TYPES = getMatchingMaterials {it.name.endsWith("_FROGLIGHT")}
+val Material.isFroglight: Boolean get() = FROGLIGHT_TYPES.contains(this)
+
+val INFESTED_TYPES = getMatchingMaterials {it.name.startsWith("INFESTED_")}
+
+val Material.isInfested: Boolean get() = INFESTED_TYPES.contains(this)
+
+val FENCE_GATE_TYPES = getMatchingMaterials {it.name.endsWith("_FENCE_GATE") }
+
+val RAIL_TYPES = getMatchingMaterials {it.name.endsWith("_RAIL") }
