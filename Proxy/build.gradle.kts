@@ -8,6 +8,8 @@ plugins {
 repositories {
 	mavenCentral()
 
+	maven("https://repo.horizonsend.net/mirror") // Horizon's End Mirror
+
 	maven("https://repo.papermc.io/repository/maven-public/") // Waterfall
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Bungeecord)
 	maven("https://jitpack.io") // NuVotifier
