@@ -33,7 +33,7 @@ libraries:
   - "com.github.stefvanschie.inventoryframework:IF:0.5.8"
   - "com.daveanthonythomas.moshipack:moshipack:1.0.1"
   - "com.googlecode.cqengine:cqengine:3.6.0"
-  - "io.github.config4k:config4k:0.5.0"
+  - "io.github.config4k:config4k:7.6"
 
   - "org.spongepowered:configurate-extra-kotlin:4.1.2"
   - "org.spongepowered:configurate-hocon:4.1.2"
