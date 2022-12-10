@@ -26,4 +26,4 @@ libraries:
   - "org.jetbrains.kotlin:kotlin-stdlib:1.7.22"
 
   - "org.litote.kmongo:kmongo:4.8.0"
-  - "redis.clients:jedis:4.3.1"
+  - "redis.clients:jedis:4.10.3"
