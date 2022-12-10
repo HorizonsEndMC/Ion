@@ -30,7 +30,7 @@ softdepend:
   - dynmap
 
 libraries:
-  - "com.github.stefvanschie.inventoryframework:IF:0.5.8"
+  - "com.github.stefvanschie.inventoryframework:IF:7.6"
   - "com.daveanthonythomas.moshipack:moshipack:1.0.1"
   - "com.googlecode.cqengine:cqengine:3.6.0"
   - "io.github.config4k:config4k:0.5.0"
