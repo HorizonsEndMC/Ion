@@ -1,5 +1,12 @@
 {
 	"extends": [
 		"config:base"
+	],
+	"regexManagers": [
+		{
+			"fileMatch": ["^plugin.yml$"],
+			"matchStrings": ["  - \"(?<depName>.*):(?<currentValue>.*)\""],
+			"datasourceTemplate": "gradle-version"
+		}
 	]
 }
