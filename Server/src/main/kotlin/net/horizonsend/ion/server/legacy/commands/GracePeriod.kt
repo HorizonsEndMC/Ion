@@ -10,14 +10,17 @@ import org.bukkit.command.CommandSender
 @CommandAlias("graceperiodtoggle")
 @CommandPermission("graceperiodtoggle")
 object GracePeriod : BaseCommand() {
-	private val graceperiodfile = Ion.dataFolder.resolve("graceperiod")
+	private val gracePeriodFile = Ion.dataFolder.resolve("gracePeriod")
 
-	val isGracePeriod get() = graceperiodfile.exists()
+	var isGracePeriod = gracePeriodFile.exists()
+		private set
 
 	@Default
 	@Suppress("unused", "unused_parameter")
 	fun onToggle(sender: CommandSender) {
-		if (isGracePeriod) graceperiodfile.delete()
-		else graceperiodfile.createNewFile()
+		if (isGracePeriod) gracePeriodFile.delete()
+		else gracePeriodFile.createNewFile()
+
+		isGracePeriod = gracePeriodFile.exists()
 	}
 }
