@@ -4,7 +4,7 @@
 	],
 	"regexManagers": [
 		{
-			"fileMatch": ["^plugin.yml$"],
+			"fileMatch": ["(^|/)plugin.yml$"],
 			"matchStrings": ["  - \"(?<depName>.*):(?<currentValue>.*)\""],
 			"datasourceTemplate": "gradle-version"
 		}
