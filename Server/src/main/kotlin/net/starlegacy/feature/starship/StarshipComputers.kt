@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship
 
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.util.LinkedList
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SERVER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS

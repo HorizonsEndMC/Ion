@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3

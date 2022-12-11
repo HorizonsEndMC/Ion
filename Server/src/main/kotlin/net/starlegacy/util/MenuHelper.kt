@@ -1,13 +1,12 @@
 package net.starlegacy.util
 
 import co.aikar.commands.ACFBukkitUtil
-import com.github.stefvanschie.inventoryframework.Gui
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import net.horizonsend.ion.server.IonServer.Companion.Ion
 import kotlin.math.min
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
@@ -16,8 +15,8 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
 object MenuHelper {
-	fun gui(rows: Int, title: String) = Gui(Ion, rows, ACFBukkitUtil.color(title)).apply {
-		setOnLocalClick { event: InventoryClickEvent ->
+	fun gui(rows: Int, title: String) = ChestGui(rows, ACFBukkitUtil.color(title)).apply {
+		setOnGlobalClick { event: InventoryClickEvent ->
 			val item = event.currentItem
 			if (item?.type?.isAir != false) {
 				event.isCancelled = true
@@ -25,7 +24,7 @@ object MenuHelper {
 		}
 	}
 
-	fun Gui.withPane(pane: Pane): Gui {
+	fun ChestGui.withPane(pane: Pane): ChestGui {
 		addPane(pane); return this
 	}
 

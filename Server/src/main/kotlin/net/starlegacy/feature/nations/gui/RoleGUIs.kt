@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations.gui
 
-import com.github.stefvanschie.inventoryframework.Gui
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.md_5.bungee.api.ChatColor
 import net.starlegacy.util.SLTextStyle
@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
 fun Player.manageRolesGUI(commandName: String, roleItems: List<GuiItem>) {
-	val gui = Gui(Ion, 4, "Manage Roles")
+	val gui = ChestGui(4, "Manage Roles")
 
 	// top bar buttons
 	gui.addPane(
@@ -75,7 +75,7 @@ fun editRoleGUI(
 	roleColor: SLTextStyle,
 	roleWeight: Int
 ) {
-	val gui = Gui(Ion, 1, "Edit Role $roleColor$roleName")
+	val gui = ChestGui(1, "Edit Role $roleColor$roleName")
 
 	gui.addPane(
 		outlinePane(0, 0, 8, 1).apply
@@ -157,7 +157,7 @@ fun <P : Enum<P>> editRolePermissionGUI(
 	rolePermissions: Set<P>,
 	pValues: Array<P>
 ) {
-	val gui = Gui(Ion, 1 + (pValues.size + 1) / 9, "Edit Permissions for $roleColor$roleName")
+	val gui = ChestGui(1 + (pValues.size + 1) / 9, "Edit Permissions for $roleColor$roleName")
 
 	val backCommand = "$commandName edit $roleName"
 	gui.addPane(
@@ -184,7 +184,7 @@ fun membersRoleGUI(player: Player, commandName: String, members: List<GuiItem>) 
 }
 
 fun Player.memberRoleGUI(commandName: String, playerName: String, playerRoles: Set<String>, allRoles: List<String>) {
-	val gui = Gui(Ion, 1 + (allRoles.size + 1) / 9, "Manage $playerName's roles")
+	val gui = ChestGui(1 + (allRoles.size + 1) / 9, "Manage $playerName's roles")
 
 	gui.addPane(
 		outlinePane(0, 0, 9, gui.rows)

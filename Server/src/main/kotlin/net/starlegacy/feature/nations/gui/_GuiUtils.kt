@@ -2,8 +2,8 @@ package net.starlegacy.feature.nations.gui
 
 import co.aikar.commands.ACFBukkitUtil.color
 import com.destroystokyo.paper.profile.ProfileProperty
-import com.github.stefvanschie.inventoryframework.Gui
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
@@ -85,9 +85,9 @@ fun skullItem(uuid: UUID, name: String): ItemStack =
 		item.itemMeta = meta
 	}.ensureServerConversions()
 
-fun gui(rows: Int, title: String) = Gui(Ion, rows, color(title))
+fun gui(rows: Int, title: String) = ChestGui(rows, color(title))
 
-fun Gui.withPane(pane: Pane): Gui {
+fun ChestGui.withPane(pane: Pane): ChestGui {
 	addPane(pane); return this
 }
 

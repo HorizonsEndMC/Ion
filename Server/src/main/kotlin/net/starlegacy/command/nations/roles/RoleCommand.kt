@@ -1,6 +1,6 @@
 package net.starlegacy.command.nations.roles
 
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.sql.Timestamp
 import java.util.UUID
 import net.starlegacy.command.SLCommand

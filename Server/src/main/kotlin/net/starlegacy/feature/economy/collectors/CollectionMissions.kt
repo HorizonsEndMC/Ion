@@ -1,6 +1,6 @@
 package net.starlegacy.feature.economy.collectors
 
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader

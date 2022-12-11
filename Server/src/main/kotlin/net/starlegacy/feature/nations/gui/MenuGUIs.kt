@@ -1,6 +1,6 @@
 package net.starlegacy.feature.nations.gui
 
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import kotlin.math.min
 import net.md_5.bungee.api.ChatColor.GREEN

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.economy.bazaar
 
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
