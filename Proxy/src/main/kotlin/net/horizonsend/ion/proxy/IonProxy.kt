@@ -4,6 +4,7 @@ package net.horizonsend.ion.proxy
 import net.horizonsend.ion.proxy.commands.bungee.*
 import net.horizonsend.ion.proxy.commands.discord.*
 import net.horizonsend.ion.proxy.listeners.*
+import net.horizonsend.ion.proxy.managers.ReminderManager
 
 import co.aikar.commands.BungeeCommandManager
 import java.util.concurrent.TimeUnit
@@ -47,6 +48,9 @@ class IonProxy : Plugin() {
 
 	override fun onEnable() { try {
 		Connectivity.open(dataFolder)
+
+		// Schedule Reminders
+		ReminderManager.scheduleReminders()
 
 		// Listener Registration
 		val pluginManager = proxy.pluginManager
