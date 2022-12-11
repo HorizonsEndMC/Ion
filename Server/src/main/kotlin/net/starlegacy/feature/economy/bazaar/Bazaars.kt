@@ -1,6 +1,6 @@
 package net.starlegacy.feature.economy.bazaar
 
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.reflect.KProperty

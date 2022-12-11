@@ -1,6 +1,6 @@
 package net.starlegacy.feature.economy.cargotrade
 
-import com.github.stefvanschie.inventoryframework.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.time.Instant
 import java.util.Date
 import java.util.Locale
