@@ -5,6 +5,7 @@ import org.bukkit.World
 import org.bukkit.util.Vector
 
 data class Vec3i(val x: Int, val y: Int, val z: Int) {
+	@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 	constructor(blockKey: Long) : this(blockKeyX(blockKey), blockKeyY(blockKey), blockKeyZ(blockKey))
 
 	constructor(vector: Vector) : this(vector.blockX, vector.blockY, vector.blockZ)
@@ -15,6 +16,7 @@ data class Vec3i(val x: Int, val y: Int, val z: Int) {
 
 	fun toLocation(world: World): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 
+	@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 	fun toBlockKey(): Long = blockKey(x, y, z)
 
 	fun toVector(): Vector = Vector(x, y, z)

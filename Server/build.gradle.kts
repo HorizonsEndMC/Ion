@@ -10,6 +10,8 @@ plugins {
 repositories {
 	mavenCentral()
 
+	maven("https://repo.horizonsend.net/mirror") // Horizon's End Mirror
+
 	maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper)
 	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
 	maven("https://repo.codemc.io/repository/maven-snapshots/") // WorldEdit
