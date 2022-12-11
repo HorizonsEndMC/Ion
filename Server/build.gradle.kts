@@ -36,11 +36,11 @@ dependencies {
 
 	// Included Dependencies
 	implementation("com.github.jkcclemens:khttp:0.1.0") { exclude("org.jetbrains.kotlin") /* Old Version */ }
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.7")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 
 	// Library Loaded Dependencies
-	compileOnly("com.github.stefvanschie.inventoryframework:IF:0.10.7")
 	compileOnly("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	compileOnly("com.googlecode.cqengine:cqengine:3.6.0")
 	compileOnly("io.github.config4k:config4k:0.5.0")
