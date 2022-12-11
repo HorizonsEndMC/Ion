@@ -49,6 +49,16 @@ class ServerConnectListener : Listener {
 						.create()
 				)
 
+				if (PlayerData[event.player.name]?.voteTimes?.values?.any { it - System.currentTimeMillis() <= 86400000 } == false) {
+					event.player.sendMessage(
+						*ComponentBuilder()
+							.append(ComponentBuilder("Hey ${event.player.displayName}! Remember to vote for the server to help us grow the Horizon's End community!")
+								.color(ChatColor.GOLD)
+								.create())
+							.create()
+					)
+				}
+
 				Ion.jda?.let { jda ->
 					val globalChannel = jda.getTextChannelById(Ion.configuration.globalChannel) ?: return@let
 

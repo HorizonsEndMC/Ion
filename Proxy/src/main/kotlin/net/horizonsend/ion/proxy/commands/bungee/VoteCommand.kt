@@ -21,15 +21,19 @@ class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand()
 			.color(ChatColor.GOLD)
 			.underlined(true)
 
-		for ((url, name) in configuration.voteSites) {
-			val colour = if ((playerData.voteTimes[url] ?: 0) - System.currentTimeMillis() <= 8_400_000) ChatColor.GREEN else ChatColor.RED
+		for (site in configuration.voteSites) {
+			val siteTime: Boolean = playerData.voteTimes[site.serviceName]?.let {
+				playerData.voteTimes[site.serviceName]!! - System.currentTimeMillis() >= 86400000
+			} ?: false
+
+			val color = if (siteTime) ChatColor.GREEN else ChatColor.RED
 
 			siteList.append(
-				ComponentBuilder("\n\n$name\n")
+				ComponentBuilder("\n\n${site.displayName}\n")
 					.color(ChatColor.YELLOW).underlined(false)
-					.append(url).underlined(true)
-					.event(ClickEvent(ClickEvent.Action.OPEN_URL, url))
-					.color(colour)
+					.append(site.displayAddress).underlined(true)
+					.event(ClickEvent(ClickEvent.Action.OPEN_URL, site.displayAddress))
+					.color(color)
 					.create()
 			)
 		}

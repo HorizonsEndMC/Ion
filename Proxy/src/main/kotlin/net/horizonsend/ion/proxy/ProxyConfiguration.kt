@@ -11,5 +11,15 @@ data class ProxyConfiguration(
 	val globalChannel: Long = 0,
 	val unlinkedRole: Long = 0,
 	val linkedRole: Long = 0,
-	val voteSites: Map<String, String> = mapOf("Example1.com" to "Example1Name", "Example2.com" to "Example2Name")
-)
+	val voteSites: List<VoteSite> = listOf(
+		VoteSite("TESTNET", "Test Server List", "https://Test.net/HorizonsEnd"),
+		VoteSite("TESTNET2", "Test Server List2", "https://Test2.net/HorizonsEnd")
+	),
+) {
+	@ConfigSerializable
+	data class VoteSite(
+		val serviceName: String,
+		val displayName: String,
+		val displayAddress: String,
+	)
+}
