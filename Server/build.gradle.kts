@@ -1,6 +1,6 @@
 plugins {
 	id("com.github.johnrengelman.shadow") version "7.1.2"
-	id("io.papermc.paperweight.userdev") version "1.3.11"
+	id("io.papermc.paperweight.userdev") version "1.4.0"
 	java
 
 	id("com.diffplug.spotless")
