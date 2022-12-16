@@ -179,7 +179,7 @@ object OptimizedMovement {
 					nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
 					section.setBlockState(localX, localY, localZ, air, false)
 
-//					lightEngine.checkBlock(BlockPos(x, y, z)) // Lighting is cringe
+					lightEngine.checkBlock(BlockPos(x, y, z)) // Lighting is not cringe
 				}
 			}
 
