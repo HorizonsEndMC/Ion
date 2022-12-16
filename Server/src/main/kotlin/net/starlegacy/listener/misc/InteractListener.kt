@@ -2,6 +2,8 @@ package net.starlegacy.listener.misc
 
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem
 import net.starlegacy.feature.misc.CustomBlocks
@@ -10,8 +12,6 @@ import net.starlegacy.feature.misc.getPower
 import net.starlegacy.feature.misc.setPower
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.multiblock.dockingtube.ConnectedDockingTubeMultiblock
-import net.starlegacy.feature.multiblock.dockingtube.DisconnectedDockingTubeMultiblock
 import net.starlegacy.feature.multiblock.dockingtube.DockingTubeMultiblock
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
@@ -20,14 +20,11 @@ import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.LegacyBlockUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.axis
-import net.starlegacy.util.colorize
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isBed
 import net.starlegacy.util.isStainedGlass
 import net.starlegacy.util.isWallSign
 import net.starlegacy.util.leftFace
-import net.starlegacy.util.msg
-import net.starlegacy.util.red
 import net.starlegacy.util.rightFace
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -62,7 +59,7 @@ object InteractListener : SLEventListener() {
 
 		if (multiblock is DrillMultiblock) {
 			if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
-				event.player msg red("You need Prismarine Crystals in both slots of the furnace!")
+				event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "You need Prismarine Crystals in both slots of the furnace!")
 				return
 			}
 
@@ -167,7 +164,9 @@ object InteractListener : SLEventListener() {
 		topPortal.blockData = newData
 		bottomPortal.blockData = newData
 
-		sign.setLine(1, if (enabled) AirlockMultiblock.ON else AirlockMultiblock.OFF)
+		val component = if (enabled) MiniMessage.miniMessage().deserialize(AirlockMultiblock.ON) else MiniMessage.miniMessage().deserialize(AirlockMultiblock.OFF)
+
+		sign.line(1, component)
 		sign.update()
 	}
 
@@ -236,32 +235,7 @@ object InteractListener : SLEventListener() {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
 		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
-		val multiblock = Multiblocks[sign] as? DockingTubeMultiblock
-
-		if (multiblock == null) {
-			if (sign.getLine(0) == "&1Docking".colorize()) {
-				val lastLine = sign.getLine(3)
-
-				fun setLastLine(text: String) {
-					if (lastLine != text) {
-						sign.setLine(3, text)
-						sign.update(false, false)
-						event.player msg "The text was broken/outdated, it is now fixed. Try again!"
-					}
-				}
-
-				when {
-					lastLine.contains("Connected") -> setLastLine(ConnectedDockingTubeMultiblock.stateText)
-					lastLine.contains("Disconnected") -> setLastLine(DisconnectedDockingTubeMultiblock.stateText)
-				}
-			}
-
-			if (sign.line(0) == ConnectedDockingTubeMultiblock.signText[0]) {
-				event.player msg "&cInvalid docking tube."
-			}
-
-			return
-		}
+		val multiblock = Multiblocks[sign, true, false] as? DockingTubeMultiblock ?: return
 
 		multiblock.toggle(sign, event.player)
 	}
@@ -287,7 +261,7 @@ object InteractListener : SLEventListener() {
 		val player = event.player
 
 		val hand = event.hand
-		val itemStack = player.inventory.getItem(hand)?.clone() ?: return
+		val itemStack = player.inventory.getItem(hand).clone()
 		val item: CustomBlockItem = CustomItems[itemStack] as? CustomBlockItem ?: return
 
 		event.block.location.block.setBlockData(item.customBlock.blockData, true)
