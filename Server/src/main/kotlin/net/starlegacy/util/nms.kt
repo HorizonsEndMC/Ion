@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemStack as MinecraftItemStack
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
@@ -93,6 +94,24 @@ fun getNMSBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockState? {
 
 	return try {
 		val chunk: LevelChunk = world.nms.getChunkIfLoaded(x shr 4, z shr 4) ?: return null
+
+		chunk.getBlockState(x and 15, y, z and 15)
+	} catch (indexOutOfBounds: IndexOutOfBoundsException) {
+		null
+	}
+}
+
+/**
+ * Will attempt to get the block in a thread safe manner.
+ * If the chunk is not loaded or it's outside of the valid Y range, will return null.
+ */
+fun getNMSBlockDataSafe(world: ServerLevel, x: Int, y: Int, z: Int): BlockState? {
+	if (y < world.minBuildHeight || y > world.maxBuildHeight) {
+		return null
+	}
+
+	return try {
+		val chunk: LevelChunk = world.getChunkIfLoaded(x shr 4, z shr 4) ?: return null
 
 		chunk.getBlockState(x and 15, y, z and 15)
 	} catch (indexOutOfBounds: IndexOutOfBoundsException) {
