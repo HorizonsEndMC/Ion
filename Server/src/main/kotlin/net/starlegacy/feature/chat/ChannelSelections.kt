@@ -9,7 +9,6 @@ import net.starlegacy.SLComponent
 import net.starlegacy.listen
 import net.starlegacy.redis
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.action
 import net.starlegacy.util.enumValueOfOrNull
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -71,7 +70,7 @@ object ChannelSelections : SLComponent() {
 				} else {
 					localCache[playerID] = channel
 					val info: String =
-						"<white><bold>Switched to ${channel.displayName.uppercase(Locale.getDefault())}<white><bold> chat!" +
+						"<white><bold>Switched to ${channel.displayName.uppercase(Locale.getDefault())}<white><bold> chat! " +
 							"<white><bold>To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'"
 					player.sendFeedbackAction(FeedbackType.INFORMATION, info)
 				}
