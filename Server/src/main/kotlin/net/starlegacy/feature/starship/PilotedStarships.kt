@@ -155,7 +155,8 @@ object PilotedStarships : SLComponent() {
 	operator fun get(player: Player): ActivePlayerStarship? = map[player]
 	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActivePlayerStarship) -> Unit = {}): Boolean {
 		if (!data.isPilot(player)) {
-			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this!")
+			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this! \nPilot: $player")
+
 			return false
 		}
 		if (!data.starshipType.canUse(player)) {
