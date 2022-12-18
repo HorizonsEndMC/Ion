@@ -16,7 +16,6 @@ import net.horizonsend.ion.server.legacy.listeners.ShipKillListener
 import net.horizonsend.ion.server.legacy.listeners.StationSiegeBeginListener
 import net.horizonsend.ion.server.listeners.BlockFadeListener
 import net.horizonsend.ion.server.listeners.BlockFormListener
-import net.horizonsend.ion.server.listeners.CraftingListener
 import net.horizonsend.ion.server.listeners.EnchantItemListener
 import net.horizonsend.ion.server.listeners.EntityDamageListener
 import net.horizonsend.ion.server.listeners.InventoryClickListener
@@ -28,7 +27,7 @@ import net.horizonsend.ion.server.listeners.PlayerDeathListener
 import net.horizonsend.ion.server.listeners.PlayerItemSwapListener
 import net.horizonsend.ion.server.listeners.PlayerFishListener
 import net.horizonsend.ion.server.listeners.PlayerItemConsumeListener
-import net.horizonsend.ion.server.listeners.PlayerItemHeldListener
+import net.horizonsend.ion.server.listeners.PlayerItemHoldListener
 import net.horizonsend.ion.server.listeners.PlayerInteractListener
 import net.horizonsend.ion.server.listeners.PlayerJoinListener
 import net.horizonsend.ion.server.listeners.PlayerLoginListener
@@ -36,6 +35,7 @@ import net.horizonsend.ion.server.listeners.PlayerQuitListener
 import net.horizonsend.ion.server.listeners.PlayerResourcePackStatusListener
 import net.horizonsend.ion.server.listeners.PlayerTeleportListener
 import net.horizonsend.ion.server.listeners.PotionSplashListener
+import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
@@ -57,7 +57,7 @@ val listeners = arrayOf(
 	PlayerItemSwapListener(),
 	PlayerFishListener(),
 	PlayerItemConsumeListener(),
-	PlayerItemHeldListener(),
+	PlayerItemHoldListener(),
 	PlayerInteractListener(),
 	PlayerJoinListener(),
 	PlayerLoginListener(),
@@ -65,13 +65,13 @@ val listeners = arrayOf(
 	PlayerResourcePackStatusListener(),
 	PlayerTeleportListener(),
 	PotionSplashListener(),
+	PrepareItemCraftListener(),
 	PrepareItemEnchantListener(),
 	WorldInitListener(),
 	WorldUnloadListener(),
 
 	BuySpawnShuttleListener(),
 	CompleteCargoRunListener(),
-	CraftingListener(),
 	CreateNationListener(),
 	CreateNationOutpostListener(),
 	CreateSettlementListener(),
