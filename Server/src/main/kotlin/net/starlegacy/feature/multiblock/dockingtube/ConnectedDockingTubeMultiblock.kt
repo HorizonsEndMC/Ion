@@ -1,15 +1,18 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblocks.multiblockNamespacedKey
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.action
-import net.starlegacy.util.colorize
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isDoor
 import net.starlegacy.util.isGlass
-import net.starlegacy.util.msg
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
@@ -17,13 +20,16 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.Switch
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 
-object ConnectedDockingTubeMultiblock : DockingTubeMultiblock("&2[Connected]".colorize()) {
+object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
+	MiniMessage.miniMessage().deserialize("[Connected]").color(TextColor.fromHexString("#55FF55"))
+) {
 	override fun LegacyMultiblockShape.RequirementBuilder.tubeStateExtension() = anyGlass()
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {
-			player msg "&cCannot toggle tube in an active ship"
+			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "&cCannot toggle tube in an active ship")
 			return
 		}
 
@@ -34,7 +40,7 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock("&2[Connected]".co
 
 		for (distance in 1..100) {
 			if (distance == 100) {
-				player msg "&cOther end not found!"
+				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Other end not found!")
 				return
 			}
 
@@ -49,7 +55,7 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock("&2[Connected]".co
 					val type = buttonRelative.type
 					if (type == Material.AIR || type.isGlass) continue
 
-					player msg "Blocked at ${Vec3i(buttonRelative.location)}"
+					player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Blocked at ${Vec3i(buttonRelative.location)}")
 					return
 				}
 				continue
@@ -57,7 +63,7 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock("&2[Connected]".co
 
 			// if it's not a door it's an obstruction
 			if (!blockType.isDoor) {
-				player msg "&cDocking tube is blocked or the other end is missing/misaligned. Distance: $distance"
+				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "&Docking tube is blocked or the other end is missing/misaligned. Distance: $distance")
 				return
 			}
 
@@ -65,13 +71,13 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock("&2[Connected]".co
 			// doesn't actually have to be a sign block
 			// if it's unloaded then tell them too move closer
 			val otherSignLocation = block.getRelativeIfLoaded(direction)?.location ?: run {
-				player msg "&cDoor on other end is too far."
+				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Door on other end is too far.")
 				return
 			}
 
 			// if the other side's sign is not a valid docking tube then we can't dock
 			if (!signMatchesStructure(otherSignLocation, direction.oppositeFace)) {
-				player msg "&cDocking tube on the other end is not valid or is not aligned correctly."
+				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Docking tube on the other end is not valid or is not aligned correctly.")
 				return
 			}
 
@@ -96,8 +102,11 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock("&2[Connected]".co
 			setButtons(buttons, direction)
 			setButtons(otherButtons, direction.oppositeFace)
 
-			player action "&2Docking tube disconnected."
-			sign.setLine(3, DisconnectedDockingTubeMultiblock.stateText)
+			player.sendFeedbackActionMessage(FeedbackType.SUCCESS,"Docking tube disconnected.")
+
+			sign.persistentDataContainer.set(multiblockNamespacedKey, PersistentDataType.STRING, DisconnectedDockingTubeMultiblock::class.simpleName!!)
+
+			sign.line(3, DisconnectedDockingTubeMultiblock.stateText)
 			sign.update(false, false)
 
 			sign.world.playSound(sign.location, Sound.BLOCK_PISTON_CONTRACT, 1.0f, 1.5f)

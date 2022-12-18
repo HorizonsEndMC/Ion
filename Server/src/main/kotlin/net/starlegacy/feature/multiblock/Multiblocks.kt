@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMu
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
@@ -79,7 +81,6 @@ import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomTriTurretMu
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopTriTurretMultiblock
-import net.starlegacy.util.msg
 import net.starlegacy.util.time
 import net.starlegacy.util.timing
 import org.bukkit.Location
@@ -266,7 +267,7 @@ object Multiblocks : SLComponent() {
 		val player = event.player
 
 		if (!player.hasPermission("starlegacy.multiblock.detect")) {
-			player msg "&cYou don't have permission to detect multiblocks!"
+			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "You don't have permission to detect multiblocks!")
 			return
 		}
 
@@ -282,7 +283,7 @@ object Multiblocks : SLComponent() {
 		}
 
 		if (lastMatch != null) {
-			player msg "&4Improperly built &c${lastMatch.name}&4. Make sure every block is correctly placed!"
+			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Improperly built ${lastMatch.name}. Make sure every block is correctly placed!")
 		}
 	}
 }
