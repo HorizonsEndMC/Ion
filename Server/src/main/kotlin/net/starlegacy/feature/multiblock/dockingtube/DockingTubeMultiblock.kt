@@ -1,5 +1,8 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.rightFace
@@ -9,14 +12,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
-abstract class DockingTubeMultiblock(val stateText: String) : Multiblock() {
+abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock() {
 	override val name = "dockingtube"
 
-	override val signText = createSignText(
-		line1 = "&1Docking",
-		line2 = "&1Tube",
-		line3 = null,
-		line4 = stateText
+	override val signText = arrayOf(
+		MiniMessage.miniMessage().deserialize("Docking").color(TextColor.fromHexString("#ff8888")),
+		MiniMessage.miniMessage().deserialize("Tube").color(TextColor.fromHexString("#ff8888")),
+		null,
+		stateText
 	)
 
 	override fun LegacyMultiblockShape.buildStructure() {
