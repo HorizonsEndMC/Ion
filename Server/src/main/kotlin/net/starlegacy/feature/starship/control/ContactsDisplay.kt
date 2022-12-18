@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.control
 
 import java.util.Collections
+import java.util.Locale
 import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.max
@@ -75,7 +76,11 @@ object ContactsDisplay : SLComponent() {
 				directionString += if (playerDirection.x > 0) "east " else "west "
 			}
 
-			var worldName = player.world.name.replace("Andromeda", "Libna")
+			var worldName = player.world.key.toString().substringAfterLast(":")
+				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
+			if (worldName == "Overworld") worldName = player.world.name
+				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
 			objective.displayName = "&2${worldName.split("_")[0]}&a$directionString".colorize()
 			objective.displaySlot = DisplaySlot.SIDEBAR
