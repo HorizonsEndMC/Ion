@@ -18,7 +18,6 @@ abstract class Blaster : CustomItem() {
 			PlayerData[entity.uniqueId].chosenParticle.getBukkitEquivalent()
 		} else Particle.REDSTONE
 	}
-
 	protected fun getParticleColour(entity: Entity) : Color{
 		return if (entity is Player){
 			val playerData = PlayerData[entity.uniqueId]
