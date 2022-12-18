@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship
 
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
@@ -17,6 +18,7 @@ import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.listen
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.isWallSign
+import net.starlegacy.util.toLocation
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -43,7 +45,7 @@ object Interdiction : SLComponent() {
 			}
 			when (event.action) {
 				Action.RIGHT_CLICK_BLOCK -> {
-					toggleGravityWell(starship, sign)
+					toggleGravityWell(starship)
 				}
 
 				Action.LEFT_CLICK_BLOCK -> {
@@ -55,10 +57,10 @@ object Interdiction : SLComponent() {
 		}
 	}
 
-	private fun toggleGravityWell(starship: ActiveStarship, sign: Sign) {
+	private fun toggleGravityWell(starship: ActiveStarship) {
 		when (starship.isInterdicting) {
-			true -> for (player in starship.world.getNearbyPlayers(
-				starship.centerOfMassVec3i.toLocation(starship.world),
+			true -> for (player in starship.serverLevel.world.getNearbyPlayers(
+				starship.centerOfMass.toLocation(starship.serverLevel.world),
 				starship.type.interdictionRange.toDouble()
 			)) {
 				player.playSound(
@@ -71,8 +73,8 @@ object Interdiction : SLComponent() {
 				)
 			}
 
-			false -> for (player in starship.world.getNearbyPlayers(
-				starship.centerOfMassVec3i.toLocation(starship.world),
+			false -> for (player in starship.serverLevel.world.getNearbyPlayers(
+				starship.centerOfMass.toLocation(starship.serverLevel.world),
 				starship.type.interdictionRange.toDouble()
 			)) {
 				player.playSound(
@@ -136,10 +138,14 @@ object Interdiction : SLComponent() {
 			}
 
 			cruisingShip.cruiseData.velocity.multiply(0.8)
-			cruisingShip.sendMessage("Quantum fluctuations detected - velocity has been reduced by 20%.")
+			cruisingShip.onlinePassengers.forEach { passenger ->
+				passenger.sendFeedbackMessage(ALERT, "Quantum fluctuations detected - velocity has been reduced by 20%.")
+			}
 		}
 
 		input.removeItem(CustomItems.MINERAL_CHETHERITE.itemStack(2))
-		starship.sendMessage("&5Gravity pulse has been invoked by ${player.name}.")
+		starship.onlinePassengers.forEach { passenger ->
+			passenger.sendFeedbackMessage(ALERT, "Gravity pulse has been invoked by ${player.name}.")
+		}
 	}
 }

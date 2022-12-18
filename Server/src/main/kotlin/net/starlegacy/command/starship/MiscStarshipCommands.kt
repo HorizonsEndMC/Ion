@@ -11,12 +11,16 @@ import kotlin.collections.set
 import kotlin.math.ln
 import kotlin.math.roundToInt
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
+import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
@@ -36,14 +40,17 @@ import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSub
 import net.starlegacy.redis
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.distance
-import net.starlegacy.util.msg
 import net.starlegacy.util.normalize
 import net.starlegacy.util.randomInt
+import net.starlegacy.util.toVector
+import org.apache.commons.lang.StringUtils
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import org.litote.kmongo.eq
 
 object MiscStarshipCommands : SLCommand() {
+	@Suppress("unused")
 	@CommandAlias("release")
 	fun onRelease(sender: Player) {
 		DeactivatedPlayerStarships.deactivateAsync(getStarshipPiloting(sender)) {
@@ -51,13 +58,15 @@ object MiscStarshipCommands : SLCommand() {
 		}
 	}
 
+	@Suppress("unused")
 	@CommandAlias("unpilot")
 	fun onUnpilot(sender: Player) {
 		val starship = getStarshipPiloting(sender)
 		PilotedStarships.unpilot(starship, true)
-		sender msg "&bUnpiloted ship, but left it activated"
+		sender.sendFeedbackMessage(INFORMATION, "Unpiloted ship, but left it activated")
 	}
 
+	@Suppress("unused")
 	@CommandAlias("stopriding")
 	fun onStopRiding(sender: Player) {
 		val starship = getStarshipRiding(sender)
@@ -70,6 +79,7 @@ object MiscStarshipCommands : SLCommand() {
 		sender.sendFeedbackMessage(SUCCESS, "Stopped riding ship")
 	}
 
+	@Suppress("unused")
 	@CommandAlias("loadship")
 	@CommandPermission("starships.loadship")
 	@CommandCompletion("@players")
@@ -90,6 +100,7 @@ object MiscStarshipCommands : SLCommand() {
 		}
 	}
 
+	@Suppress("unused")
 	@CommandAlias("jump")
 	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
@@ -111,6 +122,7 @@ object MiscStarshipCommands : SLCommand() {
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
 
+	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("@planets")
 	fun onJump(sender: Player, planet: String) {
@@ -122,12 +134,12 @@ object MiscStarshipCommands : SLCommand() {
 		val cachedPlanet = Space.getPlanet(planet)
 
 		if (cachedPlanet == null) {
-			sender msg "&cUnknown planet $planet."
+			sender.sendFeedbackMessage(USER_ERROR, "Unknown planet $planet.")
 			return
 		}
 
 		if (cachedPlanet.spaceWorld != sender.world) {
-			sender msg "&c$planet is not in this space sector."
+			sender.sendFeedbackMessage(USER_ERROR, "$planet is not in this space sector.")
 			return
 		}
 
@@ -146,7 +158,7 @@ object MiscStarshipCommands : SLCommand() {
 			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
 		}
 
-		val world = starship.world
+		val world = starship.serverLevel.world
 		failIf(!SpaceWorlds.contains(world)) {
 			"Not a space world!"
 		}
@@ -160,7 +172,7 @@ object MiscStarshipCommands : SLCommand() {
 		}
 
 		if (MassShadows.find(
-				starship.world,
+				starship.serverLevel.world,
 				starship.centerOfMass.x.toDouble(),
 				starship.centerOfMass.z.toDouble()
 			) != null
@@ -178,7 +190,7 @@ object MiscStarshipCommands : SLCommand() {
 		var x1: Int = x
 		var z1: Int = z
 
-		val origin: Vector = starship.centerOfMassVec3i.toVector()
+		val origin: Vector = starship.centerOfMass.toVector()
 		val distance: Double = distance(origin.x, 0.0, origin.z, x1.toDouble(), 0.0, z1.toDouble())
 
 		if (distance > maxRange) {
@@ -186,13 +198,15 @@ object MiscStarshipCommands : SLCommand() {
 			x1 = (normalizedX * maxRange + origin.x).roundToInt()
 			z1 = (normalizedZ * maxRange + origin.z).roundToInt()
 
-			sender msg "&eWarning: You attempted to jump ${distance.toInt()} blocks, " +
-				"but your navigation computer only supports jumping up to $maxRange blocks! " +
-				"Automatically shortening jump. New Coordinates: $x1, $z1"
+			sender.sendFeedbackMessage(
+				USER_ERROR,
+				"Warning: You attempted to jump ${distance.toInt()} blocks, " +
+						"but your navigation computer only supports jumping up to $maxRange blocks! " +
+						"Automatically shortening jump. New Coordinates: $x1, $z1")
 		}
 
 		sender.sendFeedbackMessage(SUCCESS, "Initiating Hyperspace Jump to approximately ({0}, {1})", x1, z1)
-		
+
 		val offset = ln(distance).toInt()
 
 		// don't let it be perfectly accurate
@@ -202,6 +216,7 @@ object MiscStarshipCommands : SLCommand() {
 		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, true)
 	}
 
+	@Suppress("unused")
 	@CommandAlias("settarget|starget|st")
 	fun onSetTarget(sender: Player, set: String, @Optional player: OnlinePlayer?) {
 		val starship = getStarshipRiding(sender)
@@ -216,24 +231,30 @@ object MiscStarshipCommands : SLCommand() {
 			failIf(starship.autoTurretTargets.remove(weaponSet) == null) {
 				"No target set for $weaponSet"
 			}
-			sender msg "&7Unset target of &b$weaponSet"
+
+			sender.sendFeedbackMessage(INFORMATION, "Unset target of <aqua>$weaponSet")
 		} else {
 			starship.autoTurretTargets[weaponSet] = player.getPlayer().uniqueId
-			sender msg "&7Set target of &b$weaponSet&7 to ${player.getPlayer().name}"
+
+			sender.sendFeedbackMessage(INFORMATION, "Set target of <aqua>$weaponSet</aqua> to <white>${player.getPlayer().name}")
 		}
 	}
+
+	@Suppress("unused")
 	@CommandAlias("unsettarget|ustarget|ust|unstarget")
 	fun onUnSetTarget(sender: Player, set: String, weapon: String) {
 		val starship = getStarshipRiding(sender)
 		val weaponSet = weapon.lowercase(Locale.getDefault())
 		if (set == "unset")
-		for (weapon in starship.weapons){
-			if (weapon.toString().lowercase().contains(weaponSet)){
+		for (shipWeapon in starship.weapons){
+			if (shipWeapon.toString().lowercase().contains(weaponSet)){
 				starship.autoTurretTargets.forEach { starship.autoTurretTargets.forEach { if (it.key == set){ starship.autoTurretTargets.remove(it.key, it.value)} }}
 				sender.sendFeedbackActionMessage(INFORMATION, "Unset targets of weaponssets containing {0}", weaponSet)
 			}
 		}
 	}
+
+	@Suppress("unused")
 	@CommandAlias("usa|unsetall|unsa")
 	fun onUnSetAll(sender: Player){
 		val starship = getStarshipRiding(sender)
@@ -245,6 +266,7 @@ object MiscStarshipCommands : SLCommand() {
 		sender.sendFeedbackActionMessage(INFORMATION, "Unset target for all weaponsets.")
 	}
 
+	@Suppress("unused")
 	@CommandAlias("powerdivision|powerd|pdivision|pd|powermode|pm")
 	fun onPowerDivision(sender: Player, shield: Int, weapon: Int, thruster: Int) {
 		val sum = shield + weapon + thruster
@@ -259,6 +281,7 @@ object MiscStarshipCommands : SLCommand() {
 		getStarshipRiding(sender).updatePower(sender, shieldPct, weaponPct, thrusterPct)
 	}
 
+	@Suppress("unused")
 	@CommandAlias("nukeship")
 	@CommandPermission("starships.nukeship")
 	fun onNukeShip(sender: Player) {
@@ -266,6 +289,7 @@ object MiscStarshipCommands : SLCommand() {
 		StarshipDestruction.vanish(ship)
 	}
 
+	@Suppress("unused")
 	@CommandAlias("directcontrol|dc")
 	fun onDirectControl(sender: Player) {
 		val starship = getStarshipPiloting(sender)
@@ -283,6 +307,7 @@ object MiscStarshipCommands : SLCommand() {
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}
 
+	@Suppress("unused")
 	@CommandAlias("cruise")
 	fun onCruise(sender: Player) {
 		val ship = getStarshipPiloting(sender)
@@ -293,13 +318,16 @@ object MiscStarshipCommands : SLCommand() {
 		}
 	}
 
+	@Suppress("unused")
 	@CommandAlias("cruisespeed|csp|speedlimit|cruisespeedlimit")
 	fun onCruiseSpeed(sender: Player, speedLimit: Int) {
 		val ship = getStarshipPiloting(sender)
 		ship.speedLimit = speedLimit
-		sender msg "&3Speed limit set to $speedLimit"
+
+		sender.sendFeedbackMessage(INFORMATION, "Speed limit set to $speedLimit")
 	}
 
+	@Suppress("unused")
 	@CommandAlias("eject")
 	fun onEject(sender: Player, who: OnlinePlayer) {
 		val starship = getStarshipPiloting(sender)
@@ -319,10 +347,13 @@ object MiscStarshipCommands : SLCommand() {
 			}
 		}
 		player.teleport(location)
-		starship.sendMessage("&c${player.name} was ejected from the starship")
-		player msg "&cYou were ejected from the starship"
+
+		starship.onlinePassengers.forEach { passenger -> passenger.sendFeedbackMessage(INFORMATION, "${player.name} was ejected from the starship") }
+
+		player.sendFeedbackMessage(ALERT, "You were ejected from the starship")
 	}
 
+	@Suppress("unused")
 	@CommandAlias("listships")
 	@CommandPermission("starships.listships")
 	fun onListShips(sender: Player) {
@@ -332,15 +363,34 @@ object MiscStarshipCommands : SLCommand() {
 		for (starship in ActiveStarships.all()) {
 			val pilot: Player? = (starship as? ActivePlayerStarship)?.pilot
 			totalShips++
+
 			val size: Int = starship.blockCount
 			totalBlocks += size
-			val typeName = starship.type.displayName
+
+			val typeName = starship.type.formatted
 			val pilotName = pilot?.name ?: "none"
-			val worldName = starship.world.name
-			sender msg "$typeName piloted by $pilotName with block count $size in world $worldName"
+
+			val pilotNationID = pilot?.let { PlayerCache[pilot].nation }
+
+			val senderNationID = PlayerCache[sender.player!!].nation
+
+			val pilotNationRelation = senderNationID?.let {
+				pilotNationID?.let {
+					NationRelation.col.find(NationRelation::nation eq senderNationID)
+						.firstOrNull { it.other == pilotNationID }
+				}
+			}
+
+			val pilotRelationColor = pilotNationRelation?.actual?.textStyle?.name?.lowercase()
+
+			val formattedName = pilotRelationColor?.let { "<$pilotRelationColor>$pilotName</$pilotRelationColor>" } ?: pilotName
+			val worldName = StringUtils.substringBetween(starship.serverLevel.toString(), "[", "]")
+
+			sender.sendMessage(MiniMessage.miniMessage().deserialize("$typeName piloted by $formattedName of size $size in $worldName")
+			)
 		}
 
-		sender msg "&7Total Ships&8:&b $totalShips&8"
-		sender msg "&7Total Blocks in all ships&8:&b $totalBlocks"
+		sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Total Ships<dark_gray>:<aqua> $totalShips"))
+		sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Total Blocks in all ships<dark_gray>:<aqua> $totalBlocks"))
 	}
 }
