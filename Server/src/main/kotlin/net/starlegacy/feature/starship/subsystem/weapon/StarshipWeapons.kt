@@ -2,6 +2,8 @@ package net.starlegacy.feature.starship.subsystem.weapon
 
 import com.google.common.collect.HashMultimap
 import com.google.common.util.concurrent.AtomicDouble
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -49,7 +51,10 @@ object StarshipWeapons {
 			val heavyWeaponTypes =
 				queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
 			if (heavyWeaponTypes.count() > 1) {
-				ship.sendMessage("&cYou can only fire one type of heavy weapon at a time!")
+				ship.onlinePassengers.forEach { player ->
+					player.sendFeedbackActionMessage(FeedbackType.USER_ERROR, "You can only fire one type of heavy weapon at a time!")
+				}
+
 				return
 			}
 
@@ -94,7 +99,8 @@ object StarshipWeapons {
 		if (weapon is AmmoConsumingWeaponSubsystem &&
 			ship.magazines.none { it.isAmmoAvailable(weapon.getRequiredAmmo()) }
 		) {
-			ship.sendActionBar("&c&lInsufficient ammunition")
+			ship.onlinePassengers.forEach { player -> player.sendFeedbackActionMessage(FeedbackType.ALERT, "Insufficient ammunition") }
+
 			return true
 		}
 

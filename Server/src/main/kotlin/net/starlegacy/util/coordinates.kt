@@ -6,6 +6,7 @@ import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -198,6 +199,10 @@ fun isInside(location: Location, extraChecks: Int): Boolean {
 
 	return true
 }
+
+fun BlockPos.toVector() = Vector(this.x, this.y, this.z)
+
+fun BlockPos.toLocation(world: World?) = Location(world, this.x.toDouble(), this.y.toDouble(), this.z.toDouble())
 
 fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFace {
 	val x = vector.x

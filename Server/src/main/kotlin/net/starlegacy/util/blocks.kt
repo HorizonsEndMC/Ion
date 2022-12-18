@@ -1,6 +1,7 @@
 package net.starlegacy.util
 
 import com.google.common.collect.ImmutableSet
+import net.minecraft.server.level.ServerLevel
 import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.World
@@ -14,6 +15,10 @@ import org.bukkit.block.data.type.WallSign
  * @see getNMSBlockDataSafe
  */
 fun getBlockTypeSafe(world: World, x: Int, y: Int, z: Int): Material? {
+	return getNMSBlockDataSafe(world, x, y, z)?.bukkitMaterial
+}
+
+fun getBlockTypeSafe(world: ServerLevel, x: Int, y: Int, z: Int): Material? {
 	return getNMSBlockDataSafe(world, x, y, z)?.bukkitMaterial
 }
 

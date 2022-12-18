@@ -5,6 +5,7 @@ import kotlin.math.min
 import kotlin.math.sign
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
@@ -15,8 +16,6 @@ import net.starlegacy.feature.starship.event.StarshipStopCruisingEvent
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import net.starlegacy.feature.starship.movement.TranslateMovement
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.action
-import net.starlegacy.util.msg
 import net.starlegacy.util.roundToHundredth
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -90,7 +89,13 @@ object StarshipCruising : SLComponent() {
 		if (oldVelocity.distance(velocity) > 0.01) {
 			// velocity has changed
 			val targetSpeed = starship.cruiseData.targetSpeed
-			starship.sendActionBar("&bCruise Speed: &b${speed.roundToHundredth()}&8/&3$targetSpeed")
+
+			starship.onlinePassengers.forEach { passenger ->
+				passenger.sendFeedbackAction(
+					FeedbackType.INFORMATION,
+					"Cruise Speed: ${"<aqua>" + speed.roundToHundredth()}<gray>/</gray><dark_aqua>$targetSpeed"
+				)
+			}
 
 			if (starship.isInterdicting) {
 				starship.setIsInterdicting(false)
@@ -156,14 +161,16 @@ object StarshipCruising : SLComponent() {
 		val dz = if (abs(dir.z) > 0.5) sign(dir.z).toInt() else 0
 
 		if (dx == 0 && dz == 0) {
-			player action "&cCan't go up or down"
+			player.sendFeedbackAction(FeedbackType.USER_ERROR, "Can't go up or down")
+
 			return
 		}
 
 		// ThrustData is a binomial data class so we can just expand it like this
 		var (accel, maxSpeed) = starship.getThrustData(dx, dz)
 		if (maxSpeed == 0) {
-			player msg "&cCan't cruise in that direction"
+			player.sendFeedbackAction(FeedbackType.USER_ERROR, "Can't cruise in that direction")
+
 			return
 		}
 
@@ -175,12 +182,17 @@ object StarshipCruising : SLComponent() {
 		starship.cruiseData.targetDir = Vector(dx, 0, dz).normalize()
 
 		val realAccel = starship.cruiseData.getRealAccel(starship.reactor.powerDistributor.thrusterPortion)
-		val info = "&b$dx,$dz &8; &eAccel&8/&aSpeed&8: &e$realAccel&8/&a$maxSpeed"
+		val info = "<aqua>$dx,$dz <dark_gray>; <yellow>Accel<dark_gray>/<green>Speed<dark_gray>: <yellow>$realAccel<dark_gray>/<yellow>$maxSpeed"
 		if (!isCruising(starship)) {
-			starship.sendMessage("&3Cruise started, dir&8: $info")
+			starship.onlinePassengers.forEach { passenger ->
+				passenger.sendFeedbackAction(FeedbackType.USER_ERROR, "Cruise started, dir<dark_gray>: $info")
+			}
+
 			updateCruisingShip(starship)
 		} else {
-			starship.sendActionBar("&3Adjusted dir to $info &e&o[Left click to stop]")
+			starship.onlinePassengers.forEach { passenger ->
+				passenger.sendFeedbackAction(FeedbackType.INFORMATION, "Adjusted dir to $info <yellow>[Left click to stop]")
+			}
 		}
 	}
 
@@ -196,15 +208,17 @@ object StarshipCruising : SLComponent() {
 
 		if (!isCruising(starship)) {
 			if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
-				player action "&cStarship is decelerating"
+				player.sendFeedbackAction(FeedbackType.USER_ERROR, "Starship is decelerating")
+
 			} else {
-				player action "&cStarship is not cruising"
+				player.sendFeedbackAction(FeedbackType.USER_ERROR, "Starship is not cruising")
 			}
 			return
 		}
 
 		starship.cruiseData.targetDir = null
-		starship.sendMessage("&cCruise stopped, decelerating...")
+
+		starship.onlinePassengers.forEach { passenger -> passenger.sendFeedbackMessage(FeedbackType.INFORMATION, "Cruise stopped, decelerating...") }
 	}
 
 	fun forceStopCruising(starship: ActivePlayerStarship) {

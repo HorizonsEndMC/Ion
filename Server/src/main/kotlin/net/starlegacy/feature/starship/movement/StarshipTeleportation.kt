@@ -1,6 +1,8 @@
 package net.starlegacy.feature.starship.movement
 
 import java.util.concurrent.CompletableFuture
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipCruising
@@ -42,14 +44,20 @@ object StarshipTeleportation {
 		previousAdjustZ: Int? = null
 	): CompletableFuture<Boolean> {
 		if (previousTries >= 16) {
-			starship.sendMessage("&cFailed to teleport, too many failed attempts")
+			starship.onlinePassengers.forEach { passenger ->
+				passenger.sendFeedbackMessage(FeedbackType.USER_ERROR, "Failed to teleport, too many failed attempts")
+			}
+
 			return CompletableFuture.completedFuture(false)
 		}
 
 		val world = newWorld ?: starship.world
 
 		if (wouldBeOutOfWorldBorder(starship, world, previousDX, previousDZ)) {
-			starship.sendMessage("&cFailed to teleport, would be out of border")
+			starship.onlinePassengers.forEach { passenger ->
+				passenger.sendFeedbackMessage(FeedbackType.USER_ERROR, "Failed to teleport, would be out of border")
+			}
+
 			return CompletableFuture.completedFuture(false)
 		}
 
@@ -71,7 +79,10 @@ object StarshipTeleportation {
 					return@thenComposeAsync CompletableFuture.completedFuture(true)
 				}
 
-				starship.sendMessage("&cAdjusting position...")
+				starship.onlinePassengers.forEach { passenger ->
+					passenger.sendFeedbackMessage(FeedbackType.INFORMATION, "Adjusting position...")
+				}
+
 				val tries = previousTries + 1
 				return@thenComposeAsync tryTeleport(starship, dx, dy, dz, newWorld, tries, adjustX, adjustZ)
 			}

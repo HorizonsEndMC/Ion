@@ -5,7 +5,7 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.objId
 import net.starlegacy.database.trx
-import net.starlegacy.util.SLTextStyle
+import org.bukkit.ChatColor
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
 import org.litote.kmongo.ensureIndex
@@ -61,14 +61,14 @@ data class NationRelation(
 	}
 
 	/** Relation wishes nations can set to other nations */
-	enum class Level(val textStyle: SLTextStyle) {
-		ENEMY(SLTextStyle.RED),
-		UNFRIENDLY(SLTextStyle.GOLD),
-		NONE(SLTextStyle.GRAY),
-		NEUTRAL(SLTextStyle.LIGHT_PURPLE),
-		FRIENDLY(SLTextStyle.AQUA),
-		ALLY(SLTextStyle.DARK_PURPLE),
-		NATION(SLTextStyle.GREEN);
+	enum class Level(val textStyle: ChatColor) {
+		ENEMY(ChatColor.RED),
+		UNFRIENDLY(ChatColor.GOLD),
+		NONE(ChatColor.GRAY),
+		NEUTRAL(ChatColor.LIGHT_PURPLE),
+		FRIENDLY(ChatColor.AQUA),
+		ALLY(ChatColor.DARK_PURPLE),
+		NATION(ChatColor.GREEN);
 
 		fun lowest(other: Level): Level = when {
 			other.ordinal > this.ordinal -> this

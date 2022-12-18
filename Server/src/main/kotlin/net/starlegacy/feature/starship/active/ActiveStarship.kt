@@ -19,6 +19,9 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.CachedPlanet
@@ -38,7 +41,6 @@ import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.action
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
@@ -46,6 +48,7 @@ import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.d
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.msg
+import net.starlegacy.util.nms
 import net.starlegacy.util.squared
 import net.starlegacy.util.title
 import org.bukkit.Bukkit
@@ -155,16 +158,17 @@ abstract class ActiveStarship(
 
 		gravityWells
 			.filter { it.isIntact() }
-			.map { it.pos.toLocation(world).block.state }
+			.map { it.pos.toLocation(serverLevel.world).block.state }
 			.filterIsInstance<Sign>()
 			.forEach { GravityWellMultiblock.setEnabled(it, value) }
 
 		if (!value) {
-			sendMessage("&eGravity well disabled")
+			onlinePassengers.forEach { player -> player.sendFeedbackMessage(FeedbackType.SUCCESS, "Gravity well disabled")}
+
 			return
 		}
 
-		sendMessage("&6Gravity well enabled")
+		onlinePassengers.forEach { player -> player.sendFeedbackMessage(FeedbackType.SUCCESS, "Gravity well enabled")}
 	}
 
 	abstract val interdictionRange: Int
@@ -237,7 +241,7 @@ abstract class ActiveStarship(
 	}
 
 	fun isWithinHitbox(loc: Location, tolerance: Int = 2): Boolean {
-		return world == loc.world && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
+		return serverLevel == loc.world.nms && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
 	}
 
 	fun isWithinHitbox(entity: Entity, tolerance: Int = 2): Boolean {
@@ -301,13 +305,6 @@ abstract class ActiveStarship(
 	abstract fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean>
 
 	@Deprecated("Deprecated in favour of Adventure text components.")
-	fun sendActionBar(message: String) {
-		for (player in onlinePassengers) {
-			player action message
-		}
-	}
-
-	@Deprecated("Deprecated in favour of Adventure text components.")
 	fun sendTitle(title: Title) {
 		onlinePassengers.asSequence().forEach { it title title }
 	}
@@ -341,12 +338,18 @@ abstract class ActiveStarship(
 	fun updatePower(sender: Player, shield: Int, weapon: Int, thruster: Int) {
 		reactor.powerDistributor.setDivision(shield / 100.0, weapon / 100.0, thruster / 100.0)
 		val name = sender.name
-		sendMessage("&a$name&3 updated the power mode to &b$shield% shield &c$weapon% weapon &e$thruster% thruster")
+
+		onlinePassengers.forEach { player -> player.
+			sendFeedbackAction(
+				FeedbackType.INFORMATION,
+				"<green>$name</green> updated the power mode to <aqua>$shield% shield <red>$weapon% weapon <yellow>$thruster% thruster"
+			)
+		}
 	}
 
 	fun hullIntegrity(): Double {
 		val nonAirBlocks = blocks.count {
-			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
+			getBlockTypeSafe(serverLevel, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
 		return nonAirBlocks.toDouble() / blockCount.toDouble()
 	}
