@@ -123,12 +123,6 @@ fun initializeCrafting() {
 	// Nether Wart Block -> Nether Warts
 	shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
-	/* Rifle Crafting
-		itemStackShapeRecipe("rifle", CustomItemList.RIFLE.itemStack){
-			shape("a", "igi", "ggg")
-		}
-	*/
-
 	// Blaster Barrel Crafting
 	itemStackShapeRecipe("blaster_barrel", CustomItemList.BLASTER_BARREL.itemStack){
 		shape("tct", "ppp", "tct")

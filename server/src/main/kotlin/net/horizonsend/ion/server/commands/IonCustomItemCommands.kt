@@ -17,9 +17,9 @@ class IonCustomItemCommands() : BaseCommand(){
 	@CommandPermission("ion.customItem.get")
 	fun onCustomItemGet(sender:Player, customItemList: CustomItemList, @Optional amount: Int?){
 		val itemToAdd = customItemList.itemStack
-		if (amount != null) {
-			itemToAdd.amount = amount
-		}else itemToAdd.amount = 1
+
+		itemToAdd.amount = amount ?: 1
+
 		sender.inventory.addItem(itemToAdd)
 		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Successfully obtained ${itemToAdd.amount} ${customItemList.name}")
 	}
