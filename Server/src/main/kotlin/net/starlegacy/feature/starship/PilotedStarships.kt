@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -72,7 +74,7 @@ object PilotedStarships : SLComponent() {
 
 	private fun setupPassengers(starship: ActivePlayerStarship) {
 		starship.addPassenger(starship.requirePilot().uniqueId)
-		for (otherPlayer in starship.world.players) {
+		for (otherPlayer in starship.serverLevel.world.players) {
 			if (!starship.isWithinHitbox(otherPlayer)) {
 				continue
 			}
@@ -97,7 +99,7 @@ object PilotedStarships : SLComponent() {
 	private fun saveLoadshipData(starship: ActivePlayerStarship, player: Player) {
 		val schematic = StarshipSchematic.createSchematic(starship)
 
-		val key = "starships.lastpiloted.${player.uniqueId}.${starship.world.name.lowercase(Locale.getDefault())}"
+		val key = "starships.lastpiloted.${player.uniqueId}.${starship.serverLevel.world.name.lowercase(Locale.getDefault())}"
 
 		Tasks.async {
 			redis {
@@ -108,8 +110,8 @@ object PilotedStarships : SLComponent() {
 
 	private fun removeExtractors(starship: ActivePlayerStarship) {
 		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.remove(starship.world, Vec3i(x, y, z))
+			if (starship.serverLevel.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
+				Extractors.remove(starship.serverLevel.world, Vec3i(x, y, z))
 			}
 		}
 	}
@@ -126,7 +128,7 @@ object PilotedStarships : SLComponent() {
 				player.sendFeedbackActionMessage(
 					INFORMATION,
 					"You already have a ship unpiloted, on {0} at {1} {2} {3}, that ship will now be released.",
-					it.world.name,
+					it.serverLevel.world.name,
 					it.centerOfMass.x,
 					it.centerOfMass.y,
 					it.centerOfMass.z
@@ -144,8 +146,8 @@ object PilotedStarships : SLComponent() {
 
 
 		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.add(starship.world, Vec3i(x, y, z))
+			if (starship.serverLevel.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
+				Extractors.add(starship.serverLevel.world, Vec3i(x, y, z))
 			}
 		}
 
@@ -207,8 +209,8 @@ object PilotedStarships : SLComponent() {
 			return false
 		}
 
-		for (player in player.world.getNearbyPlayers(player.location, 500.0)) {
-			player.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
+		for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
+			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
 
 		val carriedShips = mutableListOf<PlayerStarshipData>()
@@ -305,14 +307,14 @@ object PilotedStarships : SLComponent() {
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
-		for (player in player.world.getNearbyPlayers(player.location, 500.0)) {
-			player.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
+		for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
+			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
 		player.sendFeedbackActionMessage(SUCCESS, "Released {0}", getDisplayName(starship.data))
 		return true
 	}
 
-	private fun getDisplayName(data: PlayerStarshipData): String {
-		return data.name ?: data.starshipType.displayName.lowercase(Locale.getDefault())
+	fun getDisplayName(data: PlayerStarshipData): Component {
+		return data.name ?: MiniMessage.miniMessage().deserialize(data.starshipType.displayName.lowercase(Locale.getDefault()))
 	}
 }

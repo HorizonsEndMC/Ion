@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.util.UUID
+import net.kyori.adventure.text.Component
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -95,6 +96,15 @@ object DeactivatedPlayerStarships : SLComponent() {
 
 		// remove the current state in case the new type no longer matches the ship's state
 		removeState(data)
+	}
+
+	fun updateName(data: PlayerStarshipData, newName: Component?) {
+		data.name = newName
+
+		Tasks.async {
+			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::name, newName))
+		}
+
 	}
 
 	fun updateLockEnabled(data: PlayerStarshipData, newValue: Boolean) {

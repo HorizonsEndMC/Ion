@@ -43,7 +43,6 @@ import net.starlegacy.util.distance
 import net.starlegacy.util.normalize
 import net.starlegacy.util.randomInt
 import net.starlegacy.util.toVector
-import org.apache.commons.lang.StringUtils
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -384,7 +383,12 @@ object MiscStarshipCommands : SLCommand() {
 			val pilotRelationColor = pilotNationRelation?.actual?.textStyle?.name?.lowercase()
 
 			val formattedName = pilotRelationColor?.let { "<$pilotRelationColor>$pilotName</$pilotRelationColor>" } ?: pilotName
-			val worldName = StringUtils.substringBetween(starship.serverLevel.toString(), "[", "]")
+
+			var worldName = starship.serverLevel.world.key.toString().substringAfterLast(":")
+				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
+			if (worldName == "Overworld") worldName = starship.serverLevel.world.name
+				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
 			sender.sendMessage(MiniMessage.miniMessage().deserialize("$typeName piloted by $formattedName of size $size in $worldName")
 			)

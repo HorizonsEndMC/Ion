@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -15,14 +16,13 @@ import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
+import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.event.StarshipComputerOpenMenuEvent
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
 import net.starlegacy.util.MenuHelper
-import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.colorize
 import net.starlegacy.util.toText
 import org.bukkit.Material
 import org.bukkit.World
@@ -137,28 +137,33 @@ object StarshipComputers : SLComponent() {
 
 			pane.addItem(guiButton(StarshipControl.CONTROLLER_TYPE) {
 				tryReDetect(playerClicker, data)
-			}.setName("&5Re-detect".colorize()), 0, 0)
+			}.setName(MiniMessage.miniMessage().deserialize("<dark_purple>Re-detect")), 0, 0)
 
 			pane.addItem(guiButton(Material.PLAYER_HEAD) {
 				openPilotsMenu(playerClicker, data)
-			}.setName("&6Pilots".colorize()), 1, 0)
+			}.setName(MiniMessage.miniMessage().deserialize("<gold>Pilots")), 1, 0)
 
 			pane.addItem(guiButton(Material.GHAST_TEAR) {
 				openTypeMenu(playerClicker, data)
-			}.setName("&fType (${data.starshipType})".colorize()), 2, 0)
+			}.setName(MiniMessage.miniMessage().deserialize("<white>Type (${data.starshipType})")), 2, 0)
 
-			val lockDisplayTag = if (data.isLockEnabled) "&aLock Enabled" else "&cLock Disabled"
+			val lockDisplayTag = if (data.isLockEnabled) "<green>Lock Enabled" else "<red>Lock Disabled"
 
 			pane.addItem(guiButton(Material.IRON_DOOR) {
 				toggleLockEnabled(playerClicker, data)
 				tryOpenMenu(player, data)
-			}.setName(lockDisplayTag.colorize()), 3, 0)
+			}.setName(MiniMessage.miniMessage().deserialize(lockDisplayTag)), 3, 0)
+
+			pane.addItem(guiButton(Material.NAME_TAG) {
+				startRename(playerClicker, data)
+				tryOpenMenu(player, data)
+			}.setName(MiniMessage.miniMessage().deserialize("<gray>Starship Name")), 8, 0)
 
 			pane.setOnClick { e ->
 				e.isCancelled = true
 			}
 
-			gui(1, "&5${SLTextStyle.OBFUSCATED}${data._id}".colorize()).withPane(pane).show(player)
+			gui(1, MiniMessage.miniMessage().serialize(getDisplayName(data))).withPane(pane).show(player)
 		}
 	}
 
@@ -238,6 +243,30 @@ object StarshipComputers : SLComponent() {
 				}
 			}
 		}
+	}
+
+	private fun startRename(player: Player, data: PlayerStarshipData) {
+		player.closeInventory()
+		player.beginConversation(
+			Conversation(Ion, player, object : StringPrompt() {
+				override fun getPromptText(context: ConversationContext): String {
+					return "Enter new starship name:"
+				}
+
+				override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
+					if (input != null) Tasks.async {
+
+						val deserialized = MiniMessage.miniMessage().deserialize(input)
+
+						DeactivatedPlayerStarships.updateName(data, deserialized)
+
+						player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Changed starship name to $input"))
+						player.sendFeedbackMessage(SUCCESS, "Changed starship name to <white>\"$deserialized<white>\".")
+					}
+					return null
+				}
+			})
+		)
 	}
 
 	private fun openTypeMenu(player: Player, data: PlayerStarshipData) {

@@ -1,5 +1,6 @@
 package net.starlegacy.database.schema.starships
 
+import net.kyori.adventure.text.Component
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -36,7 +37,7 @@ data class PlayerStarshipData(
 
 	/** UUIDs of players who have been added to the ship by the captain. Should never include the captain. */
 	val pilots: MutableSet<SLPlayerId> = mutableSetOf(),
-	var name: String? = null,
+	var name: Component? = null,
 	/** Chunk combined coordinates, of each chunk the detected blocks reside in */
 	var containedChunks: Set<Long>? = null,
 
