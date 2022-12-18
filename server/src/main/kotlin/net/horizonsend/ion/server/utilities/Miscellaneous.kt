@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.utilities
 
-import java.util.*
 import net.horizonsend.ion.common.database.enums.Particle
 
 fun org.bukkit.Particle.getIonEquivalent() : Particle {

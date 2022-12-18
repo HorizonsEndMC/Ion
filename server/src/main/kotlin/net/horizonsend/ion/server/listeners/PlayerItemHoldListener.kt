@@ -14,7 +14,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-class PlayerItemHeldListener : Listener {
+class PlayerItemHoldListener : Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent){
