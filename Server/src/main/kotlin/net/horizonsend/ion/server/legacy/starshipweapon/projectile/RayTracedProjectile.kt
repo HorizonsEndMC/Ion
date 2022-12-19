@@ -14,7 +14,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.SoundCategory
 import org.bukkit.block.Block
-import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers
+import org.bukkit.craftbukkit.v1_19_R2.util.CraftMagicNumbers
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity

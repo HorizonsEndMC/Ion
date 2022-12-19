@@ -15,7 +15,7 @@ import net.starlegacy.util.blockKeyZ
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.plugin.java.JavaPlugin
 import org.litote.kmongo.eq
 
