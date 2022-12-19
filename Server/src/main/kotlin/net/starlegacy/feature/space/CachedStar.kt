@@ -6,7 +6,7 @@ import net.starlegacy.database.schema.space.Star
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getSphereBlocks
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers
+import org.bukkit.craftbukkit.v1_19_R2.util.CraftMagicNumbers
 
 class CachedStar(
 	val databaseId: Oid<Star>,

@@ -12,7 +12,7 @@ import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
 class ProxyPingListener : Listener {
-	private val protocol = ServerPing.Protocol("1.19.2", 760)
+	private val protocol = ServerPing.Protocol("1.19.3", 761)
 
 	private val messages =
 		URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")

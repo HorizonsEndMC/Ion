@@ -24,7 +24,7 @@ dependencies {
 	implementation(project(":Common"))
 
 	// Platform
-	paperDevBundle("1.19.2-R0.1-SNAPSHOT")
+	paperDevBundle("1.19.3-R0.1-SNAPSHOT")
 
 	// Plugin Dependencies
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }

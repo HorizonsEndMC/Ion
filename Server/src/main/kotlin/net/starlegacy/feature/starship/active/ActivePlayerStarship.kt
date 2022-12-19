@@ -30,7 +30,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.boss.BossBar
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
