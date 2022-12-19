@@ -45,7 +45,7 @@ services:
       - ./config/paper:/config
     environment:
       TYPE: "PAPER"
-      VERSION: "1.19.2"
+      VERSION: "1.19.3"
       EULA: "TRUE"
       USE_AIKAR_FLAGS: "TRUE"
       COPY_CONFIG_DEST: "/data"
