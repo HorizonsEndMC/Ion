@@ -36,7 +36,7 @@ dependencies {
 
 	// Included Dependencies
 	implementation("com.github.jkcclemens:khttp:0.1.0") { exclude("org.jetbrains.kotlin") /* Old Version */ }
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.7")
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.8")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 
