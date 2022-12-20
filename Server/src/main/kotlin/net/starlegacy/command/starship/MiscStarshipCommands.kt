@@ -26,6 +26,7 @@ import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
+import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
 import net.starlegacy.feature.starship.StarshipDestruction
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -247,7 +248,7 @@ object MiscStarshipCommands : SLCommand() {
 		if (set == "unset")
 		for (shipWeapon in starship.weapons){
 			if (shipWeapon.toString().lowercase().contains(weaponSet)){
-				starship.autoTurretTargets.forEach { starship.autoTurretTargets.forEach { if (it.key == set){ starship.autoTurretTargets.remove(it.key, it.value)} }}
+				starship.autoTurretTargets.forEach { _ -> starship.autoTurretTargets.forEach { if (it.key == set){ starship.autoTurretTargets.remove(it.key, it.value)} }}
 				sender.sendFeedbackActionMessage(INFORMATION, "Unset targets of weaponssets containing {0}", weaponSet)
 			}
 		}
@@ -366,7 +367,9 @@ object MiscStarshipCommands : SLCommand() {
 			val size: Int = starship.blockCount
 			totalBlocks += size
 
-			val typeName = starship.type.formatted
+			val name = (starship as? ActivePlayerStarship)?.data?.let { getDisplayName(it) } ?: starship.type.formatted
+			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.formatted).asHoverEvent()
+
 			val pilotName = pilot?.name ?: "none"
 
 			val pilotNationID = pilot?.let { PlayerCache[pilot].nation }
@@ -390,11 +393,14 @@ object MiscStarshipCommands : SLCommand() {
 			if (worldName == "Overworld") worldName = starship.serverLevel.world.name
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
-			sender.sendMessage(MiniMessage.miniMessage().deserialize("$typeName piloted by $formattedName of size $size in $worldName")
-			)
+			val message = MiniMessage.miniMessage().deserialize(
+				"$name<reset> piloted by $formattedName of size $size in $worldName"
+			).hoverEvent(hoverName)
+
+			sender.sendMessage(message)
 		}
 
-		sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Total Ships<dark_gray>:<aqua> $totalShips"))
-		sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Total Blocks in all ships<dark_gray>:<aqua> $totalBlocks"))
+		sender.sendRichMessage("<gray>Total Ships<dark_gray>:<aqua> $totalShips")
+		sender.sendRichMessage("<gray>Total Blocks in all ships<dark_gray>:<aqua> $totalBlocks")
 	}
 }

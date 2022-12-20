@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import java.io.File
 import java.util.UUID
-import net.kyori.adventure.text.Component
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -98,7 +97,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 		removeState(data)
 	}
 
-	fun updateName(data: PlayerStarshipData, newName: Component?) {
+	fun updateName(data: PlayerStarshipData, newName: String?) {
 		data.name = newName
 
 		Tasks.async {
@@ -213,7 +212,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			}
 		}
 
-		val world: World = starship.world
+		val world: World = starship.serverLevel.world
 
 		val carriedShipStateMap = Object2ObjectOpenHashMap<PlayerStarshipData, PlayerStarshipState>()
 

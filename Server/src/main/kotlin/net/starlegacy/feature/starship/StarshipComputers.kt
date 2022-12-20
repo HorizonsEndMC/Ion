@@ -8,7 +8,10 @@ import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.util.HSVLike
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -163,7 +166,7 @@ object StarshipComputers : SLComponent() {
 				e.isCancelled = true
 			}
 
-			gui(1, MiniMessage.miniMessage().serialize(getDisplayName(data))).withPane(pane).show(player)
+			gui(1, getDisplayName(data).replace("<[^>]*>".toRegex(),"")).withPane(pane).show(player)
 		}
 	}
 
@@ -255,13 +258,54 @@ object StarshipComputers : SLComponent() {
 
 				override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
 					if (input != null) Tasks.async {
+						val serialized = MiniMessage.miniMessage().deserialize(input)
 
-						val deserialized = MiniMessage.miniMessage().deserialize(input)
+						if (serialized.clickEvent() != null
+							||input.contains("<rainbow>")
+							||input.contains("<newline>")
+							|| serialized.hoverEvent() != null
+							|| serialized.insertion() != null
+							|| serialized.hasDecoration(TextDecoration.OBFUSCATED)
+							|| ((serialized as? TextComponent)?.content()?.length ?: 0) >= 16
+						) {
+							player.sendFeedbackMessage(USER_ERROR, "ERROR: Disallowed tags!")
+							return@async
+						}
 
-						DeactivatedPlayerStarships.updateName(data, deserialized)
+						if (serialized.color() != null && !player.hasPermission("ion.starship.color")) {
+							player.sendFeedbackMessage(USER_ERROR,
+								"<COLOR> tags can only be used by $5+ patrons! Donate at\n" +
+										"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+							)
+							return@async
+						}
 
-						player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Changed starship name to $input"))
-						player.sendFeedbackMessage(SUCCESS, "Changed starship name to <white>\"$deserialized<white>\".")
+						if ((serialized.color() as? HSVLike) != null && serialized.color()!!.asHSV().v() < 0.25) {
+							player.sendFeedbackMessage(USER_ERROR,
+								"Ship names can't be too dark to read!"
+							)
+							return@async
+						}
+
+						if (serialized.decorations().isNotEmpty() && !player.hasPermission("ion.starship.italic")) {
+							player.sendFeedbackMessage(USER_ERROR,
+								"\\<italic>, \\<bold>, \\<strikethrough> and \\<underlined> tags can only be used by $10+ patrons!\n" +
+										"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+							)
+							return@async
+						}
+
+						if (serialized.font() != null && !player.hasPermission("ion.starship.font")) {
+							player.sendFeedbackMessage(USER_ERROR,
+								"\\<font> tags can only be used by $15+ patrons! Donate at\n" +
+										"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+							)
+							return@async
+						}
+
+						DeactivatedPlayerStarships.updateName(data, input)
+
+						player.sendFeedbackMessage(SUCCESS, "Changed starship name to $input.")
 					}
 					return null
 				}

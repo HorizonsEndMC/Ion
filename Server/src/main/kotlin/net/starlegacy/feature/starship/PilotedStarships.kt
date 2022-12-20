@@ -11,8 +11,6 @@ import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -314,7 +312,7 @@ object PilotedStarships : SLComponent() {
 		return true
 	}
 
-	fun getDisplayName(data: PlayerStarshipData): Component {
-		return data.name ?: MiniMessage.miniMessage().deserialize(data.starshipType.displayName.lowercase(Locale.getDefault()))
+	fun getDisplayName(data: PlayerStarshipData): String {
+		return data.name ?: data.starshipType.displayName.lowercase(Locale.getDefault())
 	}
 }

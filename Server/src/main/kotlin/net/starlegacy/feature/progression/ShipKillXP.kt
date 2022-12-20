@@ -18,7 +18,9 @@ import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CombatNPCKillEvent
+import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
 import net.starlegacy.feature.starship.StarshipType
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
@@ -40,7 +42,8 @@ object ShipKillXP : SLComponent() {
 	private data class ShipDamageData(
 		val map: MutableMap<Damager, AtomicInteger>,
 		val size: Int,
-		val type: StarshipType
+		val type: StarshipType,
+		val name: String?
 	)
 
 	private fun data(starship: ActiveStarship): ShipDamageData {
@@ -48,7 +51,8 @@ object ShipKillXP : SLComponent() {
 		val map = starship.damagers
 		val size = starship.blockCount
 		val type = starship.type
-		return ShipDamageData(map, size, type)
+		val name = (starship as ActivePlayerStarship).data.name
+		return ShipDamageData(map, size, type, name)
 	}
 
 	private val map: Cache<UUID, ShipDamageData> = CacheBuilder.newBuilder()
@@ -105,7 +109,7 @@ object ShipKillXP : SLComponent() {
 	private fun onShipKill(starship: ActiveStarship) {
 		val data = data(starship)
 		for (id in starship.passengerIDs) {
-			val killedName = Bukkit.getPlayer(id)?.name ?: "UNKNOWN"
+			val killedName = getPlayer(id)?.name ?: "UNKNOWN"
 			onShipKill(id, killedName, data)
 		}
 	}
@@ -115,7 +119,7 @@ object ShipKillXP : SLComponent() {
 		val dataMap: Map<Damager, Int> = data.map.filterKeys { damager ->
 			// require they be online to get xp
 			// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
-			Bukkit.getPlayer(damager.id)?.hasPermission("starships.noxp") == false
+			getPlayer(damager.id)?.hasPermission("starships.noxp") == false
 		}.mapValues { it.value.get() }
 
 		val sum = dataMap.values.sum().toDouble()
@@ -158,7 +162,9 @@ object ShipKillXP : SLComponent() {
 	}
 
 	private fun killMessage(killedName: String, damager: Damager, data: ShipDamageData) {
-		val damagership = ActiveStarships.findByPassenger(getPlayer(damager.id)!!)!!.type.formatted
+		val damagerShip = ActiveStarships.findByPassenger(getPlayer(damager.id)!!)!!
+		val damagerShipName = (damagerShip as? ActivePlayerStarship)?.let { getDisplayName(damagerShip.data) } ?: damagerShip.type.formatted
+
 		getServer().sendFeedbackMessage(
 			FeedbackType.ALERT,
 			"<hover:show_text:'<gray>Block Count: {0}</gray>'>{1}</hover> piloted by {2} was sunk by {3} piloting <hover:show_text:'<gray>Block Count: {4}</gray>'>{5}</hover>\n",
@@ -167,8 +173,9 @@ object ShipKillXP : SLComponent() {
 			killedName,
 			getPlayer(damager.id)!!.name,
 			damager.size!!,
-			damagership
+			damagerShipName
 		)
+
 		if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
 			Tasks.async {
 				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("events")
@@ -178,10 +185,11 @@ object ShipKillXP : SLComponent() {
 					return@async
 				}
 
-				val shipkilldiscordmessage =
-					"**A ${data.size} block ship piloted by $killedName was sunk by ${getPlayer(damager.id)!!.name} in a ${damager.size} block ship**"
+				val newShipKillDiscordMessage =
+					"${data.name}, a ${data.size} block ${data.type}, piloted by $killedName, was shot down by " +
+							"${getPlayer(damager.id)!!.name}, piloting $damagerShipName, a ${damager.size} block ${damagerShip.type}."
 
-				channel.sendMessage(shipkilldiscordmessage).queue()
+				channel.sendMessage(newShipKillDiscordMessage).queue()
 			}
 		}
 	}
