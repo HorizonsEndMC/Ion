@@ -1,6 +1,8 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
@@ -22,7 +24,6 @@ import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.feature.space.Space
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.colorize
-import net.starlegacy.util.msg
 import net.starlegacy.util.redisaction.RedisAction
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -33,7 +34,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	GLOBAL("<dark_green>Global", listOf("global", "g"), SLTextStyle.RESET) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (SETTINGS.chat.noGlobalWorlds.contains(player.world.name)) {
-				return player msg "<red>You can't use global chat in this world! <italic>(If you need assistance, please use /msg)"
+				return player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You can't use global chat in this world! <italic>(If you need assistance, please use /msg)")
 			}
 
 			val luckPerms = LuckPermsProvider.get()
@@ -43,7 +44,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 				val node = luckPerms.nodeBuilderRegistry.forInheritance().group(group).value(true).build()
 				val user = luckPerms.userManager.getUser(player.uniqueId)
 				if (user?.data()?.contains(node, NodeEqualityPredicate.IGNORE_EXPIRY_TIME)?.asBoolean() == true) {
-					return player msg "<red>You have gtoggle on! Use /gtoggle to disable."
+					return player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You have gtoggle on! Use /gtoggle to disable.")
 				}
 			}
 
@@ -82,7 +83,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val world = player.world
 
 			if (Space.getPlanet(world) == null) {
-				return player msg "<red>You're not on a planet! To go back to global chat, use /global"
+				return player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You're not on a planet! To go back to global chat, use /global")
 			}
 
 			val prefix = "<blue><bold>Planet".colorize() + " " + event.format.format(player.displayName, "")
@@ -99,7 +100,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	ADMIN("<red>Admin", listOf("admin", "adminchat"), SLTextStyle.RED) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.admin")) {
-				player msg "<red>You don't have access to that!"
+				player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You don't have access to that!")
 				return
 			}
 
@@ -112,7 +113,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	STAFF("<aqua>Staff", listOf("staff", "staffchat"), SLTextStyle.LIGHT_PURPLE) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.staff")) {
-				player msg "<red>You don't have access to that!"
+				player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You don't have access to that!")
 				return
 			}
 
@@ -126,7 +127,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	MOD("<green>Mod", listOf("mod", "modchat"), SLTextStyle.AQUA) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.mod")) {
-				player msg "<red>You don't have access to that!"
+				player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You don't have access to that!")
 				return
 			}
 
@@ -140,7 +141,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	dev("<green>dev", listOf("dev", "devchat"), SLTextStyle.GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.dev")) {
-				player msg "<red>You don't have access to that!"
+				player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You don't have access to that!")
 				return
 			}
 
@@ -154,7 +155,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	ContentDesign("<green>Content <red>Design", listOf("contentdesign", "cd", "slcd"), SLTextStyle.GOLD) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.contentdesign")) {
-				player msg "<red>You don't have access to that!"
+				player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You don't have access to that!")
 				return
 			}
 
@@ -168,7 +169,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	VIP("<green>VIP", listOf("vip", "vipchat"), SLTextStyle.DARK_GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.vip")) {
-				player msg "<red>You don't have access to that!"
+				player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You don't have access to that!")
 				return
 			}
 
@@ -196,7 +197,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val settlement = playerData.settlement
-				?: return player msg "<red>You're not in a settlement! <italic>(Hint: To get back to global, use /global)"
+				?: return player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You're not in a settlement! <italic>(Hint: To get back to global, use /global)")
 
 			val roleString = playerData.settlementTag?.let { " $it" } ?: ""
 
@@ -210,9 +211,9 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val settlement = playerData.settlement
-				?: return player msg "<red>You're not in a settlement! <italic>(Hint: To get back to global, use /global)"
+				?: return player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You're not in a settlement! <italic>(Hint: To get back to global, use /global)")
 			val nation = playerData.nation
-				?: return player msg "<red>You're not in a nation! <italic>(Hint: To get back to global, use /global)"
+				?: return player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You're not in a nation! <italic>(Hint: To get back to global, use /global)")
 
 			val settlementName = SettlementCache[settlement].name
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""
@@ -227,7 +228,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val nation = playerData.nation
-				?: return player msg "<red>You're not in a nation! <italic>(Hint: To get back to global, use /global)"
+				?: return player.sendFeedbackAction(FeedbackType.INFORMATION, "<red>You're not in a nation! <italic>(Hint: To get back to global, use /global)")
 
 			val nationName = NationCache[nation].name
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""
