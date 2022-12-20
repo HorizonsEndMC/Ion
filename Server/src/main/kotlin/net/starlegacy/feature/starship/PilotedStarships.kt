@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship
 
-import java.util.*
+import java.util.Locale
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
+import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -155,7 +156,9 @@ object PilotedStarships : SLComponent() {
 	operator fun get(player: Player): ActivePlayerStarship? = map[player]
 	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActivePlayerStarship) -> Unit = {}): Boolean {
 		if (!data.isPilot(player)) {
-			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this, the captain is ${data.captain}")
+			val captain = SLPlayer.getName(data.captain)
+
+			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this, the captain is $captain")
 
 			return false
 		}
