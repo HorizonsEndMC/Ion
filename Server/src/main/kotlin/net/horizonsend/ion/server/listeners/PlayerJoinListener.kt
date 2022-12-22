@@ -3,25 +3,42 @@ package net.horizonsend.ion.server.listeners
 import java.net.URL
 import java.security.MessageDigest
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.extensions.sendServerError
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
 class PlayerJoinListener(private val plugin: IonServer) : Listener {
-	private val url = "https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
-		URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
-			.readText()
-			.substringAfter("\",\"tag_name\":\"")
-			.substringBefore("\",")
-	}/HorizonsEndResourcePack.zip"
+	private var cachedURL: String? = null
+	private var lastUpdated: Long = 0
+
+	private val url: String? get() {
+		if (lastUpdated < System.currentTimeMillis() + 600000) return cachedURL
+
+		cachedURL = try {
+			"https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
+				URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
+					.readText()
+					.substringAfter("\",\"tag_name\":\"")
+					.substringBefore("\",")
+			}/HorizonsEndResourcePack.zip"
+		} catch (exception: Exception) {
+			Ion.slF4JLogger.warn("Unable to update resource pack URL!")
+			null
+		}
+
+		lastUpdated = System.currentTimeMillis()
+
+		return cachedURL
+	}
 
 	private val hash = try { MessageDigest.getInstance("SHA-1").digest(URL(url).readBytes()) } catch (_: Exception) { null }
 
@@ -56,6 +73,10 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 			event.player.inventory.addItem(kitstarterasking)
 		}
 
-		event.player.setResourcePack(url, hash)
+		if (url == null) {
+			event.player.sendServerError("Unable to get resource pack URL. Please try again later.")
+		} else {
+			event.player.setResourcePack(url!!, hash)
+		}
 	}
 }
