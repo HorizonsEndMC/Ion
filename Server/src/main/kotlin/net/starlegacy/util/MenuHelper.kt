@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import kotlin.math.min
+import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -41,6 +42,14 @@ object MenuHelper {
 		guiButton(ItemStack(type), action)
 
 	fun GuiItem.setName(text: String?): GuiItem {
+		if (text != null) {
+			item.setDisplayNameAndGet(text)
+		}
+
+		return this
+	}
+
+	fun GuiItem.setName(text: Component?): GuiItem {
 		if (text != null) {
 			item.setDisplayNameAndGet(text)
 		}

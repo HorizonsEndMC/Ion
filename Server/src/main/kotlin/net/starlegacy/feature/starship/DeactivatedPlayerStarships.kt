@@ -97,6 +97,15 @@ object DeactivatedPlayerStarships : SLComponent() {
 		removeState(data)
 	}
 
+	fun updateName(data: PlayerStarshipData, newName: String?) {
+		data.name = newName
+
+		Tasks.async {
+			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::name, newName))
+		}
+
+	}
+
 	fun updateLockEnabled(data: PlayerStarshipData, newValue: Boolean) {
 		data.isLockEnabled = newValue
 
@@ -203,7 +212,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			}
 		}
 
-		val world: World = starship.world
+		val world: World = starship.serverLevel.world
 
 		val carriedShipStateMap = Object2ObjectOpenHashMap<PlayerStarshipData, PlayerStarshipState>()
 

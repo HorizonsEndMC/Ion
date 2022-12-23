@@ -1,5 +1,6 @@
 package net.starlegacy.util
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
@@ -12,6 +13,8 @@ fun ItemStack.updateMeta(block: (ItemMeta) -> Unit): ItemStack = apply {
 }
 
 fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = updateMeta { it.setDisplayName(name) }
+
+fun ItemStack.setDisplayNameAndGet(name: Component): ItemStack = updateMeta { it.displayName(name) }
 
 val ItemStack.displayName
 	get() =
