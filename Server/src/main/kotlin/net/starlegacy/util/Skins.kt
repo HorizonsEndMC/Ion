@@ -2,24 +2,27 @@ package net.starlegacy.util
 
 import com.destroystokyo.paper.profile.PlayerProfile
 import com.destroystokyo.paper.profile.ProfileProperty
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
 import java.util.UUID
-import khttp.get
-import khttp.responses.Response
 import org.bukkit.Bukkit
-import org.json.JSONException
-import org.json.JSONObject
+import java.io.IOException
+import java.net.URL
+
+data class User(val data: Data)
+data class Data(val texture: Texture)
+data class Texture(val value: String, val signature: String)
 
 object Skins {
 	data class SkinData(val value: String, val signature: String) {
 		companion object {
-			fun fromBytes(bytes: ByteArray): SkinData = Gson().fromJson(ungzip(bytes), Skins.SkinData::class.java)
+			fun fromBytes(bytes: ByteArray): SkinData = Gson().fromJson(ungzip(bytes), SkinData::class.java)
 		}
 
 		fun toBytes(): ByteArray = gzip(Gson().toJson(this))
 	}
 
-	operator fun get(id: UUID): Skins.SkinData? {
+	operator fun get(id: UUID): SkinData? {
 		try {
 			// use mojang thing is possible
 			val profile: PlayerProfile = Bukkit.getPlayer(id)?.playerProfile
@@ -36,13 +39,19 @@ object Skins {
 		val url = "https://api.mineskin.org/generate/user/$id"
 
 		try {
-			val response: Response = get(url)
-			if (response.jsonObject.has("error")) {
-				return null
-			}
-			val textureObject: JSONObject = response.jsonObject.getJSONObject("data").getJSONObject("texture")
-			return Skins.SkinData(textureObject.getString("value"), textureObject.getString("signature"))
-		} catch (e: JSONException) {
+			val response: User
+
+			URL(url)
+				.openConnection()
+				.apply {
+					doInput = true
+					connect()
+
+					response = ObjectMapper().readValue(getInputStream(), User::class.java)
+				}
+
+			return SkinData(response.data.texture.value, response.data.texture.value)
+		} catch (e: IOException) {
 			return null
 		}
 	}
