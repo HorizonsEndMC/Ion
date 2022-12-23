@@ -137,7 +137,7 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#0c5ce8",
 		overridePermission = "ion.ships.override.battlecruiser",
-		
+
 	),
 	BATTLESHIP(
 		displayName = "Battleship",
@@ -154,7 +154,7 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#0c5ce8",
 		overridePermission = "ion.ships.override.battleship",
-		
+
 	),
 	DREADNOUGHT(
 		displayName = "Dreadnought",
@@ -171,7 +171,7 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#320385",
 		overridePermission = "ion.ships.override.dreadnought",
-		
+
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
@@ -261,7 +261,7 @@ enum class StarshipType(
 	PLATFORM(
 		displayName = "Platform",
 		minSize = 25,
-		maxSize = 100000,
+		maxSize = 500000,
 		minLevel = 1,
 		containerPercent = 100.0,
 		crateLimitMultiplier = 100.0,
