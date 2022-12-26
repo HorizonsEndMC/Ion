@@ -5,10 +5,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.customitems.CustomItemList
 import net.horizonsend.ion.server.customitems.blasters.constructors.AmmoRequiringSingleShotBlaster
 import net.horizonsend.ion.server.customitems.blasters.constructors.Magazine
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer
-import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 
 @Suppress("Unused")
 object Sniper : AmmoRequiringSingleShotBlaster() {
