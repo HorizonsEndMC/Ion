@@ -66,8 +66,9 @@ abstract class Blaster<T: Balancing>(
 		var ammo = getAmmunition(itemStack)
 
 		for (magazineItem in livingEntity.inventory) {
-			if (ammo == balancing.magazineSize) return // Check not full
-			if (magazineItem.customItem !is Magazine) return // Only Magazines
+			if (ammo >= balancing.magazineSize) continue // Check if magazine is full
+			if (magazineItem == null) continue // Check not null
+			if (magazineItem.customItem !is Magazine) continue // Only Magazines
 
 			val magazineAmmo = Magazine.getAmmunition(magazineItem)
 			val amountToTake = (balancing.magazineSize - ammo).coerceAtMost(magazineAmmo)
@@ -77,6 +78,7 @@ abstract class Blaster<T: Balancing>(
 		}
 
 		livingEntity.setCooldown(itemStack.type, this.balancing.reload)
+
 		setAmmunition(itemStack, livingEntity.inventory, ammo)
 
 		// TODO: Use durability to indicate ammo
