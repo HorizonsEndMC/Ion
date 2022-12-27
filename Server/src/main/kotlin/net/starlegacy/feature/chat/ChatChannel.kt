@@ -1,6 +1,7 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
@@ -30,10 +31,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.litote.kmongo.eq
 
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {
-	GLOBAL("<dark_green>Global", listOf("global", "g"), SLTextStyle.RESET) {
+	GLOBAL("&2Global", listOf("global", "g"), SLTextStyle.RESET) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (SETTINGS.chat.noGlobalWorlds.contains(player.world.name)) {
-				return player msg "<red>You can't use global chat in this world! <italic>(If you need assistance, please use /msg)"
+				return player msg "&cYou can't use global chat in this world! &o(If you need assistance, please use /msg)"
 			}
 
 			val luckPerms = LuckPermsProvider.get()
@@ -43,7 +44,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 				val node = luckPerms.nodeBuilderRegistry.forInheritance().group(group).value(true).build()
 				val user = luckPerms.userManager.getUser(player.uniqueId)
 				if (user?.data()?.contains(node, NodeEqualityPredicate.IGNORE_EXPIRY_TIME)?.asBoolean() == true) {
-					return player msg "<red>You have gtoggle on! Use /gtoggle to disable."
+					return player msg "&cYou have gtoggle on! Use /gtoggle to disable."
 				}
 			}
 
@@ -62,11 +63,11 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			DiscordSRV.getPlugin().processChatMessage(event.player, event.message, null, false)
 		}
 	},
-	LOCAL("<yellow>Local", listOf("local", "l"), SLTextStyle.YELLOW) {
+	LOCAL("&eLocal", listOf("local", "l"), SLTextStyle.YELLOW) {
 		private val distanceSquared = SETTINGS.chat.localDistance * SETTINGS.chat.localDistance
 
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
-			val prefix = "<yellow><bold>Local".colorize() + " " + event.format.format(player.displayName, "")
+			val prefix = "&e&lLocal".colorize() + " " + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}"
 			val playerInfo = playerInfo(player)
 			val component = NormalChatMessage(prefix, message, playerInfo).buildChatComponent()
@@ -77,15 +78,15 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			}
 		}
 	},
-	PLANET("<dark_blue>Planet", listOf("planetchat", "pchat", "pc"), SLTextStyle.DARK_GREEN) {
+	PLANET("&9Planet", listOf("planetchat", "pchat", "pc"), SLTextStyle.DARK_GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val world = player.world
 
 			if (Space.getPlanet(world) == null) {
-				return player msg "<red>You're not on a planet! To go back to global chat, use /global"
+				return player msg "&cYou're not on a planet! To go back to global chat, use /global"
 			}
 
-			val prefix = "<blue><bold>Planet".colorize() + " " + event.format.format(player.displayName, "")
+			val prefix = "&9&lPlanet".colorize() + " " + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}"
 			val playerInfo = playerInfo(player)
 
@@ -96,93 +97,93 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			}
 		}
 	},
-	ADMIN("<red>Admin", listOf("admin", "adminchat"), SLTextStyle.RED) {
+	ADMIN("&cAdmin", listOf("admin", "adminchat"), SLTextStyle.RED) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.admin")) {
-				player msg "<red>You don't have access to that!"
+				player msg "&cYou don't have access to that!"
 				return
 			}
 
-			val prefix = "dark_red><bold>Admin<reset> ".colorize() + event.format.format(player.displayName, "")
+			val prefix = "&4&lAdmin&r ".colorize() + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}"
 			val playerInfo = playerInfo(player)
 			adminAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	STAFF("<aqua>Staff", listOf("staff", "staffchat"), SLTextStyle.LIGHT_PURPLE) {
+	STAFF("&bStaff", listOf("staff", "staffchat"), SLTextStyle.LIGHT_PURPLE) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.staff")) {
-				player msg "<red>You don't have access to that!"
+				player msg "&cYou don't have access to that!"
 				return
 			}
 
-			val prefix = "<dark_gray><bold>Staff<reset> ".colorize() + event.format.format(player.displayName, "")
+			val prefix = "&8&lStaff&r ".colorize() + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}".colorize()
 			val playerInfo = playerInfo(player)
 
 			staffAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	MOD("<green>Mod", listOf("mod", "modchat"), SLTextStyle.AQUA) {
+	MOD("&aMod", listOf("mod", "modchat"), SLTextStyle.AQUA) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.mod")) {
-				player msg "<red>You don't have access to that!"
+				player msg "&cYou don't have access to that!"
 				return
 			}
 
-			val prefix = "<dark_aqua><bold>Mod<reset> ".colorize() + event.format.format(player.displayName, "")
+			val prefix = "&3&lMod&r ".colorize() + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}".colorize()
 			val playerInfo = playerInfo(player)
 
 			modAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	dev("<green>dev", listOf("dev", "devchat"), SLTextStyle.GREEN) {
+	dev("&adev", listOf("dev", "devchat"), SLTextStyle.GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.dev")) {
-				player msg "<red>You don't have access to that!"
+				player msg "&cYou don't have access to that!"
 				return
 			}
 
-			val prefix = "<dark_aqua><bold>dev<reset> ".colorize() + event.format.format(player.displayName, "")
+			val prefix = "&3&ldev&r ".colorize() + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}".colorize()
 			val playerInfo = playerInfo(player)
 
 			devAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	ContentDesign("<green>Content <red>Design", listOf("contentdesign", "cd", "slcd"), SLTextStyle.GOLD) {
+	ContentDesign("&aContent &cDesign", listOf("contentdesign", "cd", "slcd"), SLTextStyle.GOLD) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.contentdesign")) {
-				player msg "<red>You don't have access to that!"
+				player msg "&cYou don't have access to that!"
 				return
 			}
 
-			val prefix = "<green><bold>Content <red><bold>Design<reset> ".colorize() + event.format.format(player.displayName, "")
+			val prefix = "&a&lContent &c&lDesign&r ".colorize() + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}".colorize()
 			val playerInfo = playerInfo(player)
 
 			contentDesignAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	VIP("<green>VIP", listOf("vip", "vipchat"), SLTextStyle.DARK_GREEN) {
+	VIP("&aVIP", listOf("vip", "vipchat"), SLTextStyle.DARK_GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.vip")) {
-				player msg "<red>You don't have access to that!"
+				player msg "&cYou don't have access to that!"
 				return
 			}
 
-			val prefix = "<dark_green><bold>VIP<reset> ".colorize() + event.format.format(player.displayName, "")
+			val prefix = "&2&lVIP&r ".colorize() + event.format.format(player.displayName, "")
 			val message = "$messageColor${event.message}".colorize()
 			val playerInfo = playerInfo(player)
 
 			vipAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},/*
-    CREW("<aqua>Crew", listOf("crew", "c"), SLTextStyle.ITALIC) {
+    CREW("&bCrew", listOf("crew", "c"), SLTextStyle.ITALIC) {
         override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
             val starship = StarshipManager.getRiding(player)
-                ?: return player msg "<red>You're not riding a starship! <italic>(Hint: To get back to global, use /global)"
+                ?: return player msg "&cYou're not riding a starship! &o(Hint: To get back to global, use /global)"
 
             val message = (when (player) {
                 starship.pilot -> "${SLTextStyle.DARK_PURPLE}[Captain]${SLTextStyle.BLUE} "
@@ -192,47 +193,47 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
             starship.messagePassengersgit(message)
         }
     },*/ // TODO: Add this back after merging starships
-	SETTLEMENT("<dark_aqua>Settlement", listOf("schat", "sc", "settlementchat"), SLTextStyle.AQUA) {
+	SETTLEMENT("&3Settlement", listOf("schat", "sc", "settlementchat"), SLTextStyle.AQUA) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val settlement = playerData.settlement
-				?: return player msg "<red>You're not in a settlement! <italic>(Hint: To get back to global, use /global)"
+				?: return player msg "&cYou're not in a settlement! &o(Hint: To get back to global, use /global)"
 
 			val roleString = playerData.settlementTag?.let { " $it" } ?: ""
 
-			val prefix = "<dark_aqua><bold>Settlement$roleString <aqua>${player.name} <dark_gray>» ".colorize()
+			val prefix = "&3&lSettlement$roleString &b${player.name} &8» ".colorize()
 			val message = messageColor.toString() + event.message.replace("${SLTextStyle.RESET}", "$messageColor")
 
 			settlementAction(NationsChatMessage(settlement, prefix, message, playerInfo(player)))
 		}
 	},
-	NATION("<green>Nation", listOf("nchat", "nc", "nationchat"), SLTextStyle.GREEN) {
+	NATION("&aNation", listOf("nchat", "nc", "nationchat"), SLTextStyle.GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val settlement = playerData.settlement
-				?: return player msg "<red>You're not in a settlement! <italic>(Hint: To get back to global, use /global)"
+				?: return player msg "&cYou're not in a settlement! &o(Hint: To get back to global, use /global)"
 			val nation = playerData.nation
-				?: return player msg "<red>You're not in a nation! <italic>(Hint: To get back to global, use /global)"
+				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
 
 			val settlementName = SettlementCache[settlement].name
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""
 
-			val prefix = "<green><bold>Nation <aqua>$settlementName$roleString <red>${player.name} <dark_gray>»".colorize()
+			val prefix = "&a&lNation &b$settlementName$roleString &c${player.name} &8»".colorize()
 			val message = messageColor.toString() + event.message.replace("${SLTextStyle.RESET}", "$messageColor")
 
 			nationAction(NationsChatMessage(nation, prefix, message, playerInfo(player)))
 		}
 	},
-	ALLY("<dark_purple>Ally", listOf("achat", "ac", "allychat"), SLTextStyle.LIGHT_PURPLE) {
+	ALLY("&5Ally", listOf("achat", "ac", "allychat"), SLTextStyle.LIGHT_PURPLE) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val nation = playerData.nation
-				?: return player msg "<red>You're not in a nation! <italic>(Hint: To get back to global, use /global)"
+				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
 
 			val nationName = NationCache[nation].name
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""
 
-			val format = "<dark_purple><bold>Ally <yellow>$nationName$roleString <aqua>${player.name} <dark_gray>»".colorize()
+			val format = "&5&lAlly &e$nationName$roleString &b${player.name} &8»".colorize()
 			val message = messageColor.toString() + event.message.replace("${SLTextStyle.RESET}", "$messageColor")
 
 			player.sendMessage("$format $message")
