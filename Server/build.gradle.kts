@@ -37,7 +37,7 @@ dependencies {
 	// Included Dependencies
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.8")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-	implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
+	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
 
 	// Library Loaded Dependencies
 	compileOnly("com.fasterxml.jackson.core:jackson-databind:2.14.1")
