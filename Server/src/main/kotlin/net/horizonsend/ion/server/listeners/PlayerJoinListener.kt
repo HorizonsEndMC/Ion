@@ -21,7 +21,7 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 	private var lastUpdated: Long = 0
 
 	private val url: String? get() {
-		if (lastUpdated < System.currentTimeMillis() + 600000) return cachedURL
+		if (lastUpdated > System.currentTimeMillis() + 600000) return cachedURL
 
 		cachedURL = try {
 			"https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
