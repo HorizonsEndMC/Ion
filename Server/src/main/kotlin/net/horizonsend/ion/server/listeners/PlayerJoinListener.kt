@@ -21,7 +21,7 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 	private var lastUpdated: Long = 0
 
 	private val url: String? get() {
-		if (lastUpdated > System.currentTimeMillis() + 600000) return cachedURL
+		if (System.currentTimeMillis() - lastUpdated < 600000) return cachedURL
 
 		cachedURL = try {
 			"https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
@@ -31,7 +31,7 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 					.substringBefore("\",")
 			}/HorizonsEndResourcePack.zip"
 		} catch (exception: Exception) {
-			Ion.slF4JLogger.warn("Unable to update resource pack URL!")
+			Ion.slF4JLogger.warn("Unable to update resource pack URL!", exception)
 			null
 		}
 
