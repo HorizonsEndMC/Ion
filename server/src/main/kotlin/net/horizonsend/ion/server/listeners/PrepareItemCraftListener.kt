@@ -1,47 +1,26 @@
 package net.horizonsend.ion.server.listeners
 
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.customitems.blasters.StandardMagazine
-import net.horizonsend.ion.server.customitems.blasters.StandardMagazine.getAmmo
-import net.horizonsend.ion.server.customitems.getCustomItem
-import net.kyori.adventure.text.minimessage.MiniMessage
-import org.bukkit.NamespacedKey
+import net.horizonsend.ion.server.items.CustomItems
+import net.horizonsend.ion.server.items.CustomItems.customItem
+import net.horizonsend.ion.server.items.objects.Magazine
+import net.horizonsend.ion.server.items.objects.Magazine.getAmmunition
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareItemCraftEvent
-import org.bukkit.persistence.PersistentDataType
 
 class PrepareItemCraftListener : Listener {
 	@EventHandler
-	fun onPrepareCraft(event: PrepareItemCraftEvent) { // For standard Magazines
+	fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
 		if (!event.isRepair) return
 
-		val magazines = event.inventory.matrix.filter { it.getCustomItem() is StandardMagazine }
-
+		val magazines = event.inventory.matrix.filter { it?.customItem is Magazine }.filterNotNull()
 		if (magazines.isEmpty()) return
 
-		val totalAmmo = magazines.sumOf { getAmmo(it!!) ?: 0 }.coerceIn(0..30) // Non-null because would be filtered out if so
+		val totalAmmo = magazines.sumOf { getAmmunition(it) }.coerceIn(0..30)
 
-		val result = StandardMagazine.customItemlist.itemStack
+		val resultItemStack = CustomItems.MAGAZINE.constructItemStack()
+		CustomItems.MAGAZINE.setAmmunition(resultItemStack, event.inventory, totalAmmo)
 
-		result.editMeta {
-			it.lore()?.clear()
-			it.lore(
-				mutableListOf(
-					MiniMessage.miniMessage()
-						.deserialize("<bold><gray>Ammo:${totalAmmo}/${StandardMagazine.capacity}")
-				)
-			)
-		}
-
-		result.editMeta { it.persistentDataContainer.remove(NamespacedKey(IonServer.Ion, "ammo")) }
-
-		result.editMeta {
-			it.persistentDataContainer.set(NamespacedKey(IonServer.Ion, "ammo"), PersistentDataType.INTEGER,
-				totalAmmo
-			)
-		}
-
-		event.inventory.result = result
+		event.inventory.result = resultItemStack
 	}
 }
