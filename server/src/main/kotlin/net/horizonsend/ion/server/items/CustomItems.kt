@@ -24,7 +24,8 @@ object CustomItems {
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
 	@Suppress("Unused") val PISTOL = register(object : Blaster<Singleshot>("PISTOL", NETHERITE_HOE, 1, text("Blaster Pistol", RED, BOLD), { Ion.balancing.energyWeapons.pistol }) {})
-	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", NETHERITE_HOE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {
+	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", NETHERITE_HOE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
+	@Suppress("Unused") val AUTO_RIFLE = register(object : Blaster<Singleshot>("AUTO_RIFLE", NETHERITE_HOE, 1, text("Automatic Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.autoRifle }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
 			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { 4 / balancing.timeBetweenShots }
 			for (count in 0..repeatCount) Tasks.syncDelay(count.toLong()) { super.handleSecondaryInteract(livingEntity, itemStack) }
