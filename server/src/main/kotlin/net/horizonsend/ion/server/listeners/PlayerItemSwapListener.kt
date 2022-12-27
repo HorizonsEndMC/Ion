@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listeners
 
-import net.horizonsend.ion.server.customitems.getCustomItem
+import net.horizonsend.ion.server.items.CustomItems.customItem
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -10,16 +10,11 @@ class PlayerItemSwapListener : Listener{
 	@EventHandler(priority = EventPriority.NORMAL)
 	@Suppress("unused")
 	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
-		val item = event.offHandItem ?: return // The item swapped into the offhand
+		val itemStack = event.offHandItem ?: return // The item swapped into the offhand
+		val customItem = itemStack.customItem ?: return
 
-		val customItem = item.getCustomItem() ?: return
+		event.isCancelled = true
 
-		event.isCancelled = true // Offhand item
-
-		val newItem = event.player.inventory.itemInMainHand
-
-		customItem.apply {
-			this.onTertiaryInteract(event.player, newItem)
-		}
+		customItem.handleTertiaryInteract(event.player, itemStack)
 	}
 }
