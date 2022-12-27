@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.customitems.CustomItemList
-import net.starlegacy.feature.misc.CustomItems
+import net.horizonsend.ion.server.items.CustomItems
+import net.starlegacy.feature.misc.CustomItems as LegacyCustomItems
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -52,7 +52,7 @@ import org.bukkit.inventory.ShapelessRecipe
 
 fun initializeCrafting() {
 	// Prismarine Bricks
-	furnaceRecipe("prismarine_bricks", PRISMARINE_BRICKS, PRISMARINE, 1f, 200)
+	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(Ion, "prismarine_bricks"), ItemStack(PRISMARINE_BRICKS), PRISMARINE, 1f, 200))
 
 	// Bell
 	shapedRecipe("bell", BELL) {
@@ -90,19 +90,19 @@ fun initializeCrafting() {
 	shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
 
 	// Blaster Barrel Crafting
-	itemStackShapeRecipe("blaster_barrel", CustomItemList.BLASTER_BARREL.itemStack){
+	itemStackShapeRecipe("blaster_barrel", CustomItems.GUN_BARREL.constructItemStack()) {
 		shape("tct", "ppp", "tct")
 
-		setIngredient('t', RecipeChoice.ExactChoice(CustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
 		setIngredient('c', COPPER_INGOT)
 		setIngredient('p', PRISMARINE_CRYSTALS)
 	}
 
 	// Circuitry Crafting 1
-	itemStackShapeRecipe("circuitry_1", CustomItemList.CIRCUITRY.itemStack) {
+	itemStackShapeRecipe("circuitry_1", CustomItems.CIRCUITRY.constructItemStack()) {
 		shape("qdq", "arg", "ccc")
 
-		setIngredient('a', RecipeChoice.ExactChoice(CustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
 		setIngredient('c', COPPER_INGOT)
 		setIngredient('q', QUARTZ)
 		setIngredient('g', GOLD_INGOT)
@@ -111,10 +111,10 @@ fun initializeCrafting() {
 	}
 
 	// Circuitry Crafting 2
-	itemStackShapeRecipe("circuitry_2", CustomItemList.CIRCUITRY.itemStack) {
+	itemStackShapeRecipe("circuitry_2", CustomItems.CIRCUITRY.constructItemStack()) {
 		shape("qdq", "gra", "ccc")
 
-		setIngredient('a', RecipeChoice.ExactChoice(CustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
 		setIngredient('c', COPPER_INGOT)
 		setIngredient('q', QUARTZ)
 		setIngredient('g', GOLD_INGOT)
@@ -123,16 +123,12 @@ fun initializeCrafting() {
 	}
 
 	// Standard Magazine Crafting
-	itemStackShapeRecipe("standard_magazine", CustomItemList.STANDARD_MAGAZINE.itemStack) {
+	itemStackShapeRecipe("standard_magazine", CustomItems.MAGAZINE.constructItemStack()) {
 		shape("aaa", "qqq", "aaa")
 
-		setIngredient('a', RecipeChoice.ExactChoice(CustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
 		setIngredient('q', LAPIS_BLOCK)
 	}
-}
-
-private fun furnaceRecipe(name: String, result: Material, source: Material, experience: Float, cookingTime: Int) {
-	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(Ion, name), ItemStack(result), source, experience, cookingTime))
 }
 
 private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {

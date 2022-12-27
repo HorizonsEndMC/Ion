@@ -17,7 +17,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object CustomItemCommand : SLCommand() {
-	@CommandAlias("customitem")
+	@CommandAlias("legacycustomitem")
 	@CommandPermission("machinery.customitem")
 	@CommandCompletion("@customitems 1|16|64 @players")
 	fun onGive(

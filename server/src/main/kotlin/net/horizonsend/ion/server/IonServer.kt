@@ -4,6 +4,8 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
+import net.horizonsend.ion.server.items.CustomItems
+import net.minecraft.core.registries.BuiltInRegistries
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
@@ -20,8 +22,8 @@ class IonServer : JavaPlugin() {
 		lateinit var Ion: IonServer private set
 	}
 
-	var configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
 	var balancing = loadConfiguration<BalancingConfiguration>(dataFolder, "balancing.conf")
+	var configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
 
 	override fun onEnable() {
 		try {
@@ -37,8 +39,15 @@ class IonServer : JavaPlugin() {
 
 			for (command in commands) commandManager.registerCommand(command)
 
-			// TODO: This is messy, we should have individual classes which contain the completions.
 			commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
+			commandManager.commandCompletions.registerCompletion("customItem") { context ->
+				CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
+			}
+			commandManager.commandCompletions.registerCompletion("particles") { context ->
+				BuiltInRegistries.PARTICLE_TYPE.keySet()
+					.filter { context.player.hasPermission("ion.settings.particle.$it") }
+					.map { "$it" }
+			}
 
 			// The listeners are defined in a separate file for the sake of keeping the main class clean.
 			for (listener in listeners) pluginManager.registerEvents(listener, this)
