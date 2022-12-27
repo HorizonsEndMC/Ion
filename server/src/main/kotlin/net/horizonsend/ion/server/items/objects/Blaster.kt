@@ -31,6 +31,8 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
+import net.starlegacy.util.randomDouble
+import org.bukkit.util.Vector
 
 abstract class Blaster<T: Balancing>(
 	identifier: String,
@@ -116,9 +118,21 @@ abstract class Blaster<T: Balancing>(
 	}
 
 	protected open fun fireProjectiles(livingEntity: LivingEntity) {
+		val location = livingEntity.eyeLocation.clone()
+
+		if (balancing.shotDeviation > 0) {
+			val offsetX = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
+			val offsetY = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
+			val offsetZ = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
+
+			location.direction = location.direction.normalize()
+
+			location.direction = location.direction.add(Vector(offsetX, offsetY, offsetZ))
+		}
+
 		ProjectileManager.addProjectile(
 			RayTracedParticleProjectile(
-				livingEntity.eyeLocation,
+				location,
 				livingEntity,
 				balancing,
 				getParticleType(livingEntity),

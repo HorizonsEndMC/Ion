@@ -24,6 +24,7 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = false,
 			speed = 2.0,
 			timeBetweenShots = 6,
+			shotDeviation = 0.0
 		),
 		val rifle: Singleshot = Singleshot(
 			damage = 2.0,
@@ -41,6 +42,7 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = false,
 			speed = 2.0,
 			timeBetweenShots = 1,
+			shotDeviation = 0.0
 		),
 		val autoRifle: Singleshot = Singleshot(
 			damage = 2.0,
@@ -58,6 +60,7 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = false,
 			speed = 2.0,
 			timeBetweenShots = 1,
+			shotDeviation = 0.05
 		),
 		val sniper: Singleshot = Singleshot(
 			damage = 12.0,
@@ -75,6 +78,7 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = true,
 			speed = 2.0,
 			timeBetweenShots = 40,
+			shotDeviation = 0.0
 		),
 		val shotgun: Multishot = Multishot(
 			damage = 4.0,
@@ -94,7 +98,8 @@ data class BalancingConfiguration(
 			shouldHeadshot = false,
 			shouldPassThroughEntities = false,
 			speed = 2.0,
-			timeBetweenShots = 20
+			timeBetweenShots = 20,
+			shotDeviation = 0.05
 		)
 	) {
 		@ConfigSerializable
@@ -114,6 +119,7 @@ data class BalancingConfiguration(
 			override val shouldPassThroughEntities: Boolean,
 			override val speed: Double,
 			override val timeBetweenShots: Int,
+			override val shotDeviation: Double
 		): Balancing()
 
 		@ConfigSerializable
@@ -136,7 +142,8 @@ data class BalancingConfiguration(
 			override val shouldHeadshot: Boolean,
 			override val shouldPassThroughEntities: Boolean,
 			override val speed: Double,
-			override val timeBetweenShots: Int
+			override val timeBetweenShots: Int,
+			override val shotDeviation: Double
 		) : Balancing()
 
 		abstract class Balancing : ProjectileBalancing {
@@ -148,6 +155,7 @@ data class BalancingConfiguration(
 			abstract val shouldAkimbo: Boolean
 			abstract val shouldHeadshot: Boolean
 			abstract val timeBetweenShots: Int
+			abstract val shotDeviation: Double
 		}
 
 		interface ProjectileBalancing {
