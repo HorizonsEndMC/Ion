@@ -16,6 +16,8 @@ import net.horizonsend.ion.server.miscellaneous.handle
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
 import net.horizonsend.ion.server.miscellaneous.listeners
 import net.minecraft.core.registries.BuiltInRegistries
+import net.horizonsend.ion.server.generation.SpaceBiomeProvider
+import net.horizonsend.ion.server.generation.SpaceChunkGenerator
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -25,6 +27,9 @@ import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
+import org.bukkit.generator.BiomeProvider
+import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("Unused")
@@ -106,5 +111,13 @@ class IonServer : JavaPlugin() {
 		IonWorld.unregisterAll()
 		legacyDisable()
 		Connectivity.close()
+	}
+
+	override fun getDefaultBiomeProvider(worldName: String, id: String?): BiomeProvider {
+		return SpaceBiomeProvider()
+	}
+
+	override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {
+		return SpaceChunkGenerator()
 	}
 }
