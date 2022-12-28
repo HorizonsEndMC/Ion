@@ -10,7 +10,9 @@ class PlayerItemSwapListener : Listener{
 	@EventHandler(priority = EventPriority.NORMAL)
 	@Suppress("unused")
 	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
-		val itemStack = event.offHandItem ?: return // The item swapped into the offhand
+		// We have to get it from the inventory and not the event, otherwise things break
+		val itemStack = event.player.inventory.itemInMainHand
+
 		val customItem = itemStack.customItem ?: return
 
 		event.isCancelled = true
