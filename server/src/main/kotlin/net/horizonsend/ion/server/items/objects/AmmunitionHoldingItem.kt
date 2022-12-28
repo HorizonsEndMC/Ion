@@ -48,7 +48,8 @@ abstract class AmmunitionHoldingItem(
 
 		if (ammunition <= 0 && shouldDeleteItem) {
 			inventory.removeItemAnySlot(itemStack)
-			(inventory.holder as? Player)?.updateInventory()
 		}
+
+		(inventory.holder as? Player)?.updateInventory()
 	}
 }
