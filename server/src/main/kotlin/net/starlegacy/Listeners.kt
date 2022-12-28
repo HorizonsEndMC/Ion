@@ -3,7 +3,6 @@ package net.starlegacy
 import net.horizonsend.ion.server.legacy.listeners.BowHitListener
 import net.horizonsend.ion.server.legacy.listeners.PlayerJumpListener
 import net.horizonsend.ion.server.legacy.listeners.PlayerToggleSneakListener
-import net.starlegacy.listener.gear.BlasterListener
 import net.starlegacy.listener.gear.DetonatorListener
 import net.starlegacy.listener.gear.DoubleJumpListener
 import net.starlegacy.listener.gear.PowerArmorListener
@@ -36,7 +35,6 @@ val listeners = listOf(
 	PlayerToggleSneakListener,
 	PlayerJumpListener,
 
-	BlasterListener,
 	DetonatorListener,
 	DoubleJumpListener,
 	PowerArmorListener,
