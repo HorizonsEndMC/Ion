@@ -53,6 +53,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 		y: Int,
 		z: Int,
 		playerId: UUID,
+		name: String? = null,
 		callback: (PlayerStarshipData) -> Unit
 	) = Tasks.async {
 		synchronized(lock) {
@@ -62,7 +63,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val id = objId<PlayerStarshipData>()
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
-			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey)
+			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name=name)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
 
