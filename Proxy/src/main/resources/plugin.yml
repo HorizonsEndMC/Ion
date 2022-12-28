@@ -22,8 +22,8 @@ libraries:
   - "org.spongepowered:configurate-extra-kotlin:4.1.2"
   - "org.spongepowered:configurate-hocon:4.1.2"
 
-  - "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
-  - "org.jetbrains.kotlin:kotlin-stdlib:1.7.22"
+  - "org.jetbrains.kotlin:kotlin-reflect:1.8.0"
+  - "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
 
   - "org.litote.kmongo:kmongo:4.8.0"
   - "redis.clients:jedis:4.3.1"
