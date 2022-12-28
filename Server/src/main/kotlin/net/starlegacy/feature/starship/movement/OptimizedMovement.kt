@@ -108,7 +108,9 @@ object OptimizedMovement {
 			val nmsChunk = chunk.nms
 
 			for ((sectionKey, positionMap) in sectionMap) {
-				val section = nmsChunk.getSection(sectionKey)
+				if (sectionKey * 16 >= world.maxHeight) throw ConditionFailedException("Maximum height limit reached")
+
+				val section = nmsChunk.sections[sectionKey]
 
 				for ((blockKey, index) in positionMap) {
 					check(newPositionArray[index] == blockKey)

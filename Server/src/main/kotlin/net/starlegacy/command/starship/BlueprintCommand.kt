@@ -15,6 +15,8 @@ import java.util.Locale
 import java.util.UUID
 import kotlin.collections.set
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
@@ -193,7 +195,7 @@ object BlueprintCommand : SLCommand() {
 			checkObstruction(sender, schematic, pilotLoc)
 
 			loadSchematic(sender, schematic, pilotLoc) { origin ->
-				tryPilot(sender, origin, blueprint.type)
+				tryPilot(sender, origin, blueprint.type, blueprint.name)
 			}
 		}
 	}
@@ -210,7 +212,7 @@ object BlueprintCommand : SLCommand() {
 			checkObstruction(sender, schematic, pilotLoc)
 
 			loadSchematic(sender, schematic, pilotLoc) { origin ->
-				tryPilot(sender, origin, blueprint.type) { starship ->
+				tryPilot(sender, origin, blueprint.type, blueprint.name) { starship ->
 
 					starship.iterateBlocks { x, y, z ->
 						val block = starship.world.getBlockAt(x, y, z)
@@ -259,6 +261,7 @@ object BlueprintCommand : SLCommand() {
 		sender: Player,
 		origin: Vec3i,
 		type: StarshipType,
+		name: String,
 		callback: (ActivePlayerStarship) -> Unit = {}
 	) {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
@@ -268,7 +271,7 @@ object BlueprintCommand : SLCommand() {
 			return
 		}
 
-		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, sender.uniqueId) { data ->
+		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, sender.uniqueId, name) { data ->
 			Tasks.async {
 				try {
 					DeactivatedPlayerStarships.updateType(data, type)
@@ -280,7 +283,7 @@ object BlueprintCommand : SLCommand() {
 						}
 					}
 				} catch (e: StarshipDetection.DetectionFailedException) {
-					sender msg "Detection failed: " + e.message
+					sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Detection failed: ${e.message}")
 				}
 			}
 		}

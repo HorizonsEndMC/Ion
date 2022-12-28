@@ -287,7 +287,7 @@ object StarshipComputers : SLComponent() {
 							return@async
 						}
 
-						if (serialized.decorations().isNotEmpty() && !player.hasPermission("ion.starship.italic")) {
+						if (serialized.decorations().any { it.value == TextDecoration.State.TRUE } && !player.hasPermission("ion.starship.italic")) {
 							player.sendFeedbackMessage(USER_ERROR,
 								"\\<italic>, \\<bold>, \\<strikethrough> and \\<underlined> tags can only be used by $10+ patrons!\n" +
 										"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
