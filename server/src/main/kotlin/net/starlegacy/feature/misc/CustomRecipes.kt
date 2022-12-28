@@ -17,7 +17,6 @@ object CustomRecipes : SLComponent() {
 		Tasks.syncDelay(1) {
 			registerMineralRecipes()
 			registerBatteryRecipes()
-			registerBlasterRecipes()
 			registerArmorRecipes()
 			registerModuleRecipes()
 			registerSwordRecipes()
@@ -148,44 +147,6 @@ object CustomRecipes : SLComponent() {
 		)
 		createRecipe(
 			mineral.fullBlock, "aaa", "aaa", "aaa", ingredients = mapOf('a' to customItemChoice(mineral))
-		)
-	}
-
-	private fun registerBlasterRecipes() {
-		createRecipe(
-			CustomItems.BLASTER_PISTOL, " bg", " t ",
-			ingredients = mapOf(
-				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-				'g' to materialChoice(Material.GLASS_PANE),
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
-			)
-		)
-
-		createRecipe(
-			CustomItems.BLASTER_RIFLE, "btg", "t  ",
-			ingredients = mapOf(
-				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-				'g' to materialChoice(Material.GLASS_PANE)
-			)
-		)
-
-		createRecipe(
-			CustomItems.BLASTER_SNIPER, " t ", "btg", "t  ",
-			ingredients = mapOf(
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-				'g' to materialChoice(Material.GLASS_PANE)
-			)
-		)
-
-		createRecipe(
-			CustomItems.BLASTER_CANNON, "brt", "t  ",
-			ingredients = mapOf(
-				'b' to customItemChoice(CustomItems.BATTERY_SMALL),
-				'r' to materialChoice(Material.REDSTONE),
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
-			)
 		)
 	}
 
