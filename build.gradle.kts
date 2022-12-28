@@ -2,7 +2,7 @@ import java.net.URL
 
 plugins {
 	id("com.diffplug.spotless") version "6.12.0"
-	kotlin("jvm") version "1.7.22"
+	kotlin("jvm") version "1.8.0"
 }
 
 repositories {
