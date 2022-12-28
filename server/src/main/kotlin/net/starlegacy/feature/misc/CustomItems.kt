@@ -194,20 +194,6 @@ object CustomItems {
 	val ENERGY_SWORD_ORANGE = registerEnergySword(color = "orange", colorName = "${GOLD}Orange", model = 6)
 	//endregion Energy Swords
 
-	//region Blasters
-	private fun registerBlaster(type: String, typeName: String, model: Int, maxPower: Int): BlasterItem = register(
-		BlasterItem("blaster_$type", "${RED}Blaster $typeName", BOW, model, maxPower)
-	)
-
-	class BlasterItem(id: String, displayName: String, material: Material, model: Int, maxPower: Int) :
-		PoweredCustomItem(id, displayName, material, model, false, maxPower)
-
-	val BLASTER_PISTOL = registerBlaster(type = "pistol", typeName = "Pistol", model = 1, maxPower = 2500)
-	val BLASTER_RIFLE = registerBlaster(type = "rifle", typeName = "Rifle", model = 2, maxPower = 7500)
-	val BLASTER_SNIPER = registerBlaster(type = "sniper", typeName = "Sniper", model = 3, maxPower = 20000)
-	val BLASTER_CANNON = registerBlaster(type = "cannon", typeName = "Cannon", model = 4, maxPower = 25000)
-	//endregion Blasters
-
 	//region Power Armor
 	private fun registerPowerArmor(piece: String, pieceName: String, material: Material): PowerArmorItem = register(
 		PowerArmorItem("power_armor_$piece", "${GOLD}Power$GRAY $pieceName", material, 1, 50000)
