@@ -109,22 +109,13 @@ fun TextComponent.darkPurple() = style(SLTextStyle.DARK_PURPLE)
 fun TextComponent.gold() = style(SLTextStyle.GOLD)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.gray() = style(SLTextStyle.GRAY)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.green() = style(SLTextStyle.GREEN)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.aqua() = style(SLTextStyle.AQUA)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.red() = style(SLTextStyle.RED)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.yellow() = style(SLTextStyle.YELLOW)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.white() = style(SLTextStyle.WHITE)
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.bold() = apply { isBold = true }
@@ -173,7 +164,6 @@ enum class SLTextStyle(val wrappedColor: ChatColor) {
 	BLACK(ChatColor.BLACK),
 	DARK_GREEN(ChatColor.DARK_GREEN),
 	DARK_AQUA(ChatColor.DARK_AQUA),
-	DARK_RED(ChatColor.DARK_RED),
 	DARK_PURPLE(ChatColor.DARK_PURPLE),
 	GOLD(ChatColor.GOLD),
 	GRAY(ChatColor.GRAY),
