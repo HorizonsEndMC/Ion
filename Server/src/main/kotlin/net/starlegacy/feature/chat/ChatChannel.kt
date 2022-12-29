@@ -30,10 +30,11 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.litote.kmongo.eq
 
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {
-	GLOBAL("&2Global", listOf("global", "g"), SLTextStyle.RESET) {
+	GLOBAL("<dark_green>Global", listOf("global", "g"), SLTextStyle.RESET) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (SETTINGS.chat.noGlobalWorlds.contains(player.world.name)) {
-				return player msg "&cYou can't use global chat in this world! &o(If you need assistance, please use /msg)"
+				player.sendFeedbackAction(FeedbackType.USER_ERROR, "You can't use global chat in this world! " +
+						"<italic>(If you need assistance, please use /msg)")
 			}
 
 			val luckPerms = LuckPermsProvider.get()
@@ -43,7 +44,8 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 				val node = luckPerms.nodeBuilderRegistry.forInheritance().group(group).value(true).build()
 				val user = luckPerms.userManager.getUser(player.uniqueId)
 				if (user?.data()?.contains(node, NodeEqualityPredicate.IGNORE_EXPIRY_TIME)?.asBoolean() == true) {
-					return player msg "&cYou have gtoggle on! Use /gtoggle to disable."
+					player.sendFeedbackAction(FeedbackType.USER_ERROR, "You have gtoggle on! Use /gtoggle to disable.")
+					return
 				}
 			}
 
@@ -62,7 +64,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			DiscordSRV.getPlugin().processChatMessage(event.player, event.message, null, false)
 		}
 	},
-	LOCAL("&eLocal", listOf("local", "l"), SLTextStyle.YELLOW) {
+	LOCAL("<yellow>Local", listOf("local", "l"), SLTextStyle.YELLOW) {
 		private val distanceSquared = SETTINGS.chat.localDistance * SETTINGS.chat.localDistance
 
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
@@ -77,7 +79,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			}
 		}
 	},
-	PLANET("&9Planet", listOf("planetchat", "pchat", "pc"), SLTextStyle.DARK_GREEN) {
+	PLANET("<blue>Planet", listOf("planetchat", "pchat", "pc"), SLTextStyle.DARK_GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val world = player.world
 
@@ -96,7 +98,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			}
 		}
 	},
-	ADMIN("&cAdmin", listOf("admin", "adminchat"), SLTextStyle.RED) {
+	ADMIN("<red>Admin", listOf("admin", "adminchat"), SLTextStyle.RED) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.admin")) {
 				player msg "&cYou don't have access to that!"
@@ -109,7 +111,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			adminAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	STAFF("&bStaff", listOf("staff", "staffchat"), SLTextStyle.LIGHT_PURPLE) {
+	STAFF("<aqua>Staff", listOf("staff", "staffchat"), SLTextStyle.LIGHT_PURPLE) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.staff")) {
 				player msg "&cYou don't have access to that!"
@@ -123,7 +125,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			staffAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	MOD("&aMod", listOf("mod", "modchat"), SLTextStyle.AQUA) {
+	MOD("<green>Mod", listOf("mod", "modchat"), SLTextStyle.AQUA) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.mod")) {
 				player msg "&cYou don't have access to that!"
@@ -137,7 +139,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			modAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	dev("&adev", listOf("dev", "devchat"), SLTextStyle.GREEN) {
+	dev("<green>dev", listOf("dev", "devchat"), SLTextStyle.GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.dev")) {
 				player msg "&cYou don't have access to that!"
@@ -151,7 +153,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			devAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	ContentDesign("&aContent &cDesign", listOf("contentdesign", "cd", "slcd"), SLTextStyle.GOLD) {
+	ContentDesign("<green>Content <red>Design", listOf("contentdesign", "cd", "slcd"), SLTextStyle.GOLD) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.contentdesign")) {
 				player msg "&cYou don't have access to that!"
@@ -165,7 +167,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			contentDesignAction(NormalChatMessage(prefix, message, playerInfo))
 		}
 	},
-	VIP("&aVIP", listOf("vip", "vipchat"), SLTextStyle.DARK_GREEN) {
+	VIP("<green>VIP", listOf("vip", "vipchat"), SLTextStyle.DARK_GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (!player.hasPermission("chat.channel.vip")) {
 				player msg "&cYou don't have access to that!"
@@ -192,7 +194,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
             starship.messagePassengersgit(message)
         }
     },*/ // TODO: Add this back after merging starships
-	SETTLEMENT("&3Settlement", listOf("schat", "sc", "settlementchat"), SLTextStyle.AQUA) {
+	SETTLEMENT("<dark_aqua>Settlement", listOf("schat", "sc", "settlementchat"), SLTextStyle.AQUA) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val settlement = playerData.settlement
@@ -206,7 +208,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			settlementAction(NationsChatMessage(settlement, prefix, message, playerInfo(player)))
 		}
 	},
-	NATION("&aNation", listOf("nchat", "nc", "nationchat"), SLTextStyle.GREEN) {
+	NATION("<green>Nation", listOf("nchat", "nc", "nationchat"), SLTextStyle.GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val settlement = playerData.settlement
@@ -223,7 +225,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			nationAction(NationsChatMessage(nation, prefix, message, playerInfo(player)))
 		}
 	},
-	ALLY("&5Ally", listOf("achat", "ac", "allychat"), SLTextStyle.LIGHT_PURPLE) {
+	ALLY("<dark_purple>Ally", listOf("achat", "ac", "allychat"), SLTextStyle.LIGHT_PURPLE) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
 			val nation = playerData.nation
