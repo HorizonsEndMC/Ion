@@ -6,15 +6,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
-import java.lang.reflect.Type
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.UUID
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.slPlayerId
@@ -44,6 +35,15 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
+import java.lang.reflect.Type
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 object CombatNPCs : SLComponent() {
 	private const val remainTimeMinutes = 4L

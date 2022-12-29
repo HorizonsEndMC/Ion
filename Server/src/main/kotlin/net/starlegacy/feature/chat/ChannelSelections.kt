@@ -1,8 +1,5 @@
 package net.starlegacy.feature.chat
 
-import java.util.Collections
-import java.util.Locale
-import java.util.UUID
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
@@ -17,6 +14,9 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import java.util.Collections
+import java.util.Locale
+import java.util.UUID
 
 object ChannelSelections : SLComponent() {
 	private val localCache = Collections.synchronizedMap(mutableMapOf<UUID, ChatChannel>())
@@ -64,8 +64,11 @@ object ChannelSelections : SLComponent() {
 				val oldChannel = get(player)
 
 				if (oldChannel == channel) {
-					player.sendFeedbackAction(FeedbackType.USER_ERROR,"<red>You're already in chat ${channel.displayName.uppercase(Locale.getDefault())}<red>! " +
-							"<italic>(Hint: To get back to global, use /global)")
+					player.sendFeedbackAction(
+						FeedbackType.USER_ERROR,
+						"<red>You're already in chat ${channel.displayName.uppercase(Locale.getDefault())}<red>! " +
+							"<italic>(Hint: To get back to global, use /global)"
+					)
 					return@listen
 				} else {
 					localCache[playerID] = channel

@@ -6,8 +6,6 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import java.util.concurrent.TimeUnit
-import kotlin.system.measureNanoTime
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.space.Planet
 import net.starlegacy.feature.space.CachedPlanet
@@ -21,6 +19,8 @@ import net.starlegacy.util.randomDouble
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.concurrent.TimeUnit
+import kotlin.system.measureNanoTime
 
 @CommandAlias("planet")
 @CommandPermission("space.planet")
@@ -53,7 +53,19 @@ object PlanetCommand : SLCommand() {
 		val seed: Long = name.hashCode().toLong()
 		val orbitProgress: Double = randomDouble(0.0, 360.0)
 
-		Planet.create(name, rogue, x, z, sun.databaseId, planetWorldName, size, orbitDistance, orbitSpeed, orbitProgress, seed)
+		Planet.create(
+			name,
+			rogue,
+			x,
+			z,
+			sun.databaseId,
+			planetWorldName,
+			size,
+			orbitDistance,
+			orbitSpeed,
+			orbitProgress,
+			seed
+		)
 
 		Space.reload()
 
@@ -202,7 +214,7 @@ object PlanetCommand : SLCommand() {
 
 		planet.changeX(x)
 		planet.changeZ(z)
-		sender msg green ("Moved ${planet.name} to $x, $z")
+		sender msg green("Moved ${planet.name} to $x, $z")
 		planet.setLocation(true, true)
 		spaceWorld.save()
 		SpaceMap.refresh()
@@ -246,12 +258,10 @@ object PlanetCommand : SLCommand() {
 		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
 
 		val elapsedNanos = measureNanoTime {
-			if(planet.rogue) {
+			if (planet.rogue) {
 				planet.setLocation(true)
-			}
-
-			else {
-			planet.orbit(true)
+			} else {
+				planet.orbit(true)
 			}
 		}
 		spaceWorld.save()

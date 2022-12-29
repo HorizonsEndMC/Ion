@@ -2,14 +2,6 @@ package net.starlegacy.feature.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import java.util.Stack
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
-import kotlin.math.min
-import kotlin.math.sqrt
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.listen
@@ -28,6 +20,14 @@ import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.scheduler.BukkitTask
+import java.util.Stack
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+import kotlin.math.min
+import kotlin.math.sqrt
 
 object StarshipDetection : SLComponent() {
 	class DetectionFailedException(message: String) : Exception(message)

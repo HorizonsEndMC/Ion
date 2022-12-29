@@ -1,6 +1,5 @@
 package net.starlegacy.feature.starship.movement
 
-import java.util.concurrent.CompletableFuture
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -10,6 +9,7 @@ import net.starlegacy.util.Vec3i
 import net.starlegacy.util.d
 import org.bukkit.Location
 import org.bukkit.World
+import java.util.concurrent.CompletableFuture
 
 object StarshipTeleportation {
 	fun teleportStarship(starship: ActiveStarship, destination: Location): CompletableFuture<Boolean> {

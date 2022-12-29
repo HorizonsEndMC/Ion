@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.legacy.managers.ScreenManager.isInScreen
 import net.horizonsend.ion.server.legacy.managers.ScreenManager.screen
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 

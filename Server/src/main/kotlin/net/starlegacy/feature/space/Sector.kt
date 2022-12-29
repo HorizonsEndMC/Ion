@@ -1,10 +1,10 @@
 package net.starlegacy.feature.space
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import org.bukkit.World
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
-import org.bukkit.World
 
 data class Sector(val angle: Int, val distance: Int) {
 	companion object {

@@ -1,14 +1,14 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
-import kotlin.math.acos
-import kotlin.math.cos
-import kotlin.math.sin
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.squared
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.sin
 
 abstract class TrackingLaserProjectile(
 	starship: ActiveStarship?,

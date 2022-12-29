@@ -6,13 +6,6 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.awt.Rectangle
-import java.util.Locale
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sqrt
-import kotlin.random.Random
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -47,6 +40,13 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.Id
 import org.litote.kmongo.eq
+import java.awt.Rectangle
+import java.util.Locale
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sqrt
+import kotlin.random.Random
 
 @CommandAlias("settlementzone|szone")
 internal object SettlementZoneCommand : SLCommand() {

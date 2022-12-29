@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.legacy.ores
 
-import java.util.EnumSet
 import net.horizonsend.ion.server.enumSetOf
 import org.bukkit.Material
+import java.util.EnumSet
 
 /*
  TODO: This should be loaded from a configuration file.

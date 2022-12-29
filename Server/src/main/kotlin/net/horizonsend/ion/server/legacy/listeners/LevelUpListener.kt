@@ -8,7 +8,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
 @Suppress("Unused")
-class LevelUpListener: Listener {
+class LevelUpListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onLevelUpEvent(event: LevelUpEvent) {
 		event.player.rewardAchievement(

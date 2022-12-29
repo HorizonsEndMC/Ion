@@ -1,7 +1,5 @@
 package net.starlegacy.listener.misc
 
-import java.util.Date
-import java.util.UUID
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.slPlayerId
@@ -13,6 +11,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.litote.kmongo.combine
 import org.litote.kmongo.updateOneById
+import java.util.Date
+import java.util.UUID
 
 object JoinLeaveListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {

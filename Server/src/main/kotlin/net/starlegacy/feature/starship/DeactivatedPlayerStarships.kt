@@ -3,8 +3,6 @@ package net.starlegacy.feature.starship
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.io.File
-import java.util.UUID
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -23,6 +21,8 @@ import org.bukkit.event.world.WorldUnloadEvent
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
+import java.io.File
+import java.util.UUID
 
 object DeactivatedPlayerStarships : SLComponent() {
 	private val DEACTIVATED_SHIP_WORLD_CACHES: MutableMap<World, DeactivatedShipWorldCache> = Object2ObjectOpenHashMap()
@@ -63,7 +63,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val id = objId<PlayerStarshipData>()
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
-			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name=name)
+			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name = name)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
 
@@ -104,7 +104,6 @@ object DeactivatedPlayerStarships : SLComponent() {
 		Tasks.async {
 			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::name, newName))
 		}
-
 	}
 
 	fun updateLockEnabled(data: PlayerStarshipData, newValue: Boolean) {

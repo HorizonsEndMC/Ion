@@ -1,15 +1,5 @@
 package net.starlegacy.feature.transport.pipe
 
-import java.util.EnumMap
-import java.util.EnumSet
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.machine.GeneratorFuel
 import net.starlegacy.feature.transport.Extractors
@@ -42,6 +32,16 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import java.util.EnumMap
+import java.util.EnumSet
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 object Pipes : SLComponent() {
 	private lateinit var thread: ExecutorService

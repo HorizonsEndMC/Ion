@@ -1,8 +1,5 @@
 package net.starlegacy.listener.nations
 
-import java.lang.System.currentTimeMillis
-import java.util.Collections
-import java.util.UUID
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
@@ -23,6 +20,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import java.lang.System.currentTimeMillis
+import java.util.Collections
+import java.util.UUID
 
 object MovementListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {

@@ -1,9 +1,5 @@
 package net.starlegacy.feature.starship
 
-import java.util.Locale
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
@@ -40,6 +36,10 @@ import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
+import java.util.Locale
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 object PilotedStarships : SLComponent() {
 	internal val map = mutableMapOf<Player, ActivePlayerStarship>()
@@ -98,7 +98,8 @@ object PilotedStarships : SLComponent() {
 	private fun saveLoadshipData(starship: ActivePlayerStarship, player: Player) {
 		val schematic = StarshipSchematic.createSchematic(starship)
 
-		val key = "starships.lastpiloted.${player.uniqueId}.${starship.serverLevel.world.name.lowercase(Locale.getDefault())}"
+		val key =
+			"starships.lastpiloted.${player.uniqueId}.${starship.serverLevel.world.name.lowercase(Locale.getDefault())}"
 
 		Tasks.async {
 			redis {

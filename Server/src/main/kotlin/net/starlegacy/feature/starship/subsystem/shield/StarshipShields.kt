@@ -2,15 +2,6 @@ package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
-import kotlin.math.abs
-import kotlin.math.min
-import kotlin.math.sqrt
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.minecraft.world.level.Level
@@ -54,6 +45,15 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+import kotlin.math.abs
+import kotlin.math.min
+import kotlin.math.sqrt
 
 object StarshipShields : SLComponent() {
 	var LAST_EXPLOSION_ABSORBED = false

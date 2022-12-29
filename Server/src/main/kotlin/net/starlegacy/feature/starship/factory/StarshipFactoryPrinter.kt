@@ -1,10 +1,6 @@
 package net.starlegacy.feature.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
-import kotlin.math.min
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
@@ -19,6 +15,10 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+import kotlin.math.min
 
 class StarshipFactoryPrinter(
 	private val world: World,
@@ -104,7 +104,7 @@ class StarshipFactoryPrinter(
 			return false
 		}
 
-		if (availableCredits< ShipFactoryMaterialCosts.getPrice(data)) return false
+		if (availableCredits < ShipFactoryMaterialCosts.getPrice(data)) return false
 
 		decrementAvailable(item, count, amount)
 		incrementUsed(item, amount)

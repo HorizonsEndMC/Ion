@@ -3,7 +3,6 @@ package net.starlegacy.feature.transport.pipe.filter
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import java.util.concurrent.TimeUnit
 import net.starlegacy.SLComponent
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
@@ -23,6 +22,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.TimeUnit
 
 object Filters : SLComponent() {
 	private val timing = timing("Filter Caching")

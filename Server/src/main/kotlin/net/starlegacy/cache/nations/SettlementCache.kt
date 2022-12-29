@@ -1,7 +1,5 @@
 package net.starlegacy.cache.nations
 
-import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 import net.starlegacy.cache.ManualCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.containsUpdated
@@ -19,6 +17,8 @@ import net.starlegacy.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.util.Tasks
+import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 
 object SettlementCache : ManualCache() {
 	private fun synced(block: () -> Unit): Unit = Tasks.sync(block)

@@ -1,6 +1,5 @@
 package net.starlegacy.feature.misc
 
-import java.util.UUID
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.legacy.ores.Ore
@@ -17,6 +16,7 @@ import org.bukkit.block.Sign
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
+import java.util.UUID
 
 class DecomposeTask(
 	private val signLoc: Location,
@@ -46,7 +46,8 @@ class DecomposeTask(
 
 		cancel()
 
-		Bukkit.getPlayer(playerID)?.sendFeedbackMessage(FeedbackType.INFORMATION, "&7Decomposer broke &c${blocksBroken} blocks.")
+		Bukkit.getPlayer(playerID)
+			?.sendFeedbackMessage(FeedbackType.INFORMATION, "&7Decomposer broke &c${blocksBroken} blocks.")
 	}
 
 	override fun cancel() {
@@ -129,7 +130,10 @@ class DecomposeTask(
 							sign.world.dropItemNaturally(sign.location.toCenterLocation(), drop)
 						}
 
-						player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer out of space, dropping items and cancelling decomposition.")
+						player.sendFeedbackMessage(
+							FeedbackType.USER_ERROR,
+							"Decomposer out of space, dropping items and cancelling decomposition."
+						)
 						return false
 					}
 				}

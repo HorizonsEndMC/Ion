@@ -1,7 +1,5 @@
 package net.starlegacy.feature.gear.blaster
 
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.Tasks
@@ -18,6 +16,8 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 private const val ITERATIONS_PER_BLOCK = 1f
 

@@ -1,10 +1,10 @@
 package net.starlegacy.feature.misc
 
-import kotlin.math.max
-import kotlin.math.min
 import net.starlegacy.util.colorize
 import net.starlegacy.util.stripColor
 import org.bukkit.inventory.ItemStack
+import kotlin.math.max
+import kotlin.math.min
 
 val ITEM_POWER_PREFIX = "&8Power: &7".colorize()
 

@@ -54,8 +54,8 @@ object FriendlyFireListener : SLEventListener() {
 
 		val damagedNation: Oid<Nation> = damagedData.nation ?: return false
 		val damagerNation: Oid<Nation> = damagerData.nation ?: return false
-		for (relation in NationRelation.find(NationRelation::nation eq damagedNation)){
-			if (relation.other == damagerNation && (relation.actual == NationRelation.Level.ALLY) || (damagedNation == damagerNation)){
+		for (relation in NationRelation.find(NationRelation::nation eq damagedNation)) {
+			if (relation.other == damagerNation && (relation.actual == NationRelation.Level.ALLY) || (damagedNation == damagerNation)) {
 				return true
 			}
 		}

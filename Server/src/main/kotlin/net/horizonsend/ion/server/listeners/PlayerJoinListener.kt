@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.listeners
 
-import java.net.URL
-import java.security.MessageDigest
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.extensions.sendServerError
@@ -15,32 +13,39 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import java.net.URL
+import java.security.MessageDigest
 
 class PlayerJoinListener(private val plugin: IonServer) : Listener {
 	private var cachedURL: String? = null
 	private var lastUpdated: Long = 0
 
-	private val url: String? get() {
-		if (System.currentTimeMillis() - lastUpdated < 600000) return cachedURL
+	private val url: String?
+		get() {
+			if (System.currentTimeMillis() - lastUpdated < 600000) return cachedURL
 
-		cachedURL = try {
-			"https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
-				URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
-					.readText()
-					.substringAfter("\",\"tag_name\":\"")
-					.substringBefore("\",")
-			}/HorizonsEndResourcePack.zip"
-		} catch (exception: Exception) {
-			Ion.slF4JLogger.warn("Unable to update resource pack URL!", exception)
-			null
+			cachedURL = try {
+				"https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
+					URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
+						.readText()
+						.substringAfter("\",\"tag_name\":\"")
+						.substringBefore("\",")
+				}/HorizonsEndResourcePack.zip"
+			} catch (exception: Exception) {
+				Ion.slF4JLogger.warn("Unable to update resource pack URL!", exception)
+				null
+			}
+
+			lastUpdated = System.currentTimeMillis()
+
+			return cachedURL
 		}
 
-		lastUpdated = System.currentTimeMillis()
-
-		return cachedURL
+	private val hash = try {
+		MessageDigest.getInstance("SHA-1").digest(URL(url).readBytes())
+	} catch (_: Exception) {
+		null
 	}
-
-	private val hash = try { MessageDigest.getInstance("SHA-1").digest(URL(url).readBytes()) } catch (_: Exception) { null }
 
 	@EventHandler
 	@Suppress("Unused")

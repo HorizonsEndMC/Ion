@@ -1,13 +1,12 @@
 package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import java.util.LinkedList
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SERVER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -43,6 +42,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
+import java.util.LinkedList
 
 object StarshipComputers : SLComponent() {
 
@@ -166,7 +166,7 @@ object StarshipComputers : SLComponent() {
 				e.isCancelled = true
 			}
 
-			gui(1, getDisplayName(data).replace("<[^>]*>".toRegex(),"")).withPane(pane).show(player)
+			gui(1, getDisplayName(data).replace("<[^>]*>".toRegex(), "")).withPane(pane).show(player)
 		}
 	}
 
@@ -261,8 +261,8 @@ object StarshipComputers : SLComponent() {
 						val serialized = MiniMessage.miniMessage().deserialize(input)
 
 						if (serialized.clickEvent() != null
-							||input.contains("<rainbow>")
-							||input.contains("<newline>")
+							|| input.contains("<rainbow>")
+							|| input.contains("<newline>")
 							|| serialized.hoverEvent() != null
 							|| serialized.insertion() != null
 							|| serialized.hasDecoration(TextDecoration.OBFUSCATED)
@@ -273,15 +273,17 @@ object StarshipComputers : SLComponent() {
 						}
 
 						if (serialized.color() != null && !player.hasPermission("ion.starship.color")) {
-							player.sendFeedbackMessage(USER_ERROR,
+							player.sendFeedbackMessage(
+								USER_ERROR,
 								"<COLOR> tags can only be used by $5+ patrons! Donate at\n" +
-										"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+									"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
 							)
 							return@async
 						}
 
 						if ((serialized.color() as? HSVLike) != null && serialized.color()!!.asHSV().v() < 0.25) {
-							player.sendFeedbackMessage(USER_ERROR,
+							player.sendFeedbackMessage(
+								USER_ERROR,
 								"Ship names can't be too dark to read!"
 							)
 							return@async
@@ -291,17 +293,19 @@ object StarshipComputers : SLComponent() {
 							serialized.decorations().any { it.value == TextDecoration.State.TRUE }
 							&& !player.hasPermission("ion.starship.italic")
 						) {
-							player.sendFeedbackMessage(USER_ERROR,
+							player.sendFeedbackMessage(
+								USER_ERROR,
 								"\\<italic>, \\<bold>, \\<strikethrough> and \\<underlined> tags can only be used by $10+ patrons!\n" +
-										"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+									"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
 							)
 							return@async
 						}
 
 						if (serialized.font() != null && !player.hasPermission("ion.starship.font")) {
-							player.sendFeedbackMessage(USER_ERROR,
+							player.sendFeedbackMessage(
+								USER_ERROR,
 								"\\<font> tags can only be used by $15+ patrons! Donate at\n" +
-										"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+									"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
 							)
 							return@async
 						}

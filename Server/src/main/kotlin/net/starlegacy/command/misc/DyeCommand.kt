@@ -4,7 +4,6 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import java.util.Locale
 import net.starlegacy.command.SLCommand
 import net.starlegacy.util.action
 import net.starlegacy.util.enumValueOfOrNull
@@ -21,6 +20,7 @@ import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.util.Locale
 
 @CommandAlias("dye")
 @CommandPermission("starlegacy.dye")

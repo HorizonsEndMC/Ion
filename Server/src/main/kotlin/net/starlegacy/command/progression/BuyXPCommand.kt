@@ -21,10 +21,12 @@ object BuyXPCommand : SLCommand() {
 		requireMoney(sender, realCost, "purchase $amount SLXP")
 
 		if (realCost != cost) {
-			sender.sendFeedbackMessage(USER_ERROR,
+			sender.sendFeedbackMessage(
+				USER_ERROR,
 				"Purchase {0} SLXP for {1}?\n" +
-						"To confirm, do <u><click:run_command:/buyxp $amount $realCost>/buyxp $amount $realCost</click>",
-				amount, realCost.toCreditsString())
+					"To confirm, do <u><click:run_command:/buyxp $amount $realCost>/buyxp $amount $realCost</click>",
+				amount, realCost.toCreditsString()
+			)
 			return
 		}
 

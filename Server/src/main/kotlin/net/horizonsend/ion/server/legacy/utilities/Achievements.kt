@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.legacy.utilities
 
 import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

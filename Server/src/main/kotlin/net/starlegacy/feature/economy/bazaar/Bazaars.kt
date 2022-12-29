@@ -1,9 +1,6 @@
 package net.starlegacy.feature.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
-import kotlin.reflect.KProperty
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.BazaarItem
@@ -32,6 +29,9 @@ import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.ne
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
+import kotlin.reflect.KProperty
 
 object Bazaars : SLComponent() {
 	override fun supportsVanilla(): Boolean {

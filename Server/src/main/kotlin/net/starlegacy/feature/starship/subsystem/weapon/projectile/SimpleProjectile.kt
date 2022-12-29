@@ -1,8 +1,5 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
-import java.util.Locale
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicInteger
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -20,6 +17,9 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
+import java.util.Locale
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 
 abstract class SimpleProjectile(
 	starship: ActiveStarship?,
@@ -55,7 +55,7 @@ abstract class SimpleProjectile(
 
 	protected fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float = 1f) {
 		loc.world.players.forEach {
-			if (it.location.distance(loc) < range){
+			if (it.location.distance(loc) < range) {
 				loc.world.playSound(it.location, soundName, SoundCategory.PLAYERS, 1.0f, pitch)
 			}
 		}

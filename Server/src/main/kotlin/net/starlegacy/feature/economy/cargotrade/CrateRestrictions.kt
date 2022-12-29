@@ -1,7 +1,5 @@
 package net.starlegacy.feature.economy.cargotrade
 
-import java.time.Instant
-import java.util.Date
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.database.schema.economy.CargoCrateShipment
@@ -40,6 +38,8 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
+import java.time.Instant
+import java.util.Date
 
 object CrateRestrictions : SLComponent() {
 	private val CRATE_HOLDER = Material.STICKY_PISTON

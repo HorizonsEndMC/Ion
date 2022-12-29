@@ -1,11 +1,11 @@
 package net.starlegacy.feature.starship.subsystem.reactor
 
-import kotlin.math.min
-import kotlin.math.roundToInt
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.StarshipSubsystem
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 class ReactorSubsystem(
 	starship: ActiveStarship

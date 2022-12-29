@@ -1,9 +1,5 @@
 package net.starlegacy.feature.multiblock
 
-import java.util.EnumSet
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import net.starlegacy.feature.misc.CustomBlock
 import net.starlegacy.feature.misc.CustomBlocks
@@ -39,6 +35,10 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Slab
+import java.util.EnumSet
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 /** Parameters: block, inward */
 private typealias BlockRequirement = (Block, BlockFace) -> Boolean

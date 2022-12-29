@@ -1,11 +1,11 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
-import java.util.concurrent.TimeUnit
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
 	starship: ActiveStarship,

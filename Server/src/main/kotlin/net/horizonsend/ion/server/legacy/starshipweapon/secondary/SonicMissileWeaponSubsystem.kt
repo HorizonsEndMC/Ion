@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.secondary
 
-import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.legacy.starshipweapon.projectile.SonicMissileProjectile
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -14,6 +13,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class SonicMissileWeaponSubsystem(
 	starship: ActiveStarship,

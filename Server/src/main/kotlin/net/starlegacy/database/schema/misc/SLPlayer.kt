@@ -4,9 +4,6 @@ import com.mongodb.client.ClientSession
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.result.UpdateResult
-import java.time.Instant
-import java.util.Date
-import java.util.UUID
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.DbObjectCompanion
 import net.starlegacy.database.Oid
@@ -22,7 +19,6 @@ import net.starlegacy.database.updateAll
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bukkit.entity.Player
-import org.litote.kmongo.addEachToSet
 import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
@@ -34,6 +30,9 @@ import org.litote.kmongo.ne
 import org.litote.kmongo.projection
 import org.litote.kmongo.pull
 import org.litote.kmongo.withDocumentClass
+import java.time.Instant
+import java.util.Date
+import java.util.UUID
 
 typealias SLPlayerId = StringId<SLPlayer>
 

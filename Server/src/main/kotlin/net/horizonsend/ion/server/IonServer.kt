@@ -21,7 +21,9 @@ import org.litote.kmongo.eq
 
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
-	init { Ion = this }
+	init {
+		Ion = this
+	}
 
 	companion object {
 		lateinit var Ion: IonServer private set
@@ -29,82 +31,84 @@ class IonServer : JavaPlugin() {
 
 	val configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
 
-	override fun onEnable() { try {
-		Connectivity.open(dataFolder)
+	override fun onEnable() {
+		try {
+			Connectivity.open(dataFolder)
 
-		val pluginManager = server.pluginManager
+			val pluginManager = server.pluginManager
 
-		// Commands
-		val commandManager = PaperCommandManager(this)
+			// Commands
+			val commandManager = PaperCommandManager(this)
 
-		@Suppress("Deprecation")
-		commandManager.enableUnstableAPI("help")
+			@Suppress("Deprecation")
+			commandManager.enableUnstableAPI("help")
 
-		val commands = arrayOf(
-			AchievementsCommand(),
-			BountyCommands()
-		)
+			val commands = arrayOf(
+				AchievementsCommand(),
+				BountyCommands()
+			)
 
-		for (command in commands) commandManager.registerCommand(command)
+			for (command in commands) commandManager.registerCommand(command)
 
-		// TODO: This is messy, we should have individual classes which contain the completions.
-		commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
+			// TODO: This is messy, we should have individual classes which contain the completions.
+			commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
 
-		// The listeners are defined in a separate file for the sake of keeping the main class clean.
-		for (listener in listeners) pluginManager.registerEvents(listener, this)
+			// The listeners are defined in a separate file for the sake of keeping the main class clean.
+			for (listener in listeners) pluginManager.registerEvents(listener, this)
 
-		// Same deal as listeners.
-		initializeCrafting()
+			// Same deal as listeners.
+			initializeCrafting()
 
-		// Currently Ion needs to be loaded POSTWORLD due to older Star Legacy code, this means some worlds will already
-		// be loaded by the time we get to plugin enable. In the future we will change to load on STARTUP, but for the
-		// time being we need to check for worlds on start up. This additionally serves to allow Ion to handle reloads.
-		for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
+			// Currently Ion needs to be loaded POSTWORLD due to older Star Legacy code, this means some worlds will already
+			// be loaded by the time we get to plugin enable. In the future we will change to load on STARTUP, but for the
+			// time being we need to check for worlds on start up. This additionally serves to allow Ion to handle reloads.
+			for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
 
-		legacyEnable(commandManager)
+			legacyEnable(commandManager)
 
-		// Missing Ship Purge
-		var shipsRemoved = 0
-		var chunksRemaining = 0
+			// Missing Ship Purge
+			var shipsRemoved = 0
+			var chunksRemaining = 0
 
-		for (world in server.worlds)
-		for (starship in PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name)) {
-			val gX = blockKeyX(starship.blockKey)
-			val gY = blockKeyY(starship.blockKey)
-			val gZ = blockKeyZ(starship.blockKey)
+			for (world in server.worlds)
+				for (starship in PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name)) {
+					val gX = blockKeyX(starship.blockKey)
+					val gY = blockKeyY(starship.blockKey)
+					val gZ = blockKeyZ(starship.blockKey)
 
-			val location = Location(world, gX.toDouble(), gY.toDouble(), gZ.toDouble())
+					val location = Location(world, gX.toDouble(), gY.toDouble(), gZ.toDouble())
 
-			world.getChunkAtAsync(location, false) { chunk ->
-				val cX = gX.rem(16)
-				val cZ = gZ.rem(16)
+					world.getChunkAtAsync(location, false) { chunk ->
+						val cX = gX.rem(16)
+						val cZ = gZ.rem(16)
 
-				try {
-					if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
-						println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
-						PlayerStarshipData.remove(starship._id)
-						shipsRemoved++
+						try {
+							if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
+								println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
+								PlayerStarshipData.remove(starship._id)
+								shipsRemoved++
+							}
+						} catch (e: Exception) {
+							println("Removed corrupt ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
+							PlayerStarshipData.remove(starship._id)
+							shipsRemoved++
+						}
+
+						chunk.isForceLoaded = false
+						chunksRemaining--
+
+						if (chunksRemaining == 0) {
+							println("$shipsRemoved missing / corrupted ships were removed.")
+						}
 					}
-				} catch (e: Exception) {
-					println("Removed corrupt ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
-					PlayerStarshipData.remove(starship._id)
-					shipsRemoved++
+
+					chunksRemaining++
 				}
-
-				chunk.isForceLoaded = false
-				chunksRemaining--
-
-				if (chunksRemaining == 0) {
-					println("$shipsRemoved missing / corrupted ships were removed.")
-				}
-			}
-
-			chunksRemaining++
+		} catch (exception: Exception) {
+			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
+			Bukkit.shutdown()
 		}
-	} catch (exception: Exception) {
-		slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
-		Bukkit.shutdown()
-	}}
+	}
 
 	override fun onDisable() {
 		IonWorld.unregisterAll()

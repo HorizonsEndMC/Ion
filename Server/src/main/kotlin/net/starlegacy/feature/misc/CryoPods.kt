@@ -5,11 +5,6 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
-import java.util.Optional
-import java.util.UUID
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
@@ -26,6 +21,11 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
+import java.util.Optional
+import java.util.UUID
 
 object CryoPods : SLComponent() {
 	private val folder = File(Ion.dataFolder, "cryopods")

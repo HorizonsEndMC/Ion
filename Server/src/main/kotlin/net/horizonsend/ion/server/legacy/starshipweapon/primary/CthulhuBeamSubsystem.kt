@@ -1,17 +1,17 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.primary
 
-import kotlin.math.sqrt
+import net.horizonsend.ion.server.legacy.starshipweapon.projectile.CthulhuBeamProjectile
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
-import net.horizonsend.ion.server.legacy.starshipweapon.projectile.CthulhuBeamProjectile
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.randomDouble
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import kotlin.math.sqrt
 
 class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
 	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {

@@ -1,9 +1,6 @@
 package net.starlegacy.feature.starship.movement
 
 import io.papermc.paper.entity.RelativeTeleportFlag
-import java.util.concurrent.CompletableFuture
-import kotlin.math.max
-import kotlin.math.min
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
@@ -14,6 +11,9 @@ import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
+import java.util.concurrent.CompletableFuture
+import kotlin.math.max
+import kotlin.math.min
 
 class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val dz: Int, newWorld: World? = null) :
 	StarshipMovement(starship, newWorld) {

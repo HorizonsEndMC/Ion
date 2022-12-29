@@ -4,10 +4,8 @@ import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.server.legacy.listeners.PlayerJoinListener
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.io.File
-import java.util.Locale
+import net.horizonsend.ion.server.legacy.listeners.PlayerJoinListener
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -46,6 +44,8 @@ import org.litote.kmongo.eq
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Protocol
+import java.io.File
+import java.util.Locale
 
 lateinit var SETTINGS: Config
 lateinit var redisPool: JedisPool

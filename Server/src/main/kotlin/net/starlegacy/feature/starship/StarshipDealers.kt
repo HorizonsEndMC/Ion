@@ -2,9 +2,6 @@ package net.starlegacy.feature.starship
 
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.extent.clipboard.Clipboard
-import java.io.File
-import java.lang.System.currentTimeMillis
-import java.util.UUID
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.horizonsend.ion.server.legacy.events.BuySpawnShuttleEvent
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
@@ -20,6 +17,9 @@ import net.starlegacy.util.withdrawMoney
 import org.bukkit.Location
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import java.io.File
+import java.lang.System.currentTimeMillis
+import java.util.UUID
 
 object StarshipDealers : SLComponent() {
 	private const val PRICE = 200.0

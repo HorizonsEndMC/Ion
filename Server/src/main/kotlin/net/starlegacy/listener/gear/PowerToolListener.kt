@@ -58,7 +58,7 @@ object PowerToolListener : SLEventListener() {
 				player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.1f, 1.5f)
 				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
 				block.breakNaturally(PICKAXE)
-				if(blockType == Material.END_PORTAL_FRAME){
+				if (blockType == Material.END_PORTAL_FRAME) {
 					player.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))
 				}
 

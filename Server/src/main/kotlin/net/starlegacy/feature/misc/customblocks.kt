@@ -1,7 +1,6 @@
 package net.starlegacy.feature.misc
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import java.util.Locale
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.nms
 import org.bukkit.Material
@@ -15,6 +14,7 @@ import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.inventory.ItemStack
+import java.util.Locale
 
 open class CustomBlock(
 	val id: String,

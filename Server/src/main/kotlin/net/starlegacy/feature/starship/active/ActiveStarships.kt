@@ -6,7 +6,6 @@ import com.google.common.cache.LoadingCache
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import kotlin.collections.set
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -27,6 +26,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
+import kotlin.collections.set
 
 object ActiveStarships : SLComponent() {
 	private val set = ObjectOpenHashSet<ActiveStarship>()

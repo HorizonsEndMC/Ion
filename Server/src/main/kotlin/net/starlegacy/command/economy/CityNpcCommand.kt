@@ -4,7 +4,6 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import java.util.UUID
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CityNPC
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -24,6 +23,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.UUID
 
 @CommandAlias("citynpc|cnpc")
 object CityNpcCommand : SLCommand() {

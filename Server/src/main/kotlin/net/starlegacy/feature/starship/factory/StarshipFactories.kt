@@ -1,13 +1,6 @@
 package net.starlegacy.feature.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import java.util.LinkedList
-import java.util.Locale
-import java.util.UUID
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
-import kotlin.math.roundToInt
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
@@ -35,6 +28,13 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
+import java.util.LinkedList
+import java.util.Locale
+import java.util.UUID
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+import kotlin.math.roundToInt
 
 object StarshipFactories : SLComponent() {
 	override fun supportsVanilla(): Boolean {

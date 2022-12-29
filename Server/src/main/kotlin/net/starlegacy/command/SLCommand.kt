@@ -4,8 +4,6 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.HelpCommand
-import java.util.UUID
-import java.util.concurrent.Executors
 import net.md_5.bungee.api.ChatColor
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -40,6 +38,8 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.UUID
+import java.util.concurrent.Executors
 
 abstract class SLCommand : BaseCommand() {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)

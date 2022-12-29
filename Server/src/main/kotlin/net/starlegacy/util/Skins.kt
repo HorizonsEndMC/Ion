@@ -4,10 +4,10 @@ import com.destroystokyo.paper.profile.PlayerProfile
 import com.destroystokyo.paper.profile.ProfileProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
-import java.util.UUID
 import org.bukkit.Bukkit
 import java.io.IOException
 import java.net.URL
+import java.util.UUID
 
 data class User(val data: Data)
 data class Data(val texture: Texture)

@@ -1,9 +1,9 @@
 package net.starlegacy.util
 
-import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import java.util.concurrent.ConcurrentHashMap
 
 object LegacyBlockUtils {
 	val PIPE_DIRECTIONS = arrayOf(

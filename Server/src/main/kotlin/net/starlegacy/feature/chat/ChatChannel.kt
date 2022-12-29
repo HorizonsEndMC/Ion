@@ -1,7 +1,6 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent

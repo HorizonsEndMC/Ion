@@ -1,8 +1,8 @@
 package net.starlegacy.feature.multiblock.hyperdrive
 
 import net.md_5.bungee.api.ChatColor
-import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.add

@@ -124,7 +124,7 @@ class BountyCommands : BaseCommand() {
 	@Subcommand("admin clear")
 	@CommandPermission("ion.bounty.admin.clear")
 	@CommandCompletion("@players")
-	fun onBountyAdminClear(sender: CommandSender, target: String){
+	fun onBountyAdminClear(sender: CommandSender, target: String) {
 		val targetData = PlayerData[target]
 
 		if (targetData == null) {

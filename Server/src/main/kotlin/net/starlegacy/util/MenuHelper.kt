@@ -1,19 +1,19 @@
 package net.starlegacy.util
 
 import co.aikar.commands.ACFBukkitUtil
-import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import kotlin.math.min
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import kotlin.math.min
 
 object MenuHelper {
 	fun gui(rows: Int, title: String) = ChestGui(rows, ACFBukkitUtil.color(title)).apply {

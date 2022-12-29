@@ -2,15 +2,15 @@ package net.starlegacy.feature.multiblock
 
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.legacy.events.MultiblockDetectEvent
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockSide
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.legacy.events.MultiblockDetectEvent
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockSide
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
@@ -221,12 +221,17 @@ object Multiblocks : SLComponent() {
 
 		val cached: Multiblock? = multiblockCache[location]
 		if (cached != null) {
-			val matchesSign = if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
+			val matchesSign =
+				if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
 
 			// one was already cached before
 			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
 				if (pdc == null) {
-					sign.persistentDataContainer.set(multiblockNamespacedKey, PersistentDataType.STRING, cached::class.simpleName!!)
+					sign.persistentDataContainer.set(
+						multiblockNamespacedKey,
+						PersistentDataType.STRING,
+						cached::class.simpleName!!
+					)
 					sign.update(false, false)
 				}
 
@@ -239,10 +244,15 @@ object Multiblocks : SLComponent() {
 		}
 
 		for (multiblock in multiblocks) {
-			val matchesSign = if (pdc != null) pdc == multiblock::class.simpleName else multiblock.matchesSign(sign.lines().toTypedArray())
+			val matchesSign =
+				if (pdc != null) pdc == multiblock::class.simpleName else multiblock.matchesSign(sign.lines().toTypedArray())
 			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
 				if (pdc == null) {
-					sign.persistentDataContainer.set(multiblockNamespacedKey, PersistentDataType.STRING, multiblock::class.simpleName!!)
+					sign.persistentDataContainer.set(
+						multiblockNamespacedKey,
+						PersistentDataType.STRING,
+						multiblock::class.simpleName!!
+					)
 					sign.update(false, false)
 				}
 
@@ -283,7 +293,10 @@ object Multiblocks : SLComponent() {
 		}
 
 		if (lastMatch != null) {
-			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Improperly built ${lastMatch.name}. Make sure every block is correctly placed!")
+			player.sendFeedbackMessage(
+				FeedbackType.USER_ERROR,
+				"Improperly built ${lastMatch.name}. Make sure every block is correctly placed!"
+			)
 		}
 	}
 }

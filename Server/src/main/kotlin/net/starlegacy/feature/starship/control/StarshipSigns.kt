@@ -1,7 +1,5 @@
 package net.starlegacy.feature.starship.control
 
-import java.util.Locale
-import java.util.UUID
 import net.starlegacy.feature.starship.BoardingRamps
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -10,6 +8,8 @@ import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import java.util.Locale
+import java.util.UUID
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String?>) {
 	CRUISE("[cruise]", arrayOf("&3Cruise".colorize(), "&8Control".colorize(), null, null)) {

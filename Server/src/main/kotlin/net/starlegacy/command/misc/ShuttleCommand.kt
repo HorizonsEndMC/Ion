@@ -10,8 +10,6 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
-import java.io.File
-import java.util.Locale
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.Shuttle
 import net.starlegacy.feature.misc.Shuttles
@@ -23,6 +21,8 @@ import net.starlegacy.util.writeSchematic
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
+import java.util.Locale
 
 @CommandAlias("shuttle")
 @CommandPermission("starlegacy.shuttle.admin")

@@ -1,6 +1,5 @@
 package net.starlegacy.feature.starship.subsystem
 
-import kotlin.math.min
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -8,6 +7,7 @@ import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.inventory.ItemStack
+import kotlin.math.min
 
 class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: HyperdriveMultiblock) :
 	AbstractMultiblockSubsystem<HyperdriveMultiblock>(starship, sign, multiblock) {

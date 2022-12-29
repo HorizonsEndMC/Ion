@@ -6,10 +6,6 @@ import com.google.common.cache.LoadingCache
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
-import java.io.File
-import java.time.Instant
-import java.util.UUID
-import kotlin.collections.set
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.database.Oid
@@ -39,6 +35,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import java.io.File
+import java.time.Instant
+import java.util.UUID
+import kotlin.collections.set
 
 object Shuttles : SLComponent() {
 	const val TICKET_COST = 20

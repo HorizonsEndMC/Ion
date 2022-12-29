@@ -52,7 +52,10 @@ object StarshipWeapons {
 				queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
 			if (heavyWeaponTypes.count() > 1) {
 				ship.onlinePassengers.forEach { player ->
-					player.sendFeedbackActionMessage(FeedbackType.USER_ERROR, "You can only fire one type of heavy weapon at a time!")
+					player.sendFeedbackActionMessage(
+						FeedbackType.USER_ERROR,
+						"You can only fire one type of heavy weapon at a time!"
+					)
 				}
 
 				return
@@ -99,7 +102,12 @@ object StarshipWeapons {
 		if (weapon is AmmoConsumingWeaponSubsystem &&
 			ship.magazines.none { it.isAmmoAvailable(weapon.getRequiredAmmo()) }
 		) {
-			ship.onlinePassengers.forEach { player -> player.sendFeedbackActionMessage(FeedbackType.ALERT, "Insufficient ammunition") }
+			ship.onlinePassengers.forEach { player ->
+				player.sendFeedbackActionMessage(
+					FeedbackType.ALERT,
+					"Insufficient ammunition"
+				)
+			}
 
 			return true
 		}

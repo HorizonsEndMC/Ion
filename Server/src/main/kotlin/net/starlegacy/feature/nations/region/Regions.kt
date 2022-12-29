@@ -3,10 +3,6 @@ package net.starlegacy.feature.nations.region
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
-import kotlin.reflect.KClass
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -37,6 +33,10 @@ import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.litote.kmongo.id.WrappedObjectId
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.set
+import kotlin.reflect.KClass
 
 object Regions : SLComponent() {
 	override fun supportsVanilla(): Boolean {

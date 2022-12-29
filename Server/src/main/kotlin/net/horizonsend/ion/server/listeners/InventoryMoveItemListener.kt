@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.listeners
 
 import net.horizonsend.ion.server.legacy.managers.ScreenManager.isScreen
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 

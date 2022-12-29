@@ -1,7 +1,6 @@
 package net.starlegacy.listener.gear
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.util.Locale
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.listener.SLEventListener
@@ -17,6 +16,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
+import java.util.Locale
 
 object DetonatorListener : SLEventListener() {
 	@EventHandler(priority = EventPriority.LOWEST)

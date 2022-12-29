@@ -1,7 +1,6 @@
 package net.starlegacy.feature.nations
 
 import com.mongodb.client.MongoIterable
-import java.lang.Integer.min
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
@@ -26,6 +25,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
+import java.lang.Integer.min
 
 object NationsMasterTasks {
 	fun executeAll() {

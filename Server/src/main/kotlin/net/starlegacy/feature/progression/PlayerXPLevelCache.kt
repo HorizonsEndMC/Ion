@@ -1,12 +1,6 @@
 package net.starlegacy.feature.progression
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import java.sql.Timestamp
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import net.starlegacy.SLComponent
 import net.starlegacy.database.get
 import net.starlegacy.database.int
@@ -21,6 +15,12 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import java.sql.Timestamp
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 object PlayerXPLevelCache : SLComponent() {
 	private val cacheThread: ExecutorService = Executors.newSingleThreadExecutor()

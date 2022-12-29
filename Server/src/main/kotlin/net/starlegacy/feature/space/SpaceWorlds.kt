@@ -3,12 +3,12 @@ package net.starlegacy.feature.space
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import java.io.File
 import net.starlegacy.SLComponent
 import net.starlegacy.listen
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
+import java.io.File
 
 object SpaceWorlds : SLComponent() {
 	private fun getSpaceFlagFile(world: World) = File(world.worldFolder, "data/starlegacy/space.flag")

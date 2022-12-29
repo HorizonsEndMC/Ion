@@ -1,14 +1,14 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import java.util.UUID
-import java.util.WeakHashMap
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
+import java.util.UUID
+import java.util.WeakHashMap
 
 abstract class Region<T : DbObject>(dbObject: DbObject) {
 	private val accessCache: MutableMap<UUID, String?> = WeakHashMap()

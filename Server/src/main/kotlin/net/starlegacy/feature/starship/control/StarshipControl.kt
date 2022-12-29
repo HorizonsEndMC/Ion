@@ -1,21 +1,6 @@
 package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.RelativeTeleportFlag
-import java.util.Collections
-import java.util.LinkedList
-import java.util.UUID
-import java.util.concurrent.ThreadLocalRandom
-import java.util.concurrent.TimeUnit
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.round
-import kotlin.math.roundToInt
-import kotlin.math.sign
-import kotlin.math.sin
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
@@ -60,6 +45,21 @@ import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
+import java.util.Collections
+import java.util.LinkedList
+import java.util.UUID
+import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.TimeUnit
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.round
+import kotlin.math.roundToInt
+import kotlin.math.sign
+import kotlin.math.sin
 
 object StarshipControl : SLComponent() {
 	val CONTROLLER_TYPE = Material.CLOCK

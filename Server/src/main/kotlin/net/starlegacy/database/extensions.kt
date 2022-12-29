@@ -11,10 +11,6 @@ import com.mongodb.client.model.CollationStrength
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.result.UpdateResult
-import java.util.UUID
-import kotlin.collections.set
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.isSubclassOf
 import net.starlegacy.database.schema.misc.SLPlayerId
 import org.bson.BsonArray
 import org.bson.BsonDocument
@@ -34,6 +30,10 @@ import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.litote.kmongo.withDocumentClass
+import java.util.UUID
+import kotlin.collections.set
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.isSubclassOf
 
 /** Runs code with multi document transaction, only things that use the clientsession use the transaction,
  * can throw error from concurrency, if the code must retry upon write concern then use trx */
