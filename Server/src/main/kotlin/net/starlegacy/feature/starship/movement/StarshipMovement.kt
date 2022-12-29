@@ -2,8 +2,6 @@ package net.starlegacy.feature.starship.movement
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import kotlin.collections.set
-import kotlin.math.sqrt
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
@@ -29,6 +27,8 @@ import org.bukkit.entity.EnderCrystal
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import kotlin.collections.set
+import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
@@ -146,11 +146,12 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 					is EnderCrystal -> {
 						if (starship.isWithinHitbox(entity)) {
-							passengers.add(entity)}
+							passengers.add(entity)
 						}
 					}
 				}
 			}
+		}
 
 		return passengers.toList()
 	}

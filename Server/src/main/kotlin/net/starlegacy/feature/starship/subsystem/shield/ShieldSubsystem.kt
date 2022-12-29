@@ -1,7 +1,5 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
-import kotlin.math.pow
-import kotlin.math.roundToInt
 import net.starlegacy.feature.multiblock.particleshield.ShieldMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.AbstractMultiblockSubsystem
@@ -9,6 +7,8 @@ import net.starlegacy.util.d
 import net.starlegacy.util.stripColor
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 abstract class ShieldSubsystem(
 	starship: ActiveStarship,

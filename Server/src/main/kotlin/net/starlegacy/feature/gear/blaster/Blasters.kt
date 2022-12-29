@@ -1,9 +1,5 @@
 package net.starlegacy.feature.gear.blaster
 
-import java.time.Instant
-import java.util.Locale
-import java.util.Random
-import java.util.UUID
 import net.md_5.bungee.api.ChatColor
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -19,6 +15,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.util.Vector
+import java.time.Instant
+import java.util.Locale
+import java.util.Random
+import java.util.UUID
 
 object Blasters {
 	fun getBlaster(item: ItemStack): CustomItems.BlasterItem? = CustomItems[item] as? CustomItems.BlasterItem

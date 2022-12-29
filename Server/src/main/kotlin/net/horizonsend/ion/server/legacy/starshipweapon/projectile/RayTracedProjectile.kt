@@ -1,8 +1,5 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.projectile
 
-import java.util.Locale
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicInteger
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -13,6 +10,7 @@ import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.SoundCategory
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R2.util.CraftMagicNumbers
 import org.bukkit.entity.Entity
@@ -21,7 +19,9 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
-import org.bukkit.World
+import java.util.Locale
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 
 abstract class RayTracedProjectile(
 	starship: ActiveStarship?,
@@ -51,7 +51,7 @@ abstract class RayTracedProjectile(
 
 	private fun playCustomSound(loc: Location, soundName: String, volume: Float, pitch: Float = 1f) {
 		loc.world.players.forEach {
-			if (it.location.distance(loc) < range){
+			if (it.location.distance(loc) < range) {
 				loc.world.playSound(it.location, soundName, SoundCategory.PLAYERS, volume, pitch)
 			}
 		}
@@ -82,13 +82,13 @@ abstract class RayTracedProjectile(
 			return false
 		} else
 
-		if ((block != null) && starship.contains(block.x, block.y, block.z)) {
-			return false
-		} else
+			if ((block != null) && starship.contains(block.x, block.y, block.z)) {
+				return false
+			} else
 
-		if ((entity != null) && ((entity.type == EntityType.ENDER_CRYSTAL) || starship.isPassenger(entity.uniqueId))) {
-			return false
-		}
+				if ((entity != null) && ((entity.type == EntityType.ENDER_CRYSTAL) || starship.isPassenger(entity.uniqueId))) {
+					return false
+				}
 		return true
 	}
 
@@ -103,7 +103,7 @@ abstract class RayTracedProjectile(
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
 
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
-				world.createExplosion(newLoc, explosionPower)
+			world.createExplosion(newLoc, explosionPower)
 		}
 
 		if (block != null && shooter != null) {

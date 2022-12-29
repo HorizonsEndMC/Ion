@@ -1,9 +1,6 @@
 package net.starlegacy.feature.starship.active
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.util.LinkedList
-import java.util.UUID
-import java.util.concurrent.TimeUnit
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
@@ -28,6 +25,9 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
+import java.util.LinkedList
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 object ActiveStarshipMechanics : SLComponent() {
 	override fun onEnable() {
@@ -53,7 +53,6 @@ object ActiveStarshipMechanics : SLComponent() {
 			}
 		}
 	}
-
 
 	private fun chargeSubsystems() {
 		for (ship in ActiveStarships.all()) {

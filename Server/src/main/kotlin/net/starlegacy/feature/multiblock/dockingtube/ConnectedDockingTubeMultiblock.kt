@@ -63,7 +63,10 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 			// if it's not a door it's an obstruction
 			if (!blockType.isDoor) {
-				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "&Docking tube is blocked or the other end is missing/misaligned. Distance: $distance")
+				player.sendFeedbackMessage(
+					FeedbackType.USER_ERROR,
+					"&Docking tube is blocked or the other end is missing/misaligned. Distance: $distance"
+				)
 				return
 			}
 
@@ -77,7 +80,10 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 			// if the other side's sign is not a valid docking tube then we can't dock
 			if (!signMatchesStructure(otherSignLocation, direction.oppositeFace)) {
-				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Docking tube on the other end is not valid or is not aligned correctly.")
+				player.sendFeedbackMessage(
+					FeedbackType.USER_ERROR,
+					"Docking tube on the other end is not valid or is not aligned correctly."
+				)
 				return
 			}
 
@@ -102,9 +108,13 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 			setButtons(buttons, direction)
 			setButtons(otherButtons, direction.oppositeFace)
 
-			player.sendFeedbackActionMessage(FeedbackType.SUCCESS,"Docking tube disconnected.")
+			player.sendFeedbackActionMessage(FeedbackType.SUCCESS, "Docking tube disconnected.")
 
-			sign.persistentDataContainer.set(multiblockNamespacedKey, PersistentDataType.STRING, DisconnectedDockingTubeMultiblock::class.simpleName!!)
+			sign.persistentDataContainer.set(
+				multiblockNamespacedKey,
+				PersistentDataType.STRING,
+				DisconnectedDockingTubeMultiblock::class.simpleName!!
+			)
 
 			sign.line(3, DisconnectedDockingTubeMultiblock.stateText)
 			sign.update(false, false)

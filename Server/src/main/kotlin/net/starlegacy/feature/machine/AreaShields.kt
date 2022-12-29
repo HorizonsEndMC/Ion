@@ -1,12 +1,6 @@
 package net.starlegacy.feature.machine
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.io.File
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sqrt
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.areashield.AreaShield
@@ -27,6 +21,12 @@ import org.bukkit.event.block.BlockBurnEvent
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import java.io.File
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sqrt
 
 object AreaShields : SLComponent() {
 	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()

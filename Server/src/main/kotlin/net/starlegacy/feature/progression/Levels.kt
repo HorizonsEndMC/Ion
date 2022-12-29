@@ -1,9 +1,5 @@
 package net.starlegacy.feature.progression
 
-import java.util.UUID
-import java.util.concurrent.ConcurrentLinkedQueue
-import kotlin.math.max
-import kotlin.math.roundToInt
 import net.horizonsend.ion.server.legacy.events.LevelUpEvent
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -20,6 +16,10 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.title
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.util.UUID
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 /** Balancing config for e.g. level up cost */
 internal lateinit var LEVEL_BALANCING: LevelsConfig

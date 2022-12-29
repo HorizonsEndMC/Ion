@@ -1,7 +1,5 @@
 package net.starlegacy.util
 
-import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
-import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -13,13 +11,15 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import net.starlegacy.util.blockplacement.BlockPlacement
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
+import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 
 fun readSchematic(file: File): Clipboard? {
 	val format = ClipboardFormats.findByFile(file) ?: return null

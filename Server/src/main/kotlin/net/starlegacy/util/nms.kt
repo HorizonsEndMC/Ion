@@ -1,7 +1,5 @@
 package net.starlegacy.util
 
-import net.minecraft.advancements.Advancement as MinecraftAdvancement
-import net.minecraft.world.item.ItemStack as MinecraftItemStack
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -25,6 +23,8 @@ import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import net.minecraft.advancements.Advancement as MinecraftAdvancement
+import net.minecraft.world.item.ItemStack as MinecraftItemStack
 
 //region Access Extensions
 inline val Player.cbukkit: CraftPlayer get() = this as CraftPlayer

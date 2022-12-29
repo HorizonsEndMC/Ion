@@ -59,7 +59,10 @@ object InteractListener : SLEventListener() {
 
 		if (multiblock is DrillMultiblock) {
 			if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
-				event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "You need Prismarine Crystals in both slots of the furnace!")
+				event.player.sendFeedbackMessage(
+					FeedbackType.USER_ERROR,
+					"You need Prismarine Crystals in both slots of the furnace!"
+				)
 				return
 			}
 
@@ -164,7 +167,9 @@ object InteractListener : SLEventListener() {
 		topPortal.blockData = newData
 		bottomPortal.blockData = newData
 
-		val component = if (enabled) MiniMessage.miniMessage().deserialize(AirlockMultiblock.ON) else MiniMessage.miniMessage().deserialize(AirlockMultiblock.OFF)
+		val component =
+			if (enabled) MiniMessage.miniMessage().deserialize(AirlockMultiblock.ON) else MiniMessage.miniMessage()
+				.deserialize(AirlockMultiblock.OFF)
 
 		sign.line(1, component)
 		sign.update()

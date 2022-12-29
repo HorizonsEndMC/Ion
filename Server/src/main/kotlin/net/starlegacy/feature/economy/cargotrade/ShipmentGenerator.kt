@@ -1,8 +1,5 @@
 package net.starlegacy.feature.economy.cargotrade
 
-import java.util.concurrent.TimeUnit
-import kotlin.math.abs
-import kotlin.math.pow
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.database.Oid
@@ -17,6 +14,9 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.randomDouble
 import net.starlegacy.util.randomRange
 import net.starlegacy.util.roundToHundredth
+import java.util.concurrent.TimeUnit
+import kotlin.math.abs
+import kotlin.math.pow
 
 object ShipmentGenerator : SLComponent() {
 	override fun onEnable() {

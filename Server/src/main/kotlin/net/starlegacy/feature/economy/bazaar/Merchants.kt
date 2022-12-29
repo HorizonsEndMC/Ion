@@ -1,11 +1,6 @@
 package net.starlegacy.feature.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
-import java.util.Properties
-import kotlin.math.sqrt
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.economy.BazaarItem
 import net.starlegacy.feature.economy.city.TradeCityData
@@ -16,6 +11,11 @@ import net.starlegacy.util.displayName
 import net.starlegacy.util.toCreditsString
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
+import java.util.Properties
+import kotlin.math.sqrt
 
 object Merchants : SLComponent() {
 	override fun supportsVanilla(): Boolean {

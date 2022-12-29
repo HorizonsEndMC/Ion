@@ -1,7 +1,6 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import kotlin.math.roundToInt
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -10,6 +9,7 @@ import net.starlegacy.util.distance
 import net.starlegacy.util.toVector
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.roundToInt
 
 class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Location) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
@@ -36,10 +36,10 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 
 		val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
 		if (shadow != null) {
-			ship.onlinePassengers.forEach { player -> player.
-			sendFeedbackAction(
-				FeedbackType.ALERT,
-				"Ship caught by a mass shadow! Mass Shadow: ${shadow.description} at ${shadow.x}, ${shadow.z} " +
+			ship.onlinePassengers.forEach { player ->
+				player.sendFeedbackAction(
+					FeedbackType.ALERT,
+					"Ship caught by a mass shadow! Mass Shadow: ${shadow.description} at ${shadow.x}, ${shadow.z} " +
 						"with radius ${shadow.radius} (${shadow.distance} blocks away)"
 				)
 			}
@@ -49,8 +49,8 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 		}
 		if (travelled < totalDistance) {
 			val percent = (travelled / totalDistance * 100).roundToInt()
-			ship.onlinePassengers.forEach { player -> player.
-				sendFeedbackAction(
+			ship.onlinePassengers.forEach { player ->
+				player.sendFeedbackAction(
 					FeedbackType.INFORMATION,
 					"Hyperspace Progress: ${travelled.roundToInt()}/${totalDistance.roundToInt()} ($percent%)"
 				)

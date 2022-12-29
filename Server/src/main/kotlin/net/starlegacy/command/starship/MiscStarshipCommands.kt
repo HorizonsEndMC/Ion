@@ -5,11 +5,6 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import java.util.Locale
-import java.util.concurrent.ThreadLocalRandom
-import kotlin.collections.set
-import kotlin.math.ln
-import kotlin.math.roundToInt
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
@@ -48,6 +43,11 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
+import java.util.Locale
+import java.util.concurrent.ThreadLocalRandom
+import kotlin.collections.set
+import kotlin.math.ln
+import kotlin.math.roundToInt
 
 object MiscStarshipCommands : SLCommand() {
 	@Suppress("unused")
@@ -106,7 +106,8 @@ object MiscStarshipCommands : SLCommand() {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
-		val maxRange: Int = (navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
+		val maxRange: Int =
+			(navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -129,7 +130,8 @@ object MiscStarshipCommands : SLCommand() {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
-		val maxRange: Int = (navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
+		val maxRange: Int =
+			(navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
 
 		val cachedPlanet = Space.getPlanet(planet)
 
@@ -201,8 +203,9 @@ object MiscStarshipCommands : SLCommand() {
 			sender.sendFeedbackMessage(
 				USER_ERROR,
 				"Warning: You attempted to jump ${distance.toInt()} blocks, " +
-						"but your navigation computer only supports jumping up to $maxRange blocks! " +
-						"Automatically shortening jump. New Coordinates: $x1, $z1")
+					"but your navigation computer only supports jumping up to $maxRange blocks! " +
+					"Automatically shortening jump. New Coordinates: $x1, $z1"
+			)
 		}
 
 		sender.sendFeedbackMessage(SUCCESS, "Initiating Hyperspace Jump to approximately ({0}, {1})", x1, z1)
@@ -236,7 +239,10 @@ object MiscStarshipCommands : SLCommand() {
 		} else {
 			starship.autoTurretTargets[weaponSet] = player.getPlayer().uniqueId
 
-			sender.sendFeedbackMessage(INFORMATION, "Set target of <aqua>$weaponSet</aqua> to <white>${player.getPlayer().name}")
+			sender.sendFeedbackMessage(
+				INFORMATION,
+				"Set target of <aqua>$weaponSet</aqua> to <white>${player.getPlayer().name}"
+			)
 		}
 	}
 
@@ -246,19 +252,25 @@ object MiscStarshipCommands : SLCommand() {
 		val starship = getStarshipRiding(sender)
 		val weaponSet = weapon.lowercase(Locale.getDefault())
 		if (set == "unset")
-		for (shipWeapon in starship.weapons){
-			if (shipWeapon.toString().lowercase().contains(weaponSet)){
-				starship.autoTurretTargets.forEach { _ -> starship.autoTurretTargets.forEach { if (it.key == set){ starship.autoTurretTargets.remove(it.key, it.value)} }}
-				sender.sendFeedbackActionMessage(INFORMATION, "Unset targets of weaponssets containing {0}", weaponSet)
+			for (shipWeapon in starship.weapons) {
+				if (shipWeapon.toString().lowercase().contains(weaponSet)) {
+					starship.autoTurretTargets.forEach { _ ->
+						starship.autoTurretTargets.forEach {
+							if (it.key == set) {
+								starship.autoTurretTargets.remove(it.key, it.value)
+							}
+						}
+					}
+					sender.sendFeedbackActionMessage(INFORMATION, "Unset targets of weaponssets containing {0}", weaponSet)
+				}
 			}
-		}
 	}
 
 	@Suppress("unused")
 	@CommandAlias("usa|unsetall|unsa")
-	fun onUnSetAll(sender: Player){
+	fun onUnSetAll(sender: Player) {
 		val starship = getStarshipRiding(sender)
-		if (starship.autoTurretTargets.isEmpty()){
+		if (starship.autoTurretTargets.isEmpty()) {
 			sender.sendFeedbackActionMessage(USER_ERROR, "Error no weaponsets with autoturret targets found")
 			return
 		}
@@ -348,7 +360,12 @@ object MiscStarshipCommands : SLCommand() {
 		}
 		player.teleport(location)
 
-		starship.onlinePassengers.forEach { passenger -> passenger.sendFeedbackMessage(INFORMATION, "${player.name} was ejected from the starship") }
+		starship.onlinePassengers.forEach { passenger ->
+			passenger.sendFeedbackMessage(
+				INFORMATION,
+				"${player.name} was ejected from the starship"
+			)
+		}
 
 		player.sendFeedbackMessage(ALERT, "You were ejected from the starship")
 	}
@@ -385,7 +402,8 @@ object MiscStarshipCommands : SLCommand() {
 
 			val pilotRelationColor = pilotNationRelation?.actual?.textStyle?.name?.lowercase()
 
-			val formattedName = pilotRelationColor?.let { "<$pilotRelationColor>$pilotName</$pilotRelationColor>" } ?: pilotName
+			val formattedName =
+				pilotRelationColor?.let { "<$pilotRelationColor>$pilotName</$pilotRelationColor>" } ?: pilotName
 
 			var worldName = starship.serverLevel.world.key.toString().substringAfterLast(":")
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }

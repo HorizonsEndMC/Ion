@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 @Suppress("Unused")
 @CommandAlias("targetrandom")
 @CommandPermission("ion.core.random")
-object RandomTargetCommand : SLCommand()  {
+object RandomTargetCommand : SLCommand() {
 	@Subcommand("toggle")
 	@Description("Toggle random targeting")
 	fun onToggleRandom(sender: CommandSender, p: Player) = asyncCommand(sender) {

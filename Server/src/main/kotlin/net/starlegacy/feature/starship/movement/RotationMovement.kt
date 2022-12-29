@@ -1,9 +1,6 @@
 package net.starlegacy.feature.starship.movement
 
 import io.papermc.paper.entity.RelativeTeleportFlag
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.misc.CustomBlocks
@@ -17,6 +14,9 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.util.Vector
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship) {
 	private val origin = starship.centerOfMass

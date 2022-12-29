@@ -1,7 +1,5 @@
 package net.starlegacy.feature.starship.active
 
-import java.util.LinkedList
-import java.util.Locale
 import net.starlegacy.feature.misc.CryoPods
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblock
@@ -32,6 +30,8 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import java.util.LinkedList
+import java.util.Locale
 
 object SubsystemDetector {
 	fun detectSubsystems(starship: ActivePlayerStarship) {

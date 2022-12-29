@@ -1,11 +1,11 @@
 package net.starlegacy.feature.multiblock.misc
 
-import java.util.UUID
-import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import org.bukkit.ChatColor
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import java.util.UUID
 
 object CryoPodMultiblock : Multiblock() {
 	override val name = "cryopod"

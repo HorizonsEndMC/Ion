@@ -2,7 +2,6 @@ package net.starlegacy.feature.misc
 
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
-import java.util.Locale
 import net.starlegacy.util.set
 import net.starlegacy.util.updateMeta
 import org.bukkit.ChatColor
@@ -18,7 +17,6 @@ import org.bukkit.ChatColor.RED
 import org.bukkit.ChatColor.WHITE
 import org.bukkit.ChatColor.YELLOW
 import org.bukkit.Material
-import org.bukkit.Material.APPLE
 import org.bukkit.Material.BOW
 import org.bukkit.Material.DIAMOND_AXE
 import org.bukkit.Material.DIAMOND_PICKAXE
@@ -35,6 +33,7 @@ import org.bukkit.Material.SHIELD
 import org.bukkit.Material.SNOWBALL
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.inventory.ItemStack
+import java.util.Locale
 
 open class CustomItem(
 	val id: String,

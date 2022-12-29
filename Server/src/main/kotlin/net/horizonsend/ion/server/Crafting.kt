@@ -1,17 +1,53 @@
 package net.horizonsend.ion.server
 
+// Special Exception Wildcard Imports
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.Material
+import org.bukkit.Material.AIR
+import org.bukkit.Material.BELL
+import org.bukkit.Material.BLACK_WOOL
+import org.bukkit.Material.BLUE_WOOL
+import org.bukkit.Material.BROWN_WOOL
+import org.bukkit.Material.CYAN_WOOL
+import org.bukkit.Material.GOLD_BLOCK
+import org.bukkit.Material.GRAY_WOOL
+import org.bukkit.Material.GREEN_WOOL
+import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.LEATHER
+import org.bukkit.Material.LIGHT_BLUE_WOOL
+import org.bukkit.Material.LIGHT_GRAY_WOOL
+import org.bukkit.Material.LIME_WOOL
+import org.bukkit.Material.MAGENTA_WOOL
+import org.bukkit.Material.NETHERITE_AXE
+import org.bukkit.Material.NETHERITE_HOE
+import org.bukkit.Material.NETHERITE_PICKAXE
+import org.bukkit.Material.NETHERITE_SHOVEL
+import org.bukkit.Material.NETHERITE_SWORD
+import org.bukkit.Material.NETHER_WART
+import org.bukkit.Material.NETHER_WART_BLOCK
+import org.bukkit.Material.OAK_LOG
+import org.bukkit.Material.ORANGE_WOOL
+import org.bukkit.Material.PINK_WOOL
+import org.bukkit.Material.PRISMARINE
+import org.bukkit.Material.PRISMARINE_BRICKS
+import org.bukkit.Material.PRISMARINE_CRYSTALS
+import org.bukkit.Material.PURPLE_WOOL
+import org.bukkit.Material.RED_WOOL
+import org.bukkit.Material.SADDLE
+import org.bukkit.Material.SEA_LANTERN
+import org.bukkit.Material.STICK
+import org.bukkit.Material.STRING
+import org.bukkit.Material.TRIPWIRE
+import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
+import org.bukkit.Material.WHITE_WOOL
+import org.bukkit.Material.YELLOW_WOOL
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
-
-// Special Exception Wildcard Imports
-import org.bukkit.Material.*
 
 val forbiddenCraftingItems = enumSetOf(
 	WARPED_FUNGUS_ON_A_STICK, NETHERITE_PICKAXE, NETHERITE_SHOVEL, NETHERITE_SWORD, NETHERITE_AXE, NETHERITE_HOE

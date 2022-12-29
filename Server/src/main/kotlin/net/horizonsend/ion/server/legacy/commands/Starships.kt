@@ -20,15 +20,18 @@ internal class Starships : BaseCommand() {
 	@Default
 	fun starships(sender: Player) {
 		sender.sendRichMessage(
-			PlayerStarshipData.find(and(
-				PlayerStarshipData::captain eq sender.slPlayerId,
-				or(PlayerStarshipData::serverName eq null, PlayerStarshipData::serverName eq Ion.configuration.serverName)
-			)).joinToString("\n", "<bold>Starships:</bold><gray>\n") {
+			PlayerStarshipData.find(
+				and(
+					PlayerStarshipData::captain eq sender.slPlayerId,
+					or(PlayerStarshipData::serverName eq null, PlayerStarshipData::serverName eq Ion.configuration.serverName)
+				)
+			).joinToString("\n", "<bold>Starships:</bold><gray>\n") {
 				val x = blockKeyX(it.blockKey)
 				val y = blockKeyY(it.blockKey)
 				val z = blockKeyZ(it.blockKey)
 
-				val ownedBy = if (it.captain != sender.slPlayerId) " owned by <aqua>${SLPlayer[it.captain]?.lastKnownName}</aqua>" else ""
+				val ownedBy =
+					if (it.captain != sender.slPlayerId) " owned by <aqua>${SLPlayer[it.captain]?.lastKnownName}</aqua>" else ""
 				val serverUnknown = if (it.serverName == null) " <red>(Unspecified Server)</red>" else ""
 
 				"${it.starshipType.formatted} at <green>$x</green>, <green>$y</green>, <green>$z</green> @ <gold>${it.levelName}</gold>$ownedBy$serverUnknown"

@@ -1,6 +1,5 @@
 package net.starlegacy.listener.gear
 
-import java.util.Locale
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.listener.SLEventListener
@@ -23,6 +22,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import java.util.Locale
 
 object SwordListener : SLEventListener() {
 	@EventHandler

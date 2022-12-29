@@ -45,12 +45,12 @@ internal object NationRelationCommand : SLCommand() {
 		requireNationPermission(sender, senderNation, NationRole.Permission.MANAGE_RELATIONS)
 		val otherNation = resolveNation(nation)
 
-		if (senderNation == otherNation && wish != NationRelation.Level.NATION){
+		if (senderNation == otherNation && wish != NationRelation.Level.NATION) {
 			sender.sendFeedbackMessage(USER_ERROR, "Error: Cannot {0} your own nation", wish.name)
 			return@asyncCommand
 		}
 
-		if (wish == NationRelation.Level.NATION && senderNation != otherNation){
+		if (wish == NationRelation.Level.NATION && senderNation != otherNation) {
 			sender.sendFeedbackMessage(USER_ERROR, "Error: Cannot nation another nation")
 			return@asyncCommand
 		}

@@ -5,7 +5,6 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import kotlin.math.pow
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.luckperms.api.LuckPermsProvider
@@ -19,6 +18,7 @@ import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
+import kotlin.math.pow
 
 @CommandAlias("removeprotection")
 object NewPlayerProtection : BaseCommand() {

@@ -1,8 +1,6 @@
 package net.starlegacy.command.nations.roles
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import java.sql.Timestamp
-import java.util.UUID
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
@@ -32,6 +30,8 @@ import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.pull
+import java.sql.Timestamp
+import java.util.UUID
 
 /** Abstract role command logic class, has the logic but not the command description/tab completions due to ACF's restrictions */
 internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>>

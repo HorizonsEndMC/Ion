@@ -1,7 +1,5 @@
 package net.starlegacy.feature.nations.utils
 
-import java.util.Date
-import java.util.concurrent.TimeUnit
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.NATIONS_BALANCE
@@ -9,6 +7,8 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GRAY
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 val INACTIVE_BEFORE_TIME
 	get() = Date(

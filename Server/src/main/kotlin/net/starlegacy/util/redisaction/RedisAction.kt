@@ -1,8 +1,8 @@
 package net.starlegacy.util.redisaction
 
-import java.lang.reflect.Type
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
+import java.lang.reflect.Type
 
 abstract class RedisAction<Data>(val id: String, val type: Type, val runSync: Boolean) {
 	abstract fun onReceive(data: Data)

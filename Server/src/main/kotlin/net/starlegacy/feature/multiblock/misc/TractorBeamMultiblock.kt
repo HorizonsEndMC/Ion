@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.misc
 
-import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 
 object TractorBeamMultiblock : Multiblock() {
 	override val name = "tractorbeam"

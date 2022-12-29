@@ -1,12 +1,12 @@
 package net.starlegacy.feature.space
 
-import kotlin.random.Random
 import net.starlegacy.SLComponent
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Color
 import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerSet
+import kotlin.random.Random
 
 object SpaceMap : SLComponent() {
 	private lateinit var markerSet: MarkerSet

@@ -3,8 +3,8 @@ package net.starlegacy.feature.multiblock.dockingtube
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.rightFace
 import org.bukkit.Location
 import org.bukkit.block.Block

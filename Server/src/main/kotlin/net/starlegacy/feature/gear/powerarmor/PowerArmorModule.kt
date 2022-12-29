@@ -1,8 +1,8 @@
 package net.starlegacy.feature.gear.powerarmor
 
-import java.util.Locale
 import net.starlegacy.feature.misc.CustomItems
 import org.bukkit.inventory.ItemStack
+import java.util.Locale
 
 enum class PowerArmorModule(
 	private val customItem: CustomItems.PowerModuleItem,

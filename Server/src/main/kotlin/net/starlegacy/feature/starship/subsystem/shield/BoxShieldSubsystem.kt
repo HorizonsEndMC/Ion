@@ -1,7 +1,5 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
-import kotlin.collections.set
-import kotlin.math.abs
 import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
@@ -10,6 +8,8 @@ import net.starlegacy.util.rightFace
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import kotlin.collections.set
+import kotlin.math.abs
 
 class BoxShieldSubsystem(
 	starship: ActiveStarship,

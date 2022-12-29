@@ -1,9 +1,9 @@
 package net.starlegacy.feature.nations.utils
 
-import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getOfflinePlayer
 import org.bukkit.OfflinePlayer
+import java.util.UUID
 
 private fun isInvalid(offlinePlayer: OfflinePlayer) =
 	offlinePlayer.uniqueId == null || !offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline

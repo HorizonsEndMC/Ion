@@ -3,11 +3,6 @@ package net.starlegacy.feature.starship.active
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.minecraft.core.BlockPos
-import java.lang.Math.cbrt
-import java.util.UUID
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
@@ -33,6 +28,11 @@ import org.bukkit.boss.BossBar
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.lang.Math.cbrt
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 
 class ActivePlayerStarship(
 	val data: PlayerStarshipData,

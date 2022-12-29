@@ -1,7 +1,6 @@
 package net.starlegacy.feature.space
 
 import com.mongodb.client.result.UpdateResult
-import java.util.Locale
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.Oid
@@ -19,6 +18,7 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.util.noise.SimplexNoiseGenerator
+import java.util.Locale
 
 class CachedPlanet(
 	val databaseId: Oid<Planet>,
@@ -95,7 +95,6 @@ class CachedPlanet(
 	fun changeX(x: Int): UpdateResult = Planet.setX(databaseId, x)
 
 	fun changeZ(z: Int): UpdateResult = Planet.setZ(databaseId, z)
-
 
 	fun changeOrbitDistance(newDistance: Int) {
 		val newLocation = calculateOrbitLocation(sun, newDistance, orbitProgress)

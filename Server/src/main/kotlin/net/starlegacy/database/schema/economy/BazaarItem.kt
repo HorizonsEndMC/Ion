@@ -1,7 +1,5 @@
 package net.starlegacy.database.schema.economy
 
-import java.time.Instant
-import java.util.Date
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -19,6 +17,8 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.updateOneById
+import java.time.Instant
+import java.util.Date
 
 data class BazaarItem(
 	override val _id: Oid<BazaarItem>,

@@ -1,9 +1,9 @@
 package net.starlegacy.feature.starship
 
-import java.util.EnumMap
 import net.starlegacy.util.MATERIALS
 import net.starlegacy.util.isConcrete
 import org.bukkit.Material
+import java.util.EnumMap
 
 object Mass {
 	val BLAST_RESIST_MASS_MULTIPLIER = 5.0

@@ -9,11 +9,6 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import java.io.InputStream
-import java.io.OutputStream
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
@@ -25,6 +20,11 @@ import net.starlegacy.util.chunkKey
 import net.starlegacy.util.toBukkitBlockData
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
+import java.io.InputStream
+import java.io.OutputStream
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 data class PlayerStarshipState(
 	/** Set of chunks included in the saved ship */

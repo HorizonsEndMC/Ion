@@ -1,9 +1,9 @@
 package net.starlegacy.util
 
+import org.bukkit.entity.Player
 import java.lang.System.nanoTime
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import org.bukkit.entity.Player
 
 class PerPlayerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
 	private val map = mutableMapOf<UUID, Long>()

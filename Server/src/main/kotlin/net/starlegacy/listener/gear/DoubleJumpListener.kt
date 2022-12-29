@@ -1,6 +1,5 @@
 package net.starlegacy.listener.gear
 
-import java.util.UUID
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.listener.SLEventListener
 import org.bukkit.FluidCollisionMode
@@ -10,6 +9,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleFlightEvent
 import org.bukkit.util.Vector
+import java.util.UUID
 
 object DoubleJumpListener : SLEventListener() {
 	private val jumpingPlayers = HashSet<UUID>()

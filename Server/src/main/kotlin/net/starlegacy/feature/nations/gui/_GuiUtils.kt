@@ -11,9 +11,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.util.Optional
-import java.util.UUID
-import java.util.concurrent.TimeUnit
 import net.md_5.bungee.api.ChatColor.RED
 import net.starlegacy.util.Skins
 import net.starlegacy.util.Tasks
@@ -25,6 +22,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
+import java.util.Optional
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 fun GuiItem.name(text: String?): GuiItem = apply { if (text != null) item.setDisplayNameAndGet(text) }
 

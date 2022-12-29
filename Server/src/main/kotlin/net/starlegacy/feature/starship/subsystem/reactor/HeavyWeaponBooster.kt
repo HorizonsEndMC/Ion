@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship.subsystem.reactor
 
 import com.destroystokyo.paper.Title
+import net.starlegacy.util.colorize
 import java.util.Timer
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
-import net.starlegacy.util.colorize
 
 class HeavyWeaponBooster(val subsystem: ReactorSubsystem) {
 	val output: Double = subsystem.output

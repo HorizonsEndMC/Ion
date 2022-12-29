@@ -1,8 +1,6 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import kotlin.math.max
-import kotlin.math.min
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.cache.nations.PlayerCache
@@ -13,6 +11,8 @@ import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
 import org.litote.kmongo.eq
+import kotlin.math.max
+import kotlin.math.min
 
 class HyperspaceWarmup(val ship: ActiveStarship, var warmup: Int, val dest: Location, val drive: HyperdriveSubsystem) :
 	BukkitRunnable() {
@@ -34,16 +34,31 @@ class HyperspaceWarmup(val ship: ActiveStarship, var warmup: Int, val dest: Loca
 
 	override fun run() {
 		seconds++
-		ship.onlinePassengers.forEach { player -> player.sendFeedbackAction(FeedbackType.INFORMATION, "Hyperdrive Warmup: $seconds/$warmup seconds") }
+		ship.onlinePassengers.forEach { player ->
+			player.sendFeedbackAction(
+				FeedbackType.INFORMATION,
+				"Hyperdrive Warmup: $seconds/$warmup seconds"
+			)
+		}
 
 		if (!drive.isIntact()) {
-			ship.onlinePassengers.forEach { player -> player.sendFeedbackAction(FeedbackType.ALERT, "Drive damaged! Jump failed!") }
+			ship.onlinePassengers.forEach { player ->
+				player.sendFeedbackAction(
+					FeedbackType.ALERT,
+					"Drive damaged! Jump failed!"
+				)
+			}
 			cancel()
 			return
 		}
 
 		if (MassShadows.find(ship.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble()) != null) {
-			ship.onlinePassengers.forEach { player -> player.sendFeedbackAction(FeedbackType.USER_ERROR, "Ship is within Gravity Well, jump cancelled") }
+			ship.onlinePassengers.forEach { player ->
+				player.sendFeedbackAction(
+					FeedbackType.USER_ERROR,
+					"Ship is within Gravity Well, jump cancelled"
+				)
+			}
 			cancel()
 			return
 		}

@@ -2,7 +2,6 @@ package net.starlegacy.feature.starship
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import java.util.EnumSet
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.BANNER_TYPES
 import net.starlegacy.util.BED_TYPES
@@ -119,6 +118,7 @@ import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
 import org.bukkit.Material.WEATHERED_COPPER
+import java.util.EnumSet
 
 val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	JUKEBOX, // ship computer
@@ -232,7 +232,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 
 	SCULK
 
-	).also {
+).also {
 	it.addAll(CONCRETE_TYPES)
 	it.addAll(SLAB_TYPES)
 	it.addAll(STAIR_TYPES)

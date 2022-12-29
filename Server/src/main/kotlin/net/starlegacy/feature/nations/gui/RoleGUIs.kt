@@ -2,7 +2,6 @@ package net.starlegacy.feature.nations.gui
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
-import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.md_5.bungee.api.ChatColor
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks

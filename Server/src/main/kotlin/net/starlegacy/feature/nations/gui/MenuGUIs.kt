@@ -2,7 +2,6 @@ package net.starlegacy.feature.nations.gui
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
-import kotlin.math.min
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
 import net.starlegacy.util.Tasks
@@ -11,6 +10,7 @@ import org.bukkit.Material.BARRIER
 import org.bukkit.Material.LILY_PAD
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import kotlin.math.min
 
 fun Player.openConfirmMenu(
 	title: String,

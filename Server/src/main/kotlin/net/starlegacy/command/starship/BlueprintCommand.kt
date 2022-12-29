@@ -10,10 +10,6 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
-import java.util.LinkedList
-import java.util.Locale
-import java.util.UUID
-import kotlin.collections.set
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
@@ -48,6 +44,10 @@ import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
+import java.util.LinkedList
+import java.util.Locale
+import java.util.UUID
+import kotlin.collections.set
 
 @CommandAlias("blueprint")
 object BlueprintCommand : SLCommand() {
@@ -136,7 +136,7 @@ object BlueprintCommand : SLCommand() {
 		return list
 	}
 
-	private fun calculateBlueprintCost(blueprint: Blueprint) : Int {
+	private fun calculateBlueprintCost(blueprint: Blueprint): Int {
 		val clipboard = blueprint.loadClipboard()
 
 		return clipboard.region

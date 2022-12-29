@@ -36,5 +36,4 @@ object PlayerJumpListener : SLEventListener() {
 			return
 		}
 	}
-
 }

@@ -1,7 +1,5 @@
 package net.starlegacy.database.schema.economy
 
-import java.util.Date
-import java.util.concurrent.TimeUnit
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -14,6 +12,8 @@ import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.inc
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 data class
 CargoCrateShipment(

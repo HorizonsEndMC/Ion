@@ -6,8 +6,6 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import java.util.concurrent.Executors
-import kotlin.reflect.KClass
 import net.starlegacy.SETTINGS
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.economy.BazaarItem
@@ -44,6 +42,8 @@ import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdGenerator
 import org.litote.kmongo.util.KMongoUtil
+import java.util.concurrent.Executors
+import kotlin.reflect.KClass
 
 object MongoManager : SLComponent() {
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()

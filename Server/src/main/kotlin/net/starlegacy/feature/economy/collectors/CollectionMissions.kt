@@ -5,8 +5,6 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 import net.citizensnpcs.api.event.NPCLeftClickEvent
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.starlegacy.SLComponent
@@ -34,6 +32,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.inc
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 object CollectionMissions : SLComponent() {
 	data class Config(val generateAmount: Int = 27, val xpPerCreditRoot: Double = 0.5, val buyMultiplier: Double = 2.0)

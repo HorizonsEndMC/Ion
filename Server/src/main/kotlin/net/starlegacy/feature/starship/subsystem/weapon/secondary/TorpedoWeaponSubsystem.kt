@@ -1,6 +1,5 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
-import java.util.concurrent.TimeUnit
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -10,6 +9,7 @@ import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class TorpedoWeaponSubsystem(
 	starship: ActiveStarship,

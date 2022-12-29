@@ -1,7 +1,5 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import kotlin.math.log10
-import kotlin.math.sqrt
 import net.horizonsend.ion.server.legacy.events.HyperspaceEnterEvent
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
@@ -26,6 +24,8 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.event.EventHandler
+import kotlin.math.log10
+import kotlin.math.sqrt
 
 object Hyperspace : SLComponent() {
 	private val warmupTasks = mutableMapOf<ActiveStarship, HyperspaceWarmup>()
@@ -43,13 +43,18 @@ object Hyperspace : SLComponent() {
 	}
 
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
-		if(MassShadows.find(starship.world, starship.centerOfMass.x.toDouble(), starship.centerOfMass.z.toDouble()) != null){
+		if (MassShadows.find(
+				starship.world,
+				starship.centerOfMass.x.toDouble(),
+				starship.centerOfMass.z.toDouble()
+			) != null
+		) {
 			starship.sendMessage("&cShip is within Gravity Well, jump cancelled")
 			return
 		}
 		if (starship.type == PLATFORM) {
 			starship.onlinePassengers.forEach {
-				it.sendFeedbackAction(FeedbackType.USER_ERROR,"This ship type is not capable of moving.")
+				it.sendFeedbackAction(FeedbackType.USER_ERROR, "This ship type is not capable of moving.")
 			}
 			return
 		}

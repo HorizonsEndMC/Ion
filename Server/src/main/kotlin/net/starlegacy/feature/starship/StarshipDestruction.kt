@@ -4,10 +4,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.util.LinkedList
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -25,6 +21,10 @@ import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.nms
 import org.bukkit.Material
 import org.bukkit.World
+import java.util.LinkedList
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import kotlin.collections.set
 
 object StarshipDestruction {
 	const val MAX_SAFE_HULL_INTEGRITY = 0.8

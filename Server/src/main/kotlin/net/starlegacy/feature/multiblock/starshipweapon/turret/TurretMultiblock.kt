@@ -2,12 +2,6 @@ package net.starlegacy.feature.multiblock.starshipweapon.turret
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
 import net.minecraft.world.level.block.Rotation
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -35,6 +29,12 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem>() {
 	init {

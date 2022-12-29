@@ -7,13 +7,13 @@ import com.googlecode.cqengine.attribute.support.SimpleFunction
 import com.googlecode.cqengine.index.unique.UniqueIndex
 import com.googlecode.cqengine.query.QueryFactory
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import kotlin.reflect.KProperty1
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.oid
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.timing
 import org.litote.kmongo.Id
+import kotlin.reflect.KProperty1
 
 @Suppress("UNCHECKED_CAST")
 abstract class DbObjectCache<T : DbObject, ID : Id<T>>(private val companion: OidDbObjectCompanion<T>) : Cache {

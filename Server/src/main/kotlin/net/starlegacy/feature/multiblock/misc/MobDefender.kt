@@ -1,11 +1,8 @@
 package net.starlegacy.feature.multiblock.misc
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.io.File
-import java.io.IOException
-import kotlin.math.abs
-import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.msg
@@ -14,6 +11,9 @@ import org.bukkit.Location
 import org.bukkit.block.Sign
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import java.io.File
+import java.io.IOException
+import kotlin.math.abs
 
 object MobDefender : Multiblock() {
 	override val name = "mobdefender"

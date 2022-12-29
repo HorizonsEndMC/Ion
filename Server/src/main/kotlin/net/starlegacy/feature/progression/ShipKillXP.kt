@@ -4,11 +4,6 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
-import java.util.UUID
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.pow
-import kotlin.math.sqrt
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.legacy.events.ShipKillEvent
@@ -35,6 +30,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.litote.kmongo.eq
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 object ShipKillXP : SLComponent() {
 	data class Damager(val id: UUID, val size: Int?)
@@ -63,7 +63,7 @@ object ShipKillXP : SLComponent() {
 		val pilotNation = PlayerCache[pilot].nation ?: return false
 		val playerNation = PlayerCache[player].nation ?: return false
 		for (relation in NationRelation.find(NationRelation::nation eq pilotNation)) {
-			if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY)||relation.actual == NationRelation.Level.NATION)
+			if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY) || relation.actual == NationRelation.Level.NATION)
 				return true
 		}
 		return false
@@ -163,7 +163,8 @@ object ShipKillXP : SLComponent() {
 
 	private fun killMessage(killedName: String, damager: Damager, data: ShipDamageData) {
 		val damagerShip = ActiveStarships.findByPassenger(getPlayer(damager.id)!!)!!
-		val damagerShipName = (damagerShip as? ActivePlayerStarship)?.let { getDisplayName(damagerShip.data) } ?: damagerShip.type.formatted
+		val damagerShipName =
+			(damagerShip as? ActivePlayerStarship)?.let { getDisplayName(damagerShip.data) } ?: damagerShip.type.formatted
 
 		getServer().sendFeedbackMessage(
 			FeedbackType.ALERT,
@@ -187,7 +188,7 @@ object ShipKillXP : SLComponent() {
 
 				val newShipKillDiscordMessage =
 					"${data.name}, a ${data.size} block ${data.type}, piloted by $killedName, was shot down by " +
-							"${getPlayer(damager.id)!!.name}, piloting $damagerShipName, a ${damager.size} block ${damagerShip.type}."
+						"${getPlayer(damager.id)!!.name}, piloting $damagerShipName, a ${damager.size} block ${damagerShip.type}."
 
 				channel.sendMessage(newShipKillDiscordMessage).queue()
 			}

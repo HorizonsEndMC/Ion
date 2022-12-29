@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.legacy.listeners
 
-import kotlin.random.Random
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.legacy.ores.Ore
 import net.horizonsend.ion.server.legacy.ores.OrePlacementConfig
@@ -14,6 +13,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
+import kotlin.random.Random
 
 /*
  TODO: Ore logic should be separated from the Listener, and the Async code should avoid using the scheduler, as well

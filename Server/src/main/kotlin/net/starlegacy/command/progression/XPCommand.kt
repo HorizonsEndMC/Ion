@@ -4,7 +4,6 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
-import java.util.UUID
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -20,6 +19,7 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.plus
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.UUID
 
 object XPCommand : SLCommand() {
 	@CommandAlias("slxp|xp")

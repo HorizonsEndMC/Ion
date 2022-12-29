@@ -1,11 +1,11 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import kotlin.math.sqrt
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.World
+import kotlin.math.sqrt
 
 object MassShadows {
 	private const val PLANET_RADIUS = 1000

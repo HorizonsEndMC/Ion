@@ -9,7 +9,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
 @Suppress("Unused")
-class EnterPlanetListener: Listener {
+class EnterPlanetListener : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onEnterPlanetEvent(event: EnterPlanetEvent) {
 		val playerData = PlayerData[event.player.uniqueId]
@@ -39,33 +39,45 @@ class EnterPlanetListener: Listener {
 
 		val achievements = playerData.achievements
 
-		if (achievements.containsAll(listOf(
-			Achievement.PLANET_CHANDRA,
-			Achievement.PLANET_LUXITERNA,
-			Achievement.PLANET_HERDOLI,
-			Achievement.PLANET_RUBACIEA,
-			Achievement.PLANET_ILIUS
-		))) event.player.rewardAchievement(Achievement.SYSTEM_ASTERI)
+		if (achievements.containsAll(
+				listOf(
+					Achievement.PLANET_CHANDRA,
+					Achievement.PLANET_LUXITERNA,
+					Achievement.PLANET_HERDOLI,
+					Achievement.PLANET_RUBACIEA,
+					Achievement.PLANET_ILIUS
+				)
+			)
+		) event.player.rewardAchievement(Achievement.SYSTEM_ASTERI)
 
-		if (achievements.containsAll(listOf(
-			Achievement.PLANET_ARET,
-			Achievement.PLANET_VASK,
-			Achievement.PLANET_AERACH,
-			Achievement.PLANET_GAHARA
-		))) event.player.rewardAchievement(Achievement.SYSTEM_REGULUS)
+		if (achievements.containsAll(
+				listOf(
+					Achievement.PLANET_ARET,
+					Achievement.PLANET_VASK,
+					Achievement.PLANET_AERACH,
+					Achievement.PLANET_GAHARA
+				)
+			)
+		) event.player.rewardAchievement(Achievement.SYSTEM_REGULUS)
 
-		if (achievements.containsAll(listOf(
-			Achievement.PLANET_QATRA,
-			Achievement.PLANET_LIODA,
-			Achievement.PLANET_KOVFEFE,
-			Achievement.PLANET_TURMS
-		))) event.player.rewardAchievement(Achievement.SYSTEM_SIRIUS)
+		if (achievements.containsAll(
+				listOf(
+					Achievement.PLANET_QATRA,
+					Achievement.PLANET_LIODA,
+					Achievement.PLANET_KOVFEFE,
+					Achievement.PLANET_TURMS
+				)
+			)
+		) event.player.rewardAchievement(Achievement.SYSTEM_SIRIUS)
 
-		if (achievements.containsAll(listOf(
-			Achievement.PLANET_DAMKOTH,
-			Achievement.PLANET_CHIMGARA,
-			Achievement.PLANET_KRIO,
-			Achievement.PLANET_ISIK
-		))) event.player.rewardAchievement(Achievement.SYSTEM_ILIOS)
+		if (achievements.containsAll(
+				listOf(
+					Achievement.PLANET_DAMKOTH,
+					Achievement.PLANET_CHIMGARA,
+					Achievement.PLANET_KRIO,
+					Achievement.PLANET_ISIK
+				)
+			)
+		) event.player.rewardAchievement(Achievement.SYSTEM_ILIOS)
 	}
 }

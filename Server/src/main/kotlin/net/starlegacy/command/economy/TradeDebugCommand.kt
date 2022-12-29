@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import kotlin.system.measureTimeMillis
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CargoCrate
@@ -34,6 +33,7 @@ import net.starlegacy.util.text
 import net.starlegacy.util.yellow
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import kotlin.system.measureTimeMillis
 
 @CommandAlias("tradedebug|tdebug|tbug")
 @CommandPermission("trade.debug")

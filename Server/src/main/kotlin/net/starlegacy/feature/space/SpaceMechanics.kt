@@ -1,6 +1,5 @@
 package net.starlegacy.feature.space
 
-import java.util.concurrent.TimeUnit
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.feature.gear.powerarmor.PowerArmorModule
@@ -24,6 +23,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import java.util.concurrent.TimeUnit
 
 object SpaceMechanics : SLComponent() {
 	override fun onEnable() {

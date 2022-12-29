@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.legacy.screens
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.collections.PlayerData
-import kotlin.math.ceil
-import kotlin.math.min
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -13,6 +11,8 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import kotlin.math.ceil
+import kotlin.math.min
 
 class AchievementsScreen private constructor(
 	private val targetName: String,

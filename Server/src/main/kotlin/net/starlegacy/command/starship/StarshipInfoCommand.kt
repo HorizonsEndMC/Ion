@@ -1,8 +1,6 @@
 package net.starlegacy.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
-import kotlin.math.round
-import kotlin.math.roundToInt
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
@@ -14,6 +12,8 @@ import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import kotlin.math.round
+import kotlin.math.roundToInt
 
 object StarshipInfoCommand : SLCommand() {
 	@CommandAlias("starshipinfo|starship")

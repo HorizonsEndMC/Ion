@@ -1,6 +1,5 @@
 package net.starlegacy.listener.gear
 
-import java.util.Locale
 import net.starlegacy.feature.gear.blaster.Blasters
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.listener.SLEventListener
@@ -23,6 +22,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Colorable
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import java.util.Locale
 
 object BlasterListener : SLEventListener() {
 	@EventHandler

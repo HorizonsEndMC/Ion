@@ -1,9 +1,6 @@
 package net.starlegacy.feature.gear
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import java.util.EnumSet
-import java.util.UUID
-import java.util.stream.Collectors
 import net.starlegacy.util.FENCE_TYPES
 import net.starlegacy.util.LOG_TYPES
 import net.starlegacy.util.WOOD_TYPES
@@ -18,6 +15,9 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerAnimationEvent
 import org.bukkit.event.player.PlayerAnimationType
 import org.bukkit.scheduler.BukkitRunnable
+import java.util.EnumSet
+import java.util.UUID
+import java.util.stream.Collectors
 
 private const val INSTANT_CUT = false
 private const val MAX_LOGS_PER_CUT = 200

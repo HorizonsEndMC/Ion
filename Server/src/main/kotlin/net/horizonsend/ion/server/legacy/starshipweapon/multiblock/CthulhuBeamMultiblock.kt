@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.multiblock
 
+import net.horizonsend.ion.server.legacy.starshipweapon.primary.CthulhuBeamSubsystem
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.horizonsend.ion.server.legacy.starshipweapon.primary.CthulhuBeamSubsystem
 import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 

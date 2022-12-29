@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
-import java.util.concurrent.TimeUnit
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.StarshipSubsystem
 import net.starlegacy.util.Vec3i
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 abstract class WeaponSubsystem(
 	starship: ActiveStarship,

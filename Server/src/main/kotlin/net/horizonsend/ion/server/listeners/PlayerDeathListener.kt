@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.listeners
 
-import java.lang.System.currentTimeMillis
-import java.util.UUID
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
@@ -15,6 +13,8 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
+import java.lang.System.currentTimeMillis
+import java.util.UUID
 
 @Suppress("Unused")
 class PlayerDeathListener : Listener {
