@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.items
 
+import net.horizonsend.ion.server.BalancingConfiguration
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.Multishot
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.Singleshot
 import net.horizonsend.ion.server.IonServer.Companion.Ion
@@ -38,9 +39,10 @@ object CustomItems {
 	})
 	@Suppress("Unused") val SNIPER = register(object : Blaster<Singleshot>("SNIPER", NETHERITE_HOE, 1, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
 
+	@Suppress("Unused") val STANDARD_MAGAZINE = register(object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"),  { Ion.balancing.energyWeapons.standardMagazine }) {})
+
 	val GUN_BARREL = register("GUN_BARREL", 500, text("Gun Barrel"))
 	val CIRCUITRY = register("CIRCUITRY", 501, text("Circuitry"))
-	val MAGAZINE = register(Magazine) // Defined as a named object to allow using "is"
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, component: Component): CustomItem {
