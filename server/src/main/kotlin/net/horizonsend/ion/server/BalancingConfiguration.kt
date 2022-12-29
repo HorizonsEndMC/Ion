@@ -100,6 +100,9 @@ data class BalancingConfiguration(
 			speed = 2.0,
 			timeBetweenShots = 20,
 			shotDeviation = 0.05
+		),
+		val standardMagazine: AmmoStorage = AmmoStorage(
+			capacity = 60
 		)
 	) {
 		@ConfigSerializable
@@ -146,6 +149,11 @@ data class BalancingConfiguration(
 			override val shotDeviation: Double
 		) : Balancing()
 
+		@ConfigSerializable
+		data class AmmoStorage(
+			override val capacity: Int
+		) : AmmoStorageBalancing
+
 		abstract class Balancing : ProjectileBalancing {
 			abstract val magazineSize: Int
 			abstract val packetsPerShot: Int
@@ -166,6 +174,10 @@ data class BalancingConfiguration(
 			val shotSize: Double
 			val shouldBypassHitTicks: Boolean
 			val range: Double
+		}
+
+		interface AmmoStorageBalancing {
+			val capacity: Int
 		}
 	}
 }
