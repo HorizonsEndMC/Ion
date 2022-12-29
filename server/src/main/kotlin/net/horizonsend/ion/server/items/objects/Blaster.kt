@@ -31,6 +31,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
+import net.horizonsend.ion.server.items.CustomItems.STANDARD_MAGAZINE
 import net.starlegacy.util.randomDouble
 import org.bukkit.util.Vector
 
@@ -70,11 +71,11 @@ abstract class Blaster<T: Balancing>(
 		for (magazineItem in livingEntity.inventory) {
 			if (ammo >= balancing.magazineSize) continue // Check if magazine is full
 			if (magazineItem == null) continue // Check not null
-			if (magazineItem.customItem !is Magazine) continue // Only Magazines
+			if (magazineItem.customItem !is Magazine<*>) continue // Only Magazines
 
-			val magazineAmmo = Magazine.getAmmunition(magazineItem)
+			val magazineAmmo = STANDARD_MAGAZINE.getAmmunition(magazineItem)
 			val amountToTake = (balancing.magazineSize - ammo).coerceAtMost(magazineAmmo)
-			Magazine.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
+			STANDARD_MAGAZINE.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
 
 			ammo += amountToTake
 		}
