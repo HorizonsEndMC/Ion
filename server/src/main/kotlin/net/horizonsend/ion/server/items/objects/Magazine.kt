@@ -1,8 +1,19 @@
 package net.horizonsend.ion.server.items.objects
 
-import net.kyori.adventure.text.Component.text
-import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
+import java.util.function.Supplier
+import net.horizonsend.ion.server.BalancingConfiguration
+import net.kyori.adventure.text.Component
+import org.bukkit.Material
 
-object Magazine : AmmunitionHoldingItem("MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"), true) {
-	override fun getMaximumAmmunition(): Int = 30
+abstract class Magazine<T: BalancingConfiguration.EnergyWeapon.AmmoStorageBalancing>(
+	identifier: String,
+
+	material: Material,
+	customModelData: Int,
+	displayName: Component,
+
+	private val balancingSupplier: Supplier<T>
+) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
+	val balancing get() = balancingSupplier.get()
+	override fun getMaximumAmmunition(): Int = balancing.capacity
 }
