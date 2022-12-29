@@ -6,19 +6,18 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import java.util.Random
+import net.horizonsend.ion.common.loadConfiguration
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.populators.AsteroidPopulator
 import net.horizonsend.ion.server.generation.populators.OrePopulator
 import net.horizonsend.ion.server.generation.populators.OrePopulator.Companion.getSphereBlocks
-import net.minecraft.core.BlockPos
 import net.minecraft.world.level.ChunkPos
 import org.bukkit.World
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R2.generator.CraftLimitedRegion
 import org.bukkit.entity.Player
-import java.util.Random
-import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.IonServer
 
 @CommandAlias("asteroid")
 class AsteroidCommand : BaseCommand() {
@@ -124,11 +123,9 @@ class AsteroidCommand : BaseCommand() {
                 .find { it is AsteroidPopulator } as? AsteroidPopulator ?: return
 
         val asteroid = AsteroidPopulator.Asteroid(
-            BlockPos(
-                sender.location.x,
-                sender.location.y,
-                sender.location.z
-            ),
+            sender.location.x.toInt(),
+			sender.location.y.toInt(),
+			sender.location.z.toInt(),
             configuration.blockPalettes[index],
             size,
             octaves
@@ -162,11 +159,9 @@ class AsteroidCommand : BaseCommand() {
 
         val asteroid = with(populator) {
             this.generateAsteroid(
-                BlockPos(
-                    sender.location.x,
-                    sender.location.y,
-                    sender.location.z
-                ),
+				sender.location.x.toInt(),
+				sender.location.y.toInt(),
+				sender.location.z.toInt(),
                 asteroidRandom
             )
         }
@@ -222,10 +217,10 @@ class AsteroidCommand : BaseCommand() {
         }
 
         for (ore in oreBlobs) {
-            val oreBlocks = getSphereBlocks(ore.blobSize, origin = ore.location)
+            val oreBlocks = getSphereBlocks(ore.blobSize, origin = Triple(ore.centerX, ore.centerY, ore.centerZ))
 
             for (block in oreBlocks) {
-                ore.material.let { world.setBlockData(block.x, block.y, block.z, it) }
+                ore.material.let { world.setBlockData(block.first, block.second, block.third, it) }
             }
         }
     }

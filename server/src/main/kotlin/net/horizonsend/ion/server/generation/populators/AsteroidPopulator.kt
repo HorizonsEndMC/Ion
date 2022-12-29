@@ -8,7 +8,6 @@ import kotlin.math.sqrt
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.configuration.AsteroidFeatures
 import net.horizonsend.ion.server.generation.configuration.Palette
-import net.minecraft.core.BlockPos
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.generator.BlockPopulator
@@ -51,16 +50,13 @@ class AsteroidPopulator : BlockPopulator() {
 
 			// random number out of 100, chance of asteroid's generation. For use in selection.
 			val chance = random.nextDouble(100.0)
-//			val chance = abs((abs(BlockPos(asteroidX, asteroidY, asteroidZ).hashCode()) % 200.0) - 100.0)
 
 			println("chance: $chance, density: ${chunkDensity * 10}")
 
 			// Selects some asteroids that are generated. Allows for densities of 0<X<1 asteroids per chunk.
 			if (chance > (chunkDensity * 10)) continue
 
-			val asteroidLoc = BlockPos(asteroidX, asteroidY, asteroidZ)
-
-			val asteroid = generateAsteroid(asteroidLoc, asteroidRandom)
+			val asteroid = generateAsteroid(asteroidX, asteroidY, asteroidZ, asteroidRandom)
 
 			if (asteroid.size + asteroidY > worldInfo.maxHeight) continue
 
@@ -82,22 +78,17 @@ class AsteroidPopulator : BlockPopulator() {
 		val worldX = chunkX * 16
 		val worldZ = chunkZ * 16
 
-		val blockPos = BlockPos.MutableBlockPos(worldX, 0, worldZ)
-
 		for (x in worldX - limitedRegion.buffer..worldX + 15 + limitedRegion.buffer) {
 			val xDouble = x.toDouble()
-			val xSquared = (xDouble - asteroid.location.x) * (xDouble - asteroid.location.x)
-			blockPos.x = x
+			val xSquared = (xDouble - asteroid.x) * (xDouble - asteroid.x)
 
 			for (z in worldZ - limitedRegion.buffer..worldZ + 15 + limitedRegion.buffer) {
 				val zDouble = z.toDouble()
-				val zSquared = (zDouble - asteroid.location.z) * (zDouble - asteroid.location.z)
-				blockPos.z = z
+				val zSquared = (zDouble - asteroid.z) * (zDouble - asteroid.z)
 
-				for (y in (asteroid.location.y - (2 * asteroid.size)).toInt() until (asteroid.location.y + (2 * asteroid.size)).toInt()) {
+				for (y in (asteroid.y - (2 * asteroid.size)).toInt() until (asteroid.y + (2 * asteroid.size)).toInt()) {
 					val yDouble = y.toDouble()
-					val ySquared = (yDouble - asteroid.location.y) * (yDouble - asteroid.location.y)
-					blockPos.y = y
+					val ySquared = (yDouble - asteroid.y) * (yDouble - asteroid.y)
 
 					noise.setScale(0.15)
 
@@ -163,22 +154,17 @@ class AsteroidPopulator : BlockPopulator() {
 		val worldX = chunkX * 16
 		val worldZ = chunkZ * 16
 
-		val blockPos = BlockPos.MutableBlockPos(worldX, 0, worldZ)
-
 		for (x in worldX - (asteroid.size * 1.5).toInt()..worldX + 15 + (asteroid.size * 1.5).toInt()) {
 			val xDouble = x.toDouble()
-			val xSquared = (xDouble - asteroid.location.x) * (xDouble - asteroid.location.x)
-			blockPos.x = x
+			val xSquared = (xDouble - asteroid.x) * (xDouble - asteroid.x)
 
 			for (z in worldZ - (asteroid.size * 1.5).toInt()..worldZ + 15 + (asteroid.size * 1.5).toInt()) {
 				val zDouble = z.toDouble()
-				val zSquared = (zDouble - asteroid.location.z) * (zDouble - asteroid.location.z)
-				blockPos.z = z
+				val zSquared = (zDouble - asteroid.z) * (zDouble - asteroid.z)
 
-				for (y in (asteroid.location.y - (1.5 * asteroid.size)).toInt() until (asteroid.location.y + (1.5 * asteroid.size)).toInt()) {
+				for (y in (asteroid.y - (1.5 * asteroid.size)).toInt() until (asteroid.y + (1.5 * asteroid.size)).toInt()) {
 					val yDouble = y.toDouble()
-					val ySquared = (yDouble - asteroid.location.y) * (yDouble - asteroid.location.y)
-					blockPos.y = y
+					val ySquared = (yDouble - asteroid.y) * (yDouble - asteroid.y)
 
 					noise.setScale(0.15)
 
@@ -233,7 +219,7 @@ class AsteroidPopulator : BlockPopulator() {
 		storeAsteroid(asteroid)
 	}
 
-	fun generateAsteroid(location: BlockPos, random: Random): Asteroid {
+	fun generateAsteroid(x: Int, y: Int, z: Int, random: Random): Asteroid {
 		val noise = SimplexOctaveGenerator(random, 1)
 
 		// Get material palette
@@ -248,7 +234,7 @@ class AsteroidPopulator : BlockPopulator() {
 		val size = random.nextDouble(5.0, 20.0)
 		val octaves = floor(5 * 0.95.pow(size)).toInt()
 
-		return Asteroid(location, blockPalette, size, octaves)
+		return Asteroid(x, y ,z, blockPalette, size, octaves)
 	}
 
 	private fun parseDensity(worldInfo: WorldInfo, x: Double, y: Double, z: Double): Double {
@@ -300,7 +286,9 @@ class AsteroidPopulator : BlockPopulator() {
 	}
 
 	data class Asteroid(
-		val location: BlockPos,
+		val x: Int,
+		val y: Int,
+		val z: Int,
 		val palette: Palette,
 		val size: Double,
 		val octaves: Int

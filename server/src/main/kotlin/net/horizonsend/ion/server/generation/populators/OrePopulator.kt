@@ -1,17 +1,16 @@
 package net.horizonsend.ion.server.generation.populators
 
+import java.util.Random
+import net.horizonsend.ion.common.loadConfiguration
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.configuration.Ore
-import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit.createBlockData
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.generator.BlockPopulator
 import org.bukkit.generator.LimitedRegion
 import org.bukkit.generator.WorldInfo
-import java.util.Random
-import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.IonServer
 
 open class OrePopulator : BlockPopulator() {
     // default asteroid configuration values
@@ -22,20 +21,22 @@ open class OrePopulator : BlockPopulator() {
         val asteroidBlocks: MutableSet<Material> = mutableSetOf()
         val oreMap: MutableMap<String, BlockData> = mutableMapOf()
 
-        fun getSphereBlocks(radius: Int, origin: BlockPos): List<BlockPos> {
+        fun getSphereBlocks(radius: Int, origin: Triple<Int, Int, Int>): List<Triple<Int, Int, Int>> {
             if (radius == 1) return listOf(origin) // bypass the rest of this if it's useless
 
-            val circleBlocks = mutableListOf<BlockPos>()
+			val (originX, originY, originZ) = origin
+
+            val circleBlocks = mutableListOf<Triple<Int, Int, Int>>()
             val upperBoundSquared = radius * radius
 
-            for (x in origin.x - radius..origin.x + radius) {
-                for (y in origin.y - radius..origin.y + radius) {
-                    for (z in origin.z - radius..origin.z + radius) {
+            for (x in originX - radius..originX + radius) {
+                for (y in originY - radius..originY + radius) {
+                    for (z in originZ - radius..originZ + radius) {
                         val distance =
-                            ((origin.x - x) * (origin.x - x) + (origin.z - z) * (origin.z - z) + (origin.y - y) * (origin.y - y)).toDouble()
+                            ((originX - x) * (originX - x) + (originX - z) * (originX - z) + (originY - y) * (originY - y)).toDouble()
 
                         if (distance < upperBoundSquared) {
-                            circleBlocks.add(BlockPos(x, y, z))
+                            circleBlocks.add(Triple(x, y, z))
                         }
                     }
                 }
@@ -66,37 +67,31 @@ open class OrePopulator : BlockPopulator() {
         if (weightedOres.isEmpty()) return
 
         for (count in configuration.orePlacementsPerChunk downTo 0) {
-            val origin = BlockPos(
-                random.nextInt(worldX, worldX + 16),
-                random.nextInt(worldInfo.minHeight + 10, worldInfo.maxHeight - 10),
-                random.nextInt(worldZ, worldZ + 16)
-            )
+			val originX = random.nextInt(worldX, worldX + 16)
+			val originY = random.nextInt(worldInfo.minHeight + 10, worldInfo.maxHeight - 10)
+			val originZ = random.nextInt(worldZ, worldZ + 16)
 
-            if (!asteroidBlocks.contains(limitedRegion.getType(origin.x,
-                    origin.y,
-                    origin.z))
-            ) {
-                continue
-            } // Quickly move on if it's not in an asteroid
+            if (!asteroidBlocks.contains(limitedRegion.getType(originX, originY, originZ))) { continue }
+			// Quickly move on if it's not in an asteroid
 
             val ore = weightedOres[random.nextInt(0, weightedOres.size - 1)]
 
             val blobSize = random.nextInt(0, ore.maxBlobSize).coerceAtLeast(1)
 
-            val oreBlocks = getSphereBlocks(blobSize, origin = origin)
+            val oreBlocks = getSphereBlocks(blobSize, origin = Triple(originX, originY, originZ))
 
 			for (block in oreBlocks) {
-                if (!limitedRegion.isInRegion(block.x, block.y, block.z)) continue
+				val (x, y ,z) = block
 
-                if (!asteroidBlocks.contains(limitedRegion.getType(block.x,
-                        block.y,
-                        block.z))
+                if (!limitedRegion.isInRegion(x, y, z)) continue
+
+                if (!asteroidBlocks.contains(limitedRegion.getType(x, y, z))
                 ) continue
 
-                oreMap[ore.material]?.let { limitedRegion.setBlockData(block.x, block.y, block.z, it) }
+                oreMap[ore.material]?.let { limitedRegion.setBlockData(x, y, z, it) }
 			}
 
-            storeOreBlob(ore, origin)
+            storeOreBlob(ore, originX, originY, originZ)
         }
     }
 
@@ -112,13 +107,15 @@ open class OrePopulator : BlockPopulator() {
         return weightedList
     }
 
-    private fun storeOreBlob(ore: Ore, origin: BlockPos) {
+    private fun storeOreBlob(ore: Ore, x: Int, y: Int, z: Int) {
         val list = listOf<PlacedOre>()
     }
 
     data class PlacedOre(
         val material: BlockData,
         val blobSize: Int,
-        val location: BlockPos
+		val centerX: Int,
+		val centerY: Int,
+		val centerZ: Int
     )
 }
