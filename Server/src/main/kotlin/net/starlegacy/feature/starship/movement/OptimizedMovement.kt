@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.levelgen.Heightmap
+import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.Hangars
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -108,7 +109,7 @@ object OptimizedMovement {
 			val nmsChunk = chunk.nms
 
 			for ((sectionKey, positionMap) in sectionMap) {
-				if (sectionKey * 16 >= world.maxHeight) throw ConditionFailedException("Maximum height limit reached")
+				if (sectionKey * 16 >= world.maxHeight && SpaceWorlds.contains(world)) throw ConditionFailedException("Maximum height limit reached")
 
 				val section = nmsChunk.sections[sectionKey]
 
