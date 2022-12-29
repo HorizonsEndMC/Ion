@@ -157,7 +157,7 @@ fun initializeCrafting() {
 	}
 
 	// Standard Magazine Crafting
-	itemStackShapeRecipe("standard_magazine", CustomItems.MAGAZINE.constructItemStack()) {
+	itemStackShapeRecipe("standard_magazine", CustomItems.STANDARD_MAGAZINE.constructItemStack()) {
 		shape("aaa", "qqq", "aaa")
 
 		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
