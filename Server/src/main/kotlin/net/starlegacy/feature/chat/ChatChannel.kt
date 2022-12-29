@@ -1,6 +1,8 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
