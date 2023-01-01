@@ -39,15 +39,17 @@ object AreaShields : SLComponent() {
 		}
 	}
 
+	var configuration: YamlConfiguration? = null
+
 	//region File data
-	private fun loadData() {
+	fun loadData() {
 		val areaShieldFile = File(Ion.dataFolder, "areashields.yml")
 		if (!areaShieldFile.exists()) {
 			return
 		}
 
-		val areaShieldConfig = YamlConfiguration.loadConfiguration(areaShieldFile)
-		for (worldName in areaShieldConfig.getKeys(false)) {
+		configuration = YamlConfiguration.loadConfiguration(areaShieldFile)
+		for (worldName in configuration!!.getKeys(false)) {
 			val world = Bukkit.getWorld(worldName)
 
 			if (world == null) {
@@ -55,10 +57,10 @@ object AreaShields : SLComponent() {
 				continue
 			}
 
-			areaShieldConfig.getConfigurationSection(worldName)?.getKeys(false)?.forEach { vector ->
+			configuration!!.getConfigurationSection(worldName)?.getKeys(false)?.forEach { vector ->
 				val split = vector.split(",")
 				val location = Location(world, split[0].toDouble(), split[1].toDouble(), split[2].toDouble())
-				val radius = areaShieldConfig.getInt("$worldName.$vector")
+				val radius = configuration!!.getInt("$worldName.$vector")
 				locationRadiusMap[location] = radius
 			}
 		}
@@ -67,19 +69,20 @@ object AreaShields : SLComponent() {
 	private fun saveData() {
 		val file = File(Ion.dataFolder, "areashields.yml")
 
-		val configuration = YamlConfiguration()
+		if (configuration == null) configuration = YamlConfiguration()
+
 		for (world in Bukkit.getWorlds()) {
-			configuration.createSection(world.name)
+			configuration!!.createSection(world.name)
 		}
 
 		for (location in locationRadiusMap.keys) {
 			val worldName = location.world.name
 			val text = "${location.blockX},${location.blockY},${location.blockZ}"
 			val radius = locationRadiusMap[location]
-			configuration.getConfigurationSection(worldName)!!.set(text, radius)
+			configuration!!.getConfigurationSection(worldName)!!.set(text, radius)
 		}
 
-		configuration.save(file)
+		configuration!!.save(file)
 	}
 	//endregion
 

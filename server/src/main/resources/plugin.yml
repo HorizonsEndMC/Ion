@@ -2,7 +2,7 @@ main: net.horizonsend.ion.server.IonServer
 
 version: unspecified
 api-version: 1.19
-load: POSTWORLD
+load: STARTUP
 
 name: Ion
 website: https://horizonsend.net
