@@ -6,18 +6,11 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.commands.BountyCommands
 import net.horizonsend.ion.server.legacy.commands.AchievementsCommand
-import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.plugin.java.JavaPlugin
-import org.litote.kmongo.eq
 
 @Suppress("Unused")
 class IonServer : JavaPlugin() {
@@ -65,45 +58,6 @@ class IonServer : JavaPlugin() {
 			for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
 
 			legacyEnable(commandManager)
-
-			// Missing Ship Purge
-			var shipsRemoved = 0
-			var chunksRemaining = 0
-
-			for (world in server.worlds)
-				for (starship in PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name)) {
-					val gX = blockKeyX(starship.blockKey)
-					val gY = blockKeyY(starship.blockKey)
-					val gZ = blockKeyZ(starship.blockKey)
-
-					val location = Location(world, gX.toDouble(), gY.toDouble(), gZ.toDouble())
-
-					world.getChunkAtAsync(location, false) { chunk ->
-						val cX = gX.rem(16)
-						val cZ = gZ.rem(16)
-
-						try {
-							if (chunk.getBlock(cX, gY, cZ).type != Material.JUKEBOX) {
-								println("Removed missing ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
-								PlayerStarshipData.remove(starship._id)
-								shipsRemoved++
-							}
-						} catch (e: Exception) {
-							println("Removed corrupt ${starship.starshipType} at $gX, $gY, $gZ @ ${world.name}.")
-							PlayerStarshipData.remove(starship._id)
-							shipsRemoved++
-						}
-
-						chunk.isForceLoaded = false
-						chunksRemaining--
-
-						if (chunksRemaining == 0) {
-							println("$shipsRemoved missing / corrupted ships were removed.")
-						}
-					}
-
-					chunksRemaining++
-				}
 		} catch (exception: Exception) {
 			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
 			Bukkit.shutdown()
