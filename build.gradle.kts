@@ -1,25 +1,59 @@
 import java.net.URL
 
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-	id("com.diffplug.spotless") version "6.12.0"
-	kotlin("jvm") version "1.8.0"
+	alias(libs.plugins.shadow) apply false
+	alias(libs.plugins.spotless)
+	alias(libs.plugins.kotlin)
 }
 
-repositories {
-	mavenCentral()
+allprojects {
+	apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
+	apply(plugin = rootProject.libs.plugins.kotlin.get().pluginId)
 
-	maven("https://repo.horizonsend.net/mirror") // Horizon's End Mirror
-}
+	if (name != "common" && rootProject != this) {
+		apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
 
-kotlin.jvmToolchain(17)
+		dependencies { implementation(project(":common")) }
 
-spotless {
-	kotlin {
-		ktlint("0.47.1")
+		tasks.build {
+			dependsOn("shadowJar")
+		}
+	}
 
-		trimTrailingWhitespace()
-		indentWithTabs()
-		endWithNewline()
+	repositories {
+		mavenCentral()
+
+		maven("https://repo.horizonsend.net/mirror")
+
+		maven("https://repo.papermc.io/repository/maven-public/") // Waterfall
+		maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper)
+		maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
+		maven("https://repo.codemc.io/repository/maven-snapshots/") // WorldEdit
+		maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
+		maven("https://jitpack.io") // Dynmap (Spigot), Vault, NuVotifier
+		maven("https://maven.citizensnpcs.co/repo") // Citizens
+	}
+
+	kotlin.jvmToolchain(17)
+
+	tasks.build {
+		dependsOn("spotlessApply")
+	}
+
+	spotless {
+		kotlin {
+			ktlint("0.47.1").editorConfigOverride(mapOf(
+				"ktlint_disabled_rules" to arrayOf(
+					"annotation", // Inlining annotations is cleaner sometimes
+					"argument-list-wrapping" // This seems to break arbitrarily with MenuHelper.kt, come back to this
+				).joinToString()
+			))
+
+			trimTrailingWhitespace()
+			indentWithTabs()
+			endWithNewline()
+		}
 	}
 }
 
