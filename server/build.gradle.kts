@@ -27,3 +27,4 @@ dependencies {
 }
 
 tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }
+tasks.build { dependsOn("reobfJar") }
