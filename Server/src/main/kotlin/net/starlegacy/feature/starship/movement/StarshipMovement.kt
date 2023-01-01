@@ -60,7 +60,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			throw ConditionFailedException("Minimum height limit reached")
 		}
 
-		if (displaceY(starship.max.y) > world1.maxHeight) {
+		if (displaceY(starship.max.y) >= world1.maxHeight) {
 			if (playerShip != null && exitPlanet(world1, playerShip)) {
 				starship.sendMessage("&7Exiting planet")
 				return
