@@ -1,10 +1,9 @@
-rootProject.name = "Ion"
-
-include("Proxy")
-include("Server")
-include("Common")
+include("proxy")
+include("server")
+include("common")
 
 pluginManagement.repositories {
-	maven("https://repo.papermc.io/repository/maven-public/")
 	gradlePluginPortal()
+
+	maven("https://repo.papermc.io/repository/maven-public/")
 }

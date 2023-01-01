@@ -1,0 +1,63 @@
+[versions]
+acf = "0.5.1-SNAPSHOT"
+anvilgui = "1.6.3-SNAPSHOT"
+citizens = "2.0.30-SNAPSHOT"
+config4k = "0.5.0"
+configurate = "4.1.2"
+cqengine = "3.6.0"
+discordsrv = "1.26.0"
+dynmap = "3.1"
+inventoryframework = "0.10.8"
+jackson = "2.14.1"
+jda = "5.0.0-beta.2"
+jedis = "4.3.1"
+kmongo = "4.8.0"
+kotlin = "1.8.0"
+luckperms = "5.4"
+moshipack = "1.0.1"
+nuvotifier = "2.7.2"
+paper = "1.19.3-R0.1-SNAPSHOT"
+paperweight = "1.4.0"
+shadow = "7.1.2"
+spotless = "6.12.0"
+vault = "1.7.1"
+waterfall = "1.19-R0.1-SNAPSHOT"
+worldedit = "7.2.8"
+
+[libraries]
+acfBungee = { module = "co.aikar:acf-bungee", version.ref = "acf" }
+acfPaper = { module = "co.aikar:acf-paper", version.ref = "acf" }
+anvilgui = { module = "net.wesjd:anvilgui", version.ref = "anvilgui" }
+citizens = { module = "net.citizensnpcs:citizens-main", version.ref = "citizens" }
+config4k = { module = "io.github.config4k:config4k", version.ref = "config4k" }
+configurate-hocon = { module = "org.spongepowered:configurate-hocon", version.ref = "configurate" }
+configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin", version.ref = "configurate" }
+cqengine = { module = "com.googlecode.cqengine:cqengine", version.ref = "cqengine" }
+discordsrv = { module = "com.discordsrv:discordsrv", version.ref = "discordsrv" }
+dynmap = { module = "com.github.webbukkit.dynmap:spigot", version.ref = "dynmap" }
+inventoryframework = { module = "com.github.stefvanschie.inventoryframework:IF", version.ref = "inventoryframework" }
+jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
+jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
+kmongo = { module = "org.litote.kmongo:kmongo", version.ref = "kmongo" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+luckperms = { module = "net.luckperms:api", version.ref = "luckperms" }
+moshipack = { module = "com.daveanthonythomas.moshipack:moshipack", version.ref = "moshipack" }
+nuvotifier-api = { module = "com.github.NuVotifier.NuVotifier:nuvotifier-api", version.ref = "nuvotifier" }
+nuvotifier-bungee = { module = "com.github.NuVotifier.NuVotifier:nuvotifier-bungeecord", version.ref = "nuvotifier" }
+vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
+waterfall = { module = "io.github.waterfallmc:waterfall-api", version.ref = "waterfall" }
+worldedit = { module = "com.sk89q.worldedit:worldedit-bukkit", version.ref = "worldedit" }
+
+[bundles]
+common = [ "jedis", "kmongo" ]
+configurate = [ "configurate-hocon", "configurate-kotlin" ]
+kotlin = [ "kotlin-reflect", "kotlin-stdlib" ]
+nuvotifier = [ "nuvotifier-api", "nuvotifier-bungee" ]
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow"}
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
