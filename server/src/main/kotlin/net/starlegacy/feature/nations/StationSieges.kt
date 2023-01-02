@@ -298,13 +298,13 @@ object StationSieges : SLComponent() {
 					val playerNationId: Oid<Nation> = PlayerCache[otherPlayer].nation ?: continue
 					for (relation in NationRelation.find(NationRelation::nation eq playerNation)) {
 						if (relation.other == playerNationId && relation.actual == NationRelation.Level.ALLY) {
-							continue
+							if (!station.contains(otherPlayer.location)) {
+								continue
+							}
+							SLXP.addAsync(otherPlayer, NATIONS_BALANCE.capturableStation.siegerAllyXP)
 						}
-					}
-					if (!station.contains(otherPlayer.location)) {
 						continue
 					}
-					SLXP.addAsync(otherPlayer, NATIONS_BALANCE.capturableStation.siegerAllyXP)
 				}
 			}
 		}
