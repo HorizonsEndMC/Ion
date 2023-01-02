@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.legacy
 
+import net.minecraft.world.level.material.Material.DIRT
+import net.minecraft.world.level.material.Material.GRASS
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.util.isConcrete
 import net.starlegacy.util.isGlass
@@ -211,7 +213,10 @@ object ShipFactoryMaterialCosts {
 		CRACKED_DEEPSLATE_BRICKS to 0.1,
 		CRACKED_DEEPSLATE_TILES to 0.1,
 		CRACKED_NETHER_BRICKS to 0.1,
-		CRACKED_POLISHED_BLACKSTONE_BRICKS to 0.1
+		CRACKED_POLISHED_BLACKSTONE_BRICKS to 0.1,
+
+		DIRT to 0.1,
+		GRASS to 0.1,
 	)
 
 	fun getPrice(data: BlockData): Double {
