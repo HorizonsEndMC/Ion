@@ -3,96 +3,28 @@ package net.horizonsend.ion.proxy.commands.discord
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
+import net.horizonsend.ion.proxy.managers.SyncManager
 import net.horizonsend.ion.proxy.messageEmbed
 
 @CommandAlias("resync")
 @Description("Resync all roles")
-class ResyncCommand(private val configuration: ProxyConfiguration) {
+class ResyncCommand(private val jda: JDA, private val configuration: ProxyConfiguration) {
 	@Default
 	@Suppress("Unused")
 	fun onResyncCommand(event: SlashCommandInteractionEvent) {
-		if (event.user.idLong != 521031433972744193) {
+		if (event.user.idLong != 521031433972744193 || event.user.idLong != 152566944925483009) {
 			event.replyEmbeds(messageEmbed(title = "You do not have permission to use this command.", color = 0xff8844))
 				.setEphemeral(true)
 				.queue()
 			return
 		}
 
-		val guild = event.jda.getGuildById(configuration.discordServer) ?: run {
-			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild is not set.", color = 0xff8844)).queue()
-			return
-		}
-
-		val linkedRole = guild.getRoleById(configuration.linkedRole) ?: run {
-			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild linked role is not set.", color = 0xff8844)).queue()
-			return
-		}
-
-		val unlinkedRole = guild.getRoleById(configuration.unlinkedRole) ?: run {
-			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild unlinked role is not set.", color = 0xff8844)).queue()
-			return
-		}
-
-		val linkBypassRole = guild.getRoleById(configuration.linkBypassRole) ?: run {
-			event.hook.editOriginalEmbeds(messageEmbed(title = "Guild link bypass role is not set.", color = 0xff8844)).queue()
-			return
-		}
-
 		event.deferReply(true).queue()
 
-		val changeLog = mutableListOf<String>()
-
-		val membersWithLinked = guild.getMembersWithRoles(linkedRole)
-		val membersWithUnlinked = guild.getMembersWithRoles(unlinkedRole)
-		val membersWithLinkBypass = guild.getMembersWithRoles(linkBypassRole)
-
-		for (member in guild.members) {
-			val playerData = PlayerData[member.idLong]
-
-			val isOverridden = member.user.isBot || membersWithLinkBypass.contains(member)
-
-			val shouldHaveUnlinked = !isOverridden && playerData == null
-			val shouldHaveLinked = !isOverridden && playerData != null
-
-			if (shouldHaveLinked && !membersWithLinked.contains(member)) {
-				guild.addRoleToMember(member, linkedRole).queue()
-				changeLog += "- Granted ${linkedRole.asMention} to ${member.asMention}"
-			}
-
-			if (!shouldHaveLinked && membersWithLinked.contains(member)) {
-				guild.removeRoleFromMember(member, linkedRole).queue()
-				changeLog += "- Removed ${linkedRole.asMention} from ${member.asMention}"
-			}
-
-			if (shouldHaveUnlinked && !membersWithUnlinked.contains(member)) {
-				guild.addRoleToMember(member, unlinkedRole).queue()
-				changeLog += "- Granted ${unlinkedRole.asMention} to ${member.asMention}"
-			}
-
-			if (!shouldHaveUnlinked && membersWithUnlinked.contains(member)) {
-				guild.removeRoleFromMember(member, unlinkedRole).queue()
-				changeLog += "- Removed ${unlinkedRole.asMention} from ${member.asMention}"
-			}
-
-			playerData?.let {
-				try {
-					if (member.effectiveName != it.minecraftUsername) {
-						member.modifyNickname(it.minecraftUsername).queue()
-						changeLog += "- Updated name of ${member.asMention}"
-					} else {
-						if (member.nickname == member.user.name) {
-							member.modifyNickname(null).queue()
-							changeLog += "- Updated name of ${member.asMention}"
-						}
-					}
-				} catch (exception: Exception) {
-					exception.printStackTrace()
-				}
-			}
-		}
+		val changeLog = SyncManager(jda, configuration).sync()
 
 		if (changeLog.isEmpty()) {
 			event.hook.editOriginalEmbeds(
