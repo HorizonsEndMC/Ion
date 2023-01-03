@@ -22,6 +22,7 @@ import net.horizonsend.ion.proxy.listeners.ProxyPingListener
 import net.horizonsend.ion.proxy.listeners.ServerConnectListener
 import net.horizonsend.ion.proxy.listeners.VotifierListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
+import net.horizonsend.ion.proxy.managers.SyncManager
 import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Plugin
@@ -56,6 +57,8 @@ class IonProxy : Plugin() {
 		try {
 			Connectivity.open(dataFolder)
 
+			jda?.let { SyncManager(it, configuration).onEnable() }
+
 			// Schedule Reminders
 			ReminderManager.scheduleReminders()
 
@@ -84,7 +87,7 @@ class IonProxy : Plugin() {
 				jdaCommandManager.registerGuildCommand(DiscordAccountCommand(configuration))
 				jdaCommandManager.registerGuildCommand(DiscordInfoCommand())
 				jdaCommandManager.registerGuildCommand(PlayerListCommand(proxy))
-				jdaCommandManager.registerGuildCommand(ResyncCommand(configuration))
+				jdaCommandManager.registerGuildCommand(ResyncCommand(jda, configuration))
 
 				jdaCommandManager.build()
 
