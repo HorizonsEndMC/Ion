@@ -184,6 +184,10 @@ object NationsMap : SLComponent() {
 			lineRGB = fillRGB
 		}
 
+		if (settlement == null && nation == null && npcOwner == null) {
+			marker.label += "\nCost: ${territory.cost}C"
+		}
+
 		marker.setFillStyle(fillOpacity, fillRGB)
 		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
 	}
