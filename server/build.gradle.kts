@@ -16,6 +16,7 @@ dependencies {
 
 	// Included
 	implementation(libs.moshipack) { exclude("kotlin") /* Old Version */ }
+	implementation(libs.config4k) { exclude("kotlin") /* Old Version */ }
 	implementation(libs.inventoryframework)
 	implementation(libs.acfPaper)
 	implementation(libs.anvilgui)
@@ -23,7 +24,6 @@ dependencies {
 	// Library Loaded
 	compileOnly(libs.jackson)
 	compileOnly(libs.cqengine)
-	compileOnly(libs.config4k)
 }
 
 tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }
