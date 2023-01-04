@@ -8,6 +8,7 @@ import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.SoundCategory
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -136,6 +137,19 @@ abstract class SimpleProjectile(
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
 			if (!hasHit) {
 				world.createExplosion(newLoc, explosionPower)
+				world.spawnParticle(
+					Particle.FLASH,
+					newLoc.x,
+					newLoc.y,
+					newLoc.z,
+					explosionPower.toInt(),
+					explosionPower.toDouble() / 2,
+					explosionPower.toDouble() / 2,
+					explosionPower.toDouble() / 2,
+					0.0,
+					null,
+					true
+				)
 				hasHit = true
 			}
 		}
