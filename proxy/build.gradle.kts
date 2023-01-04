@@ -3,9 +3,9 @@ dependencies {
 
 	compileOnly(libs.bundles.nuvotifier) // Other Plugin
 
-	// Library Loaded
-	compileOnly(libs.jda)
+	// Included
 	implementation(libs.acfBungee)
+	implementation(libs.jda)
 }
 
 tasks.shadowJar { archiveFileName.set("../../../build/IonProxy.jar") }

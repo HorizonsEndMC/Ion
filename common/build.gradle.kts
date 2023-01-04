@@ -1,9 +1,7 @@
-plugins { `java-library` }
-
 dependencies {
-	// Library Loaded
-	compileOnlyApi(libs.bundles.configurate)
-	compileOnlyApi(libs.bundles.kotlin)
-	compileOnlyApi(libs.jedis)
-	compileOnlyApi(libs.kmongo)
+	// Included
+	api(libs.bundles.configurate)
+	api(libs.bundles.kotlin)
+	api(libs.jedis)
+	api(libs.kmongo)
 }
