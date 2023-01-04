@@ -15,13 +15,13 @@ dependencies {
 	compileOnly(libs.luckperms)
 
 	// Included
+	implementation(libs.moshipack) { exclude("kotlin") /* Old Version */ }
 	implementation(libs.inventoryframework)
 	implementation(libs.acfPaper)
 	implementation(libs.anvilgui)
 
 	// Library Loaded
 	compileOnly(libs.jackson)
-	compileOnly(libs.moshipack)
 	compileOnly(libs.cqengine)
 	compileOnly(libs.config4k)
 }
