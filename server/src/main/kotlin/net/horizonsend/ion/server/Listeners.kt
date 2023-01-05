@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.legacy.listeners.StationSiegeBeginListener
 import net.horizonsend.ion.server.listeners.BlockFadeListener
 import net.horizonsend.ion.server.listeners.BlockFormListener
 import net.horizonsend.ion.server.listeners.EnchantItemListener
+import net.horizonsend.ion.server.listeners.EntityDamageListener
 import net.horizonsend.ion.server.listeners.InventoryClickListener
 import net.horizonsend.ion.server.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.listeners.InventoryDragListener
@@ -42,6 +43,7 @@ val listeners = arrayOf(
 	BlockFormListener(),
 	ChunkLoadListener(Ion),
 	EnchantItemListener(),
+	EntityDamageListener(),
 	InventoryClickListener(),
 	InventoryCloseListener(),
 	InventoryDragListener(),
