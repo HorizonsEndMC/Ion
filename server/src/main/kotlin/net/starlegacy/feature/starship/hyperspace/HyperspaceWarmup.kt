@@ -14,7 +14,13 @@ import org.litote.kmongo.eq
 import kotlin.math.max
 import kotlin.math.min
 
-class HyperspaceWarmup(val ship: ActiveStarship, var warmup: Int, val dest: Location, val drive: HyperdriveSubsystem) :
+class HyperspaceWarmup(
+	val ship: ActiveStarship,
+	var warmup: Int,
+	val dest: Location,
+	val drive: HyperdriveSubsystem,
+	private val useFuel: Boolean
+) :
 	BukkitRunnable() {
 	init {
 		if (ship is ActivePlayerStarship) {
@@ -55,7 +61,7 @@ class HyperspaceWarmup(val ship: ActiveStarship, var warmup: Int, val dest: Loca
 			return
 		}
 
-		if (MassShadows.find(ship.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble()) != null) {
+		if (MassShadows.find(ship.serverLevel.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble()) != null) {
 			ship.onlinePassengers.forEach { player ->
 				player.sendFeedbackAction(
 					FeedbackType.USER_ERROR,
@@ -69,7 +75,13 @@ class HyperspaceWarmup(val ship: ActiveStarship, var warmup: Int, val dest: Loca
 		if (seconds < warmup) {
 			return
 		}
-		ship.onlinePassengers.forEach { player -> player.sendFeedbackAction(FeedbackType.INFORMATION, "Jumping") }
+
+		if (useFuel) {
+			require(drive.hasFuel()) { "Hyperdrive doesn't have fuel!" }
+			drive.useFuel()
+		}
+
+		ship.sendFeedbackAction(FeedbackType.INFORMATION, "Jumping")
 		Hyperspace.completeJumpWarmup(this)
 	}
 

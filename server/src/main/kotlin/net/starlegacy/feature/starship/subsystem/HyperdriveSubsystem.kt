@@ -12,7 +12,7 @@ import kotlin.math.min
 class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: HyperdriveMultiblock) :
 	AbstractMultiblockSubsystem<HyperdriveMultiblock>(starship, sign, multiblock) {
 	private fun getHoppers(): Set<Hopper> {
-		return multiblock.getHoppers(starship.world.getBlockAtKey(pos.toBlockKey()).getState(false) as Sign)
+		return multiblock.getHoppers(starship.serverLevel.world.getBlockAtKey(pos.toBlockKey()).getState(false) as Sign)
 	}
 
 	fun hasFuel(): Boolean = getHoppers().all { hopper ->

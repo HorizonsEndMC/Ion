@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship.hyperspace
 import net.horizonsend.ion.server.legacy.events.HyperspaceEnterEvent
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
@@ -20,6 +21,7 @@ import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.movement.StarshipTeleportation
 import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import net.starlegacy.feature.starship.subsystem.NavCompSubsystem
+import net.starlegacy.util.toLocation
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -37,19 +39,19 @@ object Hyperspace : SLComponent() {
 	const val HYPERMATTER_AMOUNT = 2
 
 	override fun onDisable() {
-		movementTasks.forEach { activeStarship, hyperspaceMovement ->
+		movementTasks.forEach { (_, hyperspaceMovement) ->
 			cancelJumpMovement(hyperspaceMovement)
 		}
 	}
 
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
 		if (MassShadows.find(
-				starship.world,
+				starship.serverLevel.world,
 				starship.centerOfMass.x.toDouble(),
 				starship.centerOfMass.z.toDouble()
 			) != null
 		) {
-			starship.sendMessage("&cShip is within Gravity Well, jump cancelled")
+			starship.sendFeedbackMessage(FeedbackType.USER_ERROR, "Ship is within Gravity Well, jump cancelled")
 			return
 		}
 		if (starship.type == PLATFORM) {
@@ -62,19 +64,15 @@ object Hyperspace : SLComponent() {
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }
 		check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
-		val spaceWorld = starship.world
+		val spaceWorld = starship.serverLevel.world
 		check(SpaceWorlds.contains(spaceWorld)) { "${spaceWorld.name} is not a space world" }
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
 		checkNotNull(hyperspaceWorld) { "${spaceWorld.name} does not have a hyperspace world" }
-		if (useFuel) {
-			require(hyperdrive.hasFuel()) { "Hyperdrive doesn't have fuel!" }
-			hyperdrive.useFuel()
-		}
-		val dest = Location(starship.world, x.toDouble(), 128.0, z.toDouble())
+		val dest = Location(spaceWorld, x.toDouble(), 128.0, z.toDouble())
 		val mass = starship.mass
 		val speed = calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
-		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive)
+		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
 		(starship as? ActivePlayerStarship)?.pilot?.let { HyperspaceEnterEvent(it, starship).callEvent() }
 	}
@@ -89,7 +87,7 @@ object Hyperspace : SLComponent() {
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
 		val starship = warmup.ship
-		for (player in starship.world.getNearbyPlayers(starship.centerOfMassVec3i.toLocation(starship.world), 2500.0)) {
+		for (player in starship.serverLevel.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)) {
 			player.playSound(
 				Sound.sound(
 					Key.key("minecraft:entity.elder_guardian.hurt"),
@@ -100,7 +98,7 @@ object Hyperspace : SLComponent() {
 			)
 		}
 		Space.getPlanets().filter {
-			it.location.toLocation(starship.world).distance(starship.centerOfMassVec3i.toLocation(starship.world)) < 2500
+			it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMass.toLocation(starship.serverLevel.world)) < 2500
 		}
 			.forEach {
 				it.planetWorld?.playSound(
@@ -114,7 +112,7 @@ object Hyperspace : SLComponent() {
 			}
 		check(warmupTasks.remove(starship, warmup)) { "Warmup wasn't in the map!" }
 		warmup.cancel()
-		val world = getHyperspaceWorld(starship.world)
+		val world = getHyperspaceWorld(starship.serverLevel.world)
 		val x = starship.centerOfMass.x.toDouble()
 		val y = starship.centerOfMass.y.toDouble()
 		val z = starship.centerOfMass.z.toDouble()
@@ -139,14 +137,14 @@ object Hyperspace : SLComponent() {
 			return
 		}
 
-		val world = getRealspaceWorld(starship.world)
+		val world = getRealspaceWorld(starship.serverLevel.world)
 
 		if (world == null) {
-			starship.sendMessage("&cFailed to exist hyperspace: Realspace world not found")
+			starship.sendFeedbackMessage(FeedbackType.SERVER_ERROR, "Failed to exit hyperspace: Realspace world not found")
 			return
 		}
 
-		val dest = starship.centerOfMassVec3i.toLocation(world)
+		val dest = starship.centerOfMass.toLocation(world)
 		dest.x = movement.x
 		dest.z = movement.z
 
@@ -177,7 +175,7 @@ object Hyperspace : SLComponent() {
 		movement.cancel()
 
 		StarshipTeleportation.teleportStarship(starship, movement.dest)
-		starship.world.playSound(
+		starship.serverLevel.world.playSound(
 			Sound.sound(
 				Key.key("minecraft:entity.warden.sonic_boom"),
 				Sound.Source.AMBIENT,
@@ -238,7 +236,7 @@ object Hyperspace : SLComponent() {
 	@EventHandler
 	fun onStarshipActivated(event: StarshipActivatedEvent) {
 		val starship = event.starship
-		val world = starship.world
+		val world = starship.serverLevel.world
 
 		if (!isHyperspaceWorld(world)) {
 			return
@@ -246,7 +244,7 @@ object Hyperspace : SLComponent() {
 
 		val realspaceWorld = getRealspaceWorld(world) ?: return
 
-		val dest = starship.centerOfMassVec3i.toLocation(realspaceWorld)
+		val dest = starship.centerOfMass.toLocation(realspaceWorld)
 		StarshipTeleportation.teleportStarship(starship, dest)
 	}
 
@@ -259,7 +257,7 @@ object Hyperspace : SLComponent() {
 
 	@EventHandler
 	fun onStarshipMove(event: StarshipMoveEvent) {
-		if (!isHyperspaceWorld(event.starship.world)) {
+		if (!isHyperspaceWorld(event.starship.serverLevel.world)) {
 			return
 		}
 
