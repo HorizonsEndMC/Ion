@@ -153,7 +153,7 @@ object SpaceMechanics : SLComponent() {
 		player.damage(0.5)
 	}
 
-	private fun isWearingSpaceSuit(player: Player): Boolean {
+	fun isWearingSpaceSuit(player: Player): Boolean {
 		val inventory = player.inventory
 		return inventory.helmet?.type == Material.CHAINMAIL_HELMET &&
 			inventory.chestplate?.type == Material.CHAINMAIL_CHESTPLATE &&
