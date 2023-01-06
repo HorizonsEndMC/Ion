@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.extensions
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.starships.control.PlayerController
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor.color
@@ -10,7 +9,6 @@ import org.bukkit.entity.Player
 /** Returns the prefix that should be used when displaying server messages sent to this audience in the console. */
 private val Audience.prefix get() = when (this) {
 	is Player -> "to $name: "
-	is PlayerController -> "to ${serverPlayer.displayName}: "
 	else -> ""
 }
 
