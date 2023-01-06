@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.generation
 
-import java.util.Random
 import net.horizonsend.ion.server.generation.populators.AsteroidPopulator
 import net.horizonsend.ion.server.generation.populators.OrePopulator
 import org.bukkit.World
 import org.bukkit.generator.BlockPopulator
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.generator.WorldInfo
+import java.util.Random
 
 class SpaceChunkGenerator : ChunkGenerator() {
 	override fun generateNoise(worldInfo: WorldInfo, random: Random, chunkX: Int, chunkZ: Int, chunkData: ChunkData) {

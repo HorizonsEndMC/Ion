@@ -1,10 +1,7 @@
 package net.horizonsend.ion.server.generation.populators
 
-import java.util.Random
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.pow
-import kotlin.math.sqrt
+import net.horizonsend.ion.common.loadConfiguration
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.configuration.AsteroidFeatures
 import net.horizonsend.ion.server.generation.configuration.Palette
@@ -14,9 +11,12 @@ import org.bukkit.generator.BlockPopulator
 import org.bukkit.generator.LimitedRegion
 import org.bukkit.generator.WorldInfo
 import org.bukkit.util.noise.SimplexOctaveGenerator
+import java.util.Random
+import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.floor
-import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.IonServer
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class AsteroidPopulator : BlockPopulator() {
 	// default asteroid configuration values
@@ -32,7 +32,7 @@ class AsteroidPopulator : BlockPopulator() {
 		random: Random,
 		chunkX: Int,
 		chunkZ: Int,
-		limitedRegion: LimitedRegion,
+		limitedRegion: LimitedRegion
 	) {
 		val worldX = chunkX * 16
 		val worldZ = chunkZ * 16
@@ -43,15 +43,13 @@ class AsteroidPopulator : BlockPopulator() {
 		for (count in 0..ceil(chunkDensity).toInt()) {
 			val asteroidRandom = Random(System.currentTimeMillis() + worldInfo.seed)
 
-			//Random coordinate generation.
+			// Random coordinate generation.
 			val asteroidX = asteroidRandom.nextInt(0, 15) + worldX
 			val asteroidZ = asteroidRandom.nextInt(0, 15) + worldZ
 			val asteroidY = asteroidRandom.nextInt(worldInfo.minHeight + 10, worldInfo.maxHeight - 10)
 
 			// random number out of 100, chance of asteroid's generation. For use in selection.
 			val chance = random.nextDouble(100.0)
-
-			println("chance: $chance, density: ${chunkDensity * 10}")
 
 			// Selects some asteroids that are generated. Allows for densities of 0<X<1 asteroids per chunk.
 			if (chance > (chunkDensity * 10)) continue
@@ -71,7 +69,7 @@ class AsteroidPopulator : BlockPopulator() {
 		chunkX: Int,
 		chunkZ: Int,
 		limitedRegion: LimitedRegion,
-		asteroid: Asteroid,
+		asteroid: Asteroid
 	) {
 		val noise = SimplexOctaveGenerator(Random(seed), 1)
 
@@ -116,8 +114,10 @@ class AsteroidPopulator : BlockPopulator() {
 						xSquared +
 						ySquared +
 						zSquared
-						> (fullNoise).pow(2)
-					) continue // Continue if block is not inside any asteroid
+					> (fullNoise).pow(2)
+					) {
+						continue // Continue if block is not inside any asteroid
+					}
 
 					if (!limitedRegion.isInRegion(x, y, z)) continue
 
@@ -125,14 +125,20 @@ class AsteroidPopulator : BlockPopulator() {
 
 					noise.setScale(0.15)
 
-					val paletteSample = (((noise.noise(
-						worldX + xDouble,
-						yDouble,
-						worldZ + zDouble,
-						1.0,
-						1.0,
-						true
-					) + 1) / 2) * (weightedMaterials.size - 1)).toInt() // Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
+					val paletteSample = (
+						(
+							(
+								noise.noise(
+									worldX + xDouble,
+									yDouble,
+									worldZ + zDouble,
+									1.0,
+									1.0,
+									true
+								) + 1
+								) / 2
+							) * (weightedMaterials.size - 1)
+						).toInt() // Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 
 					val material =
 						weightedMaterials[paletteSample] // Weight the list by adding duplicate entries, then sample it for the material.
@@ -147,7 +153,7 @@ class AsteroidPopulator : BlockPopulator() {
 		world: World,
 		chunkX: Int,
 		chunkZ: Int,
-		asteroid: Asteroid,
+		asteroid: Asteroid
 	) {
 		val noise = SimplexOctaveGenerator(Random(world.seed), 1)
 
@@ -192,21 +198,29 @@ class AsteroidPopulator : BlockPopulator() {
 						xSquared +
 						ySquared +
 						zSquared
-						> (fullNoise).pow(2)
-					) continue // Continue if block is not inside any asteroid
+					> (fullNoise).pow(2)
+					) {
+						continue // Continue if block is not inside any asteroid
+					}
 
 					val weightedMaterials = materialWeights(asteroid.palette)
 
 					noise.setScale(0.15)
 
-					val paletteSample = (((noise.noise(
-						worldX + xDouble,
-						yDouble,
-						worldZ + zDouble,
-						1.0,
-						1.0,
-						true
-					) + 1) / 2) * (weightedMaterials.size - 1)).toInt() // Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
+					val paletteSample = (
+						(
+							(
+								noise.noise(
+									worldX + xDouble,
+									yDouble,
+									worldZ + zDouble,
+									1.0,
+									1.0,
+									true
+								) + 1
+								) / 2
+							) * (weightedMaterials.size - 1)
+						).toInt() // Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 
 					val material =
 						weightedMaterials[paletteSample] // Weight the list by adding duplicate entries, then sample it for the material.
@@ -234,7 +248,7 @@ class AsteroidPopulator : BlockPopulator() {
 		val size = random.nextDouble(5.0, 20.0)
 		val octaves = floor(5 * 0.95.pow(size)).toInt()
 
-		return Asteroid(x, y ,z, blockPalette, size, octaves)
+		return Asteroid(x, y, z, blockPalette, size, octaves)
 	}
 
 	private fun parseDensity(worldInfo: WorldInfo, x: Double, y: Double, z: Double): Double {
@@ -245,7 +259,8 @@ class AsteroidPopulator : BlockPopulator() {
 			if (feature.worldName != worldInfo.name) continue
 
 			if ((sqrt((x - feature.x).pow(2) + (z - feature.z).pow(2)) - feature.tubeSize).pow(2) + (y - feature.y).pow(
-					2) < feature.tubeRadius.pow(2)
+					2
+				) < feature.tubeRadius.pow(2)
 			) {
 				densities.add(feature.baseDensity)
 			}
@@ -282,7 +297,6 @@ class AsteroidPopulator : BlockPopulator() {
 	}
 
 	fun storeAsteroid(asteroid: Asteroid) {
-
 	}
 
 	data class Asteroid(
