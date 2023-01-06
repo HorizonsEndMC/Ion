@@ -8,7 +8,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
  */
 @ConfigSerializable
 data class AsteroidFeatures(
-	val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", "ExampleWorld",1.0, 100.0, 10.0, 420, 100, 69000))
+	val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", "ExampleWorld", 1.0, 100.0, 10.0, 420, 100, 69000))
 )
 
 /**Asteroid Feature
