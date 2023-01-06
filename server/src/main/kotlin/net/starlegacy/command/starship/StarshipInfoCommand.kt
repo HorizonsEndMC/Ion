@@ -22,7 +22,7 @@ object StarshipInfoCommand : SLCommand() {
 
 		val blocks = ship.blocks.map { Vec3i(it) }.associateWith { it.toLocation(ship.world).block.state }
 
-		val size = ship.blockCount
+		val size = ship.initialBlockCount
 
 		p msg "&b${ship.data.starshipType.displayName} &f($size blocks)"
 		p msg "   &7Mass:&f ${ship.mass}"

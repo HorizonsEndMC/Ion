@@ -313,7 +313,7 @@ object StationSieges : SLComponent() {
 
 	private fun isInBigShip(player: Player): Boolean {
 		val starship = ActiveStarships.findByPilot(player) ?: return false
-		return starship.blockCount >= StarshipType.CORVETTE.minSize
+		return starship.initialBlockCount >= StarshipType.CORVETTE.minSize
 	}
 
 	@EventHandler

@@ -382,7 +382,7 @@ object MiscStarshipCommands : SLCommand() {
 			val pilot: Player? = (starship as? ActivePlayerStarship)?.pilot
 			totalShips++
 
-			val size: Int = starship.blockCount
+			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
 			val name = (starship as? ActivePlayerStarship)?.data?.let { getDisplayName(it) } ?: starship.type.formatted

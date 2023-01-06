@@ -49,7 +49,7 @@ object ShipKillXP : SLComponent() {
 	private fun data(starship: ActiveStarship): ShipDamageData {
 		// needs to be a direct reference to the starship's damagers so it stays synchronized
 		val map = starship.damagers
-		val size = starship.blockCount
+		val size = starship.initialBlockCount
 		val type = starship.type
 		val name = (starship as ActivePlayerStarship).data.name
 		return ShipDamageData(map, size, type, name)
@@ -101,7 +101,7 @@ object ShipKillXP : SLComponent() {
 	private fun onPlayerKilled(killed: UUID, killedName: String, killer: Entity?) {
 		val data = map.getIfPresent(killed) ?: return
 		if (killer is Player) {
-			val damager = Damager(killer.uniqueId, ActiveStarships.findByPassenger(killer)?.blockCount)
+			val damager = Damager(killer.uniqueId, ActiveStarships.findByPassenger(killer)?.initialBlockCount)
 			data.map.getOrPut(damager, { AtomicInteger() }).incrementAndGet()
 		}
 		onShipKill(killed, killedName, data)

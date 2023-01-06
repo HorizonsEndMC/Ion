@@ -30,7 +30,7 @@ object StarshipCruising : SLComponent() {
 		var targetDir: Vector? = null,
 		var accel: Double = 0.0
 	) {
-		var lastBlockCount = starship.blockCount
+		var lastBlockCount = starship.initialBlockCount
 
 		fun accelerate(maxSpeed: Int, thrusterPower: Double) {
 			val dir = this.targetDir ?: Vector()
@@ -124,7 +124,7 @@ object StarshipCruising : SLComponent() {
 
 	private fun processUpdatedHullIntegrity(starship: ActivePlayerStarship) {
 		val oldBlockCount = starship.cruiseData.lastBlockCount
-		val newBlockCount = starship.blockCount
+		val newBlockCount = starship.initialBlockCount
 
 		if (oldBlockCount == newBlockCount) {
 			return
