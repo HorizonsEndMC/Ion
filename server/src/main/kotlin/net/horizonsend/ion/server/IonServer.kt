@@ -4,8 +4,6 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.commands.BountyCommands
-import net.horizonsend.ion.server.legacy.commands.AchievementsCommand
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
@@ -35,11 +33,6 @@ class IonServer : JavaPlugin() {
 
 			@Suppress("Deprecation")
 			commandManager.enableUnstableAPI("help")
-
-			val commands = arrayOf(
-				AchievementsCommand(),
-				BountyCommands()
-			)
 
 			for (command in commands) commandManager.registerCommand(command)
 
