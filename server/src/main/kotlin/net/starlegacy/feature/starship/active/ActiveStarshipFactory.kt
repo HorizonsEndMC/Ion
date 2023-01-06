@@ -108,7 +108,7 @@ object ActiveStarshipFactory {
 
 	private fun limitReinforcedShields(starship: ActivePlayerStarship) {
 		val reinforcedCount = starship.shields.count { it.isReinforcementEnabled }
-		val maxReinforced = min(3, starship.blockCount / 7500)
+		val maxReinforced = min(3, starship.initialBlockCount / 7500)
 
 		if (reinforcedCount <= maxReinforced) {
 			return

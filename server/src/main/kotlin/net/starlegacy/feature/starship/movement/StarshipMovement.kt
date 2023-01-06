@@ -254,7 +254,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			return false
 		}
 
-		val blockCountSquareRoot = sqrt(starship.blockCount.toDouble())
+		val blockCountSquareRoot = sqrt(starship.initialBlockCount.toDouble())
 		val distance: Double = 15 + (planet.atmosphereRadius + blockCountSquareRoot) * 1.5
 
 		val exitPoint: Location = planet.location

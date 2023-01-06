@@ -133,7 +133,7 @@ object Interdiction : SLComponent() {
 
 			val pilot = cruisingShip.pilot ?: continue
 
-			if (pilot.location.distance(sign.location) > starship.interdictionRange) {
+			if (pilot.location.distance(sign.location) > starship.type.interdictionRange) {
 				continue
 			}
 

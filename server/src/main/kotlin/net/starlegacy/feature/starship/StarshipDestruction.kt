@@ -49,7 +49,7 @@ object StarshipDestruction {
 
 	private fun vanishShip(starship: ActiveStarship) {
 		val air = Material.AIR.createBlockData().nms
-		val queue = Long2ObjectOpenHashMap<BlockState>(starship.blockCount)
+		val queue = Long2ObjectOpenHashMap<BlockState>(starship.initialBlockCount)
 		starship.blocks.associateWithTo(queue) { air }
 		BlockPlacement.placeImmediate(starship.world, queue)
 	}

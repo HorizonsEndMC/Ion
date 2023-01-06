@@ -16,9 +16,9 @@ abstract class ShieldSubsystem(
 	multiblock: ShieldMultiblock
 ) : AbstractMultiblockSubsystem<ShieldMultiblock>(starship, sign, multiblock) {
 	val name: String = sign.getLine(2).stripColor()
-	val maxShields: Double = (0.00671215 * starship.blockCount.toDouble().pow(0.836512) - 0.188437)
-		get() = if (starship.blockCount < 500) (1 - field + (1)) else field
-	val maxPower: Int = (starship.blockCount.coerceAtLeast(500).d().pow(3.0 / 5.0) * 10000.0).roundToInt()
+	val maxShields: Double = (0.00671215 * starship.initialBlockCount.toDouble().pow(0.836512) - 0.188437)
+		get() = if (starship.initialBlockCount < 500) (1 - field + (1)) else field
+	val maxPower: Int = (starship.initialBlockCount.coerceAtLeast(500).d().pow(3.0 / 5.0) * 10000.0).roundToInt()
 		get() = if (starship.shields.size > maxShields) {
 			((maxShields / starship.shields.size) * field).toInt()
 		} else if (starship.type.eventship) {

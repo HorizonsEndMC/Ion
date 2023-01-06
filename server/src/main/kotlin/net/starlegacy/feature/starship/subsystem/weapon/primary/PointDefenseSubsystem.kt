@@ -19,7 +19,7 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 	override val range: Double = 120.0
 
 	override fun getMaxPerShot(): Int {
-		return (sqrt(starship.blockCount.toDouble()) / 32).toInt()
+		return (sqrt(starship.initialBlockCount.toDouble()) / 32).toInt()
 	}
 
 	private fun getFirePos() = Vec3i(pos.x + face.modX * 3, pos.y + face.modY * 3, pos.z + face.modZ * 3)

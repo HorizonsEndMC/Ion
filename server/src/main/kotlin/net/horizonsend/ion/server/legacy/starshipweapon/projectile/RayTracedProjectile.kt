@@ -117,7 +117,7 @@ abstract class RayTracedProjectile(
 
 	private fun addToDamagers(world: World, block: Block) {
 		val damagerId: UUID = requireNotNull(shooter).uniqueId
-		val damagerSize: Int? = starship?.blockCount
+		val damagerSize: Int? = starship?.initialBlockCount
 		val damager = ShipKillXP.Damager(damagerId, damagerSize)
 		val x = block.x
 		val y = block.y

@@ -284,7 +284,7 @@ object PilotedStarships : SLComponent() {
 				SUCCESS,
 				"Activated and piloted {0} with {1} blocks.",
 				getDisplayName(data),
-				activePlayerStarship.blockCount
+				activePlayerStarship.initialBlockCount
 			)
 
 			if (carriedShips.any()) {

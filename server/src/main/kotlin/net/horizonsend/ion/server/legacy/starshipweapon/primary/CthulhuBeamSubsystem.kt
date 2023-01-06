@@ -19,7 +19,7 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 	override val range: Double = 300.0
 
 	override fun getMaxPerShot(): Int {
-		return (sqrt(starship.blockCount.toDouble()) / 32).toInt()
+		return (sqrt(starship.initialBlockCount.toDouble()) / 32).toInt()
 	}
 
 	private fun getFirePos() = Vec3i(pos.x + face.modX * 5, pos.y + face.modY * 5, pos.z + face.modZ * 5)
