@@ -309,7 +309,7 @@ object MiscStarshipCommands : SLCommand() {
 		failIf(!starship.isDirectControlEnabled && !StarshipControl.isHoldingController(sender)) {
 			"You need to hold a starship controller to enable direct control"
 		}
-		if (starship.blockCount > StarshipType.CORVETTE.maxSize) {
+		if (starship.initialBlockCount > StarshipType.CORVETTE.maxSize) {
 			sender.sendFeedbackMessage(
 				FeedbackType.SERVER_ERROR,
 				"Only ships of size {0} or less can use direct control, this is mostly a performance thing, and will probably change in the future.",
