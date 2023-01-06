@@ -17,7 +17,7 @@ data class AsteroidConfiguration(
 	val baseAsteroidDensity: Double = 0.25,
 	val maxAsteroidSize: Double = 14.0,
 	val maxAsteroidOctaves: Int = 4,
-	val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1,mapOf(Material.STONE to 1, Material.ANDESITE to 1))),
+	val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, mapOf(Material.STONE to 1, Material.ANDESITE to 1))),
 	val ores: Set<Ore> = setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)),
 	val orePlacementsPerChunk: Int = 256
 )
@@ -33,6 +33,7 @@ data class Palette(
 	val weight: Int,
 	val materials: Map<Material, Int>
 )
+
 /**
  * @param material: Map of Materials to their Weight
  * @param maxBlobSize: Size of the ore blob (Official Mojang term)
