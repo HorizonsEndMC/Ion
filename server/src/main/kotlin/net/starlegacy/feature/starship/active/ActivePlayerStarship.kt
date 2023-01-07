@@ -72,9 +72,9 @@ class ActivePlayerStarship(
 	fun getTargetForward(): BlockFace {
 		val rotation = pendingRotations.peek()
 		return when {
-			rotation == null -> forward
-			rotation.clockwise -> forward.rightFace
-			else -> forward.leftFace
+			rotation == null -> forwardBlockFace
+			rotation.clockwise -> forwardBlockFace.rightFace
+			else -> forwardBlockFace.leftFace
 		}
 	}
 

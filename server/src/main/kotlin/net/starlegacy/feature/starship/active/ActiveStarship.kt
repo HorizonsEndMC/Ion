@@ -7,9 +7,11 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.starships.Starship
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.progression.ShipKillXP
@@ -47,6 +49,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R2.block.CraftBlock
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
@@ -70,14 +73,7 @@ abstract class ActiveStarship(
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
-) : ForwardingAudience {
-	override fun audiences(): Iterable<Audience> = onlinePassengers
-
-	abstract val type: StarshipType
-
-	private var _centerOfMass: BlockPos = centerOfMass
-	private var _centerOfMassVec3i: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
-
+) : Starship(), ForwardingAudience {
 	private var _serverLevel: ServerLevel = serverLevel
 	private var _world: World = serverLevel.world
 
@@ -98,10 +94,13 @@ abstract class ActiveStarship(
 			_world = value
 		}
 
-	var centerOfMass: BlockPos
-		get() = _centerOfMass
+	private var _centerOfMassBlockPos: BlockPos = centerOfMass
+	private var _centerOfMassVec3i: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
+
+	var centerOfMassBlockPos: BlockPos
+		get() = _centerOfMassBlockPos
 		set(value) {
-			_centerOfMass = value
+			_centerOfMassBlockPos = value
 			_centerOfMassVec3i = Vec3i(value.x, value.y, value.z)
 		}
 
@@ -109,9 +108,29 @@ abstract class ActiveStarship(
 	var centerOfMassVec3i: Vec3i
 		get() = _centerOfMassVec3i
 		set(value) {
-			_centerOfMass = BlockPos(value.x, value.y, value.z)
+			_centerOfMassBlockPos = BlockPos(value.x, value.y, value.z)
 			_centerOfMassVec3i = value
 		}
+
+	private var _forwardBlockFace: BlockFace = BlockFace.NORTH
+
+	override var facingDirection: Direction
+		get() = super.facingDirection
+		set(value) {
+			_forwardBlockFace = CraftBlock.notchToBlockFace(value)
+			super.facingDirection = value
+		}
+
+	@Deprecated("Prefer Minecraft - `net.minecraft.core.Direction`")
+	var forwardBlockFace: BlockFace
+		get() = _forwardBlockFace
+		set(value) {
+			_forwardBlockFace = value
+			super.facingDirection = CraftBlock.blockFaceToNotch(value)
+		}
+
+	override fun audiences(): Iterable<Audience> = onlinePassengers
+	abstract val type: StarshipType
 
 	var isTeleporting: Boolean = false
 
@@ -175,7 +194,6 @@ abstract class ActiveStarship(
 
 	abstract val weaponColor: Color
 
-	var forward: BlockFace = BlockFace.NORTH
 	var isExploding = false
 
 	val damagers = mutableMapOf<ShipKillXP.Damager, AtomicInteger>()

@@ -61,7 +61,7 @@ class HyperspaceWarmup(
 			return
 		}
 
-		if (MassShadows.find(ship.serverLevel.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble()) != null) {
+		if (MassShadows.find(ship.serverLevel.world, ship.centerOfMassBlockPos.x.toDouble(), ship.centerOfMassBlockPos.z.toDouble()) != null) {
 			ship.onlinePassengers.forEach { player ->
 				player.sendFeedbackAction(
 					FeedbackType.USER_ERROR,

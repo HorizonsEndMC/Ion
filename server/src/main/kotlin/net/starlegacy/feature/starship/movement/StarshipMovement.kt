@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship.movement
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
+import net.horizonsend.ion.server.starships.control.DirectController
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -34,13 +35,13 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	// null if the ship is not a player ship
 	private val playerShip: ActivePlayerStarship? = starship as? ActivePlayerStarship
 
-	protected abstract fun displaceX(oldX: Int, oldZ: Int): Int
-	protected abstract fun displaceY(oldY: Int): Int
-	protected abstract fun displaceZ(oldZ: Int, oldX: Int): Int
-	protected abstract fun displaceLocation(oldLocation: Location): Location
-	protected abstract fun movePassenger(passenger: Entity)
-	protected abstract fun onComplete()
-	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
+	abstract fun displaceX(oldX: Int, oldZ: Int): Int
+	abstract fun displaceY(oldY: Int): Int
+	abstract fun displaceZ(oldZ: Int, oldX: Int): Int
+	abstract fun displaceLocation(oldLocation: Location): Location
+	abstract fun movePassenger(passenger: Entity)
+	abstract fun onComplete()
+	abstract fun blockDataTransform(blockData: BlockState): BlockState
 
 	/* should only be called by the ship itself */
 	fun execute() {
@@ -108,13 +109,15 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			starship.world = world2
 			starship.blocks = newLocationSet
 			moveShipComputers(world2)
-			updateDirectControlCenter()
 			starship.calculateMinMax()
 			updateCenter()
 			updateSubsystems(world2)
 
+			(starship.controller as? DirectController)?.onShipMovement(this)
+
 			onComplete()
 		}
+
 		if (world1 != world2 && !world2.toString().contains("hyperspace")) {
 			EnterPlanetEvent(world1, world2, (starship as? ActivePlayerStarship)!!.pilot!!).callEvent()
 		}
@@ -213,16 +216,11 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 	}
 
-	private fun updateDirectControlCenter() {
-		val directControlCenter = playerShip?.directControlCenter ?: return
-		playerShip.directControlCenter = displaceLocation(directControlCenter)
-	}
-
 	private fun updateCenter() {
-		val oldCenter = starship.centerOfMass
+		val oldCenter = starship.centerOfMassBlockPos
 		val newCenterX = displaceX(oldCenter.x, oldCenter.z)
 		val newCenterZ = displaceZ(oldCenter.z, oldCenter.x)
-		starship.centerOfMass = BlockPos(newCenterX, displaceY(oldCenter.y), newCenterZ)
+		starship.centerOfMassBlockPos = BlockPos(newCenterX, displaceY(oldCenter.y), newCenterZ)
 	}
 
 	private fun updateSubsystems(world2: World) {

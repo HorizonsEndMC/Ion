@@ -1,8 +1,8 @@
 package net.starlegacy.feature.starship.control
 
-import io.papermc.paper.entity.RelativeTeleportFlag
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.starships.control.LegacyController
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
@@ -25,8 +25,6 @@ import net.starlegacy.util.d
 import net.starlegacy.util.isLava
 import net.starlegacy.util.isSign
 import net.starlegacy.util.isWater
-import net.starlegacy.util.nms
-import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -38,14 +36,11 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
-import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
-import java.util.Collections
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
@@ -56,9 +51,7 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.math.round
 import kotlin.math.roundToInt
-import kotlin.math.sign
 import kotlin.math.sin
 
 object StarshipControl : SLComponent() {
@@ -74,8 +67,6 @@ object StarshipControl : SLComponent() {
 		rotation()
 	}
 
-	private const val DIRECT_CONTROL_DIVISOR = 1.75
-
 	private fun manualFlight() {
 		Tasks.syncRepeat(1, 1) {
 			for (starship in ActiveStarships.allPlayerShips()) {
@@ -87,25 +78,6 @@ object StarshipControl : SLComponent() {
 			PilotedStarships[event.player]?.sneakMovements = 0
 		}
 
-		listen<PlayerItemHeldEvent>(EventPriority.MONITOR, ignoreCancelled = true) { event ->
-			val player = event.player
-			val starship = ActiveStarships.findByPilot(player)
-			if (starship == null || !starship.isDirectControlEnabled) {
-				return@listen
-			}
-			val inventory = player.inventory
-			val previousSlot = event.previousSlot
-			val oldItem = inventory.getItem(previousSlot)
-			val newSlot = event.newSlot
-			val newItem = player.inventory.getItem(newSlot)
-			inventory.setItem(newSlot, oldItem)
-			inventory.setItem(previousSlot, newItem)
-			val baseSpeed = calculateSpeed(newSlot)
-			val cooldown: Long = calculateCooldown(starship.directControlCooldown, newSlot)
-			val speed = (10.0f * baseSpeed * (1000.0f / cooldown)).roundToInt() / 10.0f
-			player.sendActionBar(ChatColor.AQUA.toString() + "Speed: " + speed)
-		}
-
 		listen<PlayerMoveEvent> { event ->
 			if (event.player.walkSpeed == 0.009f && PilotedStarships[event.player] == null) {
 				event.player.walkSpeed = 0.2f
@@ -114,6 +86,8 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun processManualFlight(starship: ActivePlayerStarship) {
+		if (starship.controller !is LegacyController) return
+
 		if (starship.type == PLATFORM) {
 			starship.pilot?.sendFeedbackAction(FeedbackType.USER_ERROR, "This ship type is not capable of moving.")
 			return
@@ -125,147 +99,9 @@ object StarshipControl : SLComponent() {
 
 		val pilot = starship.pilot ?: return
 
-		if (starship.isDirectControlEnabled) {
-			processDirectControl(starship)
-		} else if (pilot.isSneaking) {
+		if (pilot.isSneaking) {
 			processSneakFlight(pilot, starship)
 		}
-	}
-
-	private fun processDirectControl(starship: ActivePlayerStarship) {
-		if (starship.type == PLATFORM) {
-			starship.pilot!!.sendFeedbackAction(FeedbackType.USER_ERROR, "This ship type is not capable of moving.")
-			return
-		}
-
-		if (starship.isInterdicting || Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) {
-			starship.setDirectControlEnabled(false)
-			return
-		}
-
-		val pilot = starship.pilot ?: return
-		val ping = getPing(pilot)
-		val movementCooldown = starship.directControlCooldown
-		val speedFac = if (ping > movementCooldown) 2 else 1
-		val heldItemSlot = pilot.inventory.heldItemSlot
-		val cooldown = calculateCooldown(movementCooldown, heldItemSlot) * speedFac
-		val currentTime = System.currentTimeMillis()
-		val lastManualMove = starship.lastManualMove
-		val elapsedSinceLastMove = currentTime - lastManualMove
-		if (elapsedSinceLastMove < cooldown) {
-			return
-		}
-		starship.lastManualMove = currentTime
-
-		var dx = 0
-		var dy = 0
-		var dz = 0
-		val direction = starship.getTargetForward()
-		val targetSpeed = calculateSpeed(heldItemSlot)
-		dx += (targetSpeed * direction.modX)
-		dz += (targetSpeed * direction.modZ)
-		if (pilot.isSneaking) {
-			dx *= 2
-			dz *= 2
-		}
-		var center = starship.directControlCenter
-		if (center == null) {
-			center = pilot.location.toBlockLocation().add(0.5, 0.0, 0.5)
-			starship.directControlCenter = center
-		}
-		var vector = pilot.location.toVector().subtract(center.toVector())
-		vector.setY(0)
-		vector.normalize()
-
-		val directionWrapper = center.clone()
-		directionWrapper.direction = Vector(direction.modX, direction.modY, direction.modZ)
-
-		val playerDirectionWrapper = center.clone()
-		playerDirectionWrapper.direction = pilot.location.direction
-
-		val vectorWrapper = center.clone()
-		vectorWrapper.direction = vector
-
-		vectorWrapper.yaw = vectorWrapper.yaw - (playerDirectionWrapper.yaw - directionWrapper.yaw)
-		vector = vectorWrapper.direction
-
-		vector.x = round(vector.x)
-		vector.setY(0)
-		vector.z = round(vector.z)
-
-		val vectors = starship.directControlPreviousVectors
-		if (vectors.size > 3) {
-			vectors.poll()
-		}
-		vectors.add(vector)
-
-		if (vector.x != 0.0 || vector.z != 0.0) {
-			val newLoc = center.clone()
-			newLoc.pitch = pilot.location.pitch
-			newLoc.yaw = pilot.location.yaw
-			pilot.teleport(
-				newLoc,
-				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				true,
-				false,
-				*RelativeTeleportFlag.values()
-			)
-		}
-
-		var highestFrequency = Collections.frequency(vectors, vector)
-		for (previousVector in vectors) {
-			val frequency = Collections.frequency(vectors, previousVector)
-			if (previousVector != vector && frequency > highestFrequency) {
-				highestFrequency = frequency
-				vector = previousVector
-			}
-		}
-
-		val forwardZ = direction.modZ != 0
-		val strafeAxis = if (forwardZ) vector.x else vector.z
-		val strafe = sign(strafeAxis).toInt() * abs(targetSpeed)
-		val ascensionAxis = if (forwardZ) vector.z * -direction.modZ else vector.x * -direction.modX
-		val ascension = sign(ascensionAxis).toInt() * abs(targetSpeed)
-		if (forwardZ) dx += strafe else dz += strafe
-		dy += ascension
-
-		val deltaTime = elapsedSinceLastMove / 1000.0
-		val maxChange = 15 * starship.reactor.powerDistributor.thrusterPortion * deltaTime
-
-		val directControlVec = starship.directControlVector
-		val offset = Vector(dx, dy, dz).subtract(directControlVec)
-		if (offset.length() > maxChange) {
-			offset.normalize().multiply(maxChange)
-		}
-		directControlVec.add(offset)
-		dx = directControlVec.blockX
-		dy = directControlVec.blockY
-		dz = directControlVec.blockZ
-
-		dx *= speedFac
-		dy *= speedFac
-		dz *= speedFac
-
-		when {
-			dy < 0 && starship.min.y + dy < 0 -> {
-				dy = -starship.min.y
-			}
-
-			dy > 0 && starship.max.y + dy > starship.world.maxHeight -> {
-				dy = starship.world.maxHeight - starship.max.y
-			}
-		}
-
-		if (locationCheck(starship, dx, dy, dz)) {
-			return
-		}
-
-		if (dx == 0 && dy == 0 && dz == 0) {
-			return
-		}
-
-		pilot.walkSpeed = 0.009f
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
 	private fun processSneakFlight(pilot: Player, starship: ActivePlayerStarship) {
@@ -344,23 +180,6 @@ object StarshipControl : SLComponent() {
 
 		StarshipTeleportation.teleportStarship(starship, target)
 		return true
-	}
-
-	private fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
-
-	private fun calculateSpeed(slot: Int) = if (slot == 0) -1 else (slot / DIRECT_CONTROL_DIVISOR).toInt()
-
-	private fun accel(old: Double, new: Double, maxChange: Double): Double {
-		val diff = new - old
-		if (diff < maxChange) {
-			return new
-		}
-
-		return old + min(maxChange, abs(diff)) * sign(diff)
-	}
-
-	private fun getPing(player: Player): Int {
-		return player.nms.connection.player.latency
 	}
 
 	private fun rotation() {

@@ -46,9 +46,9 @@ object HyperspaceBeaconManager : Listener {
 				if (it.value.spaceLocation.toLocation().isInRange(
 						Location(
 								event.starship.serverLevel.world,
-								(event.x + starship.centerOfMass.x).toDouble(),
-								(event.y + starship.centerOfMass.y).toDouble(),
-								(event.z + starship.centerOfMass.x).toDouble()
+								(event.x + starship.centerOfMassBlockPos.x).toDouble(),
+								(event.y + starship.centerOfMassBlockPos.y).toDouble(),
+								(event.z + starship.centerOfMassBlockPos.x).toDouble()
 							),
 						it.value.radius
 					)

@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.movement
 
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.starships.control.LegacyController
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipCruising
@@ -13,7 +14,7 @@ import java.util.concurrent.CompletableFuture
 
 object StarshipTeleportation {
 	fun teleportStarship(starship: ActiveStarship, destination: Location): CompletableFuture<Boolean> {
-		val origin = starship.centerOfMass
+		val origin = starship.centerOfMassBlockPos
 		val (x, y, z) = Vec3i(destination)
 		val dx = x - origin.x
 		val dy = y - origin.y
@@ -21,7 +22,7 @@ object StarshipTeleportation {
 
 		if (starship is ActivePlayerStarship) {
 			StarshipCruising.forceStopCruising(starship)
-			starship.setDirectControlEnabled(false)
+			starship.controller = if (starship.controller != null) LegacyController(starship, starship.controller!!.serverPlayer) else null
 		}
 
 		starship.isTeleporting = true

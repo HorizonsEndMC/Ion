@@ -47,8 +47,8 @@ object Hyperspace : SLComponent() {
 	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
 		if (MassShadows.find(
 				starship.serverLevel.world,
-				starship.centerOfMass.x.toDouble(),
-				starship.centerOfMass.z.toDouble()
+				starship.centerOfMassBlockPos.x.toDouble(),
+				starship.centerOfMassBlockPos.z.toDouble()
 			) != null
 		) {
 			starship.sendFeedbackMessage(FeedbackType.USER_ERROR, "Ship is within Gravity Well, jump cancelled")
@@ -87,7 +87,7 @@ object Hyperspace : SLComponent() {
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
 		val starship = warmup.ship
-		for (player in starship.serverLevel.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)) {
+		for (player in starship.serverLevel.world.getNearbyPlayers(starship.centerOfMassBlockPos.toLocation(starship.serverLevel.world), 2500.0)) {
 			player.playSound(
 				Sound.sound(
 					Key.key("minecraft:entity.elder_guardian.hurt"),
@@ -98,7 +98,7 @@ object Hyperspace : SLComponent() {
 			)
 		}
 		Space.getPlanets().filter {
-			it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMass.toLocation(starship.serverLevel.world)) < 2500
+			it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMassBlockPos.toLocation(starship.serverLevel.world)) < 2500
 		}
 			.forEach {
 				it.planetWorld?.playSound(
@@ -113,9 +113,9 @@ object Hyperspace : SLComponent() {
 		check(warmupTasks.remove(starship, warmup)) { "Warmup wasn't in the map!" }
 		warmup.cancel()
 		val world = getHyperspaceWorld(starship.serverLevel.world)
-		val x = starship.centerOfMass.x.toDouble()
-		val y = starship.centerOfMass.y.toDouble()
-		val z = starship.centerOfMass.z.toDouble()
+		val x = starship.centerOfMassBlockPos.x.toDouble()
+		val y = starship.centerOfMassBlockPos.y.toDouble()
+		val z = starship.centerOfMassBlockPos.z.toDouble()
 		val loc = Location(world, x, y, z)
 		StarshipTeleportation.teleportStarship(starship, loc).thenAccept { success ->
 			if (!success) {
@@ -144,7 +144,7 @@ object Hyperspace : SLComponent() {
 			return
 		}
 
-		val dest = starship.centerOfMass.toLocation(world)
+		val dest = starship.centerOfMassBlockPos.toLocation(world)
 		dest.x = movement.x
 		dest.z = movement.z
 
@@ -244,7 +244,7 @@ object Hyperspace : SLComponent() {
 
 		val realspaceWorld = getRealspaceWorld(world) ?: return
 
-		val dest = starship.centerOfMass.toLocation(realspaceWorld)
+		val dest = starship.centerOfMassBlockPos.toLocation(realspaceWorld)
 		StarshipTeleportation.teleportStarship(starship, dest)
 	}
 
