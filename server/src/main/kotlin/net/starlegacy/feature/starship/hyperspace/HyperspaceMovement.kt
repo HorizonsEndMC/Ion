@@ -12,9 +12,9 @@ import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.roundToInt
 
 class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Location) : BukkitRunnable() {
-	var x = ship.centerOfMass.x.toDouble()
-	var z = ship.centerOfMass.z.toDouble()
-	private val direction = dest.toVector().subtract(ship.centerOfMass.toVector()).normalize()
+	var x = ship.centerOfMassBlockPos.x.toDouble()
+	var z = ship.centerOfMassBlockPos.z.toDouble()
+	private val direction = dest.toVector().subtract(ship.centerOfMassBlockPos.toVector()).normalize()
 	private val totalDistance = remainingDistance()
 	private var travelled = 0.0
 

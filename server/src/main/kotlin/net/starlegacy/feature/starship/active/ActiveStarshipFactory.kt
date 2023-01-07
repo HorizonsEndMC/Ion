@@ -96,10 +96,10 @@ object ActiveStarshipFactory {
 	}
 
 	private fun determineForward(starship: ActiveStarship) {
-		starship.forward = starship.thrusterMap.entries
+		starship.forwardBlockFace = starship.thrusterMap.entries
 			.maxByOrNull { it.value.maxSpeed }
 			?.key
-			?: starship.forward
+			?: starship.forwardBlockFace
 	}
 
 	private fun prepareShields(starship: ActivePlayerStarship) {
@@ -136,14 +136,14 @@ object ActiveStarshipFactory {
 
 			val face = weapon.face
 
-			if (face == starship.forward) {
+			if (face == starship.forwardBlockFace) {
 				continue
 			}
 
 			starship.weapons.remove(weapon)
 			starship.subsystems.remove(weapon)
 			val pos = weapon.pos
-			starship.sendMessage("&c${weapon.name} at $pos is facing $face, but is forward-only and forward is ${starship.forward}")
+			starship.sendMessage("&c${weapon.name} at $pos is facing $face, but is forward-only and forward is ${starship.forwardBlockFace}")
 		}
 	}
 }

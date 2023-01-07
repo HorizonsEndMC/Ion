@@ -48,11 +48,11 @@ object MassShadows {
 				continue
 			}
 
-			val otherX = otherShip.centerOfMass.x
-			val otherY = otherShip.centerOfMass.y
-			val otherZ = otherShip.centerOfMass.z
+			val otherX = otherShip.centerOfMassBlockPos.x
+			val otherY = otherShip.centerOfMassBlockPos.y
+			val otherZ = otherShip.centerOfMassBlockPos.z
 			var dist = distanceSquared(x, 128.0, z, otherX.toDouble(), otherY.toDouble(), otherZ.toDouble())
-			if (dist > otherShip.interdictionRange.squared()) {
+			if (dist > otherShip.type.interdictionRange.squared()) {
 				continue
 			}
 			dist = sqrt(dist)

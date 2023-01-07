@@ -5,7 +5,6 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
@@ -23,10 +22,8 @@ import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
 import net.starlegacy.feature.starship.StarshipDestruction
-import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
-import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import net.starlegacy.feature.starship.hyperspace.MassShadows
@@ -109,8 +106,8 @@ object MiscStarshipCommands : SLCommand() {
 		val maxRange: Int =
 			(navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
 
-		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
-		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
+		val x = parseNumber(xCoordinate, starship.centerOfMassBlockPos.x)
+		val z = parseNumber(zCoordinate, starship.centerOfMassBlockPos.z)
 
 		tryJump(starship, x, z, maxRange, sender)
 	}
@@ -175,8 +172,8 @@ object MiscStarshipCommands : SLCommand() {
 
 		if (MassShadows.find(
 				starship.serverLevel.world,
-				starship.centerOfMass.x.toDouble(),
-				starship.centerOfMass.z.toDouble()
+				starship.centerOfMassBlockPos.x.toDouble(),
+				starship.centerOfMassBlockPos.z.toDouble()
 			) != null
 		) {
 			sender.sendFeedbackMessage(USER_ERROR, "You're within a MassShadow, jump cancelled.")
@@ -192,7 +189,7 @@ object MiscStarshipCommands : SLCommand() {
 		var x1: Int = x
 		var z1: Int = z
 
-		val origin: Vector = starship.centerOfMass.toVector()
+		val origin: Vector = starship.centerOfMassBlockPos.toVector()
 		val distance: Double = distance(origin.x, 0.0, origin.z, x1.toDouble(), 0.0, z1.toDouble())
 
 		if (distance > maxRange) {
@@ -300,24 +297,6 @@ object MiscStarshipCommands : SLCommand() {
 	fun onNukeShip(sender: Player) {
 		val ship = getStarshipRiding(sender) as? ActivePlayerStarship ?: return
 		StarshipDestruction.vanish(ship)
-	}
-
-	@Suppress("unused")
-	@CommandAlias("directcontrol|dc")
-	fun onDirectControl(sender: Player) {
-		val starship = getStarshipPiloting(sender)
-		failIf(!starship.isDirectControlEnabled && !StarshipControl.isHoldingController(sender)) {
-			"You need to hold a starship controller to enable direct control"
-		}
-		if (starship.initialBlockCount > StarshipType.CORVETTE.maxSize) {
-			sender.sendFeedbackMessage(
-				FeedbackType.SERVER_ERROR,
-				"Only ships of size {0} or less can use direct control, this is mostly a performance thing, and will probably change in the future.",
-				StarshipType.CORVETTE.maxSize
-			)
-			return
-		}
-		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}
 
 	@Suppress("unused")

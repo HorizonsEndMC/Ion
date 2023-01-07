@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship.control
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.starships.control.LegacyController
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
@@ -134,7 +135,7 @@ object StarshipCruising : SLComponent() {
 	}
 
 	private fun shouldStopCruising(starship: ActivePlayerStarship): Boolean {
-		if (starship.isDirectControlEnabled) {
+		if (starship.controller !is LegacyController) {
 			return true
 		}
 

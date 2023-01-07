@@ -80,6 +80,7 @@ object ActiveStarships : SLComponent() {
 	fun remove(starship: ActiveStarship) {
 		Tasks.checkMainThread()
 
+		starship.cleanup()
 		set.remove(starship)
 
 		if (starship is ActivePlayerStarship) {

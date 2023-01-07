@@ -60,7 +60,7 @@ object Interdiction : SLComponent() {
 	private fun toggleGravityWell(starship: ActiveStarship) {
 		when (starship.isInterdicting) {
 			true -> for (player in starship.serverLevel.world.getNearbyPlayers(
-				starship.centerOfMass.toLocation(starship.serverLevel.world),
+				starship.centerOfMassBlockPos.toLocation(starship.serverLevel.world),
 				starship.type.interdictionRange.toDouble()
 			)) {
 				player.playSound(
@@ -74,7 +74,7 @@ object Interdiction : SLComponent() {
 			}
 
 			false -> for (player in starship.serverLevel.world.getNearbyPlayers(
-				starship.centerOfMass.toLocation(starship.serverLevel.world),
+				starship.centerOfMassBlockPos.toLocation(starship.serverLevel.world),
 				starship.type.interdictionRange.toDouble()
 			)) {
 				player.playSound(
