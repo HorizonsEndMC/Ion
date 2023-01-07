@@ -32,7 +32,9 @@ open class Starship(
 			field = value
 		}
 
-	override fun audience(): Audience = controller ?: Audience.empty()
+	var velocityX = 0.0; private set
+	var velocityY = 0.0; private set
+	var velocityZ = 0.0; private set
 
 	open fun tick() {
 		mainThreadCheck()
@@ -65,25 +67,23 @@ open class Starship(
 		controller?.cleanup()
 	}
 
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val frontThrust = 1.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val backThrust = 1.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val leftThrust = 1.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val rightThrust = 1.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val upThrust = 1.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val downThrust = 1.0
-
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val frontLimit = 8.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val backLimit = 8.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val leftLimit = 8.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val rightLimit = 8.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val upLimit = 8.0
-	@Deprecated("Used for compatibility with older code. Do not use.") protected open val downLimit = 8.0
-
+	// region Temporary code
 	private val naturalDeceleration = 1.0
 
-	var velocityX = 0.0; private set
-	var velocityY = 0.0; private set
-	var velocityZ = 0.0; private set
+	protected open val frontThrust = 1.0
+	protected open val backThrust = 1.0
+	protected open val leftThrust = 1.0
+	protected open val rightThrust = 1.0
+	protected open val upThrust = 1.0
+	protected open val downThrust = 1.0
+
+	protected open val frontLimit = 8.0
+	protected open val backLimit = 8.0
+	protected open val leftLimit = 8.0
+	protected open val rightLimit = 8.0
+	protected open val upLimit = 8.0
+	protected open val downLimit = 8.0
+	// endregion
 
 	fun globalToRelative(x: Int, y: Int, z: Int): Triple<Int, Int, Int> {
 		return when (facingDirection) {
@@ -114,4 +114,6 @@ open class Starship(
 			else -> throw IllegalStateException("Ship direction must not be vertical")
 		}
 	}
+
+	override fun audience(): Audience = controller ?: Audience.empty()
 }
