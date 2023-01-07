@@ -2,11 +2,11 @@ package net.starlegacy.feature.machine
 
 import co.aikar.timings.Timing
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.Multiblocks.multiblockNamespacedKey
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.time
 import net.starlegacy.util.timing
@@ -45,7 +45,6 @@ object PowerMachines : SLComponent() {
 		}
 	}
 
-	private val powerNamespacedKey = NamespacedKey(Ion, "power")
 	private val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
 
 	@JvmOverloads
@@ -57,9 +56,9 @@ object PowerMachines : SLComponent() {
 			power.coerceAtLeast(0)
 		}
 
-		if (!sign.persistentDataContainer.has(multiblockNamespacedKey)) return@time power
+		if (!sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return@time power
 
-		sign.persistentDataContainer.set(powerNamespacedKey, PersistentDataType.INTEGER, correctedPower)
+		sign.persistentDataContainer.set(NamespacedKeys.POWER, PersistentDataType.INTEGER, correctedPower)
 		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
 		sign.update(false, false)
 		return@time power
@@ -71,7 +70,7 @@ object PowerMachines : SLComponent() {
 			return 0
 		}
 
-		return sign.persistentDataContainer.get(powerNamespacedKey, PersistentDataType.INTEGER)
+		return sign.persistentDataContainer.get(NamespacedKeys.POWER, PersistentDataType.INTEGER)
 			?: return setPower(sign, sign.getLine(2).removePrefix(prefix).toIntOrNull() ?: 0)
 	}
 

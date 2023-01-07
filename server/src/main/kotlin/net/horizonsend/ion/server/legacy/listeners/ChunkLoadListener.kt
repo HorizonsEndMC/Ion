@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.legacy.listeners
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.legacy.ores.Ore
 import net.horizonsend.ion.server.legacy.ores.OrePlacementConfig
 import net.horizonsend.ion.server.legacy.utilities.Position
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -22,8 +22,6 @@ TODO: Ore logic should be separated from the Listener, and the Async code should
 
 @Suppress("Unused")
 class ChunkLoadListener(private val plugin: IonServer) : Listener {
-	private val oreCheckNamespace = NamespacedKey(plugin, "oreCheck")
-
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		val placementConfiguration = try {
@@ -31,7 +29,8 @@ class ChunkLoadListener(private val plugin: IonServer) : Listener {
 		} catch (_: IllegalArgumentException) {
 			return
 		}
-		val chunkOreVersion = event.chunk.persistentDataContainer.get(oreCheckNamespace, PersistentDataType.INTEGER)
+
+		val chunkOreVersion = event.chunk.persistentDataContainer.get(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER)
 
 		if (chunkOreVersion == placementConfiguration.currentOreVersion) return
 
@@ -101,7 +100,7 @@ class ChunkLoadListener(private val plugin: IonServer) : Listener {
 						println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
 
 						event.chunk.persistentDataContainer.set(
-							oreCheckNamespace,
+							NamespacedKeys.ORE_CHECK,
 							PersistentDataType.INTEGER,
 							placementConfiguration.currentOreVersion
 						)
