@@ -7,11 +7,14 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.Direction
 import net.minecraft.core.Direction.Axis
+import net.minecraft.server.level.ServerLevel
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.movement.TranslateMovement
 import org.bukkit.Bukkit
 
-open class Starship : ForwardingAudience.Single {
+open class Starship(
+	open var serverLevel: ServerLevel
+) : ForwardingAudience.Single {
 	open var facingDirection = Direction.NORTH
 		set(value) {
 			mainThreadCheck()
