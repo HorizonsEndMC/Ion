@@ -1,12 +1,12 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
+import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
-import net.starlegacy.feature.multiblock.Multiblocks.multiblockNamespacedKey
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
@@ -111,7 +111,7 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 			player.sendFeedbackActionMessage(FeedbackType.SUCCESS, "Docking tube disconnected.")
 
 			sign.persistentDataContainer.set(
-				multiblockNamespacedKey,
+				NamespacedKeys.MULTIBLOCK,
 				PersistentDataType.STRING,
 				DisconnectedDockingTubeMultiblock::class.simpleName!!
 			)

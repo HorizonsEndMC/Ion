@@ -3,6 +3,7 @@ package net.starlegacy.feature.multiblock
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.legacy.events.MultiblockDetectEvent
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
@@ -208,8 +209,6 @@ object Multiblocks : SLComponent() {
 
 	fun all(): List<Multiblock> = multiblocks
 
-	val multiblockNamespacedKey = NamespacedKey(Ion, "multiblock")
-
 	@JvmStatic
 	@JvmOverloads
 	operator fun get(
@@ -219,7 +218,7 @@ object Multiblocks : SLComponent() {
 	): Multiblock? = gettingTiming.time {
 		val location: Location = sign.location
 
-		val pdc = sign.persistentDataContainer.get(multiblockNamespacedKey, PersistentDataType.STRING)
+		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)
 
 		val cached: Multiblock? = multiblockCache[location]
 		if (cached != null) {
@@ -230,7 +229,7 @@ object Multiblocks : SLComponent() {
 			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
 				if (pdc == null) {
 					sign.persistentDataContainer.set(
-						multiblockNamespacedKey,
+						NamespacedKeys.MULTIBLOCK,
 						PersistentDataType.STRING,
 						cached::class.simpleName!!
 					)
@@ -251,7 +250,7 @@ object Multiblocks : SLComponent() {
 			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
 				if (pdc == null) {
 					sign.persistentDataContainer.set(
-						multiblockNamespacedKey,
+						NamespacedKeys.MULTIBLOCK,
 						PersistentDataType.STRING,
 						multiblock::class.simpleName!!
 					)
