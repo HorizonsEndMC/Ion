@@ -73,15 +73,14 @@ abstract class ActiveStarship(
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
-) : Starship(), ForwardingAudience {
-	private var _serverLevel: ServerLevel = serverLevel
+) : Starship(serverLevel), ForwardingAudience {
 	private var _world: World = serverLevel.world
 
-	var serverLevel: ServerLevel
-		get() = _serverLevel
+	override var serverLevel: ServerLevel
+		get() = super.serverLevel
 		set(value) {
 			ActiveStarships.updateWorld(this, value.world, value.world)
-			_serverLevel = value
+			super.serverLevel = value
 			_world = value.world
 		}
 
@@ -90,7 +89,7 @@ abstract class ActiveStarship(
 		get() = _world
 		set(value) {
 			ActiveStarships.updateWorld(this, value, value)
-			_serverLevel = (value as CraftWorld).handle
+			super.serverLevel = (value as CraftWorld).handle
 			_world = value
 		}
 
