@@ -2,10 +2,14 @@ package net.horizonsend.ion.server.generation.generators
 
 import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.generation.PlacedOre
+import net.horizonsend.ion.server.generation.PlacedOres
+import net.horizonsend.ion.server.generation.PlacedOresDataType
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.configuration.Ore
 import net.minecraft.util.RandomSource
+import org.bukkit.Bukkit.createBlockData
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.World
@@ -20,11 +24,17 @@ object OreGenerator {
 	private val asteroidBlocks: MutableSet<Material> = mutableSetOf()
 	private val oreMap: MutableMap<String, BlockData> = mutableMapOf()
 
-	fun generateOres(world: World, chunk: Chunk): List<PlacedOre> {
+	init {
+		configuration.blockPalettes.forEach { asteroidBlocks.addAll((it.materials.keys)) }
+
+		configuration.ores.forEach { oreMap[it.material] = createBlockData(it.material) }
+	}
+
+	fun generateOres(world: World, chunk: Chunk) {
 		val worldX = chunk.x * 16
 		val worldZ = chunk.z * 16
 
-		if (weightedOres.isEmpty()) return listOf()
+		if (weightedOres.isEmpty()) return
 
 		val random: RandomSource = RandomSource.create(world.seed)
 
@@ -44,26 +54,30 @@ object OreGenerator {
 
 			val blobSize = random.nextInt(0, ore.maxBlobSize).coerceAtLeast(1)
 
-			val oreBlocks = getSphereBlocks(blobSize, origin = Triple(originX, originY, originZ))
+			generateOre(world, PlacedOre(ore.material, blobSize, originX, originY, originZ))
 
-			for (block in oreBlocks) {
-				val (x, y, z) = block
-
-				if (!asteroidBlocks.contains<Material>(world.getBlockAt(x, y, z).type)
-				) {
-					continue
-				}
-
-				oreMap[ore.material]?.let { world.setBlockData(x, y, z, it) }
-			}
-
-			ores += oreMap[ore.material]?.let { PlacedOre(it, ore.maxBlobSize, originX, originY, originZ) } ?: continue
+			ores += PlacedOre(ore.material, ore.maxBlobSize, originX, originY, originZ)
 		}
 
-		return ores
+		chunk.persistentDataContainer.set(NamespacedKeys.ASTEROIDS_ORES, PlacedOresDataType(), PlacedOres(ores))
 	}
 
-	fun getSphereBlocks(radius: Int, origin: Triple<Int, Int, Int>): List<Triple<Int, Int, Int>> {
+	fun generateOre(world: World, ore: PlacedOre) {
+		val oreBlocks = getSphereBlocks(ore.blobSize, origin = Triple(ore.x, ore.y, ore.z))
+
+		for (block in oreBlocks) {
+			val (x, y, z) = block
+
+			if (!asteroidBlocks.contains<Material>(world.getBlockAt(x, y, z).type)
+			) {
+				continue
+			}
+
+			oreMap[ore.material]?.let { world.setBlockData(x, y, z, it) }
+		}
+	}
+
+	private fun getSphereBlocks(radius: Int, origin: Triple<Int, Int, Int>): List<Triple<Int, Int, Int>> {
 		if (radius == 1) return listOf(origin) // bypass the rest of this if it's useless
 
 		val (originX, originY, originZ) = origin
