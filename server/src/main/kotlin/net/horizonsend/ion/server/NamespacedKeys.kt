@@ -9,6 +9,9 @@ object NamespacedKeys {
 	val MULTIBLOCK = key("multiblock")
 	val ORE_CHECK = key("oreCheck")
 	val POWER = key("power")
+	val ASTEROIDS_CHECK = key("asteroidsCheck")
+	val ASTEROIDS = key("asteroids")
+	val ASTEROIDS_ORES = key("asteroidsOres")
 
 	fun key(key: String) = NamespacedKey(Ion, key)
 }

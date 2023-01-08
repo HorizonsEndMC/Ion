@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.legacy.listeners.LevelUpListener
 import net.horizonsend.ion.server.legacy.listeners.MultiblockDetectListener
 import net.horizonsend.ion.server.legacy.listeners.ShipKillListener
 import net.horizonsend.ion.server.legacy.listeners.StationSiegeBeginListener
+import net.horizonsend.ion.server.listeners.AsteroidChunkLoadListener
 import net.horizonsend.ion.server.listeners.BlockFadeListener
 import net.horizonsend.ion.server.listeners.BlockFormListener
 import net.horizonsend.ion.server.listeners.EnchantItemListener
@@ -45,6 +46,7 @@ val listeners = arrayOf(
 	BlockFadeListener(),
 	BlockFormListener(),
 	ChunkLoadListener(Ion),
+	AsteroidChunkLoadListener(),
 	EnchantItemListener(),
 	EntityDamageListener(),
 	HyperspaceBeaconManager,

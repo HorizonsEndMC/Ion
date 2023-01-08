@@ -8,14 +8,18 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.NamespacedKeys
+import net.horizonsend.ion.server.generation.Asteroid
+import net.horizonsend.ion.server.generation.AsteroidsDataType
+import net.horizonsend.ion.server.generation.PlacedOre
+import net.horizonsend.ion.server.generation.PlacedOresDataType
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
-import net.horizonsend.ion.server.generation.populators.AsteroidPopulator
-import net.horizonsend.ion.server.generation.populators.OrePopulator
-import net.horizonsend.ion.server.generation.populators.OrePopulator.Companion.getSphereBlocks
+import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.generateAsteroid
+import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.postGenerateAsteroid
+import net.horizonsend.ion.server.generation.generators.OreGenerator.generateOres
+import net.horizonsend.ion.server.generation.generators.OreGenerator.getSphereBlocks
 import net.minecraft.world.level.ChunkPos
 import org.bukkit.World
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
-import org.bukkit.craftbukkit.v1_19_R2.generator.CraftLimitedRegion
 import org.bukkit.entity.Player
 import java.util.Random
 
@@ -33,7 +37,9 @@ class AsteroidCommand : BaseCommand() {
 
 		for (x in sender.chunk.x - range..sender.chunk.x + range) {
 			for (z in sender.chunk.z - range..sender.chunk.z + range) {
-				try { postGenerateAsteroids(sender.world, ChunkPos(x, z)) } catch (error: ConditionFailedException) {
+				try {
+					postGenerateAsteroids(sender.world, ChunkPos(x, z))
+				} catch (error: ConditionFailedException) {
 					sender.sendRichMessage("<red>${error.message}"); continue
 				}
 
@@ -50,29 +56,12 @@ class AsteroidCommand : BaseCommand() {
 	@CommandCompletion("Optional:Range")
 	fun onCreateOres(sender: Player, range: Int) {
 		val world = sender.world
-		val craftWorld = (world as CraftWorld).handle
-		val populator: OrePopulator =
-			craftWorld.generator.getDefaultPopulators(world)
-				.find { it is OrePopulator } as? OrePopulator ?: return
-
-		val oreRandom = Random(System.currentTimeMillis() + world.seed)
 
 		var chunkCount = 0
 
 		for (x in sender.chunk.x - range..sender.chunk.x + range) {
 			for (z in sender.chunk.z - range..sender.chunk.z + range) {
-				val chunkPos = ChunkPos(x, z)
-				val limitedRegion = CraftLimitedRegion(craftWorld, chunkPos)
-
-				populator.apply {
-					this.populate(
-						sender.world,
-						oreRandom,
-						x,
-						z,
-						limitedRegion
-					)
-				}
+				generateOres(world, sender.chunk)
 
 				chunkCount += 1
 			}
@@ -90,7 +79,9 @@ class AsteroidCommand : BaseCommand() {
 
 		for (x in sender.chunk.x - range..sender.chunk.x + range) {
 			for (z in sender.chunk.z - range..sender.chunk.z + range) {
-				try { postGenerateOres(sender.world, ChunkPos(x, z)) } catch (error: ConditionFailedException) {
+				try {
+					postGenerateOres(sender.world, ChunkPos(x, z))
+				} catch (error: ConditionFailedException) {
 					sender.sendRichMessage("<red>${error.message}"); continue
 				}
 
@@ -111,16 +102,9 @@ class AsteroidCommand : BaseCommand() {
 			return
 		}
 
-		val chunkPos = ChunkPos(sender.chunk.x, sender.chunk.z)
 		val world = sender.world
 
-		val craftWorld = (world as CraftWorld).handle
-
-		val populator: AsteroidPopulator =
-			craftWorld.generator.getDefaultPopulators(world)
-				.find { it is AsteroidPopulator } as? AsteroidPopulator ?: return
-
-		val asteroid = AsteroidPopulator.Asteroid(
+		val asteroid = Asteroid(
 			sender.location.x.toInt(),
 			sender.location.y.toInt(),
 			sender.location.z.toInt(),
@@ -129,11 +113,10 @@ class AsteroidCommand : BaseCommand() {
 			octaves
 		)
 
-		populator.apply {
-			this.postGenerateAsteroid(
+		run {
+			postGenerateAsteroid(
 				world,
-				chunkPos.x,
-				chunkPos.z,
+				sender.chunk,
 				asteroid
 			)
 		}
@@ -149,73 +132,43 @@ class AsteroidCommand : BaseCommand() {
 
 		val asteroidRandom = Random(chunkPos.x + chunkPos.z + world.seed)
 
-		val craftWorld = (world as CraftWorld).handle
+		val asteroid = generateAsteroid(
+			sender.location.x.toInt(),
+			sender.location.y.toInt(),
+			sender.location.z.toInt(),
+			asteroidRandom
+		)
 
-		val populator: AsteroidPopulator =
-			craftWorld.generator.getDefaultPopulators(world)
-				.find { it is AsteroidPopulator } as? AsteroidPopulator ?: return
-
-		val asteroid = with(populator) {
-			this.generateAsteroid(
-				sender.location.x.toInt(),
-				sender.location.y.toInt(),
-				sender.location.z.toInt(),
-				asteroidRandom
-			)
-		}
-
-		val limitedRegion = CraftLimitedRegion(craftWorld, chunkPos)
-
-		populator.apply {
-			this.placeAsteroid(
-				craftWorld.seed,
-				chunkPos.x,
-				chunkPos.z,
-				limitedRegion,
-				asteroid
-			)
-		}
+		postGenerateAsteroid(
+			world,
+			sender.chunk,
+			asteroid
+		)
 
 		sender.sendRichMessage("<#7fff7f>Success!")
 	}
 
 	private fun postGenerateAsteroids(world: World, chunkPos: ChunkPos) {
-		val asteroids = getChunkAsteroids(chunkPos.x, chunkPos.z)
+		val asteroids = getChunkAsteroids(world, chunkPos.x, chunkPos.z)
 
 		if (asteroids.isEmpty()) {
 			throw ConditionFailedException("No asteroids to regenerate for Chunk (${chunkPos.x}, ${chunkPos.z})!")
 		}
 
-		val craftWorld = (world as CraftWorld).handle
-
-		val populator: AsteroidPopulator =
-			craftWorld.generator.getDefaultPopulators(world)
-				.find { it is AsteroidPopulator } as? AsteroidPopulator ?: return
-
-		val limitedRegion = CraftLimitedRegion(craftWorld, chunkPos)
-
 		for (asteroid in asteroids) {
-			populator.apply {
-				this.placeAsteroid(
-					craftWorld.seed,
-					chunkPos.x,
-					chunkPos.z,
-					limitedRegion,
-					asteroid
-				)
-			}
+			postGenerateAsteroid(world, world.getChunkAt(chunkPos.x, chunkPos.z), asteroid)
 		}
 	}
 
 	private fun postGenerateOres(world: World, chunkPos: ChunkPos) {
-		val oreBlobs = getChunkOres(chunkPos.x, chunkPos.z)
+		val oreBlobs = getChunkOres(world, chunkPos.x, chunkPos.z)
 
 		if (oreBlobs.isEmpty()) {
 			throw ConditionFailedException("No ores to regenerate for Chunk (${chunkPos.x}, ${chunkPos.z})!")
 		}
 
 		for (ore in oreBlobs) {
-			val oreBlocks = getSphereBlocks(ore.blobSize, origin = Triple(ore.centerX, ore.centerY, ore.centerZ))
+			val oreBlocks = getSphereBlocks(ore.blobSize, origin = Triple(ore.x, ore.y, ore.z))
 
 			for (block in oreBlocks) {
 				ore.material.let { world.setBlockData(block.first, block.second, block.third, it) }
@@ -223,11 +176,13 @@ class AsteroidCommand : BaseCommand() {
 		}
 	}
 
-	private fun getChunkAsteroids(chunkX: Int, chunkZ: Int): List<AsteroidPopulator.Asteroid> {
-		return listOf()
+	private fun getChunkAsteroids(world: World, chunkX: Int, chunkZ: Int): List<Asteroid> {
+		val chunk = world.getChunkAt(chunkX, chunkZ)
+		return chunk.persistentDataContainer.get(NamespacedKeys.ASTEROIDS, AsteroidsDataType())?.asteroids ?: listOf()
 	}
 
-	private fun getChunkOres(chunkX: Int, chunkZ: Int): List<OrePopulator.PlacedOre> {
-		return listOf()
+	private fun getChunkOres(world: World, chunkX: Int, chunkZ: Int): List<PlacedOre> {
+		val chunk = world.getChunkAt(chunkX, chunkZ)
+		return chunk.persistentDataContainer.get(NamespacedKeys.ASTEROIDS_ORES, PlacedOresDataType())?.ores ?: listOf()
 	}
 }
