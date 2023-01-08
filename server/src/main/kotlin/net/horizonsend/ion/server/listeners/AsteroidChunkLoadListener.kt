@@ -4,8 +4,6 @@ import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.generation.Asteroid
 import net.horizonsend.ion.server.generation.Asteroids
 import net.horizonsend.ion.server.generation.AsteroidsDataType
-import net.horizonsend.ion.server.generation.PlacedOres
-import net.horizonsend.ion.server.generation.PlacedOresDataType
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.generateAsteroid
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.parseDensity
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.postGenerateAsteroid
@@ -59,15 +57,13 @@ class AsteroidChunkLoadListener : Listener {
 
 			asteroids += asteroid
 
-			run { postGenerateAsteroid(event.world, event.chunk, asteroid) }
+			postGenerateAsteroid(event.world, event.chunk, asteroid)
 		}
 
 		container.set(NamespacedKeys.ASTEROIDS, AsteroidsDataType(), Asteroids(asteroids))
 		// Asteroids End
 
 		// Ores begin
-		val ores = generateOres(event.world, event.chunk)
-
-		container.set(NamespacedKeys.ASTEROIDS_ORES, PlacedOresDataType(), PlacedOres(ores))
+		generateOres(event.world, event.chunk)
 	}
 }
