@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.generation
 
-import net.horizonsend.ion.server.generation.populators.AsteroidPopulator
-import net.horizonsend.ion.server.generation.populators.OrePopulator
 import org.bukkit.World
 import org.bukkit.generator.BlockPopulator
 import org.bukkit.generator.ChunkGenerator
@@ -13,7 +11,7 @@ class SpaceChunkGenerator : ChunkGenerator() {
 	}
 
 	override fun getDefaultPopulators(world: World): MutableList<BlockPopulator> {
-		return mutableListOf(AsteroidPopulator(), OrePopulator())
+		return mutableListOf()
 	}
 
 	override fun shouldGenerateSurface(): Boolean {
