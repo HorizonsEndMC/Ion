@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.generation.configuration
 
 import org.bukkit.Material
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
+import java.io.Serializable
 
 /**
  * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -32,7 +33,7 @@ data class AsteroidConfiguration(
 data class Palette(
 	val weight: Int,
 	val materials: Map<Material, Int>
-)
+) : Serializable
 
 /**
  * @param material: Map of Materials to their Weight
