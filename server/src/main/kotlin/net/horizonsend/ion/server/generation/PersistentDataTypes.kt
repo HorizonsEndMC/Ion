@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.generation
 
 import net.horizonsend.ion.server.generation.configuration.Palette
 import org.apache.commons.lang.SerializationUtils
-import org.bukkit.block.data.BlockData
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayInputStream
@@ -43,7 +42,7 @@ class AsteroidsDataType : PersistentDataType<ByteArray, Asteroids> {
 }
 
 data class PlacedOre(
-	val material: BlockData,
+	val material: String,
 	val blobSize: Int,
 	val x: Int,
 	val y: Int,
