@@ -16,8 +16,9 @@ import net.horizonsend.ion.server.generation.PlacedOresDataType
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.generateAsteroid
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.postGenerateAsteroid
-import net.horizonsend.ion.server.generation.generators.OreGenerator.generateOres
-import net.horizonsend.ion.server.generation.generators.OreGenerator.getSphereBlocks
+import net.horizonsend.ion.server.generation.generators.OreGenerator.generateOre
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.world.level.ChunkPos
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -40,14 +41,14 @@ class AsteroidCommand : BaseCommand() {
 				try {
 					postGenerateAsteroids(sender.world, ChunkPos(x, z))
 				} catch (error: ConditionFailedException) {
-					sender.sendRichMessage("<red>${error.message}"); continue
+					sender.sendFeedbackMessage(FeedbackType.SERVER_ERROR, "${error.message}"); continue
 				}
 
 				placed += 1
 			}
 		}
 
-		sender.sendRichMessage("<#7fff7f>Regenerated ores in $placed chunks!")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Regenerated ores in {0} chunks!", placed)
 	}
 
 	@Suppress("unused")
@@ -61,13 +62,17 @@ class AsteroidCommand : BaseCommand() {
 
 		for (x in sender.chunk.x - range..sender.chunk.x + range) {
 			for (z in sender.chunk.z - range..sender.chunk.z + range) {
-				generateOres(world, sender.chunk)
+				val ores = getChunkOres(world, sender.chunk.x, sender.chunk.z)
+
+				for (ore in ores) {
+					generateOre(world, ore)
+				}
 
 				chunkCount += 1
 			}
 		}
 
-		sender.sendRichMessage("<#7fff7f>Success! Populated $chunkCount chunks with new ores!")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Success! Populated {0} chunks with new ores!", chunkCount)
 	}
 
 	@Suppress("unused")
@@ -82,14 +87,14 @@ class AsteroidCommand : BaseCommand() {
 				try {
 					postGenerateOres(sender.world, ChunkPos(x, z))
 				} catch (error: ConditionFailedException) {
-					sender.sendRichMessage("<red>${error.message}"); continue
+					sender.sendFeedbackMessage(FeedbackType.SERVER_ERROR, "${error.message}"); continue
 				}
 
 				placed += 1
 			}
 		}
 
-		sender.sendRichMessage("<#7fff7f>Regenerated ores in $placed chunks!")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Regenerated ores in {0} chunks!", placed)
 	}
 
 	@Suppress("unused")
@@ -98,7 +103,7 @@ class AsteroidCommand : BaseCommand() {
 	@CommandCompletion("size index octaves")
 	fun onCreateCustom(sender: Player, size: Double, index: Int, octaves: Int) {
 		if (!IntRange(0, configuration.blockPalettes.size).contains(index)) {
-			sender.sendRichMessage("<red>ERROR: index out of range: 0..${configuration.blockPalettes.size - 1}")
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "ERROR: index out of range: 0..${configuration.blockPalettes.size - 1}")
 			return
 		}
 
@@ -113,15 +118,13 @@ class AsteroidCommand : BaseCommand() {
 			octaves
 		)
 
-		run {
-			postGenerateAsteroid(
-				world,
-				sender.chunk,
-				asteroid
-			)
-		}
+		postGenerateAsteroid(
+			world,
+			sender.chunk,
+			asteroid
+		)
 
-		sender.sendRichMessage("<#7fff7f>Success!")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Success!")
 	}
 
 	@Suppress("unused")
@@ -145,7 +148,7 @@ class AsteroidCommand : BaseCommand() {
 			asteroid
 		)
 
-		sender.sendRichMessage("<#7fff7f>Success!")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Success!")
 	}
 
 	private fun postGenerateAsteroids(world: World, chunkPos: ChunkPos) {
@@ -168,11 +171,7 @@ class AsteroidCommand : BaseCommand() {
 		}
 
 		for (ore in oreBlobs) {
-			val oreBlocks = getSphereBlocks(ore.blobSize, origin = Triple(ore.x, ore.y, ore.z))
-
-			for (block in oreBlocks) {
-				ore.material.let { world.setBlockData(block.first, block.second, block.third, it) }
-			}
+			generateOre(world, ore)
 		}
 	}
 
