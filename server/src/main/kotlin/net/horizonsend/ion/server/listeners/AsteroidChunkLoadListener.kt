@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.generation.AsteroidsDataType
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.generateAsteroid
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.parseDensity
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.postGenerateAsteroid
-import net.horizonsend.ion.server.generation.generators.OreGenerator.generateOres
 import net.starlegacy.feature.space.SpaceWorlds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -36,18 +35,18 @@ class AsteroidChunkLoadListener : Listener {
 
 		// Generate a number of random asteroids in a chunk, proportional to the density in a portion of the chunk. Allows densities of X>1 asteroid per chunk.
 		for (count in 0..ceil(chunkDensity).toInt()) {
-			val asteroidRandom = Random(System.currentTimeMillis() + event.world.seed)
-
-			// Random coordinate generation.
-			val asteroidX = asteroidRandom.nextInt(0, 15) + worldX
-			val asteroidZ = asteroidRandom.nextInt(0, 15) + worldZ
-			val asteroidY = asteroidRandom.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
+			val asteroidRandom = Random(System.currentTimeMillis() + event.world.seed + event.chunk.hashCode())
 
 			// random number out of 100, chance of asteroid's generation. For use in selection.
 			val chance = asteroidRandom.nextDouble(100.0)
 
 			// Selects some asteroids that are generated. Allows for densities of 0<X<1 asteroids per chunk.
 			if (chance > (chunkDensity * 10)) continue
+
+			// Random coordinate generation.
+			val asteroidX = asteroidRandom.nextInt(0, 15) + worldX
+			val asteroidZ = asteroidRandom.nextInt(0, 15) + worldZ
+			val asteroidY = asteroidRandom.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
 
 			val asteroid = generateAsteroid(asteroidX, asteroidY, asteroidZ, asteroidRandom)
 
@@ -61,9 +60,5 @@ class AsteroidChunkLoadListener : Listener {
 		}
 
 		container.set(NamespacedKeys.ASTEROIDS, AsteroidsDataType(), Asteroids(asteroids))
-		// Asteroids End
-
-		// Ores begin
-		generateOres(event.world, event.chunk)
 	}
 }
