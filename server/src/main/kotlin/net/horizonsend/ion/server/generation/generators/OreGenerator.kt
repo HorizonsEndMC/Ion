@@ -52,18 +52,18 @@ object OreGenerator {
 
 			val ore = weightedOres[random.nextInt(0, weightedOres.size - 1)]
 
-			val blobSize = random.nextInt(0, ore.maxBlobSize).coerceAtLeast(1)
+			val blobSize = random.nextInt(ore.maxBlobSize).coerceAtLeast(1)
 
 			generateOre(world, PlacedOre(ore.material, blobSize, originX, originY, originZ))
 
-			ores += PlacedOre(ore.material, ore.maxBlobSize, originX, originY, originZ)
+			ores += PlacedOre(ore.material, blobSize, originX, originY, originZ)
 		}
 
 		chunk.persistentDataContainer.set(NamespacedKeys.ASTEROIDS_ORES, PlacedOresDataType(), PlacedOres(ores))
 	}
 
 	fun generateOre(world: World, ore: PlacedOre) {
-		val oreBlocks = getSphereBlocks(ore.blobSize, origin = Triple(ore.x, ore.y, ore.z))
+		val oreBlocks = getSphereBlocks(ore.blobSize, Triple(ore.x, ore.y, ore.z))
 
 		for (block in oreBlocks) {
 			val (x, y, z) = block
@@ -88,8 +88,7 @@ object OreGenerator {
 		for (x in originX - radius..originX + radius) {
 			for (y in originY - radius..originY + radius) {
 				for (z in originZ - radius..originZ + radius) {
-					val distance =
-						((originX - x) * (originX - x) + (originX - z) * (originX - z) + (originY - y) * (originY - y)).toDouble()
+					val distance = ((x - originX) * (x - originX) + (y - originY) * (y - originY) + (z - originZ) * (z - originZ))
 
 					if (distance < upperBoundSquared) {
 						circleBlocks.add(Triple(x, y, z))
