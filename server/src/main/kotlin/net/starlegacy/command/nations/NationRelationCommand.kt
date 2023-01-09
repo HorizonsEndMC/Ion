@@ -9,7 +9,6 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.util.Notify
-import net.starlegacy.util.msg
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -76,8 +75,8 @@ internal object NationRelationCommand : SLCommand() {
 			val other = relation.other
 			val otherName = getNationName(other)
 			val otherWish = NationRelation.getRelationWish(other, nation)
-			sender msg "&e$otherName&8: ${relation.actual.coloredName} " +
-				"&8(&7Your wish: ${relation.wish.coloredName}&7, their wish: ${otherWish.coloredName}&8)"
+			sender.sendRichMessage("<yellow>$otherName<dark_gray>: ${relation.actual.coloredName} " +
+				"<dark_gray>(<gray>Your wish: ${relation.wish.coloredName}<gray>, their wish: ${otherWish.coloredName}<dark_gray>)")
 		}
 	}
 }

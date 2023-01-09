@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.Default
 import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -60,7 +59,7 @@ object PlayerInfoCommand : SLCommand() {
 						val senderNation: Oid<Nation>? = Settlement.findPropById(senderSettlement, Settlement::nation)
 
 						if (senderNation != null) {
-							val relation: NationRelation.Level = RelationCache[nationId, senderNation]
+							val relation: NationRelation.Level = NationRelation.getRelationActual(nationId, senderNation)
 
 							sender msg "&7Relation:&7 ${relation.coloredName}"
 						}

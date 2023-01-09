@@ -3,7 +3,11 @@ package net.starlegacy.feature.nations
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.legacy.events.StationCaptureEvent
 import net.horizonsend.ion.server.legacy.events.StationSiegeBeginEvent
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
@@ -14,7 +18,6 @@ import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.database.schema.nations.CapturableStationSiege
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.uuid
@@ -30,7 +33,6 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.colorize
 import net.starlegacy.util.getDurationBreakdown
-import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -73,7 +75,7 @@ object StationSieges : SLComponent() {
 				elapsed >= siegeMinTimeMillis -> capture(player, stationId)
 				else -> {
 					val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(siegeMinTimeMillis - elapsed) / 60.0
-					player.sendActionBar("$elapsedSecondsDecimal minutes remaining")
+					player.sendFeedbackAction(FeedbackType.INFORMATION, "$elapsedSecondsDecimal minutes remaining")
 				}
 			}
 		}
@@ -131,42 +133,43 @@ object StationSieges : SLComponent() {
 
 	fun beginSiege(player: Player) = asyncLocked {
 		val nation = PlayerCache[player].nation
-			?: return@asyncLocked player msg "&cYou need to be in a nation to siege a station."
+			?: return@asyncLocked player.sendFeedbackMessage(USER_ERROR, "You need to be in a nation to siege a station.")
 
 		val station = Regions.findFirstOf<RegionCapturableStation>(player.location)
-			?: return@asyncLocked player msg "&cYou must be within a station's area to siege it"
+			?: return@asyncLocked player.sendFeedbackMessage(USER_ERROR, "You must be within a station's area to siege it.")
 
-		for (relation in NationRelation.find(NationRelation::nation eq station.nation)) {
-			if (relation.other == nation && relation.actual == NationRelation.Level.ALLY) {
-				return@asyncLocked player.sendFeedbackMessage(USER_ERROR, "This station is owned by an ally of your nation")
-			}
+		if (station.nation?.let { NationRelation.getRelationActual(nation, it).ordinal >= 5 } == true) {
+			return@asyncLocked player.sendFeedbackMessage(USER_ERROR, "This station is owned by an ally of your nation.")
 		}
 
 		val stationId = station.id
 		when {
 			station.nation?.id == nation.id -> {
-				return@asyncLocked player msg "&cYour nation already owns this station."
+				return@asyncLocked player.sendFeedbackMessage(USER_ERROR, "Your nation already owns this station.")
 			}
 
 			isUnderSiege(stationId) -> {
-				return@asyncLocked player msg "&cThis station is already under siege."
+				return@asyncLocked player.sendFeedbackMessage(USER_ERROR, "This station is already under siege!")
 			}
 
 			station.siegeTimeFrame != currentHour() -> {
-				return@asyncLocked player msg "&cThis station can only be besieged in quarter ${station.siegeTimeFrame} " +
-					"of the day (EST timezone), but the current quarter is ${currentHour()}"
+				return@asyncLocked player.sendFeedbackMessage(
+					USER_ERROR,
+					"This station can only be besieged in " +
+						"quarter ${station.siegeTimeFrame}" + "of the day (EST timezone), but the current quarter is ${currentHour()}"
+				)
 			}
 		}
 
 		if (isUnderSiege(stationId)) {
-			player msg "&cThis station is already under siege!"
+			player.sendFeedbackMessage(USER_ERROR, "This station is already under siege!")
 			return@asyncLocked
 		}
 
 		val playerId = player.uniqueId.slPlayerId
 
 		if (sieges.any { it.siegerId == playerId }) {
-			player msg "&cYou are already besieging a station"
+			player.sendFeedbackMessage(USER_ERROR, "You are already besieging a station")
 			return@asyncLocked
 		}
 
@@ -187,16 +190,22 @@ object StationSieges : SLComponent() {
 
 			if (lastSiege != null) {
 				val remainingTime = lastSiege.time.time + duration - currentTimeMillis()
-				player msg "&cYour nation has already besieged stations in the past $daysPerSiege day(s)!" +
-					" Time until next siege: ${getDurationBreakdown(remainingTime)}"
-				player msg "&7Note: Please do not try to bypass this restriction using exploits such as splitting into multiple nations. " +
-					"This would be considered exploiting and against the rules."
+				player.sendFeedbackMessage(
+					INFORMATION,
+					"Your nation has already besieged stations in the past $daysPerSiege day(s)!" +
+						" Time until next siege: ${getDurationBreakdown(remainingTime)}"
+				)
+				player.sendFeedbackMessage(
+					INFORMATION,
+					"Note: Please do not try to bypass this restriction using " +
+						"exploits such as splitting into multiple nations. This would be considered exploiting and against the rules."
+				)
 				return@asyncLocked
 			}
 		}
 
 		if (!VAULT_ECO.has(player, NATIONS_BALANCE.capturableStation.siegeCost.toDouble())) {
-			player msg "&cYou need C${NATIONS_BALANCE.capturableStation.siegeCost} to begin a siege."
+			player.sendFeedbackMessage(USER_ERROR, "You need C${NATIONS_BALANCE.capturableStation.siegeCost} to begin a siege.")
 			return@asyncLocked
 		} else {
 			VAULT_ECO.withdrawPlayer(player, NATIONS_BALANCE.capturableStation.siegeCost.toDouble())
@@ -233,7 +242,7 @@ object StationSieges : SLComponent() {
 
 		val playerNation = PlayerCache[player].nation
 		if (playerNation == null) {
-			player msg "&cYou need to be in a nation to siege a station."
+			player.sendFeedbackMessage(USER_ERROR, "You need to be in a nation to siege a station.")
 			return
 		}
 
@@ -266,9 +275,12 @@ object StationSieges : SLComponent() {
 				}
 			}
 			if (count > 0) {
-				player msg "$count members of the defending station's nation " +
-					"or its allied nations are piloting ships in the region! " +
-					"Remove them to complete the siege."
+				player.sendFeedbackMessage(
+					ALERT,
+					"$count members of the defending station's nation " +
+						"or its allied nations are piloting ships in the region! " +
+						"Remove them to complete the siege."
+				)
 				return
 			}
 		}
@@ -277,7 +289,7 @@ object StationSieges : SLComponent() {
 			val slPlayerId = player.slPlayerId
 			sieges.removeIf { it.siegerId == slPlayerId }
 			if (station.nation == playerNation) {
-				player msg "&cThis station is already captured by your nation, capture failed."
+				player.sendFeedbackMessage(USER_ERROR, "This station is already captured by your nation, capture failed.")
 				return@asyncLocked
 			}
 			sieges.removeIf { it.siegerId == slPlayerId }
@@ -295,15 +307,15 @@ object StationSieges : SLComponent() {
 					if (otherPlayer.slPlayerId == slPlayerId) {
 						continue
 					}
-					val playerNationId: Oid<Nation> = PlayerCache[otherPlayer].nation ?: continue
-					for (relation in NationRelation.find(NationRelation::nation eq playerNation)) {
-						if (relation.other == playerNationId && relation.actual == NationRelation.Level.ALLY) {
+
+					if (oldNation != null) {
+						if (NationRelation.getRelationActual(playerNation, oldNation).ordinal >= 5) {
 							if (!station.contains(otherPlayer.location)) {
 								continue
 							}
+
 							SLXP.addAsync(otherPlayer, NATIONS_BALANCE.capturableStation.siegerAllyXP)
 						}
-						continue
 					}
 				}
 			}
