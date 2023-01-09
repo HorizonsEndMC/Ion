@@ -10,7 +10,7 @@ import java.io.Serializable
  * @param maxAsteroidOctaves: Maximum number of octaves for noise generation
  * @param blockPalettes: list of Palettes use for the asteroid materials
  * @param ores:  list of Palettes used for ore placement
- * @param orePlacementsPerChunk: Number of attempts to place an ore blob per chunk
+ * @param oreRatio: Number of attempts to place an ore blob per chunk
  * @see Palette
  */
 @ConfigSerializable
@@ -20,7 +20,7 @@ data class AsteroidConfiguration(
 	val maxAsteroidOctaves: Int = 4,
 	val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, mapOf(Material.STONE to 1, Material.ANDESITE to 1))),
 	val ores: Set<Ore> = setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)),
-	val orePlacementsPerChunk: Int = 256
+	val oreRatio: Double = 0.25
 )
 
 /**

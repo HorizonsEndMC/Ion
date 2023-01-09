@@ -20,8 +20,8 @@ object OreGenerator {
 	private val configuration: AsteroidConfiguration =
 		loadConfiguration(IonServer.Ion.dataFolder.resolve("asteroids"), "asteroid_configuration.conf")
 
-	private val weightedOres = oreWeights()
-	private val asteroidBlocks: MutableSet<Material> = mutableSetOf()
+	val weightedOres = oreWeights()
+	val asteroidBlocks: MutableSet<Material> = mutableSetOf()
 	private val oreMap: MutableMap<String, BlockData> = mutableMapOf()
 
 	init {
@@ -40,7 +40,7 @@ object OreGenerator {
 
 		val ores = mutableListOf<PlacedOre>()
 
-		for (count in configuration.orePlacementsPerChunk downTo 0) {
+		for (count in (configuration.oreRatio * 10000).toInt() downTo 0) {
 			val originX = random.nextInt(worldX, worldX + 16)
 			val originY = random.nextInt(world.minHeight + 10, world.maxHeight - 10)
 			val originZ = random.nextInt(worldZ, worldZ + 16)
