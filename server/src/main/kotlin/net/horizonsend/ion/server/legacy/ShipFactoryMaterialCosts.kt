@@ -216,7 +216,7 @@ object ShipFactoryMaterialCosts {
 		CRACKED_POLISHED_BLACKSTONE_BRICKS to 0.1,
 
 		DIRT to 0.1,
-		GRASS to 0.1,
+		GRASS to 0.1
 	)
 
 	fun getPrice(data: BlockData): Double {

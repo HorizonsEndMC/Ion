@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.legacy.events.ShipKillEvent
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CombatNPCKillEvent
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
@@ -29,7 +29,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.litote.kmongo.eq
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -58,17 +57,6 @@ object ShipKillXP : SLComponent() {
 	private val map: Cache<UUID, ShipDamageData> = CacheBuilder.newBuilder()
 		.expireAfterWrite(5L, TimeUnit.MINUTES)
 		.build()
-
-	private fun isAllied(pilot: Player, player: Player): Boolean {
-		val pilotNation = PlayerCache[pilot].nation ?: return false
-		val playerNation = PlayerCache[player].nation ?: return false
-		for (relation in NationRelation.find(NationRelation::nation eq pilotNation)) {
-			if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY) || relation.actual == NationRelation.Level.NATION) {
-				return true
-			}
-		}
-		return false
-	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onStarshipPilot(event: StarshipPilotedEvent) {
@@ -102,7 +90,7 @@ object ShipKillXP : SLComponent() {
 		val data = map.getIfPresent(killed) ?: return
 		if (killer is Player) {
 			val damager = Damager(killer.uniqueId, ActiveStarships.findByPassenger(killer)?.initialBlockCount)
-			data.map.getOrPut(damager, { AtomicInteger() }).incrementAndGet()
+			data.map.getOrPut(damager) { AtomicInteger() }.incrementAndGet()
 		}
 		onShipKill(killed, killedName, data)
 	}
@@ -139,7 +127,13 @@ object ShipKillXP : SLComponent() {
 		for ((damager, points) in dataMap.entries) {
 			val player = getPlayer(damager.id) ?: continue // shouldn't happen
 			val killedSize = data.size.toDouble()
-			if (isAllied(player, getPlayer(killedName)!!)) return
+
+			val pilotNation = SLPlayer[player].nation
+			val killedNation = SLPlayer[getPlayer(killedName)!!].nation
+
+			if (pilotNation != null && killedNation != null) {
+				if (NationRelation.getRelationActual(pilotNation, killedNation).ordinal >= 5) return
+			}
 
 			val percent = points / sum
 			val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005))) * percent).toInt()
@@ -148,10 +142,8 @@ object ShipKillXP : SLComponent() {
 				SLXP.addAsync(player, xp)
 				log.info("Gave ${player.name} $xp XP for ship-killing $killedName")
 			}
-			var pointsrn = 0
-			if (points > pointsrn) {
-				pointsrn = points
 
+			if (points > 0) {
 				killMessage(killedName, damager, data)
 				ShipKillEvent(getPlayer(killed)!!, getPlayer(damager.id)!!).callEvent()
 				PlayerData[damager.id].update {

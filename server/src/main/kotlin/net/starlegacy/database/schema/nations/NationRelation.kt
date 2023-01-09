@@ -29,6 +29,13 @@ data class NationRelation(
 		ensureIndex(NationRelation::nation)
 		ensureIndex(NationRelation::other)
 	}) {
+		fun getRelationActual(nation: Oid<Nation>, other: Oid<Nation>): Level = when (nation) {
+			other -> Level.NATION
+			else -> findOneProp(
+				and(NationRelation::nation eq nation, NationRelation::other eq other), NationRelation::actual
+			) ?: Level.NONE
+		}
+
 		fun getRelationWish(nation: Oid<Nation>, other: Oid<Nation>): Level = when (nation) {
 			other -> Level.NATION
 			else -> findOneProp(

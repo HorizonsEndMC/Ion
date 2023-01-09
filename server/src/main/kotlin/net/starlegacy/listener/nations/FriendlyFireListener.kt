@@ -11,7 +11,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.litote.kmongo.eq
 
 object FriendlyFireListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {
@@ -54,10 +53,9 @@ object FriendlyFireListener : SLEventListener() {
 
 		val damagedNation: Oid<Nation> = damagedData.nation ?: return false
 		val damagerNation: Oid<Nation> = damagerData.nation ?: return false
-		for (relation in NationRelation.find(NationRelation::nation eq damagedNation)) {
-			if (relation.other == damagerNation && (relation.actual == NationRelation.Level.ALLY) || (damagedNation == damagerNation)) {
-				return true
-			}
+
+		if (NationRelation.getRelationActual(damagedNation, damagerNation).ordinal >= 5) {
+			return true
 		}
 
 		return false

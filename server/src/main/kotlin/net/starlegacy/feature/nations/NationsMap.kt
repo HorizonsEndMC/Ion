@@ -238,7 +238,7 @@ object NationsMap : SLComponent() {
 		} else {
 			"""
 			<h3>Owned by ${nation.name}</h3>
-			<p>Siege time during ${quarter}:00 (UTC)
+			<p>Siege time during $quarter:00 (UTC)
 			""".trimIndent()
 		}}
 		</p>
