@@ -2,16 +2,22 @@ package net.horizonsend.ion.server.generation.generators
 
 import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.generation.Asteroid
+import net.horizonsend.ion.server.generation.PlacedOre
+import net.horizonsend.ion.server.generation.PlacedOres
+import net.horizonsend.ion.server.generation.PlacedOresDataType
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.configuration.AsteroidFeatures
 import net.horizonsend.ion.server.generation.configuration.Palette
+import net.minecraft.util.RandomSource
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.util.Random
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -32,14 +38,11 @@ object AsteroidGenerator {
 	) {
 		val noise = SimplexOctaveGenerator(Random(world.seed), 1)
 
-		val worldX = chunk.x * 16
-		val worldZ = chunk.z * 16
-
-		for (x in worldX - (asteroid.size * 1.5).toInt()..worldX + 15 + (asteroid.size * 1.5).toInt()) {
+		for (x in asteroid.x - (asteroid.size * 1.5).toInt()..asteroid.x + 15 + (asteroid.size * 1.5).toInt()) {
 			val xDouble = x.toDouble()
 			val xSquared = (xDouble - asteroid.x) * (xDouble - asteroid.x)
 
-			for (z in worldZ - (asteroid.size * 1.5).toInt()..worldZ + 15 + (asteroid.size * 1.5).toInt()) {
+			for (z in asteroid.z - (asteroid.size * 1.5).toInt()..asteroid.z + 15 + (asteroid.size * 1.5).toInt()) {
 				val zDouble = z.toDouble()
 				val zSquared = (zDouble - asteroid.z) * (zDouble - asteroid.z)
 
@@ -86,9 +89,9 @@ object AsteroidGenerator {
 						(
 							(
 								noise.noise(
-									worldX + xDouble,
+									asteroid.x + xDouble,
 									yDouble,
-									worldZ + zDouble,
+									asteroid.x + zDouble,
 									1.0,
 									1.0,
 									true
@@ -104,6 +107,33 @@ object AsteroidGenerator {
 				}
 			}
 		}
+
+		val random: RandomSource = RandomSource.create(world.seed)
+		val ores = mutableListOf<PlacedOre>()
+
+		for (
+		count in
+		ceil(configuration.oreRatio * asteroid.size.pow(2.75)).toInt()
+			downTo 0
+		) {
+			val originX = random.nextInt(asteroid.x - (asteroid.size * 1.5).toInt(), asteroid.x + 16 + (asteroid.size * 1.5).toInt())
+			val originY = random.nextInt(asteroid.y - (asteroid.size * 1.5).toInt(), asteroid.y + 16 + (asteroid.size * 1.5).toInt())
+			val originZ = random.nextInt(asteroid.z - (asteroid.size * 1.5).toInt(), asteroid.z + 16 + (asteroid.size * 1.5).toInt())
+
+			if (!OreGenerator.asteroidBlocks.contains(world.getBlockAt(originX, originY, originZ).type)) {
+				continue
+			} // Quickly move on if it's not in an asteroid
+
+			val ore = OreGenerator.weightedOres[random.nextInt(0, OreGenerator.weightedOres.size - 1)]
+
+			val blobSize = random.nextInt(ore.maxBlobSize).coerceAtLeast(1)
+
+			OreGenerator.generateOre(world, PlacedOre(ore.material, blobSize, originX, originY, originZ))
+
+			ores += PlacedOre(ore.material, blobSize, originX, originY, originZ)
+		}
+
+		chunk.persistentDataContainer.set(NamespacedKeys.ASTEROIDS_ORES, PlacedOresDataType(), PlacedOres(ores))
 	}
 
 	fun generateAsteroid(x: Int, y: Int, z: Int, random: Random): Asteroid {
