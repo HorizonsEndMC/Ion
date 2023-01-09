@@ -118,8 +118,8 @@ object AsteroidGenerator {
 
 		val blockPalette: Palette = weightedPalette[paletteSample]
 
-		val size = random.nextDouble(5.0, 20.0)
-		val octaves = floor(5 * 0.95.pow(size)).toInt()
+		val size = random.nextDouble(5.0, configuration.maxAsteroidSize)
+		val octaves = floor(5 * 0.95.pow(size)).toInt().coerceAtLeast(1)
 
 		return Asteroid(x, y, z, blockPalette, size, octaves)
 	}
