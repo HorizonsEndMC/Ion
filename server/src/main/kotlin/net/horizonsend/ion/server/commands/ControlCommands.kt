@@ -31,8 +31,11 @@ class ControlCommands : BaseCommand() {
 	fun legacySelectDirect(sender: Player) {
 		sender.sendHint("/dc is deprecated and may be removed. Use /control direct")
 		selectControlMode(sender) {
-			if (it.controller is DirectController) LegacyController(it, (sender as CraftPlayer).handle)
-			else DirectController(it, (sender as CraftPlayer).handle)
+			if (it.controller is DirectController) {
+				LegacyController(it, (sender as CraftPlayer).handle)
+			} else {
+				DirectController(it, (sender as CraftPlayer).handle)
+			}
 		}
 	}
 
