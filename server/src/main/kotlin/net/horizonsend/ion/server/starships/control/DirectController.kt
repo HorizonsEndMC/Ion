@@ -20,7 +20,7 @@ class DirectController(
 		serverPlayer.speed = 0.01f
 	}
 
-	fun onShipMovement(starshipMovement: StarshipMovement) {
+	override fun onShipMovement(starshipMovement: StarshipMovement) {
 		mainThreadCheck()
 
 		centerX = starshipMovement.displaceX(centerX, centerZ)

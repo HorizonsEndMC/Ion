@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.starships
 
 import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.mainThreadCheck
+import net.horizonsend.ion.server.starships.control.Controller
 import net.horizonsend.ion.server.starships.control.PlayerController
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
@@ -23,11 +24,11 @@ open class Starship(
 			field = value
 		}
 
-	open var controller: PlayerController? = null
+	open var controller: Controller? = null
 		set(value) {
 			mainThreadCheck()
 
-			value?.sendInformation("Switched active control mode to ${value.name}.")
+			(value as? PlayerController)?.sendInformation("Switched active control mode to ${value.name}.")
 			field?.cleanup()
 			field = value
 		}
@@ -115,5 +116,5 @@ open class Starship(
 		}
 	}
 
-	override fun audience(): Audience = controller ?: Audience.empty()
+	override fun audience(): Audience = controller as? PlayerController ?: Audience.empty()
 }

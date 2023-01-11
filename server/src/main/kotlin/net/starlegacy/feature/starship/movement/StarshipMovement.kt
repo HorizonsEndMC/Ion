@@ -3,7 +3,6 @@ package net.starlegacy.feature.starship.movement
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
-import net.horizonsend.ion.server.starships.control.DirectController
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -113,7 +112,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			updateCenter()
 			updateSubsystems(world2)
 
-			(starship.controller as? DirectController)?.onShipMovement(this)
+			starship.controller?.onShipMovement(this)
 
 			onComplete()
 		}
