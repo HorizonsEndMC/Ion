@@ -8,10 +8,10 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.Direction
 import net.minecraft.core.Direction.Axis
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.movement.TranslateMovement
-import org.bukkit.Bukkit
 
 open class Starship(
 	open var serverLevel: ServerLevel
@@ -40,7 +40,7 @@ open class Starship(
 	open fun tick() {
 		mainThreadCheck()
 
-		if (Bukkit.getCurrentTick() % 20 != 0) return
+		if (MinecraftServer.currentTick % 20 != 0) return // Once per second
 
 		val (forwardBackward, upDown, rightLeft) = controller?.accelerationTick() ?: return
 
