@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship.movement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.starships.control.LegacyController
+import net.horizonsend.ion.server.starships.control.PlayerController
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipCruising
@@ -22,7 +23,7 @@ object StarshipTeleportation {
 
 		if (starship is ActivePlayerStarship) {
 			StarshipCruising.forceStopCruising(starship)
-			starship.controller = if (starship.controller != null) LegacyController(starship, starship.controller!!.serverPlayer) else null
+			starship.controller = if (starship.controller != null) LegacyController(starship, (starship.controller!! as PlayerController).serverPlayer) else null
 		}
 
 		starship.isTeleporting = true
