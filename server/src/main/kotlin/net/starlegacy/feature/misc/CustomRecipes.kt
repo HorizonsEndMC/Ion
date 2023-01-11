@@ -314,5 +314,41 @@ object CustomRecipes : SLComponent() {
 				's' to materialChoice(Material.END_STONE)
 			)
 		)
+	
+	}
+	
+	private fun registerOchreFroglightRecipe() {
+		registerShapedRecipe(
+			"ochre_froglight",
+			ItemStack(Material.OCHRE_FROGLIGHT, 2),
+			" h ", "hsh", " h ",
+			ingredients = mapOf(
+				's' to materialChoice(Material.SHROOMLIGHT),
+				'h' to materialChoice(Material.HONEYCOMB)
+			)
+		)
+	
+	}private fun registerVerdantFroglightRecipe() {
+		registerShapedRecipe(
+			"verdant_froglight",
+			ItemStack(Material.VERDANT_FROGLIGHT, 2),
+			" b ", "bsb", " b ",
+			ingredients = mapOf(
+				's' to materialChoice(Material.SHROOMLIGHT),
+				'b' to materialChoice(Material.SLIMEBALL)
+			)
+		)
+	
+	}private fun registerPearlescentFroglightRecipe() {
+		registerShapedRecipe(
+			"pearlescent_froglight",
+			ItemStack(Material.PEARLESCENT_FROGLIGHT, 2),
+			" a ", "asa", " a ",
+			ingredients = mapOf(
+				's' to materialChoice(Material.SHROOMLIGHT),
+				'a' to materialChoice(Material.AMETHYST_SHARD)
+			)
+		)
+	
 	}
 }
