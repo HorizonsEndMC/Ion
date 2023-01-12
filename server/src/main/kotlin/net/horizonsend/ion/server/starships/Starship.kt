@@ -116,5 +116,24 @@ open class Starship(
 		}
 	}
 
+	/**
+	 * Add velocity globally. Does not account for inertia.
+	 */
+	fun addGlobalVelocity(x: Double, y: Double, z: Double) {
+		velocityX += x
+		velocityY += y
+		velocityZ += z
+	}
+
+	/**
+	 * Add velocity locally. Does not account for inertia.
+	 */
+	fun addLocalVelocity(frontBack: Int, upDown: Int, rightLeft: Int) {
+		val (x, y, z) = relativeToGlobal(frontBack, upDown, rightLeft)
+		velocityX += x
+		velocityY += y
+		velocityZ += z
+	}
+
 	override fun audience(): Audience = controller as? PlayerController ?: Audience.empty()
 }
