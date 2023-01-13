@@ -89,7 +89,8 @@ fun initializeCrafting() {
 		setIngredient('t', TRIPWIRE)
 		setIngredient('a', AIR)
 	}
-	// Froglights
+	
+	// Ochre Froglight
 	shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
 		shape( "xhx", "hlh", "xhx")
 
@@ -97,6 +98,8 @@ fun initializeCrafting() {
 		setIngredient('l', SHROOMLIGHT)
 		setIngredient('x', AIR)
 	}
+	
+	// Verdant Froglight
 	shapedRecipe("verdant_froglight", VERDANT_FROGLIGHT) {
 		shape( "xsx", "sls", "xsx")
 
@@ -104,6 +107,8 @@ fun initializeCrafting() {
 		setIngredient('l', SHROOMLIGHT)
 		setIngredient('x', AIR)
 	}
+	
+	// Pearlescent Froglight
 	shapedRecipe("pearlescent_froglight", PEARLESCENT_FROGLIGHT) {
 		shape( "xax", "ala", "xax")
 
