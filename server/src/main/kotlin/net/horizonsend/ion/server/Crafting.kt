@@ -43,6 +43,10 @@ import org.bukkit.Material.TRIPWIRE
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
+import org.bukkit.Material.SHROOMLIGHT
+import org.bukkit.Material.HONEYCOMB
+import org.bukkit.Material.SLIMEBALL
+import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -84,6 +88,28 @@ fun initializeCrafting() {
 		setIngredient('l', LEATHER)
 		setIngredient('t', TRIPWIRE)
 		setIngredient('a', AIR)
+	}
+	// Froglights
+	shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
+		shape( "xhx", "hlh", "xhx")
+
+		setIngredient('h', HONEYCOMB)
+		setIngredient('l', SHROOMLIGHT)
+		setIngredient('x', AIR)
+	}
+	shapedRecipe("verdant_froglight", VERDANT_FROGLIGHT) {
+		shape( "xsx", "sls", "xsx")
+
+		setIngredient('s', SLIMEBALL)
+		setIngredient('l', SHROOMLIGHT)
+		setIngredient('x', AIR)
+	}
+	shapedRecipe("pearlescent_froglight", PEARLESCENT_FROGLIGHT) {
+		shape( "xax", "ala", "xax")
+
+		setIngredient('a', AMETHYST_SHARD)
+		setIngredient('l', SHROOMLIGHT)
+		setIngredient('x', AIR)
 	}
 
 	// Prismarine Crystals
