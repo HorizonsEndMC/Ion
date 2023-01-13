@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server
 
-// Special Exception Wildcard Imports
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.Material
 import org.bukkit.Material.AIR
+import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACK_WOOL
 import org.bukkit.Material.BLUE_WOOL
@@ -14,6 +14,7 @@ import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GRAY_WOOL
 import org.bukkit.Material.GREEN_WOOL
+import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.LEATHER
 import org.bukkit.Material.LIGHT_BLUE_WOOL
@@ -28,7 +29,9 @@ import org.bukkit.Material.NETHERITE_SWORD
 import org.bukkit.Material.NETHER_WART
 import org.bukkit.Material.NETHER_WART_BLOCK
 import org.bukkit.Material.OAK_LOG
+import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.ORANGE_WOOL
+import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.Material.PINK_WOOL
 import org.bukkit.Material.PRISMARINE
 import org.bukkit.Material.PRISMARINE_BRICKS
@@ -37,16 +40,15 @@ import org.bukkit.Material.PURPLE_WOOL
 import org.bukkit.Material.RED_WOOL
 import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
+import org.bukkit.Material.SHROOMLIGHT
+import org.bukkit.Material.SLIME_BALL
 import org.bukkit.Material.STICK
 import org.bukkit.Material.STRING
 import org.bukkit.Material.TRIPWIRE
+import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.Material.WHITE_WOOL
 import org.bukkit.Material.YELLOW_WOOL
-import org.bukkit.Material.SHROOMLIGHT
-import org.bukkit.Material.HONEYCOMB
-import org.bukkit.Material.SLIMEBALL
-import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -89,7 +91,7 @@ fun initializeCrafting() {
 		setIngredient('t', TRIPWIRE)
 		setIngredient('a', AIR)
 	}
-	
+
 	// Ochre Froglight
 	shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
 		shape( "xhx", "hlh", "xhx")
@@ -98,16 +100,16 @@ fun initializeCrafting() {
 		setIngredient('l', SHROOMLIGHT)
 		setIngredient('x', AIR)
 	}
-	
+
 	// Verdant Froglight
 	shapedRecipe("verdant_froglight", VERDANT_FROGLIGHT) {
 		shape( "xsx", "sls", "xsx")
 
-		setIngredient('s', SLIMEBALL)
+		setIngredient('s', SLIME_BALL)
 		setIngredient('l', SHROOMLIGHT)
 		setIngredient('x', AIR)
 	}
-	
+
 	// Pearlescent Froglight
 	shapedRecipe("pearlescent_froglight", PEARLESCENT_FROGLIGHT) {
 		shape( "xax", "ala", "xax")
