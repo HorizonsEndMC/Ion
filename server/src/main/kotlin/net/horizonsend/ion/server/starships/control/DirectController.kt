@@ -42,7 +42,7 @@ class DirectController(
 		val movementX = if (deltaX > 0.05) 1 else if (deltaX < -0.05) -1 else 0
 		val movementZ = if (deltaZ > 0.05) 1 else if (deltaZ < -0.05) -1 else 0
 
-		return starship.globalToRelative(movementX, 0, movementZ)
+		return starship.globalToLocal(movementX, 0, movementZ)
 	}
 
 	override fun cleanup() {
