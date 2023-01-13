@@ -48,13 +48,13 @@ open class Starship(
 		val upDownThrust = if (upDown == 1) upThrust else if (upDown == -1) downThrust else 0.0
 		val rightLeftThrust = if (rightLeft == 1) rightThrust else if (rightLeft == -1) leftThrust else 0.0
 
-		var (relativeVelocityForwardBackward, relativeVelocityUpDown, relativeVelocityRightLeft) = globalToRelative(velocityX, velocityY, velocityZ)
+		var (relativeVelocityForwardBackward, relativeVelocityUpDown, relativeVelocityRightLeft) = globalToLocal(velocityX, velocityY, velocityZ)
 
 		relativeVelocityForwardBackward += forwardBackwardThrust
 		relativeVelocityUpDown += upDownThrust
 		relativeVelocityRightLeft += rightLeftThrust
 
-		val (x, y, z) = relativeToGlobal(forwardBackward, upDown, rightLeft)
+		val (x, y, z) = localToGlobal(forwardBackward, upDown, rightLeft)
 		velocityX += x
 		velocityY += y
 		velocityZ += z
@@ -86,7 +86,7 @@ open class Starship(
 	protected open val downLimit = 8.0
 	// endregion
 
-	fun globalToRelative(x: Int, y: Int, z: Int): Triple<Int, Int, Int> {
+	fun globalToLocal(x: Int, y: Int, z: Int): Triple<Int, Int, Int> {
 		return when (facingDirection) {
 			Direction.NORTH -> Triple(-z, y, x)
 			Direction.SOUTH -> Triple(z, y, -x)
@@ -96,7 +96,7 @@ open class Starship(
 		}
 	}
 
-	fun globalToRelative(x: Double, y: Double, z: Double): Triple<Double, Double, Double> {
+	fun globalToLocal(x: Double, y: Double, z: Double): Triple<Double, Double, Double> {
 		return when (facingDirection) {
 			Direction.NORTH -> Triple(-z, y, x)
 			Direction.SOUTH -> Triple(z, y, -x)
@@ -106,30 +106,38 @@ open class Starship(
 		}
 	}
 
-	fun relativeToGlobal(forwardBackward: Int, upDown: Int, rightLeft: Int): Triple<Int, Int, Int> {
+	fun localToGlobal(frontBack: Int, upDown: Int, rightLeft: Int): Triple<Int, Int, Int> {
 		return when (facingDirection) {
-			Direction.NORTH -> Triple(rightLeft, upDown, -forwardBackward)
-			Direction.SOUTH -> Triple(-rightLeft, upDown, forwardBackward)
-			Direction.WEST -> Triple(-forwardBackward, upDown, -rightLeft)
-			Direction.EAST -> Triple(forwardBackward, upDown, rightLeft)
+			Direction.NORTH -> Triple(rightLeft, upDown, -frontBack)
+			Direction.SOUTH -> Triple(-rightLeft, upDown, frontBack)
+			Direction.WEST -> Triple(-frontBack, upDown, -rightLeft)
+			Direction.EAST -> Triple(frontBack, upDown, rightLeft)
 			else -> throw IllegalStateException("Ship direction must not be vertical")
 		}
 	}
 
-	/**
-	 * Add velocity globally. Does not account for inertia.
-	 */
+	fun localToGlobal(frontBack: Double, upDown: Double, rightLeft: Double): Triple<Double, Double, Double> {
+		return when (facingDirection) {
+			Direction.NORTH -> Triple(rightLeft, upDown, -frontBack)
+			Direction.SOUTH -> Triple(-rightLeft, upDown, frontBack)
+			Direction.WEST -> Triple(-frontBack, upDown, -rightLeft)
+			Direction.EAST -> Triple(frontBack, upDown, rightLeft)
+			else -> throw IllegalStateException("Ship direction must not be vertical")
+		}
+	}
+
 	fun addGlobalVelocity(x: Double, y: Double, z: Double) {
+		mainThreadCheck()
+
 		velocityX += x
 		velocityY += y
 		velocityZ += z
 	}
 
-	/**
-	 * Add velocity locally. Does not account for inertia.
-	 */
 	fun addLocalVelocity(frontBack: Int, upDown: Int, rightLeft: Int) {
-		val (x, y, z) = relativeToGlobal(frontBack, upDown, rightLeft)
+		mainThreadCheck()
+
+		val (x, y, z) = localToGlobal(frontBack, upDown, rightLeft)
 		velocityX += x
 		velocityY += y
 		velocityZ += z
