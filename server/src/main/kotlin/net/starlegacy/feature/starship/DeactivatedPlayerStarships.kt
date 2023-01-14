@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -13,7 +14,6 @@ import net.starlegacy.feature.starship.active.ActiveStarshipFactory
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.listen
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKey
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
@@ -61,7 +61,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val captain = playerId.slPlayerId
 			val type = StarshipType.SHUTTLE
 			val id = objId<PlayerStarshipData>()
-			val blockKey = blockKey(x, y, z)
+			val blockKey = BlockPos.asLong(x, y, z)
 			val worldName = world.name
 			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name = name, subShips = mutableMapOf())
 			PlayerStarshipData.add(data)

@@ -14,10 +14,6 @@ import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.isTurretComputer
 import net.starlegacy.util.toBukkitBlockData
@@ -40,7 +36,7 @@ data class PlayerStarshipState(
 ) {
 	companion object {
 		fun createFromActiveShip(starship: ActiveStarship): PlayerStarshipState {
-			val world = starship.world
+			val world = starship.serverLevel.world
 			val blocks = starship.blocks
 			val subCraft = starship.subShips.mapKeys { it.key.blockKey }
 			return createFromBlocks(world, blocks, subCraft)
@@ -61,9 +57,9 @@ data class PlayerStarshipState(
 			var maxZ: Int? = null
 
 			for (key in blocks) {
-				val x = blockKeyX(key)
-				val y = blockKeyY(key)
-				val z = blockKeyZ(key)
+				val x = BlockPos.getX(key)
+				val y = BlockPos.getY(key)
+				val z = BlockPos.getZ(key)
 
 				if (minX == null || minX > x) minX = x
 				if (minY == null || minY > y) minY = y
@@ -79,7 +75,7 @@ data class PlayerStarshipState(
 				}
 
 				coveredChunks += chunkKey(x shr 4, z shr 4)
-				blockMap[blockKey(x, y, z)] = blockData
+				blockMap[BlockPos.asLong(x, y, z)] = blockData
 			}
 
 			for (ship in subCraft) {
@@ -96,7 +92,7 @@ data class PlayerStarshipState(
 						continue
 					}
 
-					subCraftBlockMap[blockKey(x, y, z)] = blockData
+					subCraftBlockMap[BlockPos.asLong(x, y, z)] = blockData
 				}
 
 				subShipMap[ship.key] = subCraftBlockMap
@@ -129,7 +125,7 @@ data class PlayerStarshipState(
 					continue
 				}
 
-				val blockKey = blockKey(vec.x, vec.y, vec.z)
+				val blockKey = BlockPos.asLong(vec.x, vec.y, vec.z)
 
 				if (blockData.material.isTurretComputer) {
 					subShipComputers += blockKey
@@ -159,7 +155,7 @@ data class PlayerStarshipState(
 		val clipboard = BlockArrayClipboard(region)
 
 		for ((blockKey: Long, data: BlockData) in blockMap) {
-			val vector = BlockVector3.at(blockKeyX(blockKey), blockKeyY(blockKey), blockKeyZ(blockKey))
+			val vector = BlockVector3.at(BlockPos.getX(blockKey), BlockPos.getY(blockKey), BlockPos.getZ(blockKey))
 			val adaptedData = BukkitAdapter.adapt(data)
 			clipboard.setBlock(vector, adaptedData)
 		}

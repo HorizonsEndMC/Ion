@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -11,10 +12,6 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarshipMechanics
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKey
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.blockplacement.BlockPlacement
 import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
@@ -51,7 +48,7 @@ object StarshipDestruction {
 		val air = Material.AIR.createBlockData().nms
 		val queue = Long2ObjectOpenHashMap<BlockState>(starship.initialBlockCount)
 		starship.blocks.associateWithTo(queue) { air }
-		BlockPlacement.placeImmediate(starship.world, queue)
+		BlockPlacement.placeImmediate(starship.serverLevel.world, queue)
 	}
 
 	fun destroy(starship: ActiveStarship) {
@@ -76,7 +73,7 @@ object StarshipDestruction {
 	}
 
 	private fun destroyShip(starship: ActiveStarship) {
-		val world = starship.world
+		val world = starship.serverLevel.world
 		val blocks = starship.blocks
 		if (SpaceWorlds.contains(world)) {
 			explode(world, blocks)
@@ -142,20 +139,20 @@ object StarshipDestruction {
 			}
 
 			val key = iterator.nextLong()
-			val x = blockKeyX(key)
-			val y = blockKeyY(key)
-			val z = blockKeyZ(key)
+			val x = BlockPos.getX(key)
+			val y = BlockPos.getY(key)
+			val z = BlockPos.getZ(key)
 			val newY = y - 1
 			if (newY < 1) {
 				obstructedLocations.add(key)
 				continue
 			}
-			val block = world.getBlockAtKey(key)
+			val block = world.getBlockAt(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key))
 			val blockData = block.blockData
-			val belowKey = blockKey(x, newY, z)
+			val belowKey = BlockPos.asLong(x, newY, z)
 			newSinkingBlocks.add(belowKey)
 			if (!sinkingBlocks.contains(belowKey)) {
-				val below = world.getBlockAtKey(belowKey)
+				val below = world.getBlockAt(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key))
 				val belowData = below.blockData
 				if (belowData.nms.material.isLiquid) {
 					Hangars.dissipateBlock(world, belowKey)
@@ -174,13 +171,13 @@ object StarshipDestruction {
 
 	private fun removeBlocksAroundObstructed(newSinking: LinkedBlockingQueue<Long>, obstructedLocs: LongOpenHashSet) {
 		newSinking.removeIf { a ->
-			val aX = blockKeyX(a).d()
-			val aY = blockKeyY(a).d()
-			val aZ = blockKeyZ(a).d()
+			val aX = BlockPos.getX(a).d()
+			val aY = BlockPos.getY(a).d()
+			val aZ = BlockPos.getZ(a).d()
 			obstructedLocs.any { b ->
-				val bX = blockKeyX(b).d()
-				val bY = blockKeyY(b).d()
-				val bZ = blockKeyZ(b).d()
+				val bX = BlockPos.getX(b).d()
+				val bY = BlockPos.getY(b).d()
+				val bZ = BlockPos.getZ(b).d()
 				distanceSquared(aX, aY, aZ, bX, bY, bZ) < 4
 			}
 		}
@@ -205,9 +202,9 @@ object StarshipDestruction {
 				continue
 			}
 
-			val x = blockKeyX(block).toDouble()
-			val y = blockKeyY(block).toDouble()
-			val z = blockKeyZ(block).toDouble()
+			val x = BlockPos.getX(block).toDouble()
+			val y = BlockPos.getY(block).toDouble()
+			val z = BlockPos.getZ(block).toDouble()
 
 			val delay = ticksBetweenExplosions * (i / blockInterval)
 			Tasks.syncDelayTask(delay) {
@@ -221,9 +218,9 @@ object StarshipDestruction {
 
 		Tasks.syncDelayTask(finalDelay) {
 			for (block in queue) {
-				val x = blockKeyX(block).toDouble()
-				val y = blockKeyY(block).toDouble()
-				val z = blockKeyZ(block).toDouble()
+				val x = BlockPos.getX(block).toDouble()
+				val y = BlockPos.getY(block).toDouble()
+				val z = BlockPos.getZ(block).toDouble()
 				ActiveStarshipMechanics.withBlockExplosionDamageAllowed {
 					world.createExplosion(x, y, z, 8.0f)
 				}
@@ -235,7 +232,7 @@ object StarshipDestruction {
 
 			Tasks.syncDelayTask(finalDelay) {
 				for (key in blocks.iterator()) {
-					world.getBlockAtKey(key).setBlockData(air, false)
+					world.getBlockAt(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key)).setBlockData(air, false)
 				}
 			}
 		}

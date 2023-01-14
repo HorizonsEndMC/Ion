@@ -3,14 +3,12 @@ package net.starlegacy.feature.starship
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.SLComponent
 import net.starlegacy.listen
 import net.starlegacy.util.PerWorld
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.blockplacement.BlockPlacement
 import net.starlegacy.util.getNMSBlockDataSafe
 import net.starlegacy.util.nms
@@ -61,10 +59,10 @@ object Hangars : SLComponent() {
 			}
 			val restorations = LinkedList<Map.Entry<BlockData, Long>>()
 			for (entry in map.entries()) {
-				val (data, blockKey) = entry
-				val x = blockKeyX(blockKey)
-				val y = blockKeyY(blockKey)
-				val z = blockKeyZ(blockKey)
+				val (_, blockKey) = entry
+				val x = BlockPos.getX(blockKey)
+				val y = BlockPos.getY(blockKey)
+				val z = BlockPos.getZ(blockKey)
 				val currentData: BlockState = getNMSBlockDataSafe(world, x, y, z) ?: continue
 				if (!currentData.bukkitMaterial.isAir) {
 					continue
@@ -77,7 +75,7 @@ object Hangars : SLComponent() {
 			Tasks.sync {
 				val queue = Long2ObjectOpenHashMap<BlockState>()
 				for ((data, blockKey) in restorations) {
-					if (!world.isChunkLoaded(blockKeyX(blockKey) shr 4, blockKeyZ(blockKey) shr 4)) {
+					if (!world.isChunkLoaded(BlockPos.getX(blockKey) shr 4, BlockPos.getZ(blockKey) shr 4)) {
 						continue
 					}
 					val block = world.getBlockAtKey(blockKey)
@@ -92,12 +90,12 @@ object Hangars : SLComponent() {
 		}
 	}
 
-	fun dissipateBlock(world: World, blockKey: Long) {
-		val block = world.getBlockAtKey(blockKey)
+	fun dissipateBlock(world: World, key: Long) {
+		val block = world.getBlockAt(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key))
 		val data = block.blockData
 		require(!data.material.isAir)
 		block.setType(Material.AIR, false)
-		hangarData[world][data].add(blockKey)
+		hangarData[world][data].add(key)
 	}
 
 	override fun onDisable() {

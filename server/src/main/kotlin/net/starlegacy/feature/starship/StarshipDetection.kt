@@ -11,10 +11,6 @@ import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.listen
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.isChiseled
@@ -90,7 +86,7 @@ object StarshipDetection : SLComponent() {
 			val blockData = getBlockDataSafe(world, x, y, z)
 				// Do not allow checking ships larger than render distance.
 				// The type being null usually means the chunk is unloaded.
-				?: throw DetectionFailedException("The blocks went beyond loaded chunks!")
+				?: throw DetectionFailedException("The subcraft's blocks went beyond loaded chunks!")
 
 			val material = blockData.material
 
@@ -155,7 +151,7 @@ object StarshipDetection : SLComponent() {
 		/*
 						val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
 		*/
-		val computerLocation = Vec3i(data.blockKey)
+		val computerLocation = BlockPos.of(data.blockKey)
 
 		// blocks that were accepted
 		val blocks = mutableListOf<Vec3i>()
@@ -176,7 +172,7 @@ object StarshipDetection : SLComponent() {
 		var stickyPistons = 0
 
 		// Jumpstart the queue by adding the origin block
-		val computerKey = computerLocation.toBlockKey()
+		val computerKey = BlockPos.asLong(computerLocation.x, computerLocation.y, computerLocation.z)
 		visited.add(computerKey)
 		queue.push(computerKey)
 
@@ -200,9 +196,9 @@ object StarshipDetection : SLComponent() {
 			}
 
 			val key = queue.pop()
-			val x = blockKeyX(key)
-			val y = blockKeyY(key)
-			val z = blockKeyZ(key)
+			val x = BlockPos.getX(key)
+			val y = BlockPos.getY(key)
+			val z = BlockPos.getZ(key)
 
 			val blockData = getBlockDataSafe(world, x, y, z)
 				// Do not allow checking ships larger than render distance.
@@ -244,7 +240,7 @@ object StarshipDetection : SLComponent() {
 				material.isConcrete -> concrete++
 				isInventory(material) -> containers++
 				material == Material.STICKY_PISTON -> stickyPistons++
-				material.isTurretComputer -> { subShips += BlockPos.asLong(x, y, z); println(material) }
+				material.isTurretComputer -> { subShips += BlockPos.asLong(x, y, z) }
 			}
 
 			if (material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.BARREL) {
@@ -264,7 +260,7 @@ object StarshipDetection : SLComponent() {
 							continue
 						}
 
-						val key1 = blockKey(adjacentX, adjacentY, adjacentZ)
+						val key1 = BlockPos.asLong(adjacentX, adjacentY, adjacentZ)
 						if (visited.add(key1)) {
 							queue.push(key1)
 						}
@@ -334,7 +330,7 @@ object StarshipDetection : SLComponent() {
 			SubCraftData.findByKey(subShip).first()?.let { SubCraftData.remove(it._id) }
 			val id = objId<SubCraftData>()
 
-			val subShipData = SubCraftData(id, data.serverName, data.levelName, subShip)
+			val subShipData = SubCraftData(id, data._id, data.serverName, data.levelName, subShip)
 
 			val mapThingy = detectSubShip(subShipData, size)
 
@@ -342,7 +338,6 @@ object StarshipDetection : SLComponent() {
 
 			SubCraftData.add(subShipData)
 			subShipMap[subShip] = mapThingy
-			println(subShipData)
 		}
 
 		val coveredChunks = LongOpenHashSet()

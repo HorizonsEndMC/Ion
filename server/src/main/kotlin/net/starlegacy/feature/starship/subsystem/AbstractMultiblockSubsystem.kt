@@ -16,7 +16,7 @@ abstract class AbstractMultiblockSubsystem<T>(
 	override var face: BlockFace = sign.getFacing().oppositeFace
 
 	override fun isIntact(): Boolean {
-		val block = starship.world.getBlockAtKey(pos.toBlockKey())
+		val block = starship.serverLevel.world.getBlockAt(pos.x, pos.y, pos.z)
 
 		if (!block.type.isWallSign) {
 			return false

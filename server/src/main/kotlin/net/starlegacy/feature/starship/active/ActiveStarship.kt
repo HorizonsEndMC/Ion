@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.active
 
+import co.aikar.commands.ConditionFailedException
 import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
@@ -8,17 +9,25 @@ import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.starships.Starship
+import net.horizonsend.ion.server.starships.subcraft.SubShipUtils
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.starship.StarshipType
+import net.starlegacy.feature.starship.control.StarshipControl
+import net.starlegacy.feature.starship.event.StarshipMoveEvent
+import net.starlegacy.feature.starship.event.StarshipRotateEvent
+import net.starlegacy.feature.starship.event.StarshipTranslateEvent
+import net.starlegacy.feature.starship.movement.RotationMovement
 import net.starlegacy.feature.starship.movement.StarshipMovement
+import net.starlegacy.feature.starship.movement.TranslateMovement
 import net.starlegacy.feature.starship.subsystem.GravityWellSubsystem
 import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import net.starlegacy.feature.starship.subsystem.MagazineSubsystem
@@ -33,10 +42,6 @@ import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.d
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.msg
@@ -58,6 +63,8 @@ import org.bukkit.util.Vector
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
 import kotlin.math.ln
@@ -71,7 +78,7 @@ abstract class ActiveStarship(
 	serverLevel: ServerLevel,
 
 	var blocks: LongOpenHashSet,
-	val subShips: Map<SubCraftData, LongOpenHashSet>,
+	val subShips: MutableMap<SubCraftData, LongOpenHashSet>,
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
@@ -204,7 +211,7 @@ abstract class ActiveStarship(
 
 	inline fun iterateBlocks(x: (Int, Int, Int) -> Unit) {
 		for (key in blocks.iterator()) {
-			x(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
+			x(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key))
 		}
 	}
 
@@ -213,6 +220,16 @@ abstract class ActiveStarship(
 			val faceThrusters = thrusters.filter { it.face == face }
 			val data = buildThrustData(faceThrusters)
 			thrusterMap[face] = data
+		}
+	}
+
+	override fun tick() {
+		super.tick()
+
+		if (MinecraftServer.currentTick % 10 != 0) return // Once per 0.5 second
+
+		for (subShip in subShips) {
+			SubShipUtils.execute(subShip.key, subShip.value, true)
 		}
 	}
 
@@ -269,7 +286,7 @@ abstract class ActiveStarship(
 	}
 
 	fun contains(x: Int, y: Int, z: Int): Boolean {
-		return isInBounds(x, y, z) && blocks.contains(blockKey(x, y, z))
+		return isInBounds(x, y, z) && blocks.contains(BlockPos.asLong(x, y, z))
 	}
 
 	fun isInternallyObstructed(origin: Vec3i, dir: Vector, maxDistance: Int? = null): Boolean {
@@ -321,7 +338,90 @@ abstract class ActiveStarship(
 		passengers.clear()
 	}
 
-	abstract fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean>
+	// manual move is sneak/direct control
+	val manualMoveCooldownMillis: Long = (Math.cbrt(initialBlockCount.toDouble()) * 40).toLong()
+
+	var lastManualMove = System.nanoTime() / 1_000_000
+	var sneakMovements = 0
+
+	data class PendingRotation(val clockwise: Boolean)
+	private val pendingRotations = LinkedBlockingQueue<PendingRotation>()
+	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(250L + initialBlockCount / 40L)
+
+	open fun moveAsync(movement: StarshipMovement, pilot: Player? = null): CompletableFuture<Boolean> {
+		if (!ActiveStarships.isActive(this)) {
+			return CompletableFuture.completedFuture(false)
+		}
+
+		if (pilot != null) {
+			val event: StarshipMoveEvent = when (movement) {
+				is TranslateMovement -> StarshipTranslateEvent(this, pilot, movement)
+				is RotationMovement -> StarshipRotateEvent(this, pilot, movement)
+				else -> error("Unrecognized movement type ${movement.javaClass.name}")
+			}
+
+			if (!event.callEvent()) {
+				return CompletableFuture.completedFuture(false)
+			}
+		}
+
+		val future = CompletableFuture<Boolean>()
+		Tasks.async {
+			val result = executeMovement(movement, pilot)
+			future.complete(result)
+		}
+
+		return future
+	}
+
+	fun tryRotate(clockwise: Boolean) {
+		pendingRotations.add(PendingRotation(clockwise))
+
+		if (pendingRotations.size > 1) {
+			return
+		}
+
+		scheduleRotation()
+	}
+
+	private fun scheduleRotation(pilot: Player? = null) {
+		val rotationTimeTicks = TimeUnit.NANOSECONDS.toMillis(rotationTime) / 50L
+		Tasks.sync {
+			pilot?.setCooldown(StarshipControl.CONTROLLER_TYPE, rotationTimeTicks.toInt())
+		}
+		Tasks.syncDelay(rotationTimeTicks) {
+			if (pendingRotations.none()) {
+				return@syncDelay
+			}
+
+			val rotation = pendingRotations.poll()
+
+			if (pendingRotations.any()) {
+				scheduleRotation()
+			}
+
+			moveAsync(RotationMovement(this, rotation.clockwise))
+		}
+	}
+
+	@Synchronized
+	fun executeMovement(movement: StarshipMovement, pilot: Player?): Boolean {
+		if (movement.starship is ActivePlayerStarship) return false
+		println("06")
+		println(movement)
+		println(movement.starship)
+
+		try {
+			movement.execute()
+		} catch (e: ConditionFailedException) {
+			pilot?.msg("&c" + (e.message ?: "Starship could not move for an unspecified reason!"))
+			sneakMovements = 0
+			return false
+		}
+
+		println("07")
+		return true
+	}
 
 	@Deprecated("Deprecated in favour of Adventure text components.")
 	fun sendTitle(title: Title) {
@@ -368,7 +468,7 @@ abstract class ActiveStarship(
 
 	fun hullIntegrity(): Double {
 		val nonAirBlocks = blocks.count {
-			getBlockTypeSafe(serverLevel, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
+			getBlockTypeSafe(serverLevel, BlockPos.getX(it), BlockPos.getY(it), BlockPos.getZ(it))?.isAir != true
 		}
 		return nonAirBlocks.toDouble() / initialBlockCount.toDouble()
 	}

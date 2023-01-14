@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
@@ -10,7 +11,6 @@ import net.starlegacy.feature.multiblock.misc.ShipFactoryMultiblock
 import net.starlegacy.listen
 import net.starlegacy.util.SignUtils
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKey
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.isSign
@@ -98,7 +98,7 @@ object StarshipFactories : SLComponent() {
 				continue
 			}
 
-			val key = blockKey(pos.x + offsetX + targetX, pos.y + offsetY + targetY, pos.z + offsetZ + targetZ)
+			val key = BlockPos.asLong(pos.x + offsetX + targetX, pos.y + offsetY + targetY, pos.z + offsetZ + targetZ)
 
 			blocks[key] = data
 

@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.active;
 
+import net.minecraft.core.BlockPos;
 import net.starlegacy.util.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,9 +54,9 @@ public class ActiveStarshipHitbox {
         boundsArray = new int[width][][];
 
         for (long key : blocks) {
-            int x = blockKeyX(key) - minX;
-            int y = blockKeyY(key) - minY;
-            int z = blockKeyZ(key) - minZ;
+            int x = BlockPos.getX(key) - minX;
+            int y = BlockPos.getY(key) - minY;
+            int z = BlockPos.getZ(key) - minZ;
 
             int[][] yBoundsArray = boundsArray[x];
 
@@ -86,13 +87,13 @@ public class ActiveStarshipHitbox {
         }
 
         long start = blocks.iterator().next();
-        int minX = blockKeyX(start), minY = blockKeyY(start), minZ = blockKeyZ(start);
+        int minX = BlockPos.getX(start), minY = BlockPos.getY(start), minZ = BlockPos.getZ(start);
         int maxX = minX, maxY = minY, maxZ = minZ;
 
         for (long key : blocks) {
-            int x = blockKeyX(key);
-            int y = blockKeyY(key);
-            int z = blockKeyZ(key);
+            int x = BlockPos.getX(key);
+            int y = BlockPos.getY(key);
+            int z = BlockPos.getZ(key);
 
             if (x < minX) minX = x;
             if (x > maxX) maxX = x;

@@ -21,9 +21,6 @@ import net.starlegacy.util.PerWorld
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.getFacing
@@ -31,6 +28,7 @@ import net.starlegacy.util.getSphereBlocks
 import net.starlegacy.util.nms
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.timing
+import net.starlegacy.util.toLocation
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -74,7 +72,7 @@ object StarshipShields : SLComponent() {
 	@EventHandler
 	fun onActivate(event: StarshipActivatedEvent) {
 		val starship = event.starship
-		val worldID = starship.world.uid
+		val worldID = starship.serverLevel.world.uid
 
 		for (shield in starship.shields) {
 			val shieldPos = ShieldPos(worldID, shield.pos)
@@ -85,7 +83,7 @@ object StarshipShields : SLComponent() {
 	@EventHandler
 	fun onDeactivate(event: StarshipDeactivatedEvent) {
 		val starship = event.starship
-		val worldID = starship.world.uid
+		val worldID = starship.serverLevel.world.uid
 
 		for (shield in starship.shields) {
 			val shieldPos = ShieldPos(worldID, shield.pos)
@@ -271,7 +269,7 @@ object StarshipShields : SLComponent() {
 		nmsLevel: Level
 	) {
 		// ignore if it's over 500 blocks away
-		if (starship.centerOfMassVec3i.toLocation(world).distanceSquared(location) > 250_000) {
+		if (starship.centerOfMassBlockPos.toLocation(world).distanceSquared(location) > 250_000) {
 			return
 		}
 
@@ -374,7 +372,7 @@ object StarshipShields : SLComponent() {
 			val by = block.y
 			val bz = block.z
 
-			val blockKey: Long = block.blockKey
+			val blockKey: Long = BlockPos.asLong(block.x, block.y, block.z)
 
 			if (!flaringBlocks.add(blockKey) || !flaredBlocks.add(blockKey)) {
 				continue
@@ -408,14 +406,14 @@ object StarshipShields : SLComponent() {
 			for (key: Long in flaredBlocks.iterator()) {
 				flaringBlocks.remove(key)
 
-				val data = world.getBlockAtKey(key).blockData.nms
+				val data = world.getBlockAt(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key)).blockData.nms
 
 				if (data.block is BaseEntityBlock) {
-					world.getBlockAtKey(key).state.update(false, false)
+					world.getBlockAt(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key)).state.update(false, false)
 					continue
 				}
 
-				val pos = BlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
+				val pos = BlockPos(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key))
 				val packet = ClientboundBlockUpdatePacket(pos, data)
 				nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
 			}

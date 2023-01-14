@@ -264,7 +264,7 @@ object BlueprintCommand : SLCommand() {
 		name: String,
 		callback: (ActivePlayerStarship) -> Unit = {}
 	) {
-		val block = sender.world.getBlockAtKey(origin.toBlockKey())
+		val block = sender.world.getBlockAt(origin.x, origin.y, origin.z)
 
 		if (block.type != StarshipComputers.COMPUTER_TYPE) {
 			sender msg "${block.type} at $origin was not a starship computer, failed to pilot"

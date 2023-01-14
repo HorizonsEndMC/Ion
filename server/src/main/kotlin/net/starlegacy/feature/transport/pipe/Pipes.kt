@@ -1,5 +1,6 @@
 package net.starlegacy.feature.transport.pipe
 
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.machine.GeneratorFuel
 import net.starlegacy.feature.transport.Extractors
@@ -11,7 +12,6 @@ import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.MATERIALS
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.chunkKeyX
 import net.starlegacy.util.chunkKeyZ
@@ -238,7 +238,7 @@ object Pipes : SLComponent() {
 					}
 
 					// if it's an inventory
-					isPipedInventory(adjacentType) && blockKey(sideX, sideY, sideZ) != data.source.toBlockKey() -> {
+					isPipedInventory(adjacentType) && BlockPos.asLong(sideX, sideY, sideZ) != BlockPos.asLong(data.source.x, data.source.y, data.source.z) -> {
 						// check if it actually fits later
 						sideInventories.add(sideFace)
 					}
@@ -409,7 +409,7 @@ object Pipes : SLComponent() {
 					}
 
 					// move all the items by default
-					else -> sourceInventory.contents!!.withIndex()
+					else -> sourceInventory.contents.withIndex()
 				}
 
 				for ((index: Int, item: ItemStack?) in items) {

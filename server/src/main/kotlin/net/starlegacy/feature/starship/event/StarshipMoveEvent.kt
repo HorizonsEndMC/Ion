@@ -1,16 +1,16 @@
 package net.starlegacy.feature.starship.event
 
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
+import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.movement.StarshipMovement
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
 
 abstract class StarshipMoveEvent(
-	val ship: ActivePlayerStarship,
+	val ship: ActiveStarship,
 	val player: Player,
 	open val movement: StarshipMovement
-) : PlayerStarshipEvent(ship), Cancellable {
+) : StarshipEvent(ship), Cancellable {
 	private var cancelled: Boolean = false
 
 	override fun getHandlers(): HandlerList {
