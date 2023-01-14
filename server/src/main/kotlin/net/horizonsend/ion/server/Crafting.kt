@@ -94,7 +94,7 @@ fun initializeCrafting() {
 
 	// Ochre Froglight
 	shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
-		shape( "xhx", "hlh", "xhx")
+		shape("xhx", "hlh", "xhx")
 
 		setIngredient('h', HONEYCOMB)
 		setIngredient('l', SHROOMLIGHT)
@@ -103,7 +103,7 @@ fun initializeCrafting() {
 
 	// Verdant Froglight
 	shapedRecipe("verdant_froglight", VERDANT_FROGLIGHT) {
-		shape( "xsx", "sls", "xsx")
+		shape("xsx", "sls", "xsx")
 
 		setIngredient('s', SLIME_BALL)
 		setIngredient('l', SHROOMLIGHT)
@@ -112,7 +112,7 @@ fun initializeCrafting() {
 
 	// Pearlescent Froglight
 	shapedRecipe("pearlescent_froglight", PEARLESCENT_FROGLIGHT) {
-		shape( "xax", "ala", "xax")
+		shape("xax", "ala", "xax")
 
 		setIngredient('a', AMETHYST_SHARD)
 		setIngredient('l', SHROOMLIGHT)
