@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.starships.Starship
-import net.horizonsend.ion.server.starships.subcraft.SubShipUtils
+import net.horizonsend.ion.server.starships.subcraft.SubShipMovement
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -229,7 +229,13 @@ abstract class ActiveStarship(
 		if (MinecraftServer.currentTick % 10 != 0) return // Once per 0.5 second
 
 		for (subShip in subShips) {
-			SubShipUtils.execute(subShip.key, subShip.value, true)
+			Tasks.async {
+				try {
+					SubShipMovement(subShip.key, subShip.value, true).execute()
+				} catch (e: ConditionFailedException) {
+					this.sendFeedbackMessage(FeedbackType.SERVER_ERROR, "{0}", (e.message ?: "Starship could not move for an unspecified reason!"))
+				}
+			}
 		}
 	}
 
@@ -407,9 +413,6 @@ abstract class ActiveStarship(
 	@Synchronized
 	fun executeMovement(movement: StarshipMovement, pilot: Player?): Boolean {
 		if (movement.starship is ActivePlayerStarship) return false
-		println("06")
-		println(movement)
-		println(movement.starship)
 
 		try {
 			movement.execute()
@@ -419,7 +422,6 @@ abstract class ActiveStarship(
 			return false
 		}
 
-		println("07")
 		return true
 	}
 

@@ -2,8 +2,6 @@ package net.starlegacy.feature.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
@@ -187,7 +185,7 @@ object StarshipDetection : SLComponent() {
 		val start = System.nanoTime()
 
 		// Sub Ship Computer Locations
-		val subShips = mutableSetOf<Long>()
+		val subShips = mutableMapOf<Long, BlockData>()
 		val subShipMap = mutableMapOf<Long, Long2ObjectOpenHashMap<BlockData>>()
 
 		while (!queue.isEmpty()) {
@@ -240,7 +238,7 @@ object StarshipDetection : SLComponent() {
 				material.isConcrete -> concrete++
 				isInventory(material) -> containers++
 				material == Material.STICKY_PISTON -> stickyPistons++
-				material.isTurretComputer -> { subShips += BlockPos.asLong(x, y, z) }
+				material.isTurretComputer -> { subShips[BlockPos.asLong(x, y, z)] = blockData }
 			}
 
 			if (material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.BARREL) {
@@ -326,16 +324,15 @@ object StarshipDetection : SLComponent() {
 		}*/
 
 		// Detect SubShips
-		for (subShip in subShips) {
+		for ((subShip, blockData) in subShips) {
 			SubCraftData.findByKey(subShip).first()?.let { SubCraftData.remove(it._id) }
+
 			val id = objId<SubCraftData>()
-
-			val subShipData = SubCraftData(id, data._id, data.serverName, data.levelName, subShip)
-
+			val facing = (blockData as Directional).facing
+			val subShipData = SubCraftData(id, data._id, data.serverName, data.levelName, subShip, facing, name = null)
 			val mapThingy = detectSubShip(subShipData, size)
 
 			data.subShips[subShipData.blockKey] = LongOpenHashSet(mapThingy.keys)
-
 			SubCraftData.add(subShipData)
 			subShipMap[subShip] = mapThingy
 		}
@@ -352,8 +349,6 @@ object StarshipDetection : SLComponent() {
 		checkNotNull(maxX)
 		checkNotNull(maxY)
 		checkNotNull(maxZ)
-
-		world.sendFeedbackMessage(FeedbackType.ALERT, "{0}", subShipMap)
 
 		return PlayerStarshipState(coveredChunks, blockTypes, subShipMap, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
 	}

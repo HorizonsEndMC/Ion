@@ -5,6 +5,7 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
 import org.bukkit.Bukkit
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -16,7 +17,9 @@ data class SubCraftData(
 	val parent: Oid<PlayerStarshipData>,
 	var serverName: String?,
 	var levelName: String,
-	var blockKey: Long
+	var blockKey: Long,
+	var facing: BlockFace,
+	var name: String?
 ) : DbObject, Serializable {
 	companion object : OidDbObjectCompanion<SubCraftData>(SubCraftData::class, setup = {
 		ensureIndex(SubCraftData::serverName)

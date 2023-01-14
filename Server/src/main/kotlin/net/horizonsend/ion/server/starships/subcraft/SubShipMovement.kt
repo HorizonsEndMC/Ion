@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.starships.subcraft
 
-import io.papermc.paper.entity.RelativeTeleportFlag
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
@@ -18,21 +19,28 @@ import net.starlegacy.util.nms
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Entity
-import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-object SubShipUtils {
-	fun execute(data: SubCraftData, blocks: LongOpenHashSet, clockwise: Boolean) {
-		val origin: BlockPos = BlockPos.of(data.blockKey)
-		val parent: ActiveStarship = ActiveStarships[data.parent] ?: return
-		val world1: World = data.bukkitWorld()
+open class SubShipMovement(val data: SubCraftData, private var oldLocationSet: LongOpenHashSet, private val clockwise: Boolean) {
+	private val origin = BlockPos.of(data.blockKey)
+	private val nmsRotation = if (clockwise) Rotation.CLOCKWISE_90 else Rotation.COUNTERCLOCKWISE_90
+	private val theta: Double = if (clockwise) 90.0 else -90.0
+	private val cosTheta: Double = cos(Math.toRadians(theta))
+	private val sinTheta: Double = sin(Math.toRadians(theta))
+	val parent: ActiveStarship? = ActiveStarships[data.parent]
 
-		val oldLocationSet: LongOpenHashSet = blocks
+	open fun execute() {
+		if (parent == null) return
+
+		val world1: World = parent.serverLevel.world
+
+		if (!ActiveStarships.isActive(parent)) {
+			parent.sendFeedbackMessage(FeedbackType.INFORMATION, "Starship not active, movement cancelled.")
+			return
+		}
 
 		val oldLocationArray = oldLocationSet.filter {
 			isFlyable(world1.getBlockAt(BlockPos.getX(it), BlockPos.getY(it), BlockPos.getZ(it)).blockData.nms)
@@ -47,11 +55,10 @@ object SubShipUtils {
 			val y0 = BlockPos.getY(blockKey)
 			val z0 = BlockPos.getZ(blockKey)
 
-			val x = displaceX(x0, z0, origin, clockwise)
-			val y = y0
-			val z = displaceZ(z0, x0, origin, clockwise)
+			val x = displaceX(x0, z0)
+			val z = displaceZ(z0, x0)
 
-			val newBlockKey = BlockPos.asLong(x, y, z)
+			val newBlockKey = BlockPos.asLong(x, y0, z)
 			newLocationArray[i] = newBlockKey
 
 			newLocationSet.add(newBlockKey)
@@ -64,46 +71,39 @@ object SubShipUtils {
 			newLocationArray,
 			this::blockDataTransform
 		) {
-			parent.calculateMinMax()
-
-			parent.subShips[data] = newLocationSet
-
+			// this part will run on the main thread
 			parent.blocks -= oldLocationSet
 			parent.blocks += newLocationSet
 
-			onComplete(data, clockwise)
+			parent.calculateMinMax()
+			parent.subShips[data] = newLocationSet
+
+			onComplete()
+
+			oldLocationSet = newLocationSet
 		}
 	}
 
 	fun blockDataTransform(blockData: BlockState): BlockState =
 		if (CustomBlocks[blockData] == null) {
-			blockData.rotate(Rotation.CLOCKWISE_90)
+			blockData.rotate(nmsRotation)
 		} else {
 			blockData
 		}
 
-	fun displaceX(oldX: Int, oldZ: Int, origin: BlockPos, clockwise: Boolean): Int {
-		val theta: Double = if (clockwise) 90.0 else -90.0
-		val cosTheta: Double = cos(Math.toRadians(theta))
-		val sinTheta: Double = sin(Math.toRadians(theta))
+	fun displaceX(oldX: Int, oldZ: Int): Int {
 		val offsetX = oldX - origin.x
 		val offsetZ = oldZ - origin.z
 		return (offsetX.toDouble() * cosTheta - offsetZ.toDouble() * sinTheta).roundToInt() + origin.x
 	}
 
-	fun displaceZ(oldZ: Int, oldX: Int, origin: BlockPos, clockwise: Boolean): Int {
-		val theta: Double = if (clockwise) 90.0 else -90.0
-		val cosTheta: Double = cos(Math.toRadians(theta))
-		val sinTheta: Double = sin(Math.toRadians(theta))
+	fun displaceZ(oldZ: Int, oldX: Int): Int {
 		val offsetX = oldX - origin.x
 		val offsetZ = oldZ - origin.z
 		return (offsetX.toDouble() * sinTheta + offsetZ.toDouble() * cosTheta).roundToInt() + origin.z
 	}
 
-	fun displaceLocation(oldLocation: Location, origin: BlockPos, clockwise: Boolean): Location {
-		val theta: Double = if (clockwise) 90.0 else -90.0
-		val cosTheta: Double = cos(Math.toRadians(theta))
-		val sinTheta: Double = sin(Math.toRadians(theta))
+	fun displaceLocation(oldLocation: Location): Location {
 		val centerX = origin.x + 0.5
 		val centerZ = origin.z + 0.5
 		val offsetX = oldLocation.x - centerX
@@ -115,18 +115,7 @@ object SubShipUtils {
 		return newLocation
 	}
 
-	fun movePassenger(passenger: Entity, origin: BlockPos, clockwise: Boolean) {
-		val newLoc = displaceLocation(passenger.location, origin, clockwise)
-		if (passenger is Player) {
-			newLoc.pitch = passenger.location.pitch
-			newLoc.yaw += passenger.location.yaw
-			passenger.teleport(newLoc, PlayerTeleportEvent.TeleportCause.PLUGIN, true, false, *RelativeTeleportFlag.values())
-		} else {
-			passenger.teleport(newLoc)
-		}
-	}
-
-	fun rotateBlockFace(blockFace: BlockFace, clockwise: Boolean): BlockFace {
+	private fun rotateBlockFace(blockFace: BlockFace): BlockFace {
 		return if (clockwise) {
 			when (blockFace) {
 				BlockFace.NORTH -> BlockFace.EAST
@@ -146,25 +135,22 @@ object SubShipUtils {
 		}
 	}
 
-	private fun onComplete(data: SubCraftData, clockwise: Boolean) {
-		val theta: Double = if (clockwise) 90.0 else -90.0
-		val cosTheta: Double = cos(Math.toRadians(theta))
-		val sinTheta: Double = sin(Math.toRadians(theta))
-		val parent: ActiveStarship = ActiveStarships[data.parent] ?: return
-
+	fun onComplete() {
+		if (parent == null) return
 		parent.calculateHitbox()
-		for (subsystem in parent.subsystems) {
+
+		for (subsystem in parent.subsystems.filter { parent.subShips[data]?.contains(it.pos.toBlockPos().asLong()) ?: false }) {
 			if (subsystem is DirectionalSubsystem) {
-				subsystem.face = rotateBlockFace(subsystem.face, clockwise)
+				subsystem.face = rotateBlockFace(subsystem.face)
 			}
 		}
 		// rotate all the thruster data
 		val thrusterMap: MutableMap<BlockFace, ThrustData> = parent.thrusterMap
 		// creates a new map with the updated faces, then overwrites the old map
 		// since the map contains every possible face, it overwrites every face
-		thrusterMap.putAll(thrusterMap.mapKeys { (face: BlockFace, _) -> rotateBlockFace(face, clockwise) })
+		thrusterMap.putAll(thrusterMap.mapKeys { (face: BlockFace, _) -> rotateBlockFace(face) })
 
-		parent.forwardBlockFace = rotateBlockFace(parent.forwardBlockFace, clockwise)
+		parent.forwardBlockFace = rotateBlockFace(parent.forwardBlockFace)
 
 		if (parent is ActivePlayerStarship) {
 			val dir = parent.cruiseData.targetDir

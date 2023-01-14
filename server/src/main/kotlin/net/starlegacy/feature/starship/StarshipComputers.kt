@@ -11,10 +11,12 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.util.HSVLike
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
@@ -213,7 +215,21 @@ object StarshipComputers : SLComponent() {
 
 				DeactivatedPlayerStarships.updateState(data, state)
 
+				var hoverMessage = ""
+
+				for ((key, blocks) in state.subShipMap) {
+					val craftData = SubCraftData.findByKey(key).first()
+
+					hoverMessage += "${craftData?.name ?: "Sub-Ship"} at ${BlockPos.of(key)}: ${blocks.size.toText()}\n"
+				}
+
 				player.sendFeedbackActionMessage(SUCCESS, "Re-detected! New size {0}", state.blockMap.size.toText())
+				player.sendFeedbackActionMessage(
+					SUCCESS,
+					"{0}Detected {1} sub-ships",
+					hoverMessage,
+					state.subShipMap.size
+				)
 			}
 		}
 	}
