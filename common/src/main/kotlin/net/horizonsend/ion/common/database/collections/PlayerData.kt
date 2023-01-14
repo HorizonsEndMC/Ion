@@ -5,6 +5,7 @@ import com.mongodb.client.model.IndexOptions
 import net.horizonsend.ion.common.database.Collection
 import net.horizonsend.ion.common.database.Document
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.database.objects.ShipSet
 import org.bson.codecs.pojo.annotations.BsonId
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
@@ -18,7 +19,8 @@ class PlayerData private constructor(
 	var achievements: MutableList<Achievement> = mutableListOf(),
 	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
 	var acceptedBounty: UUID? = null,
-	var bounty: Int = 0
+	var bounty: Int = 0,
+	var shipSets: MutableSet<ShipSet> = mutableSetOf()
 ) : Document() {
 	companion object : Collection<PlayerData>(PlayerData::class) {
 		init {

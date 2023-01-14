@@ -1,6 +1,9 @@
 package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.objects.ShipSet
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SERVER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
@@ -24,6 +27,7 @@ import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.event.StarshipComputerOpenMenuEvent
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
 import net.starlegacy.util.MenuHelper
+import net.starlegacy.util.MenuHelper.openPaginatedMenu
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.toText
 import org.bukkit.Material
@@ -117,7 +121,6 @@ object StarshipComputers : SLComponent() {
 			)
 		}
 	}
-
 	private fun tryOpenMenu(player: Player, data: PlayerStarshipData) {
 		if (!data.isPilot(player) && !player.hasPermission("ion.core.starship.override")) {
 			Tasks.async {
@@ -175,10 +178,32 @@ object StarshipComputers : SLComponent() {
 
 			pane.addItem(
 				guiButton(Material.NAME_TAG) {
+					player.closeInventory()
 					startRename(playerClicker, data)
 					tryOpenMenu(player, data)
 				}.setName(MiniMessage.miniMessage().deserialize("<gray>Starship Name")),
 				8, 0
+			)
+
+			pane.addItem(
+				guiButton(Material.NOTE_BLOCK) {
+					tryOpenMaterialMenu(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<color:#332100>Materials")),
+				5, 0
+			)
+
+			pane.addItem(
+				guiButton(Material.WRITABLE_BOOK) {
+					saveShipSet(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<yellow>Save Ship Set")),
+				7, 0
+			)
+
+			pane.addItem(
+				guiButton(Material.BOOK) {
+					loadShipSet(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<blue>Load Ship Set")),
+				6, 0
 			)
 
 			pane.setOnClick { e ->
@@ -277,7 +302,6 @@ object StarshipComputers : SLComponent() {
 	}
 
 	private fun startRename(player: Player, data: PlayerStarshipData) {
-		player.closeInventory()
 		player.beginConversation(
 			Conversation(
 				Ion, player,
@@ -382,5 +406,178 @@ object StarshipComputers : SLComponent() {
 		} else {
 			player.sendFeedbackMessage(SUCCESS, "Disabled Lock")
 		}
+	}
+
+	private fun tryOpenMaterialMenu(player: Player, data: PlayerStarshipData) {
+		MenuHelper.apply {
+			val pane = staticPane(0, 0, 9, 1)
+			pane.addItem(
+				guiButton(Material.GREEN_STAINED_GLASS_PANE) {}.setName(MiniMessage.miniMessage().deserialize("<green>Flyable Blocks")),
+				0, 0
+			)
+			pane.addItem(
+				guiButton(Material.GREEN_STAINED_GLASS) {
+					openFlyableBlocksMenu(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<green>Flyable Blocks")),
+				1, 0
+			)
+			pane.addItem(
+				guiButton(Material.GREEN_STAINED_GLASS) {
+					openFlyableBlocksMenu(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<green>Flyable Blocks")),
+				2, 0
+			)
+			pane.addItem(
+				guiButton(Material.GREEN_STAINED_GLASS_PANE) {}.setName(MiniMessage.miniMessage().deserialize("<green>Flyable Blocks")),
+				3, 0
+			)
+			pane.addItem(
+				guiButton(Material.GRAY_STAINED_GLASS_PANE) {}.setName(MiniMessage.miniMessage().deserialize("<red> ")),
+				4, 0
+			)
+			pane.addItem(
+				guiButton(Material.RED_STAINED_GLASS_PANE) {}.setName(MiniMessage.miniMessage().deserialize("<red>Non-Flyable Blocks")),
+				5, 0
+			)
+			pane.addItem(
+				guiButton(Material.RED_STAINED_GLASS) {
+					openNonFlyableBlocksMenu(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<red>Non-Flyable Blocks")),
+				6, 0
+			)
+			pane.addItem(
+				guiButton(Material.RED_STAINED_GLASS) {
+					openNonFlyableBlocksMenu(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<red>Non-Flyable Blocks")),
+				7, 0
+			)
+			pane.addItem(
+				guiButton(Material.RED_STAINED_GLASS_PANE) {}.setName(MiniMessage.miniMessage().deserialize("<red>Non-Flyable Blocks")),
+				8, 0
+			)
+
+			pane.setOnClick { e ->
+				e.isCancelled = true
+			}
+
+			gui(1, "Flyable Blocks Menu").withPane(pane).show(player)
+		}
+	}
+
+	private fun openFlyableBlocksMenu(player: Player, data: PlayerStarshipData) {
+		MenuHelper.apply {
+			val items = data.flyableBlocks.map { type ->
+				guiButton(type) {
+					DeactivatedPlayerStarships.updateFlyableBlock(data, type)
+
+					player.sendMessage(MiniMessage.miniMessage().deserialize("<color:#E93303>Changed ${type.name} to be <bold>non-flyable"))
+				}
+			}
+			player.openPaginatedMenu("Flyable Blocks", items)
+		}
+	}
+
+	private fun openNonFlyableBlocksMenu(player: Player, data: PlayerStarshipData) {
+		MenuHelper.apply {
+			val nonFlyables: Set<Material> = FLYABLE_BLOCKS.clone().subtract(data.flyableBlocks)
+			val items = nonFlyables.map { type ->
+				guiButton(type) {
+					DeactivatedPlayerStarships.updateFlyableBlock(data, type)
+
+					player.sendMessage(MiniMessage.miniMessage().deserialize("<color:#19600E>Changed ${type.name} to be <bold>flyable"))
+				}
+			}
+			player.openPaginatedMenu("Flyable Blocks", items)
+		}
+	}
+
+	private fun loadShipSet(player: Player, data: PlayerStarshipData) {
+		player.closeInventory()
+		player.beginConversation(
+			Conversation(
+				Ion, player,
+				object : StringPrompt() {
+					override fun getPromptText(context: ConversationContext): String {
+						return "Enter shipSet name to load:"
+					}
+
+					override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
+						if (input != null) {
+							Tasks.async {
+								val shipSet = PlayerData[player.uniqueId].shipSets.find { it.setName == input }
+								// update name
+								DeactivatedPlayerStarships.updateName(data, input)
+								// update type
+								DeactivatedPlayerStarships.updateType(data, StarshipType.valueOf(shipSet!!.type))
+								// update flyable blocks
+								shipSet.flyableblocks.forEach {
+									val material = Material.getMaterial(it)
+									if (material != null) {
+										DeactivatedPlayerStarships.updateFlyableBlock(data, material)
+									}
+								}
+								// update
+								player.sendFeedbackMessage(SUCCESS, "Load shipSet of $input to StarshipData")
+							}
+						}
+						return null
+					}
+				}
+			)
+		)
+	}
+
+	private fun saveShipSet(player: Player, data: PlayerStarshipData) {
+		val playerData = PlayerData[player.name]
+
+		val flyableBlocksAsStringToBoolean: MutableSet<String> = mutableSetOf()
+		for (i in data.flyableBlocks) {
+			val asString = i.name
+			flyableBlocksAsStringToBoolean.add(asString)
+		}
+
+		val pilots = mutableSetOf<PlayerData>()
+		for (i in data.pilots) {
+			val playerData = PlayerData[i.uuid]
+			if (playerData != null) {
+				pilots.add(playerData)
+			}
+		}
+		player.closeInventory()
+		player.beginConversation(
+			Conversation(
+				Ion, player,
+				object : StringPrompt() {
+					override fun getPromptText(context: ConversationContext): String {
+						return "Enter new shipSet name:"
+					}
+
+					override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
+						if (input != null) {
+							Tasks.async {
+								val shipSet = ShipSet(
+									input,
+									data.name,
+									flyableBlocksAsStringToBoolean,
+									data.starshipType.displayName,
+									pilots
+								)
+								if (playerData?.shipSets?.find { it.setName == input } != null) {
+									playerData.update {
+										playerData.shipSets.add(
+											shipSet
+										)
+									}
+									player.sendFeedbackMessage(SUCCESS, "Added new shipSet of $input to PlayerData")
+								} else {
+									player.sendFeedbackMessage(USER_ERROR, "Error: setName $input already exists")
+								}
+							}
+						}
+						return null
+					}
+				}
+			)
+		)
 	}
 }
