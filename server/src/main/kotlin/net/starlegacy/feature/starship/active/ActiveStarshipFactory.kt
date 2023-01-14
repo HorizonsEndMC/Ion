@@ -3,12 +3,10 @@ package net.starlegacy.feature.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.minecraft.core.BlockPos
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.feature.starship.Mass
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import org.bukkit.Bukkit
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -17,6 +15,7 @@ object ActiveStarshipFactory {
 	fun createPlayerStarship(
 		data: PlayerStarshipData,
 		blockCol: Collection<Long>,
+		subShips: Map<Long, LongOpenHashSet>,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 	): ActivePlayerStarship? {
 		Tasks.checkMainThread()
@@ -24,7 +23,7 @@ object ActiveStarshipFactory {
 		val blocks = LongOpenHashSet(blockCol)
 		if (blocks.isEmpty()) return null
 
-		val starship = createStarship(data, blocks, carriedShips)
+		val starship = createStarship(data, blocks, subShips, carriedShips)
 
 		initSubsystems(starship)
 
@@ -34,14 +33,15 @@ object ActiveStarshipFactory {
 	private fun createStarship(
 		data: PlayerStarshipData,
 		blocks: LongOpenHashSet,
+		subShips: Map<Long, LongOpenHashSet>,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 	): ActivePlayerStarship {
 		val world = checkNotNull(Bukkit.getWorld(data.levelName))
 
 		val first = blocks.first()
-		var minX = blockKeyX(first)
-		var minY = blockKeyY(first)
-		var minZ = blockKeyZ(first)
+		var minX = BlockPos.getX(first)
+		var minY = BlockPos.getY(first)
+		var minZ = BlockPos.getZ(first)
 		var maxX = minX
 		var maxY = minY
 		var maxZ = minZ
@@ -53,9 +53,9 @@ object ActiveStarshipFactory {
 		var totalMass = 0.0
 
 		for (key in blocks.iterator()) {
-			val x = blockKeyX(key)
-			val y = blockKeyY(key)
-			val z = blockKeyZ(key)
+			val x = BlockPos.getX(key)
+			val y = BlockPos.getY(key)
+			val z = BlockPos.getZ(key)
 
 			if (x < minX) minX = x
 			if (x > maxX) maxX = x
@@ -84,7 +84,9 @@ object ActiveStarshipFactory {
 
 		val hitbox = ActiveStarshipHitbox(blocks)
 
-		return ActivePlayerStarship(data, blocks, mass, centerOfMass, hitbox, carriedShips)
+		val mappedSubShips = subShips.mapKeys { SubCraftData.findByKey(it.key).first()!! }.toMutableMap()
+
+		return ActivePlayerStarship(data, blocks, mass, centerOfMass, hitbox, mappedSubShips, carriedShips)
 	}
 
 	private fun initSubsystems(starship: ActivePlayerStarship) {

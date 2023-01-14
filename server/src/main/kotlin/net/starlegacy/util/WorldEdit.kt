@@ -11,6 +11,7 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.minecraft.core.BlockPos
 import net.starlegacy.util.blockplacement.BlockPlacement
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -74,7 +75,7 @@ fun placeSchematicEfficiently(
 			if (blockData.material.isAir) {
 				continue
 			}
-			val blockKey = blockKey(vector.x, vector.y, vector.z)
+			val blockKey = BlockPos.asLong(vector.x, vector.y, vector.z)
 			queue[blockKey] = blockData.nms
 		}
 

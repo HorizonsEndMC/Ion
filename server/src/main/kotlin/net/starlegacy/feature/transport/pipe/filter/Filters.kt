@@ -34,7 +34,7 @@ object Filters : SLComponent() {
 				return@from timing.time {
 					checkNotNull(key)
 					val world = checkNotNull(Bukkit.getWorld(key.world))
-					val block = world.getBlockAtKey(key.pos.toBlockKey())
+					val block = world.getBlockAt(key.pos.toLocation(world))
 
 					val state = block.getState(false) as Hopper
 
@@ -50,7 +50,7 @@ object Filters : SLComponent() {
 	fun getItemData(inventory: Inventory): Set<FilterItemData> {
 		val types = mutableSetOf<FilterItemData>()
 
-		for (item: ItemStack? in inventory.contents!!) {
+		for (item: ItemStack? in inventory.contents) {
 			val type = item?.type ?: continue
 
 			if (type.isAir) {

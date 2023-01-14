@@ -63,9 +63,9 @@ class BlockPlacementRaw {
 
     void addToWorldQueue(Long2ObjectOpenHashMap<BlockState> queue, Long2ObjectOpenHashMap<BlockState[][][]> worldQueue, World world) {
         queue.forEach((coords, blockData) -> {
-            int y = blockKeyY(coords);
-            int x = blockKeyX(coords);
-            int z = blockKeyZ(coords);
+            int y = BlockPos.getY(coords);
+            int x = BlockPos.getX(coords);
+            int z = BlockPos.getZ(coords);
 
             int chunkX = x >> 4;
             int chunkZ = z >> 4;

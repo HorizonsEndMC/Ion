@@ -1,13 +1,13 @@
 package net.starlegacy.feature.starship.event
 
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
+import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.movement.RotationMovement
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
 
 class StarshipRotateEvent(
-	ship: ActivePlayerStarship,
+	ship: ActiveStarship,
 	player: Player,
 	override val movement: RotationMovement
 ) : StarshipMoveEvent(ship, player, movement), Cancellable {

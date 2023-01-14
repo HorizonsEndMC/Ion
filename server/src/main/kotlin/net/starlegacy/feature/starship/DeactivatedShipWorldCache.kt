@@ -6,9 +6,8 @@ import com.google.common.cache.LoadingCache
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.minecraft.core.BlockPos
 import net.starlegacy.database.schema.starships.PlayerStarshipData
-import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.orNull
 import org.bukkit.Chunk
@@ -37,7 +36,7 @@ class DeactivatedShipWorldCache(world: World) {
 		val blockKey: Long = data.blockKey
 
 		check(!blockKeyMap.containsKey(blockKey)) {
-			"$worldName already has starship data at ${Vec3i(blockKey)} (existing: ${blockKeyMap[blockKey]}, tried adding: $data)"
+			"$worldName already has starship data at ${BlockPos.of(blockKey)} (existing: ${blockKeyMap[blockKey]}, tried adding: $data)"
 		}
 
 		blockKeyMap[blockKey] = data
@@ -52,13 +51,13 @@ class DeactivatedShipWorldCache(world: World) {
 		val existing: PlayerStarshipData? = blockKeyMap[blockKey]
 
 		requireNotNull(existing) {
-			"$worldName does not have starship data at ${Vec3i(blockKey)}, " +
+			"$worldName does not have starship data at ${BlockPos.of(blockKey)}, " +
 				"but ${data._id} was attempted to be removed. " +
 				"Full json: ${data.json}"
 		}
 
 		require(existing._id == data._id) {
-			"$worldName does have starship data at ${Vec3i(blockKey)}, " +
+			"$worldName does have starship data at ${BlockPos.of(blockKey)}, " +
 				"but it's a different ID! " +
 				"Tried removing ${data._id} but found ${existing._id}"
 		}
@@ -117,7 +116,7 @@ class DeactivatedShipWorldCache(world: World) {
 
 	operator fun get(blockKey: Long): PlayerStarshipData? = blockKeyMap[blockKey]
 
-	operator fun get(x: Int, y: Int, z: Int): PlayerStarshipData? = this[blockKey(x, y, z)]
+	operator fun get(x: Int, y: Int, z: Int): PlayerStarshipData? = this[BlockPos.asLong(x, y, z)]
 
 	fun getInChunk(chunk: Chunk): List<PlayerStarshipData> {
 		val chunkKey = chunk.chunkKey
@@ -130,7 +129,7 @@ class DeactivatedShipWorldCache(world: World) {
 	}
 
 	fun getLockedContaining(x: Int, y: Int, z: Int): PlayerStarshipData? {
-		val blockKey = blockKey(x, y, z)
+		val blockKey = BlockPos.asLong(x, y, z)
 		val chunkKey = chunkKey(x shr 4, z shr 4)
 
 		for (data: PlayerStarshipData in chunkKeyMap.get(chunkKey)) {

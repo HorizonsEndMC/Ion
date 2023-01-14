@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -15,10 +16,6 @@ import net.starlegacy.feature.starship.StarshipType.SPEEDER
 import net.starlegacy.feature.starship.event.StarshipActivatedEvent
 import net.starlegacy.feature.starship.event.StarshipDeactivatedEvent
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKey
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -35,7 +32,7 @@ object ActiveStarships : SLComponent() {
 		.newBuilder()
 		.weakKeys()
 		.build(CacheLoader.from { w -> Long2ObjectOpenHashMap() })
-	private val worldMap: LoadingCache<World, MutableSet<ActiveStarship>> = CacheBuilder
+	val worldMap: LoadingCache<World, MutableSet<ActiveStarship>> = CacheBuilder
 		.newBuilder()
 		.weakKeys()
 		.build(CacheLoader.from { w -> mutableSetOf() })
@@ -46,7 +43,7 @@ object ActiveStarships : SLComponent() {
 
 	fun add(starship: ActiveStarship) {
 		Tasks.checkMainThread()
-		val world = starship.world
+		val world = starship.serverLevel.world
 
 		require(starship !is ActivePlayerStarship || !playerShipIdMap.containsKey(starship.dataId)) {
 			"Starship is already in the active id map"
@@ -65,7 +62,7 @@ object ActiveStarships : SLComponent() {
 		worldMap[world].add(starship)
 
 		starship.iterateBlocks { x, y, z ->
-			val block = starship.world.getBlockAt(x, y, z)
+			val block = starship.serverLevel.world.getBlockAt(x, y, z)
 			if (block.type == Material.REDSTONE_BLOCK) {
 				val below = block.getRelative(BlockFace.DOWN).blockData
 				if (below.material == Material.PISTON && (below as Directional).facing == BlockFace.DOWN) {
@@ -87,12 +84,12 @@ object ActiveStarships : SLComponent() {
 			playerShipIdMap.remove(starship.dataId)
 			val blockKey: Long = starship.data.blockKey
 			val data: PlayerStarshipData = starship.data
-			playerShipLocationMap[starship.world].remove(blockKey, data as Any)
+			playerShipLocationMap[starship.serverLevel.world].remove(blockKey, data as Any)
 		}
 
-		worldMap[starship.world].remove(starship)
+		worldMap[starship.serverLevel.world].remove(starship)
 
-		if (starship.world.name == "SpaceArena" && !starship.isExploding) {
+		if (starship.serverLevel.world.name == "SpaceArena" && !starship.isExploding) {
 			StarshipDestruction.vanish(starship)
 		}
 
@@ -115,8 +112,8 @@ object ActiveStarships : SLComponent() {
 		val successfullyRemoved = oldMap.remove(oldKey, playerStarshipData as Any)
 		check(notYetInNewWorld && successfullyRemoved) {
 			"Not all conditions ($notYetInNewWorld, $successfullyRemoved) were true when moving computer from " +
-				"${oldWorld.name}@${blockKeyX(oldKey)},${blockKeyY(oldKey)},${blockKeyZ(oldKey)}" +
-				" to ${newWorld.name}@${blockKeyX(newKey)},${blockKeyY(newKey)},${blockKeyZ(newKey)}"
+				"${oldWorld.name}@${BlockPos.getX(oldKey)},${BlockPos.getY(oldKey)},${BlockPos.getZ(oldKey)}" +
+				" to ${newWorld.name}@${BlockPos.getX(newKey)},${BlockPos.getY(newKey)},${BlockPos.getZ(newKey)}"
 		}
 
 		playerStarshipData.blockKey = newKey
@@ -134,7 +131,7 @@ object ActiveStarships : SLComponent() {
 	operator fun get(playerShipId: Oid<PlayerStarshipData>) = playerShipIdMap[playerShipId]
 
 	fun getByComputerLocation(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
-		return playerShipLocationMap[world][blockKey(x, y, z)]
+		return playerShipLocationMap[world][BlockPos.asLong(x, y, z)]
 	}
 
 	fun getInWorld(world: World): Collection<ActiveStarship> = worldMap[world]
@@ -155,5 +152,5 @@ object ActiveStarships : SLComponent() {
 		return getInWorld(world).firstOrNull { it.contains(x, y, z) }
 	}
 
-	fun isActive(starship: ActiveStarship) = worldMap[starship.world].contains(starship)
+	fun isActive(starship: ActiveStarship) = worldMap[starship.serverLevel.world].contains(starship)
 }

@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -13,7 +14,6 @@ import net.starlegacy.feature.starship.active.ActiveStarshipFactory
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.listen
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKey
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.World
@@ -62,9 +62,9 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val captain = playerId.slPlayerId
 			val type = StarshipType.SHUTTLE
 			val id = objId<PlayerStarshipData>()
-			val blockKey = blockKey(x, y, z)
+			val blockKey = BlockPos.asLong(x, y, z)
 			val worldName = world.name
-			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name = name, flyableBlocks = FLYABLE_BLOCKS)
+			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name = name, subShips = mutableMapOf(), flyableBlocks = FLYABLE_BLOCKS)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
 
@@ -181,7 +181,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 
 			Tasks.sync {
 				val starship =
-					ActiveStarshipFactory.createPlayerStarship(data, state.blockMap.keys, carriedShipMap) ?: return@sync
+					ActiveStarshipFactory.createPlayerStarship(data, state.blockMap.keys, data.subShips, carriedShipMap) ?: return@sync
 				ActiveStarships.add(starship)
 				callback.invoke(starship)
 			}
@@ -230,9 +230,11 @@ object DeactivatedPlayerStarships : SLComponent() {
 			// this needs to be removed sync!
 			ActiveStarships.remove(starship)
 
+			val subCraft = starship.subShips.mapKeys { it.key.blockKey }
+
 			for ((ship: PlayerStarshipData, blocks: Set<Long>) in starship.carriedShips) {
 				if (!blocks.isEmpty()) {
-					carriedShipStateMap[ship] = PlayerStarshipState.createFromBlocks(world, blocks)
+					carriedShipStateMap[ship] = PlayerStarshipState.createFromBlocks(world, blocks, subCraft)
 				}
 			}
 

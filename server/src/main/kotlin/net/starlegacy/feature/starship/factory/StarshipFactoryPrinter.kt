@@ -2,11 +2,9 @@ package net.starlegacy.feature.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.nms
 import net.starlegacy.util.setNMSBlockData
@@ -50,7 +48,7 @@ class StarshipFactoryPrinter(
 	}
 
 	private fun countMaterials() {
-		for (item: ItemStack? in inventory.contents!!) {
+		for (item: ItemStack? in inventory.contents) {
 			if (item == null || item.type.isAir) {
 				continue
 			}
@@ -77,9 +75,9 @@ class StarshipFactoryPrinter(
 	}
 
 	private fun processBlock(key: Long, data: BlockData) {
-		val x = blockKeyX(key)
-		val y = blockKeyY(key)
-		val z = blockKeyZ(key)
+		val x = BlockPos.getX(key)
+		val y = BlockPos.getY(key)
+		val z = BlockPos.getZ(key)
 		val oldData = getBlockDataSafe(world, x, y, z) ?: return
 
 		if (!oldData.material.isAir) {
@@ -141,7 +139,7 @@ class StarshipFactoryPrinter(
 		for ((printItem, count) in usedItems) {
 			var remainingCount = count
 
-			for (item: ItemStack? in inventory.contents!!) {
+			for (item: ItemStack? in inventory.contents) {
 				if (item == null || item.type.isAir) {
 					continue
 				}
@@ -174,7 +172,7 @@ class StarshipFactoryPrinter(
 		for ((key, data) in queue) {
 			val price = ShipFactoryMaterialCosts.getPrice(data.createCraftBlockData())
 			tryCreditCost(price)
-			world.setNMSBlockData(blockKeyX(key), blockKeyY(key), blockKeyZ(key), data)
+			world.setNMSBlockData(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key), data)
 		}
 	}
 

@@ -1,10 +1,10 @@
 package net.starlegacy.feature.space
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockplacement.BlockPlacement.placeImmediate
 import net.starlegacy.util.blockplacement.BlockPlacement.queue
 import org.bukkit.Bukkit
@@ -24,7 +24,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 		val air = Blocks.AIR.defaultBlockState()
 
 		for ((x, y, z) in structure.keys) {
-			blocks[blockKey(x + location.x, y + location.y, z + location.z)] = air
+			blocks[BlockPos.asLong(x + location.x, y + location.y, z + location.z)] = air
 		}
 		return blocks
 	}
@@ -43,7 +43,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 		placeImmediate(
 			spaceWorld,
 			structure.mapKeysTo(Long2ObjectOpenHashMap(structure.size)) { (intTrio, _) ->
-				blockKey(intTrio.x + location.x, intTrio.y + location.y, intTrio.z + location.z)
+				BlockPos.asLong(intTrio.x + location.x, intTrio.y + location.y, intTrio.z + location.z)
 			}
 		)
 	}
@@ -56,7 +56,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 		val blocks = airQueue(structure)
 
 		structure.mapKeysTo(blocks) { (intTrio, _) ->
-			blockKey(intTrio.x + newLoc.x, intTrio.y + newLoc.y, intTrio.z + newLoc.z)
+			BlockPos.asLong(intTrio.x + newLoc.x, intTrio.y + newLoc.y, intTrio.z + newLoc.z)
 		}
 
 		queue(spaceWorld, blocks)

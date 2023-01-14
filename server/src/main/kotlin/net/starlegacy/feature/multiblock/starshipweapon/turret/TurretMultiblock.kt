@@ -2,6 +2,7 @@ package net.starlegacy.feature.multiblock.starshipweapon.turret
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Rotation
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -16,7 +17,6 @@ import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserPr
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.flagcolors
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.nms
 import net.starlegacy.util.rightFace
@@ -140,7 +140,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	}
 
 	fun getFacing(signPos: Vec3i, starship: ActiveStarship): BlockFace {
-		val block = signPos.toLocation(starship.world).block
+		val block = signPos.toLocation(starship.serverLevel.world).block
 		val sign = block.state as Sign
 		return getFacing(sign)
 	}
@@ -190,11 +190,11 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 				return oldFace
 			}
 
-			val oldKey = blockKey(x, y, z)
+			val oldKey = BlockPos.asLong(x, y, z)
 			oldKeys.add(oldKey)
 			placements.putIfAbsent(oldKey, air) // old block, may have been removed
 
-			val newKey = blockKey(nx, y, nz)
+			val newKey = BlockPos.asLong(nx, y, nz)
 			newKeys.add(newKey)
 			placements[newKey] = newData
 		}
@@ -210,7 +210,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 
 	private fun placeBlocks(placements: Long2ObjectOpenHashMap<BlockData>, world: World) {
 		for ((key, data) in placements) {
-			world.getBlockAtKey(key).setBlockData(data, false)
+			world.getBlockAt(BlockPos.getX(key), BlockPos.getY(key), BlockPos.getZ(key)).setBlockData(data, false)
 		}
 	}
 
@@ -272,7 +272,6 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	}
 
 	private fun getColor(starship: ActiveStarship?, shooter: Player?): Color {
-		var counter = 0
 		if (starship != null) {
 			if (starship.rainbowtoggle) {
 				flagcolors.random()

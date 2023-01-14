@@ -14,9 +14,6 @@ import net.starlegacy.feature.starship.Hangars
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.chunkKeyX
 import net.starlegacy.util.chunkKeyZ
@@ -40,6 +37,61 @@ object OptimizedMovement {
 
 	private val timing = timing("Starship Movement")
 
+	fun moveBlockArray(
+		world1: World,
+		world2: World,
+		oldPositionArray: LongArray,
+		newPositionArray: LongArray,
+		blockDataTransform: (BlockState) -> BlockState,
+		callback: () -> Unit
+	) {
+		val oldChunkMap = getChunkMap(oldPositionArray)
+		val newChunkMap = getChunkMap(newPositionArray)
+		val collisionChunkMap = getCollisionChunkMap(oldChunkMap, newChunkMap)
+
+		val n = oldPositionArray.size
+
+		@Suppress("UNCHECKED_CAST")
+		val capturedStates = java.lang.reflect.Array.newInstance(BlockState::class.java, n) as Array<BlockState>
+		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
+		val hangars = LinkedList<Long>()
+
+		try {
+			Tasks.syncBlocking {
+				timing.time {
+					checkForCollision(world2, collisionChunkMap, hangars, newPositionArray)
+
+					processOldBlocks(
+						oldChunkMap,
+						world1,
+						world2,
+						capturedStates,
+						capturedTiles
+					)
+
+					dissipateHangarBlocks(world2, hangars)
+
+					processNewBlocks(
+						newPositionArray,
+						newChunkMap,
+						world1,
+						world2,
+						capturedStates,
+						capturedTiles,
+						blockDataTransform
+					)
+
+					callback()
+
+					sendChunkUpdatesToPlayers(world1, world2, oldChunkMap, newChunkMap)
+				}
+			}
+		} catch (e: ExecutionException) {
+			e.printStackTrace()
+			throw e.cause ?: e
+		}
+	}
+
 	fun moveStarship(
 		starship: ActiveStarship,
 		world1: World,
@@ -54,6 +106,8 @@ object OptimizedMovement {
 		val collisionChunkMap = getCollisionChunkMap(oldChunkMap, newChunkMap)
 
 		val n = oldPositionArray.size
+
+		@Suppress("UNCHECKED_CAST")
 		val capturedStates = java.lang.reflect.Array.newInstance(BlockState::class.java, n) as Array<BlockState>
 		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
 		val hangars = LinkedList<Long>()
@@ -113,9 +167,9 @@ object OptimizedMovement {
 				for ((blockKey, index) in positionMap) {
 					check(newPositionArray[index] == blockKey)
 
-					val x = blockKeyX(blockKey)
-					val y = blockKeyY(blockKey)
-					val z = blockKeyZ(blockKey)
+					val x = BlockPos.getX(blockKey)
+					val y = BlockPos.getY(blockKey)
+					val z = BlockPos.getZ(blockKey)
 
 					val localX = x and 0xF
 					val localY = y and 0xF
@@ -161,9 +215,9 @@ object OptimizedMovement {
 				val section = nmsChunk.getSection(sectionKey)
 
 				for ((blockKey, index) in positionMap) {
-					val x = blockKeyX(blockKey)
-					val y = blockKeyY(blockKey)
-					val z = blockKeyZ(blockKey)
+					val x = BlockPos.getX(blockKey)
+					val y = BlockPos.getY(blockKey)
+					val z = BlockPos.getZ(blockKey)
 
 					val localX = x and 0xF
 					val localY = y and 0xF
@@ -207,9 +261,9 @@ object OptimizedMovement {
 				val section = nmsChunk.getSection(sectionKey)
 
 				for ((blockKey, index) in positionMap) {
-					val x = blockKeyX(blockKey)
-					val y = blockKeyY(blockKey)
-					val z = blockKeyZ(blockKey)
+					val x = BlockPos.getX(blockKey)
+					val y = BlockPos.getY(blockKey)
+					val z = BlockPos.getZ(blockKey)
 
 					val localX = x and 0xF
 					val localY = y and 0xF
@@ -229,9 +283,9 @@ object OptimizedMovement {
 
 		for ((index, tile) in capturedTiles) {
 			val blockKey = newPositionArray[index]
-			val x = blockKeyX(blockKey)
-			val y = blockKeyY(blockKey)
-			val z = blockKeyZ(blockKey)
+			val x = BlockPos.getX(blockKey)
+			val y = BlockPos.getY(blockKey)
+			val z = BlockPos.getZ(blockKey)
 
 			val newPos = BlockPos(x, y, z)
 			val chunk = world2.getChunkAt(x shr 4, z shr 4)
@@ -256,9 +310,9 @@ object OptimizedMovement {
 		world2: World
 	) {
 		val blockPos = BlockPos(
-			blockKeyX(blockKey),
-			blockKeyY(blockKey),
-			blockKeyZ(blockKey)
+			BlockPos.getX(blockKey),
+			BlockPos.getY(blockKey),
+			BlockPos.getZ(blockKey)
 		)
 
 		val blockEntity = chunk.nms.getBlockEntity(blockPos) ?: return
@@ -272,9 +326,9 @@ object OptimizedMovement {
 
 		for (index in positionArray.indices) {
 			val blockKey = positionArray[index]
-			val x = blockKeyX(blockKey)
-			val y = blockKeyY(blockKey)
-			val z = blockKeyZ(blockKey)
+			val x = BlockPos.getX(blockKey)
+			val y = BlockPos.getY(blockKey)
+			val z = BlockPos.getZ(blockKey)
 			val chunkKey = chunkKey(x shr 4, z shr 4)
 			val sectionKey = y shr 4
 			val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }

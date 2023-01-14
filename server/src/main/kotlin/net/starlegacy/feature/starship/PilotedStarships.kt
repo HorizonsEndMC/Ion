@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.starships.Blueprint
@@ -24,9 +25,6 @@ import net.starlegacy.listen
 import net.starlegacy.redis
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -217,9 +215,9 @@ object PilotedStarships : SLComponent() {
 		val carriedShips = mutableListOf<PlayerStarshipData>()
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
-			val x: Int = blockKeyX(key)
-			val y: Int = blockKeyY(key)
-			val z: Int = blockKeyZ(key)
+			val x: Int = BlockPos.getX(key)
+			val y: Int = BlockPos.getY(key)
+			val z: Int = BlockPos.getZ(key)
 			val foundData: BlockData = world.getBlockAt(x, y, z).blockData
 
 			if (blockData.material != foundData.material) {

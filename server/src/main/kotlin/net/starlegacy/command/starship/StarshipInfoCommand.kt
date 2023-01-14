@@ -2,13 +2,14 @@ package net.starlegacy.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
+import net.minecraft.core.BlockPos
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.factory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.isConcrete
 import net.starlegacy.util.msg
+import net.starlegacy.util.toLocation
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -20,7 +21,7 @@ object StarshipInfoCommand : SLCommand() {
 	fun onExecute(p: Player) {
 		val ship = getStarshipPiloting(p)
 
-		val blocks = ship.blocks.map { Vec3i(it) }.associateWith { it.toLocation(ship.world).block.state }
+		val blocks = ship.blocks.map { BlockPos.of(it) }.associateWith { it.toLocation(ship.world).block.state }
 
 		val size = ship.initialBlockCount
 

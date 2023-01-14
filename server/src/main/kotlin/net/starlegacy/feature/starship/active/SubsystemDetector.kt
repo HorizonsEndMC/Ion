@@ -129,7 +129,7 @@ object SubsystemDetector {
 			val thrusterType: ThrusterType = ThrusterType.values()
 				.firstOrNull { it.matchesStructure(starship, block.x, block.y, block.z, face) }
 				?: continue
-			val pos = Vec3i(block.blockKey)
+			val pos = Vec3i(block.x, block.y, block.z)
 			starship.subsystems += ThrusterSubsystem(starship, pos, face, thrusterType)
 		}
 	}
