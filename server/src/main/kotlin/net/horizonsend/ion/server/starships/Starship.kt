@@ -134,7 +134,7 @@ open class Starship(
 		velocityZ += z
 	}
 
-	fun addLocalVelocity(frontBack: Int, upDown: Int, rightLeft: Int) {
+	fun addLocalVelocity(frontBack: Double, upDown: Double, rightLeft: Double) {
 		mainThreadCheck()
 
 		val (x, y, z) = localToGlobal(frontBack, upDown, rightLeft)
