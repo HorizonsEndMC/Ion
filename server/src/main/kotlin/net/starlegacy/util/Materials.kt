@@ -21,6 +21,8 @@ val Material.isStainedGlassPane: Boolean get() = STAINED_GLASS_PANE_TYPES.contai
 
 val Material.isLava: Boolean get() = this == Material.LAVA
 
+val Material.isTurretComputer: Boolean get() = this == Material.LOOM
+
 val Material.isWater: Boolean get() = this == Material.WATER
 
 val Material.isRedstoneLamp: Boolean get() = this == Material.REDSTONE_LAMP
@@ -97,3 +99,4 @@ val WALL_TYPES = getMatchingMaterials { it.name.endsWith("_WALL") }
 val Material.isWall: Boolean get() = WALL_TYPES.contains(this)
 
 val CHISELED_TYPES = getMatchingMaterials { it.name.startsWith("CHISELED_") }
+val Material.isChiseled: Boolean get() = CHISELED_TYPES.contains(this)

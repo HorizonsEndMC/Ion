@@ -2,8 +2,13 @@ package net.starlegacy.feature.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.minecraft.core.BlockPos
 import net.starlegacy.SLComponent
+import net.starlegacy.database.objId
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.listen
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
@@ -12,7 +17,9 @@ import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.getBlockDataSafe
+import net.starlegacy.util.isChiseled
 import net.starlegacy.util.isConcrete
+import net.starlegacy.util.isTurretComputer
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
@@ -50,6 +57,98 @@ object StarshipDetection : SLComponent() {
 		log.info("  -> Cancelled")
 	}
 	//endregion
+
+	fun detectSubShip(data: SubCraftData, parentSize: Int): Long2ObjectOpenHashMap<BlockData> {
+		val world = data.bukkitWorld()
+		// blocks that were accepted
+		val blockTypes = Long2ObjectOpenHashMap<BlockData>()
+
+		// blocks that are pending checking
+		val queue = Stack<Long>()
+
+		val start = System.nanoTime()
+
+		// blocks that were already checked and should not be detected twice
+		val visited = mutableSetOf<Long>()
+
+		// Jumpstart the queue by adding the origin block
+		val computerKey = data.blockKey
+		visited.add(computerKey)
+		queue.push(computerKey)
+		var computers = 0
+
+		while (!queue.isEmpty()) {
+			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(30)) {
+				throw DetectionFailedException("Timed out!")
+			}
+
+			val key = queue.pop()
+			val x = BlockPos.getX(key)
+			val y = BlockPos.getY(key)
+			val z = BlockPos.getZ(key)
+
+			val blockData = getBlockDataSafe(world, x, y, z)
+				// Do not allow checking ships larger than render distance.
+				// The type being null usually means the chunk is unloaded.
+				?: throw DetectionFailedException("The blocks went beyond loaded chunks!")
+
+			val material = blockData.material
+
+			// Don't allow blocks that are not flown
+			if (material.isChiseled) continue
+
+			if (!FLYABLE_BLOCKS.contains(material)) continue
+
+			// --------------------------------------------------------------------
+			// Past this point, the block has been validated and will be detected
+			// --------------------------------------------------------------------
+
+			when {
+				material.isTurretComputer -> computers++
+			}
+
+			// Add the location to the list of blocks that'll be set on the starships
+			blockTypes[key] = blockData
+
+			// Detect adjacent blocks
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						val adjacentX = offsetX + x
+						val adjacentY = offsetY + y
+						val adjacentZ = offsetZ + z
+
+						// Ensure it's a valid Y-level before adding it to the queue
+						if (adjacentY < 0 || adjacentY > world.maxHeight) {
+							continue
+						}
+
+						val key1 = BlockPos.asLong(adjacentX, adjacentY, adjacentZ)
+						if (visited.add(key1)) {
+							queue.push(key1)
+						}
+					}
+				}
+			}
+		}
+
+		// Validate the size
+		val size = blockTypes.size
+
+		if (size > parentSize / 10) {
+			throw DetectionFailedException(
+				"Subcraft too large! $size too large for maximum ${parentSize / 10}"
+			)
+		}
+
+		if (computers > 1) {
+			throw DetectionFailedException(
+				"You cannot have multiple subcraft computers on one subcraft!"
+			)
+		}
+
+		return blockTypes
+	}
 
 	fun detectNewState(data: PlayerStarshipData): PlayerStarshipState {
 		val world = data.bukkitWorld()
@@ -90,6 +189,10 @@ object StarshipDetection : SLComponent() {
 		var maxZ: Int? = null
 
 		val start = System.nanoTime()
+
+		// Sub Ship Computer Locations
+		val subShips = mutableSetOf<Long>()
+		val subShipMap = mutableMapOf<Long, Long2ObjectOpenHashMap<BlockData>>()
 
 		while (!queue.isEmpty()) {
 			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(30)) {
@@ -141,6 +244,7 @@ object StarshipDetection : SLComponent() {
 				material.isConcrete -> concrete++
 				isInventory(material) -> containers++
 				material == Material.STICKY_PISTON -> stickyPistons++
+				material.isTurretComputer -> { subShips += BlockPos.asLong(x, y, z); println(material) }
 			}
 
 			if (material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.BARREL) {
@@ -225,6 +329,22 @@ object StarshipDetection : SLComponent() {
 				)
 		}*/
 
+		// Detect SubShips
+		for (subShip in subShips) {
+			SubCraftData.findByKey(subShip).first()?.let { SubCraftData.remove(it._id) }
+			val id = objId<SubCraftData>()
+
+			val subShipData = SubCraftData(id, data.serverName, data.levelName, subShip)
+
+			val mapThingy = detectSubShip(subShipData, size)
+
+			data.subShips[subShipData.blockKey] = LongOpenHashSet(mapThingy.keys)
+
+			SubCraftData.add(subShipData)
+			subShipMap[subShip] = mapThingy
+			println(subShipData)
+		}
+
 		val coveredChunks = LongOpenHashSet()
 
 		for (block in blocks) {
@@ -238,7 +358,9 @@ object StarshipDetection : SLComponent() {
 		checkNotNull(maxY)
 		checkNotNull(maxZ)
 
-		return PlayerStarshipState(coveredChunks, blockTypes, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
+		world.sendFeedbackMessage(FeedbackType.ALERT, "{0}", subShipMap)
+
+		return PlayerStarshipState(coveredChunks, blockTypes, subShipMap, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
 	}
 
 	fun isInventory(material: Material): Boolean {

@@ -1,5 +1,6 @@
 package net.starlegacy.database.schema.starships
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -33,6 +34,7 @@ data class PlayerStarshipData(
 	var serverName: String?,
 	var levelName: String,
 	var blockKey: Long,
+	val subShips: MutableMap<Long, LongOpenHashSet>,
 
 	/** UUIDs of players who have been added to the ship by the captain. Should never include the captain. */
 	val pilots: MutableSet<SLPlayerId> = mutableSetOf(),
@@ -47,6 +49,7 @@ data class PlayerStarshipData(
 		ensureIndex(PlayerStarshipData::captain)
 		ensureIndex(PlayerStarshipData::pilots)
 		ensureIndex(PlayerStarshipData::name)
+		ensureIndex(PlayerStarshipData::subShips)
 		ensureIndex(PlayerStarshipData::serverName)
 		ensureIndex(PlayerStarshipData::levelName)
 		ensureUniqueIndex(PlayerStarshipData::levelName, PlayerStarshipData::blockKey)

@@ -63,7 +63,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val id = objId<PlayerStarshipData>()
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
-			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name = name)
+			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name = name, subShips = mutableMapOf())
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
 
@@ -172,7 +172,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 
 			Tasks.sync {
 				val starship =
-					ActiveStarshipFactory.createPlayerStarship(data, state.blockMap.keys, carriedShipMap) ?: return@sync
+					ActiveStarshipFactory.createPlayerStarship(data, state.blockMap.keys, data.subShips, carriedShipMap) ?: return@sync
 				ActiveStarships.add(starship)
 				callback.invoke(starship)
 			}
@@ -221,9 +221,11 @@ object DeactivatedPlayerStarships : SLComponent() {
 			// this needs to be removed sync!
 			ActiveStarships.remove(starship)
 
+			val subCraft = starship.subShips.mapKeys { it.key.blockKey }
+
 			for ((ship: PlayerStarshipData, blocks: Set<Long>) in starship.carriedShips) {
 				if (!blocks.isEmpty()) {
-					carriedShipStateMap[ship] = PlayerStarshipState.createFromBlocks(world, blocks)
+					carriedShipStateMap[ship] = PlayerStarshipState.createFromBlocks(world, blocks, subCraft)
 				}
 			}
 

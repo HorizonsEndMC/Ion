@@ -31,6 +31,7 @@ import net.starlegacy.database.schema.space.Planet
 import net.starlegacy.database.schema.space.Star
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.util.Tasks
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
@@ -106,6 +107,7 @@ object MongoManager : SLComponent() {
 
 		// starships
 		PlayerStarshipData.init()
+		SubCraftData.init()
 		Blueprint.init()
 	}
 

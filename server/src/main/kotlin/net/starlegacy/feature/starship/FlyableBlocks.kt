@@ -9,6 +9,7 @@ import net.starlegacy.util.BUTTON_TYPES
 import net.starlegacy.util.CAKE_TYPES
 import net.starlegacy.util.CANDLE_TYPES
 import net.starlegacy.util.CARPET_TYPES
+import net.starlegacy.util.CHISELED_TYPES
 import net.starlegacy.util.CONCRETE_TYPES
 import net.starlegacy.util.DOOR_TYPES
 import net.starlegacy.util.FENCE_TYPES
@@ -62,6 +63,7 @@ import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LECTERN
 import org.bukkit.Material.LEVER
 import org.bukkit.Material.LODESTONE
+import org.bukkit.Material.LOOM
 import org.bukkit.Material.MAGMA_BLOCK
 import org.bukkit.Material.MOVING_PISTON
 import org.bukkit.Material.NETHER_PORTAL
@@ -191,6 +193,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	BARREL,
 	SCAFFOLDING,
 	CHAIN,
+	LOOM,
 
 	COPPER_BLOCK,
 	EXPOSED_COPPER,
@@ -254,6 +257,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	it.addAll(WALL_TYPES)
 	it.addAll(CANDLE_TYPES)
 	it.addAll(CAKE_TYPES)
+	it.addAll(CHISELED_TYPES)
 }.filter { it.isBlock }.toCollection(EnumSet.noneOf(Material::class.java))
 
 private val FLYABLE_BLOCK_DATA_CACHE = CacheBuilder.newBuilder()

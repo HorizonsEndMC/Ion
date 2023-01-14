@@ -75,8 +75,10 @@ internal object NationRelationCommand : SLCommand() {
 			val other = relation.other
 			val otherName = getNationName(other)
 			val otherWish = NationRelation.getRelationWish(other, nation)
-			sender.sendRichMessage("<yellow>$otherName<dark_gray>: ${relation.actual.coloredName} " +
-				"<dark_gray>(<gray>Your wish: ${relation.wish.coloredName}<gray>, their wish: ${otherWish.coloredName}<dark_gray>)")
+			sender.sendRichMessage(
+				"<yellow>$otherName<dark_gray>: ${relation.actual.coloredName} " +
+					"<dark_gray>(<gray>Your wish: ${relation.wish.coloredName}<gray>, their wish: ${otherWish.coloredName}<dark_gray>)"
+			)
 		}
 	}
 }

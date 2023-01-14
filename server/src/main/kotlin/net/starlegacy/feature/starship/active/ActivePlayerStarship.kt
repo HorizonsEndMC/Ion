@@ -7,14 +7,17 @@ import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.event.StarshipMoveEvent
 import net.starlegacy.feature.starship.event.StarshipRotateEvent
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
+import net.starlegacy.feature.starship.event.SubCraftRotationEvent
 import net.starlegacy.feature.starship.movement.RotationMovement
 import net.starlegacy.feature.starship.movement.StarshipMovement
+import net.starlegacy.feature.starship.movement.SubCraftRotation
 import net.starlegacy.feature.starship.movement.TranslateMovement
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.leftFace
@@ -40,11 +43,13 @@ class ActivePlayerStarship(
 	mass: Double,
 	centerOfMass: BlockPos,
 	hitbox: ActiveStarshipHitbox,
+	subShips: Map<SubCraftData, LongOpenHashSet>,
 	// map of carried ship to its blocks
 	carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 ) : ActiveStarship(
 	(data.bukkitWorld() as CraftWorld).handle,
 	blocks,
+	subShips,
 	mass,
 	centerOfMass,
 	hitbox
@@ -117,6 +122,7 @@ class ActivePlayerStarship(
 			val event: StarshipMoveEvent = when (movement) {
 				is TranslateMovement -> StarshipTranslateEvent(this, pilot, movement)
 				is RotationMovement -> StarshipRotateEvent(this, pilot, movement)
+				is SubCraftRotation -> SubCraftRotationEvent(this, pilot, movement)
 				else -> error("Unrecognized movement type ${movement.javaClass.name}")
 			}
 

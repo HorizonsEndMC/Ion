@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.minecraft.core.BlockPos
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.feature.starship.Mass
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.util.Tasks
@@ -17,6 +18,7 @@ object ActiveStarshipFactory {
 	fun createPlayerStarship(
 		data: PlayerStarshipData,
 		blockCol: Collection<Long>,
+		subShips: Map<Long, LongOpenHashSet>,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 	): ActivePlayerStarship? {
 		Tasks.checkMainThread()
@@ -24,7 +26,7 @@ object ActiveStarshipFactory {
 		val blocks = LongOpenHashSet(blockCol)
 		if (blocks.isEmpty()) return null
 
-		val starship = createStarship(data, blocks, carriedShips)
+		val starship = createStarship(data, blocks, subShips, carriedShips)
 
 		initSubsystems(starship)
 
@@ -34,6 +36,7 @@ object ActiveStarshipFactory {
 	private fun createStarship(
 		data: PlayerStarshipData,
 		blocks: LongOpenHashSet,
+		subShips: Map<Long, LongOpenHashSet>,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 	): ActivePlayerStarship {
 		val world = checkNotNull(Bukkit.getWorld(data.levelName))
@@ -84,7 +87,9 @@ object ActiveStarshipFactory {
 
 		val hitbox = ActiveStarshipHitbox(blocks)
 
-		return ActivePlayerStarship(data, blocks, mass, centerOfMass, hitbox, carriedShips)
+		val mappedSubShips = subShips.mapKeys { SubCraftData.findByKey(it.key).first()!! }
+
+		return ActivePlayerStarship(data, blocks, mass, centerOfMass, hitbox, mappedSubShips, carriedShips)
 	}
 
 	private fun initSubsystems(starship: ActivePlayerStarship) {

@@ -43,7 +43,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	abstract fun blockDataTransform(blockData: BlockState): BlockState
 
 	/* should only be called by the ship itself */
-	fun execute() {
+	open fun execute() {
 		val world1: World = starship.world
 		val world2 = newWorld ?: world1
 
@@ -122,7 +122,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 	}
 
-	private fun findPassengers(world1: World): List<Entity> {
+	fun findPassengers(world1: World): List<Entity> {
 		val passengerChunks = starship.blocks
 			.map { world1.getChunkAt(blockKeyX(it) shr 4, blockKeyZ(it) shr 4) }
 			.toSet()
@@ -158,7 +158,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		return passengers.toList()
 	}
 
-	private fun validateWorldBorders(passengers: List<Entity>, world2: World) {
+	fun validateWorldBorders(passengers: List<Entity>, world2: World) {
 		for (passenger: Entity in passengers) {
 			val newLoc: Location = displaceLocation(passenger.location)
 			newLoc.world = world2
@@ -174,7 +174,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 	}
 
-	private fun moveShipComputers(world2: World) {
+	fun moveShipComputers(world2: World) {
 		moveSelfComputer(world2)
 		moveCarriedShipComputers(world2)
 	}
@@ -238,7 +238,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 	}
 
-	private fun exitPlanet(world: World, starship: ActivePlayerStarship): Boolean {
+	fun exitPlanet(world: World, starship: ActivePlayerStarship): Boolean {
 		val planet: CachedPlanet = Space.getPlanet(world) ?: return false
 		val pilot: Player = starship.pilot ?: return false
 		val direction: Vector = pilot.location.direction

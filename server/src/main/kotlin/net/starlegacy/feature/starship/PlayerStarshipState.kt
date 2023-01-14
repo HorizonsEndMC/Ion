@@ -9,6 +9,8 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.minecraft.core.BlockPos
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
@@ -17,6 +19,7 @@ import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.chunkKey
+import net.starlegacy.util.isTurretComputer
 import net.starlegacy.util.toBukkitBlockData
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
@@ -31,6 +34,7 @@ data class PlayerStarshipState(
 	val coveredChunks: LongOpenHashSet,
 	/** Map of location to material type id */
 	val blockMap: Long2ObjectOpenHashMap<BlockData>,
+	val subShipMap: Map<Long, Long2ObjectOpenHashMap<BlockData>>,
 	val minPoint: Vec3i,
 	val maxPoint: Vec3i
 ) {
@@ -38,13 +42,15 @@ data class PlayerStarshipState(
 		fun createFromActiveShip(starship: ActiveStarship): PlayerStarshipState {
 			val world = starship.world
 			val blocks = starship.blocks
-			return createFromBlocks(world, blocks)
+			val subCraft = starship.subShips.mapKeys { it.key.blockKey }
+			return createFromBlocks(world, blocks, subCraft)
 		}
 
-		fun createFromBlocks(world: World, blocks: Iterable<Long>): PlayerStarshipState {
+		fun createFromBlocks(world: World, blocks: Iterable<Long>, subCraft: Map<Long, Iterable<Long>>): PlayerStarshipState {
 			Tasks.checkMainThread()
 			val coveredChunks = LongOpenHashSet()
 			val blockMap = Long2ObjectOpenHashMap<BlockData>()
+			val subShipMap = mutableMapOf<Long, Long2ObjectOpenHashMap<BlockData>>()
 
 			var minX: Int? = null
 			var minY: Int? = null
@@ -76,6 +82,26 @@ data class PlayerStarshipState(
 				blockMap[blockKey(x, y, z)] = blockData
 			}
 
+			for (ship in subCraft) {
+				val subCraftBlockMap = Long2ObjectOpenHashMap<BlockData>()
+
+				for (blockKey in ship.value) {
+					val x = BlockPos.getX(blockKey)
+					val y = BlockPos.getY(blockKey)
+					val z = BlockPos.getZ(blockKey)
+
+					val blockData = world.getBlockAt(x, y, z).blockData
+
+					if (blockData.material.isAir) {
+						continue
+					}
+
+					subCraftBlockMap[blockKey(x, y, z)] = blockData
+				}
+
+				subShipMap[ship.key] = subCraftBlockMap
+			}
+
 			checkNotNull(minX)
 			checkNotNull(minY)
 			checkNotNull(minZ)
@@ -83,7 +109,7 @@ data class PlayerStarshipState(
 			checkNotNull(maxY)
 			checkNotNull(maxZ)
 
-			return PlayerStarshipState(coveredChunks, blockMap, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
+			return PlayerStarshipState(coveredChunks, blockMap, subShipMap, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
 		}
 
 		fun readFromStream(stream: InputStream): PlayerStarshipState {
@@ -95,18 +121,34 @@ data class PlayerStarshipState(
 
 			val blockMap = Long2ObjectOpenHashMap<BlockData>()
 
+			val subShipComputers: MutableSet<Long> = mutableSetOf()
+
 			for (vec: BlockVector3 in clipboard.region) {
 				val blockData = clipboard.getBlock(vec).toBukkitBlockData()
 				if (blockData.material.isAir) {
 					continue
 				}
+
 				val blockKey = blockKey(vec.x, vec.y, vec.z)
+
+				if (blockData.material.isTurretComputer) {
+					subShipComputers += blockKey
+				}
 				blockMap[blockKey] = blockData
+			}
+
+			val subShipMap = mutableMapOf<Long, Long2ObjectOpenHashMap<BlockData>>()
+
+			for (subShip in subShipComputers) {
+				SubCraftData.findByKey(subShip).first()?.let {
+					subShipMap[subShip] =
+						StarshipDetection.detectSubShip(it, blockMap.size)
+				} ?: continue
 			}
 
 			val chunks = clipboard.region.chunks
 			val coveredChunks = chunks.mapTo(LongOpenHashSet(chunks.size)) { chunkKey(it.x, it.z) }
-			return PlayerStarshipState(coveredChunks, blockMap, min, max)
+			return PlayerStarshipState(coveredChunks, blockMap, subShipMap, min, max)
 		}
 	}
 

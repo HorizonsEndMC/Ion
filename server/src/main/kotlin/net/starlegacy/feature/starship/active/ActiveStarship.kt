@@ -13,6 +13,7 @@ import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
+import net.starlegacy.database.schema.starships.SubCraftData
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.CachedPlanet
@@ -70,6 +71,7 @@ abstract class ActiveStarship(
 	serverLevel: ServerLevel,
 
 	var blocks: LongOpenHashSet,
+	val subShips: Map<SubCraftData, LongOpenHashSet>,
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
