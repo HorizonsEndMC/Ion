@@ -121,7 +121,7 @@ class RayTracedParticleProjectile(
 			 * entity.location's location relative to the body
 			 */
 			if (playerEye != null && (playerEye.y-rayHitPosition.y) < 0.3) {
-				if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = 0
+				if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = -1
 				(entityHit as? Damageable)?.damage(damage * 1.5, shooter)
 				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 2)
 				hitLocation.world.playSound(hitLocation, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f)
