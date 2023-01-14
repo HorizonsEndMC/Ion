@@ -14,10 +14,8 @@ import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.event.StarshipMoveEvent
 import net.starlegacy.feature.starship.event.StarshipRotateEvent
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
-import net.starlegacy.feature.starship.event.SubCraftRotationEvent
 import net.starlegacy.feature.starship.movement.RotationMovement
 import net.starlegacy.feature.starship.movement.StarshipMovement
-import net.starlegacy.feature.starship.movement.SubCraftRotation
 import net.starlegacy.feature.starship.movement.TranslateMovement
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.leftFace
@@ -122,7 +120,6 @@ class ActivePlayerStarship(
 			val event: StarshipMoveEvent = when (movement) {
 				is TranslateMovement -> StarshipTranslateEvent(this, pilot, movement)
 				is RotationMovement -> StarshipRotateEvent(this, pilot, movement)
-				is SubCraftRotation -> SubCraftRotationEvent(this, pilot, movement)
 				else -> error("Unrecognized movement type ${movement.javaClass.name}")
 			}
 
