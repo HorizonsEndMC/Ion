@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.legacy.events.BuySpawnShuttleEvent
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
@@ -36,9 +37,11 @@ object StarshipDealers : SLComponent() {
 			return
 		}
 
-		if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + (1000 * 60 * 60 * 2) > currentTimeMillis()) {
-			player.sendMessage(miniMessage().deserialize("<yellow>Didn't I sell you a ship not too long ago? These things are expensive, and I am already selling them at a discount, leave some for other people."))
-			return
+		if (!player.hasProtection()) {
+			if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + (1000 * 60 * 60 * 2) > currentTimeMillis()) {
+				player.sendMessage(miniMessage().deserialize("<yellow>Didn't I sell you a ship not too long ago? These things are expensive, and I am already selling them at a discount, leave some for other people."))
+				return
+			}
 		}
 
 		if (!player.hasEnoughMoney(PRICE)) {
