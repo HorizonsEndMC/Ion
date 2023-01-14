@@ -24,7 +24,6 @@ import net.starlegacy.feature.misc.GameplayTweaks
 import net.starlegacy.feature.misc.Shuttles
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.nations.NationsBalancing
-import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.progression.Levels
@@ -33,7 +32,6 @@ import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.Orbits
 import net.starlegacy.feature.space.Space
-import net.starlegacy.feature.space.SpaceMap
 import net.starlegacy.feature.space.SpaceMechanics
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
@@ -81,14 +79,12 @@ val components = listOf(
 
 	SpaceWorlds,
 	Space,
-	SpaceMap,
 	Orbits,
 
 	SpaceMechanics,
 
 	NationsBalancing,
 	Regions,
-	NationsMap,
 
 	StationSieges,
 

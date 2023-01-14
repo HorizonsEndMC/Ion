@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.listeners.PlayerLoginListener
 import net.horizonsend.ion.server.listeners.PlayerQuitListener
 import net.horizonsend.ion.server.listeners.PlayerResourcePackStatusListener
 import net.horizonsend.ion.server.listeners.PlayerTeleportListener
+import net.horizonsend.ion.server.listeners.PluginEnableListener
 import net.horizonsend.ion.server.listeners.PotionSplashListener
 import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
@@ -57,6 +58,7 @@ val listeners = arrayOf(
 	PlayerQuitListener(),
 	PlayerResourcePackStatusListener(),
 	PlayerTeleportListener(),
+	PluginEnableListener(),
 	PotionSplashListener(),
 	PrepareItemCraftListener(),
 	PrepareItemEnchantListener(),
