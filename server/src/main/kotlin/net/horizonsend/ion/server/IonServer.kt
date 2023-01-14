@@ -45,9 +45,8 @@ class IonServer : JavaPlugin() {
 			// Same deal as listeners.
 			initializeCrafting()
 
-			// Currently Ion needs to be loaded POSTWORLD due to older Star Legacy code, this means some worlds will already
-			// be loaded by the time we get to plugin enable. In the future we will change to load on STARTUP, but for the
-			// time being we need to check for worlds on start up. This additionally serves to allow Ion to handle reloads.
+			// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
+			// such as reloading or other plugins doing things they probably shouldn't.
 			for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
 
 			legacyEnable(commandManager)
