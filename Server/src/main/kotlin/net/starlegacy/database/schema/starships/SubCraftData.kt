@@ -13,6 +13,7 @@ import java.io.Serializable
 
 data class SubCraftData(
 	override val _id: Oid<SubCraftData>,
+	val parent: Oid<PlayerStarshipData>,
 	var serverName: String?,
 	var levelName: String,
 	var blockKey: Long
