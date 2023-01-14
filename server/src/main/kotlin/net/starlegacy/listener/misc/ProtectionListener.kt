@@ -1,5 +1,7 @@
 package net.starlegacy.listener.misc
 
+import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
+import io.papermc.paper.event.player.PlayerItemFrameChangeEvent.ItemFrameChangeAction
 import net.starlegacy.feature.misc.CombatNPCs
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -37,6 +39,13 @@ object ProtectionListener : SLEventListener() {
 		// Only interacting with inventory blocks counts as editing blocks
 		if (event.action == Action.RIGHT_CLICK_BLOCK && block?.state is InventoryHolder) {
 			onBlockEdit(event, block.location, event.player)
+		}
+	}
+
+	@EventHandler
+	fun onItemFrameChange(event: PlayerItemFrameChangeEvent){
+		if (denyBlockAccess(event.player, event.itemFrame.location)) {
+			event.isCancelled = true
 		}
 	}
 
