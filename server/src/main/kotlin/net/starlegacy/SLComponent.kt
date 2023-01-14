@@ -7,10 +7,6 @@ import org.bukkit.event.Listener
 abstract class SLComponent : Listener {
 	protected val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(javaClass)
 
-	init {
-		if (INITIALIZATION_COMPLETE) error("Initialized ${this.javaClass.simpleName} after plugin initialization!")
-	}
-
 	open fun onEnable() {}
 
 	open fun onDisable() {}
