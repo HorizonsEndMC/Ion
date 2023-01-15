@@ -53,7 +53,7 @@ data class PlacedOres(
 	val ores: List<PlacedOre>
 ) : Serializable
 
-class PlacedOresDataType() : PersistentDataType<ByteArray, PlacedOres> {
+class PlacedOresDataType : PersistentDataType<ByteArray, PlacedOres> {
 	override fun getPrimitiveType(): Class<ByteArray> {
 		return ByteArray::class.java
 	}
