@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.generation.PlacedOresDataType
 import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.configuration.Ore
 import net.minecraft.util.RandomSource
+import net.minecraft.world.level.chunk.LevelChunkSection
+import net.starlegacy.util.nms
 import org.bukkit.Bukkit.createBlockData
 import org.bukkit.Chunk
 import org.bukkit.Material
@@ -64,16 +66,43 @@ object OreGenerator {
 
 	fun generateOre(world: World, ore: PlacedOre) {
 		val oreBlocks = getSphereBlocks(ore.blobSize, Triple(ore.x, ore.y, ore.z))
+		val mappedOre = oreMap[ore.material]?.nms
+
+		var nmsChunk = world.getChunkAt(ore.x.shr(4), ore.z.shr(4)).nms
+		var section: LevelChunkSection
 
 		for (block in oreBlocks) {
 			val (x, y, z) = block
+			val chunkX = x.shr(4)
+			val chunkZ = z.shr(4)
 
-			if (!asteroidBlocks.contains<Material>(world.getBlockAt(x, y, z).type)
-			) {
-				continue
+			if (nmsChunk.locX != chunkX || nmsChunk.locZ != chunkZ) {
+				nmsChunk = world.getChunkAt(chunkX, chunkZ).nms
 			}
 
-			oreMap[ore.material]?.let { world.setBlockData(x, y, z, it) }
+			// shouldn't go negative with this scheme
+			section = try {
+				nmsChunk.sections[
+					(y + world.minHeight)
+						.coerceAtLeast(0)
+						.coerceAtMost(world.maxHeight - 1)
+						.shr(4)
+				]
+			} catch (e: java.lang.Exception) {
+				e.printStackTrace(); continue
+			}
+
+			if (!asteroidBlocks.contains<Material>(world.getBlockAt(x, y, z).type)) continue
+
+			mappedOre?.let {
+				section.setBlockState(
+					x - chunkX.shl(4),
+					y - section.bottomBlockY(),
+					z - chunkZ.shl(4),
+					it
+				)
+			}
+			nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
 		}
 	}
 
@@ -86,9 +115,10 @@ object OreGenerator {
 		val upperBoundSquared = radius * radius
 
 		for (x in originX - radius..originX + radius) {
-			for (y in originY - radius..originY + radius) {
-				for (z in originZ - radius..originZ + radius) {
-					val distance = ((x - originX) * (x - originX) + (y - originY) * (y - originY) + (z - originZ) * (z - originZ))
+			for (z in originZ - radius..originZ + radius) {
+				for (y in originY - radius..originY + radius) {
+					val distance =
+						((x - originX) * (x - originX) + (y - originY) * (y - originY) + (z - originZ) * (z - originZ))
 
 					if (distance < upperBoundSquared) {
 						circleBlocks.add(Triple(x, y, z))
