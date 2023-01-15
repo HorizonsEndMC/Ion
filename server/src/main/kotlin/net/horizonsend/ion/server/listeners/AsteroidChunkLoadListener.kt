@@ -80,9 +80,6 @@ class AsteroidChunkLoadListener : Listener {
 				val z = random.nextInt(0, 15) + worldZ
 				val y = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
 
-				println(wreck)
-				println("$worldX, $worldZ, $x, $y, $z")
-
 				Tasks.async { generateWreck(event.chunk, x, y, z, it) }
 			}
 		}
