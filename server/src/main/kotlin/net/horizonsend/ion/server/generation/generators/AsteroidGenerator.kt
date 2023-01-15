@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.configuration.AsteroidFeatures
 import net.horizonsend.ion.server.generation.configuration.Palette
 import net.minecraft.util.RandomSource
+import net.starlegacy.util.nms
+import net.starlegacy.util.toNMSBlockData
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.World
@@ -24,12 +26,14 @@ import kotlin.math.sqrt
 
 object AsteroidGenerator {
 	// default asteroid configuration values
-	private val configuration: AsteroidConfiguration =
+	val configuration: AsteroidConfiguration =
 		loadConfiguration(IonServer.Ion.dataFolder.resolve("asteroids"), "asteroid_configuration.conf")
 
 	// features (e.g. asteroid belts)
 	private val features: AsteroidFeatures =
 		loadConfiguration(IonServer.Ion.dataFolder.resolve("asteroids"), "asteroid_features.conf")
+
+	private val asteroidOresDataType = PlacedOresDataType() // Save some class construction
 
 	fun postGenerateAsteroid(
 		world: World,
@@ -42,13 +46,31 @@ object AsteroidGenerator {
 			val xDouble = x.toDouble()
 			val xSquared = (xDouble - asteroid.x) * (xDouble - asteroid.x)
 
+			val chunkX = x.shr(4)
+
+			var nmsChunk = world.getChunkAt(chunkX, asteroid.z - (asteroid.size * 1.5).toInt() shr 4).nms
+
 			for (z in asteroid.z - (asteroid.size * 1.5).toInt()..asteroid.z + 15 + (asteroid.size * 1.5).toInt()) {
 				val zDouble = z.toDouble()
 				val zSquared = (zDouble - asteroid.z) * (zDouble - asteroid.z)
 
+				val chunkZ = z.shr(4)
+
+				if (nmsChunk.locX != chunkX || nmsChunk.locZ != chunkZ) {
+					nmsChunk = world.getChunkAt(chunkX, chunkZ).nms
+				}
+
 				for (y in (asteroid.y - (1.5 * asteroid.size)).toInt() until (asteroid.y + (1.5 * asteroid.size)).toInt()) {
 					val yDouble = y.toDouble()
 					val ySquared = (yDouble - asteroid.y) * (yDouble - asteroid.y)
+
+					// shouldn't go negative with this scheme
+					val section = nmsChunk.sections[
+						(y + world.minHeight)
+							.coerceAtLeast(0)
+							.coerceAtMost(world.maxHeight - 1)
+							.shr(4)
+					]
 
 					noise.setScale(0.15)
 
@@ -103,7 +125,12 @@ object AsteroidGenerator {
 					val material =
 						weightedMaterials[paletteSample] // Weight the list by adding duplicate entries, then sample it for the material.
 
-					world.setBlockData(x, y, z, material.createBlockData())
+					section.setBlockState(
+						x - chunkX.shl(4),
+						y - section.bottomBlockY(),
+						z - chunkZ.shl(4),
+						material.toNMSBlockData()
+					)
 				}
 			}
 		}
@@ -112,13 +139,20 @@ object AsteroidGenerator {
 		val ores = mutableListOf<PlacedOre>()
 
 		for (
-		count in
-		ceil(configuration.oreRatio * asteroid.size.pow(2.75)).toInt()
-			downTo 0
+		count in ceil(configuration.oreRatio * asteroid.size.pow(2.75)).toInt() downTo 0
 		) {
-			val originX = random.nextInt(asteroid.x - (asteroid.size * 1.5).toInt(), asteroid.x + 16 + (asteroid.size * 1.5).toInt())
-			val originY = random.nextInt(asteroid.y - (asteroid.size * 1.5).toInt(), asteroid.y + 16 + (asteroid.size * 1.5).toInt())
-			val originZ = random.nextInt(asteroid.z - (asteroid.size * 1.5).toInt(), asteroid.z + 16 + (asteroid.size * 1.5).toInt())
+			val originX = random.nextInt(
+				asteroid.x - (asteroid.size * 1.5).toInt(),
+				asteroid.x + 16 + (asteroid.size * 1.5).toInt()
+			)
+			val originY = random.nextInt(
+				asteroid.y - (asteroid.size * 1.5).toInt(),
+				asteroid.y + 16 + (asteroid.size * 1.5).toInt()
+			)
+			val originZ = random.nextInt(
+				asteroid.z - (asteroid.size * 1.5).toInt(),
+				asteroid.z + 16 + (asteroid.size * 1.5).toInt()
+			)
 
 			if (!OreGenerator.asteroidBlocks.contains(world.getBlockAt(originX, originY, originZ).type)) {
 				continue
@@ -133,7 +167,7 @@ object AsteroidGenerator {
 			ores += PlacedOre(ore.material, blobSize, originX, originY, originZ)
 		}
 
-		chunk.persistentDataContainer.set(NamespacedKeys.ASTEROIDS_ORES, PlacedOresDataType(), PlacedOres(ores))
+		chunk.persistentDataContainer.set(NamespacedKeys.ASTEROIDS_ORES, asteroidOresDataType, PlacedOres(ores))
 	}
 
 	fun generateAsteroid(x: Int, y: Int, z: Int, random: Random): Asteroid {
