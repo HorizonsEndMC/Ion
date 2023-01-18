@@ -6,7 +6,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
-class PlayerItemSwapListener : Listener{
+class PlayerItemSwapListener : Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	@Suppress("unused")
 	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
