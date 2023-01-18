@@ -9,7 +9,6 @@ import org.bson.codecs.pojo.annotations.BsonId
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
-import java.awt.Color
 import java.util.UUID
 
 class PlayerData private constructor(

@@ -19,7 +19,7 @@ class RayTracedParticleProjectile(
 	val shooter: Entity,
 	val balancing: ProjectileBalancing,
 	val particle: Particle,
-	private val dustOptions: DustOptions?,
+	private val dustOptions: DustOptions?
 ) {
 	var damage = balancing.damage
 
@@ -47,7 +47,9 @@ class RayTracedParticleProjectile(
 
 		if (dustOptions != null) {
 			location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-		} else location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+		} else {
+			location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+		}
 
 		if (rayCastTick()) return true
 
@@ -93,8 +95,10 @@ class RayTracedParticleProjectile(
 
 		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null) {
 			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
-				location.world.playSound(location,
-					it, 0.5f, 1f)
+				location.world.playSound(
+					location,
+					it, 0.5f, 1f
+				)
 			}
 
 			return true
@@ -120,7 +124,7 @@ class RayTracedParticleProjectile(
 			 * This code is for headshots, it only works on players for now, as I couldnt be bothered to figure out
 			 * entity.location's location relative to the body
 			 */
-			if (playerEye != null && (playerEye.y-rayHitPosition.y) < 0.3) {
+			if (playerEye != null && (playerEye.y - rayHitPosition.y) < 0.3) {
 				if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = -1
 				(entityHit as? Damageable)?.damage(damage * 1.5, shooter)
 				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 2)
@@ -129,7 +133,7 @@ class RayTracedParticleProjectile(
 				shooter.sendActionBar(MiniMessage.miniMessage().deserialize("<red><bold>Bullseye!"))
 				return true
 			}
-			//no damage ticks is for hitting multiple times in 1 damage tick
+			// no damage ticks is for hitting multiple times in 1 damage tick
 			if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = 0
 			(entityHit as? Damageable)?.damage(damage, shooter)
 
