@@ -13,7 +13,11 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.updateMeta
+import org.bukkit.Material.NETHERITE_AXE
 import org.bukkit.Material.NETHERITE_HOE
+import org.bukkit.Material.NETHERITE_PICKAXE
+import org.bukkit.Material.NETHERITE_SHOVEL
+import org.bukkit.Material.NETHERITE_SWORD
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -24,15 +28,15 @@ object CustomItems {
 	// If we want to be extra fancy we can replace this with some fastutils thing later.
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-	@Suppress("Unused") val PISTOL = register(object : Blaster<Singleshot>("PISTOL", NETHERITE_HOE, 1, text("Blaster Pistol", RED, BOLD), { Ion.balancing.energyWeapons.pistol }) {})
-	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", NETHERITE_HOE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
-	@Suppress("Unused") val AUTO_RIFLE = register(object : Blaster<Singleshot>("AUTO_RIFLE", NETHERITE_HOE, 1, text("Automatic Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.autoRifle }) {
+	@Suppress("Unused") val PISTOL = register(object : Blaster<Singleshot>("PISTOL", NETHERITE_AXE, 1, text("Blaster Pistol", RED, BOLD), { Ion.balancing.energyWeapons.pistol }) {})
+	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", NETHERITE_PICKAXE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
+	@Suppress("Unused") val AUTO_RIFLE = register(object : Blaster<Singleshot>("AUTO_RIFLE", NETHERITE_SHOVEL, 1, text("Automatic Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.autoRifle }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
 			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { 4 / balancing.timeBetweenShots }
 			for (count in 0..repeatCount) Tasks.syncDelay(count.toLong()) { super.handleSecondaryInteract(livingEntity, itemStack) }
 		}
 	})
-	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", NETHERITE_HOE, 1, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
+	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", NETHERITE_SWORD, 1, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
 		}
