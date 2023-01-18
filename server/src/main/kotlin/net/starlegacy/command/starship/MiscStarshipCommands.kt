@@ -401,7 +401,7 @@ object MiscStarshipCommands : SLCommand() {
 				}
 			}
 
-			val pilotRelationColor = pilotNationRelation?.actual?.textStyle?.name?.lowercase()
+			val pilotRelationColor = pilotNationRelation?.actual?.textStyle
 
 			val formattedName =
 				pilotRelationColor?.let { "<$pilotRelationColor>$pilotName</$pilotRelationColor>" } ?: pilotName
