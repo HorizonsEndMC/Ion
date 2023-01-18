@@ -29,21 +29,25 @@ object CustomItems {
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
 	@Suppress("Unused") val PISTOL = register(object : Blaster<Singleshot>("PISTOL", NETHERITE_AXE, 1, text("Blaster Pistol", RED, BOLD), { Ion.balancing.energyWeapons.pistol }) {})
+
 	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", NETHERITE_PICKAXE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
+
 	@Suppress("Unused") val AUTO_RIFLE = register(object : Blaster<Singleshot>("AUTO_RIFLE", NETHERITE_SHOVEL, 1, text("Automatic Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.autoRifle }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
 			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { 4 / balancing.timeBetweenShots }
 			for (count in 0..repeatCount) Tasks.syncDelay(count.toLong()) { super.handleSecondaryInteract(livingEntity, itemStack) }
 		}
 	})
+
 	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", NETHERITE_SWORD, 1, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
 		}
 	})
+
 	@Suppress("Unused") val SNIPER = register(object : Blaster<Singleshot>("SNIPER", NETHERITE_HOE, 1, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
 
-	@Suppress("Unused") val STANDARD_MAGAZINE = register(object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"),  { Ion.balancing.energyWeapons.standardMagazine }) {})
+	@Suppress("Unused") val STANDARD_MAGAZINE = register(object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"), { Ion.balancing.energyWeapons.standardMagazine }) {})
 
 	val GUN_BARREL = register("GUN_BARREL", 500, text("Gun Barrel"))
 	val CIRCUITRY = register("CIRCUITRY", 501, text("Circuitry"))
@@ -61,7 +65,7 @@ object CustomItems {
 		})
 	}
 
-	private fun <T: CustomItem> register(customItem: T): T {
+	private fun <T : CustomItem> register(customItem: T): T {
 		customItems[customItem.identifier] = customItem
 		return customItem
 	}

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.items.objects
 import io.papermc.paper.entity.RelativeTeleportFlag
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.Balancing
+import net.horizonsend.ion.server.items.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.items.CustomItems.customItem
 import net.horizonsend.ion.server.managers.ProjectileManager
 import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
@@ -15,6 +16,7 @@ import net.minecraft.resources.ResourceLocation
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.util.Tasks
+import net.starlegacy.util.randomDouble
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
@@ -30,12 +32,10 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
-import net.horizonsend.ion.server.items.CustomItems.STANDARD_MAGAZINE
-import net.starlegacy.util.randomDouble
 import org.bukkit.util.Vector
+import java.util.function.Supplier
 
-abstract class Blaster<T: Balancing>(
+abstract class Blaster<T : Balancing>(
 	identifier: String,
 
 	material: Material,

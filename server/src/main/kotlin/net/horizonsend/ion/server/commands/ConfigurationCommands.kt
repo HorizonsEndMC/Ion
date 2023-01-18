@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender
 class ConfigurationCommands : BaseCommand() {
 	@Subcommand("config reload")
 	@CommandPermission("ion.config.reload")
-	fun onConfigReload(sender: CommandSender){
+	fun onConfigReload(sender: CommandSender) {
 		IonServer.Ion.configuration = loadConfiguration(IonServer.Ion.dataFolder, "server.conf")
 		IonServer.Ion.balancing = loadConfiguration(IonServer.Ion.dataFolder, "balancing.conf")
 		sender.sendRichMessage("<bold><green>Configuration Reloaded")
