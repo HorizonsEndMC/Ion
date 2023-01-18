@@ -2,7 +2,6 @@ package net.horizonsend.ion.server
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.items.CustomItems
-import net.starlegacy.feature.misc.CustomItems as LegacyCustomItems
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -56,6 +55,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
+import net.starlegacy.feature.misc.CustomItems as LegacyCustomItems
 
 fun initializeCrafting() {
 	// Prismarine Bricks
@@ -171,7 +171,7 @@ private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.(
 	Bukkit.addRecipe(recipe)
 }
 
-private fun itemStackShapeRecipe(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit){
+private fun itemStackShapeRecipe(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit) {
 	val recipe = ShapedRecipe(NamespacedKey(Ion, name), result)
 	execute(recipe)
 	Bukkit.addRecipe(recipe)

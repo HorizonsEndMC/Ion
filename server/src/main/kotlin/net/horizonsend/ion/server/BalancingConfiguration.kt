@@ -123,7 +123,7 @@ data class BalancingConfiguration(
 			override val speed: Double,
 			override val timeBetweenShots: Int,
 			override val shotDeviation: Double
-		): Balancing()
+		) : Balancing()
 
 		@ConfigSerializable
 		data class Multishot(

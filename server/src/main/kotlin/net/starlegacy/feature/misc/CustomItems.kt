@@ -17,7 +17,6 @@ import org.bukkit.ChatColor.RED
 import org.bukkit.ChatColor.WHITE
 import org.bukkit.ChatColor.YELLOW
 import org.bukkit.Material
-import org.bukkit.Material.BOW
 import org.bukkit.Material.DIAMOND_AXE
 import org.bukkit.Material.DIAMOND_PICKAXE
 import org.bukkit.Material.FLINT_AND_STEEL
