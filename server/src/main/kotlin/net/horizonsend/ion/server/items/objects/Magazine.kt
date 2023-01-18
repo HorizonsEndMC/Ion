@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.items.objects
 
-import java.util.function.Supplier
 import net.horizonsend.ion.server.BalancingConfiguration
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import java.util.function.Supplier
 
-abstract class Magazine<T: BalancingConfiguration.EnergyWeapon.AmmoStorageBalancing>(
+abstract class Magazine<T : BalancingConfiguration.EnergyWeapon.AmmoStorageBalancing>(
 	identifier: String,
 
 	material: Material,

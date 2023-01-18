@@ -20,7 +20,7 @@ abstract class AmmunitionHoldingItem(
 	private val displayName: Component,
 
 	private val shouldDeleteItem: Boolean = false
-): CustomItem(identifier) {
+) : CustomItem(identifier) {
 	override fun constructItemStack(): ItemStack {
 		return ItemStack(material).updateMeta {
 			it.setCustomModelData(customModelData)
