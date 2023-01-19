@@ -53,7 +53,7 @@ val listeners = arrayOf(
 	PlayerDeathListener(),
 	PlayerFishListener(),
 	PlayerItemConsumeListener(),
-	PlayerJoinListener(Ion),
+	PlayerJoinListener(),
 	PlayerLoginListener(),
 	PlayerQuitListener(),
 	PlayerResourcePackStatusListener(),
