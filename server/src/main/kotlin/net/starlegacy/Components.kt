@@ -9,10 +9,8 @@ import net.starlegacy.feature.economy.cargotrade.CrateRestrictions
 import net.starlegacy.feature.economy.cargotrade.ShipmentBalancing
 import net.starlegacy.feature.economy.cargotrade.ShipmentGenerator
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager
-import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.collectors.CollectionMissions
-import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.PowerMachines
@@ -103,11 +101,8 @@ val components = listOf(
 	TradeCities,
 
 	CollectionMissions,
-	Collectors,
 
 	CrateRestrictions,
-
-	CityNPCs,
 
 	ShipmentBalancing,
 	ShipmentGenerator,
