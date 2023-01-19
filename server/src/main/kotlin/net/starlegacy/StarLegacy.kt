@@ -5,7 +5,6 @@ import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.legacy.listeners.PlayerJoinListener
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -62,7 +61,6 @@ fun legacyEnable(commandManager: PaperCommandManager) {
 		Ion.server.pluginManager.registerEvents(component, Ion)
 	}
 	for (listeners in listeners) Ion.server.pluginManager.registerEvents(listeners, Ion) // Listeners
-	Ion.server.pluginManager.registerEvents(PlayerJoinListener(), Ion)
 	registerCommands(commandManager)
 	scheduleNationTasks()
 	INITIALIZATION_COMPLETE = true
@@ -134,7 +132,6 @@ fun registerCommands(manager: PaperCommandManager) {
 	).forEach { manager.commandCompletions.registerStaticCompletion(it.key, it.value) }
 
 	// Add async tab completions
-	@Suppress("RedundantLambdaArrow")
 	mapOf<String, (BukkitCommandCompletionContext) -> List<String>>(
 		"gamerules" to { _ -> Bukkit.getWorlds().first().gameRules.toList() },
 		"settlements" to { _ -> SettlementCache.all().map { it.name } },

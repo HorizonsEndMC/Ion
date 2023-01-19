@@ -1,50 +1,53 @@
 package net.horizonsend.ion.server.listeners
 
-import net.horizonsend.ion.server.IonServer
+import com.google.common.io.BaseEncoding
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.extensions.sendServerError
-import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import org.bukkit.GameMode
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
+import org.bukkit.Material.CHAINMAIL_BOOTS
+import org.bukkit.Material.CHAINMAIL_CHESTPLATE
+import org.bukkit.Material.CHAINMAIL_HELMET
+import org.bukkit.Material.CHAINMAIL_LEGGINGS
+import org.bukkit.Material.CLOCK
+import org.bukkit.Material.COOKED_BEEF
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import java.net.URL
 import java.security.MessageDigest
 
-class PlayerJoinListener(private val plugin: IonServer) : Listener {
+class PlayerJoinListener : Listener {
 	private var cachedURL: String? = null
+	private var cachedHash: String? = null
 	private var lastUpdated: Long = 0
 
-	private val url: String?
-		get() {
-			if (System.currentTimeMillis() - lastUpdated < 600000) return cachedURL
-
+	private fun getURLAndHash(): Pair<String, String>? {
+		if (System.currentTimeMillis() - lastUpdated > 600000) {
 			cachedURL = try {
-				"https://github.com/HorizonsEndMC/ResourcePack/releases/download/${
-				URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
+				val tagName = URL("https://api.github.com/repos/HorizonsEndMC/ResourcePack/releases/latest")
 					.readText()
 					.substringAfter("\",\"tag_name\":\"")
 					.substringBefore("\",")
-				}/HorizonsEndResourcePack.zip"
+
+				"https://github.com/HorizonsEndMC/ResourcePack/releases/download/$tagName/HorizonsEndResourcePack.zip"
 			} catch (exception: Exception) {
-				Ion.slF4JLogger.warn("Unable to update resource pack URL!", exception)
+				Ion.slF4JLogger.warn("Exception was thrown while updating resource pack URL!", exception)
+				null
+			}
+
+			cachedHash = try {
+				BaseEncoding.base16().encode(MessageDigest.getInstance("SHA-1").digest(URL(cachedURL).readBytes()))
+			} catch (exception: Exception) {
+				Ion.slF4JLogger.warn("Exception was thrown while computing resource pack hash!", exception)
 				null
 			}
 
 			lastUpdated = System.currentTimeMillis()
-
-			return cachedURL
 		}
 
-	private val hash = try {
-		MessageDigest.getInstance("SHA-1").digest(URL(url).readBytes())
-	} catch (_: Exception) {
-		null
+		return Pair(cachedURL ?: return null, cachedHash ?: return null)
 	}
 
 	@EventHandler
@@ -52,36 +55,32 @@ class PlayerJoinListener(private val plugin: IonServer) : Listener {
 	fun onPlayerJoinEvent(event: PlayerJoinEvent) {
 		event.joinMessage(null)
 
+		if (event.player.hasProtection()) {
+			event.player.sendRichMessage(
+				"The Wiki is a great resource for new players, be sure to use it! <white><u><click:open_url:'https://wiki.horizonsend.net'>wiki.horizonsend.net</click></u></white>"
+			)
+		}
+
 		if (!event.player.hasPlayedBefore() && event.player.gameMode == GameMode.SURVIVAL) {
-			val armor: Array<ItemStack> = arrayOf(
-				ItemStack(Material.CHAINMAIL_BOOTS, 1),
-				ItemStack(Material.CHAINMAIL_LEGGINGS, 1),
-				ItemStack(Material.CHAINMAIL_CHESTPLATE, 1),
-				ItemStack(Material.CHAINMAIL_HELMET, 1)
-			)
-			event.player.inventory.armorContents = armor
-
-			val kitstarterasking = ItemStack(Material.PAPER)
-			kitstarterasking.itemMeta.displayName(
-				MiniMessage.miniMessage()
-					.deserialize("Please do /kit starter if you run out of steak or need a new set!").color(
-						TextColor.color(0, 255, 255)
-					)
-			)
-			kitstarterasking.itemMeta.persistentDataContainer.set(
-				NamespacedKey(plugin, "SpawnPaper"),
-				PersistentDataType.BYTE,
-				1
-			)
-			event.player.inventory.addItem(ItemStack(Material.COOKED_BEEF, 32))
-			event.player.inventory.addItem(ItemStack(Material.CLOCK))
-			event.player.inventory.addItem(kitstarterasking)
+			event.player.inventory.apply {
+				addItem(ItemStack(COOKED_BEEF, 32))
+				addItem(ItemStack(CLOCK))
+				addItem(ItemStack(CHAINMAIL_BOOTS))
+				addItem(ItemStack(CHAINMAIL_LEGGINGS))
+				addItem(ItemStack(CHAINMAIL_CHESTPLATE))
+				addItem(ItemStack(CHAINMAIL_HELMET))
+			}
 		}
 
-		if (url == null) {
-			event.player.sendServerError("Unable to get resource pack URL. Please try again later.")
-		} else {
-			event.player.setResourcePack(url!!, hash)
+		val urlAndHash = getURLAndHash()
+
+		if (urlAndHash == null) {
+			event.player.sendServerError("Unable to provide resource pack. This error may correct itself within 10 minutes, if not, contact an administrator.")
+			return
 		}
+
+		val (url, hash) = urlAndHash
+
+		event.player.setResourcePack(url, hash)
 	}
 }
