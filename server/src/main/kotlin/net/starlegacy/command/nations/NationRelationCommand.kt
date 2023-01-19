@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
-import net.starlegacy.util.Notify
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -58,13 +58,15 @@ internal object NationRelationCommand : SLCommand() {
 
 		val actual = NationRelation.changeRelationWish(senderNation, otherNation, wish)
 
-		Notify.online(
-			"&e${sender.name} of ${getNationName(senderNation)} " +
-				"has made the relation wish &r${wish.coloredName}&e " +
-				"with the nation ${getNationName(otherNation)}. " +
-				"Their wish is &r${otherWish.coloredName}&e, " +
-				"so their relation is &r${actual.coloredName}&e!"
-		)
+		Bukkit.getOnlinePlayers().forEach { player ->
+			player.sendRichMessage(
+				"<yellow>${sender.name} of ${getNationName(senderNation)} " +
+						"has made the relation wish <reset>${wish.coloredName}<yellow> " +
+						"with the nation ${getNationName(otherNation)}. " +
+						"Their wish is <reset>${otherWish.coloredName}<yellow>, " +
+						"so their relation is &r${actual.coloredName}<yellow>!"
+			)
+		}
 	}
 
 	@Subcommand("relations")

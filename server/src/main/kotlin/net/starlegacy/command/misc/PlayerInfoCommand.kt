@@ -61,7 +61,7 @@ object PlayerInfoCommand : SLCommand() {
 						if (senderNation != null) {
 							val relation: NationRelation.Level = NationRelation.getRelationActual(nationId, senderNation)
 
-							sender msg "&7Relation:&7 ${relation.coloredName}"
+							sender.sendRichMessage("<gray>Relation:<gray> ${relation.coloredName}")
 						}
 					}
 				}
