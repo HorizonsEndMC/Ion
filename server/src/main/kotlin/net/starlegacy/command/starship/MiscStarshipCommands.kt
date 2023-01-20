@@ -424,4 +424,16 @@ object MiscStarshipCommands : SLCommand() {
 		sender.sendRichMessage("<gray>Total Ships<dark_gray>:<aqua> $totalShips")
 		sender.sendRichMessage("<gray>Total Blocks in all ships<dark_gray>:<aqua> $totalBlocks")
 	}
+
+	@Suppress("unused")
+	@CommandAlias("usebeacon")
+	fun onUseBeacon(sender: Player) {
+		val ship = getStarshipRiding(sender) as? ActivePlayerStarship ?: return
+
+		if (ship.beacon != null) {
+			val other = ship.beacon!!.destination
+			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender)
+			ship.beacon = null
+		}
+	}
 }

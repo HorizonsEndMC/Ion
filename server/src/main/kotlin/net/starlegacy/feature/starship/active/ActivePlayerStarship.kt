@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.active
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.ServerConfiguration
 import net.minecraft.core.BlockPos
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -155,6 +156,8 @@ class ActivePlayerStarship(
 	var lastManualMove = System.nanoTime() / 1_000_000
 	var sneakMovements = 0
 	val shieldBars = mutableMapOf<String, BossBar>()
+
+	var beacon: ServerConfiguration.HyperspaceBeacon? = null
 
 	var cruiseData = StarshipCruising.CruiseData(this)
 

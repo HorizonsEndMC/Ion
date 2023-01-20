@@ -38,6 +38,7 @@ import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
+import net.horizonsend.ion.server.managers.HyperspaceBeaconManager
 
 val listeners = arrayOf(
 	BlockFadeListener(),
@@ -45,6 +46,7 @@ val listeners = arrayOf(
 	ChunkLoadListener(Ion),
 	EnchantItemListener(),
 	EntityDamageListener(),
+	HyperspaceBeaconManager,
 	InventoryClickListener(),
 	InventoryCloseListener(),
 	InventoryDragListener(),
