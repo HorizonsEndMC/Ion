@@ -6,10 +6,6 @@ import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerSet
 
 object HyperspaceBeacons : SLComponent() {
-	override fun onEnable() {
-		reloadDynmap()
-	}
-
 	fun reloadDynmap() {
 		val api = try { DynmapPlugin.plugin.markerAPI } catch (_: Error) { return } // dynmap not installed
 		var set: MarkerSet? = api.getMarkerSet("starships.hyperspace")
