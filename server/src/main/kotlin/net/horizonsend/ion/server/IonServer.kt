@@ -4,7 +4,6 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.managers.HyperspaceBeaconManager
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
@@ -49,9 +48,6 @@ class IonServer : JavaPlugin() {
 			// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 			// such as reloading or other plugins doing things they probably shouldn't.
 			for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
-
-			// Load the hyperspace beacons on the dynmap
-			HyperspaceBeaconManager.reloadDynmap()
 
 			legacyEnable(commandManager)
 		} catch (exception: Exception) {
