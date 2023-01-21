@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.generation
 
-import net.horizonsend.ion.server.generation.configuration.Palette
+import net.horizonsend.ion.server.ServerConfiguration
 import org.apache.commons.lang.SerializationUtils
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
@@ -13,7 +13,7 @@ data class Asteroid(
 	val x: Int,
 	val y: Int,
 	val z: Int,
-	val palette: Palette,
+	val palette: ServerConfiguration.Palette,
 	val size: Double,
 	val octaves: Int
 ) : Serializable
