@@ -1,15 +1,12 @@
 package net.horizonsend.ion.server.generation.generators
 
-import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.NamespacedKeys
+import net.horizonsend.ion.server.ServerConfiguration
 import net.horizonsend.ion.server.generation.Asteroid
 import net.horizonsend.ion.server.generation.PlacedOre
 import net.horizonsend.ion.server.generation.PlacedOres
 import net.horizonsend.ion.server.generation.PlacedOresDataType
-import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
-import net.horizonsend.ion.server.generation.configuration.AsteroidFeatures
-import net.horizonsend.ion.server.generation.configuration.Palette
 import net.minecraft.util.RandomSource
 import net.starlegacy.util.nms
 import net.starlegacy.util.toNMSBlockData
@@ -25,14 +22,6 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 object AsteroidGenerator {
-	// default asteroid configuration values
-	val configuration: AsteroidConfiguration =
-		loadConfiguration(IonServer.Ion.dataFolder.resolve("asteroids"), "asteroid_configuration.conf")
-
-	// features (e.g. asteroid belts)
-	private val features: AsteroidFeatures =
-		loadConfiguration(IonServer.Ion.dataFolder.resolve("asteroids"), "asteroid_features.conf")
-
 	private val asteroidOresDataType = PlacedOresDataType() // Save some class construction
 
 	fun postGenerateAsteroid(
@@ -139,7 +128,7 @@ object AsteroidGenerator {
 		val ores = mutableListOf<PlacedOre>()
 
 		for (
-		count in ceil(configuration.oreRatio * asteroid.size.pow(2.75)).toInt() downTo 0
+		count in ceil(Ion.configuration.oreRatio * asteroid.size.pow(2.75)).toInt() downTo 0
 		) {
 			val originX = random.nextInt(
 				asteroid.x - (asteroid.size * 1.5).toInt(),
@@ -180,15 +169,15 @@ object AsteroidGenerator {
 		val weightedPalette = paletteWeights()
 		val paletteSample = random.nextInt(weightedPalette.size)
 
-		val blockPalette: Palette = weightedPalette[paletteSample]
+		val blockPalette: ServerConfiguration.Palette = weightedPalette[paletteSample]
 
-		val size = random.nextDouble(5.0, configuration.maxAsteroidSize)
+		val size = random.nextDouble(5.0, Ion.configuration.maxAsteroidSize)
 		val octaves = floor(5 * 0.95.pow(size)).toInt().coerceAtLeast(1)
 
 		return Asteroid(x, y, z, blockPalette, size, octaves)
 	}
 
-	private fun materialWeights(palette: Palette): List<Material> {
+	private fun materialWeights(palette: ServerConfiguration.Palette): List<Material> {
 		val weightedList = mutableListOf<Material>()
 
 		for (material in palette.materials) {
@@ -202,9 +191,9 @@ object AsteroidGenerator {
 
 	fun parseDensity(world: World, x: Double, y: Double, z: Double): Double {
 		val densities = mutableSetOf<Double>()
-		densities.add(configuration.baseAsteroidDensity)
+		densities.add(Ion.configuration.baseAsteroidDensity)
 
-		for (feature in features.features) {
+		for (feature in Ion.configuration.features) {
 			if (feature.worldName != world.name) continue
 
 			if ((sqrt((x - feature.x).pow(2) + (z - feature.z).pow(2)) - feature.tubeSize).pow(2) + (y - feature.y).pow(
@@ -221,10 +210,10 @@ object AsteroidGenerator {
 	/**
 	 * Weights the list of Palettes in the configuration by adding duplicate entries based on the weight.
 	 */
-	private fun paletteWeights(): List<Palette> {
-		val weightedList = mutableListOf<Palette>()
+	private fun paletteWeights(): List<ServerConfiguration.Palette> {
+		val weightedList = mutableListOf<ServerConfiguration.Palette>()
 
-		for (palette in configuration.blockPalettes) {
+		for (palette in Ion.configuration.blockPalettes) {
 			for (occurrence in palette.weight downTo 0) {
 				weightedList.add(palette)
 			}
