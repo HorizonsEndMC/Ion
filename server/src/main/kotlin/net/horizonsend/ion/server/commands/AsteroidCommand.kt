@@ -6,14 +6,12 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.NamespacedKeys
+import net.horizonsend.ion.server.ServerConfiguration
 import net.horizonsend.ion.server.generation.Asteroid
 import net.horizonsend.ion.server.generation.AsteroidsDataType
 import net.horizonsend.ion.server.generation.PlacedOre
 import net.horizonsend.ion.server.generation.PlacedOresDataType
-import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.generateAsteroid
 import net.horizonsend.ion.server.generation.generators.AsteroidGenerator.postGenerateAsteroid
 import net.horizonsend.ion.server.generation.generators.OreGenerator.generateOre
@@ -28,10 +26,7 @@ import java.util.Random
 import kotlin.math.sin
 
 @CommandAlias("asteroid")
-class AsteroidCommand : BaseCommand() {
-	private val configuration: AsteroidConfiguration =
-		loadConfiguration(IonServer.Ion.dataFolder.resolve("asteroids"), "asteroid_configuration.conf")
-
+class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@Suppress("unused")
 	@CommandPermission("spacegenerator.regenerate")
 	@Subcommand("regenerate asteroid")

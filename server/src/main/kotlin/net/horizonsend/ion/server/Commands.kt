@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.commands.UtilityCommands
 import net.horizonsend.ion.server.legacy.commands.AchievementsCommand
 
 val commands = arrayOf(
-	AsteroidCommand(),
+	AsteroidCommand(IonServer.Ion.configuration),
 	BountyCommands(),
 	ConfigurationCommands(),
 	ConvertCommand(),
