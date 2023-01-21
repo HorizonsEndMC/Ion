@@ -44,7 +44,7 @@ data class BalancingConfiguration(
 			timeBetweenShots = 1,
 			shotDeviation = 0.0
 		),
-		val smg: Singleshot = Singleshot(
+		val submachineBlaster: Singleshot = Singleshot(
 			damage = 2.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 30,
