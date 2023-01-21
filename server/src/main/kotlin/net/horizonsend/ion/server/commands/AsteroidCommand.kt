@@ -28,7 +28,7 @@ import kotlin.math.sin
 @CommandAlias("asteroid")
 class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@Suppress("unused")
-	@CommandPermission("spacegenerator.regenerate")
+	@CommandPermission("ion.space.regenerate")
 	@Subcommand("regenerate asteroid")
 	@CommandCompletion("Optional:Range")
 	fun onRegenerateRangeAsteroid(sender: Player, range: Int = 0) {
@@ -51,7 +51,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandPermission("spacegenerator.regenerate")
+	@CommandPermission("ion.space.regenerate")
 	@Subcommand("create ore")
 	@CommandCompletion("Optional:Range")
 	fun onCreateOres(sender: Player, range: Int) {
@@ -73,7 +73,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandPermission("spacegenerator.regenerate")
+	@CommandPermission("ion.space.regenerate")
 	@Subcommand("regenerate ore")
 	@CommandCompletion("Optional:Range")
 	fun onRegenerateRangeOres(sender: Player, range: Int = 0) {
@@ -96,7 +96,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandPermission("spacegenerator.regenerate")
+	@CommandPermission("ion.space.regenerate")
 	@Subcommand("create custom")
 	@CommandCompletion("size index octaves")
 	fun onCreateCustom(sender: Player, size: Double, index: Int, octaves: Int) {
@@ -126,7 +126,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandPermission("spacegenerator.regenerate")
+	@CommandPermission("ion.space.regenerate")
 	@Subcommand("create random")
 	fun onCreateRandom(sender: Player) {
 		val chunkPos = ChunkPos(sender.chunk.x, sender.chunk.z)
