@@ -1,13 +1,11 @@
 package net.horizonsend.ion.server.generation.generators
 
-import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.NamespacedKeys
+import net.horizonsend.ion.server.ServerConfiguration
 import net.horizonsend.ion.server.generation.PlacedOre
 import net.horizonsend.ion.server.generation.PlacedOres
 import net.horizonsend.ion.server.generation.PlacedOresDataType
-import net.horizonsend.ion.server.generation.configuration.AsteroidConfiguration
-import net.horizonsend.ion.server.generation.configuration.Ore
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.starlegacy.util.nms
@@ -18,18 +16,14 @@ import org.bukkit.World
 import org.bukkit.block.data.BlockData
 
 object OreGenerator {
-	// default asteroid configuration values
-	private val configuration: AsteroidConfiguration =
-		loadConfiguration(IonServer.Ion.dataFolder.resolve("asteroids"), "asteroid_configuration.conf")
-
 	val weightedOres = oreWeights()
 	val asteroidBlocks: MutableSet<Material> = mutableSetOf()
 	private val oreMap: MutableMap<String, BlockData> = mutableMapOf()
 
 	init {
-		configuration.blockPalettes.forEach { asteroidBlocks.addAll((it.materials.keys)) }
+		IonServer.Ion.configuration.blockPalettes.forEach { asteroidBlocks.addAll((it.materials.keys)) }
 
-		configuration.ores.forEach { oreMap[it.material] = createBlockData(it.material) }
+		IonServer.Ion.configuration.ores.forEach { oreMap[it.material] = createBlockData(it.material) }
 	}
 
 	fun generateOres(world: World, chunk: Chunk) {
@@ -42,7 +36,7 @@ object OreGenerator {
 
 		val ores = mutableListOf<PlacedOre>()
 
-		for (count in (configuration.oreRatio * 10000).toInt() downTo 0) {
+		for (count in (IonServer.Ion.configuration.oreRatio * 10000).toInt() downTo 0) {
 			val originX = random.nextInt(worldX, worldX + 16)
 			val originY = random.nextInt(world.minHeight + 10, world.maxHeight - 10)
 			val originZ = random.nextInt(worldZ, worldZ + 16)
@@ -130,10 +124,10 @@ object OreGenerator {
 		return circleBlocks
 	}
 
-	private fun oreWeights(): List<Ore> {
-		val weightedList = mutableListOf<Ore>()
+	private fun oreWeights(): List<ServerConfiguration.Ore> {
+		val weightedList = mutableListOf<ServerConfiguration.Ore>()
 
-		for (ore in configuration.ores) {
+		for (ore in IonServer.Ion.configuration.ores) {
 			for (occurrence in ore.rolls downTo 0) {
 				weightedList.add(ore)
 			}
