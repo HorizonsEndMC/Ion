@@ -434,6 +434,8 @@ object MiscStarshipCommands : SLCommand() {
 			val other = ship.beacon!!.destination
 			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender)
 			ship.beacon = null
+		} else {
+			sender.sendFeedbackMessage(USER_ERROR, "Starship is not near beacon!")
 		}
 	}
 }

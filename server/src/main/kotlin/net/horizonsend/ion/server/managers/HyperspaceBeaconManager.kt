@@ -12,18 +12,12 @@ import org.bukkit.event.Listener
 import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerSet
 import java.util.UUID
-import kotlin.time.measureTime
 
 object HyperspaceBeaconManager : Listener {
 	private val beaconWorlds get() = Ion.configuration.beacons.associateBy { it.spaceLocation.bukkitWorld() } // Your problem if it throws null pointers
 
 	// Make it yell at you once every couple seconds not every time your ship moves
 	private val activeRequests: MutableMap<UUID, Long> = mutableMapOf()
-
-	private fun addRequest(uuid: UUID) {
-		clearExpired()
-		activeRequests[uuid] = System.currentTimeMillis()
-	}
 
 	private fun clearExpired() {
 		activeRequests.filterValues {
@@ -40,22 +34,24 @@ object HyperspaceBeaconManager : Listener {
 
 	@EventHandler
 	fun onStarshipMove(event: StarshipTranslateEvent) {
-		if (event.starship.pilot == null) return
+		clearExpired()
+		val pilot = event.starship.pilot ?: return
 		if (event.starship.hyperdrives.isEmpty()) return
 
 		val starship = event.starship
 		val worldBeacons = beaconWorlds.filter { it.key == starship.serverLevel.world }
 
-		if (!beaconWorlds.contains(event.movement.newWorld) ||
-			!beaconWorlds.contains(event.starship.serverLevel.world)
-		) {
-			return
-		}
+		if (!beaconWorlds.contains(event.starship.serverLevel.world)) return
 
 		if (
 			worldBeacons.any {
 				if (it.value.spaceLocation.toLocation().isInRange(
-						Location(event.movement.newWorld, event.x.toDouble(), event.y.toDouble(), event.z.toDouble()),
+						Location(
+								event.starship.serverLevel.world,
+								(event.x + starship.centerOfMass.x).toDouble(),
+								(event.y + starship.centerOfMass.y).toDouble(),
+								(event.z + starship.centerOfMass.x).toDouble()
+							),
 						it.value.radius
 					)
 				) {
@@ -67,21 +63,24 @@ object HyperspaceBeaconManager : Listener {
 				}
 			}
 		) {
+			if (activeRequests.containsKey(pilot.uniqueId)) return
 			val beacon = event.starship.beacon
 
-			event.starship.pilot!!.sendRichMessage(
+			pilot.sendRichMessage(
 				"<aqua>Detected signal from hyperspace beacon<yellow> ${beacon!!.name}<aqua>" + // not null if true
 					", destination<yellow> " +
 					"${beacon.destinationName ?: "${beacon.destination.world}: ${beacon.destination.x}, ${beacon.destination.z}"}<aqua>. " +
-					"<gold><italic><click:run_command:usebeacon>Engage hyperdrive?"
+					"<gold><italic><hover:show_text:'<gray>/usebeacon'><click:run_command:/usebeacon>Engage hyperdrive?</click>"
 			)
-
-			addRequest(event.starship.pilot!!.uniqueId)
+			activeRequests[pilot.uniqueId] = System.currentTimeMillis()
 		} else {
-			if (!activeRequests.containsKey(event.starship.pilot!!.uniqueId)) return // returned already if null
+			if (activeRequests.containsKey(pilot.uniqueId)) {
+				if (!activeRequests.containsKey(pilot.uniqueId)) return // returned already if null
 
-			event.starship.pilot!!.sendFeedbackMessage(FeedbackType.INFORMATION, "Exited beacon communication radius.")
-			activeRequests.remove(event.starship.pilot!!.uniqueId)
+				pilot.sendFeedbackMessage(FeedbackType.INFORMATION, "Exited beacon communication radius.")
+				activeRequests.remove(pilot.uniqueId)
+				return
+			}
 			return
 		}
 	}
