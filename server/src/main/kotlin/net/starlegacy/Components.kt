@@ -12,6 +12,7 @@ import net.starlegacy.feature.economy.cargotrade.ShipmentManager
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.collectors.CollectionMissions
 import net.starlegacy.feature.gear.Gear
+import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CombatNPCs
@@ -112,6 +113,7 @@ val components = listOf(
 	Merchants,
 
 	Hyperspace,
+	HyperspaceBeacons,
 	DeactivatedPlayerStarships,
 	ActiveStarships,
 	ActiveStarshipMechanics,
