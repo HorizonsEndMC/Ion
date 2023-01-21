@@ -29,20 +29,20 @@ object CustomItems {
 
 	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", IRON_HOE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
 
-	@Suppress("Unused") val AUTO_RIFLE = register(object : Blaster<Singleshot>("AUTO_RIFLE", IRON_HOE, 1, text("Automatic Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.autoRifle }) {
+	@Suppress("Unused") val SMG = register(object : Blaster<Singleshot>("SMG", IRON_HOE, 4, text("Blaster SMG", RED, BOLD), { Ion.balancing.energyWeapons.smg }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
 			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { 4 / balancing.timeBetweenShots }
 			for (count in 0..repeatCount) Tasks.syncDelay(count.toLong()) { super.handleSecondaryInteract(livingEntity, itemStack) }
 		}
 	})
 
-	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", IRON_HOE, 1, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
+	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", IRON_HOE, 2, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
 		}
 	})
 
-	@Suppress("Unused") val SNIPER = register(object : Blaster<Singleshot>("SNIPER", IRON_HOE, 1, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
+	@Suppress("Unused") val SNIPER = register(object : Blaster<Singleshot>("SNIPER", IRON_HOE, 3, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
 
 	@Suppress("Unused") val STANDARD_MAGAZINE = register(object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"), { Ion.balancing.energyWeapons.standardMagazine }) {})
 
