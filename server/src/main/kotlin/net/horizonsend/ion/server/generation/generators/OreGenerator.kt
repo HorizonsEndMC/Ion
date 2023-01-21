@@ -18,12 +18,10 @@ import org.bukkit.block.data.BlockData
 object OreGenerator {
 	val weightedOres = oreWeights()
 	val asteroidBlocks: MutableSet<Material> = mutableSetOf()
-	private val oreMap: MutableMap<String, BlockData> = mutableMapOf()
+	private val oreMap: Map<String, BlockData> = IonServer.Ion.configuration.ores.associate { it.material to createBlockData(it.material) }
 
 	init {
 		IonServer.Ion.configuration.blockPalettes.forEach { asteroidBlocks.addAll((it.materials.keys)) }
-
-		IonServer.Ion.configuration.ores.forEach { oreMap[it.material] = createBlockData(it.material) }
 	}
 
 	fun generateOres(world: World, chunk: Chunk) {

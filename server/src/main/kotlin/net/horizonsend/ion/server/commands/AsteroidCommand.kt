@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.ServerConfiguration
+import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.generation.Asteroid
 import net.horizonsend.ion.server.generation.AsteroidsDataType
 import net.horizonsend.ion.server.generation.PlacedOre
@@ -122,7 +123,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 			asteroid
 		)
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Success!")
+		sender.sendInformation("Success!")
 	}
 
 	@Suppress("unused")
@@ -147,7 +148,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 			asteroid
 		)
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Success!")
+		sender.sendInformation("Success!")
 	}
 
 	private fun postGenerateAsteroids(world: World, chunk: Chunk) {
