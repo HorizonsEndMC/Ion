@@ -255,7 +255,7 @@ object TutorialManager : SLComponent() {
 	}
 
 	private fun loadShip(loc: Location) {
-		val file = File(Ion.dataFolder, "tutorial_ship.schematic")
+		val file = File(Ion.dataFolder, "tutorial_ship.schem")
 
 		if (!file.exists()) {
 			error("${file.absolutePath} doesn't exist!")
