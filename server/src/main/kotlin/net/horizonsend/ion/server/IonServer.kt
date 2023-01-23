@@ -62,6 +62,8 @@ class IonServer : JavaPlugin() {
 				HyperspaceBeacons.reloadDynmap()
 				Collectors.onEnable()
 				CityNPCs.onEnable()
+
+				pluginManager.registerEvents(CityNPCs, this)
 			}, 1)
 		} catch (exception: Exception) {
 			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
