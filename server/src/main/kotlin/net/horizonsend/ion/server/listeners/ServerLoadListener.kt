@@ -12,6 +12,7 @@ import org.bukkit.event.server.ServerLoadEvent
 class ServerLoadListener : Listener {
 	@EventHandler
 	fun onServerLoadEvent(event: ServerLoadEvent) {
+		println("Post Load Components Loaded")
 		SpaceMap.onEnable()
 		NationsMap.onEnable()
 		HyperspaceBeacons.reloadDynmap()
