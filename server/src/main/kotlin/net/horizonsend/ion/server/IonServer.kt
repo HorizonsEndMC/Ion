@@ -4,6 +4,11 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
+import net.starlegacy.feature.economy.city.CityNPCs
+import net.starlegacy.feature.economy.collectors.Collectors
+import net.starlegacy.feature.hyperspace.HyperspaceBeacons
+import net.starlegacy.feature.nations.NationsMap
+import net.starlegacy.feature.space.SpaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
@@ -50,6 +55,14 @@ class IonServer : JavaPlugin() {
 			for (world in server.worlds) IonWorld.register((world as CraftWorld).handle)
 
 			legacyEnable(commandManager)
+
+			Bukkit.getScheduler().runTaskLater(this, Runnable {
+				SpaceMap.onEnable()
+				NationsMap.onEnable()
+				HyperspaceBeacons.reloadDynmap()
+				Collectors.onEnable()
+				CityNPCs.onEnable()
+			}, 1)
 		} catch (exception: Exception) {
 			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
 			Bukkit.shutdown()
