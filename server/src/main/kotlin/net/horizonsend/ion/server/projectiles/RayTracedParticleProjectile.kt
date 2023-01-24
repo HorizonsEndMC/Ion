@@ -120,19 +120,24 @@ class RayTracedParticleProjectile(
 
 			val rayHitPosition = rayTraceResult.hitPosition
 			val playerEye = (entityHit as? Player)?.eyeLocation?.toVector()
+
 			/**
 			 * This code is for headshots, it only works on players for now, as I couldnt be bothered to figure out
 			 * entity.location's location relative to the body
 			 */
-			if (playerEye != null && (playerEye.y - rayHitPosition.y) < 0.3) {
+			if (balancing.shouldHeadshot || playerEye != null && (playerEye.y - rayHitPosition.y) < 0.3) {
 				if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = -1
+
 				(entityHit as? Damageable)?.damage(damage * 1.5, shooter)
-				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 2)
-				hitLocation.world.playSound(hitLocation, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f)
-				hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 1f)
+
+				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 1)
+				hitLocation.world.playSound(hitLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 1f)
+				hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 0.25f, 1f)
+
 				shooter.sendActionBar(MiniMessage.miniMessage().deserialize("<red><bold>Bullseye!"))
 				return true
 			}
+
 			// no damage ticks is for hitting multiple times in 1 damage tick
 			if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = 0
 			(entityHit as? Damageable)?.damage(damage, shooter)

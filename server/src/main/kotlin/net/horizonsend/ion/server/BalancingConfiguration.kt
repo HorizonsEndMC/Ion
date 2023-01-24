@@ -161,7 +161,6 @@ data class BalancingConfiguration(
 			abstract val recoil: Float
 			abstract val reload: Int
 			abstract val shouldAkimbo: Boolean
-			abstract val shouldHeadshot: Boolean
 			abstract val timeBetweenShots: Int
 			abstract val shotDeviation: Double
 		}
@@ -174,6 +173,7 @@ data class BalancingConfiguration(
 			val shotSize: Double
 			val shouldBypassHitTicks: Boolean
 			val range: Double
+			val shouldHeadshot: Boolean
 		}
 
 		interface AmmoStorageBalancing {
