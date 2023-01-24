@@ -61,10 +61,10 @@ internal object NationRelationCommand : SLCommand() {
 		Bukkit.getOnlinePlayers().forEach { player ->
 			player.sendRichMessage(
 				"<yellow>${sender.name} of ${getNationName(senderNation)} " +
-						"has made the relation wish <reset>${wish.coloredName}<yellow> " +
-						"with the nation ${getNationName(otherNation)}. " +
-						"Their wish is <reset>${otherWish.coloredName}<yellow>, " +
-						"so their relation is &r${actual.coloredName}<yellow>!"
+					"has made the relation wish <reset>${wish.coloredName}<yellow> " +
+					"with the nation ${getNationName(otherNation)}. " +
+					"Their wish is <reset>${otherWish.coloredName}<yellow>, " +
+					"so their relation is &r${actual.coloredName}<yellow>!"
 			)
 		}
 	}
