@@ -97,8 +97,7 @@ abstract class Blaster<T : Balancing>(
 		super.setAmmunition(itemStack, inventory, ammunition)
 
 		if (getAmmunition(itemStack) == 0) {
-			(inventory.holder as? LivingEntity)?.let {
-				handleTertiaryInteract(it, itemStack)
+			(inventory.holder as? Player)?.let {
 				it.location.world.playSound(it.location, Sound.BLOCK_IRON_DOOR_OPEN, 1f, 2f)
 			}
 		}
