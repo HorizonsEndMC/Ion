@@ -68,6 +68,8 @@ abstract class Blaster<T : Balancing>(
 
 		var ammo = getAmmunition(itemStack)
 
+		if (ammo == ((itemStack.customItem as? Blaster<*>)?.getMaximumAmmunition() ?: return)) return
+
 		for (magazineItem in livingEntity.inventory) {
 			if (ammo >= balancing.magazineSize) continue // Check if magazine is full
 			if (magazineItem == null) continue // Check not null
