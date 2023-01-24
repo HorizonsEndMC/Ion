@@ -24,6 +24,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
+import org.bukkit.Sound
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
 import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
@@ -94,6 +95,13 @@ abstract class Blaster<T : Balancing>(
 
 	override fun setAmmunition(itemStack: ItemStack, inventory: Inventory, ammunition: Int) {
 		super.setAmmunition(itemStack, inventory, ammunition)
+
+		if (getAmmunition(itemStack) == 0) {
+			(inventory.holder as? LivingEntity)?.let {
+				handleTertiaryInteract(it, itemStack)
+				it.location.world.playSound(it.location, Sound.BLOCK_IRON_DOOR_OPEN, 1f, 2f)
+			}
+		}
 
 		// TODO: Use durability to indicate ammo
 		(inventory.holder as? Audience)?.sendActionBar(text("Ammo: ${ammunition.coerceIn(0, balancing.magazineSize)} / ${balancing.magazineSize}", NamedTextColor.RED))
