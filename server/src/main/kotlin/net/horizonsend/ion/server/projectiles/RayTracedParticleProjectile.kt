@@ -129,7 +129,7 @@ class RayTracedParticleProjectile(
 			 * This code is for headshots, it only works on players for now, as I couldnt be bothered to figure out
 			 * entity.location's location relative to the body
 			 */
-			if (balancing.shouldHeadshot || playerEye != null && (playerEye.y - rayHitPosition.y) < 0.3) {
+			if (balancing.shouldHeadshot && playerEye != null && (playerEye.y - rayHitPosition.y) < 0.3) {
 				if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = -1
 
 				(entityHit as? Damageable)?.damage(damage * 1.5, shooter)
