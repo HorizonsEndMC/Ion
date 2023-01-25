@@ -9,7 +9,7 @@ import net.md_5.bungee.api.chat.ClickEvent.Action
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-@CommandAlias("info|map|wiki")
+@CommandAlias("info|map|wiki|patreon")
 class BungeeInfoCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
