@@ -140,7 +140,7 @@ class RayTracedParticleProjectile(
 						Key.key("minecraft:entity.arrow.hit_player"),
 						Sound.Source.MASTER,
 						5f,
-						1.00f
+						2.00f
 					)
 				)
 
@@ -154,10 +154,10 @@ class RayTracedParticleProjectile(
 
 			shooter.playSound(
 				Sound.sound(
-					Key.key("minecraft:block.netherite_block.break"),
+					Key.key("minecraft:entity.arrow.hit_player"),
 					Sound.Source.MASTER,
-					5f,
-					1.00f
+					0.25f,
+					0.00f
 				)
 			)
 
