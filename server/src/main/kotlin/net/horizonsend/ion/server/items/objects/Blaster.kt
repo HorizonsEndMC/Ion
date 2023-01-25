@@ -51,7 +51,7 @@ abstract class Blaster<T : Balancing>(
 		fireWeapon(livingEntity, itemStack)
 
 		if (!balancing.shouldAkimbo) return
-		if (livingEntity !is Player) return
+		if (livingEntity !is Player) return // getting non-players to akimbo is too hard
 
 		val otherItemStack = livingEntity.inventory.itemInOffHand
 		val otherCustomItem = otherItemStack.customItem as? Blaster<*> ?: return
