@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.projectiles
 
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.starlegacy.util.alongVector
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
-import org.bukkit.Sound
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Flying
@@ -45,10 +47,12 @@ class RayTracedParticleProjectile(
 
 		if (!location.isChunkLoaded) return true
 
-		if (dustOptions != null) {
-			location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-		} else {
-			location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+		for (loc in location.alongVector(location.direction, balancing.speed.toInt())) {
+			if (dustOptions != null) {
+				location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+			} else {
+				location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+			}
 		}
 
 		if (rayCastTick()) return true
@@ -131,8 +135,14 @@ class RayTracedParticleProjectile(
 				(entityHit as? Damageable)?.damage(damage * 1.5, shooter)
 
 				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 1)
-				hitLocation.world.playSound(hitLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 1f)
-				hitLocation.world.playSound(hitLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 0.25f, 1f)
+				shooter.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.arrow.hit_player"),
+						Sound.Source.MASTER,
+						5f,
+						1.00f
+					)
+				)
 
 				shooter.sendActionBar(MiniMessage.miniMessage().deserialize("<red><bold>Bullseye!"))
 				return true
@@ -141,6 +151,15 @@ class RayTracedParticleProjectile(
 			// no damage ticks is for hitting multiple times in 1 damage tick
 			if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = 0
 			(entityHit as? Damageable)?.damage(damage, shooter)
+
+			shooter.playSound(
+				Sound.sound(
+					Key.key("minecraft:block.netherite_block.break"),
+					Sound.Source.MASTER,
+					5f,
+					1.00f
+				)
+			)
 
 			if (!balancing.shouldPassThroughEntities) {
 				return true
