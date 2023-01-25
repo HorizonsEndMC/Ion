@@ -43,7 +43,7 @@ abstract class Blaster<T : Balancing>(
 
 	material: Material,
 	customModelData: Int,
-	displayName: Component,
+	val displayName: Component,
 
 	private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
