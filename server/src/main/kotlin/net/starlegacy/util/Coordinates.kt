@@ -107,6 +107,28 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
 		return@getOrPut circleBlocks
 	}
 
+/**
+ * Returns a list of equally spaced locations along a vector
+ *
+ * @param vector: Vector which to locations points on
+ * @param points: number of locations
+ **/
+fun Location.alongVector(vector: Vector, points: Int): List<Location> {
+	val locs = mutableListOf<Location>()
+	val origin = this.toVector()
+	val normalized = vector.normalize()
+	val divsion = vector.length() / points
+
+	for (count in 0..points) {
+		val segLength = divsion * count
+		val progression = normalized.multiply(segLength)
+
+		locs.add(origin.add(progression).toLocation(this.world))
+	}
+
+	return locs
+}
+
 private val directionArray = arrayOf(
 	BlockFace.EAST,
 	BlockFace.WEST,
