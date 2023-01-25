@@ -4,8 +4,13 @@ import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.extensions.sendServerError
+import net.horizonsend.ion.server.items.CustomItems.customItem
+import net.horizonsend.ion.server.items.objects.Blaster
 import net.horizonsend.ion.server.legacy.utilities.rewardAchievement
 import net.horizonsend.ion.server.vaultEconomy
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.feature.progression.Levels
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -15,6 +20,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import java.lang.System.currentTimeMillis
 import java.util.UUID
+import kotlin.math.roundToInt
 
 @Suppress("Unused")
 class PlayerDeathListener : Listener {
@@ -23,6 +29,8 @@ class PlayerDeathListener : Listener {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
+		// Skulls start
+
 		val killer = event.entity.killer ?: return // Only player kills
 		val victim = event.player
 
@@ -37,6 +45,10 @@ class PlayerDeathListener : Listener {
 		}
 
 		event.entity.world.dropItem(victim.location, head)
+
+		// Skulls end
+
+		// Bounties start
 
 		if (killer !== victim) killer.rewardAchievement(Achievement.KILL_PLAYER) // Kill a Player Achievement
 
@@ -65,6 +77,28 @@ class PlayerDeathListener : Listener {
 					killer.sendServerError("Vault Economy is not loaded! Cannot reward bounty!")
 				}
 			}
+		}
+
+		// Bounties end
+
+		// Custom death message start
+		killer.inventory.itemInMainHand.customItem?.let {
+			if (it !is Blaster<*>) return@let
+
+			val blaster = it.displayName
+
+			val victimColor = "<#" + Integer.toHexString((SLPlayer[victim.uniqueId]?.nation?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
+			val killerColor = "<#" + Integer.toHexString((SLPlayer[killer.uniqueId]?.nation?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
+
+			val distance = killer.location.distance(victim.location)
+
+			val newMessage = MiniMessage.miniMessage()
+				.deserialize(
+					"$victimColor${victim.name}<reset> was sniped by $killerColor${killer.name}<reset> from ${distance.roundToInt()} blocks away, using "
+				)
+				.append(blaster)
+
+			event.deathMessage(newMessage)
 		}
 	}
 }
