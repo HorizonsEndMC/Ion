@@ -56,6 +56,13 @@ class BungeeInfoCommand : BaseCommand() {
 						.underlined(true)
 						.create()
 				)
+				.append(
+					ComponentBuilder("Patreon\n")
+						.event(ClickEvent(Action.OPEN_URL, "https://www.patreon.com/horizonsendmc"))
+						.color(ChatColor.WHITE)
+						.underlined(true)
+						.create()
+				)
 				.create()
 		)
 	}
