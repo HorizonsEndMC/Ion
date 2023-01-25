@@ -64,7 +64,7 @@ internal object NationRelationCommand : SLCommand() {
 					"has made the relation wish <reset>${wish.coloredName}<yellow> " +
 					"with the nation ${getNationName(otherNation)}. " +
 					"Their wish is <reset>${otherWish.coloredName}<yellow>, " +
-					"so their relation is &r${actual.coloredName}<yellow>!"
+					"so their relation is <reset>${actual.coloredName}<yellow>!"
 			)
 		}
 	}
