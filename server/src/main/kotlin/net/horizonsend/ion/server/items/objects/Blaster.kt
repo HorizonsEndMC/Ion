@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.items.objects
 import io.papermc.paper.entity.RelativeTeleportFlag
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.Balancing
+import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.items.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.items.CustomItems.customItem
 import net.horizonsend.ion.server.managers.ProjectileManager
@@ -34,6 +35,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import java.util.Locale
 import java.util.function.Supplier
 
 abstract class Blaster<T : Balancing>(
@@ -81,6 +83,13 @@ abstract class Blaster<T : Balancing>(
 			STANDARD_MAGAZINE.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
 
 			ammo += amountToTake
+		}
+
+		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena")) ammo = balancing.magazineSize
+
+		if (ammo == 0) {
+			livingEntity.sendInformation("Out of ammo!")
+			return
 		}
 
 		livingEntity.setCooldown(itemStack.type, this.balancing.reload)
