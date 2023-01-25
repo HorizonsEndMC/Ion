@@ -18,10 +18,9 @@ class ConvertCommand : BaseCommand() { // I imagine we'll need more than blaster
 	fun onConvertBlaster(sender: Player) { // Easier than trying to figure out what the old type is.
 		val heldItem = sender.inventory.itemInMainHand
 
-
 		if (heldItem.type != Material.BOW ||
 			!heldItem.itemMeta.hasCustomModelData() ||
-			heldItem.itemMeta.customModelData != 0
+			heldItem.itemMeta.customModelData == 0
 		) {
 			sender.sendUserError("Not a valid custom item!")
 			return
