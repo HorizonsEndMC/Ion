@@ -43,17 +43,17 @@ class RayTracedParticleProjectile(
 
 		if (ticks * balancing.speed > balancing.range) return true
 
-		location.add(directionVector)
-
-		if (!location.isChunkLoaded) return true
-
-		for (loc in location.alongVector(location.direction, balancing.speed.toInt() * 3)) {
+		for (loc in location.alongVector(directionVector, balancing.speed.toInt() * 10)) {
 			if (dustOptions != null) {
 				location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 			} else {
 				location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 			}
 		}
+
+		location.add(directionVector)
+
+		if (!location.isChunkLoaded) return true
 
 		if (rayCastTick()) return true
 
