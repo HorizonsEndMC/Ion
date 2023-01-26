@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.items.objects
 
-import io.papermc.paper.entity.RelativeTeleportFlag
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.Balancing
 import net.horizonsend.ion.server.extensions.sendInformation
@@ -27,10 +26,8 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
-import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -194,19 +191,19 @@ abstract class Blaster<T : Balancing>(
 			)
 		)
 
-		val recoil = balancing.recoil / balancing.packetsPerShot
-
-		for (iteration in 1..balancing.packetsPerShot) {
-			if (livingEntity is Flying) return
-
-			Tasks.syncDelay(iteration.toLong()) {
-				val loc = livingEntity.location
-				loc.pitch -= recoil
-
-				@Suppress("UnstableApiUsage")
-				(livingEntity as? Player)?.teleport(loc, PLUGIN, true, false, *RelativeTeleportFlag.values())
-			}
-		}
+//		val recoil = balancing.recoil / balancing.packetsPerShot
+//
+//		for (iteration in 1..balancing.packetsPerShot) {
+//			if (livingEntity is Flying) return
+//
+//			Tasks.syncDelay(iteration.toLong()) {
+//				val loc = livingEntity.location
+//				loc.pitch -= recoil
+//
+//				@Suppress("UnstableApiUsage")
+//				(livingEntity as? Player)?.teleport(loc, PLUGIN, true, false, *RelativeTeleportFlag.values())
+//			}
+//		}
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
