@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Values
+import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.items.CustomItems
 import org.bukkit.entity.Player
@@ -17,11 +18,18 @@ class CustomItemCommand : BaseCommand() {
 	@Suppress("Unused")
 	@CommandCompletion("@customItem")
 	@CommandPermission("ion.customitem")
-	fun onCustomItemCommand(sender: Player, @Values("@customItem") customItem: String, @Optional amount: Int?) {
+	fun onCustomItemCommand(
+		sender: Player,
+		@Values("@customItem") customItem: String,
+		@Optional amount: Int?,
+		@Optional target: OnlinePlayer?
+	) {
+		val player = target?.player ?: sender as? Player ?: throw Throwable("Console must specify a target player")
+
 		val itemStack = CustomItems.getByIdentifier(customItem)?.constructItemStack() ?: return
 		itemStack.amount = amount ?: 1
 
-		sender.inventory.addItem(itemStack)
-		sender.sendInformation("Added ${itemStack.amount}x $customItem to inventory")
+		player.inventory.addItem(itemStack)
+		player.sendInformation("Added ${itemStack.amount}x $customItem to inventory")
 	}
 }
