@@ -182,6 +182,8 @@ abstract class Blaster<T : Balancing>(
 			location.direction = location.direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
 		}
 
+		location.add(location.direction.clone().multiply(0.125))
+
 		ProjectileManager.addProjectile(
 			RayTracedParticleProjectile(
 				location,
