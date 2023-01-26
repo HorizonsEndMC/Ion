@@ -2,7 +2,6 @@ package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.legacy.events.StationCaptureEvent
 import net.horizonsend.ion.server.legacy.events.StationSiegeBeginEvent
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
