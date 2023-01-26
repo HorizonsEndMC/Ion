@@ -104,12 +104,23 @@ abstract class Blaster<T : Balancing>(
 
 		setAmmunition(itemStack, livingEntity.inventory, ammo)
 
+		Tasks.syncDelay(this.balancing.reload.toLong()) {
+			livingEntity.playSound(
+				net.kyori.adventure.sound.Sound.sound(
+					Key.key("minecraft:block.iron_door.close"), // TODO custom sound
+					net.kyori.adventure.sound.Sound.Source.MASTER,
+					5f,
+					2.00f
+				)
+			)
+		}
+
 		// TODO: Use durability to indicate ammo
 		livingEntity.sendActionBar(text("Ammo: $ammo / ${balancing.magazineSize}", NamedTextColor.RED))
 
 		livingEntity.playSound(
 			net.kyori.adventure.sound.Sound.sound(
-				Key.key("minecraft:block.iron_door.close"),
+				Key.key("minecraft:block.iron_door.close"), // TODO custom sound
 				net.kyori.adventure.sound.Sound.Source.MASTER,
 				5f,
 				2.00f
@@ -168,10 +179,7 @@ abstract class Blaster<T : Balancing>(
 			val offsetY = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
 			val offsetZ = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
 
-			val newDirection = location.direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
-
-			location.direction = location.direction.add(Vector(offsetX, offsetY, offsetZ)).normalize()
-			location.subtract(newDirection)
+			location.direction.add(Vector(offsetX, offsetY, offsetZ)).normalize()
 		}
 
 		ProjectileManager.addProjectile(
@@ -204,7 +212,7 @@ abstract class Blaster<T : Balancing>(
 		if (ammo == 0) {
 			(livingEntity as? Player)?.playSound(
 				net.kyori.adventure.sound.Sound.sound(
-					Key.key("minecraft:block.iron_door.open"),
+					Key.key("minecraft:block.iron_door.open"), // TODO custom sound
 					net.kyori.adventure.sound.Sound.Source.MASTER,
 					5f,
 					2.00f
