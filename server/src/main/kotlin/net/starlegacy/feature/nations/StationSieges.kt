@@ -1,5 +1,6 @@
 package net.starlegacy.feature.nations
 
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.legacy.events.StationCaptureEvent
 import net.horizonsend.ion.server.legacy.events.StationSiegeBeginEvent
@@ -9,6 +10,7 @@ import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.legacy.utilities.rewardAchievement
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
@@ -320,7 +322,8 @@ object StationSieges : SLComponent() {
 				}
 			}
 		}
-		StationCaptureEvent(player).callEvent()
+
+		player.rewardAchievement(Achievement.CAPTURE_STATION)
 	}
 
 	private fun isInBigShip(player: Player): Boolean {
