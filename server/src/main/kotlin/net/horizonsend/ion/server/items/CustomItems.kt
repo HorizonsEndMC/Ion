@@ -33,7 +33,13 @@ object CustomItems {
 	@Suppress("Unused") val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>("SUBMACHINE_BLASTER", IRON_HOE, 4, text("Submachine Blaster", RED, BOLD), { Ion.balancing.energyWeapons.submachineBlaster }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
 			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { (4.0 / balancing.timeBetweenShots).roundToInt() }
-			for (count in 0..repeatCount) Tasks.syncDelay(count.toLong()) { super.handleSecondaryInteract(livingEntity, itemStack) }
+			val division = 4.0 / balancing.timeBetweenShots
+			for (count in 0 until repeatCount) {
+				val delay = (count * division).toLong()
+				if (delay > 0) { Tasks.syncDelay(delay) { super.handleSecondaryInteract(livingEntity, itemStack) } } else {
+					super.handleSecondaryInteract(livingEntity, itemStack)
+				}
+			}
 		}
 	})
 

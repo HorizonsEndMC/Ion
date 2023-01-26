@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.items.CustomItems.customItem
 import net.horizonsend.ion.server.managers.ProjectileManager
 import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -25,7 +26,6 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
-import org.bukkit.Sound
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
 import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
@@ -88,6 +88,14 @@ abstract class Blaster<T : Balancing>(
 		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena")) ammo = balancing.magazineSize
 
 		if (ammo == 0) {
+			livingEntity.playSound(
+				net.kyori.adventure.sound.Sound.sound(
+					Key.key("minecraft:item.bundle.drop_contents"),
+					net.kyori.adventure.sound.Sound.Source.MASTER,
+					5f,
+					2.00f
+				)
+			)
 			livingEntity.sendInformation("Out of ammo!")
 			return
 		}
@@ -106,9 +114,14 @@ abstract class Blaster<T : Balancing>(
 		super.setAmmunition(itemStack, inventory, ammunition)
 
 		if (getAmmunition(itemStack) == 0) {
-			(inventory.holder as? Player)?.let {
-				it.location.world.playSound(it.location, Sound.BLOCK_IRON_DOOR_OPEN, 1f, 2f)
-			}
+			(inventory.holder as? Player)?.playSound(
+				net.kyori.adventure.sound.Sound.sound(
+					Key.key("minecraft:block.iron_door.open"),
+					net.kyori.adventure.sound.Sound.Source.MASTER,
+					5f,
+					2.00f
+				)
+			)
 		}
 
 		// TODO: Use durability to indicate ammo
@@ -138,6 +151,8 @@ abstract class Blaster<T : Balancing>(
 
 	protected open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
+
+		location.y = location.y - 0.5
 
 		if (balancing.shotDeviation > 0) {
 			val offsetX = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
@@ -177,11 +192,21 @@ abstract class Blaster<T : Balancing>(
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
 		val ammo = getAmmunition(itemStack)
-		if (ammo == 0) return false
+		if (ammo == 0) {
+			(livingEntity as? Player)?.playSound(
+				net.kyori.adventure.sound.Sound.sound(
+					Key.key("minecraft:block.iron_door.open"),
+					net.kyori.adventure.sound.Sound.Source.MASTER,
+					5f,
+					2.00f
+				)
+			)
+			return false
+		}
 
 		setAmmunition(itemStack, livingEntity.inventory, ammo - 1)
 
-		(livingEntity as? Player)?.setCooldown(itemStack.type, balancing.timeBetweenShots)
+		(livingEntity as? Player)?.setCooldown(itemStack.type, (balancing.timeBetweenShots - 1).coerceAtLeast(0))
 
 		return true
 	}
