@@ -106,6 +106,15 @@ abstract class Blaster<T : Balancing>(
 
 		// TODO: Use durability to indicate ammo
 		livingEntity.sendActionBar(text("Ammo: $ammo / ${balancing.magazineSize}", NamedTextColor.RED))
+
+		livingEntity.playSound(
+			net.kyori.adventure.sound.Sound.sound(
+				Key.key("minecraft:block.iron_door.close"),
+				net.kyori.adventure.sound.Sound.Source.MASTER,
+				5f,
+				2.00f
+			)
+		)
 	}
 
 	override fun getMaximumAmmunition(): Int = balancing.magazineSize
