@@ -39,8 +39,6 @@ class RayTracedParticleProjectile(
 		 * Projectile collides
 		 **/
 
-		ticks += 1
-
 		if (ticks * balancing.speed > balancing.range) return true
 
 		for (loc in location.alongVector(directionVector, balancing.speed.toInt())) {
@@ -57,6 +55,7 @@ class RayTracedParticleProjectile(
 
 		calculateDamage()
 
+		ticks += 1
 		location.add(directionVector)
 
 		return false
