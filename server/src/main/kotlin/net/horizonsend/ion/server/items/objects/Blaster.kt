@@ -179,10 +179,7 @@ abstract class Blaster<T : Balancing>(
 			val offsetY = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
 			val offsetZ = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
 
-			val newDirection = location.direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
-
 			location.direction = location.direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
-			location.subtract(newDirection)
 		}
 
 		ProjectileManager.addProjectile(
