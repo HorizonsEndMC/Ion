@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.listeners.PlayerItemHoldListener
 import net.horizonsend.ion.server.listeners.PlayerItemSwapListener
 import net.horizonsend.ion.server.listeners.PlayerJoinListener
 import net.horizonsend.ion.server.listeners.PlayerLoginListener
+import net.horizonsend.ion.server.listeners.PlayerMoveListener
 import net.horizonsend.ion.server.listeners.PlayerQuitListener
 import net.horizonsend.ion.server.listeners.PlayerResourcePackStatusListener
 import net.horizonsend.ion.server.listeners.PlayerTeleportListener
@@ -64,6 +65,7 @@ val listeners = arrayOf(
 	PlayerInteractListener(),
 	PlayerJoinListener(),
 	PlayerLoginListener(),
+	PlayerMoveListener(),
 	PlayerQuitListener(),
 	PlayerResourcePackStatusListener(),
 	PlayerTeleportListener(),

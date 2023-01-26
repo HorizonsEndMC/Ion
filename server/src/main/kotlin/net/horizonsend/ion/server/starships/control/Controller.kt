@@ -7,7 +7,7 @@ interface Controller {
 	val name: String
 	val starship: Starship
 
-	fun accelerationTick(): Triple<Int, Int, Int> = Triple(0, 0, 0)
+	fun tick() {}
 
 	fun onShipMovement(starshipMovement: StarshipMovement) {}
 

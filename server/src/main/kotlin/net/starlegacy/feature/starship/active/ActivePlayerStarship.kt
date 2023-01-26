@@ -3,6 +3,8 @@ package net.starlegacy.feature.starship.active
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.ServerConfiguration
+import net.horizonsend.ion.server.starships.control.LegacyController
+import net.horizonsend.ion.server.starships.control.PlayerController
 import net.minecraft.core.BlockPos
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -18,17 +20,13 @@ import net.starlegacy.feature.starship.movement.RotationMovement
 import net.starlegacy.feature.starship.movement.StarshipMovement
 import net.starlegacy.feature.starship.movement.TranslateMovement
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.leftFace
 import net.starlegacy.util.msg
-import net.starlegacy.util.rightFace
 import org.bukkit.Bukkit
 import org.bukkit.Color
-import org.bukkit.Location
-import org.bukkit.block.BlockFace
 import org.bukkit.boss.BossBar
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.entity.Player
-import org.bukkit.util.Vector
 import java.lang.Math.cbrt
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -56,7 +54,11 @@ class ActivePlayerStarship(
 
 	var lastUnpilotTime: Long = 0
 
-	var pilot: Player? = null
+	var pilot: Player?
+		get() = (controller as? PlayerController)?.serverPlayer?.bukkitEntity
+		set(value) {
+			controller = if (value == null) null else LegacyController(this, (value as CraftPlayer).handle)
+		}
 
 	var oldpilot: Player? = null
 
@@ -68,15 +70,6 @@ class ActivePlayerStarship(
 
 	private val pendingRotations = LinkedBlockingQueue<PendingRotation>()
 	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(250L + initialBlockCount / 40L)
-
-	fun getTargetForward(): BlockFace {
-		val rotation = pendingRotations.peek()
-		return when {
-			rotation == null -> forwardBlockFace
-			rotation.clockwise -> forwardBlockFace.rightFace
-			else -> forwardBlockFace.leftFace
-		}
-	}
 
 	fun tryRotate(clockwise: Boolean) {
 		pendingRotations.add(PendingRotation(clockwise))
@@ -152,7 +145,6 @@ class ActivePlayerStarship(
 
 	// manual move is sneak/direct control
 	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
-	val directControlCooldown get() = 300L + (initialBlockCount / 700) * 30
 	var lastManualMove = System.nanoTime() / 1_000_000
 	var sneakMovements = 0
 	val shieldBars = mutableMapOf<String, BossBar>()
@@ -165,31 +157,6 @@ class ActivePlayerStarship(
 		get() = pilot?.let { PlayerCache[it].nation }?.let { Color.fromRGB(NationCache[it].color) } ?: Color.RED
 
 	fun requirePilot(): Player = requireNotNull(pilot) { "Starship must be piloted!" }
-
-	var isDirectControlEnabled: Boolean = false
-		private set
-	val directControlPreviousVectors = LinkedBlockingQueue<Vector>(4)
-	val directControlVector: Vector = Vector()
-	var directControlCenter: Location? = null
-
-	fun setDirectControlEnabled(enabled: Boolean) {
-		isDirectControlEnabled = enabled
-		if (enabled) {
-			sendMessage("&7Direct Control: &aON &e[Use /dc to turn it off - scroll or use hotbar keys to adjust speed - use W/A/S/D to maneuver - hold sneak (Lshift) for a boost]")
-
-			val pilot = this.pilot ?: return
-			pilot.walkSpeed = 0.009f
-			directControlCenter = pilot.location.toBlockLocation().add(0.5, 0.0, 0.5)
-		} else {
-			sendMessage("&7Direct Control: &cOFF &e[Use /dc to turn it on]")
-			directControlVector.x = 0.0
-			directControlVector.y = 0.0
-			directControlVector.z = 0.0
-
-			val pilot = this.pilot ?: return
-			pilot.walkSpeed = 0.2f // default
-		}
-	}
 
 	override fun removePassenger(playerID: UUID) {
 		super.removePassenger(playerID)

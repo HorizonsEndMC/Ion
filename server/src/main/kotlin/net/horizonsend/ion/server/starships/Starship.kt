@@ -33,33 +33,45 @@ open class Starship(
 			field = value
 		}
 
-	var velocityX = 0.0; private set
-	var velocityY = 0.0; private set
-	var velocityZ = 0.0; private set
+	private var velocityX = 0.0
+	private var velocityY = 0.0
+	private var velocityZ = 0.0
+
+	private var translateX = 0.0
+	private var translateY = 0.0
+	private var translateZ = 0.0
 
 	open fun tick() {
 		mainThreadCheck()
 
-		if (MinecraftServer.currentTick % 20 != 0) return // Once per second
+		// Apply deceleration
+		if (velocityX > 1 / 20) velocityX -= 1 / 20 else if (velocityX < -(1 / 20)) velocityX += 1 / 20 else velocityX = 0.0
+		if (velocityY > 1 / 20) velocityY -= 1 / 20 else if (velocityY < -(1 / 20)) velocityY += 1 / 20 else velocityY = 0.0
+		if (velocityZ > 1 / 20) velocityZ -= 1 / 20 else if (velocityZ < -(1 / 20)) velocityZ += 1 / 20 else velocityZ = 0.0
 
-		val (forwardBackward, upDown, rightLeft) = controller?.accelerationTick() ?: return
+		// Tick Controller - This is done here because it may apply acceleration
+		controller?.tick()
 
-		val forwardBackwardThrust = if (forwardBackward == 1) frontThrust else if (forwardBackward == -1) backThrust else 0.0
-		val upDownThrust = if (upDown == 1) upThrust else if (upDown == -1) downThrust else 0.0
-		val rightLeftThrust = if (rightLeft == 1) rightThrust else if (rightLeft == -1) leftThrust else 0.0
+		// Apply velocity to the next translation
+		translateX += velocityX
+		translateY += velocityY
+		translateZ += velocityZ
 
-		var (relativeVelocityForwardBackward, relativeVelocityUpDown, relativeVelocityRightLeft) = globalToLocal(velocityX, velocityY, velocityZ)
+		// Currently hardcoded to once per second, we can make this variable later
+		if (MinecraftServer.currentTick % 20 != 0) return
 
-		relativeVelocityForwardBackward += forwardBackwardThrust
-		relativeVelocityUpDown += upDownThrust
-		relativeVelocityRightLeft += rightLeftThrust
+		// Get a truncated move amount
+		val moveX = translateX.toInt()
+		val moveY = translateY.toInt()
+		val moveZ = translateZ.toInt()
 
-		val (x, y, z) = localToGlobal(forwardBackward, upDown, rightLeft)
-		velocityX += x
-		velocityY += y
-		velocityZ += z
+		// Save the remaining decimal amount for the next movement
+		translateX -= moveX
+		translateY -= moveY
+		translateZ -= moveZ
 
-		TranslateMovement.loadChunksAndMove((this as? ActiveStarship) ?: return, velocityX.toInt(), velocityY.toInt(), velocityZ.toInt(), null)
+		// Move
+		TranslateMovement.loadChunksAndMove((this as? ActiveStarship) ?: return, moveX, moveY, moveZ, null)
 	}
 
 	fun cleanup() {
@@ -67,24 +79,6 @@ open class Starship(
 
 		controller?.cleanup()
 	}
-
-	// region Temporary code
-	private val naturalDeceleration = 1.0
-
-	protected open val frontThrust = 1.0
-	protected open val backThrust = 1.0
-	protected open val leftThrust = 1.0
-	protected open val rightThrust = 1.0
-	protected open val upThrust = 1.0
-	protected open val downThrust = 1.0
-
-	protected open val frontLimit = 8.0
-	protected open val backLimit = 8.0
-	protected open val leftLimit = 8.0
-	protected open val rightLimit = 8.0
-	protected open val upLimit = 8.0
-	protected open val downLimit = 8.0
-	// endregion
 
 	fun globalToLocal(x: Int, y: Int, z: Int): Triple<Int, Int, Int> {
 		return when (facingDirection) {
@@ -126,7 +120,11 @@ open class Starship(
 		}
 	}
 
-	fun addGlobalVelocity(x: Double, y: Double, z: Double) {
+	fun getLocalVelocity() = globalToLocal(velocityX, velocityY, velocityZ)
+
+	fun getGlobalVelocity() = Triple(velocityX, velocityY, velocityZ)
+
+	fun applyGlobalAcceleration(x: Double, y: Double, z: Double) {
 		mainThreadCheck()
 
 		velocityX += x
@@ -134,7 +132,7 @@ open class Starship(
 		velocityZ += z
 	}
 
-	fun addLocalVelocity(frontBack: Double, upDown: Double, rightLeft: Double) {
+	fun applyLocalAcceleration(frontBack: Double, upDown: Double, rightLeft: Double) {
 		mainThreadCheck()
 
 		val (x, y, z) = localToGlobal(frontBack, upDown, rightLeft)

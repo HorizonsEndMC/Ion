@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.starships.Starship
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket.RelativeArgument
 import net.minecraft.server.level.ServerPlayer
 import net.starlegacy.feature.starship.movement.StarshipMovement
+import org.bukkit.event.player.PlayerMoveEvent
 
 class DirectController(
 	override val starship: Starship,
@@ -17,7 +18,11 @@ class DirectController(
 	private var centerZ = serverPlayer.blockZ
 
 	init {
+		mainThreadCheck()
+
 		serverPlayer.speed = 0.01f
+
+		recenter()
 	}
 
 	override fun onShipMovement(starshipMovement: StarshipMovement) {
@@ -27,27 +32,29 @@ class DirectController(
 		centerZ = starshipMovement.displaceZ(centerZ, centerX)
 	}
 
-	override fun accelerationTick(): Triple<Int, Int, Int> {
+	override fun onPlayerMoveEvent(event: PlayerMoveEvent) {
 		mainThreadCheck()
 
-		val deltaX = -(centerX.toDouble() + 0.5 - serverPlayer.x)
-		val deltaZ = -(centerZ.toDouble() + 0.5 - serverPlayer.z)
+		recenter()
+	}
 
-		serverPlayer.connection.teleport(
-			/* Position */ centerX + 0.5, serverPlayer.y, centerZ + 0.5,
-			/* Rotation */ serverPlayer.yRot, serverPlayer.xRot,
-			/* Relative */ enumSetOf(RelativeArgument.Y, RelativeArgument.Y_ROT, RelativeArgument.X_ROT)
-		)
+	override fun tick() {
+		mainThreadCheck()
 
-		val movementX = if (deltaX > 0.05) 1 else if (deltaX < -0.05) -1 else 0
-		val movementZ = if (deltaZ > 0.05) 1 else if (deltaZ < -0.05) -1 else 0
-
-		return starship.globalToLocal(movementX, 0, movementZ)
+		recenter()
 	}
 
 	override fun cleanup() {
 		mainThreadCheck()
 
 		serverPlayer.speed = 1f
+	}
+
+	private fun recenter() {
+		serverPlayer.connection.teleport(
+			/* Position */ centerX + 0.5, serverPlayer.y, centerZ + 0.5,
+			/* Rotation */ serverPlayer.yRot, serverPlayer.xRot,
+			/* Relative */ enumSetOf(RelativeArgument.Y, RelativeArgument.Y_ROT, RelativeArgument.X_ROT)
+		)
 	}
 }
