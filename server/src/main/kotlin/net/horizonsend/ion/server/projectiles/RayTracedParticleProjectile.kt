@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.Projectile
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.util.alongVector
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -82,9 +83,8 @@ class RayTracedParticleProjectile(
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
-			balancing.shotSize,
-			null
-		)
+			balancing.shotSize
+		) { !it.equals(shooter) }
 
 		val rayFlyingTraceResult = location.world.rayTrace(
 			location,
@@ -92,9 +92,8 @@ class RayTracedParticleProjectile(
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
-			2.0,
-			null
-		)
+			2.0
+		) { !it.equals(shooter) }
 
 		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null) {
 			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
@@ -108,7 +107,8 @@ class RayTracedParticleProjectile(
 		}
 
 		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying && rayFlyingTraceResult.hitEntity != shooter) {
-			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
+			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage * 2.0, shooter)
+			(rayFlyingTraceResult.hitEntity as? Player)?.let { PowerArmorManager.toggleGliding(it) }
 
 			if (!balancing.shouldPassThroughEntities) {
 				return true
