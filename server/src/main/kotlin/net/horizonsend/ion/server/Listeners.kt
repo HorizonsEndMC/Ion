@@ -47,7 +47,6 @@ import net.horizonsend.ion.server.managers.HyperspaceBeaconManager
 val listeners = arrayOf(
 	BlockFadeListener(),
 	BlockFormListener(),
-	ChunkLoadListener(Ion),
 	EnchantItemListener(),
 	EntityDamageListener(),
 	HyperspaceBeaconManager,
@@ -77,6 +76,7 @@ val listeners = arrayOf(
 	WorldUnloadListener(),
 
 	BuySpawnShuttleListener(),
+	ChunkLoadListener(Ion),
 	CompleteCargoRunListener(),
 	CreateNationListener(),
 	CreateNationOutpostListener(),
