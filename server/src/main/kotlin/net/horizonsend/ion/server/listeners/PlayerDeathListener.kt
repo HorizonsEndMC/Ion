@@ -24,86 +24,89 @@ import kotlin.math.roundToInt
 
 @Suppress("Unused")
 class PlayerDeathListener : Listener {
-	private val cooldowns = mutableMapOf<UUID, Long>()
+	private val coolDowns = mutableMapOf<UUID, Long>()
 
 	@EventHandler
 	@Suppress("Unused")
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
-		// Skulls start
-
-		val killer = event.entity.killer ?: return // Only player kills
 		val victim = event.player
 
-		// Player Head Drops
-		val headDropCooldownEnd = cooldowns.getOrDefault(victim.uniqueId, 0)
-		cooldowns[victim.uniqueId] = currentTimeMillis() + 1000 * 60 * 60
-		if (headDropCooldownEnd > currentTimeMillis()) return
+		// Skulls start
+		val killer = event.entity.killer
 
-		val head = ItemStack(Material.PLAYER_HEAD)
-		head.editMeta(SkullMeta::class.java) {
-			it.owningPlayer = victim
-		}
+		killer?.let killer@{ killerNotNull ->
+			// Custom death message start
+			killerNotNull.inventory.itemInMainHand.customItem?.let blaster@{ customItem ->
+				if (customItem !is Blaster<*>) {
+					println("failed at blaster")
+					return@blaster
+				}
 
-		event.entity.world.dropItem(victim.location, head)
+				val blaster = customItem.displayName
 
-		// Skulls end
+				val victimColor = "<#" + Integer.toHexString((SLPlayer[victim.uniqueId]?.nation?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
+				val killerColor = "<#" + Integer.toHexString((SLPlayer[killerNotNull.uniqueId]?.nation?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
 
-		// Bounties start
+				val distance = killerNotNull.location.distance(victim.location)
 
-		if (killer !== victim) killer.rewardAchievement(Achievement.KILL_PLAYER) // Kill a Player Achievement
+				val newMessage = MiniMessage.miniMessage()
+					.deserialize(
+						"$victimColor${victim.name}<reset> was sniped by $killerColor${killerNotNull.name}<reset> from ${distance.roundToInt()} blocks away, using "
+					)
+					.append(blaster)
 
-		// Bounties
-		val killerData = PlayerData[killer.uniqueId]
-		val killerLevel = Levels[event.player]
-		val victimData = PlayerData[victim.uniqueId]
+				println("message created")
 
-		killerData.update {
-			bounty += (killerLevel * killerLevel) + (200 * killerLevel) + 5000
+				event.deathMessage(newMessage)
+			}
 
-			if (killerData.acceptedBounty == victim.uniqueId) {
-				if (vaultEconomy != null) {
-					val bounty = victimData.bounty
+			// Bounties start
+			let bounties@{
+				if (killerNotNull !== victim) killerNotNull.rewardAchievement(Achievement.KILL_PLAYER) // Kill a Player Achievement
 
-					vaultEconomy.depositPlayer(victim, bounty.toDouble())
+				val killerData = PlayerData[killerNotNull.uniqueId]
+				val killerLevel = Levels[event.player]
+				val victimData = PlayerData[victim.uniqueId]
 
-					acceptedBounty = null
+				killerData.update {
+					bounty += (killerLevel * killerLevel) + (200 * killerLevel) + 5000
 
-					victimData.update {
-						this.bounty = 0
+					if (killerData.acceptedBounty == victim.uniqueId) {
+						if (vaultEconomy != null) {
+							val bounty = victimData.bounty
+
+							vaultEconomy.depositPlayer(victim, bounty.toDouble())
+
+							acceptedBounty = null
+
+							victimData.update {
+								this.bounty = 0
+							}
+
+							killerNotNull.sendRichMessage("<gray>Claimed </gray>$bounty<gray> bounty on </gray>${victimData.minecraftUsername}")
+						} else {
+							killerNotNull.sendServerError("Vault Economy is not loaded! Cannot reward bounty!")
+						}
 					}
-
-					killer.sendRichMessage("<gray>Claimed </gray>$bounty<gray> bounty on </gray>${victimData.minecraftUsername}")
-				} else {
-					killer.sendServerError("Vault Economy is not loaded! Cannot reward bounty!")
 				}
 			}
+			// Bounties end
 		}
 
-		// Bounties end
+		// Player Head Drops
+		let heads@{
+			val headDropCooldownEnd = coolDowns.getOrDefault(victim.uniqueId, 0)
+			coolDowns[victim.uniqueId] = currentTimeMillis() + 1000 * 60 * 60
+			if (headDropCooldownEnd > currentTimeMillis()) return@heads
 
-		// Custom death message start
-		killer.inventory.itemInMainHand.customItem?.let {
-			if (it !is Blaster<*>) {
-				println("failed at blaster")
-				return@let
+			val head = ItemStack(Material.PLAYER_HEAD)
+			head.editMeta(SkullMeta::class.java) {
+				it.owningPlayer = victim
 			}
 
-			val blaster = it.displayName
-
-			val victimColor = "<#" + Integer.toHexString((SLPlayer[victim.uniqueId]?.nation?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
-			val killerColor = "<#" + Integer.toHexString((SLPlayer[killer.uniqueId]?.nation?.let { Nation.findById(it) }?.color ?: 16777215)) + ">"
-
-			val distance = killer.location.distance(victim.location)
-
-			val newMessage = MiniMessage.miniMessage()
-				.deserialize(
-					"$victimColor${victim.name}<reset> was sniped by $killerColor${killer.name}<reset> from ${distance.roundToInt()} blocks away, using "
-				)
-				.append(blaster)
-
-			println("message created")
-
-			event.deathMessage(newMessage)
+			event.entity.world.dropItem(victim.location, head)
 		}
+
+		// Skulls end
 	}
 }
