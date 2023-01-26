@@ -37,10 +37,7 @@ class PlayerDeathListener : Listener {
 		killer?.let killer@{ killerNotNull ->
 			// Custom death message start
 			killerNotNull.inventory.itemInMainHand.customItem?.let blaster@{ customItem ->
-				if (customItem !is Blaster<*>) {
-					println("failed at blaster")
-					return@blaster
-				}
+				if (customItem !is Blaster<*>) return@blaster
 
 				val blaster = customItem.displayName
 
@@ -49,13 +46,20 @@ class PlayerDeathListener : Listener {
 
 				val distance = killerNotNull.location.distance(victim.location)
 
+				val verb = when (customItem.identifier) {
+					"SNIPER" -> "sniped"
+					"SHOTGUN" -> "blasted"
+					"RIFLE" -> "shot"
+					"SUBMACHINE_BLASTER" -> "shredded"
+					"PISTOL" -> "pelted"
+					else -> "shot"
+				}
+
 				val newMessage = MiniMessage.miniMessage()
 					.deserialize(
-						"$victimColor${victim.name}<reset> was sniped by $killerColor${killerNotNull.name}<reset> from ${distance.roundToInt()} blocks away, using "
+						"$victimColor${victim.name}<reset> was $verb by $killerColor${killerNotNull.name}<reset> from ${distance.roundToInt()} blocks away, using "
 					)
 					.append(blaster)
-
-				println("message created")
 
 				event.deathMessage(newMessage)
 			}
