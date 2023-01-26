@@ -83,7 +83,10 @@ class PlayerDeathListener : Listener {
 
 		// Custom death message start
 		killer.inventory.itemInMainHand.customItem?.let {
-			if (it !is Blaster<*>) return@let
+			if (it !is Blaster<*>) {
+				println("failed at blaster")
+				return@let
+			}
 
 			val blaster = it.displayName
 
@@ -97,6 +100,8 @@ class PlayerDeathListener : Listener {
 					"$victimColor${victim.name}<reset> was sniped by $killerColor${killer.name}<reset> from ${distance.roundToInt()} blocks away, using "
 				)
 				.append(blaster)
+
+			println("message created")
 
 			event.deathMessage(newMessage)
 		}

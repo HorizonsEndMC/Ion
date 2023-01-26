@@ -47,7 +47,7 @@ class RayTracedParticleProjectile(
 
 		if (!location.isChunkLoaded) return true
 
-		for (loc in location.alongVector(location.direction, balancing.speed.toInt())) {
+		for (loc in location.alongVector(location.direction, balancing.speed.toInt() * 3)) {
 			if (dustOptions != null) {
 				location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 			} else {
@@ -140,7 +140,7 @@ class RayTracedParticleProjectile(
 						Key.key("minecraft:entity.arrow.hit_player"),
 						Sound.Source.MASTER,
 						5f,
-						2.00f
+						1.00f
 					)
 				)
 

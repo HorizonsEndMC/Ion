@@ -19,6 +19,7 @@ import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
+import kotlin.math.roundToInt
 
 // budget minecraft registry lmao
 object CustomItems {
@@ -31,7 +32,7 @@ object CustomItems {
 
 	@Suppress("Unused") val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>("SUBMACHINE_BLASTER", IRON_HOE, 4, text("Submachine Blaster", RED, BOLD), { Ion.balancing.energyWeapons.submachineBlaster }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
-			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { 4 / balancing.timeBetweenShots }
+			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { (4.0 / balancing.timeBetweenShots).roundToInt() }
 			for (count in 0..repeatCount) Tasks.syncDelay(count.toLong()) { super.handleSecondaryInteract(livingEntity, itemStack) }
 		}
 	})
