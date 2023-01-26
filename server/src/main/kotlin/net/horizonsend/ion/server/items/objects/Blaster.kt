@@ -147,7 +147,7 @@ abstract class Blaster<T : Balancing>(
 			val newDirection = location.direction.normalize().add(Vector(offsetX, offsetY, offsetZ))
 
 			location.direction = location.direction.normalize().add(Vector(offsetX, offsetY, offsetZ))
-			location.direction.subtract(newDirection)
+			location.direction.subtract(newDirection).normalize()
 		}
 
 		ProjectileManager.addProjectile(
