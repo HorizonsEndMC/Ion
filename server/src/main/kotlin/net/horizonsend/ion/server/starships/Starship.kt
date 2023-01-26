@@ -28,7 +28,7 @@ open class Starship(
 		set(value) {
 			mainThreadCheck()
 
-			(value as? PlayerController)?.sendInformation("Switched active control mode to ${value.name}.")
+			value?.sendInformation("Switched active control mode to ${value.name}.")
 			field?.cleanup()
 			field = value
 		}

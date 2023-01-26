@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.starships.control
 
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.server.level.ServerPlayer
 import org.bukkit.event.player.PlayerMoveEvent
 
-interface PlayerController : Controller, ForwardingAudience.Single {
+interface PlayerController : Controller {
 	val serverPlayer: ServerPlayer
 
 	fun onPlayerMoveEvent(event: PlayerMoveEvent) {}
