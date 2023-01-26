@@ -2,7 +2,6 @@ package net.horizonsend.ion.server
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.legacy.listeners.BuySpawnShuttleListener
-import net.horizonsend.ion.server.legacy.listeners.CaptureStationListener
 import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.CompleteCargoRunListener
 import net.horizonsend.ion.server.legacy.listeners.CreateNationListener
@@ -66,7 +65,6 @@ val listeners = arrayOf(
 	WorldUnloadListener(),
 
 	BuySpawnShuttleListener(),
-	CaptureStationListener(),
 	CompleteCargoRunListener(),
 	CreateNationListener(),
 	CreateNationOutpostListener(),
