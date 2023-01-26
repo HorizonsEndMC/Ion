@@ -113,20 +113,19 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
  * @param vector: Vector which to locations points on
  * @param points: number of locations
  **/
+
 fun Location.alongVector(vector: Vector, points: Int): List<Location> {
-	val locs = mutableListOf<Location>()
-	val origin = this.toVector()
-	val normalized = vector.normalize()
-	val divsion = vector.length() / points
+	val locationList = mutableListOf<Location>()
 
 	for (count in 0..points) {
-		val segLength = divsion * count
-		val progression = normalized.multiply(segLength)
+		val progression = this.clone().add(
+			vector.clone().multiply(count.toDouble() / points.toDouble())
+		)
 
-		locs.add(origin.add(progression).toLocation(this.world))
+		locationList.add(progression)
 	}
 
-	return locs
+	return locationList
 }
 
 private val directionArray = arrayOf(
