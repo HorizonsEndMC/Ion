@@ -22,6 +22,7 @@ import java.util.UUID
 object PowerArmorManager {
 
 	private val glidingPlayers = mutableSetOf<UUID>()
+	val glideDisabledPlayers = mutableMapOf<UUID, Long>() // UUID to end time of glide block
 
 	fun init() {
 		Tasks.syncRepeat(20, 20) {
@@ -35,7 +36,7 @@ object PowerArmorManager {
 
 	private fun powerModuleTick() {
 		for (player in Bukkit.getOnlinePlayers()) {
-			for (item: ItemStack? in player.inventory.armorContents!!) {
+			for (item: ItemStack? in player.inventory.armorContents) {
 				if (item == null || !isPowerArmor(item) || getPower(item) == 0) {
 					continue
 				}
@@ -86,6 +87,8 @@ object PowerArmorManager {
 	private fun tickRocketBoosters() {
 		loop@ for (uuid in glidingPlayers.toList()) {
 			val player = Bukkit.getPlayer(uuid) ?: continue
+			if ((glideDisabledPlayers[uuid] ?: 0) > System.currentTimeMillis()) continue
+			glideDisabledPlayers[uuid]?.let { glideDisabledPlayers.remove(uuid) } // remove if not disabled
 
 			if (player.isOnGround || !player.isSneaking) {
 				toggleGliding(player)

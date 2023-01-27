@@ -2,9 +2,10 @@ package net.horizonsend.ion.server.items.objects
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.Balancing
-import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.items.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.items.CustomItems.customItem
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.managers.ProjectileManager
 import net.horizonsend.ion.server.projectiles.RayTracedParticleProjectile
 import net.kyori.adventure.audience.Audience
@@ -66,7 +67,9 @@ abstract class Blaster<T : Balancing>(
 		if (livingEntity !is Player) return // Player Only
 		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
 
-		var ammo = getAmmunition(itemStack)
+		val originalAmmo =	getAmmunition(itemStack)
+
+		var ammo = originalAmmo
 
 		if (ammo == ((itemStack.customItem as? Blaster<*>)?.getMaximumAmmunition() ?: return)) return
 
@@ -84,7 +87,7 @@ abstract class Blaster<T : Balancing>(
 
 		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena")) ammo = balancing.magazineSize
 
-		if (ammo == 0) {
+		if (ammo - originalAmmo == 0) {
 			livingEntity.playSound(
 				net.kyori.adventure.sound.Sound.sound(
 					Key.key("minecraft:item.bundle.drop_contents"),
@@ -93,7 +96,7 @@ abstract class Blaster<T : Balancing>(
 					2.00f
 				)
 			)
-			livingEntity.sendInformation("Out of ammo!")
+			livingEntity.sendFeedbackMessage(FeedbackType.ALERT, "Out of ammo!")
 			return
 		}
 
@@ -191,19 +194,19 @@ abstract class Blaster<T : Balancing>(
 			)
 		)
 
-//		val recoil = balancing.recoil / balancing.packetsPerShot
+// 		val recoil = balancing.recoil / balancing.packetsPerShot
 //
-//		for (iteration in 1..balancing.packetsPerShot) {
-//			if (livingEntity is Flying) return
+// 		for (iteration in 1..balancing.packetsPerShot) {
+// 			if (livingEntity is Flying) return
 //
-//			Tasks.syncDelay(iteration.toLong()) {
-//				val loc = livingEntity.location
-//				loc.pitch -= recoil
+// 			Tasks.syncDelay(iteration.toLong()) {
+// 				val loc = livingEntity.location
+// 				loc.pitch -= recoil
 //
-//				@Suppress("UnstableApiUsage")
-//				(livingEntity as? Player)?.teleport(loc, PLUGIN, true, false, *RelativeTeleportFlag.values())
-//			}
-//		}
+// 				@Suppress("UnstableApiUsage")
+// 				(livingEntity as? Player)?.teleport(loc, PLUGIN, true, false, *RelativeTeleportFlag.values())
+// 			}
+// 		}
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
