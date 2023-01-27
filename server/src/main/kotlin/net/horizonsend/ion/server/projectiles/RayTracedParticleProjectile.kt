@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.projectiles
 
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
+import net.starlegacy.util.Tasks
 import net.starlegacy.util.alongVector
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -12,7 +15,6 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
-import org.bukkit.entity.Flying
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import kotlin.math.pow
@@ -79,7 +81,7 @@ class RayTracedParticleProjectile(
 	fun rayCastTick(): Boolean {
 		val rayTraceResult = location.world.rayTrace(
 			location,
-			location.direction,
+			location.direction.clone().multiply(balancing.speed),
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
@@ -88,12 +90,12 @@ class RayTracedParticleProjectile(
 
 		val rayFlyingTraceResult = location.world.rayTrace(
 			location,
-			location.direction.normalize().multiply(balancing.speed),
+			location.direction.clone().multiply(balancing.speed),
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
-			2.0
-		) { !it.equals(shooter) }
+			balancing.shotSize * 2
+		) { !it.equals(shooter); (it as? Player)?.isGliding == true }
 
 		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null) {
 			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
@@ -106,9 +108,17 @@ class RayTracedParticleProjectile(
 			return true
 		}
 
-		if (rayFlyingTraceResult?.hitEntity != null && rayFlyingTraceResult.hitEntity is Flying && rayFlyingTraceResult.hitEntity != shooter) {
+		if (rayFlyingTraceResult?.hitEntity != null &&
+			rayFlyingTraceResult.hitEntity != shooter
+		) {
 			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage * 2.0, shooter)
-			(rayFlyingTraceResult.hitEntity as? Player)?.let { PowerArmorManager.toggleGliding(it) }
+			(rayFlyingTraceResult.hitEntity as? Player)?.let {
+				PowerArmorManager.glideDisabledPlayers[it.uniqueId] = System.currentTimeMillis() + 3000 // 3 second glide disable
+				it.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
+				Tasks.syncDelay(60) { // after 3 seconds
+					it.sendFeedbackMessage(FeedbackType.INFORMATION, "Your rocket boots have rebooted.")
+				}
+			}
 
 			if (!balancing.shouldPassThroughEntities) {
 				return true
