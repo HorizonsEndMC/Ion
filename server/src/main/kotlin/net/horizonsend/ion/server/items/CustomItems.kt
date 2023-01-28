@@ -14,6 +14,7 @@ import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.updateMeta
 import org.bukkit.Material.DIAMOND_HOE
+import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.entity.LivingEntity
@@ -30,7 +31,7 @@ object CustomItems {
 
 	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", IRON_HOE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
 
-	@Suppress("Unused") val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>("SUBMACHINE_BLASTER", IRON_HOE, 4, text("Submachine Blaster", RED, BOLD), { Ion.balancing.energyWeapons.submachineBlaster }) {
+	@Suppress("Unused") val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>("SUBMACHINE_BLASTER", IRON_HOE, 2, text("Submachine Blaster", RED, BOLD), { Ion.balancing.energyWeapons.submachineBlaster }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
 			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { (4.0 / balancing.timeBetweenShots).roundToInt() }
 			val division = 4.0 / balancing.timeBetweenShots
@@ -43,13 +44,13 @@ object CustomItems {
 		}
 	})
 
-	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", IRON_HOE, 2, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
+	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", GOLDEN_HOE, 1, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
 		}
 	})
 
-	@Suppress("Unused") val SNIPER = register(object : Blaster<Singleshot>("SNIPER", IRON_HOE, 3, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
+	@Suppress("Unused") val SNIPER = register(object : Blaster<Singleshot>("SNIPER", GOLDEN_HOE, 2, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
 
 	@Suppress("Unused") val STANDARD_MAGAZINE = register(object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"), { Ion.balancing.energyWeapons.standardMagazine }) {})
 
