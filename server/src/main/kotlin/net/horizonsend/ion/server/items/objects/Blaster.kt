@@ -27,6 +27,7 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -189,15 +190,19 @@ abstract class Blaster<T : Balancing>(
 
 		location.add(location.direction.clone().multiply(0.125))
 
-		ProjectileManager.addProjectile(
-			RayTracedParticleProjectile(
-				location,
-				livingEntity,
-				balancing,
-				getParticleType(livingEntity),
-				if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), 1f) else null
-			)
+		val projectile = RayTracedParticleProjectile(
+			location,
+			livingEntity,
+			balancing,
+			getParticleType(livingEntity),
+			if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), 1f) else null
 		)
+
+		ProjectileManager.addProjectile(projectile)
+
+		if (livingEntity is CraftPlayer) {
+			for (i in 0 .. livingEntity.handle.latency.floorDiv(50)) projectile.tick()
+		}
 
 // 		val recoil = balancing.recoil / balancing.packetsPerShot
 //
