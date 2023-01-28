@@ -86,7 +86,7 @@ class RayTracedParticleProjectile(
 			FluidCollisionMode.NEVER,
 			true,
 			balancing.shotSize
-		) { !it.equals(shooter) }
+		) { !it.equals(shooter) && (it as? Player)?.isGliding == false }
 
 		val rayFlyingTraceResult = location.world.rayTrace(
 			location,
