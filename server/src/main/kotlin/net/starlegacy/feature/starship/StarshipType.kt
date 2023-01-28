@@ -171,12 +171,11 @@ enum class StarshipType(
 		isWarship = true,
 		colour = "#320385",
 		overridePermission = "ion.ships.override.dreadnought"
-
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
 		minSize = 100,
-		maxSize = 500,
+		maxSize = 1000,
 		minLevel = 1,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
@@ -192,7 +191,7 @@ enum class StarshipType(
 	),
 	TRANSPORT(
 		displayName = "Transport",
-		minSize = 500,
+		minSize = 1000,
 		maxSize = 2000,
 		minLevel = 10,
 		containerPercent = 0.045,
