@@ -149,8 +149,13 @@ abstract class Blaster<T : Balancing>(
 	}
 
 	private fun fireWeapon(livingEntity: LivingEntity, itemStack: ItemStack) {
-		if ((livingEntity as? Player)?.hasCooldown(itemStack.type) == true) return // Cooldown
-		if (livingEntity is Player && !checkAndDecrementAmmo(itemStack, livingEntity)) return // Ammo
+		if (livingEntity is Player) {
+			if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
+			if (!checkAndDecrementAmmo(itemStack, livingEntity)){
+				handleTertiaryInteract(livingEntity, itemStack) // Force a reload
+				return // No Ammo
+			}
+		}
 
 		livingEntity.location.world.playSound(livingEntity.location, "laser", 1f, balancing.pitch)
 		fireProjectiles(livingEntity)
