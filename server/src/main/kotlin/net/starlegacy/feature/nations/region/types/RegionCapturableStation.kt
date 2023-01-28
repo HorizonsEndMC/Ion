@@ -21,7 +21,6 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.entity.Player
-import org.litote.kmongo.eq
 import java.time.DayOfWeek
 
 class RegionCapturableStation(station: CapturableStation) :
@@ -61,16 +60,15 @@ class RegionCapturableStation(station: CapturableStation) :
 	override fun calculateInaccessMessage(player: Player): String? {
 		val nation = nation ?: return "$name is not claimed by any nation!".intern()
 
+		val noAccessMessage = "$name is a station claimed by ${NationCache[nation].name}".intern()
+
 		// if they're not in a nation they can't access any nation outposts
-		val playerNation = PlayerCache[player].nation
+		val playerNation = PlayerCache[player].nation ?: return noAccessMessage
 
-		// if they're at least an ally they can build
-		for (relation in NationRelation.find(NationRelation::nation eq nation)) {
-			if (playerNation != null && relation.other == playerNation && relation.actual == NationRelation.Level.ALLY) {
-				return null
-			}
-		}
+		// if they're at least an ally they can build]
 
-		return "$name is a station claimed by ${NationCache[nation].name}".intern()
+		if (NationRelation.getRelationActual(playerNation, nation).ordinal >= 5) return null
+
+		return noAccessMessage
 	}
 }
