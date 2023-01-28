@@ -19,7 +19,7 @@ class CustomItemCommand : BaseCommand() {
 	@CommandCompletion("@customItem")
 	@CommandPermission("ion.customitem")
 	fun onCustomItemCommand(
-		sender: Player,
+		@Optional sender: Player,
 		@Values("@customItem") customItem: String,
 		@Optional amount: Int?,
 		@Optional target: OnlinePlayer?

@@ -172,7 +172,7 @@ abstract class Blaster<T : Balancing>(
 	protected open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
 
-		location.y = location.y - 0.5
+		location.y = location.y - 0.125
 
 		if (balancing.shotDeviation > 0) {
 			val offsetX = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
