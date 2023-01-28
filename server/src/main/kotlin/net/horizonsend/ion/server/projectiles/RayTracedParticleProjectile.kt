@@ -112,12 +112,15 @@ class RayTracedParticleProjectile(
 			rayFlyingTraceResult.hitEntity != shooter
 		) {
 			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage * 2.0, shooter)
-			(rayFlyingTraceResult.hitEntity as? Player)?.let {
-				PowerArmorManager.glideDisabledPlayers[it.uniqueId] = System.currentTimeMillis() + 3000 // 3 second glide disable
-				it.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
-				Tasks.syncDelay(60) { // after 3 seconds
-					it.sendFeedbackMessage(FeedbackType.INFORMATION, "Your rocket boots have rebooted.")
-				}
+			(rayFlyingTraceResult.hitEntity as? Player)?.let { player ->
+				if (!PowerArmorManager.glideDisabledPlayers.containsKey(player.uniqueId)) {
+					Tasks.syncDelay(60) { // after 3 seconds
+						player.sendFeedbackMessage(FeedbackType.INFORMATION, "Your rocket boots have rebooted.")
+					}
+				} // Send this first to prevent duplicate messages when shot multiple times
+
+				PowerArmorManager.glideDisabledPlayers[player.uniqueId] = System.currentTimeMillis() + 3000 // 3 second glide disable
+				player.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
 			}
 
 			if (!balancing.shouldPassThroughEntities) {
