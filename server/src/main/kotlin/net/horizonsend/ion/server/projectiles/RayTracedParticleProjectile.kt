@@ -95,7 +95,7 @@ class RayTracedParticleProjectile(
 			FluidCollisionMode.NEVER,
 			true,
 			balancing.shotSize * 2
-		) { !it.equals(shooter); (it as? Player)?.isGliding == true }
+		) { !it.equals(shooter) && (it as? Player)?.isGliding == true }
 
 		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null) {
 			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
@@ -111,7 +111,7 @@ class RayTracedParticleProjectile(
 		if (rayFlyingTraceResult?.hitEntity != null &&
 			rayFlyingTraceResult.hitEntity != shooter
 		) {
-			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage * 2.0, shooter)
+			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
 			(rayFlyingTraceResult.hitEntity as? Player)?.let { player ->
 				if (!PowerArmorManager.glideDisabledPlayers.containsKey(player.uniqueId)) {
 					Tasks.syncDelay(60) { // after 3 seconds
