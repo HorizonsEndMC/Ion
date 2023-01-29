@@ -50,18 +50,6 @@ abstract class Blaster<T : Balancing>(
 
 	override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
 		fireWeapon(livingEntity, itemStack)
-
-		if (!balancing.shouldAkimbo) return
-		if (livingEntity !is Player) return // getting non-players to akimbo is too hard
-
-		val otherItemStack = livingEntity.inventory.itemInOffHand
-		val otherCustomItem = otherItemStack.customItem as? Blaster<*> ?: return
-
-		if (!otherCustomItem.balancing.shouldAkimbo) return
-
-		Tasks.syncDelay((balancing.timeBetweenShots / 2).toLong()) {
-			otherCustomItem.fireWeapon(livingEntity, otherItemStack)
-		}
 	}
 
 	override fun handleTertiaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
@@ -152,7 +140,7 @@ abstract class Blaster<T : Balancing>(
 	private fun fireWeapon(livingEntity: LivingEntity, itemStack: ItemStack) {
 		if (livingEntity is Player) {
 			if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
-			if (!checkAndDecrementAmmo(itemStack, livingEntity)){
+			if (!checkAndDecrementAmmo(itemStack, livingEntity)) {
 				handleTertiaryInteract(livingEntity, itemStack) // Force a reload
 				return // No Ammo
 			}
@@ -201,22 +189,8 @@ abstract class Blaster<T : Balancing>(
 		ProjectileManager.addProjectile(projectile)
 
 		if (livingEntity is CraftPlayer) {
-			for (i in 0 .. livingEntity.handle.latency.floorDiv(50)) projectile.tick()
+			for (i in 0..livingEntity.handle.latency.floorDiv(50)) projectile.tick()
 		}
-
-// 		val recoil = balancing.recoil / balancing.packetsPerShot
-//
-// 		for (iteration in 1..balancing.packetsPerShot) {
-// 			if (livingEntity is Flying) return
-//
-// 			Tasks.syncDelay(iteration.toLong()) {
-// 				val loc = livingEntity.location
-// 				loc.pitch -= recoil
-//
-// 				@Suppress("UnstableApiUsage")
-// 				(livingEntity as? Player)?.teleport(loc, PLUGIN, true, false, *RelativeTeleportFlag.values())
-// 			}
-// 		}
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
