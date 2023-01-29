@@ -5,12 +5,12 @@ import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.items.CustomItems
+import net.minecraft.core.registries.BuiltInRegistries
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.space.SpaceMap
-import net.minecraft.core.registries.BuiltInRegistries
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
