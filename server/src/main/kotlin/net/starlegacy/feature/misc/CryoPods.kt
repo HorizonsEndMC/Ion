@@ -128,7 +128,7 @@ object CryoPods : SLComponent() {
 	fun onPlayerRespawnSetLocationToCryoPod(event: PlayerRespawnEvent) {
 		val player = event.player
 
-		val cryoPod: CryoPod = getCryoPod(player.uniqueId) ?: return println("Returned silently at finding Cryopod")
+		val cryoPod: CryoPod = getCryoPod(player.uniqueId) ?: return
 
 		val world = Bukkit.getWorld(cryoPod.world)
 			?: return player.sendServerError("World ${cryoPod.world} is missing")
@@ -139,7 +139,7 @@ object CryoPods : SLComponent() {
 		val sign = loc.block.state as? Sign
 			?: return player.sendFeedbackMessage(FeedbackType.ALERT,"Cryo pod sign at $pos is missing")
 
-		if (Multiblocks[sign] !is CryoPodMultiblock) {
+		if (Multiblocks[sign, true, true] !is CryoPodMultiblock) {
 			return player.sendFeedbackMessage(FeedbackType.ALERT,"Cryo pod at $pos is not intact")
 		}
 
