@@ -3,9 +3,11 @@ package net.horizonsend.ion.server.projectiles
 import net.horizonsend.ion.server.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound.Source
+import net.kyori.adventure.sound.Sound.sound
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.alongVector
@@ -13,6 +15,7 @@ import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
+import org.bukkit.SoundCategory
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
@@ -32,53 +35,14 @@ class RayTracedParticleProjectile(
 	var ticks: Int = 0
 
 	fun tick(): Boolean {
-		/**
-		 * Every tick, this function will repeat the code below.
-		 * If it returns true, the projectile manager will delete the projectile.
-		 *
-		 * True if:
-		 * Distance > Range
-		 * Location is unloaded
-		 * Projectile collides
-		 **/
-
-		if (ticks * balancing.speed > balancing.range) return true
+		if (ticks * balancing.speed > balancing.range) return true // Out of range
+		if (!location.isChunkLoaded) return true // Unloaded chunks
 
 		for (loc in location.alongVector(directionVector, balancing.speed.toInt())) {
-			if (dustOptions != null) {
-				location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-			} else {
-				location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
-			}
+			location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 		}
 
-		if (!location.isChunkLoaded) return true
-
-		if (rayCastTick()) return true
-
-		calculateDamage()
-
-		ticks += 1
-		location.add(directionVector)
-
-		return false
-	}
-
-	fun calculateDamage() {
-		val distance = ticks * balancing.speed
-
-		val newDamage = if (balancing.damageFalloffMultiplier == 0.0) { // Falloff of 0 reserved for a linear falloff
-			(damage / -balancing.range) * (distance - balancing.range)
-		} else {
-			val a = (balancing.damageFalloffMultiplier / (damage + 1.0)).pow(1.0 / balancing.range)
-
-			((damage + balancing.damageFalloffMultiplier) * a.pow(distance)) - balancing.damageFalloffMultiplier
-		}
-
-		damage = newDamage
-	}
-
-	fun rayCastTick(): Boolean {
+		// 2 ray traces are used, one for flying, one for ground
 		val rayTraceResult = location.world.rayTrace(
 			location,
 			location.direction.clone().multiply(balancing.speed),
@@ -86,99 +50,85 @@ class RayTracedParticleProjectile(
 			FluidCollisionMode.NEVER,
 			true,
 			balancing.shotSize
-		) { !it.equals(shooter) && (it as? Player)?.isGliding == false }
+		) { it != shooter && (it as? Player)?.isGliding == false }
 
-		val rayFlyingTraceResult = location.world.rayTrace(
+		val flyingRayTraceResult = location.world.rayTrace(
 			location,
 			location.direction.clone().multiply(balancing.speed),
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
 			balancing.shotSize * 2
-		) { !it.equals(shooter) && (it as? Player)?.isGliding == true }
+		) { it != shooter && (it as? Player)?.isGliding == true }
 
-		if (rayTraceResult?.hitBlock != null || rayFlyingTraceResult?.hitBlock != null) {
-			rayTraceResult?.hitBlock?.blockSoundGroup?.breakSound?.let {
-				location.world.playSound(
-					location,
-					it, 0.5f, 1f
-				)
-			}
+		// Block Check
+		val hitBlock = rayTraceResult?.hitBlock
+		if (hitBlock != null) {
+			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
 
 			return true
 		}
 
-		if (rayFlyingTraceResult?.hitEntity != null &&
-			rayFlyingTraceResult.hitEntity != shooter
-		) {
-			(rayFlyingTraceResult.hitEntity as? Damageable)?.damage(damage, shooter)
-			(rayFlyingTraceResult.hitEntity as? Player)?.let { player ->
-				if (!PowerArmorManager.glideDisabledPlayers.containsKey(player.uniqueId)) {
+		// Entity Check
+		val hitEntity = rayTraceResult?.hitEntity
+		if (hitEntity != null && hitEntity is Damageable) {
+			val hitLocation = rayTraceResult.hitPosition.toLocation(hitEntity.world)
+			val hitPosition = rayTraceResult.hitPosition
+
+			if (hitEntity is LivingEntity) {
+				if (balancing.shouldBypassHitTicks) hitEntity.noDamageTicks = 0
+
+				// Headshots
+				if (balancing.shouldHeadshot && (hitEntity.eyeLocation.y - hitPosition.y) < (.3 * balancing.shotSize)) {
+					hitEntity.damage(damage * 1.5, shooter)
+
+					hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 1)
+					shooter.playSound(sound(key("minecraft:entity.arrow.hit_player"), Source.PLAYER, 5f, 1f))
+					shooter.sendActionBar(text("Headshot!", NamedTextColor.RED))
+					return true
+				}
+			}
+
+			hitEntity.damage(damage, shooter)
+
+			shooter.playSound(sound(key("minecraft:entity.arrow.hit_player"), Source.PLAYER, .25f, 0f))
+
+			if (!balancing.shouldPassThroughEntities) return true
+		}
+
+		// Flying Entity Check
+		val flyingHitEntity = flyingRayTraceResult?.hitEntity
+		if (flyingHitEntity != null && flyingHitEntity is Damageable) {
+			flyingHitEntity.damage(damage, shooter)
+
+			if (flyingHitEntity is Player) {
+				if (!PowerArmorManager.glideDisabledPlayers.containsKey(flyingHitEntity.uniqueId)) {
 					Tasks.syncDelay(60) { // after 3 seconds
-						player.sendFeedbackMessage(FeedbackType.INFORMATION, "Your rocket boots have rebooted.")
+						flyingHitEntity.sendFeedbackMessage(FeedbackType.INFORMATION, "Your rocket boots have rebooted.")
 					}
 				} // Send this first to prevent duplicate messages when shot multiple times
 
-				PowerArmorManager.glideDisabledPlayers[player.uniqueId] = System.currentTimeMillis() + 3000 // 3 second glide disable
-				player.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
+				PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] = System.currentTimeMillis() + 3000 // 3 second glide disable
+				flyingHitEntity.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
 			}
 
-			if (!balancing.shouldPassThroughEntities) {
-				return true
-			}
-
-			return false
+			if (!balancing.shouldPassThroughEntities) return true
 		}
 
-		if (rayTraceResult?.hitEntity != null && rayTraceResult.hitEntity != shooter) {
-			val entityHit = rayTraceResult.hitEntity
-			val hitLocation = rayTraceResult.hitPosition.toLocation(entityHit!!.world)
+		val distance = ticks * balancing.speed
 
-			val rayHitPosition = rayTraceResult.hitPosition
-			val playerEye = (entityHit as? Player)?.eyeLocation?.toVector()
-
-			/**
-			 * This code is for headshots, it only works on players for now, as I couldnt be bothered to figure out
-			 * entity.location's location relative to the body
-			 */
-			if (balancing.shouldHeadshot && playerEye != null && (playerEye.y - rayHitPosition.y) < (0.3 * balancing.shotSize)) {
-				if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = -1
-
-				(entityHit as? Damageable)?.damage(damage * 1.5, shooter)
-
-				hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 1)
-				shooter.playSound(
-					Sound.sound(
-						Key.key("minecraft:entity.arrow.hit_player"),
-						Sound.Source.MASTER,
-						5f,
-						1.00f
-					)
-				)
-
-				shooter.sendActionBar(MiniMessage.miniMessage().deserialize("<red><bold>Bullseye!"))
-				return true
-			}
-
-			// no damage ticks is for hitting multiple times in 1 damage tick
-			if (balancing.shouldBypassHitTicks) (entityHit as? LivingEntity)?.noDamageTicks = 0
-			(entityHit as? Damageable)?.damage(damage, shooter)
-
-			shooter.playSound(
-				Sound.sound(
-					Key.key("minecraft:entity.arrow.hit_player"),
-					Sound.Source.MASTER,
-					0.25f,
-					0.00f
-				)
-			)
-
-			if (!balancing.shouldPassThroughEntities) {
-				return true
-			}
-
-			return false
+		val newDamage = if (balancing.damageFalloffMultiplier == 0.0) { // Falloff of 0 reserved for a linear falloff
+			(damage / -balancing.range) * (distance - balancing.range)
+		} else {
+			val a = (balancing.damageFalloffMultiplier / (damage + 1.0)).pow(1.0 / balancing.range)
+			((damage + balancing.damageFalloffMultiplier) * a.pow(distance)) - balancing.damageFalloffMultiplier
 		}
+
+		damage = newDamage
+
+		ticks += 1
+		location.add(directionVector)
+
 		return false
 	}
 }
