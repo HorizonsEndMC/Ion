@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import com.google.gson.GsonBuilder
+import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.cache.trade.EcoStations
@@ -25,14 +26,7 @@ object EcoStationCommand : SLCommand() {
 	@CommandCompletion("@nothing @worlds @nothing @nothing @nothing @nothing @nothing")
 	fun onCreate(sender: CommandSender, name: String, world: World, x: Int, z: Int) = asyncCommand(sender) {
 		val id: Oid<EcoStation> = EcoStation.create(name, world.name, x, z)
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Created eco station {0} at {1}, {2} in {3} with database ID {4}",
-			x,
-			z,
-			world.name,
-			id
-		)
+		sender.sendInformation("Created eco station $name at $x, $z in ${world.name} with database ID $id")
 	}
 
 	@Suppress("Unused")
@@ -41,13 +35,7 @@ object EcoStationCommand : SLCommand() {
 	fun onSetCenter(sender: CommandSender, ecoStation: EcoStation, x: Int, z: Int) = asyncCommand(sender) {
 		EcoStation.setCenter(ecoStation._id, x, z)
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Updated center of {0} to {1}, {2}",
-			ecoStation.name,
-			x,
-			z
-		)
+		sender.sendInformation("Updated center of ${ecoStation.name} to $x, $z")
 	}
 
 	@Suppress("Unused")
@@ -56,12 +44,7 @@ object EcoStationCommand : SLCommand() {
 	fun onSetCenter(sender: CommandSender, ecoStation: EcoStation, world: World) = asyncCommand(sender) {
 		EcoStation.setWorld(ecoStation._id, world.name)
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Updated world of {0} to {1}",
-			ecoStation.name,
-			world.name
-		)
+		sender.sendInformation("Updated world of {ecoStation.name} to {world.name}")
 	}
 
 	@Suppress("Unused")
@@ -95,6 +78,6 @@ object EcoStationCommand : SLCommand() {
 	fun onDelete(sender: CommandSender, ecoStation: EcoStation) {
 		EcoStation.delete(ecoStation._id)
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted eco station {0}", ecoStation.name)
+		sender.sendInformation("Deleted eco station ${ecoStation.name}")
 	}
 }
