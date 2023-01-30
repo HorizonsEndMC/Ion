@@ -17,10 +17,10 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
-import net.horizonsend.ion.proxy.listeners.PlayerDisconnectListener
-import net.horizonsend.ion.proxy.listeners.ProxyPingListener
-import net.horizonsend.ion.proxy.listeners.ServerConnectListener
-import net.horizonsend.ion.proxy.listeners.VotifierListener
+import net.horizonsend.ion.proxy.listeners.waterfall.PlayerDisconnectListener
+import net.horizonsend.ion.proxy.listeners.waterfall.ProxyPingListener
+import net.horizonsend.ion.proxy.listeners.waterfall.ServerConnectListener
+import net.horizonsend.ion.proxy.listeners.waterfall.VotifierListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
 import net.horizonsend.ion.proxy.managers.SyncManager
 import net.md_5.bungee.api.config.ServerInfo

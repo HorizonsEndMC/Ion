@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.listeners
+package net.horizonsend.ion.proxy.listeners.waterfall
 
 import com.vexsoftware.votifier.bungee.events.VotifierEvent
 import net.horizonsend.ion.common.database.collections.PlayerData
