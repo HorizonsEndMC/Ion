@@ -44,10 +44,12 @@ open class Starship(
 	open fun tick() {
 		mainThreadCheck()
 
+		val decel = 0.05
+
 		// Apply deceleration
-		if (velocityX > 1 / 20) velocityX -= 1 / 20 else if (velocityX < -(1 / 20)) velocityX += 1 / 20 else velocityX = 0.0
-		if (velocityY > 1 / 20) velocityY -= 1 / 20 else if (velocityY < -(1 / 20)) velocityY += 1 / 20 else velocityY = 0.0
-		if (velocityZ > 1 / 20) velocityZ -= 1 / 20 else if (velocityZ < -(1 / 20)) velocityZ += 1 / 20 else velocityZ = 0.0
+		if (velocityX > decel) velocityX -= decel else if (velocityX < -decel) velocityX += decel else velocityX = 0.0
+		if (velocityY > decel) velocityY -= decel else if (velocityY < -decel) velocityY += decel else velocityY = 0.0
+		if (velocityZ > decel) velocityZ -= decel else if (velocityZ < -decel) velocityZ += decel else velocityZ = 0.0
 
 		// Tick Controller - This is done here because it may apply acceleration
 		controller?.tick()
