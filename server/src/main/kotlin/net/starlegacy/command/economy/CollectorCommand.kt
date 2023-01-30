@@ -11,7 +11,6 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
 import net.starlegacy.database.schema.economy.EcoStation
 import net.starlegacy.feature.economy.collectors.Collectors
-import net.starlegacy.util.SLTextStyle
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -81,8 +80,8 @@ object CollectorCommand : SLCommand() {
 
 			for (item: CollectedItem in items) {
 				val sold: String = when (item.sold) {
-					0 -> SLTextStyle.RED
-					else -> SLTextStyle.GOLD
+					0 -> "<red>"
+					else -> "<gold>"
 				}.toString() + item.sold.toString()
 
 				sender.sendFeedbackMessage(FeedbackType.INFORMATION, "  {0} >> {1} stacks sold ({2} in stock)", item.itemString, sold, item.stock)
