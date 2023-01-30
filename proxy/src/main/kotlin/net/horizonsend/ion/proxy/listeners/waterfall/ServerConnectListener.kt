@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.listeners
+package net.horizonsend.ion.proxy.listeners.waterfall
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.listeners
+package net.horizonsend.ion.proxy.listeners.waterfall
 
 import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
 import net.md_5.bungee.api.Favicon
