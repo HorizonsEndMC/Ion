@@ -5,6 +5,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.BazaarItem
 import net.starlegacy.database.schema.economy.CityNPC
@@ -27,7 +29,6 @@ import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.displayName
-import net.starlegacy.util.msg
 import net.starlegacy.util.roundToHundredth
 import net.starlegacy.util.toCreditsString
 import org.bukkit.DyeColor
@@ -56,10 +57,16 @@ object BazaarCommand : SLCommand() {
 
 	private fun requireItemInHand(sender: Player) = sender.inventory.itemInMainHand
 
+	@Suppress("Unused")
 	@Subcommand("string")
 	fun onString(sender: Player) {
 		val item = requireItemInHand(sender)
-		sender msg "&2Item string of ${item.displayName}&6:&a ${Bazaars.toItemString(item)}"
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"Item string of {0}: {1}",
+			item.displayName,
+			Bazaars.toItemString(item)
+		)
 	}
 
 	private fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName
@@ -82,15 +89,16 @@ object BazaarCommand : SLCommand() {
 
 		BazaarItem.create(territory.id, sender.slPlayerId, itemString, pricePerItem)
 
-		sender msg "&aCreated listing for $itemString at $cityName. " +
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Created listing for {0} at {1}. " +
 			"It will not show in the listing until it has some stock. " +
-			"To add stock, use /bazaar deposit."
+			"To add stock, use /bazaar deposit.", itemString, cityName)
 	}
 
 	private fun requireSelling(territory: RegionTerritory, sender: Player, itemString: String) =
 		BazaarItem.findOne(BazaarItem.matchQuery(territory.id, sender.slPlayerId, itemString))
 			?: fail { "You're not selling $itemString at ${cityName(territory)}" }
 
+	@Suppress("Unused")
 	@Subcommand("deposit")
 	@Description("Deposit all matching items in your inventory")
 	@CommandCompletion("@bazaarItemStrings")
@@ -115,11 +123,18 @@ object BazaarCommand : SLCommand() {
 
 			Tasks.async {
 				BazaarItem.addStock(item._id, count)
-				sender msg "&aAdded $count of $itemString to listing in $cityName"
+				sender.sendFeedbackMessage(
+					FeedbackType.INFORMATION,
+					"Added {0} of {1} to listing in {2}",
+					count,
+					itemString,
+					cityName
+				)
 			}
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("withdraw")
 	@Description("Withdraw the specified amount of the item")
 	@CommandCompletion("@bazaarItemStrings 1|64")
@@ -140,10 +155,12 @@ object BazaarCommand : SLCommand() {
 		Tasks.sync {
 			val (fullStacks, remainder) = Bazaars.dropItems(itemStack, amount, sender)
 
-			sender msg "&aWithdraw $amount of $itemString at $cityName ($fullStacks stack(s) and $remainder item(s))"
+			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Withdraw {0} of {1} at {2}" +
+					"({3} stack(s) and {4} item(s))", amount, itemString, cityName, fullStacks, remainder)
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("remove")
 	@Description("Remove a listing from the bazaar at this city")
 	@CommandCompletion("@bazaarItemStrings")
@@ -159,9 +176,15 @@ object BazaarCommand : SLCommand() {
 		}
 
 		BazaarItem.delete(item._id)
-		sender msg "&aRemoved listing for $itemString at $cityName"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Removed listing for {0} at {1}",
+			itemString,
+			cityName
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("setprice")
 	@Description("Update the price of the specific item")
 	@CommandCompletion("@bazaarItemStrings @nothing")
@@ -175,24 +198,33 @@ object BazaarCommand : SLCommand() {
 		validatePrice(newPrice)
 
 		BazaarItem.setPrice(item._id, newPrice)
-		sender msg "&aUpdated price of $itemString at $cityName to ${newPrice.toCreditsString()}"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated price of {0} at {1} to {2}",
+			itemString,
+			cityName,
+			newPrice.toCreditsString()
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("list")
 	@Description("List the items you're selling at this city")
 	fun onList(sender: Player) = asyncCommand(sender) {
 		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
-		sender msg "&eYour Items &8(&7${items.size}&8)"
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Your Items ({0})", items.size)
 		for (item in items) {
 			val name = Bazaars.fromItemString(item.itemString).displayName
 			val city = cityName(Regions[item.cityTerritory])
 			val stock = item.stock
 			val uncollected = item.balance.toCreditsString()
 			val price = item.price.toCreditsString()
-			sender msg "&b$name &5@ &d$city &8[&7stock: &c$stock&7, balance: &6$uncollected&7, price: &e$price&8]"
+			sender.sendRichMessage( "<aqua>$name <dark_purple>@ <light_purple>$city <dark_gray>[<gray>stock: " +
+					"<red>$stock <gray>, balance: <gold>$uncollected<gray>, price: <yellow>$price<dark_gray>]")
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("collect")
 	@Description("Collect the money from all of your items")
 	fun onCollect(sender: Player) = asyncCommand(sender) {
@@ -201,18 +233,30 @@ object BazaarCommand : SLCommand() {
 		val count = BazaarItem.count(BazaarItem::seller eq senderId)
 		Tasks.sync {
 			VAULT_ECO.depositPlayer(sender, total)
-			sender msg "&aCollected ${total.toCreditsString()} from $count listings"
+			sender.sendFeedbackMessage(
+				FeedbackType.SUCCESS,
+				"Collected {0} from {1} listings",
+				total.toCreditsString(),
+				count
+			)
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("tax")
 	@Description("View the tax of the city you're in")
 	fun onTax(sender: Player) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		val city = TradeCities.getIfCity(territory) ?: fail { "You're not in a trade city" }
-		sender msg "&7Tax of &b${city.displayName}&8: &e${(city.tax * 100).toInt()}%"
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"Tax of {0}: {1}%",
+			city.displayName,
+			(city.tax * 100).toInt()
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("browse")
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
@@ -242,6 +286,7 @@ object BazaarCommand : SLCommand() {
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("merchant buy")
 	fun onMerchantBuy(sender: Player, itemString: String, amount: Int) {
 		val item = validateItemString(itemString)
@@ -253,12 +298,20 @@ object BazaarCommand : SLCommand() {
 		requireMoney(sender, price + tax)
 		VAULT_ECO.withdrawPlayer(sender, price + tax)
 		Bazaars.dropItems(item, amount, sender)
-		sender msg "&aBought $amount of ${item.displayName} for ${price.toCreditsString()} (+ ${tax.toCreditsString()} tax)"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Bought {0} of {1} for {2} (+ {3} tax)",
+			amount,
+			item.displayName,
+			price.toCreditsString(),
+			tax.toCreditsString()
+		)
 		if (city.type == TradeCityType.SETTLEMENT) {
 			Settlement.deposit(city.settlementId, tax)
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("merchant setprice")
 	@CommandPermission("trade.merchantadmin")
 	fun onMerchantSetPrice(sender: CommandSender, itemString: String, price: Double) {
@@ -266,12 +319,14 @@ object BazaarCommand : SLCommand() {
 		Merchants.setMerchantDefaultPrice(itemString, price)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("merchant unsetprice")
 	@CommandPermission("trade.merchantadmin")
 	fun onMerchantUnsetPrice(sender: Player, itemString: String) {
 		Merchants.removeMerchantItem(itemString)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("merchant prices")
 	@Description("View merchant prices")
 	fun onMerchantPrices(sender: Player) {
