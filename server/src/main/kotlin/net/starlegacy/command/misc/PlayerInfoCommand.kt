@@ -79,7 +79,7 @@ object PlayerInfoCommand : SLCommand() {
 			else -> "<red>Offline"
 		}
 
-		return "$prefix$<gray> for ${getDurationBreakdown(time)}"
+		return "$prefix<gray> for ${getDurationBreakdown(time)}"
 	}
 
 	override fun supportsVanilla(): Boolean {
