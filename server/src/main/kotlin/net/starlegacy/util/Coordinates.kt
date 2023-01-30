@@ -204,6 +204,10 @@ fun BlockPos.toVector() = Vector(this.x, this.y, this.z)
 
 fun BlockPos.toLocation(world: World?) = Location(world, this.x.toDouble(), this.y.toDouble(), this.z.toDouble())
 
+fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
+
+fun Vector.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
+
 fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFace {
 	val x = vector.x
 	val z = vector.z

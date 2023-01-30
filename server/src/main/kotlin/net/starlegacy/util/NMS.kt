@@ -1,11 +1,13 @@
 package net.starlegacy.util
 
 import net.minecraft.core.BlockPos
+import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
@@ -125,6 +127,8 @@ fun World.setAir(x: Int, y: Int, z: Int, applyPhysics: Boolean = true) {
 	setNMSBlockData(x, y, z, air.nms, applyPhysics)
 }
 
+fun net.minecraft.world.level.block.Block.isAir(): Boolean = this == Blocks.AIR || this == Blocks.CAVE_AIR || this == Blocks.VOID_AIR
+
 fun World.getChunkAtIfLoaded(chunkX: Int, chunkZ: Int): Chunk? = nms.getChunkIfLoaded(chunkX, chunkZ)?.bukkitChunk
 
 fun World.setNMSBlockData(x: Int, y: Int, z: Int, data: BlockState, applyPhysics: Boolean = false): Boolean {
@@ -137,4 +141,17 @@ fun World.setNMSBlockData(x: Int, y: Int, z: Int, data: BlockState, applyPhysics
 fun BlockPos.added(x: Int, y: Int, z: Int): BlockPos {
 	return BlockPos(this.x + x, this.y + y, this.z + z)
 }
+
+fun MutableBlockPos.add(otherPos: BlockPos) {
+	this.x = this.x + otherPos.x
+	this.y = this.y + otherPos.y
+	this.z = this.z + otherPos.z
+}
+
+fun MutableBlockPos.multiply(otherPos: BlockPos) {
+	this.x = this.x * otherPos.x
+	this.y = this.y * otherPos.y
+	this.z = this.z * otherPos.z
+}
+
 //endregion
