@@ -4,13 +4,14 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
 import net.starlegacy.database.schema.economy.EcoStation
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.util.SLTextStyle
-import net.starlegacy.util.msg
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -32,41 +33,49 @@ object CollectorCommand : SLCommand() {
 
 		val ecoStation = getEcoStation(location)
 
-		sender msg "&7&oDetected station &a&o${ecoStation.name}&7&o, using..."
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Detected station {0}, using...", ecoStation.name)
 
 		EcoStation.addCollector(ecoStation._id, location.blockX, location.blockY, location.blockZ)
 
-		sender msg "&aRegistered collector npc in database, synchronizing NPCs..."
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Registered collector NPC in database, synchronizing NPCs..."
+		)
 
 		Collectors.synchronizeNPCsAsync {
-			sender msg "&bSynchronized citizens NPCs successfully."
+			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Synchronized citizens NPCs successfully.")
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("clear|delete")
 	fun onClear(sender: Player) = asyncCommand(sender) {
 		val ecoStation = getEcoStation(sender.location)
 
 		EcoStation.clearCollectors(ecoStation._id)
 
-		sender msg "&aDeleted in database, synchronizing NPCs.."
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted in database, synchronizing NPCs..")
 
 		Collectors.synchronizeNPCsAsync {
-			sender msg "&bSynchronized citizens NPCs successfully."
+			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Synchronized citizens NPCs successfully.")
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("sold")
 	fun onStock(sender: CommandSender) {
-		sender msg "&7&oNote: This may not be accurate if you're on a different server from the station(s)"
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"Note: This may not be accurate if you're on a different server from the station(s)"
+		)
 
 		for (ecoStation in EcoStations.getAll()) {
-			sender msg "&7Station &3${ecoStation.name}&7:"
+			sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Station {0}:", ecoStation.name)
 
 			val items = CollectedItem.findAllAt(ecoStation._id).toList()
 
 			if (items.isEmpty()) {
-				sender msg "  &4>> Empty?!"
+				sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "  &4>> Empty?!")
 				continue
 			}
 
@@ -76,7 +85,7 @@ object CollectorCommand : SLCommand() {
 					else -> SLTextStyle.GOLD
 				}.toString() + item.sold.toString()
 
-				sender msg "  &b${item.itemString} &8>> $sold&e stacks sold &8(&7&o${item.stock} in stock&8)"
+				sender.sendFeedbackMessage(FeedbackType.INFORMATION, "  {0} >> {1} stacks sold ({2} in stock)", item.itemString, sold, item.stock)
 			}
 		}
 	}
