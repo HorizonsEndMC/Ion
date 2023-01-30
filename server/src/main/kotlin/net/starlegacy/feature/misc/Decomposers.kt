@@ -7,19 +7,23 @@ import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.util.CHISELED_TYPES
+import net.starlegacy.util.add
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
+import net.starlegacy.util.isAir
 import net.starlegacy.util.rightFace
+import net.starlegacy.util.toBlockPos
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import kotlin.math.max
 
 object Decomposers : SLComponent() {
-	val busySigns = mutableSetOf<Location>()
+	val busySigns = mutableMapOf<Location, DecomposeTask>()
 
 	private const val MAX_LENGTH = 100
 	private const val BLOCKS_PER_SECOND = 1000
@@ -27,50 +31,62 @@ object Decomposers : SLComponent() {
 
 	@EventHandler
 	fun onClick(event: PlayerInteractEvent) {
-		if (event.action != Action.RIGHT_CLICK_BLOCK) {
-			return
-		}
-
 		val sign = event.clickedBlock?.state as? Sign ?: return
-
 		val multiblock = Multiblocks[sign] as? DecomposerMultiblock ?: return
-
 		val signLoc = sign.location
 
-		val forward = sign.getFacing().oppositeFace
-		val up = BlockFace.UP
-		val right = forward.rightFace
+		if (event.action == Action.RIGHT_CLICK_BLOCK) {
+			val forward = sign.getFacing().oppositeFace
+			val up = BlockFace.UP
+			val right = forward.rightFace
 
-		val origin: Location = signLoc.clone()
-			.add(forward.direction.multiply(2))
-			.add(up.direction)
-			.add(right.direction)
+			val origin: Location = signLoc.clone()
+				.add(forward.direction.multiply(2))
+				.add(up.direction)
+				.add(right.direction)
 
-		val frameOrigin: Location = signLoc.clone().add(forward.direction)
+			val frameOrigin: Location = signLoc.clone().add(forward.direction)
 
-		if (!busySigns.add(signLoc)) {
-			event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer in use")
-			return
+			val width = getDimension(frameOrigin, right)
+			val height = getDimension(frameOrigin, up)
+			val length = getDimension(frameOrigin, forward)
+
+			val area = height * length
+			val delay = max(10L, area / BLOCKS_PER_SECOND * 20L)
+
+			val offset = calculateOffset(origin, width, height, length, right, up, forward)
+
+			if (offset > width) return event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer empty!")
+
+			val task = DecomposeTask(
+				signLoc,
+				width,
+				offset,
+				height,
+				length,
+				origin,
+				right,
+				up,
+				forward,
+				event.player.uniqueId,
+				multiblock
+			)
+
+			if (busySigns.containsKey(signLoc)) {
+				event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer in use")
+				return
+			}
+
+			task.runTaskTimer(Ion, delay, delay)
+
+			event.player.sendFeedbackMessage(FeedbackType.SUCCESS, "Started Decomposer")
+
+			busySigns[signLoc] = task
+		} else {
+			(busySigns[signLoc] ?: return event.player.sendFeedbackMessage(FeedbackType.INFORMATION, "Decomposer not in use")).cancel()
+
+			event.player.sendFeedbackMessage(FeedbackType.INFORMATION, "Cancelled running decomposer")
 		}
-
-		val width = getDimension(frameOrigin, right)
-		val height = getDimension(frameOrigin, up)
-		val length = getDimension(frameOrigin, forward)
-		val area = height * length
-		val delay = max(10L, area / BLOCKS_PER_SECOND * 20L)
-
-		DecomposeTask(
-			signLoc,
-			width,
-			height,
-			length,
-			origin,
-			right,
-			up,
-			forward,
-			event.player.uniqueId,
-			multiblock
-		).runTaskTimer(Ion, delay, delay)
 	}
 
 	private fun getDimension(origin: Location, direction: BlockFace): Int {
@@ -89,5 +105,32 @@ object Decomposers : SLComponent() {
 		}
 
 		return dimension
+	}
+
+	private fun calculateOffset(
+		origin: Location,
+		width: Int,
+		height: Int,
+		length: Int,
+		right: BlockFace,
+		up: BlockFace,
+		forward: BlockFace
+	): Int {
+		val serverLevel = (origin.world as CraftWorld).handle
+
+		for (offsetUp: Int in 0 until height) {
+			for (offsetForward: Int in 0 until length) {
+				for (offsetWidth: Int in 0 until width) {
+					val originBlockPos = origin.toBlockPos().mutable()
+					originBlockPos.add(up.direction.multiply(offsetUp).toBlockPos())
+					originBlockPos.add(forward.direction.multiply(offsetForward).toBlockPos())
+					originBlockPos.add(right.direction.multiply(offsetWidth).toBlockPos())
+
+					if (serverLevel.getBlockIfLoaded(originBlockPos)?.isAir() == false) return offsetWidth
+				}
+			}
+		}
+
+		return width + 1
 	}
 }

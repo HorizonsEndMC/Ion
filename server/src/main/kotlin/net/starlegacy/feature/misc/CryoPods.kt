@@ -137,10 +137,10 @@ object CryoPods : SLComponent() {
 		val loc = pos.toLocation(world)
 
 		val sign = loc.block.state as? Sign
-			?: return player.sendFeedbackMessage(FeedbackType.ALERT,"Cryo pod sign at $pos is missing")
+			?: return player.sendFeedbackMessage(FeedbackType.ALERT, "Cryo pod sign at $pos is missing")
 
 		if (Multiblocks[sign, true, true] !is CryoPodMultiblock) {
-			return player.sendFeedbackMessage(FeedbackType.ALERT,"Cryo pod at $pos is not intact")
+			return player.sendFeedbackMessage(FeedbackType.ALERT, "Cryo pod at $pos is not intact")
 		}
 
 		event.respawnLocation = loc.add(0.5, -1.0, 0.5)

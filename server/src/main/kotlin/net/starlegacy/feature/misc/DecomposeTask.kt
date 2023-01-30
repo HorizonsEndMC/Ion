@@ -18,9 +18,19 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.UUID
 
+/**
+ * @param width Iterated first,
+ * @param startWidthOffset Start offset down width from 0.
+ * @param height Iterated second,
+ * @param length Iterated third,
+ * @param right direction of width
+ * @param up direction up height
+ * @param forward direction of length
+ * */
 class DecomposeTask(
 	private val signLoc: Location,
 	private val width: Int,
+	private var startWidthOffset: Int,
 	private val height: Int,
 	private val length: Int,
 	private val origin: Location,
@@ -30,7 +40,6 @@ class DecomposeTask(
 	private val playerID: UUID,
 	private val multiblock: DecomposerMultiblock
 ) : BukkitRunnable() {
-	private var offsetRight = 0
 	private var blocksBroken = 0
 
 	override fun run() {
@@ -39,67 +48,60 @@ class DecomposeTask(
 				return
 			}
 		} catch (exception: Exception) {
+			Bukkit.getPlayer(playerID)
+				?.sendFeedbackMessage(
+					FeedbackType.SERVER_ERROR,
+					"Decomposer encountered server error. Please contact staff."
+				)
 			exception.printStackTrace()
 			cancel()
 			return
 		}
 
 		cancel()
-
-		Bukkit.getPlayer(playerID)
-			?.sendFeedbackMessage(FeedbackType.INFORMATION, "&7Decomposer broke &c$blocksBroken blocks.")
 	}
 
 	override fun cancel() {
 		super.cancel()
 
 		Decomposers.busySigns.remove(signLoc)
+		Bukkit.getPlayer(playerID)
+			?.sendFeedbackMessage(FeedbackType.INFORMATION, "Decomposer broke {0} blocks.", blocksBroken)
 	}
 
 	private fun breakStrip(): Boolean {
-		if (offsetRight >= width) {
-			return false
-		}
+		if (startWidthOffset >= width) return false
 
-		val player = Bukkit.getPlayer(playerID)
-			?: return false
+		val player = Bukkit.getPlayer(playerID) ?: return false
 
-		val signBlock = getBlockIfLoaded(signLoc.world, signLoc.blockX, signLoc.blockY, signLoc.blockZ)
-			?: return false
-		val sign = signBlock.state as? Sign
-			?: return false
+		val signBlock = getBlockIfLoaded(signLoc.world, signLoc.blockX, signLoc.blockY, signLoc.blockZ) ?: return false
+		val sign = signBlock.state as? Sign ?: return false
 
 		if (!multiblock.signMatchesStructure(sign, loadChunks = false)) {
 			return false
 		}
 
 		val storage = DecomposerMultiblock.getStorage(sign)
-
 		val power = PowerMachines.getPower(sign, fast = true)
 
 		for (offsetUp: Int in 0 until height) {
 			for (offsetForward: Int in 0 until length) {
-				val blockPosition = origin.clone()
-					.add(right.direction.multiply(offsetRight))
+				val newLocation = origin.clone()
+					.add(right.direction.multiply(startWidthOffset))
 					.add(up.direction.multiply(offsetUp))
 					.add(forward.direction.multiply(offsetForward))
 					.toBlockLocation()
 
-				if (!blockPosition.isChunkLoaded) {
+				if (!newLocation.isChunkLoaded) {
 					continue
 				}
 
-				val block = blockPosition.block
-
+				val block = newLocation.block
 				val blockData = block.blockData
 
-				if (blockData.material.isAir) {
-					continue
-				}
+				if (blockData.material.isAir) continue
 
-				if (!BlockBreakEvent(block, player).callEvent()) {
-					continue
-				}
+				if (!BlockBreakEvent(block, player).callEvent()) continue
 
 				if (power < 10) {
 					player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer out of power!")
@@ -115,9 +117,7 @@ class DecomposeTask(
 				var customOre = false
 				Ore.values().forEach { Ore -> if (Ore.blockData == (CustomBlocks[block]?.blockData ?: false)) customOre = true }
 
-				if (customBlock && !customOre) {
-					drops = CustomBlocks[block]?.getDrops()?.toList()!!
-				}
+				if (customBlock && !customOre) drops = CustomBlocks[block]?.getDrops()?.toList()!!
 
 				block.setType(Material.AIR, false)
 
@@ -140,7 +140,11 @@ class DecomposeTask(
 			}
 		}
 
-		offsetRight++
+		//TODO sounds
+		//TODO particles
+
+		startWidthOffset++
+
 		return true
 	}
 }
