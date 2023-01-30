@@ -4,6 +4,7 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.cache.trade.EcoStations
@@ -32,17 +33,14 @@ object CollectorCommand : SLCommand() {
 
 		val ecoStation = getEcoStation(location)
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Detected station {0}, using...", ecoStation.name)
+		sender.sendInformation("Detected station {ecoStation.name}, using...")
 
 		EcoStation.addCollector(ecoStation._id, location.blockX, location.blockY, location.blockZ)
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Registered collector NPC in database, synchronizing NPCs..."
-		)
+		sender.sendInformation("Registered collector NPC in database, synchronizing NPCs...")
 
 		Collectors.synchronizeNPCsAsync {
-			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Synchronized citizens NPCs successfully.")
+			sender.sendInformation("Synchronized citizens NPCs successfully.")
 		}
 	}
 
@@ -53,10 +51,10 @@ object CollectorCommand : SLCommand() {
 
 		EcoStation.clearCollectors(ecoStation._id)
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted in database, synchronizing NPCs..")
+		sender.sendInformation("Deleted in database, synchronizing NPCs..")
 
 		Collectors.synchronizeNPCsAsync {
-			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Synchronized citizens NPCs successfully.")
+			sender.sendInformation("Synchronized citizens NPCs successfully.")
 		}
 	}
 
