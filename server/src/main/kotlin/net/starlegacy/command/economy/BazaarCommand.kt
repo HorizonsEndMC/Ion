@@ -89,9 +89,13 @@ object BazaarCommand : SLCommand() {
 
 		BazaarItem.create(territory.id, sender.slPlayerId, itemString, pricePerItem)
 
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Created listing for {0} at {1}. " +
-			"It will not show in the listing until it has some stock. " +
-			"To add stock, use /bazaar deposit.", itemString, cityName)
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"Created listing for {0} at {1}. " +
+				"It will not show in the listing until it has some stock. " +
+				"To add stock, use /bazaar deposit.",
+			itemString, cityName
+		)
 	}
 
 	private fun requireSelling(territory: RegionTerritory, sender: Player, itemString: String) =
@@ -155,8 +159,12 @@ object BazaarCommand : SLCommand() {
 		Tasks.sync {
 			val (fullStacks, remainder) = Bazaars.dropItems(itemStack, amount, sender)
 
-			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Withdraw {0} of {1} at {2}" +
-					"({3} stack(s) and {4} item(s))", amount, itemString, cityName, fullStacks, remainder)
+			sender.sendFeedbackMessage(
+				FeedbackType.SUCCESS,
+				"Withdraw {0} of {1} at {2}" +
+					"({3} stack(s) and {4} item(s))",
+				amount, itemString, cityName, fullStacks, remainder
+			)
 		}
 	}
 
@@ -219,8 +227,10 @@ object BazaarCommand : SLCommand() {
 			val stock = item.stock
 			val uncollected = item.balance.toCreditsString()
 			val price = item.price.toCreditsString()
-			sender.sendRichMessage( "<aqua>$name <dark_purple>@ <light_purple>$city <dark_gray>[<gray>stock: " +
-					"<red>$stock <gray>, balance: <gold>$uncollected<gray>, price: <yellow>$price<dark_gray>]")
+			sender.sendRichMessage(
+				"<aqua>$name <dark_purple>@ <light_purple>$city <dark_gray>[<gray>stock: " +
+					"<red>$stock <gray>, balance: <gold>$uncollected<gray>, price: <yellow>$price<dark_gray>]"
+			)
 		}
 	}
 
