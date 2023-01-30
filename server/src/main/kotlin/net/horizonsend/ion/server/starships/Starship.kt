@@ -100,22 +100,22 @@ open class Starship(
 		}
 	}
 
-	fun localToGlobal(frontBack: Int, upDown: Int, rightLeft: Int): Triple<Int, Int, Int> {
+	fun localToGlobal(frontBack: Int, upDown: Int, leftRight: Int): Triple<Int, Int, Int> {
 		return when (facingDirection) {
-			Direction.NORTH -> Triple(rightLeft, upDown, -frontBack)
-			Direction.SOUTH -> Triple(-rightLeft, upDown, frontBack)
-			Direction.WEST -> Triple(-frontBack, upDown, -rightLeft)
-			Direction.EAST -> Triple(frontBack, upDown, rightLeft)
+			Direction.NORTH -> Triple(leftRight, upDown, -frontBack)
+			Direction.SOUTH -> Triple(-leftRight, upDown, frontBack)
+			Direction.WEST -> Triple(-frontBack, upDown, -leftRight)
+			Direction.EAST -> Triple(frontBack, upDown, leftRight)
 			else -> throw IllegalStateException("Ship direction must not be vertical")
 		}
 	}
 
-	fun localToGlobal(frontBack: Double, upDown: Double, rightLeft: Double): Triple<Double, Double, Double> {
+	fun localToGlobal(frontBack: Double, upDown: Double, leftRight: Double): Triple<Double, Double, Double> {
 		return when (facingDirection) {
-			Direction.NORTH -> Triple(rightLeft, upDown, -frontBack)
-			Direction.SOUTH -> Triple(-rightLeft, upDown, frontBack)
-			Direction.WEST -> Triple(-frontBack, upDown, -rightLeft)
-			Direction.EAST -> Triple(frontBack, upDown, rightLeft)
+			Direction.NORTH -> Triple(leftRight, upDown, -frontBack)
+			Direction.SOUTH -> Triple(-leftRight, upDown, frontBack)
+			Direction.WEST -> Triple(-frontBack, upDown, -leftRight)
+			Direction.EAST -> Triple(frontBack, upDown, leftRight)
 			else -> throw IllegalStateException("Ship direction must not be vertical")
 		}
 	}
