@@ -90,15 +90,16 @@ object TradeDebugCommand : SLCommand() {
 		ShipmentManager.regenerateShipmentsAsync {
 			sender.sendRichMessage("<green>Regenerated shipments for <aqua>${TradeCities.getAll().size} <green>cities.")
 			asyncCommand(sender) {
-				sender.sendRichMessage("<dark_purple>Shipments (cities to importing cities): " +
-					"(<light_purple>${
-					ShipmentManager.getShipmentMap().map { (territoryId, shipments) ->
-						val exporterName: String = TradeCities.getIfCity(Regions[territoryId])?.displayName
-							?: "[ERR:$territoryId]"
-						val importing = shipments.map { it.to.territoryId }.toSet().size
-						return@map "$exporterName: $importing"
-					}.joinToString()
-					})"
+				sender.sendRichMessage(
+					"<dark_purple>Shipments (cities to importing cities): " +
+						"(<light_purple>${
+						ShipmentManager.getShipmentMap().map { (territoryId, shipments) ->
+							val exporterName: String = TradeCities.getIfCity(Regions[territoryId])?.displayName
+								?: "[ERR:$territoryId]"
+							val importing = shipments.map { it.to.territoryId }.toSet().size
+							return@map "$exporterName: $importing"
+						}.joinToString()
+						})"
 				)
 			}
 		}
@@ -115,9 +116,11 @@ object TradeDebugCommand : SLCommand() {
 			sender.sendRichMessage("<dark_aqua>${city.displayName} on ${territory.world} (${shipments.size}):")
 
 			shipments.sortedByDescending { it.routeValue }.forEach { shipment ->
-				sender.sendRichMessage("<gold>  Crate: " + "<aqua>${CargoCrates[shipment.crate].name}" +
+				sender.sendRichMessage(
+					"<gold>  Crate: " + "<aqua>${CargoCrates[shipment.crate].name}" +
 					"<gold> To: " + "<dark_purple>${shipment.to.displayName}" +
-					"<gold> Value: " + "<yellow>${shipment.routeValue}")
+					"<gold> Value: " + "<yellow>${shipment.routeValue}"
+				)
 			}
 		}
 	}

@@ -171,7 +171,8 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS,
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
 			"Changed value of {0} at {1} from {2} to {3} and refreshed collector missions.",
 			collectedItem.itemString,
 			EcoStations[collectedItem.station].name,
@@ -194,7 +195,8 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS,
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
 			"Changed stock of {0} at {1} from {2} to {3} and refreshed collector missions.",
 			collectedItem.itemString,
 			EcoStations[collectedItem.station].name,
