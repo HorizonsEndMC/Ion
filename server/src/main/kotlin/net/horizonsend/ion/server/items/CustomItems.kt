@@ -57,6 +57,12 @@ object CustomItems {
 	val GUN_BARREL = register("GUN_BARREL", 500, text("Gun Barrel"))
 	val CIRCUITRY = register("CIRCUITRY", 501, text("Circuitry"))
 
+	val PISTOL_RECEIVER = register("PISTOL_RECEIVER", 502, text("Pistol Receiver"))
+	val RIFLE_RECEIVER = register("RIFLE_RECEIVER", 503, text("Rifle Receiver"))
+	val SMB_RECEIVER = register("SMB_RECEIVER", 504, text("SMB Receiver"))
+	val SNIPER_RECEIVER = register("SNIPER_RECEIVER", 505, text("Sniper Receiver"))
+	val SHOTGUN_RECEIVER = register("SHOTGUN_RECEIVER", 506, text("Shotgun Receiver"))
+
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, component: Component): CustomItem {
 		return register(object : CustomItem(identifier) {
