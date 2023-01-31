@@ -4,8 +4,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.command.SLCommand
-import net.starlegacy.util.action
 import net.starlegacy.util.enumValueOfOrNull
 import net.starlegacy.util.isBed
 import net.starlegacy.util.isCarpet
@@ -25,6 +26,7 @@ import java.util.Locale
 @CommandAlias("dye")
 @CommandPermission("starlegacy.dye")
 object DyeCommand : SLCommand() {
+	@Suppress("Unused")
 	@Default()
 	fun execute(sender: Player, newColor: String) {
 		val newDyeColor = enumValueOfOrNull<DyeColor>(newColor.uppercase(Locale.getDefault()))
@@ -33,7 +35,7 @@ object DyeCommand : SLCommand() {
 		val item = sender.inventory.itemInMainHand
 		val oldDyeColor = dyeItem(item, newDyeColor)
 			?: fail { "Item is not colorable" }
-		sender action "&aDyed from $oldDyeColor -> $newDyeColor"
+		sender.sendFeedbackAction(FeedbackType.SUCCESS, "Dyed from {0} -> {1}", oldDyeColor, newDyeColor)
 	}
 
 	private fun dyeItem(item: ItemStack, newDyeColor: DyeColor): DyeColor? {
@@ -51,6 +53,7 @@ object DyeCommand : SLCommand() {
 		return oldDyeColor
 	}
 
+	@Suppress("Unused")
 	@Subcommand("inventory|inv|all")
 	@CommandPermission("starlegacy.dyeinventoy")
 	fun executeInv(sender: Player, newColor: String) {
