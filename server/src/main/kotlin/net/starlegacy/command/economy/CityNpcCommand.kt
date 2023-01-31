@@ -4,6 +4,8 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CityNPC
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -16,9 +18,6 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.util.Skins
 import net.starlegacy.util.distanceSquared
-import net.starlegacy.util.gray
-import net.starlegacy.util.green
-import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
@@ -59,7 +58,7 @@ object CityNpcCommand : SLCommand() {
 		CityNPC.create(territory.id, location.x, location.y, location.z, skinData.toBytes(), type)
 		CityNPCs.synchronizeNPCsAsync()
 
-		sender msg green("Created NPC!")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Created NPC!")
 	}
 
 	private fun getIdFromName(name: String): UUID = SLPlayer[name]?._id?.uuid
@@ -73,7 +72,7 @@ object CityNpcCommand : SLCommand() {
 		CityNPC.delete(npc._id)
 		CityNPCs.synchronizeNPCsAsync() // update the actual npc
 
-		sender msg green("Deleted NPC!")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted NPC!")
 	}
 
 	fun requireNearbyNPC(sender: Player, permission: Boolean = true): CityNPC {
@@ -103,11 +102,12 @@ object CityNpcCommand : SLCommand() {
 		return npc
 	}
 
+	@Suppress("Unused")
 	@Subcommand("sync")
 	fun onSync(sender: CommandSender) {
-		sender msg gray("Synchronizing...")
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Synchronizing...")
 		CityNPCs.synchronizeNPCsAsync {
-			sender msg green("Synchronized!")
+			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Synchronized!")
 		}
 	}
 }
