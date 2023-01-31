@@ -10,14 +10,17 @@ import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACK_WOOL
 import org.bukkit.Material.BLUE_WOOL
 import org.bukkit.Material.BROWN_WOOL
+import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.CYAN_WOOL
+import org.bukkit.Material.DIAMOND_BLOCK
+import org.bukkit.Material.EMERALD_BLOCK
+import org.bukkit.Material.GLASS
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
 import org.bukkit.Material.GRAY_WOOL
 import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
-import org.bukkit.Material.GLASS
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_TRAPDOOR
@@ -147,30 +150,30 @@ fun initializeCrafting() {
 
 	// Rifle Receiver Crafting
 	itemStackShapeRecipe("rifle_receiver", CustomItems.RIFLE_RECEIVER.constructItemStack()) {
-		shape("xtx", "irt", "xtx")
+		shape("xtx", "igt", "xtx")
 
 		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
-		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('g', GOLD_BLOCK)
 		setIngredient('i', IRON_TRAPDOOR)
 		setIngredient('x', AIR)
 	}
 
 	// SMB Receiver Crafting
 	itemStackShapeRecipe("smb_receiver", CustomItems.SMB_RECEIVER.constructItemStack()) {
-		shape("xtx", "irx", "xtx")
+		shape("xtx", "idx", "xtx")
 
 		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
-		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('d', DIAMOND_BLOCK)
 		setIngredient('i', IRON_TRAPDOOR)
 		setIngredient('x', AIR)
 	}
 
 	// Sniper Receiver Crafting
 	itemStackShapeRecipe("sniper_receiver", CustomItems.SNIPER_RECEIVER.constructItemStack()) {
-		shape("xtx", "irb", "xtx")
+		shape("xtx", "ieb", "xtx")
 
 		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
-		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('e', EMERALD_BLOCK)
 		setIngredient('b', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.fullBlock.singleItem()))
 		setIngredient('i', IRON_TRAPDOOR)
 		setIngredient('x', AIR)
@@ -178,10 +181,10 @@ fun initializeCrafting() {
 
 	// Shotgun Receiver Crafting
 	itemStackShapeRecipe("shotgun_receiver", CustomItems.SHOTGUN_RECEIVER.constructItemStack()) {
-		shape("xxx", "irb", "xtx")
+		shape("xxx", "icb", "xtx")
 
 		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
-		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('c', COPPER_BLOCK)
 		setIngredient('b', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.fullBlock.singleItem()))
 		setIngredient('i', IRON_TRAPDOOR)
 		setIngredient('x', AIR)
@@ -269,9 +272,9 @@ fun initializeCrafting() {
 
 	// Standard Magazine Crafting
 	itemStackShapeRecipe("standard_magazine", CustomItems.STANDARD_MAGAZINE.constructItemStack()) {
-		shape("xxx", "rlr", "aaa")
+		shape("xxx", "rlr", "ttt")
 
-		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
 		setIngredient('l', LAPIS_BLOCK)
 		setIngredient('r', REDSTONE)
 		setIngredient('x', AIR)
