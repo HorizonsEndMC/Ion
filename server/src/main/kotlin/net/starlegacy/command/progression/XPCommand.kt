@@ -35,7 +35,7 @@ object XPCommand : SLCommand() {
 
 		val responseLevel = when (level) {
 			maxLevel -> "<aqua>$xp <gray>XP, at max level."
-			else -> "<dark_aqua>$xp <aqua>/<dark_aqua>${Levels.getLevelUpCost(level + 1)}" +
+			else -> "<dark_aqua>$xp<aqua>/<dark_aqua>${Levels.getLevelUpCost(level + 1)}" +
 				"<gray> XP, at level <dark_purple>$level<light_purple>/<dark_purple>$maxLevel"
 		}
 		sender.sendRichMessage("$response$responseLevel")
