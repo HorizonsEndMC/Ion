@@ -276,38 +276,6 @@ fun initializeCrafting() {
 		setIngredient('r', REDSTONE)
 		setIngredient('x', AIR)
 	}
-
-	// Circuitry Crafting 1
-	itemStackShapeRecipe("circuitry_1", CustomItems.CIRCUITRY.constructItemStack()) {
-		shape("qdq", "arg", "ccc")
-
-		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
-		setIngredient('c', COPPER_INGOT)
-		setIngredient('q', QUARTZ)
-		setIngredient('g', GOLD_INGOT)
-		setIngredient('d', GREEN_DYE)
-		setIngredient('r', REDSTONE)
-	}
-
-	// Circuitry Crafting 2
-	itemStackShapeRecipe("circuitry_2", CustomItems.CIRCUITRY.constructItemStack()) {
-		shape("qdq", "gra", "ccc")
-
-		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
-		setIngredient('c', COPPER_INGOT)
-		setIngredient('q', QUARTZ)
-		setIngredient('g', GOLD_INGOT)
-		setIngredient('d', GREEN_DYE)
-		setIngredient('r', REDSTONE)
-	}
-
-	// Standard Magazine Crafting
-	itemStackShapeRecipe("standard_magazine", CustomItems.STANDARD_MAGAZINE.constructItemStack()) {
-		shape("aaa", "qqq", "aaa")
-
-		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
-		setIngredient('q', LAPIS_BLOCK)
-	}
 }
 
 private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
