@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.proxy.commands.bungee.BungeeAccountCommand
-import net.horizonsend.ion.proxy.commands.bungee.BungeeInfoCommand
-import net.horizonsend.ion.proxy.commands.bungee.VoteCommand
+import net.horizonsend.ion.proxy.commands.waterfall.BungeeAccountCommand
+import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
+import net.horizonsend.ion.proxy.commands.waterfall.VoteCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
