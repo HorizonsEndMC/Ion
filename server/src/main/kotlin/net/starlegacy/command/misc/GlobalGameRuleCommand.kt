@@ -4,12 +4,14 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
-import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
 object GlobalGameRuleCommand : SLCommand() {
+	@Suppress("Unused")
 	@CommandAlias("globalgamerule")
 	@CommandPermission("slcore.globalgamerule")
 	@CommandCompletion("@gamerules @nothing")
@@ -26,7 +28,7 @@ object GlobalGameRuleCommand : SLCommand() {
 			}
 		}
 
-		sender msg "&aSet gamerule $rule to $value in ${worlds.size} worlds"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Set gamerule {0} to {1} in {2} worlds", rule, value, worlds.size)
 	}
 
 	override fun supportsVanilla(): Boolean {
