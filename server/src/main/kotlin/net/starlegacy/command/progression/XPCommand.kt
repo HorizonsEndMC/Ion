@@ -4,24 +4,17 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
-import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.MAX_LEVEL
-import net.starlegacy.util.aqua
-import net.starlegacy.util.darkAqua
-import net.starlegacy.util.darkPurple
-import net.starlegacy.util.gray
-import net.starlegacy.util.lightPurple
-import net.starlegacy.util.msg
-import net.starlegacy.util.plus
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.UUID
 
 object XPCommand : SLCommand() {
+	@Suppress("Unused")
 	@CommandAlias("slxp|xp")
 	fun execute(sender: CommandSender, @Optional player: String?) = asyncCommand(sender) {
 		val playerID: UUID = player?.let { resolveOfflinePlayer(it) }
@@ -38,14 +31,13 @@ object XPCommand : SLCommand() {
 
 		val isSelf: Boolean = name == sender.name
 
-		val response: TextComponent = gray((if (isSelf) "You have " else "$name has "))
+		val response: String = (if (isSelf) "<gray>You have " else "<gray>$name has ")
 
 		response + when (level) {
-			maxLevel -> aqua(xp.toString()) + gray(" SLXP, at max level.")
-			else -> darkAqua("$xp") + aqua("/") + darkAqua(Levels.getLevelUpCost(level + 1).toString()) +
-				gray(" SLXP, at level ") +
-				darkPurple("$level") + lightPurple("/") + darkPurple("$maxLevel")
+			maxLevel -> "<aqua>$xp <gray>XP, at max level."
+			else -> "<dark_aqua>$xp <aqua>/ <dark_aqua>${Levels.getLevelUpCost(level + 1)}" +
+				"<gray> XP, at level <dark_purple>$level<light_purple>/<dark_purple>$maxLevel"
 		}
-		sender msg response
+		sender.sendRichMessage(response)
 	}
 }
