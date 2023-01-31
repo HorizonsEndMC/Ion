@@ -5,13 +5,14 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
 import net.starlegacy.database.schema.economy.EcoStation
 import net.starlegacy.feature.economy.collectors.CollectionMissions
 import net.starlegacy.util.displayName
-import net.starlegacy.util.msg
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -62,15 +63,17 @@ object CollectedItemCommand : SLCommand() {
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("string")
 	fun onString(sender: Player) {
 		val item: ItemStack = sender.inventory.itemInMainHand
 
 		val itemString = CollectionMissions.getString(item)
 
-		sender msg "&f${item.displayName}&7 item string:&b $itemString"
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "{0} item string: {1}", item.displayName, itemString)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("add")
 	@CommandCompletion("@ecostations DIAMOND:0|chetherite 10|20|50|100|200|300 1|2|3|5 1|3|6|9|27")
 	fun onAdd(
@@ -96,30 +99,45 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender msg "&aAdded item $itemString with value $value and stack range $minStacks..$maxStacks, " +
-			"& refreshed collector missions."
-		sender msg "&8(&5ID:&d $id&8)"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Added item {0} with value {1} and stack range {2}..{3}, and refreshed collector missions.",
+			itemString,
+			value,
+			minStacks,
+			maxStacks
+		)
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "(ID: {0})", id)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("list")
 	@CommandCompletion("@ecostations")
 	fun onList(sender: CommandSender, station: EcoStation) {
 		val items: List<CollectedItem> = CollectedItem.findAllAt(station._id).toList()
 			.takeIf { it.isNotEmpty() } ?: throw InvalidCommandArgument("No items at ${station.name}")
 
-		sender msg "&7Station &b${station.name}&7 Items:"
-		sender msg "&8(&dID: item string&7,&6 value&7,&a min stacks&7,&2 max stacks&7,&9 stock&8)"
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Station {0} Items:", station.name)
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"(ID: item string, value, min stacks, max stacks, stock)"
+		)
 
 		for (item: CollectedItem in items) {
-			sender msg "&d${item._id}&7: " +
-				"&e${item.itemString}&7, " +
-				"&6${item.value}&7, " +
-				"&a${item.minStacks}&7, " +
-				"&2${item.maxStacks}&7, " +
-				"&9${item.stock}"
+			sender.sendFeedbackMessage(
+				FeedbackType.INFORMATION,
+				"{0}: {1}, {2}, {3}, {4}, {5}",
+				item._id,
+				item.itemString,
+				item.value,
+				item.minStacks,
+				item.maxStacks,
+				item.stock
+			)
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("remove")
 	@CommandCompletion("@ecostations @collecteditems")
 	fun onRemove(sender: CommandSender, station: EcoStation, item: String) = asyncCommand(sender) {
@@ -133,10 +151,15 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender msg "&aRemoved item ${collectedItem.itemString} from ${station.name} " +
-			"& refreshed collector missions."
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Removed item {0} from {1} and refreshed collector missions.",
+			collectedItem.itemString,
+			station.name
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set value")
 	@CommandCompletion("@collecteditems 10|20|50|100|200|300")
 	fun onSetValue(sender: CommandSender, item: String, value: Double) = asyncCommand(sender) {
@@ -148,11 +171,17 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender msg "&aChanged value of ${collectedItem.itemString} at ${EcoStations[collectedItem.station].name} " +
-			"from ${collectedItem.value} to $value " +
-			"& refreshed collector missions."
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Changed value of {0} at {1} from {2} to {3} and refreshed collector missions.",
+			collectedItem.itemString,
+			EcoStations[collectedItem.station].name,
+			collectedItem.value,
+			value
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set stock")
 	@CommandCompletion("@collecteditems 0")
 	fun onSetStock(sender: CommandSender, item: String, stock: Int) = asyncCommand(sender) {
@@ -166,11 +195,17 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender msg "&aChanged stock of ${collectedItem.itemString} at ${EcoStations[collectedItem.station].name} " +
-			"from ${collectedItem.stock} to $stock " +
-			"& refreshed collector missions."
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Changed stock of {0} at {1} from {2} to {3} and refreshed collector missions.",
+			collectedItem.itemString,
+			EcoStations[collectedItem.station].name,
+			collectedItem.stock,
+			stock
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set stackrange")
 	@CommandCompletion("@collecteditems 1 10")
 	fun onSetStackRange(sender: CommandSender, item: String, minStacks: Int, maxStacks: Int) {
@@ -183,9 +218,14 @@ object CollectedItemCommand : SLCommand() {
 
 			CollectionMissions.reset()
 
-			sender msg "&aChanged stack range of ${collectedItem.itemString} at ${EcoStations[collectedItem.station].name} " +
-				"to $minStacks..$maxStacks" +
-				"& refreshed collector missions."
+			sender.sendFeedbackMessage(
+				FeedbackType.SUCCESS,
+				"Changed stack range of {0} at {1} to {2}..{3} and refreshed collector missions.",
+				collectedItem.itemString,
+				EcoStations[collectedItem.station].name,
+				minStacks,
+				maxStacks
+			)
 		}
 	}
 }
