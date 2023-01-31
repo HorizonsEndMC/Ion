@@ -10,12 +10,13 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.Shuttle
 import net.starlegacy.feature.misc.Shuttles
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.isAlphanumeric
-import net.starlegacy.util.msg
 import net.starlegacy.util.readSchematic
 import net.starlegacy.util.writeSchematic
 import org.bukkit.Particle
@@ -34,6 +35,7 @@ object ShuttleCommand : SLCommand() {
 		failIf(!name.replace("_", "").isAlphanumeric()) { "Name must use only letters, numbers, and underscores" }
 	}
 
+	@Suppress("Unused")
 	@Subcommand("schem save")
 	fun onSchemSave(sender: Player, name: String) {
 		validateName(name)
@@ -50,23 +52,38 @@ object ShuttleCommand : SLCommand() {
 		writeSchematic(clipboard, file)
 
 		val region: Region = clipboard.region
-		sender msg "&7&oDimensions&8&o:&b&o ${region.width}x${region.height}x${region.length}"
-		sender msg "&aSaved schematic file ${file.absolutePath}"
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"Dimensions: {0}x{1}x{2}",
+			region.width,
+			region.height,
+			region.length
+		)
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Saved schematic file {0}", file.absolutePath)
 		Shuttles.invalidateSchematicCache(name)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("schem list")
 	fun onSchemList(sender: Player) {
 		for (name in Shuttles.getAllSchematics()) {
 			val schematic: Clipboard = readSchematic(Shuttles.getSchematicFile(name)) ?: fail { "Failed to read $name" }
 			val region: Region = schematic.region
-			sender msg "&6$name&8&l :: &b${region.width}x${region.height}x${region.length}"
+			sender.sendFeedbackMessage(
+				FeedbackType.INFORMATION,
+				"{0} :: {1}x{2}x{3}",
+				name,
+				region.width,
+				region.height,
+				region.length
+			)
 		}
 	}
 
 	private fun validateSchematicFile(name: String): File = Shuttles.getSchematicFile(name)
 		.takeIf(File::exists) ?: fail { "Shuttle schematic $name not found" }
 
+	@Suppress("Unused")
 	@Subcommand("schem load")
 	@CommandCompletion("@shuttleSchematics")
 	fun onSchemLoad(sender: Player, name: String) {
@@ -74,7 +91,7 @@ object ShuttleCommand : SLCommand() {
 		val session: LocalSession = worldEditPlugin.getSession(sender)
 		val clipboard: Clipboard = readSchematic(file) ?: fail { "Failed to read schematic" }
 		session.clipboard = ClipboardHolder(clipboard)
-		sender msg "&aCopied shuttle schematic $name to clipboard"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Copied shuttle schematic {0} to clipboard", name)
 	}
 
 	@Subcommand("create")
@@ -84,7 +101,7 @@ object ShuttleCommand : SLCommand() {
 		failIf(Shuttle[name] != null) { "A shuttle named $name already existed" }
 		validateSchematicFile(schematicName)
 		Shuttle.create(name, schematicName)
-		sender msg "Created shuttle $name"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Created shuttle {0}", name)
 	}
 
 	@Subcommand("delete")
@@ -95,14 +112,20 @@ object ShuttleCommand : SLCommand() {
 			Shuttles.removeShuttleFromWorld(shuttle)
 		}
 		Shuttle.delete(shuttle._id)
-		sender msg "&aDeleted shuttle $shuttleName"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted shuttle {0}", shuttleName)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("list")
 	fun onList(sender: Player) {
 		for (shuttle in Shuttle.all()) {
-			sender msg "&b${shuttle.name} &d&l::&7 ${shuttle.destinations.size} &3destinations " +
-				"in worlds &2[&a${shuttle.destinations.joinToString { it.world }}&2]"
+			sender.sendFeedbackMessage(
+				FeedbackType.INFORMATION,
+				"{0} :: {1} destinations in worlds [{2}]",
+				shuttle.name,
+				shuttle.destinations.size,
+				shuttle.destinations.joinToString { it.world }
+			)
 		}
 	}
 
@@ -110,6 +133,7 @@ object ShuttleCommand : SLCommand() {
 		return Shuttle[name] ?: fail { "Shuttle $name not found" }
 	}
 
+	@Suppress("Unused")
 	@Subcommand("cycle")
 	@CommandCompletion("@shuttles")
 	fun onCycle(sender: Player, shuttleName: String) {
@@ -118,18 +142,25 @@ object ShuttleCommand : SLCommand() {
 		Shuttles.moveShuttle(shuttle, newPosition)
 
 		val destination = shuttle.destinations[newPosition]
-		sender msg "&aMoved shuttle to $destination"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Moved shuttle to {0}", destination)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set schem")
 	@CommandCompletion("@shuttles @shuttleSchematics")
 	fun onSetSchematic(sender: Player, shuttleName: String, schematicName: String) {
 		val shuttle = validateShuttle(shuttleName)
 		validateSchematicFile(schematicName)
 		Shuttle.setSchematic(shuttle._id, schematicName)
-		sender msg "Set schematic of shuttle $shuttleName to $schematicName"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Set schematic of shuttle {0} to {1}",
+			shuttleName,
+			schematicName
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("dest add")
 	@CommandCompletion("@shuttles planet|station")
 	fun onDestinationAdd(sender: Player, shuttleName: String, destinationName: String) {
@@ -162,19 +193,34 @@ object ShuttleCommand : SLCommand() {
 		}
 
 		Shuttle.addDestination(shuttle._id, Shuttle.Destination(destinationName, world.name, ox, oy, oz))
-		sender msg "&aAdded destination $destinationName to shuttle $shuttleName"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Added destination {0} to shuttle {1}",
+			destinationName,
+			shuttleName
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("dest list")
 	@CommandCompletion("@shuttles")
 	fun onDestinationList(sender: Player, shuttleName: String) {
 		val shuttle = validateShuttle(shuttleName)
-		sender msg "&bDestinations of shuttle &e$shuttleName:"
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Destinations of shuttle {0}:", shuttleName)
 		for (dest in shuttle.destinations) {
-			sender msg "   &b::&7> &3${dest.name} &7(&a${dest.world}@[${dest.x},${dest.y},${dest.z}]&7)"
+			sender.sendFeedbackMessage(
+				FeedbackType.INFORMATION,
+				"   ::> {0} ({1}@[{2},{3},{4}])",
+				dest.name,
+				dest.world,
+				dest.x,
+				dest.y,
+				dest.z
+			)
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("dest remove")
 	@CommandCompletion("@shuttles @nothing")
 	fun onDestinationRemove(sender: Player, shuttleName: String, destinationName: String) {
@@ -192,6 +238,11 @@ object ShuttleCommand : SLCommand() {
 			Shuttles.moveShuttle(shuttle, newPosition)
 		}
 
-		sender msg "&aRemoved destination $destinationName from $shuttleName"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Removed destination {0} from {1}",
+			destinationName,
+			shuttleName
+		)
 	}
 }
