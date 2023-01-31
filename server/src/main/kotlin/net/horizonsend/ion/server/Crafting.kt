@@ -237,7 +237,7 @@ fun initializeCrafting() {
 
 	// Shotgun Crafting
 	itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
-		shape("xxx", "apb", "acx")
+		shape("xxx", "apb", "acb")
 
 		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
 		setIngredient('p', CustomItems.SHOTGUN_RECEIVER.constructItemStack())
