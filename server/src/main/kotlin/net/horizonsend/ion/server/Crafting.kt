@@ -17,8 +17,10 @@ import org.bukkit.Material.GOLD_INGOT
 import org.bukkit.Material.GRAY_WOOL
 import org.bukkit.Material.GREEN_DYE
 import org.bukkit.Material.GREEN_WOOL
+import org.bukkit.Material.GLASS
 import org.bukkit.Material.HONEYCOMB
 import org.bukkit.Material.IRON_BLOCK
+import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LEATHER
 import org.bukkit.Material.LIGHT_BLUE_WOOL
@@ -38,6 +40,7 @@ import org.bukkit.Material.PRISMARINE_CRYSTALS
 import org.bukkit.Material.PURPLE_WOOL
 import org.bukkit.Material.QUARTZ
 import org.bukkit.Material.REDSTONE
+import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.RED_WOOL
 import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
@@ -130,6 +133,148 @@ fun initializeCrafting() {
 		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
 		setIngredient('c', COPPER_INGOT)
 		setIngredient('p', PRISMARINE_CRYSTALS)
+	}
+
+	// Pistol Receiver Crafting
+	itemStackShapeRecipe("pistol_receiver", CustomItems.PISTOL_RECEIVER.constructItemStack()) {
+		shape("xxx", "irt", "xxx")
+
+		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('i', IRON_TRAPDOOR)
+		setIngredient('x', AIR)
+	}
+
+	// Rifle Receiver Crafting
+	itemStackShapeRecipe("rifle_receiver", CustomItems.RIFLE_RECEIVER.constructItemStack()) {
+		shape("xtx", "irt", "xtx")
+
+		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('i', IRON_TRAPDOOR)
+		setIngredient('x', AIR)
+	}
+
+	// SMB Receiver Crafting
+	itemStackShapeRecipe("smb_receiver", CustomItems.SMB_RECEIVER.constructItemStack()) {
+		shape("xtx", "irx", "xtx")
+
+		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('i', IRON_TRAPDOOR)
+		setIngredient('x', AIR)
+	}
+
+	// Sniper Receiver Crafting
+	itemStackShapeRecipe("sniper_receiver", CustomItems.SNIPER_RECEIVER.constructItemStack()) {
+		shape("xtx", "irb", "xtx")
+
+		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('b', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.fullBlock.singleItem()))
+		setIngredient('i', IRON_TRAPDOOR)
+		setIngredient('x', AIR)
+	}
+
+	// Shotgun Receiver Crafting
+	itemStackShapeRecipe("shotgun_receiver", CustomItems.SHOTGUN_RECEIVER.constructItemStack()) {
+		shape("xxx", "irb", "xtx")
+
+		setIngredient('t', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.singleItem()))
+		setIngredient('r', REDSTONE_BLOCK)
+		setIngredient('b', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_TITANIUM.fullBlock.singleItem()))
+		setIngredient('i', IRON_TRAPDOOR)
+		setIngredient('x', AIR)
+	}
+
+	// Pistol Crafting
+	itemStackShapeRecipe("pistol", CustomItems.PISTOL.constructItemStack()) {
+		shape("xxx", "apb", "cxx")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('p', CustomItems.PISTOL_RECEIVER.constructItemStack())
+		setIngredient('b', CustomItems.GUN_BARREL.constructItemStack())
+		setIngredient('c', CustomItems.CIRCUITRY.constructItemStack())
+		setIngredient('x', AIR)
+	}
+
+	// Rifle Crafting
+	itemStackShapeRecipe("rifle", CustomItems.RIFLE.constructItemStack()) {
+		shape("xxx", "apb", "acx")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('p', CustomItems.RIFLE_RECEIVER.constructItemStack())
+		setIngredient('b', CustomItems.GUN_BARREL.constructItemStack())
+		setIngredient('c', CustomItems.CIRCUITRY.constructItemStack())
+		setIngredient('x', AIR)
+	}
+
+	// SMB Crafting
+	itemStackShapeRecipe("submachine_blaster", CustomItems.SUBMACHINE_BLASTER.constructItemStack()) {
+		shape("xxx", "apb", "acx")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('p', CustomItems.SMB_RECEIVER.constructItemStack())
+		setIngredient('b', CustomItems.GUN_BARREL.constructItemStack())
+		setIngredient('c', CustomItems.CIRCUITRY.constructItemStack())
+		setIngredient('x', AIR)
+	}
+
+	// Sniper Crafting
+	itemStackShapeRecipe("sniper", CustomItems.SNIPER.constructItemStack()) {
+		shape("xgx", "apb", "acx")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('p', CustomItems.SNIPER_RECEIVER.constructItemStack())
+		setIngredient('b', CustomItems.GUN_BARREL.constructItemStack())
+		setIngredient('c', CustomItems.CIRCUITRY.constructItemStack())
+		setIngredient('g', GLASS)
+		setIngredient('x', AIR)
+	}
+
+	// Shotgun Crafting
+	itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
+		shape("xxx", "apb", "acx")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('p', CustomItems.SHOTGUN_RECEIVER.constructItemStack())
+		setIngredient('b', CustomItems.GUN_BARREL.constructItemStack())
+		setIngredient('c', CustomItems.CIRCUITRY.constructItemStack())
+		setIngredient('x', AIR)
+	}
+
+	// Circuitry Crafting 1
+	itemStackShapeRecipe("circuitry_1", CustomItems.CIRCUITRY.constructItemStack()) {
+		shape("qdq", "arg", "ccc")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
+	}
+
+	// Circuitry Crafting 2
+	itemStackShapeRecipe("circuitry_2", CustomItems.CIRCUITRY.constructItemStack()) {
+		shape("qdq", "gra", "ccc")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('c', COPPER_INGOT)
+		setIngredient('q', QUARTZ)
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('d', GREEN_DYE)
+		setIngredient('r', REDSTONE)
+	}
+
+	// Standard Magazine Crafting
+	itemStackShapeRecipe("standard_magazine", CustomItems.STANDARD_MAGAZINE.constructItemStack()) {
+		shape("xxx", "rlr", "aaa")
+
+		setIngredient('a', RecipeChoice.ExactChoice(LegacyCustomItems.MINERAL_ALUMINUM.singleItem()))
+		setIngredient('l', LAPIS_BLOCK)
+		setIngredient('r', REDSTONE)
+		setIngredient('x', AIR)
 	}
 
 	// Circuitry Crafting 1
