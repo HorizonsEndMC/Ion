@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy.commands.bungee
+package net.horizonsend.ion.proxy.commands.waterfall
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
