@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object TutorialStartStopCommand : SLCommand() {
+	@Suppress("Unused")
 	@CommandAlias("tutorialstart")
 	@CommandPermission("tutorial.start")
 	fun onTutorialStart(sender: CommandSender, @Optional player: OnlinePlayer?) {
@@ -32,12 +33,14 @@ object TutorialStartStopCommand : SLCommand() {
 		TutorialManager.start(targetPlayer)
 	}
 
+	@Suppress("Unused")
 	@CommandAlias("tutorialstop")
 	@CommandPermission("tutorial.stop")
 	fun onTutorialStop(sender: CommandSender, player: OnlinePlayer) {
 		TutorialManager.stop(player.getPlayer())
 	}
 
+	@Suppress("Unused")
 	@Subcommand("exit|quit")
 	@CommandAlias("tutorialexit|tutorialquit|quittutorial|exittutorial")
 	fun onTutorialExit(sender: Player) {
