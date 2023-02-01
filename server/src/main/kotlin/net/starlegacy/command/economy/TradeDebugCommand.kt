@@ -118,8 +118,8 @@ object TradeDebugCommand : SLCommand() {
 			shipments.sortedByDescending { it.routeValue }.forEach { shipment ->
 				sender.sendRichMessage(
 					"<gold>  Crate: " + "<aqua>${CargoCrates[shipment.crate].name}" +
-					"<gold> To: " + "<dark_purple>${shipment.to.displayName}" +
-					"<gold> Value: " + "<yellow>${shipment.routeValue}"
+						"<gold> To: " + "<dark_purple>${shipment.to.displayName}" +
+						"<gold> Value: " + "<yellow>${shipment.routeValue}"
 				)
 			}
 		}
