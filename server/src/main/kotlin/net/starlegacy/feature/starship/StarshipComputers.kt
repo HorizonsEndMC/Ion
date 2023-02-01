@@ -1,7 +1,9 @@
 package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SERVER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
@@ -22,7 +24,6 @@ import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.event.StarshipComputerOpenMenuEvent
-import net.starlegacy.feature.starship.event.StarshipDetectEvent
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.toText
@@ -207,9 +208,7 @@ object StarshipComputers : SLComponent() {
 					return@async
 				}
 
-				if (!Tasks.getSyncBlocking { StarshipDetectEvent(player, player.world).callEvent() }) {
-					return@async
-				}
+				player.rewardAchievement(Achievement.DETECT_SHIP)
 
 				DeactivatedPlayerStarships.updateState(data, state)
 

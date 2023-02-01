@@ -1,7 +1,8 @@
 package net.starlegacy.feature.economy.cargotrade
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import net.horizonsend.ion.server.legacy.events.CompleteCargoRunEvent
+import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.SLComponent
@@ -402,7 +403,7 @@ object ShipmentManager : SLComponent() {
 				}
 			}
 		}
-		CompleteCargoRunEvent(player).callEvent()
+		player.rewardAchievement(Achievement.COMPLETE_CARGO_RUN)
 	}
 
 	private fun giveSettlementProfit(playerName: String, city: TradeCityData, tax: Int) {
