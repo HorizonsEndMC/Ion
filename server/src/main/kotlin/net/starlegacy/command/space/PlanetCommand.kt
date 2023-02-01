@@ -300,17 +300,17 @@ object PlanetCommand : SLCommand() {
 	@CommandCompletion("@planets")
 	fun onInfo(sender: CommandSender, planet: CachedPlanet) {
 		sender.sendRichMessage(
-			"<dark_green>${planet.name}" +
-				"  <gray>Sun: <aqua>${planet.sun.name}" +
-				"  <gray>Space World: <aqua>${planet.spaceWorldName}" +
-				"  <gray>Planet World: <aqua>${planet.planetWorldName}" +
-				"  <gray>Rogue: <aqua>${planet.rogue}" +
-				"  <gray>Fixed location: <aqua>${planet.x}, ${planet.z}" +
-				"  <gray>Size: <aqua>${planet.size}" +
-				"  <gray>Atmosphere Density: <aqua>${planet.cloudDensity}" +
-				"  <gray>Atmosphere Radius: <aqua>${planet.atmosphereRadius}" +
-				"  <gray>Atmosphere Materials: <aqua>${planet.cloudMaterials}" +
-				"  <gray>Crust Radius: <aqua>${planet.crustRadius}" +
+			"<dark_green>${planet.name}\n" +
+				"  <gray>Sun: <aqua>${planet.sun.name}\n" +
+				"  <gray>Space World: <aqua>${planet.spaceWorldName}\n" +
+				"  <gray>Planet World: <aqua>${planet.planetWorldName}\n" +
+				"  <gray>Rogue: <aqua>${planet.rogue}\n" +
+				"  <gray>Fixed location: <aqua>${planet.x}, ${planet.z}\n" +
+				"  <gray>Size: <aqua>${planet.size}\n" +
+				"  <gray>Atmosphere Density: <aqua>${planet.cloudDensity}\n" +
+				"  <gray>Atmosphere Radius: <aqua>${planet.atmosphereRadius}\n" +
+				"  <gray>Atmosphere Materials: <aqua>${planet.cloudMaterials}\n" +
+				"  <gray>Crust Radius: <aqua>${planet.crustRadius}\n" +
 				"  <gray>Crust Materials: <aqua>${planet.crustMaterials}"
 		)
 	}
