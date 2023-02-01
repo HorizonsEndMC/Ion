@@ -6,6 +6,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.space.Planet
 import net.starlegacy.feature.space.CachedPlanet
@@ -13,8 +15,6 @@ import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Orbits
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceMap
-import net.starlegacy.util.green
-import net.starlegacy.util.msg
 import net.starlegacy.util.randomDouble
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
@@ -72,9 +72,10 @@ object PlanetCommand : SLCommand() {
 
 		val planet: CachedPlanet = Space.planetNameCache[name].get()
 
-		sender msg green("Created planet $name at ${planet.location} ")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Created planet {0} at {1} ", name, planet.location)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set seed")
 	@CommandCompletion("@planets 0")
 	fun onSetSeed(sender: CommandSender, planet: CachedPlanet, newSeed: Long) {
@@ -84,9 +85,13 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg green("Updated seed in database, reloaded systems, and regenerated planet.")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated seed in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set atmosphere materials")
 	@CommandCompletion("@planets @nothing")
 	fun onSetAtmosphereMaterials(sender: CommandSender, planet: CachedPlanet, newMaterials: String) {
@@ -104,9 +109,13 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg "Updated atmosphere materials in database, reloaded systems, and regenerated planet."
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated atmosphere materials in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set atmosphere density")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetAtmosphereDensity(sender: CommandSender, planet: CachedPlanet, newDensity: Double) {
@@ -116,9 +125,13 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg green("Updated atmosphere density in database, reloaded systems, and regenerated planet.")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated atmosphere density in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set atmosphere noise")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetAtmosphereNoise(sender: CommandSender, planet: CachedPlanet, newNoise: Double) {
@@ -128,9 +141,13 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg green("Updated atmosphere noise in database, reloaded systems, and regenerated planet.")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated atmosphere noise in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set cloud threshold")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetCloudThreshold(sender: CommandSender, planet: CachedPlanet, newThreshold: Double) {
@@ -140,9 +157,13 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg green("Updated cloud density in database, reloaded systems, and regenerated planet.")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated cloud density in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set cloud noise")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetCloudNoise(sender: CommandSender, planet: CachedPlanet, newNoise: Double) {
@@ -152,9 +173,13 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg green("Updated cloud noise in database, reloaded systems, and regenerated planet.")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated cloud noise in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set crust noise")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetCrustNoise(sender: CommandSender, planet: CachedPlanet, newNoise: Double) {
@@ -164,9 +189,13 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg green("Updated crust noise in database, reloaded systems, and regenerated planet.")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated crust noise in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set crust materials")
 	@CommandCompletion("@planets @nothing")
 	fun onSetCrustMaterials(sender: CommandSender, planet: CachedPlanet, newMaterials: String) {
@@ -184,17 +213,27 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender msg "Updated crust materials in database, reloaded systems, and regenerated planet."
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated crust materials in database, reloaded systems, and regenerated planet."
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set sun")
 	@CommandCompletion("@planets @stars")
 	fun onSetSun(sender: CommandSender, planet: CachedPlanet, newSun: CachedStar) {
 		val oldSun = planet.sun
 		planet.changeSun(newSun)
-		sender msg green("Updated sun from ${oldSun.name} to ${newSun.name}, moved the planet, and updated database")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated sun from {0} to {1}, moved the planet, and updated database",
+			oldSun.name,
+			newSun.name
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set rogue")
 	@CommandCompletion("@planets true|false")
 	fun onSetRogue(sender: CommandSender, planet: CachedPlanet, newValue: Boolean) {
@@ -202,12 +241,19 @@ object PlanetCommand : SLCommand() {
 		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
 
 		planet.toggleRogue(newValue)
-		sender msg green("Updated ${planet.name} rogue to $newValue from $oldValue")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated {0} rogue to {1} from {2}",
+			planet.name,
+			newValue,
+			oldValue
+		)
 		planet.setLocation(true)
 		spaceWorld.save()
 		SpaceMap.refresh()
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set location")
 	@CommandCompletion("@planets x z")
 	fun onSetLocation(sender: CommandSender, planet: CachedPlanet, x: Int, z: Int) {
@@ -215,44 +261,61 @@ object PlanetCommand : SLCommand() {
 
 		planet.changeX(x)
 		planet.changeZ(z)
-		sender msg green("Moved ${planet.name} to $x, $z")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Moved {0} to {1}, {2}", planet.name, x, z)
 		planet.setLocation(true, true)
 		spaceWorld.save()
 		SpaceMap.refresh()
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set orbit distance")
 	@CommandCompletion("@planets @nothing")
 	fun onSetOrbitDistance(sender: CommandSender, planet: CachedPlanet, newDistance: Int) {
 		val oldDistance = planet.orbitDistance
 		planet.changeOrbitDistance(newDistance)
-		sender msg green("Updated distance from $oldDistance to $newDistance, moved the planet, and updated database")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Updated distance from {0} to {1}, moved the planet, and updated database",
+			oldDistance,
+			newDistance
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("getpos")
 	@CommandCompletion("@planets")
 	fun onGetPos(sender: CommandSender, planet: CachedPlanet) {
-		sender msg "&7${planet.name}&b is at &e${planet.location}&b in &c${planet.spaceWorldName}&b. " +
-			"Its planet world is &2${planet.planetWorldName}"
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"{0} is at {1} in {2}. Its planet world is {3}",
+			planet.name,
+			planet.location,
+			planet.spaceWorldName,
+			planet.planetWorldName
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("info")
 	@CommandCompletion("@planets")
 	fun onInfo(sender: CommandSender, planet: CachedPlanet) {
-		sender msg "&2${planet.name}"
-		sender msg "  &7Sun:&b ${planet.sun.name}"
-		sender msg "  &7Space World:&b ${planet.spaceWorldName}"
-		sender msg "  &7Planet World:&b ${planet.planetWorldName}"
-		sender msg "  &7Rogue: &b ${planet.rogue}"
-		sender msg "  $7Fixed location: &b ${planet.x}, ${planet.z}"
-		sender msg "  &7Size:&b ${planet.size}"
-		sender msg "  &7Atmosphere Density:&b ${planet.cloudDensity}"
-		sender msg "  &7Atmosphere Radius:&b ${planet.atmosphereRadius}"
-		sender msg "  &7Atmosphere Materials:&b ${planet.cloudMaterials}"
-		sender msg "  &7Crust Radius:&b ${planet.crustRadius}"
-		sender msg "  &7Crust Materials:&b ${planet.crustMaterials}"
+		sender.sendRichMessage(
+			"<dark_green>${planet.name}" +
+				"  <gray>Sun: <aqua>${planet.sun.name}" +
+				"  <gray>Space World: <aqua>${planet.spaceWorldName}" +
+				"  <gray>Planet World: <aqua>${planet.planetWorldName}" +
+				"  <gray>Rogue: <aqua>${planet.rogue}" +
+				"  <gray>Fixed location: <aqua>${planet.x}, ${planet.z}" +
+				"  <gray>Size: <aqua>${planet.size}" +
+				"  <gray>Atmosphere Density: <aqua>${planet.cloudDensity}" +
+				"  <gray>Atmosphere Radius: <aqua>${planet.atmosphereRadius}" +
+				"  <gray>Atmosphere Materials: <aqua>${planet.cloudMaterials}" +
+				"  <gray>Crust Radius: <aqua>${planet.crustRadius}" +
+				"  <gray>Crust Materials: <aqua>${planet.crustMaterials}"
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("orbit")
 	@CommandCompletion("@planets")
 	fun onOrbit(sender: CommandSender, planet: CachedPlanet) {
@@ -270,9 +333,15 @@ object PlanetCommand : SLCommand() {
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
 
-		sender msg "&7Orbited &b${planet.name}&7 in &c${elapsedMilliseconds}ms"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Orbited {0} in {1}ms",
+			planet.name,
+			elapsedMilliseconds
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("orbit all")
 	fun onOrbitAll(sender: CommandSender) {
 		val elapsedNanos = measureNanoTime {
@@ -281,9 +350,10 @@ object PlanetCommand : SLCommand() {
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
 
-		sender msg "&7Orbited &b&oeverything&7 in &c${elapsedMilliseconds}ms"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Orbited everything in {0}ms", elapsedMilliseconds)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("generate")
 	@CommandCompletion("@planets")
 	fun onGenerate(sender: CommandSender, planet: CachedPlanet) {
@@ -297,9 +367,15 @@ object PlanetCommand : SLCommand() {
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
 
-		sender msg "&7Generated &b${planet.name}&7 in &c${elapsedMilliseconds}ms"
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Generated {0} in {1}ms",
+			planet.name,
+			elapsedMilliseconds
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("teleport|tp")
 	@CommandCompletion("@planets")
 	fun onTeleport(sender: Player, planet: CachedPlanet) {
@@ -311,7 +387,7 @@ object PlanetCommand : SLCommand() {
 
 		sender.teleport(location)
 
-		sender msg green("Teleported to ${planet.name}")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Teleported to {0}", planet.name)
 	}
 
 	@Subcommand("delete")
@@ -320,6 +396,6 @@ object PlanetCommand : SLCommand() {
 		planet.erase()
 		Planet.delete(planet.databaseId)
 		Space.reload()
-		sender msg "&aDeleted planet ${planet.name}"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted planet {0}", planet.name)
 	}
 }
