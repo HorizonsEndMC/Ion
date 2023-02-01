@@ -6,6 +6,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.space.Star
 import net.starlegacy.feature.space.CachedPlanet
@@ -13,9 +15,6 @@ import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.green
-import net.starlegacy.util.msg
-import net.starlegacy.util.yellow
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.command.CommandSender
@@ -53,15 +52,32 @@ object StarCommand : SLCommand() {
 
 		Space.starNameCache[name].get().generate()
 
-		sender msg green("Created star $name at $x $z in $spaceWorld with material $material and size $size")
+		sender.sendFeedbackMessage(
+			FeedbackType.SUCCESS,
+			"Created star {0} at {1} {2} in {3} with material {4} and size {5}",
+			name,
+			x,
+			z,
+			spaceWorld,
+			material,
+			size
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("getpos")
 	@CommandCompletion("@stars")
 	fun onGetPos(sender: CommandSender, star: CachedStar) {
-		sender msg "&7${star.name}&b is at &e${star.location}&b in &c${star.spaceWorldName}&b."
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"{0} is at {1} in {2}.",
+			star.name,
+			star.location,
+			star.spaceWorldName
+		)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("teleport|tp")
 	@CommandCompletion("@stars")
 	fun onTeleport(sender: Player, star: CachedStar) {
@@ -73,17 +89,19 @@ object StarCommand : SLCommand() {
 
 		sender.teleport(location)
 
-		sender msg green("Teleported to ${star.name}")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Teleported to {0}", star.name)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("generate")
 	@CommandCompletion("@stars")
 	fun onGenerate(sender: CommandSender, star: CachedStar) {
-		sender msg yellow("Generating star...")
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Generating star...")
 		star.generate()
-		sender msg green("Generated star ${star.name}")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Generated star {0}", star.name)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("move")
 	@CommandCompletion("@stars @nothing @nothing")
 	fun onMove(sender: CommandSender, star: CachedStar, spaceWorld: World, newX: Int, newZ: Int) {
@@ -91,22 +109,22 @@ object StarCommand : SLCommand() {
 		moveOrbitingPlanets(sender, star, spaceWorld)
 
 		Star.setPos(star.databaseId, spaceWorld.name, newX, 128, newZ)
-		sender msg "Moved star ${star.name} to $newX, $newZ"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Moved star {0} to {1}, {2}", star.name, newX, newZ)
 	}
 
 	private fun moveStar(sender: CommandSender, newX: Int, newZ: Int, star: CachedStar, spaceWorld: World) {
-		sender msg yellow("Moving star...")
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Moving star...")
 
 		val newLoc = Vec3i(newX, 128, newZ)
 		star.move(newLoc, spaceWorld)
 	}
 
 	private fun moveOrbitingPlanets(sender: CommandSender, star: CachedStar, spaceWorld: World) {
-		sender msg yellow("Moving orbiting planets...")
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Moving orbiting planets...")
 
 		for (planet in Space.getPlanets()) {
 			if (planet.sun.databaseId == star.databaseId) {
-				sender msg yellow("Moving ${planet.name}...")
+				sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Moving {0}...", planet.name)
 				val newLoc = CachedPlanet.calculateOrbitLocation(star, planet.orbitDistance, planet.orbitProgress)
 				planet.move(newLoc, spaceWorld)
 			}
