@@ -240,7 +240,7 @@ object BlueprintCommand : SLCommand() {
 		val offset = vec.subtract(schematic.origin)
 		for (point in region) {
 			failIf(!isAir(schematic.getBlock(point)) && !isAir(world.getBlock(point.add(offset)))) {
-				"&cObstructed at $point"
+				"Obstructed at $point"
 			}
 		}
 	}
