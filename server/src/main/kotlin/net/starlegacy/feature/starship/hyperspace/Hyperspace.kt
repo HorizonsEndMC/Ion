@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import net.horizonsend.ion.server.legacy.events.HyperspaceEnterEvent
+import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
@@ -74,7 +75,7 @@ object Hyperspace : SLComponent() {
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
-		(starship as? ActivePlayerStarship)?.pilot?.let { HyperspaceEnterEvent(it, starship).callEvent() }
+		(starship as? ActivePlayerStarship)?.pilot?.let { it.rewardAchievement(Achievement.USE_HYPERSPACE) }
 	}
 
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {

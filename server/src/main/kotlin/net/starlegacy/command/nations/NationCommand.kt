@@ -6,8 +6,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.events.CreateNationEvent
-import net.horizonsend.ion.server.legacy.events.CreateNationOutpostEvent
+import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -135,7 +135,7 @@ internal object NationCommand : SLCommand() {
 		Nation.create(name, settlement, color.asRGB())
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		CreateNationEvent(sender, name).callEvent()
+		sender.rewardAchievement(Achievement.CREATE_NATION)
 
 		Notify all "&e${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!"
 	}
@@ -340,7 +340,7 @@ internal object NationCommand : SLCommand() {
 
 		Territory.setNation(territory.id, nationId)
 
-		CreateNationOutpostEvent(sender, nationId).callEvent()
+		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
 		Notify.online("&6${sender.name}&d claimed the territory &2${territory.name}&d for their nation &c$nationName&d!")

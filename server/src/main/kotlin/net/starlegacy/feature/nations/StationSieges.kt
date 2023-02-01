@@ -2,14 +2,13 @@ package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.legacy.events.StationSiegeBeginEvent
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.legacy.utilities.rewardAchievement
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
@@ -229,7 +228,7 @@ object StationSieges : SLComponent() {
 		Notify.online("$GOLD${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)")
 		Notify.discord("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
 
-		StationSiegeBeginEvent(player).callEvent()
+		player.rewardAchievement(Achievement.SIEGE_STATION)
 	}
 
 	fun isUnderSiege(stationId: Oid<CapturableStation>) = sieges.any { it.stationId == stationId }

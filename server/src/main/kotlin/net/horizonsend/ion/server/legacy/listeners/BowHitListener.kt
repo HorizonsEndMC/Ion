@@ -12,8 +12,7 @@ object BowHitListener : SLEventListener() {
 	@Suppress("unused")
 	fun onBowHit(event: EntityDamageByEntityEvent) {
 		if (event.damager is Projectile && ProtectionListener.isProtectedCity(event.entity.location)) {
-			event.isCancelled =
-				true
+			event.isCancelled = true
 		}
 	}
 }

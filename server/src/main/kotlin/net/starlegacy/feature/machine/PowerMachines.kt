@@ -2,7 +2,7 @@ package net.starlegacy.feature.machine
 
 import co.aikar.timings.Timing
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent

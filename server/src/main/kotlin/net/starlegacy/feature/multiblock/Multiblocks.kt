@@ -2,8 +2,8 @@ package net.starlegacy.feature.multiblock
 
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.NamespacedKeys
-import net.horizonsend.ion.server.legacy.events.MultiblockDetectEvent
+import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMu
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
@@ -283,7 +284,7 @@ object Multiblocks : SLComponent() {
 		for (multiblock in multiblocks) {
 			if (multiblock.matchesUndetectedSign(sign)) {
 				if (multiblock.signMatchesStructure(sign, particles = true)) {
-					MultiblockDetectEvent(player, multiblock).callEvent()
+					event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
 					return multiblock.setupSign(player, sign)
 				} else {
 					lastMatch = multiblock
