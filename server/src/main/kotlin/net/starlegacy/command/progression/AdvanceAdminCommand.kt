@@ -7,6 +7,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CargoCrateShipment
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -16,9 +18,6 @@ import net.starlegacy.database.uuid
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import net.starlegacy.feature.progression.SLXP
-import net.starlegacy.util.SLTextStyle
-import net.starlegacy.util.green
-import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -31,6 +30,7 @@ import kotlin.math.abs
 @CommandAlias("advanceadmin")
 @CommandPermission("advance.admin")
 object AdvanceAdminCommand : SLCommand() {
+	@Suppress("Unused")
 	@Subcommand("xp get")
 	@CommandCompletion("@players")
 	fun onXPGet(sender: CommandSender, player: String) = asyncCommand(sender) {
@@ -38,7 +38,7 @@ object AdvanceAdminCommand : SLCommand() {
 
 		val xp: Int = SLPlayer.getXP(playerId.slPlayerId) ?: throw InvalidCommandArgument("Player not stored")
 
-		sender msg green("$player has $xp XP")
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "{0} has {1} XP", player, xp)
 
 		Bukkit.getPlayer(playerId)?.let {
 			val cached: PlayerXPLevelCache.CachedAdvancePlayer = PlayerXPLevelCache[playerId]
@@ -50,6 +50,7 @@ object AdvanceAdminCommand : SLCommand() {
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("xp give")
 	@CommandCompletion("@players @nothing")
 	fun onXPGive(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
@@ -64,25 +65,28 @@ object AdvanceAdminCommand : SLCommand() {
 		PlayerXPLevelCache.addSLXP(playerId, amount)
 
 		val newXP: Int = PlayerXPLevelCache.fetchSLXP(playerId)
-		sender msg green("Gave $amount XP to $player. Now they have $newXP XP.")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Gave {0} XP to {1}. Now they have {2} XP.", amount, player, newXP)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("xp set")
 	@CommandCompletion("@players @nothing")
 	fun onXPSet(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
 		val playerId = resolveOfflinePlayer(player)
 		val oldXP = PlayerXPLevelCache.fetchSLXP(playerId)
 		SLXP.setAsync(playerId, amount)
-		sender msg green("Changed $player's XP from $oldXP to $amount.")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Changed {0}'s XP from {1} to {2}.", player, oldXP, amount)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("rebalance")
 	@Description("Reload the levels config")
 	fun onRebalance(sender: CommandSender) {
 		Levels.reloadConfig()
-		sender msg green("Reloaded level balancing configs")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Reloaded level balancing configs")
 	}
 
+	@Suppress("Unused")
 	@Subcommand("level get")
 	@CommandCompletion("@players")
 	fun onLevelGet(sender: CommandSender, player: String) = asyncCommand(sender) {
@@ -90,7 +94,7 @@ object AdvanceAdminCommand : SLCommand() {
 
 		val level: Int = SLPlayer.getLevel(playerId.slPlayerId) ?: throw InvalidCommandArgument("Player not stored")
 
-		sender msg green("$player's level is $level")
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "{0}'s level is {1}", player, level)
 
 		Bukkit.getPlayer(playerId)?.let {
 			val cached = PlayerXPLevelCache[playerId] ?: throw ConditionFailedException("$player has no cache!")
@@ -98,28 +102,31 @@ object AdvanceAdminCommand : SLCommand() {
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("level set")
 	@CommandCompletion("@players @levels")
 	fun onLevelSet(sender: CommandSender, player: String, level: Int) = asyncCommand(sender) {
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val oldLevel: Int = PlayerXPLevelCache.fetchLevel(playerId)
 		PlayerXPLevelCache.setLevel(playerId, level)
-		sender msg green("Changed $player's level from $oldLevel to $level.")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Changed {0}'s level from {1} to {2}.", player, oldLevel, level)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("listplayers")
 	fun onListPlayers(sender: CommandSender) = asyncCommand(sender) {
 		val ids: List<UUID> = SLPlayer.all().map { it._id.uuid }.toList()
 
 		val text = ids.joinToString { id: UUID ->
 			val player = Bukkit.getOfflinePlayer(id)
-			val color = if (player.isOnline) SLTextStyle.GREEN else SLTextStyle.GRAY
-			return@joinToString color.toString() + player.name
+			val color = if (player.isOnline) "<green>" else "<gray>"
+			return@joinToString "$color${player.name}"
 		}
 
-		sender msg text
+		sender.sendFeedbackMessage(FeedbackType.INFORMATION, text)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("scanabuse")
 	fun onScanAbuse(sender: CommandSender) = asyncCommand(sender) {
 		val cratesMap = mutableMapOf<SLPlayerId, Int>()
@@ -137,7 +144,13 @@ object AdvanceAdminCommand : SLCommand() {
 		for (key in creditsMap.keys.sortedByDescending { cratesMap.getValue(it) }) {
 			val extraCredits = creditsMap.getValue(key)
 			val extraCrates = cratesMap.getValue(key)
-			sender msg "${SLPlayer.getName(key)} has ${extraCredits.toCreditsString()} extra money from $extraCrates"
+			sender.sendFeedbackMessage(
+				FeedbackType.INFORMATION,
+				"{0} has {1} extra money from {2}",
+				SLPlayer.getName(key).toString(),
+				extraCredits.toCreditsString(),
+				extraCrates
+			)
 		}
 	}
 }
