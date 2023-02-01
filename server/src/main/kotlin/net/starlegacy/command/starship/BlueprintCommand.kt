@@ -34,7 +34,6 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.isAlphanumeric
-import net.starlegacy.util.msg
 import net.starlegacy.util.nms
 import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.toBukkitBlockData
@@ -90,14 +89,14 @@ object BlueprintCommand : SLCommand() {
 				"You can only have up to ${getMaxBlueprints(sender)} blueprints."
 			}
 			Blueprint.create(slPlayerId, name, starship.data.starshipType, pilotLoc, starship.initialBlockCount, data)
-			sender msg "&aSaved blueprint $name"
+			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Saved blueprint {0}", name)
 		} else {
 			val blueprint = getBlueprint(sender, name)
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
 			blueprint.type = starship.data.starshipType
 			saveBlueprint(blueprint)
-			sender msg "&aUpdated blueprint $name"
+			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Updated blueprint {0}", name)
 		}
 
 		failIf(confirm != "confirm") {
@@ -120,7 +119,7 @@ object BlueprintCommand : SLCommand() {
 		val blueprint = getBlueprint(sender, name)
 		// TODO: confirm menu
 		Blueprint.delete(blueprint._id)
-		sender msg "&aDeleted blueprint ${blueprint.name}"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted blueprint {0}", blueprint.name)
 	}
 
 	private fun blueprintInfo(blueprint: Blueprint): List<String> {
@@ -146,6 +145,7 @@ object BlueprintCommand : SLCommand() {
 			.toInt()
 	}
 
+	@Suppress("Unused")
 	@Subcommand("list")
 	fun onList(sender: Player) = asyncCommand(sender) {
 		val slPlayerId = sender.slPlayerId
@@ -169,13 +169,15 @@ object BlueprintCommand : SLCommand() {
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("info")
 	@CommandCompletion("@blueprints")
 	fun onInfo(sender: Player, name: String) = asyncCommand(sender) {
 		val blueprint = getBlueprint(sender, name)
-		sender msg blueprintInfo(blueprint).joinToString("\n")
+		sender.sendRichMessage(blueprintInfo(blueprint).joinToString("\n"))
 	}
 
+	@Suppress("Unused")
 	@Subcommand("materials")
 	@CommandCompletion("@blueprints")
 	fun onMaterials(sender: Player, name: String) = asyncCommand(sender) {
@@ -183,6 +185,7 @@ object BlueprintCommand : SLCommand() {
 		showMaterials(sender, blueprint)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("load")
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
@@ -200,6 +203,7 @@ object BlueprintCommand : SLCommand() {
 		}
 	}
 
+	@Suppress("Unused")
 	@Subcommand("fix")
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
@@ -267,7 +271,7 @@ object BlueprintCommand : SLCommand() {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 
 		if (block.type != StarshipComputers.COMPUTER_TYPE) {
-			sender msg "${block.type} at $origin was not a starship computer, failed to pilot"
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "{0} at {1} was not a starship computer, failed to pilot", block.type, origin)
 			return
 		}
 
@@ -310,9 +314,10 @@ object BlueprintCommand : SLCommand() {
 			map[printItem] = map.getOrDefault(printItem, 0) + amount
 		}
 
-		sender msg StarshipFactories.getPrintItemCountString(map)
+		sender.sendRichMessage(StarshipFactories.getPrintItemCountString(map))
 	}
 
+	@Suppress("Unused")
 	@Subcommand("trust player")
 	@CommandCompletion("@blueprints @players")
 	fun onTrustPlayer(sender: Player, name: String, player: String) {
@@ -325,9 +330,10 @@ object BlueprintCommand : SLCommand() {
 		blueprint.trustedPlayers.add(slPlayerId)
 		saveBlueprint(blueprint)
 		Notify.player(playerId, "&b${sender.name} &7trusted you to their blueprint &b$name")
-		sender msg "&7Trusted &c$player&7 to blueprint $name"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Trusted {0} to blueprint {1}", player, name)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("untrust player")
 	@CommandCompletion("@blueprints @players")
 	fun onUntrustPlayer(sender: Player, name: String, player: String) {
@@ -340,9 +346,10 @@ object BlueprintCommand : SLCommand() {
 		blueprint.trustedPlayers.remove(slPlayerId)
 		saveBlueprint(blueprint)
 		Notify.player(playerId, "&b${sender.name} &7un-trusted you from their blueprint &b$name")
-		sender msg "&7Un-trusted &c$player&7 from blueprint $name"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Un-trusted {0} from blueprint {1}", player, name)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("trust nation")
 	@CommandCompletion("@blueprints @nations")
 	fun onTrustNation(sender: Player, name: String, nation: String) {
@@ -353,9 +360,10 @@ object BlueprintCommand : SLCommand() {
 		}
 		blueprint.trustedNations.add(nationId)
 		saveBlueprint(blueprint)
-		sender msg "&7Trusted nation &c$nation&7 to blueprint $name"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Trusted nation {0} to blueprint {1}", nation, name)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("untrust nation")
 	@CommandCompletion("@blueprints @nations")
 	fun onUntrustNation(sender: Player, name: String, nation: String) {
@@ -366,6 +374,6 @@ object BlueprintCommand : SLCommand() {
 		}
 		blueprint.trustedNations.remove(nationId)
 		saveBlueprint(blueprint)
-		sender msg "&7Un-trusted nation &c$nation&7 from blueprint $name"
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Un-trusted nation $nation from blueprint $name")
 	}
 }
