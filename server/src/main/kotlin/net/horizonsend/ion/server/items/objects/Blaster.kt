@@ -27,7 +27,6 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -188,9 +187,9 @@ abstract class Blaster<T : Balancing>(
 
 		ProjectileManager.addProjectile(projectile)
 
-		if (livingEntity is CraftPlayer) {
-			for (i in 0..livingEntity.handle.latency.floorDiv(50)) projectile.tick()
-		}
+// 		if (livingEntity is CraftPlayer) {
+// 			for (i in 0..livingEntity.handle.latency.floorDiv(50)) projectile.tick()
+// 		}
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
