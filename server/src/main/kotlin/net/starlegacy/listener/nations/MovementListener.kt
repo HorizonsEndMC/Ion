@@ -1,5 +1,8 @@
 package net.starlegacy.listener.nations
 
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackTitle
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
@@ -14,8 +17,6 @@ import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.action
-import org.bukkit.ChatColor.GOLD
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
@@ -54,7 +55,7 @@ object MovementListener : SLEventListener() {
 
 			if (territory != null) {
 				Tasks.async {
-					val title = "${GOLD}Entered Territory"
+					val title = "<gold>Entered Territory"
 					var subtitle = territory.name
 
 					territory.settlement?.let { id: Oid<Settlement> ->
@@ -69,7 +70,14 @@ object MovementListener : SLEventListener() {
 						subtitle += " (${NPCTerritoryOwner.getName(id)})"
 					}
 
-					player.sendTitle(title, subtitle, 20, 40, 20)
+					player.sendFeedbackTitle(
+						FeedbackType.INFORMATION,
+						title,
+						subtitle,
+						1000,
+						2000,
+						1000
+					)
 				}
 			}
 		}
@@ -85,10 +93,10 @@ object MovementListener : SLEventListener() {
 				lastPlayerZones[uuid] = zone?.id
 
 				if (zone != null) {
-					player action "&3Entered zone&b ${zone.name}"
+					player.sendFeedbackAction(FeedbackType.INFORMATION, "Entered zone {0}", zone.name)
 				} else {
 					oldZone?.let { Regions.get<RegionSettlementZone>(it) }?.let {
-						player action "&3Exited zone&b ${it.name}"
+						player.sendFeedbackAction(FeedbackType.INFORMATION, "Exited zone {0}", it.name)
 					}
 				}
 			}
