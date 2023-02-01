@@ -78,8 +78,8 @@ private fun parseFeedback(type: FeedbackType, message: String, parameters: Colle
 		newMessage = newMessage.replace(
 			"{$index}",
 			"<reset>${
-				when (parameter) {
-					is Number -> "$parameter"
+			when (parameter) {
+				is Number -> "$parameter"
 				else -> "\"$parameter<reset>\""
 			}
 			}<${type.colour}>"
