@@ -181,7 +181,7 @@ object PilotedStarships : SLComponent() {
 			return false
 		}
 
-		if (!StarshipPilotEvent(player).callEvent()) {
+		if (!StarshipPilotEvent(player, data).callEvent()) {
 			return false
 		}
 

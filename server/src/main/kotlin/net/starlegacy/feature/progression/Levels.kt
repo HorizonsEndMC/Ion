@@ -1,6 +1,7 @@
 package net.starlegacy.feature.progression
 
-import net.horizonsend.ion.server.legacy.events.LevelUpEvent
+import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.sharedDataFolder
@@ -92,7 +93,15 @@ object Levels : SLComponent() {
 				player msg lightPurple("Leveled up to level $newLevel for ${previousCost + cost} SLXP").italic()
 
 				broadcastGlobal("&6&l$name&a&l leveled up to &5&lLevel $newLevel&a&l!")
-				LevelUpEvent(player, level).callEvent()
+				when (level) {
+					10 -> Achievement.LEVEL_10
+					20 -> Achievement.LEVEL_20
+					40 -> Achievement.LEVEL_40
+					80 -> Achievement.LEVEL_80
+					else -> null
+				}?.let {
+					player.rewardAchievement(it)
+				}
 			}
 		}
 

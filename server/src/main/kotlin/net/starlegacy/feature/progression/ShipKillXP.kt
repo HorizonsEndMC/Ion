@@ -7,8 +7,9 @@ import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.legacy.events.ShipKillEvent
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -159,7 +160,7 @@ object ShipKillXP : SLComponent() {
 			}
 
 			if (points > 0) {
-				ShipKillEvent(getPlayer(killed)!!, getPlayer(damager.id)!!).callEvent()
+				getPlayer(damager.id)?.rewardAchievement(Achievement.KILL_SHIP)
 				PlayerData[damager.id].update {
 					bounty += xp
 				}

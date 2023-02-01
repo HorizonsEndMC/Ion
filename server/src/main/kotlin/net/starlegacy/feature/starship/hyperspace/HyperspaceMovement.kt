@@ -1,8 +1,11 @@
 package net.starlegacy.feature.starship.hyperspace
 
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.distance
@@ -29,6 +32,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 			cancel()
 			return
 		}
+		(ship as? ActivePlayerStarship)?.pilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
 
 		x += direction.x * speed
 		z += direction.z * speed

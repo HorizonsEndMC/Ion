@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship.active
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.ServerConfiguration
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.minecraft.core.BlockPos
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache

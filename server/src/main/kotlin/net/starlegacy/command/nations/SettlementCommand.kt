@@ -6,7 +6,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.events.CreateSettlementEvent
+import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -99,7 +100,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.create(territory.id, name, sender.slPlayerId)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		CreateSettlementEvent(sender, name).callEvent()
+		sender.rewardAchievement(Achievement.CREATE_SETTLEMENT)
 
 		Notify all "&a${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!"
 
