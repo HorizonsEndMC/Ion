@@ -26,13 +26,15 @@ object SpaceWorldCommand : SLCommand() {
 
 	@Subcommand("list")
 	fun onList(sender: CommandSender) {
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Space Worlds: " + (
-			Bukkit.getWorlds()
-				.filter { SpaceWorlds.contains(it) }
-				.takeIf { it.isNotEmpty() }
-				?.joinToString { it.name }
-				?: "None"
-			)
+		sender.sendFeedbackMessage(
+			FeedbackType.INFORMATION,
+			"Space Worlds: " + (
+				Bukkit.getWorlds()
+					.filter { SpaceWorlds.contains(it) }
+					.takeIf { it.isNotEmpty() }
+					?.joinToString { it.name }
+					?: "None"
+				)
 		)
 	}
 }
