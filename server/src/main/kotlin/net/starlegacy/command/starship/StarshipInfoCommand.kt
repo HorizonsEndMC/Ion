@@ -25,10 +25,10 @@ object StarshipInfoCommand : SLCommand() {
 		val size = ship.initialBlockCount
 
 		p.sendRichMessage(
-			"<aqua>${ship.data.starshipType.displayName} <white>($size blocks)\n" +
-					"   <gray>Mass:<white> ${ship.mass}\n" +
-					"   <gray>World:<white> ${ship.world.name}\n" +
-					"   <gray>Pilot:<white> ${ship.pilot?.name}"
+			"<aqua>${ship.data.name} <white>(${ship.data.starshipType.displayName}) ($size blocks)\n" +
+				"   <gray>Mass:<white> ${ship.mass}\n" +
+				"   <gray>World:<white> ${ship.world.name}\n" +
+				"   <gray>Pilot:<white> ${ship.pilot?.name}"
 		)
 
 		val passengers = ship.onlinePassengers.map { it.name }.joinToString()
@@ -59,8 +59,8 @@ object StarshipInfoCommand : SLCommand() {
 		val powerOutput = ship.reactor.output
 		p.sendRichMessage(
 			"   <gray>Power Output: <white>$powerOutput\n" +
-					"   <gray>Weapon Capacitor Capacity: <white>${ship.reactor.weaponCapacitor.capacity}\n" +
-					"   <gray>Heavy Weapon Booster Output: <white>${ship.reactor.heavyWeaponBooster.output}"
+				"   <gray>Weapon Capacitor Capacity: <white>${ship.reactor.weaponCapacitor.capacity}\n" +
+				"   <gray>Heavy Weapon Booster Output: <white>${ship.reactor.heavyWeaponBooster.output}"
 		)
 
 		p.sendRichMessage("   <gray>Power Division:")
