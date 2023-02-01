@@ -5,14 +5,14 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.misc.addPower
 import net.starlegacy.feature.misc.isPowerable
 import net.starlegacy.feature.misc.removePower
 import net.starlegacy.feature.misc.setPower
 import net.starlegacy.util.displayName
-import net.starlegacy.util.green
-import net.starlegacy.util.msg
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -29,25 +29,28 @@ object BatteryCommand : SLCommand() {
 		return item
 	}
 
+	@Suppress("Unused")
 	@Subcommand("set")
 	@CommandCompletion("0|10|100|1000|10000")
 	fun onSet(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		setPower(item, amount)
-		sender msg green("Set power of ${item.displayName} to $amount")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Set power of {0} to {1}", item.displayName, amount)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("add")
 	fun onAdd(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		addPower(item, amount)
-		sender msg green("Added $amount power to ${item.displayName}")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Added {0} power to {1}", amount, item.displayName)
 	}
 
+	@Suppress("Unused")
 	@Subcommand("remove")
 	fun onRemove(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		removePower(item, amount)
-		sender msg green("Removed $amount power from ${item.displayName}")
+		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Removed {0} power from {1}", amount, item.displayName)
 	}
 }

@@ -1,6 +1,8 @@
 package net.starlegacy.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
@@ -8,19 +10,19 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.SLXP
-import net.starlegacy.util.msg
 import net.starlegacy.util.multimapOf
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object ListCommand : SLCommand() {
+	@Suppress("Unused")
 	@CommandAlias("list|who")
 	fun execute(sender: CommandSender) {
 		val players: Collection<Player> = Bukkit.getOnlinePlayers()
 
 		if (players.isEmpty()) {
-			sender msg "&c&oNo players online"
+			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "No players online")
 			return
 		}
 
@@ -39,12 +41,14 @@ object ListCommand : SLCommand() {
 
 			val nationText = nationId?.let { "&5${NationCache[it].name}" } ?: "&e&oNationless"
 
-			sender msg "$nationText &8&l:(&d${members.count()}&8&l):&7 ${
-			members.joinToString { player ->
-				val nationPrefix = PlayerCache[player].nationTag?.let { "&r$it " } ?: ""
-				return@joinToString "&7[&b${Levels[player]}&7] $nationPrefix&7${player.name}"
-			}
-			}"
+			sender.sendRichMessage(
+				"$nationText <dark_gray>:(<light_purple>${members.count()}<dark_gray>):<gray> ${
+					members.joinToString { player ->
+					val nationPrefix = PlayerCache[player].nationTag?.let { "&r$it " } ?: ""
+					return@joinToString "<gray>[<aqua>${Levels[player]}<gray>] $nationPrefix<gray>${player.name}"
+					}
+				}"
+			)
 		}
 	}
 }
