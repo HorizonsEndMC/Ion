@@ -297,6 +297,8 @@ enum class StarshipType(
 
 	val formatted: String get() = "<$colour>$displayName</$colour>"
 
+	val caseFormatted: String get() = displayName.lowercase().replaceFirstChar { it.uppercase() }
+
 	val menuItem: ItemStack = ItemStack(menuItemMaterial)
 		.setDisplayNameAndGet(displayName)
 		.setLoreAndGet(

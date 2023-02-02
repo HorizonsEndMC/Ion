@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.starships.Blueprint
@@ -156,9 +158,9 @@ object PilotedStarships : SLComponent() {
 	operator fun get(player: Player): ActivePlayerStarship? = map[player]
 	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActivePlayerStarship) -> Unit = {}): Boolean {
 		if (!data.isPilot(player)) {
-			val captain = SLPlayer.getName(data.captain)
+			val captain = SLPlayer.getName(data.captain) ?: "null, <red>something's gone wrong, please contact staff"
 
-			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this, the captain is $captain")
+			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this, the captain is {0}", captain)
 
 			return false
 		}
@@ -317,5 +319,9 @@ object PilotedStarships : SLComponent() {
 
 	fun getDisplayName(data: PlayerStarshipData): String {
 		return data.name ?: data.starshipType.displayName.lowercase(Locale.getDefault())
+	}
+
+	fun getRawDisplayName(data: PlayerStarshipData): String {
+		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()
 	}
 }
