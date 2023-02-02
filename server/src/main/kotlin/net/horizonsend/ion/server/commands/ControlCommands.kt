@@ -6,9 +6,9 @@ import co.aikar.commands.annotation.Private
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.extensions.sendHint
 import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.starships.control.Controller
 import net.horizonsend.ion.server.starships.control.DirectController
 import net.horizonsend.ion.server.starships.control.LegacyController
-import net.horizonsend.ion.server.starships.control.PlayerController
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
@@ -16,6 +16,10 @@ import org.bukkit.entity.Player
 
 @CommandAlias("control")
 class ControlCommands : BaseCommand() {
+	@Suppress("Unused")
+	@Subcommand("none")
+	fun selectNone(sender: Player) = selectControlMode(sender) { null }
+
 	@Suppress("Unused")
 	@Subcommand("direct")
 	fun selectDirect(sender: Player) = selectControlMode(sender) { DirectController(it, (sender as CraftPlayer).handle) }
@@ -40,7 +44,7 @@ class ControlCommands : BaseCommand() {
 	}
 
 	/** Alias to avoid repeating the same checks over and over again. */
-	private fun selectControlMode(sender: Player, constructor: (ActiveStarship) -> PlayerController) {
+	private fun selectControlMode(sender: Player, constructor: (ActiveStarship) -> Controller?) {
 		val starship = ActiveStarships.findByPilot(sender) ?: run {
 			sender.sendUserError("You must be piloting a ship to use this command!")
 			return
