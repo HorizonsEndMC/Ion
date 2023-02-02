@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.starlegacy.feature.starship.movement.StarshipMovement
 import org.bukkit.event.player.PlayerMoveEvent
 
-class DirectController(
+class NormalController(
 	override val starship: Starship,
 	override val serverPlayer: ServerPlayer
 ) : PlayerController {

@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.extensions.sendHint
 import net.horizonsend.ion.server.extensions.sendUserError
 import net.horizonsend.ion.server.starships.control.Controller
-import net.horizonsend.ion.server.starships.control.DirectController
+import net.horizonsend.ion.server.starships.control.NormalController
 import net.horizonsend.ion.server.starships.control.LegacyController
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -21,8 +21,8 @@ class ControlCommands : BaseCommand() {
 	fun selectNone(sender: Player) = selectControlMode(sender) { null }
 
 	@Suppress("Unused")
-	@Subcommand("direct")
-	fun selectDirect(sender: Player) = selectControlMode(sender) { DirectController(it, (sender as CraftPlayer).handle) }
+	@Subcommand("normal")
+	fun selectNormal(sender: Player) = selectControlMode(sender) { NormalController(it, (sender as CraftPlayer).handle) }
 
 	@Suppress("Unused")
 	@Subcommand("legacy")
@@ -33,12 +33,12 @@ class ControlCommands : BaseCommand() {
 	@Suppress("Unused")
 	@CommandAlias("dc|directcontrol")
 	fun legacySelectDirect(sender: Player) {
-		sender.sendHint("/dc is deprecated and may be removed. Use /control direct")
+		sender.sendHint("/dc is deprecated and may be removed. Use /control normal")
 		selectControlMode(sender) {
-			if (it.controller is DirectController) {
+			if (it.controller is NormalController) {
 				LegacyController(it, (sender as CraftPlayer).handle)
 			} else {
-				DirectController(it, (sender as CraftPlayer).handle)
+				NormalController(it, (sender as CraftPlayer).handle)
 			}
 		}
 	}
