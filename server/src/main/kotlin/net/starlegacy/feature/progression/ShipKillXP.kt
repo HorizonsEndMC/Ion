@@ -3,6 +3,8 @@ package net.starlegacy.feature.progression
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import github.scarsz.discordsrv.DiscordSRV
+import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
+import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
@@ -11,9 +13,11 @@ import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CombatNPCKillEvent
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
+import net.starlegacy.feature.starship.PilotedStarships.getRawDisplayName
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -22,6 +26,7 @@ import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
+import org.bukkit.Bukkit.getOfflinePlayer
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.Bukkit.getServer
 import org.bukkit.entity.Entity
@@ -29,6 +34,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -124,6 +130,8 @@ object ShipKillXP : SLComponent() {
 		killedName: String,
 		killed: UUID
 	) {
+		killMessage(killedName, data)
+
 		for ((damager, points) in dataMap.entries) {
 			val player = getPlayer(damager.id) ?: continue // shouldn't happen
 			val killedSize = data.size.toDouble()
@@ -144,7 +152,6 @@ object ShipKillXP : SLComponent() {
 			}
 
 			if (points > 0) {
-				killMessage(killedName, damager, data)
 				ShipKillEvent(getPlayer(killed)!!, getPlayer(damager.id)!!).callEvent()
 				PlayerData[damager.id].update {
 					bounty += xp
@@ -153,36 +160,71 @@ object ShipKillXP : SLComponent() {
 		}
 	}
 
-	private fun killMessage(killedName: String, damager: Damager, data: ShipDamageData) {
-		val damagerShip = ActiveStarships.findByPassenger(getPlayer(damager.id)!!)!!
-		val damagerShipName =
-			(damagerShip as? ActivePlayerStarship)?.let { getDisplayName(damagerShip.data) } ?: damagerShip.type.formatted
+	private fun killMessage(killedName: String, data: ShipDamageData) {
+		val descending = data.map.toList().sortedBy { it.second.get() }.toMutableList()
+		val killer = descending.first().first; descending.removeFirst()
+		val killerShip = ActiveStarships.findByPassenger(getPlayer(killer.id)!!)!!
+		val killerShipName =
+			(killerShip as? ActivePlayerStarship)?.let { getDisplayName(killerShip.data) } ?: ("a " + killerShip.type.formatted)
 
 		getServer().sendFeedbackMessage(
 			FeedbackType.ALERT,
-			"<hover:show_text:'<gray>Block Count: {0}</gray>'>{1}</hover> piloted by {2} was sunk by {3} piloting <hover:show_text:'<gray>Block Count: {4}</gray>'>{5}</hover>\n",
+			"<hover:show_text:'<gray>Block Count: {0}</gray>'>{1}</hover> piloted by {2} was sunk by {3} piloting <hover:show_text:'<gray>Block Count: {4}</gray>'>{5}</hover>",
 			data.size,
 			data.type.formatted,
 			killedName,
-			getPlayer(damager.id)!!.name,
-			damager.size!!,
-			damagerShipName
-		)
+			getPlayer(killer.id)!!.name,
+			killer.size!!,
+			killerShipName
+		) // TODO do this better
 
 		if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
 			Tasks.async {
-				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("events")
+				val channel: TextChannel = DiscordSRV.getPlugin()
+					.getDestinationTextChannelForGameChannelName("events") ?: return@async
 
-				if (channel == null) {
-					System.err.println("ERROR: No events channel found!")
-					return@async
+				// Formatting the messages
+				val killedShipDiscordName = data.name?.let { "$it, a" } ?: "A" // Prevents null weirdness
+				val killerShipDiscordName =
+					(killerShip as? ActivePlayerStarship)?.let { getRawDisplayName(killerShip.data) + ", a" } ?: " a"
+
+				val discordMessage =
+					"$killedShipDiscordName ${data.size} block ${data.type.caseFormatted}, piloted by $killedName, was shot down by " +
+						"${getOfflinePlayer(killer.id).name}, piloting $killerShipDiscordName ${killer.size} block ${killerShip.type.caseFormatted}."
+				// end formatting
+
+				// Nice extras
+				val color = SLPlayer.findIdByName(killedName)
+					?.let { SLPlayer[it]?.nation?.let { nationID -> Nation.findById(nationID)?.color } }
+					?: 16777215 // white // So many null checks, meh, it's not called too often.
+
+				val headURL = "https://minotar.net/avatar/$killedName"
+				// end nice extras
+
+				val embed = EmbedBuilder() // Build the embed
+					.setTitle("Ship Kill") // Title at top
+					.setTimestamp(Instant.now()) // Timestamp at the bottom
+					.setColor(color) // Color bar on the side is the killed player's nation's color
+					.setThumbnail(headURL) // Head of the killed player
+					.addField(MessageEmbed.Field(discordMessage, "", false))
+
+				// Assists section
+				if (data.map.size > 1) {
+					var assists = "" // Build a string to put all the assists on newlines in the same field
+
+					for (assist in descending) {
+						val assistPlayer = getPlayer(assist.first.id) ?: continue
+						val assistShip = ActiveStarships.findByPilot(assistPlayer) ?: continue
+						val assistName = assistShip.data.name?.let { getRawDisplayName(assistShip.data) + ", a" } ?: "a"
+
+						assists += "${assistPlayer.name}, piloting $assistName ${assist.first.size} block ${assistShip.type.caseFormatted}\n"
+					}
+
+					embed.addField(MessageEmbed.Field("Assisted by:", assists, false))
 				}
+				// End assists
 
-				val newShipKillDiscordMessage =
-					"${data.name}, a ${data.size} block ${data.type}, piloted by $killedName, was shot down by " +
-						"${getPlayer(damager.id)!!.name}, piloting $damagerShipName, a ${damager.size} block ${damagerShip.type}."
-
-				channel.sendMessage(newShipKillDiscordMessage).queue()
+				channel.sendMessageEmbeds(embed.build()).queue()
 			}
 		}
 	}

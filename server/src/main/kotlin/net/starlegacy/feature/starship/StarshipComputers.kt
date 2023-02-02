@@ -294,6 +294,7 @@ object StarshipComputers : SLComponent() {
 								if (serialized.clickEvent() != null ||
 									input.contains("<rainbow>") ||
 									input.contains("<newline>") ||
+									input.contains("<reset>") ||
 									serialized.hoverEvent() != null ||
 									serialized.insertion() != null ||
 									serialized.hasDecoration(TextDecoration.OBFUSCATED) ||
@@ -343,7 +344,7 @@ object StarshipComputers : SLComponent() {
 
 								DeactivatedPlayerStarships.updateName(data, input)
 
-								player.sendFeedbackMessage(SUCCESS, "Changed starship name to $input.")
+								player.sendFeedbackMessage(SUCCESS, "Changed starship name to {0}", input)
 							}
 						}
 						return null
