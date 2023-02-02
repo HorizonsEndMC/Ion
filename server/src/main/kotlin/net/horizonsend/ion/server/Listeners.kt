@@ -23,7 +23,6 @@ import net.horizonsend.ion.server.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.listeners.InventoryDragListener
 import net.horizonsend.ion.server.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.listeners.PlayerAttemptPickupItemListener
-import net.horizonsend.ion.server.listeners.PlayerCommandSendListener
 import net.horizonsend.ion.server.listeners.PlayerDeathListener
 import net.horizonsend.ion.server.listeners.PlayerFishListener
 import net.horizonsend.ion.server.listeners.PlayerInteractListener
@@ -32,17 +31,16 @@ import net.horizonsend.ion.server.listeners.PlayerItemHoldListener
 import net.horizonsend.ion.server.listeners.PlayerItemSwapListener
 import net.horizonsend.ion.server.listeners.PlayerJoinListener
 import net.horizonsend.ion.server.listeners.PlayerLoginListener
-import net.horizonsend.ion.server.listeners.PlayerMoveListener
 import net.horizonsend.ion.server.listeners.PlayerQuitListener
 import net.horizonsend.ion.server.listeners.PlayerResourcePackStatusListener
 import net.horizonsend.ion.server.listeners.PlayerTeleportListener
 import net.horizonsend.ion.server.listeners.PotionSplashListener
 import net.horizonsend.ion.server.listeners.PrepareItemCraftListener
 import net.horizonsend.ion.server.listeners.PrepareItemEnchantListener
-import net.horizonsend.ion.server.listeners.ServerTickStartListener
 import net.horizonsend.ion.server.listeners.WorldInitListener
 import net.horizonsend.ion.server.listeners.WorldUnloadListener
 import net.horizonsend.ion.server.managers.HyperspaceBeaconManager
+import net.horizonsend.ion.server.starships.ControlListeners
 
 val listeners = arrayOf(
 	BlockFadeListener(),
@@ -55,7 +53,6 @@ val listeners = arrayOf(
 	InventoryDragListener(),
 	InventoryMoveItemListener(),
 	PlayerAttemptPickupItemListener(),
-	PlayerCommandSendListener(),
 	PlayerDeathListener(),
 	PlayerItemSwapListener(),
 	PlayerFishListener(),
@@ -64,16 +61,16 @@ val listeners = arrayOf(
 	PlayerInteractListener(),
 	PlayerJoinListener(),
 	PlayerLoginListener(),
-	PlayerMoveListener(),
 	PlayerQuitListener(),
 	PlayerResourcePackStatusListener(),
 	PlayerTeleportListener(),
 	PotionSplashListener(),
 	PrepareItemCraftListener(),
 	PrepareItemEnchantListener(),
-	ServerTickStartListener(),
 	WorldInitListener(),
 	WorldUnloadListener(),
+
+	ControlListeners(),
 
 	BuySpawnShuttleListener(),
 	ChunkLoadListener(Ion),
