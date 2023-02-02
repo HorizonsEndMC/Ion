@@ -128,7 +128,28 @@ abstract class ActiveStarship(
 			super.facingDirection = CraftBlock.blockFaceToNotch(value)
 		}
 
+	override fun getThrustInLocalDirection(direction: Direction): Double {
+		return when (direction) {
+			Direction.NORTH -> (thrusterMap[BlockFace.NORTH]?.accel ?: 0.0) / 20.0
+			Direction.EAST -> (thrusterMap[BlockFace.EAST]?.accel ?: 0.0) / 20.0
+			Direction.SOUTH -> (thrusterMap[BlockFace.SOUTH]?.accel ?: 0.0) / 20.0
+			Direction.WEST -> (thrusterMap[BlockFace.WEST]?.accel ?: 0.0) / 20.0
+			else -> super.getThrustInLocalDirection(direction)
+		}
+	}
+
+	override fun getSpeedInLocalDirection(direction: Direction): Double {
+		return when (direction) {
+			Direction.NORTH -> (thrusterMap[BlockFace.NORTH]?.maxSpeed ?: 0) / 20.0
+			Direction.EAST -> (thrusterMap[BlockFace.EAST]?.maxSpeed ?: 0) / 20.0
+			Direction.SOUTH -> (thrusterMap[BlockFace.SOUTH]?.maxSpeed ?: 0) / 20.0
+			Direction.WEST -> (thrusterMap[BlockFace.WEST]?.maxSpeed ?: 0) / 20.0
+			else -> super.getSpeedInLocalDirection(direction)
+		}
+	}
+
 	override fun audiences(): Iterable<Audience> = onlinePassengers
+
 	abstract val type: StarshipType
 
 	var isTeleporting: Boolean = false

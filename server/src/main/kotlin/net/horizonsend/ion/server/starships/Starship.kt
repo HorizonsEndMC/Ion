@@ -143,5 +143,11 @@ open class Starship(
 		velocityZ += z
 	}
 
+	// TODO: Currently intended to be overriden by ActiveStarship
+	open fun getThrustInLocalDirection(direction: Direction): Double = 0.1
+
+	// TODO: Currently intended to be overriden by ActiveStarship
+	open fun getSpeedInLocalDirection(direction: Direction): Double = 1.5
+
 	override fun audience(): Audience = controller as? PlayerController ?: Audience.empty()
 }
