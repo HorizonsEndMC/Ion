@@ -7,8 +7,8 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.extensions.sendHint
 import net.horizonsend.ion.server.extensions.sendUserError
 import net.horizonsend.ion.server.starships.control.Controller
-import net.horizonsend.ion.server.starships.control.NormalController
 import net.horizonsend.ion.server.starships.control.LegacyController
+import net.horizonsend.ion.server.starships.control.NormalController
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
