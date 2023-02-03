@@ -4,10 +4,11 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import net.horizonsend.ion.server.starships.control.PlayerController
 import net.starlegacy.feature.starship.active.ActiveStarships
 import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandSendEvent
 import org.bukkit.event.player.PlayerMoveEvent
 
-class ControlListeners {
+class ControlListeners : Listener {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPlayerCommandSendEvent(event: PlayerCommandSendEvent) {
