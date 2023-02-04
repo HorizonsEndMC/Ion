@@ -1,45 +1,52 @@
 package net.horizonsend.ion.server.generation.generators
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.ServerConfiguration
-import net.horizonsend.ion.server.generation.PlacedOre
-import net.horizonsend.ion.server.generation.PlacedOres
-import net.horizonsend.ion.server.generation.PlacedOresDataType
+import net.minecraft.core.BlockPos
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.starlegacy.util.nms
+import net.starlegacy.util.toBlockPos
 import org.bukkit.Bukkit.createBlockData
-import org.bukkit.Chunk
-import org.bukkit.Material
-import org.bukkit.World
 import org.bukkit.block.data.BlockData
 
 object OreGenerator {
 	val weightedOres = oreWeights()
-	val asteroidBlocks: MutableSet<Material> = mutableSetOf()
+	val asteroidBlocks: MutableSet<BlockState> = mutableSetOf()
 	private val oreMap: Map<String, BlockData> = IonServer.Ion.configuration.ores.associate { it.material to createBlockData(it.material) }
 
-	init {
-		IonServer.Ion.configuration.blockPalettes.forEach { asteroidBlocks.addAll((it.materials.keys)) }
-	}
+	private data class PlacedOre(
+		val materialString: String,
+		val size: Int,
+		val originX: Int,
+		val originY: Int,
+		val originZ: Int
+	)
 
-	fun generateOres(world: World, chunk: Chunk) {
-		val worldX = chunk.x * 16
-		val worldZ = chunk.z * 16
+	fun generateOres(world: ServerLevel, chunk: LevelChunk): Map<Long, BlockState> {
+		val worldX = chunk.pos.x * 16
+		val worldZ = chunk.pos.z * 16
 
-		if (weightedOres.isEmpty()) return
+		if (weightedOres.isEmpty()) return mapOf()
 
 		val random: RandomSource = RandomSource.create(world.seed)
 
-		val ores = mutableListOf<PlacedOre>()
+		val ores = mutableMapOf<Long, BlockState>()
 
 		for (count in (IonServer.Ion.configuration.oreRatio * 10000).toInt() downTo 0) {
 			val originX = random.nextInt(worldX, worldX + 16)
-			val originY = random.nextInt(world.minHeight + 10, world.maxHeight - 10)
+			val originY = random.nextInt(world.minBuildHeight + 10, world.maxBuildHeight - 10)
 			val originZ = random.nextInt(worldZ, worldZ + 16)
 
-			if (!asteroidBlocks.contains(world.getBlockAt(originX, originY, originZ).type)) {
+			if (!asteroidBlocks.contains(
+					world.getBlockIfLoaded(
+							BlockPos(originX, originY, originZ)
+						)?.defaultBlockState()
+				)
+			) {
 				continue
 			}
 			// Quickly move on if it's not in an asteroid
@@ -48,43 +55,44 @@ object OreGenerator {
 
 			val blobSize = random.nextInt(ore.maxBlobSize).coerceAtLeast(1)
 
-			generateOre(world, PlacedOre(ore.material, blobSize, originX, originY, originZ))
-
-			ores += PlacedOre(ore.material, blobSize, originX, originY, originZ)
+			ores += generateOre(world, PlacedOre(ore.material, blobSize, originX, originY, originZ))
 		}
 
-		chunk.persistentDataContainer.set(NamespacedKeys.ASTEROIDS_ORES, PlacedOresDataType(), PlacedOres(ores))
+		return ores
 	}
 
-	fun generateOre(world: World, ore: PlacedOre) {
-		val oreBlocks = getSphereBlocks(ore.blobSize, Triple(ore.x, ore.y, ore.z))
-		val mappedOre = oreMap[ore.material]?.nms
+	private fun generateOre(world: ServerLevel, ore: PlacedOre): Map<Long, BlockState> {
+		val oreBlocks = getSphereBlocks(ore.size, Triple(ore.originX, ore.originY, ore.originZ))
+		val mappedOre = oreMap[ore.materialString]?.nms
 
-		var nmsChunk = world.getChunkAt(ore.x.shr(4), ore.z.shr(4)).nms
+		var nmsChunk = world.getChunk(ore.originX.shr(4), ore.originZ.shr(4))
 		var section: LevelChunkSection
 
+		val returnBlockStates = mutableMapOf<Long, BlockState>() // Ore blocks to return
+
 		for (block in oreBlocks) {
+			val blockPos = block.toBlockPos()
 			val (x, y, z) = block
 			val chunkX = x.shr(4)
 			val chunkZ = z.shr(4)
 
 			if (nmsChunk.locX != chunkX || nmsChunk.locZ != chunkZ) {
-				nmsChunk = world.getChunkAt(chunkX, chunkZ).nms
+				nmsChunk = world.getChunk(chunkX, chunkZ)
 			}
 
 			// shouldn't go negative with this scheme
 			section = try {
 				nmsChunk.sections[
-					(y + world.minHeight)
+					(y + world.minBuildHeight)
 						.coerceAtLeast(0)
-						.coerceAtMost(world.maxHeight - 1)
+						.coerceAtMost(world.maxBuildHeight - 1)
 						.shr(4)
 				]
 			} catch (e: java.lang.Exception) {
 				e.printStackTrace(); continue
 			}
 
-			if (!asteroidBlocks.contains<Material>(world.getBlockAt(x, y, z).type)) continue
+			if (!asteroidBlocks.contains(world.getBlockState(block.toBlockPos()))) continue
 
 			mappedOre?.let {
 				section.setBlockState(
@@ -93,9 +101,14 @@ object OreGenerator {
 					z - chunkZ.shl(4),
 					it
 				)
+
+				returnBlockStates[blockPos.asLong()] = it
 			}
-			nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
+			nmsChunk.playerChunk?.blockChanged(blockPos)
 		}
+		nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
+
+		return returnBlockStates
 	}
 
 	private fun getSphereBlocks(radius: Int, origin: Triple<Int, Int, Int>): List<Triple<Int, Int, Int>> {
