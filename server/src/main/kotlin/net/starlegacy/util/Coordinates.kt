@@ -229,6 +229,12 @@ fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), t
 
 fun Vector.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
+fun getChunkSection(minHeight: Int, maxHeight: Int, y: Int): Int {
+	check(y in minHeight..maxHeight)
+
+	return (y - minHeight).shr(4)
+}
+
 fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFace {
 	val x = vector.x
 	val z = vector.z
