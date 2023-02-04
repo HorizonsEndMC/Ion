@@ -1,5 +1,7 @@
 package net.starlegacy.feature.starship
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.util.setDisplayNameAndGet
 import net.starlegacy.util.setLoreAndGet
@@ -296,8 +298,7 @@ enum class StarshipType(
 	);
 
 	val formatted: String get() = "<$colour>$displayName</$colour>"
-
-	val caseFormatted: String get() = displayName.lowercase().replaceFirstChar { it.uppercase() }
+	val component: Component get() = Component.text(displayName).color(TextColor.fromHexString(colour))
 
 	val menuItem: ItemStack = ItemStack(menuItemMaterial)
 		.setDisplayNameAndGet(displayName)
