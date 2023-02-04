@@ -127,4 +127,6 @@ fun MutableBlockPos.multiply(otherPos: BlockPos) {
 	this.y = this.y * otherPos.y
 	this.z = this.z * otherPos.z
 }
+
+fun Triple<Int, Int, Int>.toBlockPos() = BlockPos(this.first, this.second, this.third)
 //endregion
