@@ -45,7 +45,7 @@ abstract class HyperdriveMultiblock : Multiblock() {
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super.onTransformSign(player, sign)
-		sign.setLine(3, ChatColor.RED.toString() + "Offline")
+		sign.setLine(3, ChatColor.RED.toString() + "/jump <planet>")
 		sign.update()
 	}
 }
