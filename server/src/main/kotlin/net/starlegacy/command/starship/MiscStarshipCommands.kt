@@ -100,8 +100,15 @@ object MiscStarshipCommands : SLCommand() {
 		}
 	}
 
+	@Suppress("Unused")
+	@CommandAlias("jump")
+	fun onJump(sender: Player) {
+		sender.sendFeedbackMessage(USER_ERROR, "/jump <planet> or /jump <x> <z>")
+	}
+
 	@Suppress("unused")
 	@CommandAlias("jump")
+	@CommandCompletion("x|z")
 	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
