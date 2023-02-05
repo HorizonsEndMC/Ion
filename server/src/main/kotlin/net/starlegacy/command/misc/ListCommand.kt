@@ -39,13 +39,15 @@ object ListCommand : SLCommand() {
 		for (nationId: Oid<Nation>? in nationIdsSortedByName) {
 			val members: Collection<Player> = nationMap[nationId].sortedBy { SLXP[it] }
 
-			val nationText = nationId?.let { "&5${NationCache[it].name}" } ?: "&e&oNationless"
+			val nationText = nationId?.let { "<purple>${NationCache[it].name}" } ?: "<yellow><italic>Nationless"
 
 			sender.sendRichMessage(
 				"$nationText <dark_gray>:(<light_purple>${members.count()}<dark_gray>):<gray> ${
 				members.joinToString { player ->
-					val nationPrefix = PlayerCache[player].nationTag?.let { "&r$it " } ?: ""
-					return@joinToString "<gray>[<aqua>${Levels[player]}<gray>] $nationPrefix<gray>${player.name}"
+//					val nationPrefix = PlayerCache[player].nationTag?.let { "<reset>$it " } ?: ""
+					return@joinToString "<gray>[<aqua>${Levels[player]}<gray>] " +
+//							"$nationPrefix" +
+							"<gray>${player.name}"
 				}
 				}"
 			)
