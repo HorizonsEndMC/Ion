@@ -79,7 +79,7 @@ class BountyCommands : BaseCommand() {
 			bounty += amount
 		}
 
-		sender.sendRichMessage("<gray>Added </gray>$amount<gray> to </gray>$${targetData.minecraftUsername}'s<gray> bounty.")
+		sender.sendRichMessage("<gray>Added </gray>$amount<gray> to </gray>${targetData.minecraftUsername}'s<gray> bounty.")
 	}
 
 	@Subcommand("clear")

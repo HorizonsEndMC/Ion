@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -64,6 +65,13 @@ object MenuHelper {
 	fun GuiItem.setLore(lines: List<String>): GuiItem = apply {
 		item.itemMeta = item.itemMeta?.apply {
 			lore = lines.map(String::colorize)
+		}
+	}
+
+	fun GuiItem.setRichLore(lines: List<String>): GuiItem = apply {
+		item.itemMeta = item.itemMeta.apply {
+			val serialized = lines.map { MiniMessage.miniMessage().deserialize(it) }
+			lore(serialized)
 		}
 	}
 
