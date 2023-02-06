@@ -44,10 +44,10 @@ object ListCommand : SLCommand() {
 			sender.sendRichMessage(
 				"$nationText <dark_gray>:(<light_purple>${members.count()}<dark_gray>):<gray> ${
 				members.joinToString { player ->
-//					val nationPrefix = PlayerCache[player].nationTag?.let { "<reset>$it " } ?: ""
+// 					val nationPrefix = PlayerCache[player].nationTag?.let { "<reset>$it " } ?: ""
 					return@joinToString "<gray>[<aqua>${Levels[player]}<gray>] " +
-//							"$nationPrefix" +
-							"<gray>${player.name}"
+// 							"$nationPrefix" +
+						"<gray>${player.name}"
 				}
 				}"
 			)
