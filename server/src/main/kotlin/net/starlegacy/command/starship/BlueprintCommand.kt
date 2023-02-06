@@ -125,12 +125,12 @@ object BlueprintCommand : SLCommand() {
 	private fun blueprintInfo(blueprint: Blueprint): List<String> {
 		val list = LinkedList<String>()
 		var blueprintcost = calculateBlueprintCost(blueprint)
-		list.add("&7Size&8: &6${blueprint.size}")
-		list.add("&7Cost&8: &6$${blueprintcost.toInt()}")
-		list.add("&7Class&8: &d${blueprint.type}")
+		list.add("<gray>Size<dark_gray>: <gold>${blueprint.size}")
+		list.add("<gray>Cost<dark_gray>: <gold>$${blueprintcost.toInt()}")
+		list.add("<gray>Class<dark_gray>: <light_purple>${blueprint.type}")
 		if (blueprint.trustedNations.isNotEmpty()) {
-			list.add("&7Trusted Players&8: &b${blueprint.trustedPlayers.joinToString { getPlayerName(it) }}}")
-			list.add("&7Trusted Nations&8: &a${blueprint.trustedNations.joinToString { NationCache[it].name }}")
+			list.add("<gray>Trusted Players<dark_gray>: <aqua>${blueprint.trustedPlayers.joinToString { getPlayerName(it) }}}")
+			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { NationCache[it].name }}")
 		}
 		return list
 	}
@@ -161,7 +161,7 @@ object BlueprintCommand : SLCommand() {
 				guiButton(blueprint.type.menuItem) {
 					playerClicker.closeInventory()
 					Tasks.async { showMaterials(playerClicker, blueprint) }
-				}.setName(blueprint.name).setLore(blueprintInfo(blueprint))
+				}.setName(blueprint.name).setRichLore(blueprintInfo(blueprint))
 			}
 			Tasks.sync {
 				sender.openPaginatedMenu("Your Blueprints", items)
