@@ -7,34 +7,20 @@ import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.nms
 
 object AsteroidBlockStorage {
-	fun formatChunk(sections: List<CompoundTag>, version: Byte): CompoundTag {
+	fun formatChunk(sections: ListTag, version: Byte): CompoundTag {
 		val chunkCompoundTag = CompoundTag()
-		val sectionsListTag = ListTag()
 
-		for (section in sections) { sectionsListTag.add(section) }
-
-		chunkCompoundTag.put("sections", sectionsListTag)
+		chunkCompoundTag.put("sections", sections)
 		chunkCompoundTag.putByte("ion.space_gen_version", version)
 
 		return chunkCompoundTag
 	}
 
-	fun formatSection(sectionY: Byte, blocks: IntArray, palette: List<CompoundTag>): CompoundTag {
+	fun formatSection(sectionY: Byte, blocks: IntArray, palette: ListTag): CompoundTag {
 		val section = CompoundTag()
 		section.putByte("y", sectionY)
 		section.putIntArray("blocks", blocks)
-
-		val paletteListTag = ListTag()
-
-		for (blockData in palette) {
-			val paletteEntryCompoundTag = CompoundTag()
-
-			paletteEntryCompoundTag.putString("name", blockData.toString())
-
-			paletteListTag.add(paletteEntryCompoundTag)
-		}
-
-		section.put("palette", paletteListTag)
+		section.put("palette", palette)
 
 		return section
 	}
