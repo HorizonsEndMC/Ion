@@ -42,17 +42,17 @@ object AsteroidGenerator {
 
 	fun postGenerateAsteroid(
 		serverLevel: ServerLevel,
-		asteroid: Asteroid,
+		asteroid: Asteroid
 	) {
 		timing.time {
 			val random = Random(serverLevel.seed)
 
 			// generates a set number of ores per asteroid based on a rough estimate of the block count (volume of a sphere)
 			val roughVolume: Double = (
-					(4.0 / 3.0) *
-							Math.PI *
-							((asteroid.size * asteroid.size * asteroid.size) / 3)
-					)
+				(4.0 / 3.0) *
+					Math.PI *
+					((asteroid.size * asteroid.size * asteroid.size) / 3)
+				)
 
 			var oresRemaining: Int = (roughVolume * Ion.configuration.oreRatio).roundToInt()
 			// Ores generate in veins, but each block decrements the count
@@ -88,7 +88,7 @@ object AsteroidGenerator {
 					if (circle >= radiusSquared) continue // if out of equatorial radius continue
 
 					val coveredChunk = serverLevel.getChunk(chunkPosX, chunkPosZ)
-//						(serverLevel.world.getChunkAtAsync(chunkPosX, chunkPosZ).get() as CraftChunk).handle
+// 						(serverLevel.world.getChunkAtAsync(chunkPosX, chunkPosZ).get() as CraftChunk).handle
 					val sections = mutableMapOf<LevelChunkSection, Byte>()
 
 					for (chunkSectionY in chunkYRange) {
@@ -166,10 +166,10 @@ object AsteroidGenerator {
 
 								if (
 									(
-											random.nextDouble(0.0, 1.0) <= Ion.configuration.oreRatio &&
-													oresRemaining >= 0 &&
-													block != null
-											) && !block.isAir
+										random.nextDouble(0.0, 1.0) <= Ion.configuration.oreRatio &&
+											oresRemaining >= 0 &&
+											block != null
+										) && !block.isAir
 								) {
 									val ore = weightedOres[random.nextInt(0, weightedOres.size - 1)]
 									block = oreMap[ore.material]
@@ -234,7 +234,7 @@ object AsteroidGenerator {
 		worldYSquared: Double,
 		worldZSquared: Double,
 		asteroid: Asteroid,
-		noise: SimplexOctaveGenerator,
+		noise: SimplexOctaveGenerator
 	): BlockState? {
 		noise.setScale(0.15)
 
@@ -242,19 +242,19 @@ object AsteroidGenerator {
 
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (
+			(
 				(
-						(
-								noise.noise(
-									worldX,
-									worldY,
-									worldZ,
-									1.0,
-									1.0,
-									true
-								) + 1
-								) / 2
-						) * (weightedMaterials.size - 1)
-				).roundToInt()
+					noise.noise(
+						worldX,
+						worldY,
+						worldZ,
+						1.0,
+						1.0,
+						true
+					) + 1
+					) / 2
+				) * (weightedMaterials.size - 1)
+			).roundToInt()
 
 		// Weight the list by adding duplicate entries, then sample it for the material.
 		val material = weightedMaterials[paletteSample]
@@ -283,7 +283,7 @@ object AsteroidGenerator {
 	fun rebuildChunkAsteroids(chunk: Chunk) {
 		val storedAsteroidData =
 			chunk.persistentDataContainer.get(NamespacedKeys.ASTEROIDS_DATA, PersistentDataType.BYTE_ARRAY)
-				?: throw Throwable("No asteroid data to regenerate!")
+				?: return
 		val nbt = try {
 			NbtIo.readCompressed(ByteArrayInputStream(storedAsteroidData, 0, storedAsteroidData.size))
 		} catch (error: Error) {
