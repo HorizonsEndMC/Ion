@@ -27,11 +27,11 @@ object CustomItems {
 	// If we want to be extra fancy we can replace this with some fastutils thing later.
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
-	@Suppress("Unused") val PISTOL = register(object : Blaster<Singleshot>("PISTOL", DIAMOND_HOE, 1, text("Blaster Pistol", RED, BOLD), { Ion.balancing.energyWeapons.pistol }) {})
+	val PISTOL = register(object : Blaster<Singleshot>("PISTOL", DIAMOND_HOE, 1, text("Blaster Pistol", RED, BOLD), { Ion.balancing.energyWeapons.pistol }) {})
 
-	@Suppress("Unused") val RIFLE = register(object : Blaster<Singleshot>("RIFLE", IRON_HOE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
+	val RIFLE = register(object : Blaster<Singleshot>("RIFLE", IRON_HOE, 1, text("Blaster Rifle", RED, BOLD), { Ion.balancing.energyWeapons.rifle }) {})
 
-	@Suppress("Unused") val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>("SUBMACHINE_BLASTER", IRON_HOE, 2, text("Submachine Blaster", RED, BOLD), { Ion.balancing.energyWeapons.submachineBlaster }) {
+	val SUBMACHINE_BLASTER = register(object : Blaster<Singleshot>("SUBMACHINE_BLASTER", IRON_HOE, 2, text("Submachine Blaster", RED, BOLD), { Ion.balancing.energyWeapons.submachineBlaster }) {
 		override fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) { // Allows fire above 300 rpm
 			val repeatCount = if (balancing.timeBetweenShots >= 4) { 1 } else { (4.0 / balancing.timeBetweenShots).roundToInt() }
 			val division = 4.0 / balancing.timeBetweenShots
@@ -44,15 +44,15 @@ object CustomItems {
 		}
 	})
 
-	@Suppress("Unused") val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", GOLDEN_HOE, 1, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
+	val SHOTGUN = register(object : Blaster<Multishot>("SHOTGUN", GOLDEN_HOE, 1, text("Blaster Shotgun", RED, BOLD), { Ion.balancing.energyWeapons.shotgun }) {
 		override fun fireProjectiles(livingEntity: LivingEntity) {
 			for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
 		}
 	})
 
-	@Suppress("Unused") val SNIPER = register(object : Blaster<Singleshot>("SNIPER", GOLDEN_HOE, 2, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
+	val SNIPER = register(object : Blaster<Singleshot>("SNIPER", GOLDEN_HOE, 2, text("Blaster Sniper", RED, BOLD), { Ion.balancing.energyWeapons.sniper }) {})
 
-	@Suppress("Unused") val STANDARD_MAGAZINE = register(object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"), { Ion.balancing.energyWeapons.standardMagazine }) {})
+	val STANDARD_MAGAZINE = register(object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>("STANDARD_MAGAZINE", WARPED_FUNGUS_ON_A_STICK, 1, text("Magazine"), { Ion.balancing.energyWeapons.standardMagazine }) {})
 
 	val GUN_BARREL = register("GUN_BARREL", 500, text("Gun Barrel"))
 	val CIRCUITRY = register("CIRCUITRY", 501, text("Circuitry"))

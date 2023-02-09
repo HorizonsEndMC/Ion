@@ -15,6 +15,10 @@ class PlayerInteractListener : Listener {
 
 		event.item?.customItem?.apply {
 			when (event.action) {
+				Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
+					handlePrimaryInteract(event.player, event.player.inventory.itemInMainHand)
+					event.isCancelled = true
+				}
 				Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
 					handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand)
 					event.isCancelled = true
