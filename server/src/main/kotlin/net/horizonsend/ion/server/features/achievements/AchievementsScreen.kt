@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.achievements
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.server.features.screens.screens.TextScreen
+import net.horizonsend.ion.server.features.screens.TextScreen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage

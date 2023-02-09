@@ -9,7 +9,7 @@ import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.features.bounties.BountyScreen
-import net.horizonsend.ion.server.features.screens.screens.ScreenManager.openScreen
+import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.CityNPC

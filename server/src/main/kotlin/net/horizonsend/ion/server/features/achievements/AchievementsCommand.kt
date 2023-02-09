@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.features.screens.screens.ScreenManager.openScreen
+import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
