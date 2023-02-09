@@ -9,11 +9,9 @@ interface Controller : ForwardingAudience.Single {
 	val name: String
 	val starship: Starship
 
-	fun tick() {}
-
 	fun onShipMovement(starshipMovement: StarshipMovement) {}
-
-	fun cleanup() {}
+	fun onShipTick() {}
+	fun onControllerRemove() {}
 
 	override fun audience(): Audience = Audience.empty()
 }

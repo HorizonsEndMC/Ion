@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.Private
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.extensions.sendHint
 import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.starships.control.AdvancedController
 import net.horizonsend.ion.server.starships.control.Controller
 import net.horizonsend.ion.server.starships.control.LegacyController
 import net.horizonsend.ion.server.starships.control.NormalController
@@ -23,6 +24,10 @@ class ControlCommands : BaseCommand() {
 	@Suppress("Unused")
 	@Subcommand("normal")
 	fun selectNormal(sender: Player) = selectControlMode(sender) { NormalController(it, (sender as CraftPlayer).handle) }
+
+	@Suppress("Unused")
+	@Subcommand("advanced")
+	fun selectAdvanced(sender: Player) = selectControlMode(sender) { AdvancedController(it, (sender as CraftPlayer).handle) }
 
 	@Suppress("Unused")
 	@Subcommand("legacy")

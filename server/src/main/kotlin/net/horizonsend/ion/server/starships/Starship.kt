@@ -29,7 +29,7 @@ open class Starship(
 			mainThreadCheck()
 
 			value?.sendInformation("Switched active control mode to ${value.name}.")
-			field?.cleanup()
+			field?.onControllerRemove()
 			field = value
 		}
 
@@ -52,7 +52,7 @@ open class Starship(
 		if (velocityZ > decel) velocityZ -= decel else if (velocityZ < -decel) velocityZ += decel else velocityZ = 0.0
 
 		// Tick Controller - This is done here because it may apply acceleration
-		controller?.tick()
+		controller?.onShipTick()
 
 		// Apply velocity to the next translation
 		translateX += velocityX
@@ -79,7 +79,7 @@ open class Starship(
 	fun cleanup() {
 		mainThreadCheck()
 
-		controller?.cleanup()
+		controller?.onControllerRemove()
 	}
 
 	fun globalToLocal(x: Int, y: Int, z: Int): Triple<Int, Int, Int> {
