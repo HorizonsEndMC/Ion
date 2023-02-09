@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.misc.extensions
+package net.horizonsend.ion.server.extensions
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor.color
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.entity.Player
 
 /** Returns the prefix that should be used when displaying server messages sent to this audience in the console. */
@@ -14,11 +14,7 @@ private val Audience.prefix
 	}
 
 /** Sends a message to the audience with the given colour. */
-private fun Audience.sendColouredMessage(message: String, color: Int) = sendMessage(
-	MiniMessage.miniMessage().deserialize(message).color(
-		color(color)
-	)
-)
+private fun Audience.sendColouredMessage(message: String, color: Int) = sendMessage(text(message,color(color)))
 
 /**
  * Used to provide potentially irrelevant information, sends a gray coloured message.

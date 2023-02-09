@@ -8,8 +8,8 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.misc.extensions.sendServerError
-import net.horizonsend.ion.server.misc.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.sendServerError
+import net.horizonsend.ion.server.extensions.sendUserError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.starlegacy.listener.misc.ProtectionListener
