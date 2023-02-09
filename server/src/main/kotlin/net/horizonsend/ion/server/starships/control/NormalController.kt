@@ -32,8 +32,9 @@ class NormalController(
 	override fun onShipMovement(starshipMovement: StarshipMovement) {
 		mainThreadCheck()
 
-		centerX = starshipMovement.displaceX(centerX, centerZ)
+		val new = starshipMovement.displaceX(centerX, centerZ)
 		centerZ = starshipMovement.displaceZ(centerZ, centerX)
+		centerX = new
 
 		recenter()
 	}
