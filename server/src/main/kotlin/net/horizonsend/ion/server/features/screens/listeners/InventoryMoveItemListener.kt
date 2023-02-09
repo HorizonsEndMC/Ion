@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.features.screens.screens.listeners
+package net.horizonsend.ion.server.features.screens.listeners
 
-import net.horizonsend.ion.server.features.screens.screens.ScreenManager.isScreen
+import net.horizonsend.ion.server.features.screens.ScreenManager.isScreen
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryMoveItemEvent

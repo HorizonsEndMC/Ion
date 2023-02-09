@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.screens.screens
+package net.horizonsend.ion.server.features.screens
 
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory

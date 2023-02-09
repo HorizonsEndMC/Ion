@@ -12,10 +12,10 @@ import net.horizonsend.ion.server.miscellaneous.listeners.CancelListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.GameplayTweaksListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.MiscListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.ResourcePackListener
-import net.horizonsend.ion.server.features.screens.screens.listeners.InventoryClickListener
-import net.horizonsend.ion.server.features.screens.screens.listeners.InventoryCloseListener
-import net.horizonsend.ion.server.features.screens.screens.listeners.InventoryDragListener
-import net.horizonsend.ion.server.features.screens.screens.listeners.InventoryMoveItemListener
+import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
+import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
+import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
+import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
 
 val listeners = arrayOf(
 	ChunkLoadListener(Ion),
