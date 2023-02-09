@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.bounties
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.misc.extensions.sendServerError
+import net.horizonsend.ion.server.extensions.sendServerError
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.starlegacy.feature.progression.Levels
 import org.bukkit.event.EventHandler

@@ -7,7 +7,7 @@ import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.misc.extensions.sendServerError
+import net.horizonsend.ion.server.extensions.sendServerError
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock

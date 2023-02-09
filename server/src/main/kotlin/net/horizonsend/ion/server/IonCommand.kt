@@ -4,7 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.misc.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.sendUserError
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
