@@ -24,7 +24,7 @@ class NormalController(
 	init {
 		mainThreadCheck()
 
-		serverPlayer.speed = 0.01f
+		serverPlayer.speed = 0.005f
 
 		recenter()
 	}
