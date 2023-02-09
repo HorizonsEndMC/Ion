@@ -10,13 +10,20 @@ import net.horizonsend.ion.server.items.objects.Magazine
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration.BOLD
+import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Tasks
+import net.starlegacy.util.alongVector
 import net.starlegacy.util.updateMeta
+import org.bukkit.Color
+import org.bukkit.FluidCollisionMode
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
+import org.bukkit.Particle
+import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
@@ -62,6 +69,29 @@ object CustomItems {
 	val SMB_RECEIVER = register("SMB_RECEIVER", 504, text("SMB Receiver"))
 	val SNIPER_RECEIVER = register("SNIPER_RECEIVER", 505, text("Sniper Receiver"))
 	val SHOTGUN_RECEIVER = register("SHOTGUN_RECEIVER", 506, text("Shotgun Receiver"))
+
+	@Suppress("Unused") val GRAVITY_GUN = register(object : CustomItem("GRAVITY_GUN") {
+		override fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
+			val rayTraceResult = livingEntity.rayTraceBlocks(128.0, FluidCollisionMode.NEVER) ?: return
+
+			val distance = rayTraceResult.hitPosition.distance(livingEntity.location.toVector()).toInt()
+			for (location in livingEntity.eyeLocation.alongVector(livingEntity.eyeLocation.direction.multiply(distance), distance)) {
+				location.world.spawnParticle(Particle.REDSTONE, location, 1, 0.0, 0.0, 0.0, 0.0, DustOptions(Color.ORANGE, 1f), true)
+			}
+
+			val starship = ActiveStarships.findByBlock(rayTraceResult.hitBlock ?: return) ?: return
+			val acceleration = livingEntity.eyeLocation.direction.normalize().multiply(2)
+			starship.applyGlobalAcceleration(acceleration.x, acceleration.y, acceleration.z)
+		}
+
+		override fun constructItemStack(): ItemStack {
+			return ItemStack(GOLDEN_HOE).updateMeta {
+				it.setCustomModelData(1)
+				it.displayName(text("Starship Gravity Gun", YELLOW))
+				it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
+			}
+		}
+	})
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, component: Component): CustomItem {
