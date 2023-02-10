@@ -10,10 +10,9 @@ import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.chunk.LevelChunk
-import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.util.nms
 import net.starlegacy.util.time
@@ -62,7 +61,7 @@ object AsteroidGenerator {
 			val radiusSquared = asteroid.size * asteroid.size
 
 			// Get every chunk section covered by the asteroid.
-			val coveredChunks = mutableMapOf<LevelChunk, Map<LevelChunkSection, Byte>>()
+			val coveredChunks = mutableMapOf<ChunkPos, List<Int>>()
 
 			// generate ranges ahead of time
 			val xRange =
@@ -87,138 +86,147 @@ object AsteroidGenerator {
 
 					if (circle >= radiusSquared) continue // if out of equatorial radius continue
 
-					val coveredChunk = serverLevel.getChunk(chunkPosX, chunkPosZ)
-// 						(serverLevel.world.getChunkAtAsync(chunkPosX, chunkPosZ).get() as CraftChunk).handle
-					val sections = mutableMapOf<LevelChunkSection, Byte>()
+					// (serverLevel.world.getChunkAtAsync(chunkPosX, chunkPosZ).get() as CraftChunk).handle
+					val sections = mutableListOf<Int>()
 
 					for (chunkSectionY in chunkYRange) {
 						val ySqr = (chunkSectionY - asteroid.y.shr(4)) * (chunkSectionY - asteroid.y.shr(4))
 
 						if ((circle + ySqr) <= radiusSquared) {
-							sections += coveredChunk.sections[chunkSectionY] to chunkSectionY.toByte()
+							sections += chunkSectionY
 						}
 					}
 
-					coveredChunks[coveredChunk] = sections
+					coveredChunks[ChunkPos(chunkPosX, chunkPosZ)] = sections
 				}
 			}
 
 			// Covered chunks acquired
 
 			// For each covered chunk
-			for ((nmsChunk, sectionList) in coveredChunks) {
-				val existingSerializedAsteroidData = nmsChunk.bukkitChunk.persistentDataContainer.get(
-					NamespacedKeys.ASTEROIDS_DATA,
-					PersistentDataType.BYTE_ARRAY
-				)
+			for ((nmsChunkPos, sectionList) in coveredChunks) {
+				serverLevel.world.getChunkAtAsync(nmsChunkPos.x, nmsChunkPos.z).thenAcceptAsync completedChunk@{ chunk ->
+					val nmsChunk = (chunk as CraftChunk).handle
 
-				val nbt = try {
-					existingSerializedAsteroidData?.let {
-						NbtIo.readCompressed(
-							ByteArrayInputStream(
-								existingSerializedAsteroidData,
-								0,
-								existingSerializedAsteroidData.size
+					val existingSerializedAsteroidData = nmsChunk.bukkitChunk.persistentDataContainer.get(
+						NamespacedKeys.ASTEROIDS_DATA,
+						PersistentDataType.BYTE_ARRAY
+					)
+
+					val nbt = try {
+						existingSerializedAsteroidData?.let {
+							NbtIo.readCompressed(
+								ByteArrayInputStream(
+									existingSerializedAsteroidData,
+									0,
+									existingSerializedAsteroidData.size
+								)
 							)
-						)
-					} ?: CompoundTag()
-				} catch (error: Error) {
-					error.printStackTrace(); CompoundTag()
-				}
-
-				val chunkMinX = nmsChunk.pos.x * 16
-				val chunkMinZ = nmsChunk.pos.z * 16
-
-				val formattedSections = nbt.getList("sections", 10) // list of CompoundTag (10)
-
-				for ((section, pos) in sectionList) {
-					val palette = mutableSetOf<BlockState>()
-					val storedBlocks = arrayOfNulls<Int>(4096)
-					var index = 0
-					val sectionMinY = section.bottomBlockY()
-
-					palette.add(Blocks.AIR.defaultBlockState())
-					val paletteListTag = ListTag()
-
-					for (x in 0..15) {
-						val worldX = (chunkMinX + x).toDouble()
-						val xSquared = (worldX - asteroid.x) * (worldX - asteroid.x)
-
-						for (z in 0..15) {
-							val worldZ = (chunkMinZ + z).toDouble()
-							val zSquared = (worldZ - asteroid.z) * (worldZ - asteroid.z)
-
-							for (y in 0..15) {
-								val worldY = (sectionMinY + y).toDouble()
-								val ySquared = (worldY - asteroid.y) * (worldY - asteroid.y)
-
-								var block: BlockState? =
-									checkBlockPlacement(
-										worldX,
-										worldY,
-										worldZ,
-										xSquared,
-										ySquared,
-										zSquared,
-										asteroid,
-										noise
-									)
-
-								if (
-									(
-										random.nextDouble(0.0, 1.0) <= Ion.configuration.oreRatio &&
-											oresRemaining >= 0 &&
-											block != null
-										) && !block.isAir
-								) {
-									val ore = weightedOres[random.nextInt(0, weightedOres.size - 1)]
-									block = oreMap[ore.material]
-									oresRemaining--
-								}
-
-								if (block != null) {
-									palette.add(block)
-									storedBlocks[index] = palette.indexOf(block)
-
-									section.setBlockState(
-										x,
-										y,
-										z,
-										block
-									)
-								} else {
-									storedBlocks[index] = 0
-								}
-
-								nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
-								index++
-							}
-						}
+						} ?: CompoundTag()
+					} catch (error: Error) {
+						error.printStackTrace(); CompoundTag()
 					}
 
-					if (storedBlocks.all { it == 0 }) continue // don't write it if it's all empty
+					val chunkMinX = nmsChunk.pos.x * 16
+					val chunkMinZ = nmsChunk.pos.z * 16
 
-					palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
+					val formattedSections = nbt.getList("sections", 10) // list of CompoundTag (10)
 
-					val intArray = storedBlocks.requireNoNulls().toIntArray()
-					formattedSections += AsteroidBlockStorage.formatSection(pos, intArray, paletteListTag)
+					for (sectionPos in sectionList) {
+						val section = nmsChunk.sections[sectionPos]
+
+						val palette = mutableSetOf<BlockState>()
+						val storedBlocks = arrayOfNulls<Int>(4096)
+						var index = 0
+						val sectionMinY = section.bottomBlockY()
+
+						palette.add(Blocks.AIR.defaultBlockState())
+						val paletteListTag = ListTag()
+
+						for (x in 0..15) {
+							val worldX = chunkMinX + x
+							val worldXDouble = worldX.toDouble()
+							val xSquared = (worldXDouble - asteroid.x) * (worldXDouble - asteroid.x)
+
+							for (z in 0..15) {
+								val worldZ = chunkMinZ + z
+								val worldZDouble = worldZ.toDouble()
+								val zSquared = (worldZDouble - asteroid.z) * (worldZDouble - asteroid.z)
+
+								for (y in 0..15) {
+									val worldY = sectionMinY + y
+									val worldYDouble = worldY.toDouble()
+									val ySquared = (worldYDouble - asteroid.y) * (worldYDouble - asteroid.y)
+
+									var block: BlockState? =
+										checkBlockPlacement(
+											worldXDouble,
+											worldYDouble,
+											worldZDouble,
+											xSquared,
+											ySquared,
+											zSquared,
+											asteroid,
+											noise
+										)
+
+									if (
+										(
+											random.nextDouble(0.0, 1.0) <= Ion.configuration.oreRatio &&
+												oresRemaining >= 0 &&
+												block != null
+											) && !block.isAir
+									) {
+										val ore = weightedOres[random.nextInt(0, weightedOres.size - 1)]
+										block = oreMap[ore.material]
+										oresRemaining--
+									}
+
+									if (block != null) {
+										palette.add(block)
+										storedBlocks[index] = palette.indexOf(block)
+
+										section.setBlockState(
+											x,
+											y,
+											z,
+											block
+										)
+									} else {
+										storedBlocks[index] = 0
+									}
+
+									// needs to be run on main thread
+									nmsChunk.playerChunk?.blockChanged(BlockPos(worldX, worldY, worldZ))
+									index++
+								}
+							}
+						}
+
+						if (storedBlocks.all { it == 0 }) continue // don't write it if it's all empty
+
+						palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
+
+						val intArray = storedBlocks.requireNoNulls().toIntArray()
+						formattedSections += AsteroidBlockStorage.formatSection(sectionPos, intArray, paletteListTag)
+					}
+
+					if (formattedSections.isEmpty()) return@completedChunk // everything else is unnecessary
+
+					val storedChunkBlocks = AsteroidBlockStorage.formatChunk(formattedSections, asteroidGenerationVersion)
+					val outputStream = ByteArrayOutputStream()
+					NbtIo.writeCompressed(storedChunkBlocks, outputStream)
+					val byteArray = outputStream.toByteArray()
+
+					Heightmap.primeHeightmaps(nmsChunk, Heightmap.Types.values().toSet())
+					nmsChunk.isUnsaved = true
+					nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
+					nmsChunk.bukkitChunk.persistentDataContainer.set(
+						NamespacedKeys.ASTEROIDS_DATA,
+						PersistentDataType.BYTE_ARRAY,
+						byteArray
+					)
 				}
-
-				if (formattedSections.isEmpty()) continue // everything else is unnecessary
-
-				val storedChunkBlocks = AsteroidBlockStorage.formatChunk(formattedSections, asteroidGenerationVersion)
-				val outputStream = ByteArrayOutputStream()
-				NbtIo.writeCompressed(storedChunkBlocks, outputStream)
-				val byteArray = outputStream.toByteArray()
-
-				Heightmap.primeHeightmaps(nmsChunk, Heightmap.Types.values().toSet())
-				nmsChunk.isUnsaved = true
-				nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
-				nmsChunk.bukkitChunk.persistentDataContainer.set(
-					NamespacedKeys.ASTEROIDS_DATA,
-					PersistentDataType.BYTE_ARRAY,
-					byteArray
-				)
 			}
 		}
 	}
@@ -293,6 +301,9 @@ object AsteroidGenerator {
 		val levelChunk = (chunk as CraftChunk).handle
 		val sections = nbt.getList("sections", 10) // 10 is compound tag, list of compound tags
 
+		val chunkOriginX = chunk.x.shl(4)
+		val chunkOriginZ = chunk.z.shl(4)
+
 		for (section in sections) {
 			val compound = section as CompoundTag
 			val levelChunkSection = levelChunk.sections[compound.getByte("y").toInt()]
@@ -303,8 +314,14 @@ object AsteroidGenerator {
 
 			var index = 0
 
+			val sectionMinY = levelChunkSection.bottomBlockY()
+
 			for (x in 0..15) {
+				val worldX = x + chunkOriginX
+
 				for (z in 0..15) {
+					val worldZ = z + chunkOriginZ
+
 					for (y in 0..15) {
 						val block = NbtUtils.readBlockState(holderLookup, paletteList[blocks[index]] as CompoundTag)
 						if (block == Blocks.AIR.defaultBlockState()) {
@@ -312,7 +329,7 @@ object AsteroidGenerator {
 							continue
 						}
 						levelChunkSection.setBlockState(x, y, z, block)
-						levelChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
+						levelChunk.playerChunk?.blockChanged(BlockPos(worldX, y + sectionMinY, worldZ))
 
 						index++
 					}
