@@ -16,9 +16,9 @@ object AsteroidBlockStorage {
 		return chunkCompoundTag
 	}
 
-	fun formatSection(sectionY: Byte, blocks: IntArray, palette: ListTag): CompoundTag {
+	fun formatSection(sectionY: Int, blocks: IntArray, palette: ListTag): CompoundTag {
 		val section = CompoundTag()
-		section.putByte("y", sectionY)
+		section.putInt("y", sectionY)
 		section.putIntArray("blocks", blocks)
 		section.put("palette", palette)
 
