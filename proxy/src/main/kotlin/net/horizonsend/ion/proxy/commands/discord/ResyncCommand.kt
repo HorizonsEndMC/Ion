@@ -15,7 +15,7 @@ class ResyncCommand(private val jda: JDA, private val configuration: ProxyConfig
 	@Default
 	@Suppress("Unused")
 	fun onResyncCommand(event: SlashCommandInteractionEvent) {
-		if (event.user.idLong != 521031433972744193 || event.user.idLong != 152566944925483009) {
+		if (event.user.idLong != 521031433972744193 && event.user.idLong != 152566944925483009) {
 			event.replyEmbeds(messageEmbed(title = "You do not have permission to use this command.", color = 0xff8844))
 				.setEphemeral(true)
 				.queue()
