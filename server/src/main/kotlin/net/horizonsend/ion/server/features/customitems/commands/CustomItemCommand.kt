@@ -7,8 +7,8 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.features.customItems.CustomItems
 import net.horizonsend.ion.server.extensions.sendInformation
+import net.horizonsend.ion.server.features.customItems.CustomItems
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 

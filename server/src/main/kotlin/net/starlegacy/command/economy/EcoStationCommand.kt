@@ -6,9 +6,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import com.google.gson.GsonBuilder
+import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.sendInformation
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
