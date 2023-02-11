@@ -35,14 +35,15 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.25,
-		sneakFlyAccelDistance = 5,
-		maxSneakFlyAccel = 5,
+		sneakFlyAccelDistance = 3,
+		maxSneakFlyAccel = 3,
 		interdictionRange = 10,
 		hyperspaceRangeMultiplier = 3.0,
 		menuItemMaterial = Material.DEAD_BUSH,
 		isWarship = false,
 		colour = "#ffff32",
-		overridePermission = "ion.ships.override.1"
+		overridePermission = "ion.ships.override.1",
+		poweroverrider = 0.0
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
