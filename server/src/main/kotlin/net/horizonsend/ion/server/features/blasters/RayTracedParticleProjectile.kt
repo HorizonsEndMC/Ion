@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.blasters
 
+import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound

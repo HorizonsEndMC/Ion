@@ -159,7 +159,7 @@ object ShipKillXP : SLComponent() {
 				log.info("Gave ${player.name} $xp XP for ship-killing $killedName")
 			}
 
-			if (points > 0) {
+			if (points > 0 && damager.id != killed) {
 				getPlayer(damager.id)?.rewardAchievement(Achievement.KILL_SHIP)
 				PlayerData[damager.id].update {
 					bounty += xp
