@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.nms
@@ -27,6 +26,7 @@ import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.Random
+import java.util.concurrent.CompletableFuture
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
@@ -35,33 +35,20 @@ import kotlin.math.sqrt
 
 object AsteroidGenerator {
 	const val asteroidGenerationVersion: Byte = 0
-	private val oreMap: Map<String, BlockState> = Ion.configuration.ores.associate {
+	private val oreMap: Map<String, BlockState> = Ion.configuration.asteroidConfig.ores.associate {
 		it.material to Bukkit.createBlockData(it.material).nms
 	}
 	private val weightedOres = oreWeights()
-	private val timing = timing("Asteroid Generation")
-	private val lock = Any()
+	val timing = timing("Space Generation")
+	private const val searchRadius = 1.25
 
 	fun postGenerateAsteroid(
 		serverLevel: ServerLevel,
 		asteroid: Asteroid
 	) {
-		val blocksChanged = mutableMapOf<LevelChunk, List<BlockPos>>()
-
 		Tasks.async {
 			timing.time {
 				val random = Random(serverLevel.seed)
-
-				// generates a set number of ores per asteroid based on a rough estimate of the block count (volume of a sphere)
-				val roughVolume: Double = (
-					(4.0 / 3.0) *
-						Math.PI *
-						((asteroid.size * asteroid.size * asteroid.size) / 3)
-					)
-
-				var oresRemaining: Int = (roughVolume * Ion.configuration.oreRatio).roundToInt()
-				// Ores generate in veins, but each block decrements the count
-
 				// save some time
 				val noise = SimplexOctaveGenerator(random, 1)
 				val radiusSquared = asteroid.size * asteroid.size
@@ -71,12 +58,12 @@ object AsteroidGenerator {
 
 				// generate ranges ahead of time
 				val xRange =
-					IntRange(asteroid.x - (asteroid.size * 1.5).toInt(), asteroid.x + (asteroid.size * 1.5).toInt())
+					IntRange(asteroid.x - (asteroid.size * searchRadius).toInt(), asteroid.x + (asteroid.size * searchRadius).toInt())
 				val zRange =
-					IntRange(asteroid.z - (asteroid.size * 1.5).toInt(), asteroid.z + (asteroid.size * 1.5).toInt())
+					IntRange(asteroid.z - (asteroid.size * searchRadius).toInt(), asteroid.z + (asteroid.size * searchRadius).toInt())
 				val yRange = IntRange(
-					(asteroid.y - (asteroid.size * 1.5).toInt()).coerceAtLeast(serverLevel.minBuildHeight),
-					(asteroid.y + (asteroid.size * 1.5).toInt()).coerceAtMost(serverLevel.maxBuildHeight)
+					(asteroid.y - (asteroid.size * searchRadius).toInt()).coerceAtLeast(serverLevel.minBuildHeight),
+					(asteroid.y + (asteroid.size * searchRadius).toInt()).coerceAtMost(serverLevel.maxBuildHeight)
 				)
 
 				val chunkXRange = IntRange(xRange.first.shr(4), xRange.last.shr(4))
@@ -92,7 +79,6 @@ object AsteroidGenerator {
 
 						if (circle >= radiusSquared) continue // if out of equatorial radius continue
 
-						// (serverLevel.world.getChunkAtAsync(chunkPosX, chunkPosZ).get() as CraftChunk).handle
 						val sections = mutableListOf<Int>()
 
 						for (chunkSectionY in chunkYRange) {
@@ -106,18 +92,21 @@ object AsteroidGenerator {
 						coveredChunks[ChunkPos(chunkPosX, chunkPosZ)] = sections
 					}
 				}
-
 				// Covered chunks acquired
 
 				// For each covered chunk
 				for ((nmsChunkPos, sectionList) in coveredChunks) {
 					serverLevel.world.getChunkAtAsync(nmsChunkPos.x, nmsChunkPos.z)
-						.thenAcceptAsync completedChunk@{ chunk ->
-							val nmsChunk = (chunk as CraftChunk).handle
+						.thenAcceptAsync completedChunk@{ bukkitChunk ->
+							val completableBlocksChanged: CompletableFuture<List<BlockPos>> =
+								CompletableFuture.completedFuture(mutableListOf())
+							val nmsChunk = (bukkitChunk as CraftChunk).handle
 							val newSections = mutableListOf<CompoundTag>()
 
 							val chunkMinX = nmsChunk.pos.x * 16
 							val chunkMinZ = nmsChunk.pos.z * 16
+
+							val chunkBlocksChanged = mutableListOf<BlockPos>()
 
 							for (sectionPos in sectionList) {
 								val section = nmsChunk.sections[sectionPos]
@@ -129,8 +118,6 @@ object AsteroidGenerator {
 
 								palette.add(Blocks.AIR.defaultBlockState())
 								val paletteListTag = ListTag()
-
-								val chunkBlocksChanged = mutableListOf<BlockPos>()
 
 								for (x in 0..15) {
 									val worldX = chunkMinX + x
@@ -161,14 +148,12 @@ object AsteroidGenerator {
 
 											if (
 												(
-													random.nextDouble(0.0, 1.0) <= Ion.configuration.oreRatio &&
-														oresRemaining >= 0 &&
+													random.nextDouble(0.0, 1.0) <= Ion.configuration.asteroidConfig.oreRatio &&
 														block != null
 													) && !block.isAir
 											) {
 												val ore = weightedOres[random.nextInt(0, weightedOres.size - 1)]
 												block = oreMap[ore.material]
-												oresRemaining--
 											}
 
 											if (block != null) {
@@ -193,76 +178,59 @@ object AsteroidGenerator {
 									}
 								}
 
-								blocksChanged[nmsChunk] = chunkBlocksChanged
-
 								if (storedBlocks.all { it == 0 }) continue // don't write it if it's all empty
 
 								palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
 
 								val intArray = storedBlocks.requireNoNulls().toIntArray()
-								newSections += AsteroidBlockStorage.formatSection(
+								newSections += BlockSerialization.formatSection(
 									sectionPos,
 									intArray,
 									paletteListTag
 								)
 							}
+							// start broadcasting the chunk information
+							completableBlocksChanged.complete(chunkBlocksChanged)
 
-							val existingSerializedAsteroidData = nmsChunk.bukkitChunk.persistentDataContainer.get(
-								NamespacedKeys.ASTEROIDS_DATA,
-								PersistentDataType.BYTE_ARRAY
-							)
-
-							val nbt = try {
-								existingSerializedAsteroidData?.let {
-									NbtIo.readCompressed(
-										ByteArrayInputStream(
-											existingSerializedAsteroidData,
-											0,
-											existingSerializedAsteroidData.size
-										)
-									)
-								} ?: CompoundTag()
-							} catch (error: Error) {
-								error.printStackTrace(); CompoundTag()
-							}
-
-							val formattedSections = nbt.getList("sections", 10) // list of CompoundTag (10)
-
-							formattedSections += newSections
-
-							if (formattedSections.isEmpty()) return@completedChunk // everything else is unnecessary
+							// Chunk is empty, everything else is unnecessary
+							if (newSections.isEmpty()) return@completedChunk
 
 							// data serialization
-							val storedChunkBlocks =
-								AsteroidBlockStorage.formatChunk(formattedSections, asteroidGenerationVersion)
+							val existingSerializedAsteroidData =
+								BlockSerialization.readChunkBlocks(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
+
+							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
+							formattedSections.addAll(newSections)
+							val storedChunkBlocks = BlockSerialization.formatChunk(formattedSections, asteroidGenerationVersion)
 							val outputStream = ByteArrayOutputStream()
 							NbtIo.writeCompressed(storedChunkBlocks, outputStream)
-							val byteArray = outputStream.toByteArray()
+							// end data serialization
 
 							// updating chunk information
 							Heightmap.primeHeightmaps(nmsChunk, Heightmap.Types.values().toSet())
 							nmsChunk.isUnsaved = true
 
 							// needs to be synchronized or multiple asteroids in a chunk cause issues
-							synchronized(lock) {
+							Tasks.sync {
 								nmsChunk.bukkitChunk.persistentDataContainer.set(
 									NamespacedKeys.ASTEROIDS_DATA,
 									PersistentDataType.BYTE_ARRAY,
-									byteArray
+									outputStream.toByteArray()
 								)
+							}
+							// end chunk update
+
+							// broadcast updates synchronously
+							completableBlocksChanged.thenAccept { completed ->
+								for (blockPos in completed) {
+									nmsChunk.playerChunk?.blockChanged(blockPos)
+								}
+
+								nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
 							}
 						}
 				}
 			}
-		}
-
-		for ((nmsChunk, blockList) in blocksChanged) {
-			for (block in blockList) {
-				nmsChunk.playerChunk?.blockChanged(block)
-			}
-
-			// broadcast updates synchronously
-			nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
 		}
 	}
 
@@ -382,9 +350,9 @@ object AsteroidGenerator {
 		val weightedPalette = paletteWeights()
 		val paletteSample = random.nextInt(weightedPalette.size)
 
-		val blockPalette: ServerConfiguration.Palette = weightedPalette[paletteSample]
+		val blockPalette: ServerConfiguration.AsteroidConfig.Palette = weightedPalette[paletteSample]
 
-		val size = random.nextDouble(5.0, Ion.configuration.maxAsteroidSize)
+		val size = random.nextDouble(5.0, Ion.configuration.asteroidConfig.maxAsteroidSize)
 		val octaves = floor(5 * 0.95.pow(size)).toInt().coerceAtLeast(1)
 
 		return Asteroid(x, y, z, blockPalette, size, octaves)
@@ -392,12 +360,12 @@ object AsteroidGenerator {
 
 	fun parseDensity(world: ServerLevel, x: Double, y: Double, z: Double): Double {
 		val densities = mutableSetOf<Double>()
-		densities.add(Ion.configuration.baseAsteroidDensity)
+		densities.add(Ion.configuration.asteroidConfig.baseAsteroidDensity)
 
-		for (feature in Ion.configuration.features) {
-			if (feature.worldName != world.serverLevelData.levelName) continue
+		for (feature in Ion.configuration.asteroidConfig.features) {
+			if (feature.origin.world != world.serverLevelData.levelName) continue
 
-			if ((sqrt((x - feature.x).pow(2) + (z - feature.z).pow(2)) - feature.tubeSize).pow(2) + (y - feature.y).pow(
+			if ((sqrt((x - feature.origin.x).pow(2) + (z - feature.origin.z).pow(2)) - feature.tubeSize).pow(2) + (y - feature.origin.y).pow(
 					2
 				) < feature.tubeRadius.pow(2)
 			) {
@@ -411,10 +379,10 @@ object AsteroidGenerator {
 	/**
 	 * Weights the list of Palettes in the configuration by adding duplicate entries based on the weight.
 	 */
-	private fun paletteWeights(): List<ServerConfiguration.Palette> {
-		val weightedList = mutableListOf<ServerConfiguration.Palette>()
+	private fun paletteWeights(): List<ServerConfiguration.AsteroidConfig.Palette> {
+		val weightedList = mutableListOf<ServerConfiguration.AsteroidConfig.Palette>()
 
-		for (palette in Ion.configuration.blockPalettes) {
+		for (palette in Ion.configuration.asteroidConfig.blockPalettes) {
 			for (occurrence in palette.weight downTo 0) {
 				weightedList.add(palette)
 			}
@@ -423,15 +391,36 @@ object AsteroidGenerator {
 		return weightedList
 	}
 
-	private fun oreWeights(): List<ServerConfiguration.Ore> {
-		val weightedList = mutableListOf<ServerConfiguration.Ore>()
+	private fun oreWeights(): List<ServerConfiguration.AsteroidConfig.Ore> {
+		val weightedList = mutableListOf<ServerConfiguration.AsteroidConfig.Ore>()
 
-		for (ore in Ion.configuration.ores) {
+		for (ore in Ion.configuration.asteroidConfig.ores) {
 			for (occurrence in ore.rolls downTo 0) {
 				weightedList.add(ore)
 			}
 		}
 
 		return weightedList
+	}
+
+	data class Asteroid(
+		val x: Int,
+		val y: Int,
+		val z: Int,
+		val palette: ServerConfiguration.AsteroidConfig.Palette,
+		val size: Double,
+		val octaves: Int
+	) {
+		fun materialWeights(): List<BlockState> {
+			val weightedList = mutableListOf<BlockState>()
+
+			for (material in palette.materials) {
+				for (occurrence in material.value downTo 0) {
+					weightedList.add(palette.getMaterial(material.key).nms)
+				}
+			}
+
+			return weightedList
+		}
 	}
 }
