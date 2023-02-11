@@ -77,11 +77,13 @@ object CryoPods : SLComponent() {
 	}
 
 	operator fun get(sign: Sign, checkStructure: Boolean = false): CryoPod? {
+		sign.chunk.addPluginChunkTicket(Ion)
 		if (Multiblocks[sign, checkStructure] !is CryoPodMultiblock) {
 			return null
 		}
 		val playerID: UUID = CryoPodMultiblock.getOwner(sign)
 			?: return null
+		sign.chunk.removePluginChunkTicket(Ion)
 		return getCryoPod(playerID)
 	}
 
