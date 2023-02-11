@@ -8,6 +8,8 @@ import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.alongVector
@@ -107,9 +109,13 @@ class RayTracedParticleProjectile(
 						flyingHitEntity.sendFeedbackMessage(FeedbackType.INFORMATION, "Your rocket boots have rebooted.")
 					}
 				} // Send this first to prevent duplicate messages when shot multiple times
-
-				PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] = System.currentTimeMillis() + 3000 // 3 second glide disable
-				flyingHitEntity.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
+				val hitNation = SLPlayer[flyingHitEntity.uniqueId]?.nation
+				val shooterNation = SLPlayer[shooter as Player]?.nation
+				if (NationRelation.getRelationActual(hitNation!!, shooterNation!!).ordinal >= 5) {
+					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
+						System.currentTimeMillis() + 3000 // 3 second glide disable
+					flyingHitEntity.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
+				}
 			}
 
 			if (!balancing.shouldPassThroughEntities) return true
