@@ -47,7 +47,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 object ShipKillXP : SLComponent() {
-	data class Damager(val id: UUID, val size: Int?)
+	data class Damager(val id: UUID, val size: Int)
 
 	private data class ShipDamageData(
 		val map: MutableMap<Damager, AtomicInteger>,
@@ -102,13 +102,14 @@ object ShipKillXP : SLComponent() {
 	private fun onPlayerKilled(killed: UUID, killedName: String, killer: Entity?, arena: Boolean) {
 		val data = map.getIfPresent(killed) ?: return
 		if (killer is Player) {
-			val damager = Damager(killer.uniqueId, ActiveStarships.findByPassenger(killer)?.initialBlockCount)
+			val damager = Damager(killer.uniqueId, ActiveStarships.findByPassenger(killer)!!.initialBlockCount)
 			data.map.getOrPut(damager) { AtomicInteger() }.incrementAndGet()
 		}
 		onShipKill(killed, killedName, data, arena)
 	}
 
 	private fun onShipKill(starship: ActiveStarship) {
+		println("ship killed at ${starship.centerOfMass.x} ${starship.centerOfMass.y} ${starship.centerOfMass.z}")
 		val data = data(starship)
 		for (id in starship.passengerIDs) {
 			val killedName = getPlayer(id)?.name ?: "UNKNOWN"
