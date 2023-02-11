@@ -5,6 +5,7 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
+import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -30,6 +31,8 @@ object PlayerInfoCommand : SLCommand() {
 		sendNationsInfo(sender, slPlayer)
 
 		sendAdvanceInfo(sender, slPlayer)
+
+		sendGracePeriodInfo(sender, slPlayer)
 
 		sender.sendRichMessage("<gray>Last Seen: ${getInactiveTimeText(slPlayer)}")
 	}
@@ -69,6 +72,12 @@ object PlayerInfoCommand : SLCommand() {
 	private fun sendAdvanceInfo(sender: CommandSender, slPlayer: SLPlayer) {
 		sender.sendRichMessage("<dark_purple>SLXP: <light_purple>${slPlayer.xp}")
 		sender.sendRichMessage("<red>Level: <yellow>${slPlayer.level}")
+	}
+
+	private fun sendGracePeriodInfo(sender: CommandSender, slPlayer: SLPlayer) {
+		if (Bukkit.getPlayer(slPlayer.lastKnownName)?.hasProtection() != false) {
+			sender.sendRichMessage("<yellow>GracePeriod: <gold>True")
+		}
 	}
 
 	private fun getInactiveTimeText(player: SLPlayer): String {
