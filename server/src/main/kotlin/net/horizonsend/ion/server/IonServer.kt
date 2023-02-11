@@ -4,10 +4,10 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
-import net.horizonsend.ion.server.features.customItems.CustomItems
-import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.customItems.CustomItems
+import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.miscellaneous.commands
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
 import net.horizonsend.ion.server.miscellaneous.listeners

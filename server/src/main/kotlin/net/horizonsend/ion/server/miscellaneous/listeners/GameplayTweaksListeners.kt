@@ -37,9 +37,9 @@ class GameplayTweaksListeners : Listener {
 				0.0
 			)
 
-			if (block.material.name.contains("PISTON")
-				&& above.block.type.name.contains("SHULKER")
-				&& !state.blockMap.contains(blockKey(above.x, above.y, above.z))
+			if (block.material.name.contains("PISTON") &&
+				above.block.type.name.contains("SHULKER") &&
+				!state.blockMap.contains(blockKey(above.x, above.y, above.z))
 			) {
 				event.isCancelled = true
 				event.player.sendUserError("Undetected crates found: redetect the craft before piloting!")

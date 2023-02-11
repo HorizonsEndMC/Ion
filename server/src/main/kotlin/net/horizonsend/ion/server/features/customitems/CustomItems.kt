@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.customItems
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.features.blasters.objects.Blaster
-import net.horizonsend.ion.server.features.blasters.objects.Magazine
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Multishot
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Singleshot
+import net.horizonsend.ion.server.features.blasters.objects.Blaster
+import net.horizonsend.ion.server.features.blasters.objects.Magazine
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.CUSTOM_ITEM
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
