@@ -28,7 +28,7 @@ data class ServerConfiguration(
 			Pos("space2", 0, 128, 0), "zero zero"
 		)
 	),
-	val asteroidConfig: AsteroidConfig
+	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf()
 	// Asteroid gen start
 
 ) {

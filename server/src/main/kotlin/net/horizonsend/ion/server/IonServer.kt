@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customItems.CustomItems
+import net.horizonsend.ion.server.features.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.whereisit.mod.Searcher
@@ -119,6 +120,8 @@ object IonServer : JavaPlugin() {
 					HyperspaceBeacons.reloadDynmap()
 					Collectors.onEnable()
 					CityNPCs.onEnable()
+					SpaceGenerationManager.onEnable()
+
 					pluginManager.registerEvents(CityNPCs, this)
 				},
 				1
