@@ -99,8 +99,7 @@ object AsteroidGenerator {
 				for ((nmsChunkPos, sectionList) in coveredChunks) {
 					serverLevel.world.getChunkAtAsync(nmsChunkPos.x, nmsChunkPos.z)
 						.thenAcceptAsync completedChunk@{ bukkitChunk ->
-							val completableBlocksChanged: CompletableFuture<List<BlockPos>> =
-								CompletableFuture.completedFuture(mutableListOf())
+							val completableBlocksChanged: CompletableFuture<List<BlockPos>> = CompletableFuture()
 							val nmsChunk = (bukkitChunk as CraftChunk).handle
 							val newSections = mutableListOf<CompoundTag>()
 
@@ -219,17 +218,17 @@ object AsteroidGenerator {
 									PersistentDataType.BYTE_ARRAY,
 									outputStream.toByteArray()
 								)
+
+								// broadcast updates synchronously
+								completableBlocksChanged.thenAccept { completed ->
+									for (blockPos in completed) {
+										nmsChunk.playerChunk?.blockChanged(blockPos)
+									}
+
+									nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
+								}
 							}
 							// end chunk update
-
-							// broadcast updates synchronously
-							completableBlocksChanged.thenAccept { completed ->
-								for (blockPos in completed) {
-									nmsChunk.playerChunk?.blockChanged(blockPos)
-								}
-
-								nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
-							}
 						}
 				}
 			}
