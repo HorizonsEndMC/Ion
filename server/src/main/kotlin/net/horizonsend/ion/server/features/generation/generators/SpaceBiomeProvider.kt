@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.generation
+package net.horizonsend.ion.server.features.generation.generators
 
 import org.bukkit.block.Biome
 import org.bukkit.generator.BiomeProvider
