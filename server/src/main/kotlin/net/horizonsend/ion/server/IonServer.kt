@@ -10,14 +10,14 @@ import net.horizonsend.ion.server.features.customItems.CustomItems
 import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.whereisit.mod.Searcher
+import net.horizonsend.ion.server.features.generation.generators.SpaceBiomeProvider
+import net.horizonsend.ion.server.features.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.miscellaneous.commands
 import net.horizonsend.ion.server.miscellaneous.handle
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
 import net.horizonsend.ion.server.miscellaneous.listeners
 import net.minecraft.core.registries.BuiltInRegistries
-import net.horizonsend.ion.server.features.generation.generators.SpaceBiomeProvider
-import net.horizonsend.ion.server.features.generation.generators.SpaceChunkGenerator
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
