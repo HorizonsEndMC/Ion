@@ -17,6 +17,7 @@ import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING

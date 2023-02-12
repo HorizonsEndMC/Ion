@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.bounties.BountyListener
 import net.horizonsend.ion.server.features.customItems.CustomItemListeners
+import net.horizonsend.ion.server.features.qol.RecipeListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
@@ -34,6 +35,7 @@ val listeners = arrayOf(
 	BlasterListeners(),
 	BountyListener(),
 	EdenFixer9000(),
+	RecipeListener(),
 
 	// Achievement Listeners
 	AchievementListeners()
