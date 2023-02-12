@@ -39,7 +39,10 @@ object AsteroidGenerator {
 	private val oreMap: Map<String, BlockState> = Ion.configuration.asteroidConfig.ores.associate {
 		it.material to Bukkit.createBlockData(it.material).nms
 	}
+
+	private val weightedPalettes = Ion.configuration.asteroidConfig.blockPalettes.associateWith { it.materialWeights() }
 	private val weightedOres = oreWeights()
+
 	val timing = timing("Space Generation")
 	private const val searchRadius = 1.25
 
@@ -250,7 +253,7 @@ object AsteroidGenerator {
 	): BlockState? {
 		noise.setScale(0.15)
 
-		val weightedMaterials = asteroid.materialWeights()
+		val weightedMaterials = asteroid.weightedPalette
 
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (
@@ -412,16 +415,6 @@ object AsteroidGenerator {
 		val size: Double,
 		val octaves: Int
 	) {
-		fun materialWeights(): List<BlockState> {
-			val weightedList = mutableListOf<BlockState>()
-
-			for (material in palette.materials) {
-				for (occurrence in material.value downTo 0) {
-					weightedList.add(palette.getMaterial(material.key).nms)
-				}
-			}
-
-			return weightedList
-		}
+		val weightedPalette = weightedPalettes[this.palette]!!
 	}
 }

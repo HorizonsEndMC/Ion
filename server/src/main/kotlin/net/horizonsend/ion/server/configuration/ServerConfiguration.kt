@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
 import net.minecraft.core.BlockPos
+import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.nms
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -25,7 +26,7 @@ data class ServerConfiguration(
 	 * @param features List of AsteroidFeature
 	 * @see Palette
 	 */
-	@ConfigSerializable
+	@Serializable
 	data class AsteroidConfig(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
@@ -52,6 +53,18 @@ data class ServerConfiguration(
 			val materials: Map<String, Int>
 		) {
 			fun getMaterial(material: String) = Bukkit.createBlockData(material)
+
+			fun materialWeights(): List<BlockState> {
+				val weightedList = mutableListOf<BlockState>()
+
+				for (material in this.materials) {
+					for (occurrence in material.value downTo 0) {
+						weightedList.add(getMaterial(material.key).nms)
+					}
+				}
+
+				return weightedList
+			}
 		}
 
 		/**
