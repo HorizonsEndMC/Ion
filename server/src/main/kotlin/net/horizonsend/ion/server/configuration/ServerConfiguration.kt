@@ -14,7 +14,9 @@ data class ServerConfiguration(
 	val serverName: String? = null,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
-	val asteroidConfig: AsteroidConfig
+	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf()
+	// Asteroid gen start
+
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
