@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.generation
+package net.horizonsend.ion.server.features.generation.generators
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.minecraft.server.level.ServerLevel
