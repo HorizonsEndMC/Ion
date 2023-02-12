@@ -127,7 +127,7 @@ fun registerCommands(manager: PaperCommandManager) {
 	// Add static tab completions
 	mapOf(
 		"levels" to (0..MAX_LEVEL).joinToString("|"),
-		"customitems" to CustomItems.all().joinToString("|") { it.id },
+		"legacycustomitems" to CustomItems.all().joinToString("|") { it.id },
 		"npctypes" to CityNPC.Type.values().joinToString("|") { it.name }
 	).forEach { manager.commandCompletions.registerStaticCompletion(it.key, it.value) }
 

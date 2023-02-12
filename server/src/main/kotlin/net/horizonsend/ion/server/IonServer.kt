@@ -58,10 +58,6 @@ class IonServer : JavaPlugin() {
 				CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
 			}
 
-			commandManager.commandCompletions.registerStaticCompletion("customItemAll",
-				CustomItems.identifiers + net.starlegacy.feature.misc.CustomItems.all().map { it.id }
-			)
-
 			commandManager.commandCompletions.registerCompletion("particles") { context ->
 				BuiltInRegistries.PARTICLE_TYPE.keySet()
 					.filter { context.player.hasPermission("ion.settings.particle.$it") }
