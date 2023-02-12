@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.generation.generators
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.NamespacedKeys
-import net.horizonsend.ion.server.ServerConfiguration
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.generation.BlockSerialization
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
