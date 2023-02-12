@@ -16,9 +16,9 @@ import org.bukkit.World
 data class ServerConfiguration(
 	val serverName: String? = null,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
-	val beacons: List<HyperspaceBeacon>,
-	val soldShips: List<Ship>,
-	val asteroidConfig: AsteroidConfig
+	val beacons: List<HyperspaceBeacon> = listOf(),
+	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
+	val soldShips: List<Ship>
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk

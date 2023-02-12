@@ -1,11 +1,6 @@
 package net.horizonsend.ion.server.features.generation
 
-import net.horizonsend.ion.server.features.generation.generators.AsteroidGenerator.asteroidGenerationVersion
-import net.horizonsend.ion.server.features.generation.generators.AsteroidGenerator.generateRandomAsteroid
-import net.horizonsend.ion.server.features.generation.generators.AsteroidGenerator.parseDensity
-import net.horizonsend.ion.server.features.generation.generators.AsteroidGenerator.postGenerateAsteroid
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
-import net.starlegacy.feature.space.SpaceWorlds
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -17,21 +12,19 @@ import kotlin.math.ceil
 class GenerationChunkLoadListener : Listener {
 	@EventHandler
 	fun onChunkLoad(event: ChunkLoadEvent) {
-		if (!SpaceWorlds.contains(event.world)) return
+		val generator = SpaceGenerationManager.getGenerator((event.world as CraftWorld).handle) ?: return
 		if (event.chunk.persistentDataContainer.has(NamespacedKeys.ASTEROIDS_VERSION)) return
 
 		event.chunk.persistentDataContainer.set(
 			NamespacedKeys.ASTEROIDS_VERSION,
 			PersistentDataType.BYTE,
-			asteroidGenerationVersion
+			generator.asteroidGenerationVersion
 		)
-
-		val serverLevel = (event.world as CraftWorld).handle
 
 		val worldX = event.chunk.x * 16
 		val worldZ = event.chunk.z * 16
 
-		val chunkDensity = parseDensity(serverLevel, worldX.toDouble(), event.world.maxHeight / 2.0, worldZ.toDouble())
+		val chunkDensity = generator.parseDensity(worldX.toDouble(), event.world.maxHeight / 2.0, worldZ.toDouble())
 
 		val random = Random(System.currentTimeMillis() + event.world.seed + event.chunk.hashCode())
 
@@ -48,13 +41,13 @@ class GenerationChunkLoadListener : Listener {
 			val asteroidZ = random.nextInt(0, 15) + worldZ
 			val asteroidY = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
 
-			val asteroid = generateRandomAsteroid(asteroidX, asteroidY, asteroidZ, random)
+			val asteroid = generator.generateRandomAsteroid(asteroidX, asteroidY, asteroidZ, random)
 
 			if (asteroid.size + asteroidY > event.world.maxHeight) continue
 
 			if (asteroidY - asteroid.size < event.world.minHeight) continue
 
-			postGenerateAsteroid(serverLevel, asteroid)
+			generator.generateAsteroid(asteroid)
 		}
 	}
 }
