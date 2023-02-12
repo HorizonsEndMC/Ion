@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.blasters.SettingsCommand
 import net.horizonsend.ion.server.features.bounties.BountyCommands
 import net.horizonsend.ion.server.features.customItems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.customItems.commands.CustomItemCommand
+import net.horizonsend.ion.server.miscellaneous.commands.CalcExpCommand
 
 val commands = arrayOf(
 	BountyCommands(),
@@ -15,6 +16,7 @@ val commands = arrayOf(
 	CustomItemCommand(),
 	SettingsCommand(),
 	IonCommand(),
+	CalcExpCommand(),
 
 	AchievementsCommand()
 )
