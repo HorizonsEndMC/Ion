@@ -19,8 +19,8 @@ import net.horizonsend.ion.server.miscellaneous.listeners
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
-import net.horizonsend.ion.server.generation.SpaceBiomeProvider
-import net.horizonsend.ion.server.generation.SpaceChunkGenerator
+import net.horizonsend.ion.server.features.generation.generators.SpaceBiomeProvider
+import net.horizonsend.ion.server.features.generation.generators.SpaceChunkGenerator
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons

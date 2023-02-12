@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.generation
+package net.horizonsend.ion.server.features.generation
 
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
