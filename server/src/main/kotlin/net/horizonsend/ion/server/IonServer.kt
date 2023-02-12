@@ -50,7 +50,10 @@ class IonServer : JavaPlugin() {
 
 			for (command in commands) commandManager.registerCommand(command)
 
-			commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
+			commandManager.commandCompletions.registerStaticCompletion("achievements",
+				Achievement.values().map { it.name }
+			)
+
 			commandManager.commandCompletions.registerCompletion("customItem") { context ->
 				CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
 			}
