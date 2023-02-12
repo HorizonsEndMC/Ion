@@ -50,10 +50,18 @@ class IonServer : JavaPlugin() {
 
 			for (command in commands) commandManager.registerCommand(command)
 
-			commandManager.commandCompletions.registerStaticCompletion("achievements", Achievement.values().map { it.name })
+			commandManager.commandCompletions.registerStaticCompletion("achievements",
+				Achievement.values().map { it.name }
+			)
+
 			commandManager.commandCompletions.registerCompletion("customItem") { context ->
 				CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
 			}
+
+			commandManager.commandCompletions.registerStaticCompletion("customItemAll",
+				CustomItems.identifiers + net.starlegacy.feature.misc.CustomItems.all().map { it.id }
+			)
+
 			commandManager.commandCompletions.registerCompletion("particles") { context ->
 				BuiltInRegistries.PARTICLE_TYPE.keySet()
 					.filter { context.player.hasPermission("ion.settings.particle.$it") }
