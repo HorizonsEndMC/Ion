@@ -25,6 +25,7 @@ data class ServerConfiguration(
 	 * @param features List of AsteroidFeature
 	 * @see Palette
 	 */
+	@ConfigSerializable
 	data class AsteroidConfig(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
