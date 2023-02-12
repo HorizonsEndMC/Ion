@@ -1,8 +1,9 @@
-package net.horizonsend.ion.server.generation
+package net.horizonsend.ion.server.features.generation.generators
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.NamespacedKeys
 import net.horizonsend.ion.server.ServerConfiguration
+import net.horizonsend.ion.server.features.generation.BlockSerialization
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
@@ -201,7 +202,8 @@ object AsteroidGenerator {
 
 							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
 							formattedSections.addAll(newSections)
-							val storedChunkBlocks = BlockSerialization.formatChunk(formattedSections, asteroidGenerationVersion)
+							val storedChunkBlocks =
+								BlockSerialization.formatChunk(formattedSections, asteroidGenerationVersion)
 							val outputStream = ByteArrayOutputStream()
 							NbtIo.writeCompressed(storedChunkBlocks, outputStream)
 							// end data serialization
