@@ -212,15 +212,15 @@ object AsteroidGenerator {
 							nmsChunk.isUnsaved = true
 
 							// needs to be synchronized or multiple asteroids in a chunk cause issues
-							Tasks.sync {
-								nmsChunk.bukkitChunk.persistentDataContainer.set(
-									NamespacedKeys.ASTEROIDS_DATA,
-									PersistentDataType.BYTE_ARRAY,
-									outputStream.toByteArray()
-								)
+							completableBlocksChanged.thenAccept { completed ->
+								Tasks.sync {
+									nmsChunk.bukkitChunk.persistentDataContainer.set(
+										NamespacedKeys.ASTEROIDS_DATA,
+										PersistentDataType.BYTE_ARRAY,
+										outputStream.toByteArray()
+									)
 
-								// broadcast updates synchronously
-								completableBlocksChanged.thenAccept { completed ->
+									// broadcast updates synchronously
 									for (blockPos in completed) {
 										nmsChunk.playerChunk?.blockChanged(blockPos)
 									}
