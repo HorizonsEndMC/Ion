@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.customItems.CustomItems
+import net.horizonsend.ion.server.features.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.whereisit.mod.Searcher
@@ -97,6 +98,8 @@ class IonServer : JavaPlugin() {
 					HyperspaceBeacons.reloadDynmap()
 					Collectors.onEnable()
 					CityNPCs.onEnable()
+					SpaceGenerationManager.onEnable()
+
 					pluginManager.registerEvents(CityNPCs, this)
 				},
 				1
