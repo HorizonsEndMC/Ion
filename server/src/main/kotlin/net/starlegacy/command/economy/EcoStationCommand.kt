@@ -6,9 +6,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import com.google.gson.GsonBuilder
-import net.horizonsend.ion.server.extensions.sendInformation
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
@@ -26,7 +26,7 @@ object EcoStationCommand : SLCommand() {
 	@CommandCompletion("@nothing @worlds @nothing @nothing @nothing @nothing @nothing")
 	fun onCreate(sender: CommandSender, name: String, world: World, x: Int, z: Int) = asyncCommand(sender) {
 		val id: Oid<EcoStation> = EcoStation.create(name, world.name, x, z)
-		sender.sendInformation("Created eco station $name at $x, $z in ${world.name} with database ID $id")
+		sender.information("Created eco station $name at $x, $z in ${world.name} with database ID $id")
 	}
 
 	@Suppress("Unused")
@@ -35,7 +35,7 @@ object EcoStationCommand : SLCommand() {
 	fun onSetCenter(sender: CommandSender, ecoStation: EcoStation, x: Int, z: Int) = asyncCommand(sender) {
 		EcoStation.setCenter(ecoStation._id, x, z)
 
-		sender.sendInformation("Updated center of ${ecoStation.name} to $x, $z")
+		sender.information("Updated center of ${ecoStation.name} to $x, $z")
 	}
 
 	@Suppress("Unused")
@@ -44,7 +44,7 @@ object EcoStationCommand : SLCommand() {
 	fun onSetCenter(sender: CommandSender, ecoStation: EcoStation, world: World) = asyncCommand(sender) {
 		EcoStation.setWorld(ecoStation._id, world.name)
 
-		sender.sendInformation("Updated world of {ecoStation.name} to {world.name}")
+		sender.information("Updated world of {ecoStation.name} to {world.name}")
 	}
 
 	@Suppress("Unused")
@@ -70,7 +70,7 @@ object EcoStationCommand : SLCommand() {
 	fun onList(sender: CommandSender) {
 		val json: String = GsonBuilder().setPrettyPrinting().create().toJson(EcoStations.getAll())
 
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, json)
+		sender.information(json)
 	}
 
 	@Subcommand("delete")
@@ -78,6 +78,6 @@ object EcoStationCommand : SLCommand() {
 	fun onDelete(sender: CommandSender, ecoStation: EcoStation) {
 		EcoStation.delete(ecoStation._id)
 
-		sender.sendInformation("Deleted eco station ${ecoStation.name}")
+		sender.information("Deleted eco station ${ecoStation.name}")
 	}
 }

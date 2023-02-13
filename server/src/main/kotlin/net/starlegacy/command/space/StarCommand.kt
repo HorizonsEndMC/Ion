@@ -6,8 +6,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.space.Star
 import net.starlegacy.feature.space.CachedPlanet
@@ -96,7 +97,7 @@ object StarCommand : SLCommand() {
 	@Subcommand("generate")
 	@CommandCompletion("@stars")
 	fun onGenerate(sender: CommandSender, star: CachedStar) {
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Generating star...")
+		sender.information("Generating star...")
 		star.generate()
 		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Generated star {0}", star.name)
 	}
@@ -113,14 +114,14 @@ object StarCommand : SLCommand() {
 	}
 
 	private fun moveStar(sender: CommandSender, newX: Int, newZ: Int, star: CachedStar, spaceWorld: World) {
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Moving star...")
+		sender.information("Moving star...")
 
 		val newLoc = Vec3i(newX, 128, newZ)
 		star.move(newLoc, spaceWorld)
 	}
 
 	private fun moveOrbitingPlanets(sender: CommandSender, star: CachedStar, spaceWorld: World) {
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Moving orbiting planets...")
+		sender.information("Moving orbiting planets...")
 
 		for (planet in Space.getPlanets()) {
 			if (planet.sun.databaseId == star.databaseId) {

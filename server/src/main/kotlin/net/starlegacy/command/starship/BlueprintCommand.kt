@@ -10,9 +10,11 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
@@ -287,7 +289,7 @@ object BlueprintCommand : SLCommand() {
 						}
 					}
 				} catch (e: StarshipDetection.DetectionFailedException) {
-					sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Detection failed: ${e.message}")
+					sender.userError("Detection failed: ${e.message}")
 				}
 			}
 		}
@@ -374,6 +376,6 @@ object BlueprintCommand : SLCommand() {
 		}
 		blueprint.trustedNations.remove(nationId)
 		saveBlueprint(blueprint)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Un-trusted nation $nation from blueprint $name")
+		sender.success("Un-trusted nation $nation from blueprint $name")
 	}
 }

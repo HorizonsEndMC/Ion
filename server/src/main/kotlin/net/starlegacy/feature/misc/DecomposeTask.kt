@@ -1,7 +1,9 @@
 package net.starlegacy.feature.misc
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.serverError
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.legacy.ores.Ore
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
@@ -49,8 +51,7 @@ class DecomposeTask(
 			}
 		} catch (exception: Exception) {
 			Bukkit.getPlayer(playerID)
-				?.sendFeedbackMessage(
-					FeedbackType.SERVER_ERROR,
+				?.serverError(
 					"Decomposer encountered server error. Please contact staff."
 				)
 			exception.printStackTrace()
@@ -104,7 +105,7 @@ class DecomposeTask(
 				if (!BlockBreakEvent(block, player).callEvent()) continue
 
 				if (power < 10) {
-					player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer out of power!")
+					player.userError("Decomposer out of power!")
 					return false
 				}
 
@@ -130,8 +131,7 @@ class DecomposeTask(
 							sign.world.dropItemNaturally(sign.location.toCenterLocation(), drop)
 						}
 
-						player.sendFeedbackMessage(
-							FeedbackType.USER_ERROR,
+						player.userError(
 							"Decomposer out of space, dropping items and cancelling decomposition."
 						)
 						return false

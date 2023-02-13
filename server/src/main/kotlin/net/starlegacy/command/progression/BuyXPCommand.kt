@@ -2,8 +2,8 @@ package net.starlegacy.command.progression
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.progression.LEVEL_BALANCING
 import net.starlegacy.feature.progression.SLXP

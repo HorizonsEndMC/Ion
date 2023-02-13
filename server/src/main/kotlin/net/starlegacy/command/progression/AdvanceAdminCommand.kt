@@ -7,8 +7,10 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CargoCrateShipment
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -83,7 +85,7 @@ object AdvanceAdminCommand : SLCommand() {
 	@Description("Reload the levels config")
 	fun onRebalance(sender: CommandSender) {
 		Levels.reloadConfig()
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Reloaded level balancing configs")
+		sender.success("Reloaded level balancing configs")
 	}
 
 	@Suppress("Unused")
@@ -123,7 +125,7 @@ object AdvanceAdminCommand : SLCommand() {
 			return@joinToString "$color${player.name}"
 		}
 
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, text)
+		sender.information(text)
 	}
 
 	@Suppress("Unused")

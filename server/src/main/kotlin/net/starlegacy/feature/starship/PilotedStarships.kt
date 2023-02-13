@@ -1,10 +1,13 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType.INFORMATION
+import net.horizonsend.ion.server.extensions.FeedbackType.SUCCESS
+import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
+import net.horizonsend.ion.server.extensions.sendFeedbackActionMessage
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.successActionMessage
+import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.extensions.userErrorActionMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -166,7 +169,7 @@ object PilotedStarships : SLComponent() {
 			return false
 		}
 		if (!data.starshipType.canUse(player)) {
-			player.sendFeedbackActionMessage(USER_ERROR, "You are not high enough level to pilot this!")
+			player.userErrorActionMessage("You are not high enough level to pilot this!")
 			return false
 		}
 
@@ -177,7 +180,7 @@ object PilotedStarships : SLComponent() {
 				return false
 			}
 
-			player.sendFeedbackActionMessage(USER_ERROR, "You're already piloting a starship!")
+			player.userErrorActionMessage("You're already piloting a starship!")
 			return false
 		}
 
@@ -190,17 +193,17 @@ object PilotedStarships : SLComponent() {
 
 		if (activeStarship != null) {
 			if (isPiloted(activeStarship)) {
-				player.sendFeedbackActionMessage(USER_ERROR, "That starship is already being piloted!")
+				player.userErrorActionMessage("That starship is already being piloted!")
 				return false
 			}
 
 			if (!activeStarship.isWithinHitbox(player)) {
-				player.sendFeedbackMessage(USER_ERROR, "You need to be inside the ship to pilot it")
+				player.userError("You need to be inside the ship to pilot it")
 				return false
 			}
 
 			pilot(activeStarship, player)
-			player.sendFeedbackActionMessage(SUCCESS, "Piloted already activated starship")
+			player.successActionMessage("Piloted already activated starship")
 			return false
 		}
 
@@ -209,7 +212,7 @@ object PilotedStarships : SLComponent() {
 		val state: PlayerStarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 
 		if (state == null) {
-			player.sendFeedbackActionMessage(USER_ERROR, "Starship has not been detected")
+			player.userErrorActionMessage("Starship has not been detected")
 			return false
 		}
 
@@ -277,7 +280,7 @@ object PilotedStarships : SLComponent() {
 			}
 
 			if (!activePlayerStarship.isWithinHitbox(player)) {
-				player.sendFeedbackMessage(USER_ERROR, "You need to be inside the ship to pilot it")
+				player.userError("You need to be inside the ship to pilot it")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}

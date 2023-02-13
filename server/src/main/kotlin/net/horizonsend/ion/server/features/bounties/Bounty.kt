@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.bounties
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.userError
 import org.bukkit.entity.Player
 
 fun Player.acceptBounty(target: Player) {
@@ -10,12 +10,12 @@ fun Player.acceptBounty(target: Player) {
 	val targetData = PlayerData[target.uniqueId]
 
 	if (playerData.minecraftUUID == targetData.minecraftUUID) {
-		sendUserError("Cannot accept a bounty on yourself")
+		userError("Cannot accept a bounty on yourself")
 		return
 	}
 
 	if (playerData.acceptedBounty != null) {
-		sendUserError("Cannot accept more then 1 bounty")
+		userError("Cannot accept more then 1 bounty")
 		return
 	}
 

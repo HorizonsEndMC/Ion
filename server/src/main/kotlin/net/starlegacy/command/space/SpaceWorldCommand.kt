@@ -4,8 +4,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.space.SpaceWorlds
 import org.bukkit.Bukkit
@@ -26,8 +27,7 @@ object SpaceWorldCommand : SLCommand() {
 
 	@Subcommand("list")
 	fun onList(sender: CommandSender) {
-		sender.sendFeedbackMessage(
-			FeedbackType.INFORMATION,
+		sender.information(
 			"Space Worlds: " + (
 				Bukkit.getWorlds()
 					.filter { SpaceWorlds.contains(it) }

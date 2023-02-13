@@ -4,8 +4,8 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.sendInformation
-import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.features.customItems.CustomItems
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -22,7 +22,7 @@ class ConvertCommand : BaseCommand() { // I imagine we'll need more than blaster
 			!heldItem.itemMeta.hasCustomModelData() ||
 			heldItem.itemMeta.customModelData == 0
 		) {
-			sender.sendUserError("Not a valid custom item!")
+			sender.userError("Not a valid custom item!")
 			return
 		}
 
@@ -31,7 +31,7 @@ class ConvertCommand : BaseCommand() { // I imagine we'll need more than blaster
 			2 -> CustomItems.RIFLE
 			3 -> CustomItems.SNIPER
 			else -> {
-				sender.sendInformation("Sorry, but there is no current equivalent for the cannon, one will come soon")
+				sender.information("Sorry, but there is no current equivalent for the cannon, one will come soon")
 				return
 			}
 		}.constructItemStack()

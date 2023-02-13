@@ -6,8 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.server.extensions.successActionMessage
 import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -22,10 +21,10 @@ object RandomTargetCommand : SLCommand() {
 		val ship = getStarshipPiloting(p)
 		if (!ship.randomTarget) {
 			ship.randomTarget = true
-			sender.sendFeedbackActionMessage(SUCCESS, "Random Turret Targeting activated!")
+			sender.successActionMessage("Random Turret Targeting activated!")
 		} else {
 			ship.randomTarget = false
-			sender.sendFeedbackActionMessage(SUCCESS, "Random Turret Targeting De-Activating")
+			sender.successActionMessage("Random Turret Targeting De-Activating")
 		}
 	}
 
@@ -39,7 +38,7 @@ object RandomTargetCommand : SLCommand() {
 		} else {
 			ship.randomTargetBlacklist.remove(player.getPlayer().uniqueId)
 		}
-		sender.sendFeedbackActionMessage(SUCCESS, "Added $p to Random Target Blacklist")
+		sender.successActionMessage("Added $p to Random Target Blacklist")
 	}
 
 	@Subcommand("clearblacklist")
@@ -47,6 +46,6 @@ object RandomTargetCommand : SLCommand() {
 	fun onClearBlacklist(sender: CommandSender, p: Player) = asyncCommand(sender) {
 		val ship = getStarshipPiloting(p)
 		ship.randomTargetBlacklist.clear()
-		sender.sendFeedbackActionMessage(SUCCESS, "Cleared Random Target Blacklist")
+		sender.successActionMessage("Cleared Random Target Blacklist")
 	}
 }

@@ -5,8 +5,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
@@ -118,8 +119,7 @@ object CollectedItemCommand : SLCommand() {
 			.takeIf { it.isNotEmpty() } ?: throw InvalidCommandArgument("No items at ${station.name}")
 
 		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Station {0} Items:", station.name)
-		sender.sendFeedbackMessage(
-			FeedbackType.INFORMATION,
+		sender.information(
 			"(ID: item string, value, min stacks, max stacks, stock)"
 		)
 
