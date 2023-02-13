@@ -38,7 +38,7 @@ class AsteroidGenerator(
 	val configuration: ServerConfiguration.AsteroidConfig
 ) {
 	val asteroidGenerationVersion: Byte = 0
-	val oreMap: Map<String, BlockState> = configuration.ores.associate {
+	private val oreMap: Map<String, BlockState> = configuration.ores.associate {
 		it.material to Bukkit.createBlockData(it.material).nms
 	}
 
@@ -55,7 +55,10 @@ class AsteroidGenerator(
 			timing.time {
 				val random = Random(serverLevel.seed)
 				// save some time
-				val noise = SimplexOctaveGenerator(random, 1)
+				val shapingNoise = SimplexOctaveGenerator(random, 1)
+				val materialNoise = SimplexOctaveGenerator(random, 1)
+				materialNoise.setScale(0.15)
+
 				val radiusSquared = asteroid.size * asteroid.size
 
 				// Get every chunk section covered by the asteroid.
@@ -147,8 +150,9 @@ class AsteroidGenerator(
 													ySquared,
 													zSquared,
 													asteroid,
-													asteroid.size / 25,
-													noise
+													asteroid.size / 30,
+													shapingNoise,
+													materialNoise
 												)
 
 											if (
@@ -252,35 +256,15 @@ class AsteroidGenerator(
 		worldZSquared: Double,
 		asteroid: Asteroid,
 		sizeFactor: Double,
-		noise: SimplexOctaveGenerator
+		shapingNoise: SimplexOctaveGenerator,
+		materialNoise: SimplexOctaveGenerator
 	): BlockState? {
-		// Full noise is used as the radius of the asteroid, and it is offset by the noise of each block pos.
-		var fullNoise = 0.0
-		val initialScale = 0.015 / sizeFactor.coerceAtLeast(0.5)
-
-		for (octave in 0..asteroid.octaves) {
-			noise.setScale(initialScale * (octave + 1.0).pow(2.25 + (sizeFactor / 2.5)))
-
-			val offset = abs(
-				noise.noise(worldX, worldY, worldZ, 0.0, 1.0, false)
-			) * (asteroid.size / (octave + 1.0).pow(2.25))
-
-			fullNoise += offset
-		}
-
-		fullNoise *= fullNoise
-		// Continue if block is not inside any asteroid
-		if (worldXSquared + worldYSquared + worldZSquared >= fullNoise) return null
-
-		noise.setScale(0.095)
-
 		val weightedMaterials = weightedPalettes[asteroid.palette]!!
-
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (
 			(
 				(
-					noise.noise(
+					materialNoise.noise(
 						worldX,
 						worldY,
 						worldZ,
@@ -292,67 +276,28 @@ class AsteroidGenerator(
 				) * (weightedMaterials.size - 1)
 			).roundToInt()
 
-		// Weight the list by adding duplicate entries, then sample it for the material.
+		// Full noise is used as the radius of the asteroid, and it is offset by the noise of each block pos.
+		var fullNoise = 0.0
+		val initialScale = 0.015 / sizeFactor.coerceAtLeast(1.0)
+
+		for (octave in 0..asteroid.octaves) {
+			shapingNoise.setScale(initialScale * (octave + 1.0).pow(2.25 + (sizeFactor / 2.25)))
+
+			val offset = abs(
+				shapingNoise.noise(worldX, worldY, worldZ, 0.0, 1.0, false)
+			) * (asteroid.size / (octave + 1.0).pow(2.25))
+
+			fullNoise += offset
+		}
+
+		fullNoise *= fullNoise
+		// Continue if block is not inside any asteroid
+		if (worldXSquared + worldYSquared + worldZSquared >= fullNoise) return null
 
 		return weightedMaterials[paletteSample]
 	}
 
-	fun rebuildChunkAsteroids(chunk: Chunk) {
-		val storedAsteroidData =
-			chunk.persistentDataContainer.get(NamespacedKeys.ASTEROIDS_DATA, PersistentDataType.BYTE_ARRAY)
-				?: return
-		val nbt = try {
-			NbtIo.readCompressed(ByteArrayInputStream(storedAsteroidData, 0, storedAsteroidData.size))
-		} catch (error: Error) {
-			error.printStackTrace(); throw Throwable("Could not serialize stored asteroid data!")
-		}
-
-		val levelChunk = (chunk as CraftChunk).handle
-		val sections = nbt.getList("sections", 10) // 10 is compound tag, list of compound tags
-
-		val chunkOriginX = chunk.x.shl(4)
-		val chunkOriginZ = chunk.z.shl(4)
-
-		for (section in sections) {
-			val compound = section as CompoundTag
-			val levelChunkSection = levelChunk.sections[compound.getByte("y").toInt()]
-			val blocks: IntArray = compound.getIntArray("blocks")
-			val paletteList = compound.getList("palette", 10)
-
-			val holderLookup = levelChunk.level.level.holderLookup(Registries.BLOCK)
-
-			var index = 0
-
-			val sectionMinY = levelChunkSection.bottomBlockY()
-
-			for (x in 0..15) {
-				val worldX = x + chunkOriginX
-
-				for (z in 0..15) {
-					val worldZ = z + chunkOriginZ
-
-					for (y in 0..15) {
-						val block = NbtUtils.readBlockState(holderLookup, paletteList[blocks[index]] as CompoundTag)
-						if (block == Blocks.AIR.defaultBlockState()) {
-							index++
-							continue
-						}
-						levelChunkSection.setBlockState(x, y, z, block)
-						levelChunk.playerChunk?.blockChanged(BlockPos(worldX, y + sectionMinY, worldZ))
-
-						index++
-					}
-				}
-			}
-		}
-		levelChunk.playerChunk?.broadcastChanges(levelChunk)
-	}
-
 	fun generateRandomAsteroid(x: Int, y: Int, z: Int, random: Random): Asteroid {
-		val noise = SimplexOctaveGenerator(random, 1)
-
-		noise.setScale(0.15)
-
 		val weightedPalette = paletteWeights()
 		val paletteSample = random.nextInt(weightedPalette.size)
 
@@ -417,4 +362,57 @@ class AsteroidGenerator(
 		val size: Double,
 		val octaves: Int
 	)
+
+	companion object {
+		fun rebuildChunkAsteroids(chunk: Chunk) {
+			val storedAsteroidData =
+				chunk.persistentDataContainer.get(NamespacedKeys.ASTEROIDS_DATA, PersistentDataType.BYTE_ARRAY)
+					?: return
+			val nbt = try {
+				NbtIo.readCompressed(ByteArrayInputStream(storedAsteroidData, 0, storedAsteroidData.size))
+			} catch (error: Error) {
+				error.printStackTrace(); throw Throwable("Could not serialize stored asteroid data!")
+			}
+
+			val levelChunk = (chunk as CraftChunk).handle
+			val sections = nbt.getList("sections", 10) // 10 is compound tag, list of compound tags
+
+			val chunkOriginX = chunk.x.shl(4)
+			val chunkOriginZ = chunk.z.shl(4)
+
+			for (section in sections) {
+				val compound = section as CompoundTag
+				val levelChunkSection = levelChunk.sections[compound.getByte("y").toInt()]
+				val blocks: IntArray = compound.getIntArray("blocks")
+				val paletteList = compound.getList("palette", 10)
+
+				val holderLookup = levelChunk.level.level.holderLookup(Registries.BLOCK)
+
+				var index = 0
+
+				val sectionMinY = levelChunkSection.bottomBlockY()
+
+				for (x in 0..15) {
+					val worldX = x + chunkOriginX
+
+					for (z in 0..15) {
+						val worldZ = z + chunkOriginZ
+
+						for (y in 0..15) {
+							val block = NbtUtils.readBlockState(holderLookup, paletteList[blocks[index]] as CompoundTag)
+							if (block == Blocks.AIR.defaultBlockState()) {
+								index++
+								continue
+							}
+							levelChunkSection.setBlockState(x, y, z, block)
+							levelChunk.playerChunk?.blockChanged(BlockPos(worldX, y + sectionMinY, worldZ))
+
+							index++
+						}
+					}
+				}
+			}
+			levelChunk.playerChunk?.broadcastChanges(levelChunk)
+		}
+	}
 }
