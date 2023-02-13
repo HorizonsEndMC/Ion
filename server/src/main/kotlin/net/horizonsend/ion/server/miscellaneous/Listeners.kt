@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.bounties.BountyListener
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.customItems.CustomItemListeners
+import net.horizonsend.ion.server.features.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.qol.RecipeListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
@@ -38,6 +39,7 @@ val listeners = arrayOf(
 	BlasterListeners(),
 	BountyListener(),
 	EdenFixer9000(),
+	SpaceGenerationManager,
 	RecipeListener(),
 	VoidNetwork(),
 
