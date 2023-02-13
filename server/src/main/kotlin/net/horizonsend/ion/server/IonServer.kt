@@ -98,7 +98,6 @@ class IonServer : JavaPlugin() {
 					HyperspaceBeacons.reloadDynmap()
 					Collectors.onEnable()
 					CityNPCs.onEnable()
-					SpaceGenerationManager.onEnable()
 
 					pluginManager.registerEvents(CityNPCs, this)
 				},
