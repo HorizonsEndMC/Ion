@@ -1,8 +1,12 @@
 package net.starlegacy.listener.nations
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackTitle
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.sendFeedbackAction
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.title.Title
+import net.kyori.adventure.title.Title.Times.times
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
@@ -22,6 +26,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.lang.System.currentTimeMillis
+import java.time.Duration.ofMillis
 import java.util.Collections
 import java.util.UUID
 
@@ -55,7 +60,6 @@ object MovementListener : SLEventListener() {
 
 			if (territory != null) {
 				Tasks.async {
-					val title = "<gold>Entered Territory"
 					var subtitle = territory.name
 
 					territory.settlement?.let { id: Oid<Settlement> ->
@@ -70,14 +74,7 @@ object MovementListener : SLEventListener() {
 						subtitle += " (${NPCTerritoryOwner.getName(id)})"
 					}
 
-					player.sendFeedbackTitle(
-						FeedbackType.INFORMATION,
-						title,
-						subtitle,
-						1000,
-						2000,
-						1000
-					)
+					player.showTitle(Title.title(text("Entered Territory", GOLD), text(subtitle, BLUE), times(ofMillis(1000), ofMillis(2000), ofMillis(1000))))
 				}
 			}
 		}

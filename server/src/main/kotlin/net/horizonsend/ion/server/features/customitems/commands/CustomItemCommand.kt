@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.extensions.sendInformation
+import net.horizonsend.ion.server.extensions.information
 import net.horizonsend.ion.server.features.customItems.CustomItems
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -30,6 +30,6 @@ class CustomItemCommand : BaseCommand() {
 		itemStack.amount = amount ?: 1
 
 		player.inventory.addItem(itemStack)
-		player.sendInformation("Added ${itemStack.amount}x $customItem to inventory")
+		player.information("Added ${itemStack.amount}x $customItem to inventory")
 	}
 }

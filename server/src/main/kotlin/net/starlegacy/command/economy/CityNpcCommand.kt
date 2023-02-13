@@ -4,8 +4,8 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CityNPC
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -58,7 +58,7 @@ object CityNpcCommand : SLCommand() {
 		CityNPC.create(territory.id, location.x, location.y, location.z, skinData.toBytes(), type)
 		CityNPCs.synchronizeNPCsAsync()
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Created NPC!")
+		sender.success("Created NPC!")
 	}
 
 	private fun getIdFromName(name: String): UUID = SLPlayer[name]?._id?.uuid
@@ -72,7 +72,7 @@ object CityNpcCommand : SLCommand() {
 		CityNPC.delete(npc._id)
 		CityNPCs.synchronizeNPCsAsync() // update the actual npc
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted NPC!")
+		sender.success("Deleted NPC!")
 	}
 
 	fun requireNearbyNPC(sender: Player, permission: Boolean = true): CityNPC {
@@ -105,9 +105,9 @@ object CityNpcCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("sync")
 	fun onSync(sender: CommandSender) {
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Synchronizing...")
+		sender.information("Synchronizing...")
 		CityNPCs.synchronizeNPCsAsync {
-			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Synchronized!")
+			sender.success("Synchronized!")
 		}
 	}
 }

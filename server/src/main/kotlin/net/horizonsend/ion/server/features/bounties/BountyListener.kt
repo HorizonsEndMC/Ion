@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.bounties
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.extensions.sendServerError
+import net.horizonsend.ion.server.extensions.serverError
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.starlegacy.feature.progression.Levels
 import org.bukkit.event.EventHandler
@@ -35,7 +35,7 @@ class BountyListener : Listener {
 
 					killer.sendRichMessage("<gray>Claimed </gray>$bounty<gray> bounty on </gray>${victimData.minecraftUsername}")
 				} else {
-					killer.sendServerError("Vault Economy is not loaded! Cannot reward bounty!")
+					killer.serverError("Vault Economy is not loaded! Cannot reward bounty!")
 				}
 			}
 		}

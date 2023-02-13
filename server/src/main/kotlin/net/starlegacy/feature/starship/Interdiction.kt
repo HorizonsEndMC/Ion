@@ -1,9 +1,8 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.alert
+import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.extensions.userError
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
@@ -39,7 +38,7 @@ object Interdiction : SLComponent() {
 				return@listen
 			}
 			val starship = ActiveStarships.findByPassenger(player)
-				?: return@listen player.sendFeedbackMessage(USER_ERROR, "You're not riding the starship")
+				?: return@listen player.userError("You're not riding the starship")
 			if (!starship.contains(block.x, block.y, block.z)) {
 				return@listen
 			}
@@ -94,25 +93,24 @@ object Interdiction : SLComponent() {
 		val world = sign.world
 
 		if (!SpaceWorlds.contains(world)) {
-			player.sendFeedbackMessage(USER_ERROR, "You cannot use gravity wells within other gravity wells.")
+			player.userError("You cannot use gravity wells within other gravity wells.")
 			return
 		}
 
 		if (world.environment == World.Environment.NETHER) {
-			player.sendFeedbackMessage(USER_ERROR, "You can't use gravity wells in hyperspace.")
+			player.userError("You can't use gravity wells in hyperspace.")
 			return
 		}
 
 		if (!starship.isInterdicting) {
-			player.sendFeedbackMessage(SUCCESS, "Gravity well is disabled.")
+			player.success("Gravity well is disabled.")
 			return
 		}
 
 		val input = GravityWellMultiblock.getInput(sign)
 
 		if (LegacyItemUtils.getTotalItems(input, CustomItems.MINERAL_CHETHERITE.singleItem()) < 2) {
-			player.sendFeedbackMessage(
-				USER_ERROR,
+			player.userError(
 				"Not enough hypermatter in the dropper. Two chetherite shards are required!"
 			)
 			return
@@ -139,13 +137,13 @@ object Interdiction : SLComponent() {
 
 			cruisingShip.cruiseData.velocity.multiply(0.8)
 			cruisingShip.onlinePassengers.forEach { passenger ->
-				passenger.sendFeedbackMessage(ALERT, "Quantum fluctuations detected - velocity has been reduced by 20%.")
+				passenger.alert("Quantum fluctuations detected - velocity has been reduced by 20%.")
 			}
 		}
 
 		input.removeItem(CustomItems.MINERAL_CHETHERITE.itemStack(2))
 		starship.onlinePassengers.forEach { passenger ->
-			passenger.sendFeedbackMessage(ALERT, "Gravity pulse has been invoked by ${player.name}.")
+			passenger.alert("Gravity pulse has been invoked by ${player.name}.")
 		}
 	}
 }

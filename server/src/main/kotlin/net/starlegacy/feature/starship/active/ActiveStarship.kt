@@ -4,9 +4,8 @@ import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.informationAction
+import net.horizonsend.ion.server.extensions.success
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -163,12 +162,12 @@ abstract class ActiveStarship(
 			.forEach { GravityWellMultiblock.setEnabled(it, value) }
 
 		if (!value) {
-			onlinePassengers.forEach { player -> player.sendFeedbackMessage(FeedbackType.SUCCESS, "Gravity well disabled") }
+			onlinePassengers.forEach { player -> player.success("Gravity well disabled") }
 
 			return
 		}
 
-		onlinePassengers.forEach { player -> player.sendFeedbackMessage(FeedbackType.SUCCESS, "Gravity well enabled") }
+		onlinePassengers.forEach { player -> player.success("Gravity well enabled") }
 	}
 
 	abstract val interdictionRange: Int
@@ -340,8 +339,7 @@ abstract class ActiveStarship(
 		val name = sender.name
 
 		onlinePassengers.forEach { player ->
-			player.sendFeedbackAction(
-				FeedbackType.INFORMATION,
+			player.informationAction(
 				"<green>$name</green> updated the power mode to <aqua>$shield% shield <red>$weapon% weapon <yellow>$thruster% thruster"
 			)
 		}

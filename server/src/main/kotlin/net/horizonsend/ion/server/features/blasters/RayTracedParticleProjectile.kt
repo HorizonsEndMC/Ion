@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.blasters
 
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.alert
+import net.horizonsend.ion.server.extensions.information
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
@@ -106,7 +106,7 @@ class RayTracedParticleProjectile(
 			if (flyingHitEntity is Player) {
 				if (!PowerArmorManager.glideDisabledPlayers.containsKey(flyingHitEntity.uniqueId)) {
 					Tasks.syncDelay(60) { // after 3 seconds
-						flyingHitEntity.sendFeedbackMessage(FeedbackType.INFORMATION, "Your rocket boots have rebooted.")
+						flyingHitEntity.information("Your rocket boots have rebooted.")
 					}
 				} // Send this first to prevent duplicate messages when shot multiple times
 				val hitNation = SLPlayer[flyingHitEntity.uniqueId]?.nation
@@ -114,7 +114,7 @@ class RayTracedParticleProjectile(
 				if (NationRelation.getRelationActual(hitNation!!, shooterNation!!).ordinal >= 5) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
-					flyingHitEntity.sendFeedbackMessage(FeedbackType.ALERT, "Taking fire! Rocket boots powering down!")
+					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
 				}
 			}
 
