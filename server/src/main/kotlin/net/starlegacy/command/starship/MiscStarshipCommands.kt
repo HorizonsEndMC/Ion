@@ -5,13 +5,17 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.ALERT
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.INFORMATION
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.FeedbackType.INFORMATION
+import net.horizonsend.ion.server.extensions.FeedbackType.SUCCESS
+import net.horizonsend.ion.server.extensions.alert
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.sendFeedbackActionMessage
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.extensions.successActionMessage
+import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.extensions.userErrorActionMessage
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
@@ -54,7 +58,7 @@ object MiscStarshipCommands : SLCommand() {
 	@CommandAlias("release")
 	fun onRelease(sender: Player) {
 		DeactivatedPlayerStarships.deactivateAsync(getStarshipPiloting(sender)) {
-			sender.sendFeedbackMessage(SUCCESS, "Released starship")
+			sender.success("Released starship")
 		}
 	}
 
@@ -63,7 +67,7 @@ object MiscStarshipCommands : SLCommand() {
 	fun onUnpilot(sender: Player) {
 		val starship = getStarshipPiloting(sender)
 		PilotedStarships.unpilot(starship, true)
-		sender.sendFeedbackMessage(INFORMATION, "Unpiloted ship, but left it activated")
+		sender.information("Unpiloted ship, but left it activated")
 	}
 
 	@Suppress("unused")
@@ -76,7 +80,7 @@ object MiscStarshipCommands : SLCommand() {
 		}
 
 		starship.removePassenger(sender.uniqueId)
-		sender.sendFeedbackMessage(SUCCESS, "Stopped riding ship")
+		sender.success("Stopped riding ship")
 	}
 
 	@Suppress("unused")
@@ -103,7 +107,7 @@ object MiscStarshipCommands : SLCommand() {
 	@Suppress("Unused")
 	@CommandAlias("jump")
 	fun onJump(sender: Player) {
-		sender.sendFeedbackMessage(USER_ERROR, "/jump <planet> or /jump <x> <z>")
+		sender.userError("/jump <planet> or /jump <x> <z>")
 	}
 
 	@Suppress("unused")
@@ -143,12 +147,12 @@ object MiscStarshipCommands : SLCommand() {
 		val cachedPlanet = Space.getPlanet(planet)
 
 		if (cachedPlanet == null) {
-			sender.sendFeedbackMessage(USER_ERROR, "Unknown planet $planet.")
+			sender.userError("Unknown planet $planet.")
 			return
 		}
 
 		if (cachedPlanet.spaceWorld != sender.world) {
-			sender.sendFeedbackMessage(USER_ERROR, "$planet is not in this space sector.")
+			sender.userError("$planet is not in this space sector.")
 			return
 		}
 
@@ -186,12 +190,12 @@ object MiscStarshipCommands : SLCommand() {
 				starship.centerOfMass.z.toDouble()
 			) != null
 		) {
-			sender.sendFeedbackMessage(USER_ERROR, "You're within a MassShadow, jump cancelled.")
+			sender.userError("You're within a MassShadow, jump cancelled.")
 			return
 		}
 
 		if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
-			sender.sendFeedbackMessage(USER_ERROR, "Starship is cruising, jump aborted, try again when it fully stops.")
+			sender.userError("Starship is cruising, jump aborted, try again when it fully stops.")
 			StarshipCruising.stopCruising(sender, starship)
 			return
 		}
@@ -207,8 +211,7 @@ object MiscStarshipCommands : SLCommand() {
 			x1 = (normalizedX * maxRange + origin.x).roundToInt()
 			z1 = (normalizedZ * maxRange + origin.z).roundToInt()
 
-			sender.sendFeedbackMessage(
-				USER_ERROR,
+			sender.userError(
 				"Warning: You attempted to jump ${distance.toInt()} blocks, " +
 					"but your navigation computer only supports jumping up to $maxRange blocks! " +
 					"Automatically shortening jump. New Coordinates: $x1, $z1"
@@ -242,12 +245,11 @@ object MiscStarshipCommands : SLCommand() {
 				"No target set for $weaponSet"
 			}
 
-			sender.sendFeedbackMessage(INFORMATION, "Unset target of <aqua>$weaponSet")
+			sender.information("Unset target of <aqua>$weaponSet")
 		} else {
 			starship.autoTurretTargets[weaponSet] = player.getPlayer().uniqueId
 
-			sender.sendFeedbackMessage(
-				INFORMATION,
+			sender.information(
 				"Set target of <aqua>$weaponSet</aqua> to <white>${player.getPlayer().name}"
 			)
 		}
@@ -279,11 +281,11 @@ object MiscStarshipCommands : SLCommand() {
 	fun onUnSetAll(sender: Player) {
 		val starship = getStarshipRiding(sender)
 		if (starship.autoTurretTargets.isEmpty()) {
-			sender.sendFeedbackActionMessage(USER_ERROR, "Error no weaponsets with autoturret targets found")
+			sender.userErrorActionMessage("Error no weaponsets with autoturret targets found")
 			return
 		}
 		starship.autoTurretTargets.forEach { starship.autoTurretTargets.remove(it.key, it.value) }
-		sender.sendFeedbackActionMessage(INFORMATION, "Unset target for all weaponsets.")
+		sender.successActionMessage("Unset target for all weaponsets.")
 	}
 
 	@Suppress("unused")
@@ -344,7 +346,7 @@ object MiscStarshipCommands : SLCommand() {
 		val ship = getStarshipPiloting(sender)
 		ship.speedLimit = speedLimit
 
-		sender.sendFeedbackMessage(INFORMATION, "Speed limit set to $speedLimit")
+		sender.information("Speed limit set to $speedLimit")
 	}
 
 	@Suppress("unused")
@@ -369,13 +371,12 @@ object MiscStarshipCommands : SLCommand() {
 		player.teleport(location)
 
 		starship.onlinePassengers.forEach { passenger ->
-			passenger.sendFeedbackMessage(
-				INFORMATION,
+			passenger.information(
 				"${player.name} was ejected from the starship"
 			)
 		}
 
-		player.sendFeedbackMessage(ALERT, "You were ejected from the starship")
+		player.alert("You were ejected from the starship")
 	}
 
 	@Suppress("unused")
@@ -442,7 +443,7 @@ object MiscStarshipCommands : SLCommand() {
 			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender)
 			ship.beacon = null
 		} else {
-			sender.sendFeedbackMessage(USER_ERROR, "Starship is not near beacon!")
+			sender.userError("Starship is not near beacon!")
 		}
 	}
 }

@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.extensions.serverError
+import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.extensions.userErrorAction
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
@@ -52,12 +52,12 @@ object Hyperspace : SLComponent() {
 				starship.centerOfMass.z.toDouble()
 			) != null
 		) {
-			starship.sendFeedbackMessage(FeedbackType.USER_ERROR, "Ship is within Gravity Well, jump cancelled")
+			starship.userError("Ship is within Gravity Well, jump cancelled")
 			return
 		}
 		if (starship.type == PLATFORM) {
 			starship.onlinePassengers.forEach {
-				it.sendFeedbackAction(FeedbackType.USER_ERROR, "This ship type is not capable of moving.")
+				it.userErrorAction("This ship type is not capable of moving.")
 			}
 			return
 		}
@@ -141,7 +141,7 @@ object Hyperspace : SLComponent() {
 		val world = getRealspaceWorld(starship.serverLevel.world)
 
 		if (world == null) {
-			starship.sendFeedbackMessage(FeedbackType.SERVER_ERROR, "Failed to exit hyperspace: Realspace world not found")
+			starship.serverError("Failed to exit hyperspace: Realspace world not found")
 			return
 		}
 

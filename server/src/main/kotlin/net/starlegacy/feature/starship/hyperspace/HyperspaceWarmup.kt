@@ -1,8 +1,9 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.extensions.alertAction
+import net.horizonsend.ion.server.extensions.informationAction
+import net.horizonsend.ion.server.extensions.userErrorAction
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -44,16 +45,14 @@ class HyperspaceWarmup(
 	override fun run() {
 		seconds++
 		ship.onlinePassengers.forEach { player ->
-			player.sendFeedbackAction(
-				FeedbackType.INFORMATION,
+			player.informationAction(
 				"Hyperdrive Warmup: $seconds/$warmup seconds"
 			)
 		}
 
 		if (!drive.isIntact()) {
 			ship.onlinePassengers.forEach { player ->
-				player.sendFeedbackAction(
-					FeedbackType.ALERT,
+				player.alertAction(
 					"Drive damaged! Jump failed!"
 				)
 			}
@@ -63,10 +62,7 @@ class HyperspaceWarmup(
 
 		if (MassShadows.find(ship.serverLevel.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble()) != null) {
 			ship.onlinePassengers.forEach { player ->
-				player.sendFeedbackAction(
-					FeedbackType.USER_ERROR,
-					"Ship is within Gravity Well, jump cancelled"
-				)
+				player.userErrorAction("Ship is within Gravity Well, jump cancelled")
 			}
 			cancel()
 			return
@@ -81,7 +77,7 @@ class HyperspaceWarmup(
 			drive.useFuel()
 		}
 
-		ship.sendFeedbackAction(FeedbackType.INFORMATION, "Jumping")
+		ship.informationAction("Jumping")
 		Hyperspace.completeJumpWarmup(this)
 	}
 

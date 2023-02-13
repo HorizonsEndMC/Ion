@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.miscellaneous.listeners
 
 import com.google.common.io.BaseEncoding
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.extensions.sendServerError
-import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.serverError
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import org.bukkit.GameMode
 import org.bukkit.Material.CHAINMAIL_BOOTS
@@ -57,7 +57,7 @@ class ResourcePackListener : Listener {
 	fun onPlayerResourcePackStatusEvent(event: PlayerResourcePackStatusEvent) {
 		if (event.status != PlayerResourcePackStatusEvent.Status.ACCEPTED) return
 
-		event.player.sendUserError(
+		event.player.userError(
 			"Please consider downloading the resource pack for better login times! <click:open_url:'https://github.com/HorizonsEndMC/ResourcePack'>https://github.com/HorizonsEndMC/ResourcePack</click>"
 		)
 	}
@@ -85,7 +85,7 @@ class ResourcePackListener : Listener {
 		}
 
 		val (url, hash) = getURLAndHash() ?: let {
-			event.player.sendServerError("Unable to provide resource pack. This error may correct itself within 10 minutes, if not, contact an administrator.")
+			event.player.serverError("Unable to provide resource pack. This error may correct itself within 10 minutes, if not, contact an administrator.")
 			return
 		}
 

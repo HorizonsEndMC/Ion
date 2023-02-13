@@ -4,9 +4,10 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.sendInformation
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.userError
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
@@ -33,14 +34,14 @@ object CollectorCommand : SLCommand() {
 
 		val ecoStation = getEcoStation(location)
 
-		sender.sendInformation("Detected station {ecoStation.name}, using...")
+		sender.information("Detected station {ecoStation.name}, using...")
 
 		EcoStation.addCollector(ecoStation._id, location.blockX, location.blockY, location.blockZ)
 
-		sender.sendInformation("Registered collector NPC in database, synchronizing NPCs...")
+		sender.information("Registered collector NPC in database, synchronizing NPCs...")
 
 		Collectors.synchronizeNPCsAsync {
-			sender.sendInformation("Synchronized citizens NPCs successfully.")
+			sender.information("Synchronized citizens NPCs successfully.")
 		}
 	}
 
@@ -51,18 +52,17 @@ object CollectorCommand : SLCommand() {
 
 		EcoStation.clearCollectors(ecoStation._id)
 
-		sender.sendInformation("Deleted in database, synchronizing NPCs..")
+		sender.information("Deleted in database, synchronizing NPCs..")
 
 		Collectors.synchronizeNPCsAsync {
-			sender.sendInformation("Synchronized citizens NPCs successfully.")
+			sender.information("Synchronized citizens NPCs successfully.")
 		}
 	}
 
 	@Suppress("Unused")
 	@Subcommand("sold")
 	fun onStock(sender: CommandSender) {
-		sender.sendFeedbackMessage(
-			FeedbackType.INFORMATION,
+		sender.information(
 			"Note: This may not be accurate if you're on a different server from the station(s)"
 		)
 
@@ -72,7 +72,7 @@ object CollectorCommand : SLCommand() {
 			val items = CollectedItem.findAllAt(ecoStation._id).toList()
 
 			if (items.isEmpty()) {
-				sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "  &4>> Empty?!")
+				sender.userError("  &4>> Empty?!")
 				continue
 			}
 

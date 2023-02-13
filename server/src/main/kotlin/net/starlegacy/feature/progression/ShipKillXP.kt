@@ -9,8 +9,8 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.server.extensions.FeedbackType
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -170,7 +170,7 @@ object ShipKillXP : SLComponent() {
 
 	private fun killMessage(killedName: String, data: ShipDamageData, arena: Boolean) {
 		val descending = data.map.toList().sortedBy { it.second.get() }.toMutableList()
-		val alertFeedbackColor = TextColor.fromHexString(FeedbackType.ALERT.colour)
+		val alertFeedbackColor = TextColor.color(FeedbackType.ALERT.colour)
 
 		// Begin killed ship formatting
 		val killedShipName = data.name?.let {

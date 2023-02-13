@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.features
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.information
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotedEvent
 import net.starlegacy.util.isInRange
@@ -75,7 +74,7 @@ object HyperspaceBeaconManager : Listener {
 			if (activeRequests.containsKey(pilot.uniqueId)) {
 				if (!activeRequests.containsKey(pilot.uniqueId)) return // returned already if null
 
-				pilot.sendFeedbackMessage(FeedbackType.INFORMATION, "Exited beacon communication radius.")
+				pilot.information("Exited beacon communication radius.")
 				activeRequests.remove(pilot.uniqueId)
 				return
 			}

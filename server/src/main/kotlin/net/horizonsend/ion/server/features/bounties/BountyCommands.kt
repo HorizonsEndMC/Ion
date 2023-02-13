@@ -8,8 +8,8 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.extensions.sendServerError
-import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.serverError
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.starlegacy.listener.misc.ProtectionListener
@@ -23,7 +23,7 @@ class BountyCommands : BaseCommand() {
 	@CommandPermission("ion.bounty.gui")
 	fun onBounty(sender: Player) {
 		if (!ProtectionListener.isProtectedCity(sender.location)) {
-			sender.sendUserError("You must be within a protected trade city to use this command!")
+			sender.userError("You must be within a protected trade city to use this command!")
 			return
 		}
 
@@ -38,7 +38,7 @@ class BountyCommands : BaseCommand() {
 		val targetData = PlayerData[target]
 
 		if (targetData == null) {
-			sender.sendUserError("Target player has not played Horizon's End!")
+			sender.userError("Target player has not played Horizon's End!")
 			return
 		}
 
@@ -56,21 +56,21 @@ class BountyCommands : BaseCommand() {
 		}
 
 		if (vaultEconomy == null) {
-			sender.sendServerError("Vault economy is not loaded! Cannot place bounty.")
+			sender.serverError("Vault economy is not loaded! Cannot place bounty.")
 			return
 		}
 
 		val targetData = PlayerData[target]
 
 		if (targetData == null) {
-			sender.sendUserError("Target player has not played Horizon's End!")
+			sender.userError("Target player has not played Horizon's End!")
 			return
 		}
 
 		val withdrawalSucceeded = vaultEconomy.withdrawPlayer(sender, amount.toDouble()).transactionSuccess()
 
 		if (!withdrawalSucceeded) {
-			sender.sendUserError("You do not have enough credits!")
+			sender.userError("You do not have enough credits!")
 			return
 		}
 
@@ -108,7 +108,7 @@ class BountyCommands : BaseCommand() {
 		val targetData = PlayerData[target]
 
 		if (targetData == null) {
-			sender.sendUserError("Target player has not played Horizon's End!")
+			sender.userError("Target player has not played Horizon's End!")
 			return
 		}
 
@@ -127,7 +127,7 @@ class BountyCommands : BaseCommand() {
 		val targetData = PlayerData[target]
 
 		if (targetData == null) {
-			sender.sendUserError("Target player has not played Horizon's End!")
+			sender.userError("Target player has not played Horizon's End!")
 			return
 		}
 

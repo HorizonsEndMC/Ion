@@ -5,9 +5,10 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.extensions.sendServerError
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.alert
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.serverError
+import net.horizonsend.ion.server.extensions.userError
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
@@ -99,7 +100,7 @@ object CryoPods : SLComponent() {
 		val player = event.player
 		val pos = Vec3i(sign.location)
 		if (!multiblock.isOwner(sign, player)) {
-			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "You aren't the owner of this cryo pod!")
+			player.userError("You aren't the owner of this cryo pod!")
 			return
 		}
 
@@ -107,20 +108,20 @@ object CryoPods : SLComponent() {
 
 		if (event.action == Action.LEFT_CLICK_BLOCK) {
 			if (cryoPod?.pos != pos) {
-				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "This is not your selected cryo pod!")
+				player.userError("This is not your selected cryo pod!")
 				return
 			}
 
 			removeCryoPod(player.uniqueId)
-			player.sendFeedbackMessage(FeedbackType.INFORMATION, "Deselected cryo pod!")
+			player.information("Deselected cryo pod!")
 		} else if (event.action == Action.RIGHT_CLICK_BLOCK) {
 			if (cryoPod?.pos == pos) {
-				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "This is already your selected cryo pod!")
+				player.userError("This is already your selected cryo pod!")
 				return
 			}
 
 			setCryoPod(player.uniqueId, sign.world.name, pos)
-			player.sendFeedbackMessage(FeedbackType.INFORMATION, "Selected cryo pod!")
+			player.information("Selected cryo pod!")
 		}
 	}
 
@@ -131,16 +132,16 @@ object CryoPods : SLComponent() {
 		val cryoPod: CryoPod = getCryoPod(player.uniqueId) ?: return
 
 		val world = Bukkit.getWorld(cryoPod.world)
-			?: return player.sendServerError("World ${cryoPod.world} is missing")
+			?: return player.serverError("World ${cryoPod.world} is missing")
 
 		val pos = cryoPod.pos
 		val loc = pos.toLocation(world)
 
 		val sign = loc.block.state as? Sign
-			?: return player.sendFeedbackMessage(FeedbackType.ALERT, "Cryo pod sign at $pos is missing")
+			?: return player.alert("Cryo pod sign at $pos is missing")
 
 		if (Multiblocks[sign, true, true] !is CryoPodMultiblock) {
-			return player.sendFeedbackMessage(FeedbackType.ALERT, "Cryo pod at $pos is not intact")
+			return player.alert("Cryo pod at $pos is not intact")
 		}
 
 		event.respawnLocation = loc.add(0.5, -1.0, 0.5)

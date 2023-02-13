@@ -1,8 +1,7 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.extensions.userErrorAction
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
@@ -35,8 +34,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	GLOBAL("<dark_green>Global", listOf("global", "g"), SLTextStyle.RESET) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			if (SETTINGS.chat.noGlobalWorlds.contains(player.world.name)) {
-				player.sendFeedbackAction(
-					FeedbackType.USER_ERROR,
+				player.userErrorAction(
 					"You can't use global chat in this world! " +
 						"<italic>(If you need assistance, please use /msg)"
 				)
@@ -49,7 +47,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 				val node = luckPerms.nodeBuilderRegistry.forInheritance().group(group).value(true).build()
 				val user = luckPerms.userManager.getUser(player.uniqueId)
 				if (user?.data()?.contains(node, NodeEqualityPredicate.IGNORE_EXPIRY_TIME)?.asBoolean() == true) {
-					player.sendFeedbackAction(FeedbackType.USER_ERROR, "You have gtoggle on! Use /gtoggle to disable.")
+					player.userErrorAction("You have gtoggle on! Use /gtoggle to disable.")
 					return
 				}
 			}
