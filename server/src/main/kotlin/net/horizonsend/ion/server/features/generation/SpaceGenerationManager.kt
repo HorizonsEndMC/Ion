@@ -1,25 +1,28 @@
 package net.horizonsend.ion.server.features.generation
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.features.generation.generators.AsteroidGenerator
 import net.minecraft.server.level.ServerLevel
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.world.WorldInitEvent
 
-object SpaceGenerationManager {
-	lateinit var worldGenerators: Map<ServerLevel, AsteroidGenerator?>
+object SpaceGenerationManager : Listener {
+	val worldGenerators: MutableMap<ServerLevel, AsteroidGenerator?> = mutableMapOf()
 
-	fun onEnable() {
-		worldGenerators = IonServer.Ion.server.worlds.associate { world ->
-			val serverLevel = (world as CraftWorld).handle
-			serverLevel to IonServer.Ion.configuration.spaceGenConfig[serverLevel.serverLevelData.levelName]?.let { config ->
-				println(config)
+	fun getGenerator(serverLevel: ServerLevel): AsteroidGenerator? = worldGenerators[serverLevel]
+
+	@EventHandler
+	fun onWorldInit(event: WorldInitEvent) {
+		val serverLevel = (event.world as CraftWorld).handle
+
+		Ion.configuration.spaceGenConfig[event.world.name]?.let { config ->
+			worldGenerators[serverLevel] =
 				AsteroidGenerator(
 					serverLevel,
 					config
 				)
-			}
 		}
 	}
-
-	fun getGenerator(serverLevel: ServerLevel): AsteroidGenerator? = worldGenerators[serverLevel]
 }
