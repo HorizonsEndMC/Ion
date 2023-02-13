@@ -62,7 +62,7 @@ data class ServerConfiguration(
 				val weightedList = mutableListOf<BlockState>()
 
 				for (material in this.materials) {
-					for (occurrence in material.value downTo 0) {
+					for (occurrence in material.value downTo 1) {
 						weightedList.add(getMaterial(material.key).nms)
 					}
 				}
