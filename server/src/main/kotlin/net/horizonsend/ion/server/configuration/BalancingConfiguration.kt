@@ -183,7 +183,7 @@ data class BalancingConfiguration(
 	}
 
 	class StarshipWeapons(
-		//Light Weapons
+		// Light Weapons
 		val PlasmaCannon: StarshipWeapon = StarshipWeapon(
 			range = 160.0,
 			speed = 400.0,
@@ -199,7 +199,7 @@ data class BalancingConfiguration(
 			angleRadians = 15.0,
 			convergeDistance = 10.0,
 			extraDistance = 1,
-			fireCooldownNanos = 250, //not overriden for Plasma Cannons
+			fireCooldownNanos = 250, // not overriden for Plasma Cannons
 			boostChargeNanos = 0,
 			aimDistance = 0,
 			fowardOnly = true,
@@ -222,7 +222,7 @@ data class BalancingConfiguration(
 			extraDistance = 2,
 			fireCooldownNanos = 250,
 			boostChargeNanos = 0,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 		val PulseCannon: StarshipWeapon = StarshipWeapon(
 			range = 140.0,
@@ -241,14 +241,14 @@ data class BalancingConfiguration(
 			extraDistance = 2,
 			fireCooldownNanos = 250,
 			boostChargeNanos = 0,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 		val MiniPhaser: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 600.0,
 			shieldDamageMultiplier = 1,
 			thickness = 0.2,
-			particleThickness = 0.0, //not applicable
+			particleThickness = 0.0, // not applicable
 			explosionPower = 2f,
 			volume = 10,
 			pitch = -2.0f,
@@ -260,10 +260,10 @@ data class BalancingConfiguration(
 			extraDistance = 0,
 			fireCooldownNanos = 500,
 			boostChargeNanos = 0,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 
-		//Heavy Weapons
+		// Heavy Weapons
 		val HeavyLaser: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 50.0,
@@ -301,7 +301,7 @@ data class BalancingConfiguration(
 			extraDistance = 0,
 			fireCooldownNanos = 10,
 			boostChargeNanos = 3,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 		val ProtonTorpedo: StarshipWeapon = StarshipWeapon(
 			range = 100.0,
@@ -341,7 +341,7 @@ data class BalancingConfiguration(
 			extraDistance = 0,
 			fireCooldownNanos = 250,
 			boostChargeNanos = 7,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 		val SonicMissile: StarshipWeapon = StarshipWeapon(
 			range = 300.0,
@@ -360,10 +360,10 @@ data class BalancingConfiguration(
 			extraDistance = 0,
 			fireCooldownNanos = 5000,
 			boostChargeNanos = 5,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 
-		//Auto Turret Stuff
+		// Auto Turret Stuff
 		val LightTurret: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 250.0,
@@ -401,7 +401,7 @@ data class BalancingConfiguration(
 			extraDistance = 0,
 			fireCooldownNanos = 500,
 			boostChargeNanos = 0,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 		val TriTurret: StarshipWeapon = StarshipWeapon(
 			range = 500.0,
@@ -440,7 +440,7 @@ data class BalancingConfiguration(
 			extraDistance = 0,
 			fireCooldownNanos = 10,
 			boostChargeNanos = 0,
-			aimDistance = 0,
+			aimDistance = 0
 		),
 		val CthulhuBeam: StarshipWeapon = StarshipWeapon(
 			range = 64.0,
@@ -459,9 +459,9 @@ data class BalancingConfiguration(
 			extraDistance = 0,
 			fireCooldownNanos = 10,
 			boostChargeNanos = 0,
-			aimDistance = 0,
+			aimDistance = 0
 		)
-	){
+	) {
 		@ConfigSerializable
 		data class StarshipWeapon(
 			override val range: Double,
@@ -481,14 +481,14 @@ data class BalancingConfiguration(
 			override val fireCooldownNanos: Long,
 			override val maxPerShot: Int = 0,
 			override val fowardOnly: Boolean = false,
-			val boostChargeNanos: Long, //Seconds, should only be put for heavyWeapons
-			val aimDistance: Int, //should only be put if the weapon in question is target tracking
+			val boostChargeNanos: Long, // Seconds, should only be put for heavyWeapons
+			val aimDistance: Int, // should only be put if the weapon in question is target tracking
 			val maxDegrees: Double = 0.0,
 			override val inaccuracyRadians: Double = 0.0
 		) : ProjectileBalancing()
 
 		@ConfigSerializable
-		abstract class ProjectileBalancing : SubSystem(){
+		abstract class ProjectileBalancing : SubSystem() {
 			abstract val range: Double
 			abstract val speed: Double
 			abstract val shieldDamageMultiplier: Int
@@ -501,7 +501,7 @@ data class BalancingConfiguration(
 		}
 
 		@ConfigSerializable
-		abstract class SubSystem{
+		abstract class SubSystem {
 			abstract val powerusage: Int
 			abstract val length: Int
 			abstract val angleRadians: Double
