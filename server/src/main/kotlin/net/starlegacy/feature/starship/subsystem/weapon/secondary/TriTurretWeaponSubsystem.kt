@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TriTurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -14,7 +15,7 @@ class TriTurretWeaponSubsystem(
 	override val multiblock: TriTurretMultiblock
 ) : TurretWeaponSubsystem(ship, pos, face),
 	HeavyWeaponSubsystem {
-	override val inaccuracyRadians: Double = Math.toRadians(3.0)
-	override val powerUsage: Int = 45_000
-	override val boostChargeNanos: Long = multiblock.cooldownNanos
+	override val inaccuracyRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.TriTurret.inaccuracyRadians)
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.TriTurret.powerusage
+	override val boostChargeNanos: Long = IonServer.Ion.balancing.starshipWeapons.TriTurret.boostChargeNanos
 }
