@@ -1,15 +1,37 @@
-package net.horizonsend.ion.server.features.generation
+package net.horizonsend.ion.server.features.space.generation
 
+import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.minecraft.server.level.ServerLevel
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
+import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.persistence.PersistentDataType
 import java.util.Random
 import kotlin.math.ceil
 
-class GenerationChunkLoadListener : Listener {
+object SpaceGenerationManager : Listener {
+	val worldGenerators: MutableMap<ServerLevel, SpaceGenerator?> = mutableMapOf()
+
+	fun getGenerator(serverLevel: ServerLevel): SpaceGenerator? = worldGenerators[serverLevel]
+
+	@EventHandler
+	fun onWorldInit(event: WorldInitEvent) {
+		val serverLevel = (event.world as CraftWorld).handle
+
+		Ion.configuration.spaceGenConfig[event.world.name]?.let { config ->
+			worldGenerators[serverLevel] =
+				SpaceGenerator(
+					serverLevel,
+					config
+				)
+		}
+	}
+
+	// Generate asteroids on chunk load
 	@EventHandler
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		val generator = SpaceGenerationManager.getGenerator((event.world as CraftWorld).handle) ?: return
@@ -18,7 +40,7 @@ class GenerationChunkLoadListener : Listener {
 		event.chunk.persistentDataContainer.set(
 			NamespacedKeys.ASTEROIDS_VERSION,
 			PersistentDataType.BYTE,
-			generator.asteroidGenerationVersion
+			generator.spaceGenerationVersion
 		)
 
 		val worldX = event.chunk.x * 16

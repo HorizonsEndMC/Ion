@@ -1,7 +1,9 @@
-package net.horizonsend.ion.server.features.generation.generators
+package net.horizonsend.ion.server.features.space.generation.generators
 
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.generation.BlockSerialization
+import net.horizonsend.ion.server.features.space.encounters.Encounter
+import net.horizonsend.ion.server.features.space.encounters.Encounters
+import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
@@ -33,26 +35,51 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class AsteroidGenerator(
+/**
+ * This class covers asteroid and wreck generation.
+ * An instance of this class is generated for each world on server startup
+ *
+ **/
+class SpaceGenerator(
 	val serverLevel: ServerLevel,
 	val configuration: ServerConfiguration.AsteroidConfig
 ) {
-	val asteroidGenerationVersion: Byte = 0
+	val spaceGenerationVersion: Byte = 0
+	val timing = timing("Space Generation")
+
+	/**
+	 * This class contains information passed to the generation function.
+	 * @param [x, y ,z] Origin of the asteroid.
+	 * @param palette A weighted list of blocks.
+	 * @param size The radius of the asteroid before noise deformation.
+	 * @param octaves The number of octaves of noise to apply. Generally 1, but higher for small asteroids. Increases roughness.
+	 **/
+	data class Asteroid(
+		val x: Int,
+		val y: Int,
+		val z: Int,
+		val palette: ServerConfiguration.AsteroidConfig.Palette,
+		val size: Double,
+		val octaves: Int
+	)
+
+	// ASTEROIDS SECTION
 	private val oreMap: Map<String, BlockState> = configuration.ores.associate {
 		it.material to Bukkit.createBlockData(it.material).nms
 	}
 
+	// Palettes weighted
 	private val weightedPalettes = configuration.blockPalettes.associateWith { it.materialWeights() }
 	private val weightedOres = oreWeights()
 
-	val timing = timing("Space Generation")
+	// Multiple of the radius of the asteroid to mark chunks as might contain an asteroid
 	private val searchRadius = 1.25
 
 	fun generateAsteroid(
 		asteroid: Asteroid
 	) {
-		Tasks.async {
-			timing.time {
+		timing.time {
+			Tasks.async {
 				val random = Random(serverLevel.seed)
 				// save some time
 				val shapingNoise = SimplexOctaveGenerator(random, 1)
@@ -211,7 +238,7 @@ class AsteroidGenerator(
 							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
 							formattedSections.addAll(newSections)
 							val storedChunkBlocks =
-								BlockSerialization.formatChunk(formattedSections, asteroidGenerationVersion)
+								BlockSerialization.formatChunk(formattedSections, spaceGenerationVersion)
 							val outputStream = ByteArrayOutputStream()
 							NbtIo.writeCompressed(storedChunkBlocks, outputStream)
 							// end data serialization
@@ -353,15 +380,48 @@ class AsteroidGenerator(
 
 		return weightedList
 	}
+	// Asteroids end
 
-	data class Asteroid(
+	// Wrecks start
+
+	/**
+	 * This information is not serialized. It is used in the generation of the wreck.
+	 * @param schematic The name of the schematic file referenced, not including file extension
+	 * @param encounter The optional encounter data.
+	 **/
+	data class WreckData(
 		val x: Int,
 		val y: Int,
 		val z: Int,
-		val palette: ServerConfiguration.AsteroidConfig.Palette,
-		val size: Double,
-		val octaves: Int
-	)
+		val schematic: String,
+		val encounter: WreckEncounterData?
+	) {
+		/**
+		 * This is serialized and stored in the chunk alongside the wreck.
+		 *
+		 * @param identifier The identifier string for the encounter class
+		 **/
+		data class WreckEncounterData(
+			val chestX: Int,
+			val chestY: Int,
+			val chestZ: Int,
+			val identifier: String
+		) {
+			fun getEncounter(): Encounter = Encounters.getByIdentifier(identifier)!!
+
+			fun NMS(): CompoundTag {
+				val beginningTag = CompoundTag()
+
+				beginningTag.putInt("x", chestX)
+				beginningTag.putInt("y", chestY)
+				beginningTag.putInt("z", chestZ)
+
+				beginningTag.putString("Encounter Identifier", identifier)
+
+				return beginningTag
+			}
+		}
+	}
 
 	companion object {
 		fun rebuildChunkAsteroids(chunk: Chunk) {
