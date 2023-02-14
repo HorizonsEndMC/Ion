@@ -14,7 +14,7 @@ private val Audience.prefix
 	}
 
 /** Sends a message to the audience with the given colour. */
-private fun Audience.sendColouredMessage(message: String, color: Int) = sendMessage(text(message,color(color)))
+private fun Audience.sendColouredMessage(message: String, color: Int) = sendMessage(text(message, color(color)))
 
 /**
  * Used to provide potentially irrelevant information, sends a gray coloured message.
