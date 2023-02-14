@@ -182,6 +182,7 @@ data class BalancingConfiguration(
 		}
 	}
 
+	@ConfigSerializable
 	class StarshipWeapons(
 		// Light Weapons
 		val PlasmaCannon: StarshipWeapon = StarshipWeapon(
