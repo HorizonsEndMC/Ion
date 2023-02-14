@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.mcName
 import org.bukkit.Color
@@ -16,15 +17,15 @@ class TorpedoProjectile(
 	originalTarget: Vector,
 	baseAimDistance: Int
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
-	override val range: Double = 100.0
-	override val speed: Double = 70.0
-	override val shieldDamageMultiplier: Int = 2
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.range
+	override val speed: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.speed
+	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.shieldDamageMultiplier
 	override val color: Color = Color.fromRGB(255, 0, 255)
-	override val thickness: Double = 0.4
-	override val particleThickness: Double = 1.0
-	override val explosionPower: Float = 6.0f
-	override val maxDegrees: Double = 45.0
-	override val volume: Int = 10
-	override val pitch: Float = 0.75f
-	override val soundName: String = Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR.mcName
+	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.thickness
+	override val particleThickness: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.particleThickness
+	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.explosionPower
+	override val maxDegrees: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.maxDegrees
+	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.volume
+	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.pitch
+	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.soundName
 }
