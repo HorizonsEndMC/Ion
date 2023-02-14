@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
 import org.bukkit.Location
@@ -103,13 +104,13 @@ class RocketProjectile(
 
 	override val blockMap: Map<Vec3i, BlockData> = blockMaps.getValue(face)
 
-	override val range: Double = 300.0
-	override var speed: Double = 5.0
-	override val shieldDamageMultiplier: Int = 5
-	override val thickness: Double = 1.0
-	override val explosionPower: Float = 30.0f
-	override val volume: Int = 10
-	override val soundName: String = "starship.weapon.rocket.shoot"
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.Rocket.range
+	override var speed: Double = IonServer.Ion.balancing.starshipWeapons.Rocket.speed
+	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.Rocket.shieldDamageMultiplier
+	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.Rocket.thickness
+	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.Rocket.explosionPower
+	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.Rocket.volume
+	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.Rocket.soundName
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
