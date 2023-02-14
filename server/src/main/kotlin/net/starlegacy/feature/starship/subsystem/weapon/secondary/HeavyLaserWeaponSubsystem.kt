@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
@@ -21,14 +22,14 @@ class HeavyLaserWeaponSubsystem(
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	private val sound = "starship.weapon.heavy_laser.single.shoot"
+	private val sound = IonServer.Ion.balancing.starshipWeapons.HeavyLaser.soundName
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(5L)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.HeavyLaser.boostChargeNanos)
 
-	override val length: Int = 8
-	override val powerUsage: Int = 30000
-	override val extraDistance: Int = 1
-	override val aimDistance: Int = 10
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.HeavyLaser.length
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.HeavyLaser.powerusage
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.HeavyLaser.extraDistance
+	override val aimDistance: Int = IonServer.Ion.balancing.starshipWeapons.HeavyLaser.aimDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
 		checkNotNull(target)
