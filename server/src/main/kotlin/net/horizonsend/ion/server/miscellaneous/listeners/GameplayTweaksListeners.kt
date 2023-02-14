@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
-import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.userError
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PlayerStarshipState
 import net.starlegacy.feature.starship.event.StarshipPilotEvent
@@ -42,7 +42,7 @@ class GameplayTweaksListeners : Listener {
 				!state.blockMap.contains(blockKey(above.x, above.y, above.z))
 			) {
 				event.isCancelled = true
-				event.player.sendUserError("Undetected crates found: redetect the craft before piloting!")
+				event.player.userError("Undetected crates found: redetect the craft before piloting!")
 			}
 		}
 	}

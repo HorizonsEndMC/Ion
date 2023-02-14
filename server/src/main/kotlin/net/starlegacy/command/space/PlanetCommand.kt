@@ -6,8 +6,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.space.Planet
 import net.starlegacy.feature.space.CachedPlanet
@@ -85,8 +86,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated seed in database, reloaded systems, and regenerated planet."
 		)
 	}
@@ -109,8 +109,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated atmosphere materials in database, reloaded systems, and regenerated planet."
 		)
 	}
@@ -125,8 +124,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated atmosphere density in database, reloaded systems, and regenerated planet."
 		)
 	}
@@ -141,8 +139,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated atmosphere noise in database, reloaded systems, and regenerated planet."
 		)
 	}
@@ -157,8 +154,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated cloud density in database, reloaded systems, and regenerated planet."
 		)
 	}
@@ -173,8 +169,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated cloud noise in database, reloaded systems, and regenerated planet."
 		)
 	}
@@ -189,8 +184,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated crust noise in database, reloaded systems, and regenerated planet."
 		)
 	}
@@ -213,8 +207,7 @@ object PlanetCommand : SLCommand() {
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Updated crust materials in database, reloaded systems, and regenerated planet."
 		)
 	}

@@ -1,7 +1,7 @@
 package net.starlegacy.feature.chat
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.extensions.informationAction
+import net.horizonsend.ion.server.extensions.userErrorAction
 import net.starlegacy.SLComponent
 import net.starlegacy.listen
 import net.starlegacy.redis
@@ -64,8 +64,7 @@ object ChannelSelections : SLComponent() {
 				val oldChannel = get(player)
 
 				if (oldChannel == channel) {
-					player.sendFeedbackAction(
-						FeedbackType.USER_ERROR,
+					player.userErrorAction(
 						"<red>You're already in chat ${channel.displayName.uppercase(Locale.getDefault())}<red>! " +
 							"<italic>(Hint: To get back to global, use /global)"
 					)
@@ -75,7 +74,7 @@ object ChannelSelections : SLComponent() {
 					val info: String =
 						"<white><bold>Switched to ${channel.displayName.uppercase(Locale.getDefault())}<white><bold> chat! " +
 							"<white><bold>To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'"
-					player.sendFeedbackAction(FeedbackType.INFORMATION, info)
+					player.informationAction(info)
 				}
 
 				Tasks.async {

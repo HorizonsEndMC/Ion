@@ -3,8 +3,9 @@ package net.starlegacy.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.userError
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
@@ -50,7 +51,7 @@ internal object NationRelationCommand : SLCommand() {
 		}
 
 		if (wish == NationRelation.Level.NATION && senderNation != otherNation) {
-			sender.sendFeedbackMessage(USER_ERROR, "Error: Cannot nation another nation")
+			sender.userError("Error: Cannot nation another nation")
 			return@asyncCommand
 		}
 

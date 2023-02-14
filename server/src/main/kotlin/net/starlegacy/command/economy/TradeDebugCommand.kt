@@ -6,9 +6,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.sendInformation
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.success
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CargoCrate
@@ -36,14 +35,12 @@ object TradeDebugCommand : SLCommand() {
 	fun onRebalance(sender: CommandSender) {
 		ShipmentBalancing.reload()
 		onShipmentRegenerate(sender)
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Reloaded the shipment balancing config & regenerated shipments."
 		)
 
 		CollectionMissions.rebalance()
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Reloaded the collection mission balancing config & regenerated collection missions."
 		)
 	}
@@ -54,8 +51,7 @@ object TradeDebugCommand : SLCommand() {
 		sender.sendRichMessage("<yellow>Reloading data...")
 		CargoCrates.reloadData()
 		val crates = CargoCrates.crates
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
+		sender.success(
 			"Reloaded. Crates (${crates.size}): ${crates.map { it.name }}"
 		)
 	}
@@ -131,16 +127,16 @@ object TradeDebugCommand : SLCommand() {
 		val elapsed = measureTimeMillis {
 			for (i in 1..seconds) {
 				Thread.sleep(1000)
-				sender.sendInformation("Froze a database thread for $i seconds...")
+				sender.information("Froze a database thread for $i seconds...")
 			}
 		}
 
-		sender.sendInformation("Done! Elapsed time: $elapsed")
+		sender.information("Done! Elapsed time: $elapsed")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("npc fix")
 	fun onNpcFix(sender: CommandSender) {
-		CityNPCs.synchronizeNPCsAsync { sender.sendInformation("done") }
+		CityNPCs.synchronizeNPCsAsync { sender.information("done") }
 	}
 }

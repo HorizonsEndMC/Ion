@@ -1,8 +1,9 @@
 package net.starlegacy.feature.misc
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.extensions.userError
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
@@ -56,7 +57,7 @@ object Decomposers : SLComponent() {
 
 			val offset = calculateOffset(origin, width, height, length, right, up, forward)
 
-			if (offset > width) return event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer empty!")
+			if (offset > width) return event.player.userError("Decomposer empty!")
 
 			val task = DecomposeTask(
 				signLoc,
@@ -73,19 +74,19 @@ object Decomposers : SLComponent() {
 			)
 
 			if (busySigns.containsKey(signLoc)) {
-				event.player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Decomposer in use")
+				event.player.userError("Decomposer in use")
 				return
 			}
 
 			task.runTaskTimer(Ion, delay, delay)
 
-			event.player.sendFeedbackMessage(FeedbackType.SUCCESS, "Started Decomposer")
+			event.player.success("Started Decomposer")
 
 			busySigns[signLoc] = task
 		} else {
-			(busySigns[signLoc] ?: return event.player.sendFeedbackMessage(FeedbackType.INFORMATION, "Decomposer not in use")).cancel()
+			(busySigns[signLoc] ?: return event.player.information("Decomposer not in use")).cancel()
 
-			event.player.sendFeedbackMessage(FeedbackType.INFORMATION, "Cancelled running decomposer")
+			event.player.information("Cancelled running decomposer")
 		}
 	}
 

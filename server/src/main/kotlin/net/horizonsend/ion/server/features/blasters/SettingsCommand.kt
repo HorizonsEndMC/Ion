@@ -8,8 +8,8 @@ import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Values
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.extensions.sendInformation
-import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.userError
 import org.bukkit.Color
 import org.bukkit.entity.Player
 import kotlin.math.pow
@@ -22,14 +22,14 @@ class SettingsCommand : BaseCommand() {
 	@CommandPermission("ion.settings.particle")
 	fun onSettingsParticleCommand(sender: Player, @Values("@particles") particle: String) {
 		PlayerData[sender.uniqueId].update { this.particle = particle }
-		sender.sendInformation("Set particle to $particle")
+		sender.information("Set particle to $particle")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("particle")
 	fun onSettingsParticleCommand(sender: Player) {
 		PlayerData[sender.uniqueId].update { this.particle = null }
-		sender.sendInformation("Cleared particle")
+		sender.information("Cleared particle")
 	}
 
 	@Suppress("Unused")
@@ -57,18 +57,18 @@ class SettingsCommand : BaseCommand() {
 		val perceivedLightness = if (luminance <= (216.0 / 24389.0)) luminance * (24389.0 / 27.0) else luminance.pow(1.0 / 3.0) * 116 - 16
 
 		if (perceivedLightness < 50.0) {
-			sender.sendUserError("This color is too dark, please choose something lighter.")
+			sender.userError("This color is too dark, please choose something lighter.")
 			return
 		}
 
 		PlayerData[sender.uniqueId].update { color = Color.fromRGB(red, green, blue).asRGB() }
-		sender.sendInformation("Set color to $red $green $blue")
+		sender.information("Set color to $red $green $blue")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("color")
 	fun onSettingsColorCommand(sender: Player) {
 		PlayerData[sender.uniqueId].update { color = null }
-		sender.sendInformation("Cleared color")
+		sender.information("Cleared color")
 	}
 }

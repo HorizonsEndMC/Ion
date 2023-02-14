@@ -3,9 +3,8 @@ package net.starlegacy.feature.multiblock
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockSide
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
@@ -277,7 +276,7 @@ object Multiblocks : SLComponent() {
 		val player = event.player
 
 		if (!player.hasPermission("starlegacy.multiblock.detect")) {
-			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "You don't have permission to detect multiblocks!")
+			player.userError("You don't have permission to detect multiblocks!")
 			return
 		}
 
@@ -293,8 +292,7 @@ object Multiblocks : SLComponent() {
 		}
 
 		if (lastMatch != null) {
-			player.sendFeedbackMessage(
-				FeedbackType.USER_ERROR,
+			player.userError(
 				"Improperly built ${lastMatch.name}. Make sure every block is correctly placed!"
 			)
 		}

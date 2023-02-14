@@ -2,9 +2,9 @@ package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.extensions.alertAction
+import net.horizonsend.ion.server.extensions.informationAction
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -41,8 +41,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 		val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
 		if (shadow != null) {
 			ship.onlinePassengers.forEach { player ->
-				player.sendFeedbackAction(
-					FeedbackType.ALERT,
+				player.alertAction(
 					"Ship caught by a mass shadow! Mass Shadow: ${shadow.description} at ${shadow.x}, ${shadow.z} " +
 						"with radius ${shadow.radius} (${shadow.distance} blocks away)"
 				)
@@ -54,15 +53,14 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 		if (travelled < totalDistance) {
 			val percent = (travelled / totalDistance * 100).roundToInt()
 			ship.onlinePassengers.forEach { player ->
-				player.sendFeedbackAction(
-					FeedbackType.INFORMATION,
+				player.informationAction(
 					"Hyperspace Progress: ${travelled.roundToInt()}/${totalDistance.roundToInt()} ($percent%)"
 				)
 			}
 			return
 		}
 
-		ship.onlinePassengers.forEach { player -> player.sendFeedbackAction(FeedbackType.INFORMATION, "Jump complete") }
+		ship.onlinePassengers.forEach { player -> player.informationAction("Jump complete") }
 		Hyperspace.completeJumpMovement(this)
 	}
 

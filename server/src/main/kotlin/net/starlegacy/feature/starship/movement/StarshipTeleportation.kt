@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.movement
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.userError
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipCruising
@@ -45,7 +45,7 @@ object StarshipTeleportation {
 	): CompletableFuture<Boolean> {
 		if (previousTries >= 16) {
 			starship.onlinePassengers.forEach { passenger ->
-				passenger.sendFeedbackMessage(FeedbackType.USER_ERROR, "Failed to teleport, too many failed attempts")
+				passenger.userError("Failed to teleport, too many failed attempts")
 			}
 
 			return CompletableFuture.completedFuture(false)
@@ -55,7 +55,7 @@ object StarshipTeleportation {
 
 		if (wouldBeOutOfWorldBorder(starship, world, previousDX, previousDZ)) {
 			starship.onlinePassengers.forEach { passenger ->
-				passenger.sendFeedbackMessage(FeedbackType.USER_ERROR, "Failed to teleport, would be out of border")
+				passenger.userError("Failed to teleport, would be out of border")
 			}
 
 			return CompletableFuture.completedFuture(false)
@@ -80,7 +80,7 @@ object StarshipTeleportation {
 				}
 
 				starship.onlinePassengers.forEach { passenger ->
-					passenger.sendFeedbackMessage(FeedbackType.INFORMATION, "Adjusting position...")
+					passenger.information("Adjusting position...")
 				}
 
 				val tries = previousTries + 1

@@ -1,8 +1,7 @@
 package net.starlegacy.listener.misc
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.successActionMessage
+import net.horizonsend.ion.server.extensions.userError
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem
@@ -59,8 +58,7 @@ object InteractListener : SLEventListener() {
 
 		if (multiblock is DrillMultiblock) {
 			if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
-				event.player.sendFeedbackMessage(
-					FeedbackType.USER_ERROR,
+				event.player.userError(
 					"You need Prismarine Crystals in both slots of the furnace!"
 				)
 				return
@@ -258,8 +256,7 @@ object InteractListener : SLEventListener() {
 
 		if (item.type.isBed) {
 			event.isCancelled = true
-			player.sendFeedbackActionMessage(
-				FeedbackType.INFORMATION,
+			player.successActionMessage(
 				"Beds are disabled on this server! Use a cryopod instead"
 			)
 		}

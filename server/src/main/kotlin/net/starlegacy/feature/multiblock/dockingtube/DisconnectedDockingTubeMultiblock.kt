@@ -1,8 +1,7 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.successActionMessage
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -25,7 +24,7 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {
-			player.sendFeedbackMessage(FeedbackType.USER_ERROR, "&cCannot toggle tube in an active ship")
+			player.userError("&cCannot toggle tube in an active ship")
 			return
 		}
 
@@ -37,7 +36,7 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 		for (distance in 1..100) {
 			// checks if docking tube is too far
 			if (distance == 100) {
-				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Other end not found!")
+				player.userError("Other end not found!")
 				return
 			}
 
@@ -49,8 +48,7 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 			if (blockType != Material.AIR) {
 				// if it's not a door it's an obstruction
 				if (!blockType.isDoor) {
-					player.sendFeedbackMessage(
-						FeedbackType.USER_ERROR,
+					player.userError(
 						"&Docking tube is blocked or the other end is missing/misaligned. Distance: $distance"
 					)
 					return
@@ -60,14 +58,13 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 				// doesn't actually have to be a sign block
 				// if it's unloaded then tell them too move closer
 				val otherSignLocation = block.getRelativeIfLoaded(direction)?.location ?: run {
-					player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Door on other end is too far.")
+					player.userError("Door on other end is too far.")
 					return
 				}
 
 				// if the other side's sign is not a valid closed docking tube it can't connect
 				if (!signMatchesStructure(otherSignLocation, direction.oppositeFace)) {
-					player.sendFeedbackMessage(
-						FeedbackType.USER_ERROR,
+					player.userError(
 						"Docking tube on the other end is not valid or is not aligned correctly."
 					)
 					return
@@ -79,7 +76,7 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 					}
 				}
 
-				player.sendFeedbackActionMessage(FeedbackType.SUCCESS, "Docking tube disconnected.")
+				player.successActionMessage("Docking tube disconnected.")
 
 				sign.persistentDataContainer.set(
 					NamespacedKeys.MULTIBLOCK,
@@ -100,11 +97,11 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 					continue
 				}
 
-				player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Blocked at ${Vec3i(buttonRelative.location)}")
+				player.userError("Blocked at ${Vec3i(buttonRelative.location)}")
 				return
 			}
 		}
 
-		player.sendFeedbackMessage(FeedbackType.USER_ERROR, "Other end not found!")
+		player.userError("Other end not found!")
 	}
 }

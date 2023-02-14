@@ -1,8 +1,7 @@
 package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.RelativeTeleportFlag
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackAction
+import net.horizonsend.ion.server.extensions.userErrorAction
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
@@ -115,7 +114,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processManualFlight(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot?.sendFeedbackAction(FeedbackType.USER_ERROR, "This ship type is not capable of moving.")
+			starship.pilot?.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -134,7 +133,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processDirectControl(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot!!.sendFeedbackAction(FeedbackType.USER_ERROR, "This ship type is not capable of moving.")
+			starship.pilot!!.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -270,12 +269,12 @@ object StarshipControl : SLComponent() {
 
 	private fun processSneakFlight(pilot: Player, starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			pilot.sendFeedbackAction(FeedbackType.USER_ERROR, "This ship type is not capable of moving.")
+			pilot.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
 		if (Hyperspace.isWarmingUp(starship)) {
-			starship.pilot?.sendFeedbackAction(FeedbackType.USER_ERROR, "Cannot move while in hyperspace warmup.")
+			starship.pilot?.userErrorAction("Cannot move while in hyperspace warmup.")
 			return
 		}
 

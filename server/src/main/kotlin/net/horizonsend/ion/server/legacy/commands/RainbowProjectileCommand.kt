@@ -2,8 +2,7 @@ package net.horizonsend.ion.server.legacy.commands
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
+import net.horizonsend.ion.server.extensions.successActionMessage
 import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -15,10 +14,10 @@ object RainbowProjectileCommand : SLCommand() {
 		val ship = getStarshipPiloting(p)
 		if (!ship.rainbowtoggle) {
 			ship.rainbowtoggle = true
-			sender.sendFeedbackActionMessage(SUCCESS, "Rainbow Weapon Colors activated!")
+			sender.successActionMessage("Rainbow Weapon Colors activated!")
 		} else {
 			ship.rainbowtoggle = !ship.rainbowtoggle
-			sender.sendFeedbackActionMessage(SUCCESS, "Rainbow Weapon Colours De-Activating")
+			sender.successActionMessage("Rainbow Weapon Colours De-Activating")
 		}
 	}
 }

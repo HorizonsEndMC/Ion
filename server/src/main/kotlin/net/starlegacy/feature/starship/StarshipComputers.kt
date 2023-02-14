@@ -3,12 +3,16 @@ package net.starlegacy.feature.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.extensions.FeedbackType.SERVER_ERROR
+import net.horizonsend.ion.server.extensions.FeedbackType.SUCCESS
+import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
+import net.horizonsend.ion.server.extensions.sendFeedbackActionMessage
+import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.serverErrorActionMessage
+import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.extensions.successActionMessage
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SERVER_ERROR
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackActionMessage
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -63,7 +67,7 @@ object StarshipComputers : SLComponent() {
 		}
 
 		if (!StarshipControl.isHoldingController(player)) {
-			player.sendFeedbackMessage(USER_ERROR, "Not holding starship controller, ignoring computer click")
+			player.userError("Not holding starship controller, ignoring computer click")
 			return
 		}
 
@@ -102,7 +106,7 @@ object StarshipComputers : SLComponent() {
 			?: return
 		val player = event.player
 		DeactivatedPlayerStarships.destroyAsync(computer) {
-			player.sendFeedbackActionMessage(SUCCESS, "Destroyed starship computer")
+			player.successActionMessage("Destroyed starship computer")
 		}
 	}
 
@@ -112,8 +116,7 @@ object StarshipComputers : SLComponent() {
 
 	private fun createComputer(player: Player, block: Block) {
 		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
-			player.sendFeedbackActionMessage(
-				SUCCESS,
+			player.successActionMessage(
 				"Registered starship computer! Left click again to open the menu."
 			)
 		}
@@ -204,7 +207,7 @@ object StarshipComputers : SLComponent() {
 					return@async
 				} catch (e: Exception) {
 					e.printStackTrace()
-					player.sendFeedbackActionMessage(SERVER_ERROR, "An error occurred while detecting")
+					player.serverErrorActionMessage("An error occurred while detecting")
 					return@async
 				}
 
@@ -236,7 +239,7 @@ object StarshipComputers : SLComponent() {
 										Tasks.async {
 											val id = SLPlayer.findIdByName(input)
 											if (id == null) {
-												player.sendFeedbackMessage(USER_ERROR, "Player not found")
+												player.userError("Player not found")
 											} else {
 												DeactivatedPlayerStarships.addPilot(data, id)
 												data.pilots += id
@@ -299,13 +302,12 @@ object StarshipComputers : SLComponent() {
 									serialized.hasDecoration(TextDecoration.OBFUSCATED) ||
 									((serialized as? TextComponent)?.content()?.length ?: 0) >= 16
 								) {
-									player.sendFeedbackMessage(USER_ERROR, "ERROR: Disallowed tags!")
+									player.userError("ERROR: Disallowed tags!")
 									return@async
 								}
 
 								if (serialized.color() != null && !player.hasPermission("ion.starship.color")) {
-									player.sendFeedbackMessage(
-										USER_ERROR,
+									player.userError(
 										"<COLOR> tags can only be used by $5+ patrons! Donate at\n" +
 											"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
 									)
@@ -313,8 +315,7 @@ object StarshipComputers : SLComponent() {
 								}
 
 								if ((serialized.color() as? HSVLike) != null && serialized.color()!!.asHSV().v() < 0.25) {
-									player.sendFeedbackMessage(
-										USER_ERROR,
+									player.userError(
 										"Ship names can't be too dark to read!"
 									)
 									return@async
@@ -324,8 +325,7 @@ object StarshipComputers : SLComponent() {
 									serialized.decorations().any { it.value == TextDecoration.State.TRUE } &&
 									!player.hasPermission("ion.starship.italic")
 								) {
-									player.sendFeedbackMessage(
-										USER_ERROR,
+									player.userError(
 										"\\<italic>, \\<bold>, \\<strikethrough> and \\<underlined> tags can only be used by $10+ patrons!\n" +
 											"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
 									)
@@ -333,8 +333,7 @@ object StarshipComputers : SLComponent() {
 								}
 
 								if (serialized.font() != null && !player.hasPermission("ion.starship.font")) {
-									player.sendFeedbackMessage(
-										USER_ERROR,
+									player.userError(
 										"\\<font> tags can only be used by $15+ patrons! Donate at\n" +
 											"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
 									)
@@ -378,9 +377,9 @@ object StarshipComputers : SLComponent() {
 		DeactivatedPlayerStarships.updateLockEnabled(data, newValue)
 
 		if (newValue) {
-			player.sendFeedbackMessage(SUCCESS, "Enabled Lock")
+			player.success("Enabled Lock")
 		} else {
-			player.sendFeedbackMessage(SUCCESS, "Disabled Lock")
+			player.success("Disabled Lock")
 		}
 	}
 }

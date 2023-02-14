@@ -1,8 +1,7 @@
 package net.starlegacy.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.userError
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
@@ -22,7 +21,7 @@ object ListCommand : SLCommand() {
 		val players: Collection<Player> = Bukkit.getOnlinePlayers()
 
 		if (players.isEmpty()) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "No players online")
+			sender.userError("No players online")
 			return
 		}
 
