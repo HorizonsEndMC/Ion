@@ -7,12 +7,11 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.customItems.CustomItems
-import net.horizonsend.ion.server.features.generation.SpaceGenerationManager
+import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
+import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.whereisit.mod.Searcher
-import net.horizonsend.ion.server.features.generation.generators.SpaceBiomeProvider
-import net.horizonsend.ion.server.features.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.miscellaneous.commands
 import net.horizonsend.ion.server.miscellaneous.handle
