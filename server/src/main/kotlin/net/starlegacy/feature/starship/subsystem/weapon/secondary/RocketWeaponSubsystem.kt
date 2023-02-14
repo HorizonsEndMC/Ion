@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.RocketStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -29,9 +30,9 @@ class RocketWeaponSubsystem(
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val powerUsage: Int = 50_000
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.Rocket.powerusage
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(7L)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.Rocket.boostChargeNanos)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true
