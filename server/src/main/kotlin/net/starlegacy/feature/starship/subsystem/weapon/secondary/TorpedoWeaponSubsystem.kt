@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -17,14 +18,14 @@ class TorpedoWeaponSubsystem(
 	face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem {
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(10L)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.boostChargeNanos)
 
 	override fun isForwardOnly(): Boolean = true
 
-	override val length: Int = 3
-	override val powerUsage: Int get() = 10000
-	override val extraDistance: Int = 1
-	override val aimDistance: Int = 3
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.length
+	override val powerUsage: Int get() = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.powerusage
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.extraDistance
+	override val aimDistance: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.aimDistance
 
 	override fun getMaxPerShot() = 2
 
