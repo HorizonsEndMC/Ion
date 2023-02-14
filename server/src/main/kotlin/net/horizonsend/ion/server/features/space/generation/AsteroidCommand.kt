@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.generation
+package net.horizonsend.ion.server.features.space.generation
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.extensions.sendServerError
 import net.horizonsend.ion.server.extensions.sendUserError
-import net.horizonsend.ion.server.features.generation.generators.AsteroidGenerator
+import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.legacy.feedback.FeedbackType
 import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.world.level.ChunkPos
@@ -35,7 +35,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 				val chunk2 = sender.world.getChunkAt(x, z)
 
 				try {
-					AsteroidGenerator.rebuildChunkAsteroids(chunk2)
+					SpaceGenerator.rebuildChunkAsteroids(chunk2)
 				} catch (error: java.lang.Error) {
 					error.printStackTrace()
 					error.message?.let { sender.sendServerError(it) }
@@ -61,7 +61,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 			return
 		}
 
-		val asteroid = AsteroidGenerator.Asteroid(
+		val asteroid = SpaceGenerator.Asteroid(
 			sender.location.x.toInt(),
 			sender.location.y.toInt(),
 			sender.location.z.toInt(),

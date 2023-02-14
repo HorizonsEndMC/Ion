@@ -13,6 +13,9 @@ import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListe
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
+import net.horizonsend.ion.server.features.space.encounters.EncounterManager
+import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
+import net.horizonsend.ion.server.features.worlds.WorldListeners
 import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
 import net.horizonsend.ion.server.migrator.DataMigrator
@@ -41,6 +44,7 @@ val listeners = arrayOf(
 	RecipeListener(),
 	SpaceGenerationManager,
 	ResourcePackListener(),
+	EncounterManager,
 	VoidNetwork(),
 
 	// Achievement Listeners
