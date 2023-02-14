@@ -200,7 +200,6 @@ data class BalancingConfiguration(
 			convergeDistance = 10.0,
 			extraDistance = 1,
 			fireCooldownNanos = 250, //not overriden for Plasma Cannons
-			eventWeapon = false,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 			fowardOnly = true,
@@ -222,7 +221,6 @@ data class BalancingConfiguration(
 			convergeDistance = 20.0,
 			extraDistance = 2,
 			fireCooldownNanos = 250,
-			eventWeapon = false,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 		),
@@ -242,7 +240,6 @@ data class BalancingConfiguration(
 			convergeDistance = 16.0,
 			extraDistance = 2,
 			fireCooldownNanos = 250,
-			eventWeapon = false,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 		),
@@ -262,7 +259,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 500,
-			eventWeapon = true,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 		),
@@ -284,7 +280,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 1,
 			fireCooldownNanos = 250,
-			eventWeapon = false,
 			boostChargeNanos = 5,
 			aimDistance = 10,
 			maxDegrees = 25.0
@@ -305,7 +300,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 10,
-			eventWeapon = false,
 			boostChargeNanos = 3,
 			aimDistance = 0,
 		),
@@ -325,7 +319,6 @@ data class BalancingConfiguration(
 			convergeDistance = 10.0,
 			extraDistance = 10,
 			fireCooldownNanos = 10,
-			eventWeapon = false,
 			boostChargeNanos = 10,
 			aimDistance = 3,
 			fowardOnly = true,
@@ -347,7 +340,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 250,
-			eventWeapon = false,
 			boostChargeNanos = 7,
 			aimDistance = 0,
 		),
@@ -367,7 +359,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 5000,
-			eventWeapon = true,
 			boostChargeNanos = 5,
 			aimDistance = 0,
 		),
@@ -389,7 +380,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 250,
-			eventWeapon = false,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 			inaccuracyRadians = 2.0
@@ -410,7 +400,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 500,
-			eventWeapon = false,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 		),
@@ -430,7 +419,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 10,
-			eventWeapon = false,
 			boostChargeNanos = 3,
 			aimDistance = 0,
 			inaccuracyRadians = 3.0
@@ -451,7 +439,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 10,
-			eventWeapon = false,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 		),
@@ -471,7 +458,6 @@ data class BalancingConfiguration(
 			convergeDistance = 0.0,
 			extraDistance = 0,
 			fireCooldownNanos = 10,
-			eventWeapon = true,
 			boostChargeNanos = 0,
 			aimDistance = 0,
 		)
@@ -493,7 +479,6 @@ data class BalancingConfiguration(
 			override val convergeDistance: Double,
 			override val extraDistance: Int,
 			override val fireCooldownNanos: Long,
-			override val eventWeapon: Boolean,
 			override val maxPerShot: Int = 0,
 			override val fowardOnly: Boolean = false,
 			val boostChargeNanos: Long, //Seconds, should only be put for heavyWeapons
@@ -521,7 +506,6 @@ data class BalancingConfiguration(
 			abstract val convergeDistance: Double
 			abstract val extraDistance: Int
 			abstract val fireCooldownNanos: Long
-			abstract val eventWeapon: Boolean
 			abstract val maxPerShot: Int
 			abstract val fowardOnly: Boolean
 			abstract val inaccuracyRadians: Double
