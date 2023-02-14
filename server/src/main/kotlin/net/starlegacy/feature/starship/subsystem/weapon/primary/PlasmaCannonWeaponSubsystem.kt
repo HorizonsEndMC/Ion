@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
@@ -11,11 +12,11 @@ import org.bukkit.util.Vector
 
 class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 	CannonWeaponSubsystem(starship, pos, face) {
-	override val powerUsage: Int = 2500
-	override val length: Int = 3
-	override val angleRadians: Double = Math.toRadians(15.0)
-	override val convergeDist: Double = 10.0
-	override val extraDistance: Int = 1
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.powerusage
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.length
+	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.angleRadians)
+	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.convergeDistance
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.extraDistance
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true
