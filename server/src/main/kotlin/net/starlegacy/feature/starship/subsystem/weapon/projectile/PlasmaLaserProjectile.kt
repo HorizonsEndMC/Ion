@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Color
 import org.bukkit.Location
@@ -23,14 +24,14 @@ class PlasmaLaserProjectile(
 	shooter: Player?
 ) : LaserProjectile(starship, loc, dir, shooter) {
 	var counter = 0
-	override val range: Double = 160.0
-	override val speed: Double = 400.0
-	override val shieldDamageMultiplier: Int = 3
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.range
+	override val speed: Double = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.speed
+	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.shieldDamageMultiplier
 	override val color: Color
 		get() = if (starship!!.rainbowtoggle) flagcolors.random() else starship.weaponColor
-	override val thickness: Double = 0.3
-	override val particleThickness: Double = .5
-	override val explosionPower: Float = 4.0f
-	override val volume: Int = 10
-	override val soundName: String = "starship.weapon.plasma_cannon.shoot"
+	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.thickness
+	override val particleThickness: Double = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.particleThickness
+	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.explosionPower
+	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.volume
+	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.soundName
 }
