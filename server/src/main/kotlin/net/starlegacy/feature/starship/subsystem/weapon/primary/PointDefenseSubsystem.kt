@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
@@ -15,8 +16,8 @@ import kotlin.math.sqrt
 
 class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
 	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
-	override val powerUsage: Int = 500
-	override val range: Double = 120.0
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.PointDefence.powerusage
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.PointDefence.range
 
 	override fun getMaxPerShot(): Int {
 		return (sqrt(starship.initialBlockCount.toDouble()) / 32).toInt()
