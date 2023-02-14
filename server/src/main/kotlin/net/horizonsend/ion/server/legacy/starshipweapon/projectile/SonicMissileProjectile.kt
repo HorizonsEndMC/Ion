@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.projectile
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.ParticleProjectile
 import net.starlegacy.util.mcName
@@ -15,14 +16,14 @@ class SonicMissileProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = starship.world.viewDistance.toDouble() * 16
-	override var speed: Double = 200.0
-	override val shieldDamageMultiplier: Int = 10
-	override val thickness: Double = 0.2
-	override val explosionPower: Float = 15f
-	override val volume: Int = 10
-	override val pitch: Float = 2.0f
-	override val soundName: String = Sound.ENTITY_WARDEN_SONIC_BOOM.mcName
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.SonicMissile.range
+	override var speed: Double = IonServer.Ion.balancing.starshipWeapons.SonicMissile.speed
+	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.SonicMissile.shieldDamageMultiplier
+	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.SonicMissile.thickness
+	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.SonicMissile.explosionPower
+	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.SonicMissile.volume
+	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.SonicMissile.pitch
+	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.SonicMissile.soundName
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val offset = 0.0

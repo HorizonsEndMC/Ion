@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.secondary
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.legacy.starshipweapon.projectile.SonicMissileProjectile
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -22,13 +23,13 @@ class SonicMissileWeaponSubsystem(
 ) : CannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = 10
-	override val convergeDist: Double = 0.0
-	override val extraDistance: Int = 0
-	override val angleRadians: Double = Math.toRadians(180.0)
-	override val powerUsage: Int = 70000
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(5L)
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(5000L)
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.SonicMissile.length
+	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.SonicMissile.convergeDistance
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.SonicMissile.extraDistance
+	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.SonicMissile.angleRadians)
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.SonicMissile.powerusage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.SonicMissile.boostChargeNanos)
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.SonicMissile.fireCooldownNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
