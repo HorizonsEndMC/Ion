@@ -1,5 +1,6 @@
 package net.starlegacy.feature.multiblock.starshipweapon.turret
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -17,14 +18,14 @@ sealed class HeavyTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getSign(): Int
 
-	override val cooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500L)
-	override val range: Double = 300.0
-	override val sound: String = "starship.weapon.turbolaser.heavy.shoot"
+	override val cooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.HeavyTurret.fireCooldownNanos)
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.HeavyTurret.range
+	override val sound: String = IonServer.Ion.balancing.starshipWeapons.HeavyTurret.soundName
 
-	override val projectileSpeed: Int = 200
-	override val projectileParticleThickness: Double = 0.5
-	override val projectileExplosionPower: Float = 4f
-	override val projectileShieldDamageMultiplier: Int = 2
+	override val projectileSpeed: Int = IonServer.Ion.balancing.starshipWeapons.HeavyTurret.speed.toInt()
+	override val projectileParticleThickness: Double = IonServer.Ion.balancing.starshipWeapons.HeavyTurret.particleThickness
+	override val projectileExplosionPower: Float = IonServer.Ion.balancing.starshipWeapons.HeavyTurret.explosionPower
+	override val projectileShieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.HeavyTurret.shieldDamageMultiplier
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))
