@@ -1,10 +1,9 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-	alias(libs.plugins.paperweight)
+	id("io.papermc.paperweight.userdev") version "1.5.0"
 }
 
 dependencies {
-	paperDevBundle(libs.versions.paper.get()) // Platform
+	paperweight.paperDevBundle("1.19.3-R0.1-SNAPSHOT") // Platform
 
 	// Other Plugins
 	compileOnly(libs.dynmap) { exclude("org.bukkit") /* Old Version */ }
