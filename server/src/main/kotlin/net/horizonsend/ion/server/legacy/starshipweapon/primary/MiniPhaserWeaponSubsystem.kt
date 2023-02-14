@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.primary
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.legacy.starshipweapon.projectile.MiniPhaserProjectile
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -20,12 +21,12 @@ class MiniPhaserWeaponSubsystem(
 	face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face),
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = 6
-	override val convergeDist: Double = 0.0
-	override val extraDistance: Int = 0
-	override val angleRadians: Double = Math.toRadians(30.0)
-	override val powerUsage: Int = 5000
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500L)
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.length
+	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.convergeDistance
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.extraDistance
+	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.MiniPhaser.angleRadians)
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.powerusage
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.MiniPhaser.fireCooldownNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
