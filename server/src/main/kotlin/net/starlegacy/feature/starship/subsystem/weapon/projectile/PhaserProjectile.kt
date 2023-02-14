@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -13,14 +14,14 @@ class PhaserProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = 140.0
-	override var speed: Double = 1.0
-	override val shieldDamageMultiplier: Int = 55
-	override val thickness: Double = 0.2
-	override val explosionPower: Float = 2.0f
-	override val volume: Int = 10
-	override val pitch: Float = 2.0f
-	override val soundName: String = "starship.weapon.plasma_cannon.shoot"
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.Phaser.range
+	override var speed: Double = IonServer.Ion.balancing.starshipWeapons.Phaser.speed
+	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.Phaser.shieldDamageMultiplier
+	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.Phaser.thickness
+	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.Phaser.explosionPower
+	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.Phaser.volume
+	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.Phaser.pitch
+	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.Phaser.soundName
 
 	private val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
 	private val speedUpSpeed = 1000.0
