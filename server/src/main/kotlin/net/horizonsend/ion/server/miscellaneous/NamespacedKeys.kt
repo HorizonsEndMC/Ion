@@ -9,6 +9,7 @@ object NamespacedKeys {
 	val EDEN_FIX = key("EdenFix")
 	val ASTEROIDS_DATA = key("asteroidsDATA")
 	val ASTEROIDS_VERSION = key("asteroidsVersion")
+	val WRECK_DATA = key("wreckData")
 
 	@Deprecated("") val MULTIBLOCK = key("multiblock")
 

@@ -13,12 +13,11 @@ import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customItems.CustomItems
-import net.horizonsend.ion.server.features.generation.SpaceGenerationManager
+import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
+import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.whereisit.mod.Searcher
-import net.horizonsend.ion.server.features.generation.generators.SpaceBiomeProvider
-import net.horizonsend.ion.server.features.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.miscellaneous.commands
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
