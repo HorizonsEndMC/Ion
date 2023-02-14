@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
@@ -24,12 +25,12 @@ class PhaserWeaponSubsystem(
 ) : CannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = 8
-	override val convergeDist: Double = 0.0
-	override val extraDistance: Int = 0
-	override val angleRadians: Double = Math.toRadians(180.0) // unrestricted
-	override val powerUsage: Int = 50000
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(3L)
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.Phaser.length
+	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.Phaser.convergeDistance
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.Phaser.extraDistance
+	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.Phaser.angleRadians) // unrestricted
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.Phaser.powerusage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.Phaser.boostChargeNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
