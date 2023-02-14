@@ -2,10 +2,8 @@ package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.starlegacy.util.mcName
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
