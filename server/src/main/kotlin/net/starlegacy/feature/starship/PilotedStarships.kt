@@ -40,6 +40,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.Locale
@@ -311,6 +312,7 @@ object PilotedStarships : SLComponent() {
 		if (!StarshipUnpilotEvent(starship, player).callEvent()) {
 			return false
 		}
+		if (starship.serverLevel.world.name.contains("Hyperspace")) return false
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
