@@ -16,8 +16,6 @@ kotlin = "1.8.10"
 luckperms = "5.4"
 moshipack = "1.0.1"
 nuvotifier = "2.7.2"
-paper = "1.19.3-R0.1-SNAPSHOT"
-paperweight = "1.4.0"
 shadow = "7.1.2"
 spotless = "6.15.0"
 vault = "1.7.1"
@@ -58,6 +56,5 @@ nuvotifier = [ "nuvotifier-api", "nuvotifier-bungee" ]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow"}
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
