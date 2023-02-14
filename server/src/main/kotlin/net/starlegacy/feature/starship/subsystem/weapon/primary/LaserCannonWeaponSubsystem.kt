@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.CannonLaserProjectile
@@ -11,14 +12,14 @@ import org.bukkit.util.Vector
 
 class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 	CannonWeaponSubsystem(starship, pos, face) {
-	override val powerUsage: Int = 1600
-	override val length: Int = 2
-	override val angleRadians: Double = Math.toRadians(15.0)
-	override val convergeDist: Double = 20.0
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.powerusage
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.length
+	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.LaserCannon.angleRadians)
+	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.LaserCannon.convergeDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
 		CannonLaserProjectile(starship, loc, dir, shooter).fire()
 	}
 
-	override val extraDistance: Int = 2
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.extraDistance
 }
