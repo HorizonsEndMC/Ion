@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.mcName
 import org.bukkit.Color
@@ -14,14 +15,14 @@ class CannonLaserProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : LaserProjectile(starship, loc, dir, shooter) {
-	override val range: Double = 200.0
-	override val speed: Double = 250.0
-	override val shieldDamageMultiplier: Int = 1
+	override val range: Double = IonServer.Ion.balancing.starshipWeapons.LaserCannon.range
+	override val speed: Double = IonServer.Ion.balancing.starshipWeapons.LaserCannon.speed
+	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.shieldDamageMultiplier
 	override val color: Color = Color.YELLOW
-	override val thickness: Double = 0.2
-	override val particleThickness: Double = 0.44
-	override val explosionPower: Float = 2.0f
-	override val volume: Int = 10
-	override val pitch: Float = 2.0f
-	override val soundName: String = Sound.ENTITY_FIREWORK_ROCKET_BLAST_FAR.mcName
+	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.LaserCannon.thickness
+	override val particleThickness: Double = IonServer.Ion.balancing.starshipWeapons.LaserCannon.particleThickness
+	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.LaserCannon.explosionPower
+	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.volume
+	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.LaserCannon.pitch
+	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.LaserCannon.soundName
 }
