@@ -487,6 +487,7 @@ data class BalancingConfiguration(
 			override val inaccuracyRadians: Double = 0.0
 		) : ProjectileBalancing()
 
+		@ConfigSerializable
 		abstract class ProjectileBalancing : SubSystem(){
 			abstract val range: Double
 			abstract val speed: Double
@@ -499,6 +500,7 @@ data class BalancingConfiguration(
 			abstract val soundName: String
 		}
 
+		@ConfigSerializable
 		abstract class SubSystem{
 			abstract val powerusage: Int
 			abstract val length: Int
