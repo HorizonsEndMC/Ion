@@ -3,10 +3,8 @@ package net.horizonsend.ion.server.legacy.starshipweapon.projectile
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.ParticleProjectile
-import net.starlegacy.util.mcName
 import org.bukkit.Location
 import org.bukkit.Particle
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
