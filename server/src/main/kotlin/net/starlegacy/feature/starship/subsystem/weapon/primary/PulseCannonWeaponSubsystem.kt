@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PulseLaserProjectile
@@ -20,11 +21,11 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 			.associateWith { DyeColor.valueOf(it.name.removeSuffix("_STAINED_GLASS")).color }
 	}
 
-	override val powerUsage: Int = 1800
-	override val length: Int = 2
-	override val angleRadians: Double = Math.toRadians(180.0) // unrestricted
-	override val convergeDist: Double = 16.0
-	override val extraDistance: Int = 2
+	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.PulseCannon.powerusage
+	override val length: Int = IonServer.Ion.balancing.starshipWeapons.PulseCannon.length
+	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.PulseCannon.angleRadians) // unrestricted
+	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.PulseCannon.convergeDistance
+	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.PulseCannon.extraDistance
 
 	private val color: Color = getColor(starship, pos, face)
 
