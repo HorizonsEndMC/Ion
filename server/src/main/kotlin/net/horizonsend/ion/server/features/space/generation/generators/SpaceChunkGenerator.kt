@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.generation.generators
+package net.horizonsend.ion.server.features.space.generation.generators
 
 import org.bukkit.World
 import org.bukkit.generator.BlockPopulator
