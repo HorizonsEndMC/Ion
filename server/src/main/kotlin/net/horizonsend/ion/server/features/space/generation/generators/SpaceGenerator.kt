@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.space.generation.generators
 import com.sk89q.jnbt.NBTInputStream
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
+import com.sk89q.worldedit.math.BlockVector3
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounter
@@ -25,6 +27,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.nms
 import net.starlegacy.util.time
 import net.starlegacy.util.timing
+import net.starlegacy.util.toBukkitBlockData
 import net.starlegacy.util.worldEditSession
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
@@ -373,7 +376,62 @@ class SpaceGenerator(
 	// Asteroids end
 
 	// Wrecks start
-	fun generateWreck() {
+	fun generateWreck(wreck: WreckGenerationData) {
+		val encounter = wreck.encounter?.getEncounter()
+
+		Tasks.async {
+			val schematic = wreck.schematic()
+			val coveredChunks: MutableMap<ChunkPos, MutableList<Int>> = mutableMapOf()
+
+			val nmsBlockQueue = Long2ObjectOpenHashMap<BlockState>()
+			// Iterate through blocks using worldedit API
+			serverLevel.world.worldEditSession(true) {
+				val region = schematic.region.clone()
+				val targetBlockVector = BlockVector3.at(wreck.x, wreck.y, wreck.z)
+				val offset = targetBlockVector.subtract(schematic.origin)
+
+				region.shift(offset)
+
+				for (vector3 in region) {
+					val schematicRelative = vector3.subtract(offset)
+					val baseBlock = schematic.getFullBlock(schematicRelative)
+					var blockState = baseBlock.toImmutableState().toBukkitBlockData().nms
+
+					if (blockState.isAir) continue
+					val chunkPos = ChunkPos(
+						vector3.x.shr(4),
+						vector3.z.shr(4)
+					)
+
+					val sections: MutableList<Int> = coveredChunks.getOrDefault(
+						chunkPos,
+						mutableListOf()
+					)
+
+					sections.add(vector3.y.shr(4))
+					coveredChunks[chunkPos] = sections
+
+					if (encounter != null) {
+						if (
+							wreck.encounter.chestX == schematicRelative.blockX &&
+							wreck.encounter.chestX == schematicRelative.blockX &&
+							wreck.encounter.chestX == schematicRelative.blockX
+						) {
+							blockState = encounter.constructChestState()
+						}
+					}
+
+					nmsBlockQueue[
+							BlockPos.asLong(
+								vector3.x,
+								vector3.y,
+								vector3.z
+							)
+					] = blockState
+				}
+			}
+		}
+
 		val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
 
 		val pdc = chunk.persistentDataContainer.get(NamespacedKeys.WRECK_DATA, PersistentDataType.BYTE_ARRAY)
@@ -442,13 +500,7 @@ class SpaceGenerator(
 		}
 	}
 
-	fun placeWreck(wreck: WreckGenerationData) {
-		val schematic = wreck.schematicName
-		val editSession = serverLevel.world.worldEditSession(true) { session ->
-		}
-	}
-
-	fun generateRandomWreckData(): WreckGenerationData {
+	fun generateRandomWreckData(x: Int, y: Int, z: Int): WreckGenerationData {
 		val sum = configuration.wrecks.values.sum()
 		var soFar = 0
 
@@ -461,9 +513,9 @@ class SpaceGenerator(
 		val wreckClass = rangeMap.firstNotNullOf { if (it.value.contains(int)) it.key else null }
 
 		return WreckGenerationData( // TODO
-			0,
-			0,
-			0,
+			x,
+			y,
+			z,
 			wreckClass,
 			null
 		)
