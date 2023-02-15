@@ -1,10 +1,15 @@
 package net.horizonsend.ion.server.features.space.generation.generators
 
+import com.sk89q.jnbt.NBTInputStream
+import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
@@ -20,6 +25,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.nms
 import net.starlegacy.util.time
 import net.starlegacy.util.timing
+import net.starlegacy.util.worldEditSession
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
@@ -27,12 +33,14 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
 import java.util.Random
 import java.util.concurrent.CompletableFuture
+import java.util.zip.GZIPInputStream
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 /**
@@ -46,6 +54,7 @@ class SpaceGenerator(
 ) {
 	val spaceGenerationVersion: Byte = 0
 	val timing = timing("Space Generation")
+	val random = Random(serverLevel.seed)
 
 	/**
 	 * This class contains information passed to the generation function.
@@ -54,11 +63,11 @@ class SpaceGenerator(
 	 * @param size The radius of the asteroid before noise deformation.
 	 * @param octaves The number of octaves of noise to apply. Generally 1, but higher for small asteroids. Increases roughness.
 	 **/
-	data class Asteroid(
+	data class AsteroidGenerationData(
 		val x: Int,
 		val y: Int,
 		val z: Int,
-		val palette: ServerConfiguration.AsteroidConfig.Palette,
+		val palette: WeightedRandomList<BlockState>,
 		val size: Double,
 		val octaves: Int
 	)
@@ -69,22 +78,24 @@ class SpaceGenerator(
 	}
 
 	// Palettes weighted
-	private val weightedPalettes = configuration.blockPalettes.associateWith { it.materialWeights() }
+	val weightedPalettes = configuration.paletteWeightedList()
+
+// 	private val weightedPalettes = configuration.blockPalettes.associateWith { it.materialWeights() }
 	private val weightedOres = oreWeights()
 
 	// Multiple of the radius of the asteroid to mark chunks as might contain an asteroid
 	private val searchRadius = 1.25
 
 	fun generateAsteroid(
-		asteroid: Asteroid
+		asteroid: AsteroidGenerationData
 	) {
 		timing.time {
 			Tasks.async {
-				val random = Random(serverLevel.seed)
 				// save some time
+				val sizeFactor = asteroid.size / 15
 				val shapingNoise = SimplexOctaveGenerator(random, 1)
 				val materialNoise = SimplexOctaveGenerator(random, 1)
-				materialNoise.setScale(0.15)
+				materialNoise.setScale(0.15 / sizeFactor)
 
 				val radiusSquared = asteroid.size * asteroid.size
 
@@ -177,7 +188,7 @@ class SpaceGenerator(
 													ySquared,
 													zSquared,
 													asteroid,
-													asteroid.size / 30,
+													sizeFactor,
 													shapingNoise,
 													materialNoise
 												)
@@ -273,7 +284,7 @@ class SpaceGenerator(
 
 	/**
 	 * Places the asteroid block, if inside, and returns the block
-	 * */
+	 **/
 	private fun checkBlockPlacement(
 		worldX: Double,
 		worldY: Double,
@@ -281,34 +292,31 @@ class SpaceGenerator(
 		worldXSquared: Double,
 		worldYSquared: Double,
 		worldZSquared: Double,
-		asteroid: Asteroid,
+		asteroid: AsteroidGenerationData,
 		sizeFactor: Double,
 		shapingNoise: SimplexOctaveGenerator,
 		materialNoise: SimplexOctaveGenerator
 	): BlockState? {
-		val weightedMaterials = weightedPalettes[asteroid.palette]!!
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (
 			(
-				(
-					materialNoise.noise(
-						worldX,
-						worldY,
-						worldZ,
-						1.0,
-						1.0,
-						true
-					) + 1
-					) / 2
-				) * (weightedMaterials.size - 1)
-			).roundToInt()
+				materialNoise.noise(
+					worldX,
+					worldY,
+					worldZ,
+					1.0,
+					1.0,
+					true
+				) + 1
+				) / 2
+			)
 
 		// Full noise is used as the radius of the asteroid, and it is offset by the noise of each block pos.
 		var fullNoise = 0.0
 		val initialScale = 0.015 / sizeFactor.coerceAtLeast(1.0)
 
 		for (octave in 0..asteroid.octaves) {
-			shapingNoise.setScale(initialScale * (octave + 1.0).pow(2.25 + (sizeFactor / 2.25)))
+			shapingNoise.setScale(initialScale * (octave + 1.0).pow(2.25 + (sizeFactor / 2.25).coerceAtMost(0.5)))
 
 			val offset = abs(
 				shapingNoise.noise(worldX, worldY, worldZ, 0.0, 1.0, false)
@@ -321,19 +329,16 @@ class SpaceGenerator(
 		// Continue if block is not inside any asteroid
 		if (worldXSquared + worldYSquared + worldZSquared >= fullNoise) return null
 
-		return weightedMaterials[paletteSample]
+		return asteroid.palette.getEntry(paletteSample)
 	}
 
-	fun generateRandomAsteroid(x: Int, y: Int, z: Int, random: Random): Asteroid {
-		val weightedPalette = paletteWeights()
-		val paletteSample = random.nextInt(weightedPalette.size)
-
-		val blockPalette: ServerConfiguration.AsteroidConfig.Palette = weightedPalette[paletteSample]
+	fun generateRandomAsteroid(x: Int, y: Int, z: Int, random: Random): AsteroidGenerationData {
+		val blockPalette: WeightedRandomList<BlockState> = weightedPalettes.random()
 
 		val size = random.nextDouble(10.0, configuration.maxAsteroidSize)
-		val octaves = floor(5 * 0.95.pow(size)).toInt().coerceAtLeast(1)
+		val octaves = floor(3 * 0.998.pow(size)).toInt().coerceAtLeast(1)
 
-		return Asteroid(x, y, z, blockPalette, size, octaves)
+		return AsteroidGenerationData(x, y, z, blockPalette, size, octaves)
 	}
 
 	fun parseDensity(x: Double, y: Double, z: Double): Double {
@@ -354,21 +359,6 @@ class SpaceGenerator(
 		return densities.max()
 	}
 
-	/**
-	 * Weights the list of Palettes in the configuration by adding duplicate entries based on the weight.
-	 */
-	private fun paletteWeights(): List<ServerConfiguration.AsteroidConfig.Palette> {
-		val weightedList = mutableListOf<ServerConfiguration.AsteroidConfig.Palette>()
-
-		for (palette in configuration.blockPalettes) {
-			for (occurrence in palette.weight downTo 0) {
-				weightedList.add(palette)
-			}
-		}
-
-		return weightedList
-	}
-
 	private fun oreWeights(): List<ServerConfiguration.AsteroidConfig.Ore> {
 		val weightedList = mutableListOf<ServerConfiguration.AsteroidConfig.Ore>()
 
@@ -383,19 +373,48 @@ class SpaceGenerator(
 	// Asteroids end
 
 	// Wrecks start
+	fun generateWreck() {
+		val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
+
+		val pdc = chunk.persistentDataContainer.get(NamespacedKeys.WRECK_DATA, PersistentDataType.BYTE_ARRAY)
+		val existingWrecksBaseTag = NbtIo.readCompressed(ByteArrayInputStream(pdc))
+		val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
+
+		existingWrecks += WreckGenerationData.WreckEncounterData(0, 0, 0, "Beans").NMS()
+
+		val newFinishedData = CompoundTag()
+		newFinishedData.put("wrecks", existingWrecks)
+		val outputStream = ByteArrayOutputStream()
+		NbtIo.writeCompressed(newFinishedData, outputStream)
+
+		chunk.persistentDataContainer.set(
+			NamespacedKeys.WRECK_DATA,
+			PersistentDataType.BYTE_ARRAY,
+			outputStream.toByteArray()
+		)
+	}
 
 	/**
 	 * This information is not serialized. It is used in the generation of the wreck.
-	 * @param schematic The name of the schematic file referenced, not including file extension
+	 * @param schematicName The name of the schematic file referenced, not including file extension
 	 * @param encounter The optional encounter data.
 	 **/
-	data class WreckData(
+	data class WreckGenerationData(
 		val x: Int,
 		val y: Int,
 		val z: Int,
-		val schematic: String,
+		val schematicName: String,
 		val encounter: WreckEncounterData?
 	) {
+		fun schematic(): Clipboard {
+			val file: File = Ion.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
+			val inputStream = FileInputStream(file)
+			val compoundTag = NbtIo.readCompressed(inputStream)
+			encounter?.let { compoundTag.put("encounter", it.NMS()) }
+
+			return SpongeSchematicReader(NBTInputStream(GZIPInputStream(inputStream))).read()
+		}
+
 		/**
 		 * This is serialized and stored in the chunk alongside the wreck.
 		 *
@@ -421,6 +440,33 @@ class SpaceGenerator(
 				return beginningTag
 			}
 		}
+	}
+
+	fun placeWreck(wreck: WreckGenerationData) {
+		val schematic = wreck.schematicName
+		val editSession = serverLevel.world.worldEditSession(true) { session ->
+		}
+	}
+
+	fun generateRandomWreckData(): WreckGenerationData {
+		val sum = configuration.wrecks.values.sum()
+		var soFar = 0
+
+		val rangeMap = configuration.wrecks.mapValues {
+			val beginning = soFar
+			soFar += it.value
+			IntRange(beginning, soFar)
+		}
+		val int = random.nextInt(0, sum)
+		val wreckClass = rangeMap.firstNotNullOf { if (it.value.contains(int)) it.key else null }
+
+		return WreckGenerationData( // TODO
+			0,
+			0,
+			0,
+			wreckClass,
+			null
+		)
 	}
 
 	companion object {
