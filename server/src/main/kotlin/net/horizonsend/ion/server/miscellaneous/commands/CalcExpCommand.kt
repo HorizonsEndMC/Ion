@@ -9,11 +9,10 @@ import org.bukkit.entity.Player
 import kotlin.math.floor
 
 @CommandAlias("calcxp")
-@CommandPermission("ion.recipe")
+@CommandPermission("ion.calcxp")
 class CalcExpCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
-	@CommandPermission("ion.calcxp")
 	fun onCustomItemCommand(
 		sender: Player,
 		targetLevel: Int
