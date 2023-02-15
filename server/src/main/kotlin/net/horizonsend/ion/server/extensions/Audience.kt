@@ -78,8 +78,7 @@ fun Audience.hintActionMessage(message: String) {
 	action(message, 0x7f7f7f)
 }
 
-@Suppress("NOTHING_TO_INLINE")
-private inline fun parseFeedback(message: String, vararg parameters: Any): String {
+private fun parseFeedback(message: String, vararg parameters: Any): String {
 	var newMessage = message
 
 	parameters.forEachIndexed { index, parameter ->
