@@ -85,7 +85,7 @@ private fun parseFeedback(message: String, vararg parameters: Any): String {
 		newMessage = newMessage.replace("{$index}", "$parameter")
 	}
 
-	return message
+	return newMessage
 }
 
 @Deprecated("Use newer audience extension functions")
