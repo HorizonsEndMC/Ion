@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.configuration
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.readSchematic
@@ -35,16 +36,12 @@ data class ServerConfiguration(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
 		val maxAsteroidOctaves: Int = 4,
-		val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, mapOf(Material.STONE.createBlockData().getAsString(false) to 1))),
+		val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, listOf(Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)))),
 		val ores: Set<Ore> = setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)),
 		val oreRatio: Double = 0.25,
 		val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
 		val wrecks: Map<String, Int>
 	) {
-		val mappedWrecks = wrecks.mapKeys { (name, _) ->
-			name
-		}
-
 		/**
 		 * @param weight: Number of rolls for this Palette
 		 * @param materials: Map of Materials to their Weight
@@ -54,20 +51,21 @@ data class ServerConfiguration(
 		@Serializable
 		data class Palette(
 			val weight: Int,
-			val materials: Map<String, Int>
+			val materials: List<PaletteEntry>
 		) {
+			@Serializable
+			data class PaletteEntry(
+				val material: String,
+				val weight: Int
+			)
+
 			fun getMaterial(material: String) = Bukkit.createBlockData(material)
 
-			fun materialWeights(): List<BlockState> {
-				val weightedList = mutableListOf<BlockState>()
+			fun blockStateWeightedList(): WeightedRandomList<BlockState> {
+				val list = WeightedRandomList<BlockState>()
+				list.addMany(materials.map { getMaterial(it.material).nms to it.weight })
 
-				for (material in this.materials) {
-					for (occurrence in material.value downTo 1) {
-						weightedList.add(getMaterial(material.key).nms)
-					}
-				}
-
-				return weightedList
+				return list
 			}
 		}
 
@@ -106,6 +104,15 @@ data class ServerConfiguration(
 			val tubeRadius: Double = 0.0,
 			val origin: Pos
 		)
+
+		fun paletteWeightedList(): WeightedRandomList<WeightedRandomList<BlockState>> {
+			val list = WeightedRandomList<WeightedRandomList<BlockState>>()
+			val transformed = blockPalettes.associate { it.blockStateWeightedList() to it.weight }
+
+			list.addMany(transformed)
+
+			return list
+		}
 	}
 
 	@Serializable
@@ -127,7 +134,7 @@ data class ServerConfiguration(
 		val z: Int
 	) {
 		fun bukkitWorld(): World = Bukkit.getWorld(world) ?: throw
-		java.lang.NullPointerException("Hyperspace Beacons | Could not find world $world")
+		java.lang.NullPointerException("Could not find world $world")
 
 		fun toBlockPos(): BlockPos = BlockPos(x, y, z)
 
