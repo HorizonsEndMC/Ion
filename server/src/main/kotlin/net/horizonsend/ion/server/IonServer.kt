@@ -7,6 +7,9 @@ import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.customItems.CustomItems
+import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
+import net.horizonsend.ion.server.features.whereisit.mod.SearchC2S
+import net.horizonsend.ion.server.features.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.miscellaneous.commands
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
@@ -65,6 +68,9 @@ class IonServer : JavaPlugin() {
 
 			// The listeners are defined in a separate file for the sake of keeping the main class clean.
 			for (listener in listeners) pluginManager.registerEvents(listener, this)
+
+			Bukkit.getMessenger().registerIncomingPluginChannel(this, SearchC2S.ID.toString(), Searcher::handle)
+			Bukkit.getMessenger().registerOutgoingPluginChannel(this, FoundS2C.ID.toString())
 
 			// Same deal as listeners.
 			initializeCrafting()
