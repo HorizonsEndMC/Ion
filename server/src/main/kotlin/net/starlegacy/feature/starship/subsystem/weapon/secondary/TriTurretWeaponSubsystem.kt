@@ -7,6 +7,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
+import java.util.concurrent.TimeUnit
 
 class TriTurretWeaponSubsystem(
 	ship: ActiveStarship,
@@ -17,5 +18,5 @@ class TriTurretWeaponSubsystem(
 	HeavyWeaponSubsystem {
 	override val inaccuracyRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.TriTurret.inaccuracyRadians)
 	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.TriTurret.powerusage
-	override val boostChargeNanos: Long = IonServer.Ion.balancing.starshipWeapons.TriTurret.boostChargeNanos
+	override val boostChargeNanos: Long =  TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.TriTurret.boostChargeNanos)
 }
