@@ -63,7 +63,7 @@ object ProtectionListener : SLEventListener() {
 	/** Called on block break etc. GriefPrevention check should be done first.
 	 *  Loops through protected regions at location, checks each one for access message
 	 *  @return true if the event should be cancelled, false if it should stay the same. */
-	private fun denyBlockAccess(player: Player, location: Location): Boolean {
+	fun denyBlockAccess(player: Player, location: Location): Boolean {
 		if (isRegionDenied(player, location)) {
 			return true
 		}
