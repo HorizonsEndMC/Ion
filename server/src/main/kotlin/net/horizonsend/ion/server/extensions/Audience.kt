@@ -91,14 +91,14 @@ private inline fun parseFeedback(message: String, vararg parameters: Any): Strin
 
 @Deprecated("Use newer audience extension functions")
 internal fun Audience.sendFeedbackAction(type: FeedbackType, message: String, vararg parameters: Any): Unit =
-	sendActionBar(construct(parseFeedback(message, parameters), type.colour))
+	sendActionBar(construct(parseFeedback(message, *parameters), type.colour))
 
 @Deprecated("Use newer audience extension functions")
 internal fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, vararg parameters: Any): Unit =
-	loggedMessage(parseFeedback(message, parameters), type.colour, type.loggingFunction)
+	loggedMessage(parseFeedback(message, *parameters), type.colour, type.loggingFunction)
 
 @Deprecated("Use newer audience extension functions")
 internal fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
-	loggedMessage(parseFeedback(message, parameters), type.colour, type.loggingFunction)
+	loggedMessage(parseFeedback(message, *parameters), type.colour, type.loggingFunction)
 	action(message, type.colour)
 }
