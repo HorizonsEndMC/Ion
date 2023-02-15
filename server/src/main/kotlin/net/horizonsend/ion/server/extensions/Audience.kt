@@ -98,6 +98,7 @@ internal fun Audience.sendFeedbackMessage(type: FeedbackType, message: String, v
 
 @Deprecated("Use newer audience extension functions")
 internal fun Audience.sendFeedbackActionMessage(type: FeedbackType, message: String, vararg parameters: Any) {
-	loggedMessage(parseFeedback(message, *parameters), type.colour, type.loggingFunction)
-	action(message, type.colour)
+	val parsedFeedback = parseFeedback(message, *parameters)
+	loggedMessage(parsedFeedback, type.colour, type.loggingFunction)
+	action(parsedFeedback, type.colour)
 }
