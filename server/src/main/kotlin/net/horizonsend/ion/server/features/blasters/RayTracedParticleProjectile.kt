@@ -111,7 +111,7 @@ class RayTracedParticleProjectile(
 				} // Send this first to prevent duplicate messages when shot multiple times
 				val hitNation = SLPlayer[flyingHitEntity.uniqueId]?.nation
 				val shooterNation = SLPlayer[shooter as Player]?.nation
-				if (NationRelation.getRelationActual(hitNation!!, shooterNation!!).ordinal >= 5) {
+				if (NationRelation.getRelationActual(hitNation!!, shooterNation!!).ordinal >= 5 && !flyingHitEntity.world.name.contains("arena")) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
 					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
