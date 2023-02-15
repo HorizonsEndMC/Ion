@@ -34,7 +34,7 @@ object SpaceGenerationManager : Listener {
 	// Generate asteroids on chunk load
 	@EventHandler
 	fun onChunkLoad(event: ChunkLoadEvent) {
-		val generator = SpaceGenerationManager.getGenerator((event.world as CraftWorld).handle) ?: return
+		val generator = getGenerator((event.world as CraftWorld).handle) ?: return
 		if (event.chunk.persistentDataContainer.has(NamespacedKeys.ASTEROIDS_VERSION)) return
 
 		event.chunk.persistentDataContainer.set(

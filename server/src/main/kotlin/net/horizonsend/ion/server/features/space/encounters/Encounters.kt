@@ -31,18 +31,16 @@ object Encounters {
  * A basic class controlling an encounter on a wreck.
  *
  * @property constructChestState Code used when generating the primary chest on the wreck.
+ * 	This is executed when it places the chest block.
  * @property onChestInteract Code executed when the primary chest is interacted with.
  * @property generate Additional instructions executed when generating the wreck.
  **/
 abstract class Encounter(
 	val identifier: String
 ) {
-	// Absolutely necessary
 	abstract fun constructChestState(): BlockState
 
-	// Optional
 	open fun onChestInteract() {}
 
-	//
 	open fun generate() {}
 }

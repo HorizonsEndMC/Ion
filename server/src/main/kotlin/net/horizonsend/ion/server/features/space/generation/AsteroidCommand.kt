@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.extensions.sendInformation
 import net.horizonsend.ion.server.extensions.sendServerError
@@ -51,8 +50,6 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@Subcommand("create custom")
 	@CommandCompletion("size index octaves")
 	fun onCreateCustom(sender: Player, size: Double, index: Int, octaves: Int) {
-		println(SpaceGenerationManager.worldGenerators)
-
 		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
 			.sendUserError("No generator found for ${sender.world.name}")
 
@@ -61,11 +58,11 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 			return
 		}
 
-		val asteroid = SpaceGenerator.Asteroid(
+		val asteroid = SpaceGenerator.AsteroidGenerationData(
 			sender.location.x.toInt(),
 			sender.location.y.toInt(),
 			sender.location.z.toInt(),
-			generator.configuration.blockPalettes[index],
+			generator.weightedPalettes[index],
 			size,
 			octaves
 		)
@@ -85,9 +82,6 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@CommandPermission("ion.space.regenerate")
 	@Subcommand("create random")
 	fun onCreateRandom(sender: Player) {
-		println(SpaceGenerationManager.worldGenerators)
-		println(Ion.configuration.spaceGenConfig)
-
 		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
 			.sendUserError("No generator found for ${sender.world.name}")
 
