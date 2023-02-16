@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.Encounters
+import net.horizonsend.ion.server.features.space.encounters.Encounters.ITS_A_TRAP
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
@@ -97,7 +98,7 @@ class SpaceGenerator(
 				val sizeFactor = asteroid.size / 15
 				val shapingNoise = SimplexOctaveGenerator(random, 1)
 				val materialNoise = SimplexOctaveGenerator(random, 1)
-				materialNoise.setScale(0.15 / sizeFactor)
+				materialNoise.setScale(0.15 / (sizeFactor * 2))
 
 				val radiusSquared = asteroid.size * asteroid.size
 
@@ -246,7 +247,7 @@ class SpaceGenerator(
 
 							// data serialization
 							val existingSerializedAsteroidData =
-								BlockSerialization.readChunkBlocks(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
+								BlockSerialization.readChunkCompoundTag(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
 
 							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
 							formattedSections.addAll(newSections)
@@ -379,33 +380,26 @@ class SpaceGenerator(
 
 	fun generateWreck(wreck: WreckGenerationData) {
 		val encounter = wreck.encounter?.getEncounter()
-		println("schematic : ${wreck.schematicName}")
-
 		Tasks.async {
 			val schematic = wreck.schematic()
 
-			// Iterate through blocks using worldedit API
 			serverLevel.world.worldEditSession(true) {
 				val region = schematic.region.clone()
 				val targetBlockVector = BlockVector3.at(wreck.x, wreck.y, wreck.z)
 				val offset = targetBlockVector.subtract(schematic.origin)
 
-				println("origin: ${schematic.origin}")
-				println(region.boundingBox.toString())
-
 				region.shift(offset)
-				val sections = region.chunkCubes
+				val sectionsSet = mutableSetOf<Int>()
 
-				println(region.boundingBox.toString())
+				for (
+				y in (region.boundingBox.minimumY - serverLevel.minBuildHeight)..(region.boundingBox.maximumY - serverLevel.minBuildHeight)
+				) {
+					sectionsSet.add(y.shr(4))
+				}
 
 				for (chunkPosWE in region.chunks) {
-					val chunkSections = sections.filter { section ->
-// 						println(section)
-						section.x == chunkPosWE.x && section.z == chunkPosWE.z
-					}
 					val chunkOriginX = chunkPosWE.x * 16
 					val chunkOriginZ = chunkPosWE.z * 16
-					println("sections: " + (chunkSections.map { it.y }).toString())
 
 					serverLevel.world.getChunkAtAsync(chunkPosWE.x, chunkPosWE.z)
 						.thenAcceptAsync completedChunk@{ bukkitChunk ->
@@ -415,8 +409,8 @@ class SpaceGenerator(
 							val levelChunk = (bukkitChunk as CraftChunk).handle
 							val newSections = mutableListOf<CompoundTag>()
 
-							for (section in chunkSections) {
-								val levelChunkSection = levelChunk.sections[section.y]
+							for (section in sectionsSet) {
+								val levelChunkSection = levelChunk.sections[section]
 								val bottomY = levelChunkSection.bottomBlockY()
 
 								val palette = mutableSetOf<BlockState>()
@@ -445,8 +439,6 @@ class SpaceGenerator(
 												continue
 											}
 
-// 											println("at: ${BlockVector3.at(worldX, worldY, worldZ)} subtract $offset to $schematicRelative")
-
 											if (encounter != null) {
 												if (
 													wreck.encounter.chestX == schematicRelative.blockX &&
@@ -474,16 +466,14 @@ class SpaceGenerator(
 									}
 								}
 
-								if (storedBlocks.all { it == 0 }) {
-									println("continuing at $chunkOriginX, $chunkOriginZ")
-									continue
-								} // don't write it if it's all empty
+								if (storedBlocks.all { it == 0 }) continue
+								 // don't write it if it's all empty
 
 								palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
 
 								val intArray = storedBlocks.requireNoNulls().toIntArray()
 								newSections += BlockSerialization.formatSection(
-									section.y,
+									section,
 									intArray,
 									paletteListTag
 								)
@@ -495,9 +485,9 @@ class SpaceGenerator(
 							// Chunk is empty, everything else is unnecessary
 							if (newSections.isEmpty()) return@completedChunk
 
-							// data serialization
+							// Wreck block storage
 							val existingSerializedAsteroidData =
-								BlockSerialization.readChunkBlocks(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
+								BlockSerialization.readChunkCompoundTag(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
 
 							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
 							formattedSections.addAll(newSections)
@@ -510,19 +500,23 @@ class SpaceGenerator(
 							// updating chunk information
 							Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
 							levelChunk.isUnsaved = true
-							println(11)
+							// End wreck block storage
 
-							val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
-
-							val existingWrecksBaseTag = BlockSerialization.readChunkBlocks(chunk, NamespacedKeys.ASTEROIDS_DATA)
+							// Wreck data
+							val existingWrecksBaseTag = BlockSerialization.readChunkCompoundTag(levelChunk.bukkitChunk, NamespacedKeys.WRECK_DATA)
 							val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
 
-							existingWrecks += WreckGenerationData.WreckEncounterData(0, 0, 0, "Beans").NMS()
+							wreck.encounter?.let {
+								existingWrecks += it.NMS(
+									wreck.x,
+									wreck.y, wreck.z
+								) // TODO better way of getting chest pos
+							}
 
 							val newFinishedData = CompoundTag()
 							newFinishedData.put("wrecks", existingWrecks)
 							val wreckDataOutputStream = ByteArrayOutputStream()
-							NbtIo.writeCompressed(newFinishedData, wreckBlocksOutputStream)
+							NbtIo.writeCompressed(newFinishedData, wreckDataOutputStream)
 
 							// needs to be synchronized or multiple asteroids in a chunk cause issues
 							completableBlocksChanged.thenAccept { completed ->
@@ -533,7 +527,7 @@ class SpaceGenerator(
 										wreckBlocksOutputStream.toByteArray()
 									)
 
-									chunk.persistentDataContainer.set(
+									levelChunk.bukkitChunk.persistentDataContainer.set(
 										NamespacedKeys.WRECK_DATA,
 										PersistentDataType.BYTE_ARRAY,
 										wreckDataOutputStream.toByteArray()
@@ -554,10 +548,10 @@ class SpaceGenerator(
 
 		val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
 
-		val existingWrecksBaseTag = BlockSerialization.readChunkBlocks(chunk, NamespacedKeys.ASTEROIDS_DATA)
+		val existingWrecksBaseTag = BlockSerialization.readChunkCompoundTag(chunk, NamespacedKeys.ASTEROIDS_DATA)
 		val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
 
-		existingWrecks += WreckGenerationData.WreckEncounterData(0, 0, 0, "Beans").NMS()
+		// wreck.encounter?.NMS()?.let { existingWrecks += it }
 
 		val newFinishedData = CompoundTag()
 		newFinishedData.put("wrecks", existingWrecks)
@@ -585,8 +579,8 @@ class SpaceGenerator(
 	) {
 		fun schematic(): Clipboard {
 			val file: File = Ion.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
-			val compoundTag = NbtIo.readCompressed(FileInputStream(file))
-			encounter?.let { compoundTag.put("encounter", it.NMS()) }
+// 			val compoundTag = NbtIo.readCompressed(FileInputStream(file))
+// 			encounter?.let { compoundTag.put("encounter", it.NMS()) }
 
 			return SpongeSchematicReader(NBTInputStream(GZIPInputStream(FileInputStream(file)))).read()
 		}
@@ -604,12 +598,12 @@ class SpaceGenerator(
 		) {
 			fun getEncounter(): Encounter = Encounters.getByIdentifier(identifier)!!
 
-			fun NMS(): CompoundTag {
+			fun NMS(x: Int, y: Int, z: Int): CompoundTag {
 				val beginningTag = CompoundTag()
 
-				beginningTag.putInt("x", chestX)
-				beginningTag.putInt("y", chestY)
-				beginningTag.putInt("z", chestZ)
+				beginningTag.putInt("x", x)
+				beginningTag.putInt("y", y)
+				beginningTag.putInt("z", z)
 
 				beginningTag.putString("Encounter Identifier", identifier)
 
@@ -624,7 +618,12 @@ class SpaceGenerator(
 			y,
 			z,
 			weightedWreckList.random(),
-			null
+			WreckGenerationData.WreckEncounterData(
+				0,
+				0,
+				0,
+				ITS_A_TRAP.identifier
+			)
 		)
 	}
 
