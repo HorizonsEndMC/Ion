@@ -2,10 +2,13 @@ package net.horizonsend.ion.server.features.combatnpcs
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.extensions.information
+import net.starlegacy.listener.misc.ProtectionListener
+import net.starlegacy.listener.nations.FriendlyFireListener
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.ArmorStand
@@ -34,7 +37,6 @@ class CombatNPCs : Listener {
 	fun onPlayerLogOut(event: PlayerQuitEvent) {
 		val player = event.player
 		if (player.gameMode != GameMode.SURVIVAL) return
-		// Have to store the inventory as it isn't accessible in OfflinePlayer
 		Tasks.syncDelay(20 * 5) {
 			if (player.isOnline) return@syncDelay
 
@@ -70,7 +72,7 @@ class CombatNPCs : Listener {
 			val chunk = player.chunk.apply { addPluginChunkTicket(Ion) }
 			stands[stand] = Pair(player.uniqueId, player.inventory)
 
-			Tasks.syncDelay(1200) {
+			Tasks.syncDelay(3 * 60 * 20) {
 				stands[stand] ?: return@syncDelay
 				stands.remove(stand)
 				stand.health = 0.0
@@ -94,7 +96,8 @@ class CombatNPCs : Listener {
 
 		// Kill the player, send a message, and clear their inventory
 		val killer = run { Bukkit.getOfflinePlayer(deadPlayers[event.player.uniqueId] ?: return@run null) }
-		event.player.information("While you were offline you were killed by ${killer?.name}")
+		event.player.information("While you were offline you were killed by ${killer?.name}.")
+
 		deadPlayers.remove(event.player.uniqueId)
 		event.player.inventory.clear()
 		event.player.health = 0.0
@@ -104,8 +107,14 @@ class CombatNPCs : Listener {
 	fun onArmorStandDie(event: EntityDeathEvent) {
 		val stand = event.entity as? ArmorStand ?: return
 		val player = Bukkit.getOfflinePlayer(stands[stand]?.first ?: return)
+		val damager = (stand.lastDamageCause as? EntityDamageByEntityEvent)?.damager as OfflinePlayer?
 		val inventory = stands[stand]!!.second
 		val location = event.entity.location
+
+		if (damager != null && FriendlyFireListener.isFriendlyFire(player, damager)) {
+			event.isCancelled = true
+			return
+		}
 
 		inventory.filter { !(it?.containsEnchantment(Enchantment.VANISHING_CURSE) ?: true) }.forEach {
 			location.world.dropItem(location, it)
@@ -115,7 +124,7 @@ class CombatNPCs : Listener {
 
 		stands.remove(stand)
 		stand.chunk.removePluginChunkTicket(Ion)
-		deadPlayers[player.uniqueId] = (stand.lastDamageCause as? EntityDamageByEntityEvent)?.damager?.uniqueId
+		deadPlayers[player.uniqueId] = damager?.uniqueId
 		event.drops.clear() // don't want to drop the stand
 	}
 
