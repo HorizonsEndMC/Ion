@@ -1,8 +1,11 @@
 package net.horizonsend.ion.server.features.space.encounters
 
+import net.horizonsend.ion.server.legacy.feedback.FeedbackType
+import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.toNMSBlockData
 import org.bukkit.Material
+import org.bukkit.event.player.PlayerInteractEvent
 
 object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
@@ -11,12 +14,12 @@ object Encounters {
 	val ITS_A_TRAP = register(object : Encounter(
 		identifier = "ITS_A_TRAP"
 	) {
-			override fun constructChestState(): BlockState {
-				return Material.CHEST.toNMSBlockData()
+			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
+				TODO("Not yet implemented")
 			}
 
-			override fun generate() {
-				TODO("Not yet implemented")
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				event.player.sendFeedbackMessage(FeedbackType.ALERT, "it worked")
 			}
 		}
 	)
@@ -25,6 +28,8 @@ object Encounters {
 		encounters[encounter.identifier] = encounter
 		return encounter
 	}
+
+	val identifiers = encounters.keys
 
 	fun getByIdentifier(identifier: String): Encounter? = encounters[identifier]
 }
@@ -40,9 +45,11 @@ object Encounters {
 abstract class Encounter(
 	val identifier: String
 ) {
-	abstract fun constructChestState(): BlockState
+	open fun constructChestState(): BlockState {
+		return Material.CHEST.toNMSBlockData()
+	}
 
-	open fun onChestInteract() {}
+	open fun onChestInteract(event: PlayerInteractEvent) {}
 
-	open fun generate() {}
+	open fun generate(chestX: Int, chestY: Int, chestZ: Int) {}
 }
