@@ -113,9 +113,11 @@ class RayTracedParticleProjectile(
 				val shooterNation = SLPlayer[shooter as Player].nation
 				val isSameNation = shooterNation?.let { shoot_nation ->
 					hitNation?.let { hit_nation ->
-					NationRelation.getRelationActual(
-						hit_nation, shoot_nation).ordinal <5
-				} }  ?: false
+						NationRelation.getRelationActual(
+							hit_nation, shoot_nation
+						).ordinal < 5
+					}
+				} ?: false
 				if (isSameNation && !flyingHitEntity.world.name.lowercase().contains("arena")) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
