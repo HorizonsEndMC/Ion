@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
 import net.horizonsend.ion.server.miscellaneous.listeners.CancelListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.GameplayTweaksListeners
+import net.horizonsend.ion.server.miscellaneous.listeners.HeadListener
 import net.horizonsend.ion.server.miscellaneous.listeners.MiscListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.ResourcePackListener
 
@@ -28,6 +29,7 @@ val listeners = arrayOf(
 	InventoryDragListener(),
 	InventoryMoveItemListener(),
 	CancelListeners(),
+	HeadListener(),
 	GameplayTweaksListeners(),
 	ResourcePackListener(),
 	MiscListeners(),
