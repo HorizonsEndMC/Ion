@@ -23,6 +23,7 @@ import kotlin.math.sin
 
 @CommandAlias("asteroid")
 class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
+	// TODO all these commands suck
 	@Suppress("unused")
 	@CommandPermission("ion.space.regenerate")
 	@CommandCompletion("Range")
