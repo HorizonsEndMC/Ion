@@ -18,5 +18,5 @@ class TriTurretWeaponSubsystem(
 	HeavyWeaponSubsystem {
 	override val inaccuracyRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.TriTurret.inaccuracyRadians)
 	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.TriTurret.powerusage
-	override val boostChargeNanos: Long =  TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.TriTurret.boostChargeNanos)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.TriTurret.boostChargeNanos)
 }

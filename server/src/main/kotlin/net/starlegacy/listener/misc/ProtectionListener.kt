@@ -1,7 +1,7 @@
 package net.starlegacy.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
-import net.starlegacy.feature.misc.CombatNPCs
+import net.horizonsend.ion.server.features.combatnpcs.CombatNPCs
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships

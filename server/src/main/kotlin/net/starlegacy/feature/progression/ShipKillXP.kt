@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.extensions.FeedbackType
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.combatnpcs.CombatNPCKillEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -19,7 +20,6 @@ import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
-import net.starlegacy.feature.misc.CombatNPCKillEvent
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent
 import net.starlegacy.feature.starship.PilotedStarships.getRawDisplayName
 import net.starlegacy.feature.starship.StarshipType
@@ -82,7 +82,7 @@ object ShipKillXP : SLComponent() {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onCombatNPCKill(event: CombatNPCKillEvent) {
 		val arena = event.killer?.world?.name?.lowercase(Locale.getDefault())?.contains("arena") ?: true
-		onPlayerKilled(event.id, event.name, event.killer, arena)
+		onPlayerKilled(event.killedUuid, event.killedName, event.killer, arena)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
