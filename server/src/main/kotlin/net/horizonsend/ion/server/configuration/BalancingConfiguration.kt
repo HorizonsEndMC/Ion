@@ -486,7 +486,7 @@ data class BalancingConfiguration(
 			val boostChargeNanos: Long, // Seconds, should only be put for heavyWeapons
 			val aimDistance: Int, // should only be put if the weapon in question is target tracking
 			val maxDegrees: Double = 0.0,
-			override val inaccuracyRadians: Double = 2.5
+			override val inaccuracyRadians: Double = 2.0
 		) : ProjectileBalancing()
 
 		@ConfigSerializable
