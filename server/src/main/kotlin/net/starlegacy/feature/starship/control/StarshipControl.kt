@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.RelativeTeleportFlag
 import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
@@ -21,6 +22,7 @@ import net.starlegacy.listen
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.d
+import net.starlegacy.util.displayName
 import net.starlegacy.util.isLava
 import net.starlegacy.util.isSign
 import net.starlegacy.util.isWater
@@ -43,6 +45,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Collections
 import java.util.LinkedList
@@ -478,18 +481,36 @@ object StarshipControl : SLComponent() {
 		}
 
 		cooldown.tryExec(player) {
-			manualFire(player, starship, leftClick)
+			manualFire(player, starship, leftClick, player.inventory.itemInMainHand)
 		}
 	}
 
-	private fun manualFire(player: Player, starship: ActiveStarship, leftClick: Boolean) {
+	@EventHandler
+	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
+		val itemStack: ItemStack = event.player.inventory.getItem(event.newSlot) ?: return
+		val starship = ActiveStarships.findByPassenger(event.player) ?: return
+
+		if (itemStack.type != CONTROLLER_TYPE) return
+
+		if (starship.weaponSets.keys().contains(itemStack.displayName.lowercase())) {
+			event.player.sendActionBar(
+				MiniMessage.miniMessage().deserialize(
+					"<gray>Now firing <aqua>${itemStack.displayName.lowercase()}<gray> weaponSet"
+				)
+			)
+		}
+	}
+
+	private fun manualFire(player: Player, starship: ActiveStarship, leftClick: Boolean, clock: ItemStack) {
 		val loc = player.eyeLocation
 		val playerFacing = player.facing
 		val dir = loc.direction.normalize()
 
 		val target: Vector? = getTarget(loc, dir, starship)
 
-		val weaponSet = starship.weaponSetSelections[player.uniqueId]
+		var weaponSet = starship.weaponSetSelections[player.uniqueId]
+		val clockWeaponSet = clock.displayName.lowercase()
+		if (starship.weaponSets.keys().contains(clock.displayName.lowercase())) weaponSet = clockWeaponSet
 		if (weaponSet == null && PilotedStarships[player] != starship) {
 			return
 		}
