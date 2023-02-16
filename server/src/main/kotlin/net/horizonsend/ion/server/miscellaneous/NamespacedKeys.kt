@@ -7,9 +7,9 @@ object NamespacedKeys {
 	val AMMO = key("Ammo")
 	val CUSTOM_ITEM = key("CustomItem")
 	val EDEN_FIX = key("EdenFix")
-	val ASTEROIDS_DATA = key("asteroidsDATA")
-	val ASTEROIDS_VERSION = key("asteroidsVersion")
-	val WRECK_DATA = key("wreckData")
+	val STORED_CHUNK_BLOCKS = key("StoredChunkBlocks")
+	val ASTEROIDS_VERSION = key("AsteroidsVersion")
+	val WRECK_ENCOUNTER_DATA = key("WreckEncounterData")
 
 	@Deprecated("") val MULTIBLOCK = key("multiblock")
 
