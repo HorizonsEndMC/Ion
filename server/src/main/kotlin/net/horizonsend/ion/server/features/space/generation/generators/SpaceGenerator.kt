@@ -98,7 +98,7 @@ class SpaceGenerator(
 				val sizeFactor = asteroid.size / 15
 				val shapingNoise = SimplexOctaveGenerator(random, 1)
 				val materialNoise = SimplexOctaveGenerator(random, 1)
-				materialNoise.setScale(0.15 / (sizeFactor * 2))
+				materialNoise.setScale(0.15 / sqrt(sizeFactor))
 
 				val radiusSquared = asteroid.size * asteroid.size
 
@@ -247,7 +247,7 @@ class SpaceGenerator(
 
 							// data serialization
 							val existingSerializedAsteroidData =
-								BlockSerialization.readChunkCompoundTag(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
+								BlockSerialization.readChunkCompoundTag(bukkitChunk, NamespacedKeys.STORED_CHUNK_BLOCKS)
 
 							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
 							formattedSections.addAll(newSections)
@@ -265,7 +265,7 @@ class SpaceGenerator(
 							completableBlocksChanged.thenAccept { completed ->
 								Tasks.sync {
 									nmsChunk.bukkitChunk.persistentDataContainer.set(
-										NamespacedKeys.ASTEROIDS_DATA,
+										NamespacedKeys.STORED_CHUNK_BLOCKS,
 										PersistentDataType.BYTE_ARRAY,
 										outputStream.toByteArray()
 									)
@@ -409,6 +409,8 @@ class SpaceGenerator(
 							val levelChunk = (bukkitChunk as CraftChunk).handle
 							val newSections = mutableListOf<CompoundTag>()
 
+							var encounterChest: BlockPos? = null
+
 							for (section in sectionsSet) {
 								val levelChunkSection = levelChunk.sections[section]
 								val bottomY = levelChunkSection.bottomBlockY()
@@ -416,7 +418,6 @@ class SpaceGenerator(
 								val palette = mutableSetOf<BlockState>()
 								palette.add(Blocks.AIR.defaultBlockState())
 								val storedBlocks = arrayOfNulls<Int>(4096)
-								val paletteListTag = ListTag()
 
 								var index = 0
 
@@ -440,11 +441,8 @@ class SpaceGenerator(
 											}
 
 											if (encounter != null) {
-												if (
-													wreck.encounter.chestX == schematicRelative.blockX &&
-													wreck.encounter.chestX == schematicRelative.blockX &&
-													wreck.encounter.chestX == schematicRelative.blockX
-												) {
+												if (blockState.block == Blocks.CHEST) {
+													encounterChest = BlockPos(worldX, worldY, worldZ)
 													blockState = encounter.constructChestState()
 												}
 											}
@@ -467,10 +465,12 @@ class SpaceGenerator(
 								}
 
 								if (storedBlocks.all { it == 0 }) continue
-								 // don't write it if it's all empty
+								// don't write it if it's all empty
 
-								palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
+								val paletteListTag = ListTag()
+								palette.mapTo(paletteListTag) { blockState -> NbtUtils.writeBlockState(blockState) }.toList()
 
+								// Add the stored blocks to the list of sections
 								val intArray = storedBlocks.requireNoNulls().toIntArray()
 								newSections += BlockSerialization.formatSection(
 									section,
@@ -485,31 +485,41 @@ class SpaceGenerator(
 							// Chunk is empty, everything else is unnecessary
 							if (newSections.isEmpty()) return@completedChunk
 
-							// Wreck block storage
-							val existingSerializedAsteroidData =
-								BlockSerialization.readChunkCompoundTag(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
+							// Check chunk for existing spacegen blocks
+							val existingChunkBlocks =
+								BlockSerialization.readChunkCompoundTag(
+									bukkitChunk,
+									NamespacedKeys.STORED_CHUNK_BLOCKS
+								)
 
-							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
+							// list of CompoundTag (10)
+							val formattedSections = existingChunkBlocks.getList("sections", 10)
 							formattedSections.addAll(newSections)
-							val storedChunkBlocks =
-								BlockSerialization.formatChunk(formattedSections, spaceGenerationVersion)
-							val wreckBlocksOutputStream = ByteArrayOutputStream()
-							NbtIo.writeCompressed(storedChunkBlocks, wreckBlocksOutputStream)
-							// end data serialization
+
+							val blocksOutputStream = ByteArrayOutputStream()
+							NbtIo.writeCompressed(
+								BlockSerialization.formatChunk(formattedSections, spaceGenerationVersion),
+								blocksOutputStream
+							)
+							// End wreck block storage
 
 							// updating chunk information
 							Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
 							levelChunk.isUnsaved = true
-							// End wreck block storage
 
-							// Wreck data
-							val existingWrecksBaseTag = BlockSerialization.readChunkCompoundTag(levelChunk.bukkitChunk, NamespacedKeys.WRECK_DATA)
+							// Write wreck data to chunk
+							val existingWrecksBaseTag = BlockSerialization
+								.readChunkCompoundTag(
+									levelChunk.bukkitChunk,
+									NamespacedKeys.WRECK_ENCOUNTER_DATA
+								)
 							val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
 
 							wreck.encounter?.let {
 								existingWrecks += it.NMS(
-									wreck.x,
-									wreck.y, wreck.z
+									encounterChest!!.x,
+									encounterChest.y,
+									encounterChest.z
 								) // TODO better way of getting chest pos
 							}
 
@@ -517,18 +527,19 @@ class SpaceGenerator(
 							newFinishedData.put("wrecks", existingWrecks)
 							val wreckDataOutputStream = ByteArrayOutputStream()
 							NbtIo.writeCompressed(newFinishedData, wreckDataOutputStream)
+							// End wreck data
 
 							// needs to be synchronized or multiple asteroids in a chunk cause issues
 							completableBlocksChanged.thenAccept { completed ->
 								Tasks.sync {
 									levelChunk.bukkitChunk.persistentDataContainer.set(
-										NamespacedKeys.ASTEROIDS_DATA,
+										NamespacedKeys.STORED_CHUNK_BLOCKS,
 										PersistentDataType.BYTE_ARRAY,
-										wreckBlocksOutputStream.toByteArray()
+										blocksOutputStream.toByteArray()
 									)
 
 									levelChunk.bukkitChunk.persistentDataContainer.set(
-										NamespacedKeys.WRECK_DATA,
+										NamespacedKeys.WRECK_ENCOUNTER_DATA,
 										PersistentDataType.BYTE_ARRAY,
 										wreckDataOutputStream.toByteArray()
 									)
@@ -548,7 +559,7 @@ class SpaceGenerator(
 
 		val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
 
-		val existingWrecksBaseTag = BlockSerialization.readChunkCompoundTag(chunk, NamespacedKeys.ASTEROIDS_DATA)
+		val existingWrecksBaseTag = BlockSerialization.readChunkCompoundTag(chunk, NamespacedKeys.STORED_CHUNK_BLOCKS)
 		val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
 
 		// wreck.encounter?.NMS()?.let { existingWrecks += it }
@@ -559,7 +570,7 @@ class SpaceGenerator(
 		NbtIo.writeCompressed(newFinishedData, outputStream)
 
 		chunk.persistentDataContainer.set(
-			NamespacedKeys.WRECK_DATA,
+			NamespacedKeys.WRECK_ENCOUNTER_DATA,
 			PersistentDataType.BYTE_ARRAY,
 			outputStream.toByteArray()
 		)
@@ -630,7 +641,7 @@ class SpaceGenerator(
 	companion object {
 		fun rebuildChunkAsteroids(chunk: Chunk) {
 			val storedAsteroidData =
-				chunk.persistentDataContainer.get(NamespacedKeys.ASTEROIDS_DATA, PersistentDataType.BYTE_ARRAY)
+				chunk.persistentDataContainer.get(NamespacedKeys.STORED_CHUNK_BLOCKS, PersistentDataType.BYTE_ARRAY)
 					?: return
 			val nbt = try {
 				NbtIo.readCompressed(ByteArrayInputStream(storedAsteroidData, 0, storedAsteroidData.size))
