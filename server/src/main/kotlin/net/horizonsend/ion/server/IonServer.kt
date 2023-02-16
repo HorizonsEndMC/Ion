@@ -53,7 +53,8 @@ class IonServer : JavaPlugin() {
 
 			for (command in commands) commandManager.registerCommand(command)
 
-			commandManager.commandCompletions.registerStaticCompletion("achievements",
+			commandManager.commandCompletions.registerStaticCompletion(
+				"achievements",
 				Achievement.values().map { it.name }
 			)
 
