@@ -414,7 +414,7 @@ data class BalancingConfiguration(
 			explosionPower = 6f,
 			volume = 0,
 			pitch = 2.0f,
-			soundName = "",
+			soundName = "starship.weapon.turbolaser.tri.shoot",
 			powerusage = 45000,
 			length = 0,
 			angleRadians = 0.0,
