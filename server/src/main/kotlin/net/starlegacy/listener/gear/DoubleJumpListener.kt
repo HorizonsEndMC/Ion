@@ -48,10 +48,11 @@ object DoubleJumpListener : SLEventListener() {
 	}
 
 	private fun isGrounded(player: Player): Boolean {
-		val loc = player.location
-		val dir = Vector(0.0, -1.0, 0.0)
-		val maxDistance = 0.1
-		val fluidCollisionMode = FluidCollisionMode.ALWAYS
-		return player.world.rayTraceBlocks(loc, dir, maxDistance, fluidCollisionMode) != null
+		return player.world.rayTraceBlocks(
+			player.location,
+			Vector(0.0, -1.0, 0.0),
+			0.1,
+			FluidCollisionMode.ALWAYS
+		)?.hitBlock?.isCollidable == true
 	}
 }
