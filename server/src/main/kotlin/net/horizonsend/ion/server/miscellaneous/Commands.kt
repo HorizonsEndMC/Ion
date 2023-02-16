@@ -9,9 +9,6 @@ import net.horizonsend.ion.server.features.bounties.BountyCommands
 import net.horizonsend.ion.server.features.customItems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.customItems.commands.CustomItemCommand
 import net.horizonsend.ion.server.features.space.generation.AsteroidCommand
-import net.horizonsend.ion.server.features.generation.AsteroidCommand
-import net.horizonsend.ion.server.features.whereisit.SearchCommand
-import net.horizonsend.ion.server.miscellaneous.commands.CalcExpCommand
 
 val commands = arrayOf(
 	AsteroidCommand(Ion.configuration),
@@ -21,8 +18,6 @@ val commands = arrayOf(
 	CustomItemCommand(),
 	SettingsCommand(),
 	IonCommand(),
-	SearchCommand(),
-	CalcExpCommand(),
 
 	AchievementsCommand()
 )
