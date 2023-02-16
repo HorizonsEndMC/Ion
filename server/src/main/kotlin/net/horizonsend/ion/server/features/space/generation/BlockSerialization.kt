@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayInputStream
 
 object BlockSerialization {
-	fun readChunkBlocks(chunk: Chunk, key: NamespacedKey): CompoundTag {
+	fun readChunkCompoundTag(chunk: Chunk, key: NamespacedKey): CompoundTag {
 		val dataContainer = chunk.persistentDataContainer.get(
 			key,
 			PersistentDataType.BYTE_ARRAY
