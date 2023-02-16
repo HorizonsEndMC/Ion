@@ -22,7 +22,7 @@ object EncounterManager : Listener {
 		if (!SpaceGenerationManager.worldGenerators.containsKey(serverLevel)) return
 
 		val pdc = event.clickedBlock!!.location.chunk.persistentDataContainer.get(
-			NamespacedKeys.WRECK_DATA,
+			NamespacedKeys.WRECK_ENCOUNTER_DATA,
 			PersistentDataType.BYTE_ARRAY
 		) ?: return
 
