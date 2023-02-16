@@ -4,7 +4,6 @@ import com.sk89q.jnbt.NBTInputStream
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
 import com.sk89q.worldedit.math.BlockVector3
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounter
@@ -148,13 +147,13 @@ class SpaceGenerator(
 					serverLevel.world.getChunkAtAsync(nmsChunkPos.x, nmsChunkPos.z)
 						.thenAcceptAsync completedChunk@{ bukkitChunk ->
 							val completableBlocksChanged: CompletableFuture<List<BlockPos>> = CompletableFuture()
+							val chunkBlocksChanged = mutableListOf<BlockPos>()
+
 							val nmsChunk = (bukkitChunk as CraftChunk).handle
 							val newSections = mutableListOf<CompoundTag>()
 
 							val chunkMinX = nmsChunk.pos.x.shl(4)
 							val chunkMinZ = nmsChunk.pos.z.shl(4)
-
-							val chunkBlocksChanged = mutableListOf<BlockPos>()
 
 							for (sectionPos in sectionList) {
 								val section = nmsChunk.sections[sectionPos]
@@ -376,66 +375,186 @@ class SpaceGenerator(
 	// Asteroids end
 
 	// Wrecks start
+	val weightedWreckList = WeightedRandomList<String>().apply { this.addMany(configuration.wrecks) }
+
 	fun generateWreck(wreck: WreckGenerationData) {
 		val encounter = wreck.encounter?.getEncounter()
+		println("schematic : ${wreck.schematicName}")
 
 		Tasks.async {
 			val schematic = wreck.schematic()
-			val coveredChunks: MutableMap<ChunkPos, MutableList<Int>> = mutableMapOf()
 
-			val nmsBlockQueue = Long2ObjectOpenHashMap<BlockState>()
 			// Iterate through blocks using worldedit API
 			serverLevel.world.worldEditSession(true) {
 				val region = schematic.region.clone()
 				val targetBlockVector = BlockVector3.at(wreck.x, wreck.y, wreck.z)
 				val offset = targetBlockVector.subtract(schematic.origin)
 
+				println("origin: ${schematic.origin}")
+				println(region.boundingBox.toString())
+
 				region.shift(offset)
+				val sections = region.chunkCubes
 
-				for (vector3 in region) {
-					val schematicRelative = vector3.subtract(offset)
-					val baseBlock = schematic.getFullBlock(schematicRelative)
-					var blockState = baseBlock.toImmutableState().toBukkitBlockData().nms
+				println(region.boundingBox.toString())
 
-					if (blockState.isAir) continue
-					val chunkPos = ChunkPos(
-						vector3.x.shr(4),
-						vector3.z.shr(4)
-					)
-
-					val sections: MutableList<Int> = coveredChunks.getOrDefault(
-						chunkPos,
-						mutableListOf()
-					)
-
-					sections.add(vector3.y.shr(4))
-					coveredChunks[chunkPos] = sections
-
-					if (encounter != null) {
-						if (
-							wreck.encounter.chestX == schematicRelative.blockX &&
-							wreck.encounter.chestX == schematicRelative.blockX &&
-							wreck.encounter.chestX == schematicRelative.blockX
-						) {
-							blockState = encounter.constructChestState()
-						}
+				for (chunkPosWE in region.chunks) {
+					val chunkSections = sections.filter { section ->
+// 						println(section)
+						section.x == chunkPosWE.x && section.z == chunkPosWE.z
 					}
+					val chunkOriginX = chunkPosWE.x * 16
+					val chunkOriginZ = chunkPosWE.z * 16
+					println("sections: " + (chunkSections.map { it.y }).toString())
 
-					nmsBlockQueue[
-							BlockPos.asLong(
-								vector3.x,
-								vector3.y,
-								vector3.z
-							)
-					] = blockState
+					serverLevel.world.getChunkAtAsync(chunkPosWE.x, chunkPosWE.z)
+						.thenAcceptAsync completedChunk@{ bukkitChunk ->
+							val completableBlocksChanged: CompletableFuture<List<BlockPos>> = CompletableFuture()
+							val chunkBlocksChanged = mutableListOf<BlockPos>()
+
+							val levelChunk = (bukkitChunk as CraftChunk).handle
+							val newSections = mutableListOf<CompoundTag>()
+
+							for (section in chunkSections) {
+								val levelChunkSection = levelChunk.sections[section.y]
+								val bottomY = levelChunkSection.bottomBlockY()
+
+								val palette = mutableSetOf<BlockState>()
+								palette.add(Blocks.AIR.defaultBlockState())
+								val storedBlocks = arrayOfNulls<Int>(4096)
+								val paletteListTag = ListTag()
+
+								var index = 0
+
+								for (x in 0..15) {
+									val worldX = x + chunkOriginX
+
+									for (z in 0..15) {
+										val worldZ = z + chunkOriginZ
+
+										for (y in 0..15) {
+											val worldY = bottomY + y
+											val schematicRelative = BlockVector3.at(worldX, worldY, worldZ).subtract(offset)
+
+											val baseBlock = schematic.getFullBlock(schematicRelative)
+											var blockState = baseBlock.toImmutableState().toBukkitBlockData().nms
+
+											if (blockState.isAir) {
+												storedBlocks[index] = 0
+												index++
+												continue
+											}
+
+// 											println("at: ${BlockVector3.at(worldX, worldY, worldZ)} subtract $offset to $schematicRelative")
+
+											if (encounter != null) {
+												if (
+													wreck.encounter.chestX == schematicRelative.blockX &&
+													wreck.encounter.chestX == schematicRelative.blockX &&
+													wreck.encounter.chestX == schematicRelative.blockX
+												) {
+													blockState = encounter.constructChestState()
+												}
+											}
+
+											// needs to be run on main thread
+											chunkBlocksChanged += BlockPos(worldX, worldY, worldZ)
+
+											palette.add(blockState)
+											storedBlocks[index] = palette.indexOf(blockState)
+											levelChunkSection.setBlockState(
+												x,
+												y,
+												z,
+												blockState
+											)
+
+											index++
+										}
+									}
+								}
+
+								if (storedBlocks.all { it == 0 }) {
+									println("continuing at $chunkOriginX, $chunkOriginZ")
+									continue
+								} // don't write it if it's all empty
+
+								palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
+
+								val intArray = storedBlocks.requireNoNulls().toIntArray()
+								newSections += BlockSerialization.formatSection(
+									section.y,
+									intArray,
+									paletteListTag
+								)
+							}
+
+							// start broadcasting the chunk information
+							completableBlocksChanged.complete(chunkBlocksChanged)
+
+							// Chunk is empty, everything else is unnecessary
+							if (newSections.isEmpty()) return@completedChunk
+
+							// data serialization
+							val existingSerializedAsteroidData =
+								BlockSerialization.readChunkBlocks(bukkitChunk, NamespacedKeys.ASTEROIDS_DATA)
+
+							val formattedSections = existingSerializedAsteroidData.getList("sections", 10) // list of CompoundTag (10)
+							formattedSections.addAll(newSections)
+							val storedChunkBlocks =
+								BlockSerialization.formatChunk(formattedSections, spaceGenerationVersion)
+							val wreckBlocksOutputStream = ByteArrayOutputStream()
+							NbtIo.writeCompressed(storedChunkBlocks, wreckBlocksOutputStream)
+							// end data serialization
+
+							// updating chunk information
+							Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
+							levelChunk.isUnsaved = true
+							println(11)
+
+							val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
+
+							val existingWrecksBaseTag = BlockSerialization.readChunkBlocks(chunk, NamespacedKeys.ASTEROIDS_DATA)
+							val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
+
+							existingWrecks += WreckGenerationData.WreckEncounterData(0, 0, 0, "Beans").NMS()
+
+							val newFinishedData = CompoundTag()
+							newFinishedData.put("wrecks", existingWrecks)
+							val wreckDataOutputStream = ByteArrayOutputStream()
+							NbtIo.writeCompressed(newFinishedData, wreckBlocksOutputStream)
+
+							// needs to be synchronized or multiple asteroids in a chunk cause issues
+							completableBlocksChanged.thenAccept { completed ->
+								Tasks.sync {
+									levelChunk.bukkitChunk.persistentDataContainer.set(
+										NamespacedKeys.ASTEROIDS_DATA,
+										PersistentDataType.BYTE_ARRAY,
+										wreckBlocksOutputStream.toByteArray()
+									)
+
+									chunk.persistentDataContainer.set(
+										NamespacedKeys.WRECK_DATA,
+										PersistentDataType.BYTE_ARRAY,
+										wreckDataOutputStream.toByteArray()
+									)
+
+									// broadcast updates synchronously
+									for (blockPos in completed) {
+										levelChunk.playerChunk?.blockChanged(blockPos)
+									}
+
+									levelChunk.playerChunk?.broadcastChanges(levelChunk)
+								}
+							}
+						}
 				}
 			}
 		}
 
 		val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
 
-		val pdc = chunk.persistentDataContainer.get(NamespacedKeys.WRECK_DATA, PersistentDataType.BYTE_ARRAY)
-		val existingWrecksBaseTag = NbtIo.readCompressed(ByteArrayInputStream(pdc))
+		val existingWrecksBaseTag = BlockSerialization.readChunkBlocks(chunk, NamespacedKeys.ASTEROIDS_DATA)
 		val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
 
 		existingWrecks += WreckGenerationData.WreckEncounterData(0, 0, 0, "Beans").NMS()
@@ -466,11 +585,10 @@ class SpaceGenerator(
 	) {
 		fun schematic(): Clipboard {
 			val file: File = Ion.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
-			val inputStream = FileInputStream(file)
-			val compoundTag = NbtIo.readCompressed(inputStream)
+			val compoundTag = NbtIo.readCompressed(FileInputStream(file))
 			encounter?.let { compoundTag.put("encounter", it.NMS()) }
 
-			return SpongeSchematicReader(NBTInputStream(GZIPInputStream(inputStream))).read()
+			return SpongeSchematicReader(NBTInputStream(GZIPInputStream(FileInputStream(file)))).read()
 		}
 
 		/**
@@ -501,22 +619,11 @@ class SpaceGenerator(
 	}
 
 	fun generateRandomWreckData(x: Int, y: Int, z: Int): WreckGenerationData {
-		val sum = configuration.wrecks.values.sum()
-		var soFar = 0
-
-		val rangeMap = configuration.wrecks.mapValues {
-			val beginning = soFar
-			soFar += it.value
-			IntRange(beginning, soFar)
-		}
-		val int = random.nextInt(0, sum)
-		val wreckClass = rangeMap.firstNotNullOf { if (it.value.contains(int)) it.key else null }
-
-		return WreckGenerationData( // TODO
+		return WreckGenerationData(
 			x,
 			y,
 			z,
-			wreckClass,
+			weightedWreckList.random(),
 			null
 		)
 	}

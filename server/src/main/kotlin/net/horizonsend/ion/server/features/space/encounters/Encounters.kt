@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import net.minecraft.world.level.block.state.BlockState
+import net.starlegacy.util.toNMSBlockData
+import org.bukkit.Material
 
 object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
@@ -10,7 +12,7 @@ object Encounters {
 		identifier = "ITS_A_TRAP"
 	) {
 			override fun constructChestState(): BlockState {
-				TODO("Not yet implemented")
+				return Material.CHEST.toNMSBlockData()
 			}
 
 			override fun generate() {
