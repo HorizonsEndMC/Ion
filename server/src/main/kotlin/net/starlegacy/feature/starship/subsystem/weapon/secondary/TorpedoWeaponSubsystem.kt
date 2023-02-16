@@ -20,7 +20,7 @@ class TorpedoWeaponSubsystem(
 	HeavyWeaponSubsystem {
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.boostChargeNanos)
 
-	override fun isForwardOnly(): Boolean = true
+	override fun isForwardOnly(): Boolean = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.fowardOnly
 
 	override val length: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.length
 	override val powerUsage: Int get() = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.powerusage
