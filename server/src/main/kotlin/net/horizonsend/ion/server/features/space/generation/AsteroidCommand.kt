@@ -8,12 +8,11 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.extensions.sendInformation
-import net.horizonsend.ion.server.extensions.sendServerError
-import net.horizonsend.ion.server.extensions.sendUserError
+import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.extensions.serverError
+import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
 import net.minecraft.world.level.ChunkPos
 import net.starlegacy.util.Tasks
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
@@ -29,7 +28,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@CommandCompletion("Range")
 	@Subcommand("regenerate")
 	fun onRegenerate(sender: Player, @Optional @Default("0") range: Int) {
-		sender.sendInformation("Regenerating")
+		sender.information("Regenerating")
 		for (x in sender.chunk.x - range..sender.chunk.x + range) {
 			for (z in sender.chunk.z - range..sender.chunk.z + range) {
 				val chunk2 = sender.world.getChunkAt(x, z)
@@ -38,12 +37,12 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 					SpaceGenerator.rebuildChunkAsteroids(chunk2)
 				} catch (error: java.lang.Error) {
 					error.printStackTrace()
-					error.message?.let { sender.sendServerError(it) }
+					error.message?.let { sender.serverError(it) }
 					continue
 				}
 			}
 		}
-		sender.sendInformation("Success!")
+		sender.success("Success!")
 	}
 
 	@Suppress("unused")
@@ -52,10 +51,10 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@CommandCompletion("size index octaves")
 	fun onCreateCustom(sender: Player, size: Double, index: Int, octaves: Int) {
 		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
-			.sendUserError("No generator found for ${sender.world.name}")
+			.userError("No generator found for ${sender.world.name}")
 
 		if (!IntRange(0, generator.configuration.blockPalettes.size).contains(index)) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "ERROR: index out of range: 0..${generator.configuration.blockPalettes.size - 1}")
+			sender.userError("ERROR: index out of range: 0..${generator.configuration.blockPalettes.size - 1}")
 			return
 		}
 
@@ -71,12 +70,12 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 		try {
 			generator.generateAsteroid(asteroid)
 		} catch (err: java.lang.Exception) {
-			sender.sendServerError(err.message ?: "Error generating asteroid")
+			sender.serverError(err.message ?: "Error generating asteroid")
 			err.printStackTrace()
 			return
 		}
 
-		sender.sendInformation("Success!")
+		sender.success("Success!")
 	}
 
 	@Suppress("unused")
@@ -84,7 +83,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@Subcommand("create random")
 	fun onCreateRandom(sender: Player) {
 		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
-			.sendUserError("No generator found for ${sender.world.name}")
+			.userError("No generator found for ${sender.world.name}")
 
 		val chunkPos = ChunkPos(sender.chunk.x, sender.chunk.z)
 		val world = sender.world as CraftWorld
@@ -104,7 +103,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 			)
 		}
 
-		sender.sendInformation("Success!")
+		sender.success("Success!")
 	}
 
 	@Suppress("unused")
@@ -112,7 +111,7 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@Subcommand("create wreck")
 	fun onGenerateWreck(sender: Player, @Optional wreck: String?, @Optional encounter: String?) {
 		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
-			.sendUserError("No generator found for ${sender.world.name}")
+			.userError("No generator found for ${sender.world.name}")
 
 		val encounterData = encounter?.let {
 			SpaceGenerator.WreckGenerationData.WreckEncounterData(

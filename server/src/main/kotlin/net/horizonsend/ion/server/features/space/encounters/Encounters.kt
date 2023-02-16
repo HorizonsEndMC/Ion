@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.space.encounters
 
-import net.horizonsend.ion.server.legacy.feedback.FeedbackType
-import net.horizonsend.ion.server.legacy.feedback.sendFeedbackMessage
+import net.horizonsend.ion.server.extensions.alert
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.toNMSBlockData
 import org.bukkit.Material
@@ -21,7 +20,7 @@ object Encounters {
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
-				event.player.sendFeedbackMessage(FeedbackType.ALERT, "it worked")
+				event.player.alert("it worked")
 				for (count in 0..100) {
 					targetedBlock.location.world.spawnEntity(targetedBlock.location, EntityType.BAT)
 				}
