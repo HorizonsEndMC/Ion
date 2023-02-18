@@ -5,9 +5,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
@@ -71,7 +70,7 @@ object CollectedItemCommand : SLCommand() {
 
 		val itemString = CollectionMissions.getString(item)
 
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "{0} item string: {1}", item.displayName, itemString)
+		sender.information("${item.displayName} item string: $itemString")
 	}
 
 	@Suppress("Unused")
@@ -100,15 +99,11 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Added item {0} with value {1} and stack range {2}..{3}, and refreshed collector missions.",
-			itemString,
-			value,
-			minStacks,
-			maxStacks
+		sender.success(
+			"Added item $itemString with value $value and stack range $minStacks..$maxStacks, " +
+				"and refreshed collector missions."
 		)
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "(ID: {0})", id)
+		sender.information("(ID: $id)")
 	}
 
 	@Suppress("Unused")
@@ -118,21 +113,14 @@ object CollectedItemCommand : SLCommand() {
 		val items: List<CollectedItem> = CollectedItem.findAllAt(station._id).toList()
 			.takeIf { it.isNotEmpty() } ?: throw InvalidCommandArgument("No items at ${station.name}")
 
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Station {0} Items:", station.name)
+		sender.information("Station ${station.name} Items:")
 		sender.information(
 			"(ID: item string, value, min stacks, max stacks, stock)"
 		)
 
 		for (item: CollectedItem in items) {
-			sender.sendFeedbackMessage(
-				FeedbackType.INFORMATION,
-				"{0}: {1}, {2}, {3}, {4}, {5}",
-				item._id,
-				item.itemString,
-				item.value,
-				item.minStacks,
-				item.maxStacks,
-				item.stock
+			sender.information(
+				"${item._id}: ${item.itemString}, ${item.value}, ${item.minStacks}, ${item.maxStacks}, ${item.stock}"
 			)
 		}
 	}
@@ -151,11 +139,8 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Removed item {0} from {1} and refreshed collector missions.",
-			collectedItem.itemString,
-			station.name
+		sender.success(
+			"Removed item ${collectedItem.itemString} from ${station.name} and refreshed collector missions."
 		)
 	}
 
@@ -171,13 +156,9 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Changed value of {0} at {1} from {2} to {3} and refreshed collector missions.",
-			collectedItem.itemString,
-			EcoStations[collectedItem.station].name,
-			collectedItem.value,
-			value
+		sender.success(
+			"Changed value of ${collectedItem.itemString} at ${EcoStations[collectedItem.station].name} " +
+				"from ${collectedItem.value} to $value and refreshed collector missions."
 		)
 	}
 
@@ -195,13 +176,9 @@ object CollectedItemCommand : SLCommand() {
 
 		CollectionMissions.reset()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Changed stock of {0} at {1} from {2} to {3} and refreshed collector missions.",
-			collectedItem.itemString,
-			EcoStations[collectedItem.station].name,
-			collectedItem.stock,
-			stock
+		sender.success(
+			"Changed stock of ${collectedItem.itemString} at ${EcoStations[collectedItem.station].name} from " +
+				"${collectedItem.stock} to $stock and refreshed collector missions."
 		)
 	}
 
@@ -218,13 +195,9 @@ object CollectedItemCommand : SLCommand() {
 
 			CollectionMissions.reset()
 
-			sender.sendFeedbackMessage(
-				FeedbackType.SUCCESS,
-				"Changed stack range of {0} at {1} to {2}..{3} and refreshed collector missions.",
-				collectedItem.itemString,
-				EcoStations[collectedItem.station].name,
-				minStacks,
-				maxStacks
+			sender.success(
+				"Changed stack range of {collectedItem.itemString} at {EcoStations[collectedItem.station].name} " +
+					"to $minStacks..$maxStacks and refreshed collector missions."
 			)
 		}
 	}

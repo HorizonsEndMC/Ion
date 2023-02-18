@@ -5,8 +5,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.misc.addPower
 import net.starlegacy.feature.misc.isPowerable
@@ -35,7 +34,7 @@ object BatteryCommand : SLCommand() {
 	fun onSet(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		setPower(item, amount)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Set power of {0} to {1}", item.displayName, amount)
+		sender.success("Set power of ${item.displayName} to $amount")
 	}
 
 	@Suppress("Unused")
@@ -43,7 +42,7 @@ object BatteryCommand : SLCommand() {
 	fun onAdd(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		addPower(item, amount)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Added {0} power to {1}", amount, item.displayName)
+		sender.success("Added $amount power to ${item.displayName}")
 	}
 
 	@Suppress("Unused")
@@ -51,6 +50,6 @@ object BatteryCommand : SLCommand() {
 	fun onRemove(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		removePower(item, amount)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Removed {0} power from {1}", amount, item.displayName)
+		sender.success("Removed $amount power from ${item.displayName}")
 	}
 }

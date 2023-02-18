@@ -21,7 +21,7 @@ import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.nms
 import org.bukkit.Material
 import org.bukkit.World
-import java.util.LinkedList
+import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set

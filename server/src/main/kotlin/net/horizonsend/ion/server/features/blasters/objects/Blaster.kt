@@ -2,11 +2,11 @@ package net.horizonsend.ion.server.features.blasters.objects
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
-import net.horizonsend.ion.server.extensions.alert
 import net.horizonsend.ion.server.features.blasters.ProjectileManager
 import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
 import net.horizonsend.ion.server.features.customItems.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
