@@ -5,17 +5,13 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.FeedbackType.INFORMATION
-import net.horizonsend.ion.server.extensions.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.extensions.alert
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.sendFeedbackActionMessage
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.success
-import net.horizonsend.ion.server.extensions.successActionMessage
-import net.horizonsend.ion.server.extensions.userError
-import net.horizonsend.ion.server.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.serverError
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userErrorActionMessage
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
@@ -47,7 +43,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
 import kotlin.math.ln
@@ -218,7 +214,7 @@ object MiscStarshipCommands : SLCommand() {
 			)
 		}
 
-		sender.sendFeedbackMessage(SUCCESS, "Initiating Hyperspace Jump to approximately ({0}, {1})", x1, z1)
+		sender.success("Initiating Hyperspace Jump to approximately ($x1, $z1)")
 
 		val offset = ln(distance).toInt()
 
@@ -270,7 +266,7 @@ object MiscStarshipCommands : SLCommand() {
 							}
 						}
 					}
-					sender.sendFeedbackActionMessage(INFORMATION, "Unset targets of weaponssets containing {0}", weaponSet)
+					sender.information("Unset targets of weaponssets containing $weaponSet")
 				}
 			}
 		}
@@ -319,10 +315,9 @@ object MiscStarshipCommands : SLCommand() {
 			"You need to hold a starship controller to enable direct control"
 		}
 		if (starship.initialBlockCount > StarshipType.CORVETTE.maxSize) {
-			sender.sendFeedbackMessage(
-				FeedbackType.SERVER_ERROR,
-				"Only ships of size {0} or less can use direct control, this is mostly a performance thing, and will probably change in the future.",
-				StarshipType.CORVETTE.maxSize
+			sender.serverError(
+				"Only ships of size ${StarshipType.CORVETTE.maxSize} or less can use direct control, " +
+					"this is mostly a performance thing, and will probably change in the future."
 			)
 			return
 		}

@@ -9,9 +9,9 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -36,24 +36,21 @@ class AchievementsCommand : BaseCommand() {
 		val playerData = PlayerData[target]
 
 		if (playerData == null) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} does not exist.", target)
+			sender.userError("Player $target does not exist.")
 			return
 		}
 
 		val player = Bukkit.getPlayer(playerData.minecraftUUID)
 
 		if (player == null) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} must be online.", target)
+			sender.userError("Player $target must be online.")
 			return
 		}
 
 		player.rewardAchievement(achievement)
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Gave achievement {0} to {1}.",
-			achievement.name,
-			target
+		sender.success(
+			"Gave achievement ${achievement.name} to $target."
 		)
 	}
 
@@ -64,7 +61,7 @@ class AchievementsCommand : BaseCommand() {
 		val playerData = PlayerData[target]
 
 		if (playerData == null) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "Player {0} does not exist.", target)
+			sender.userError("Player $target does not exist.")
 			return
 		}
 
@@ -72,6 +69,6 @@ class AchievementsCommand : BaseCommand() {
 			achievements.remove(achievement)
 		}
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Took achievement {0} from {1}.", achievement.name, target)
+		sender.success("Took achievement ${achievement.name} from $target.")
 	}
 }

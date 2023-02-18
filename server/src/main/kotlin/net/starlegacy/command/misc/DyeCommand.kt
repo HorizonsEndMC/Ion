@@ -4,8 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackAction
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.util.enumValueOfOrNull
 import net.starlegacy.util.isBed
@@ -21,7 +20,7 @@ import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.Locale
+import java.util.*
 
 @CommandAlias("dye")
 @CommandPermission("starlegacy.dye")
@@ -35,10 +34,10 @@ object DyeCommand : SLCommand() {
 		val item = sender.inventory.itemInMainHand
 		val oldDyeColor = dyeItem(item, newDyeColor)
 			?: fail { "Item is not colorable" }
-		sender.sendFeedbackAction(FeedbackType.SUCCESS, "Dyed from {0} -> {1}", oldDyeColor, newDyeColor)
+		sender.success("Dyed from $oldDyeColor -> $newDyeColor")
 	}
 
-	private fun dyeItem(item: ItemStack, newDyeColor: DyeColor): DyeColor? {
+	private fun dyeItem(item: ItemStack, newDyeColor: DyeColor): DyeColor {
 		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.isGlass || item.type.isGlassPane || item.type.isStainedTerracotta || item.type.isGlazedTerracotta || item.type.isCarpet || item.type.isBed)) {
 			fail { "This item can not be dyed." }
 		}

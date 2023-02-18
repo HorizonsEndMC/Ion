@@ -4,8 +4,8 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CityNPC
 import net.starlegacy.database.schema.misc.SLPlayer
