@@ -1,8 +1,8 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.server.extensions.alert
-import net.horizonsend.ion.server.extensions.success
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent

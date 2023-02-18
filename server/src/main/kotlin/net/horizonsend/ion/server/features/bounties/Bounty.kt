@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.bounties
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import org.bukkit.entity.Player
 
 fun Player.acceptBounty(target: Player) {

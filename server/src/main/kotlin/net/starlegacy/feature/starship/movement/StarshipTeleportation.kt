@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.movement
 
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipCruising

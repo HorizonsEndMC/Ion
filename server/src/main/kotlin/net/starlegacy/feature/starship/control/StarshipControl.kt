@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.RelativeTeleportFlag
-import net.horizonsend.ion.server.extensions.userErrorAction
+import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships

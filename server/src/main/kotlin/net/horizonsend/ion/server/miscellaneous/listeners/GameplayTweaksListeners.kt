@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PlayerStarshipState
 import net.starlegacy.feature.starship.event.StarshipPilotEvent

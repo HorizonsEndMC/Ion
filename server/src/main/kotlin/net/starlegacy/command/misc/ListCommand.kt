@@ -1,7 +1,7 @@
 package net.starlegacy.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand

@@ -1,7 +1,6 @@
 package net.starlegacy.listener.nations
 
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackAction
+import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
@@ -27,8 +26,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.lang.System.currentTimeMillis
 import java.time.Duration.ofMillis
-import java.util.Collections
-import java.util.UUID
+import java.util.*
 
 object MovementListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {
@@ -90,10 +88,10 @@ object MovementListener : SLEventListener() {
 				lastPlayerZones[uuid] = zone?.id
 
 				if (zone != null) {
-					player.sendFeedbackAction(FeedbackType.INFORMATION, "Entered zone {0}", zone.name)
+					player.information("Entered zone ${zone.name}")
 				} else {
 					oldZone?.let { Regions.get<RegionSettlementZone>(it) }?.let {
-						player.sendFeedbackAction(FeedbackType.INFORMATION, "Exited zone {0}", it.name)
+						player.information("Exited zone ${it.name}")
 					}
 				}
 			}
