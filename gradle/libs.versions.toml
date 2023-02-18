@@ -21,6 +21,7 @@ spotless = "6.15.0"
 vault = "1.7.1"
 waterfall = "1.19-R0.1-SNAPSHOT"
 worldedit = "7.2.8"
+adventureBungee = "4.2.0"
 
 [libraries]
 acfBungee = { module = "co.aikar:acf-bungee", version.ref = "acf" }
@@ -47,12 +48,15 @@ nuvotifier-bungee = { module = "com.github.NuVotifier.NuVotifier:nuvotifier-bung
 vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
 waterfall = { module = "io.github.waterfallmc:waterfall-api", version.ref = "waterfall" }
 worldedit = { module = "com.sk89q.worldedit:worldedit-bukkit", version.ref = "worldedit" }
+adventureBungee = { module = "net.kyori:adventure-platform-bungeecord", version.ref = "adventureBungee"}
+miniMessage = { module = "net.kyori:adventure-text-minimessage" }
 
 [bundles]
 common = [ "jedis", "kmongo" ]
 configurate = [ "configurate-hocon", "configurate-kotlin" ]
 kotlin = [ "kotlin-reflect", "kotlin-stdlib" ]
 nuvotifier = [ "nuvotifier-api", "nuvotifier-bungee" ]
+miniMessageBungee = [ "miniMessage", "adventureBungee" ]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
