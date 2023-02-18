@@ -10,11 +10,9 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.success
-import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
@@ -45,9 +43,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
-import java.util.LinkedList
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 import kotlin.collections.set
 
 @CommandAlias("blueprint")
@@ -91,14 +87,14 @@ object BlueprintCommand : SLCommand() {
 				"You can only have up to ${getMaxBlueprints(sender)} blueprints."
 			}
 			Blueprint.create(slPlayerId, name, starship.data.starshipType, pilotLoc, starship.initialBlockCount, data)
-			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Saved blueprint {0}", name)
+			sender.success("Saved blueprint $name")
 		} else {
 			val blueprint = getBlueprint(sender, name)
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
 			blueprint.type = starship.data.starshipType
 			saveBlueprint(blueprint)
-			sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Updated blueprint {0}", name)
+			sender.success("Updated blueprint $name")
 		}
 
 		failIf(confirm != "confirm") {
@@ -121,14 +117,14 @@ object BlueprintCommand : SLCommand() {
 		val blueprint = getBlueprint(sender, name)
 		// TODO: confirm menu
 		Blueprint.delete(blueprint._id)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted blueprint {0}", blueprint.name)
+		sender.success("Deleted blueprint ${blueprint.name}")
 	}
 
 	private fun blueprintInfo(blueprint: Blueprint): List<String> {
 		val list = LinkedList<String>()
-		var blueprintcost = calculateBlueprintCost(blueprint)
+		val cost = calculateBlueprintCost(blueprint)
 		list.add("<gray>Size<dark_gray>: <gold>${blueprint.size}")
-		list.add("<gray>Cost<dark_gray>: <gold>$${blueprintcost.toInt()}")
+		list.add("<gray>Cost<dark_gray>: <gold>$$cost")
 		list.add("<gray>Class<dark_gray>: <light_purple>${blueprint.type}")
 		if (blueprint.trustedNations.isNotEmpty()) {
 			list.add("<gray>Trusted Players<dark_gray>: <aqua>${blueprint.trustedPlayers.joinToString { getPlayerName(it) }}}")
@@ -273,7 +269,7 @@ object BlueprintCommand : SLCommand() {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 
 		if (block.type != StarshipComputers.COMPUTER_TYPE) {
-			sender.sendFeedbackMessage(FeedbackType.USER_ERROR, "{0} at {1} was not a starship computer, failed to pilot", block.type, origin)
+			sender.userError("${block.type} at $origin was not a starship computer, failed to pilot")
 			return
 		}
 
@@ -332,7 +328,7 @@ object BlueprintCommand : SLCommand() {
 		blueprint.trustedPlayers.add(slPlayerId)
 		saveBlueprint(blueprint)
 		Notify.player(playerId, "&b${sender.name} &7trusted you to their blueprint &b$name")
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Trusted {0} to blueprint {1}", player, name)
+		sender.success("Trusted $player to blueprint $name")
 	}
 
 	@Suppress("Unused")
@@ -348,7 +344,7 @@ object BlueprintCommand : SLCommand() {
 		blueprint.trustedPlayers.remove(slPlayerId)
 		saveBlueprint(blueprint)
 		Notify.player(playerId, "&b${sender.name} &7un-trusted you from their blueprint &b$name")
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Un-trusted {0} from blueprint {1}", player, name)
+		sender.success("Un-trusted $player from blueprint $name")
 	}
 
 	@Suppress("Unused")
@@ -362,7 +358,7 @@ object BlueprintCommand : SLCommand() {
 		}
 		blueprint.trustedNations.add(nationId)
 		saveBlueprint(blueprint)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Trusted nation {0} to blueprint {1}", nation, name)
+		sender.success("Trusted nation $nation to blueprint $name")
 	}
 
 	@Suppress("Unused")

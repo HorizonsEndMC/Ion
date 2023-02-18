@@ -18,7 +18,7 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.util.noise.SimplexNoiseGenerator
-import java.util.Locale
+import java.util.*
 
 class CachedPlanet(
 	val databaseId: Oid<Planet>,

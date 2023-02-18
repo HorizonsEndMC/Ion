@@ -6,9 +6,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.space.Star
 import net.starlegacy.feature.space.CachedPlanet
@@ -53,15 +52,8 @@ object StarCommand : SLCommand() {
 
 		Space.starNameCache[name].get().generate()
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Created star {0} at {1} {2} in {3} with material {4} and size {5}",
-			name,
-			x,
-			z,
-			spaceWorld,
-			material,
-			size
+		sender.success(
+			"Created star $name at $x $z in $spaceWorld with material $material and size $size"
 		)
 	}
 
@@ -69,12 +61,8 @@ object StarCommand : SLCommand() {
 	@Subcommand("getpos")
 	@CommandCompletion("@stars")
 	fun onGetPos(sender: CommandSender, star: CachedStar) {
-		sender.sendFeedbackMessage(
-			FeedbackType.INFORMATION,
-			"{0} is at {1} in {2}.",
-			star.name,
-			star.location,
-			star.spaceWorldName
+		sender.information(
+			"${star.name} is at ${star.location} in ${star.spaceWorldName}."
 		)
 	}
 
@@ -90,7 +78,7 @@ object StarCommand : SLCommand() {
 
 		sender.teleport(location)
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Teleported to {0}", star.name)
+		sender.success("Teleported to ${star.name}")
 	}
 
 	@Suppress("Unused")
@@ -99,7 +87,7 @@ object StarCommand : SLCommand() {
 	fun onGenerate(sender: CommandSender, star: CachedStar) {
 		sender.information("Generating star...")
 		star.generate()
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Generated star {0}", star.name)
+		sender.success("Generated star ${star.name}")
 	}
 
 	@Suppress("Unused")
@@ -110,7 +98,7 @@ object StarCommand : SLCommand() {
 		moveOrbitingPlanets(sender, star, spaceWorld)
 
 		Star.setPos(star.databaseId, spaceWorld.name, newX, 128, newZ)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Moved star {0} to {1}, {2}", star.name, newX, newZ)
+		sender.success("Moved star ${star.name} to $newX, $newZ")
 	}
 
 	private fun moveStar(sender: CommandSender, newX: Int, newZ: Int, star: CachedStar, spaceWorld: World) {
@@ -125,7 +113,7 @@ object StarCommand : SLCommand() {
 
 		for (planet in Space.getPlanets()) {
 			if (planet.sun.databaseId == star.databaseId) {
-				sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Moving {0}...", planet.name)
+				sender.information("Moving ${planet.name}...")
 				val newLoc = CachedPlanet.calculateOrbitLocation(star, planet.orbitDistance, planet.orbitProgress)
 				planet.move(newLoc, spaceWorld)
 			}

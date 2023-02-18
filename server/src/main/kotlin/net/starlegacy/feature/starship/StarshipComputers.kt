@@ -3,16 +3,11 @@ package net.starlegacy.feature.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.extensions.FeedbackType.SERVER_ERROR
-import net.horizonsend.ion.server.extensions.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.extensions.sendFeedbackActionMessage
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.serverErrorActionMessage
-import net.horizonsend.ion.server.extensions.success
-import net.horizonsend.ion.server.extensions.successActionMessage
-import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.miscellaneous.extensions.serverErrorActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -47,7 +42,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
-import java.util.LinkedList
+import java.util.*
 
 object StarshipComputers : SLComponent() {
 
@@ -127,13 +122,9 @@ object StarshipComputers : SLComponent() {
 			Tasks.async {
 				val name: String? = SLPlayer.getName(data.captain)
 				if (name != null) {
-					(
-						player.sendFeedbackActionMessage(
-							USER_ERROR,
-							"You're not a pilot of this ship! The captain is {0}",
-							name
-						)
-						)
+					player.userError(
+						"You're not a pilot of this ship! The captain is $name"
+					)
 				}
 			}
 			return
@@ -203,7 +194,7 @@ object StarshipComputers : SLComponent() {
 				val state = try {
 					StarshipDetection.detectNewState(data)
 				} catch (e: StarshipDetection.DetectionFailedException) {
-					player.sendFeedbackActionMessage(SERVER_ERROR, "{0} Detection failed!", e.message!!)
+					player.serverErrorActionMessage("${e.message} Detection failed!")
 					return@async
 				} catch (e: Exception) {
 					e.printStackTrace()
@@ -215,7 +206,7 @@ object StarshipComputers : SLComponent() {
 
 				DeactivatedPlayerStarships.updateState(data, state)
 
-				player.sendFeedbackActionMessage(SUCCESS, "Re-detected! New size {0}", state.blockMap.size.toText())
+				player.success("Re-detected! New size ${state.blockMap.size.toText()}")
 			}
 		}
 	}
@@ -243,8 +234,11 @@ object StarshipComputers : SLComponent() {
 											} else {
 												DeactivatedPlayerStarships.addPilot(data, id)
 												data.pilots += id
-												PlayerStarshipData.updateById(data._id, addToSet(PlayerStarshipData::pilots, id))
-												player.sendFeedbackMessage(SUCCESS, "Added {0} as a pilot to starship.", input)
+												PlayerStarshipData.updateById(
+													data._id,
+													addToSet(PlayerStarshipData::pilots, id)
+												)
+												player.success("Added $input as a pilot to starship.")
 											}
 										}
 									}
@@ -266,7 +260,7 @@ object StarshipComputers : SLComponent() {
 									PlayerStarshipData.updateById(data._id, pull(PlayerStarshipData::pilots, pilot))
 								}
 								player.closeInventory()
-								player.sendFeedbackMessage(SUCCESS, "Removed {0}", name)
+								player.success("Removed $name")
 							}
 						}
 					)
@@ -314,7 +308,9 @@ object StarshipComputers : SLComponent() {
 									return@async
 								}
 
-								if ((serialized.color() as? HSVLike) != null && serialized.color()!!.asHSV().v() < 0.25) {
+								if ((serialized.color() as? HSVLike) != null && serialized.color()!!.asHSV()
+									.v() < 0.25
+								) {
 									player.userError(
 										"Ship names can't be too dark to read!"
 									)
@@ -342,7 +338,7 @@ object StarshipComputers : SLComponent() {
 
 								DeactivatedPlayerStarships.updateName(data, input)
 
-								player.sendFeedbackMessage(SUCCESS, "Changed starship name to {0}", input)
+								player.success("Changed starship name to $input")
 							}
 						}
 						return null
@@ -364,7 +360,7 @@ object StarshipComputers : SLComponent() {
 					DeactivatedPlayerStarships.updateType(data, type)
 
 					playerClicker.closeInventory()
-					player.sendFeedbackMessage(SUCCESS, "Changed type to {0}", type)
+					player.success("Changed type to $type")
 				}
 			}
 			player.openPaginatedMenu("Select Type", items)

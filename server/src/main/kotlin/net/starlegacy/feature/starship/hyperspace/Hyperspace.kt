@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.server.extensions.serverError
-import net.horizonsend.ion.server.extensions.userError
-import net.horizonsend.ion.server.extensions.userErrorAction
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.miscellaneous.extensions.serverError
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
