@@ -16,6 +16,8 @@ import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeAccountCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
+import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
+import net.horizonsend.ion.proxy.commands.waterfall.ReplyCommand
 import net.horizonsend.ion.proxy.commands.waterfall.VoteCommand
 import net.horizonsend.ion.proxy.listeners.waterfall.PlayerDisconnectListener
 import net.horizonsend.ion.proxy.listeners.waterfall.ProxyPingListener
@@ -75,6 +77,8 @@ class IonProxy : Plugin() {
 
 			commandManager.registerCommand(VoteCommand(configuration))
 			commandManager.registerCommand(BungeeInfoCommand())
+			commandManager.registerCommand(MessageCommand())
+			commandManager.registerCommand(ReplyCommand())
 
 			// Discord
 			jda?.let {
