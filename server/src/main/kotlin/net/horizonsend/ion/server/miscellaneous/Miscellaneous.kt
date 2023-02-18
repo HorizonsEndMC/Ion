@@ -5,13 +5,15 @@ import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Shulker
-import net.minecraft.world.scores.Scoreboard
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
+import org.bukkit.World
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
-import org.bukkit.craftbukkit.v1_19_R2.scoreboard.CraftScoreboard
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -34,12 +36,15 @@ fun mainThreadCheck() {
 	}
 }
 
-fun highlightBlock(player: Player, pos: BlockPos) {
-	val player = (player as CraftPlayer).handle
+val Player.handle: ServerPlayer
+	get() = (this as CraftPlayer).handle
+
+val World.handle: ServerLevel
+	get() = (this as CraftWorld).handle
+
+fun highlightBlock(bukkitPlayer: Player, pos: BlockPos) {
+	val player = bukkitPlayer.handle
 	val conn = player.connection
-	//region DO NOT TOUCH; IT WORKS ONLY WITH THIS FOR SOME REASON
-	val nmsScoreBoard: Scoreboard = (Bukkit.getScoreboardManager().mainScoreboard as CraftScoreboard).handle
-	//endregion
 	val shulker =
 		Shulker(EntityType.SHULKER, player.level).apply {
 			setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)

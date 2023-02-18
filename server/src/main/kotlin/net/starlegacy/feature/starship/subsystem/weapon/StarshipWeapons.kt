@@ -2,8 +2,8 @@ package net.starlegacy.feature.starship.subsystem.weapon
 
 import com.google.common.collect.HashMultimap
 import com.google.common.util.concurrent.AtomicDouble
-import net.horizonsend.ion.server.extensions.alertActionMessage
-import net.horizonsend.ion.server.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.alertActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.userErrorActionMessage
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem

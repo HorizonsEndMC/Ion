@@ -2,8 +2,7 @@ package net.starlegacy.command.progression
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
-import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.progression.LEVEL_BALANCING
 import net.starlegacy.feature.progression.SLXP
@@ -21,11 +20,9 @@ object BuyXPCommand : SLCommand() {
 		requireMoney(sender, realCost, "purchase $amount SLXP")
 
 		if (realCost != cost) {
-			sender.sendFeedbackMessage(
-				USER_ERROR,
-				"Purchase {0} SLXP for {1}?\n" +
-					"To confirm, do <u><click:run_command:/buyxp $amount $realCost>/buyxp $amount $realCost</click>",
-				amount, realCost.toCreditsString()
+			sender.userError(
+				"Purchase $amount SLXP for ${realCost.toCreditsString()}?\n" +
+					"To confirm, do <u><click:run_command:/buyxp $amount $realCost>/buyxp $amount $realCost</click>"
 			)
 			return
 		}

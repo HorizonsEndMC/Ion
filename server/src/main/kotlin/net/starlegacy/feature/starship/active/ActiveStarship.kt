@@ -4,8 +4,9 @@ import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.extensions.informationAction
-import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.handle
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -45,13 +46,11 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
-import java.util.LinkedList
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
@@ -93,7 +92,7 @@ abstract class ActiveStarship(
 		get() = _world
 		set(value) {
 			ActiveStarships.updateWorld(this, value, value)
-			_serverLevel = (value as CraftWorld).handle
+			_serverLevel = value.handle
 			_world = value
 		}
 

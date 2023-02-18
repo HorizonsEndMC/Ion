@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.whereisit.mod
 
 import io.netty.buffer.Unpooled
-import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.handle
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.FriendlyByteBuf
@@ -19,8 +20,6 @@ import net.minecraft.world.level.block.entity.LecternBlockEntity
 import net.starlegacy.listener.misc.ProtectionListener
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.toLocation
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
 import org.bukkit.entity.Player
 
@@ -30,8 +29,8 @@ object Searcher {
 		val itemToFind = searchContext.item
 		if (itemToFind == Items.AIR) return@async
 
-		val basePos = (player as CraftPlayer).handle.blockPosition()
-		val world = (player.world as CraftWorld).handle
+		val basePos = player.handle.blockPosition()
+		val world = player.world.handle
 		val positions =
 			searchWorld(
 				basePos,
@@ -61,8 +60,8 @@ object Searcher {
 		val itemToFind = item.item
 		val tag = item.tag
 
-		val basePos = (player as CraftPlayer).handle.blockPosition()
-		val world = (player.world as CraftWorld).handle
+		val basePos = player.handle.blockPosition()
+		val world = player.world.handle
 
 		return searchWorld(
 			basePos,
