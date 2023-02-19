@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.customItems.CustomItems
 import net.horizonsend.ion.server.features.space.encounters.Encounters
+import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
@@ -68,9 +69,7 @@ class IonServer : JavaPlugin() {
 			commandManager.commandCompletions.registerCompletion("customItem") { context ->
 				CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
 			}
-			commandManager.commandCompletions.registerCompletion("wreckEncounters") { context ->
-				Encounters.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
-			}
+			commandManager.commandCompletions.registerCompletion("wreckEncounters") { Encounters.identifiers }
 			commandManager.commandCompletions.registerCompletion("particles") { context ->
 				BuiltInRegistries.PARTICLE_TYPE.keySet()
 					.filter { context.player.hasPermission("ion.settings.particle.$it") }
@@ -103,6 +102,12 @@ class IonServer : JavaPlugin() {
 					CityNPCs.onEnable()
 
 					pluginManager.registerEvents(CityNPCs, this)
+
+					commandManager.commandCompletions.registerCompletion("wreckSchematics") { context ->
+						SpaceGenerationManager.getGenerator(
+							(context.player.world as CraftWorld).handle
+						)?.schematicMap?.keys
+					}
 				},
 				1
 			)
