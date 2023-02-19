@@ -40,7 +40,8 @@ data class ServerConfiguration(
 		val ores: Set<Ore> = setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)),
 		val oreRatio: Double = 0.25,
 		val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
-		val wrecks: Map<String, Int>
+		val wreckClasses: ArrayList<WreckClass>,
+		val wreckMultiplier: Double
 	) {
 		/**
 		 * @param weight: Number of rolls for this Palette
@@ -104,6 +105,56 @@ data class ServerConfiguration(
 			val tubeRadius: Double = 0.0,
 			val origin: Pos
 		)
+
+		/**
+		 * @param wrecks: List of Wrecks
+		 * @param weight: Weight of the wreck class
+		 **/
+		@Serializable
+		data class WreckClass(
+			val className: String,
+			val wrecks: List<Wreck>,
+			val weight: Int
+		) {
+			/**
+			 * The Wreck data class contains its schematic, weight and additional information
+			 * @param wreckSchematicName: Name of the wreck schematic
+			 * @param weight: Number of rolls for this wreck
+			 * @param encounters: Map of possible scenarios to information about them
+			 **/
+			@Serializable
+			data class Wreck(
+				val wreckSchematicName: String,
+				val weight: Int,
+				val encounters: Map<String, Int>
+			) {
+				@kotlinx.serialization.Transient
+				val encounterWeightedRandomList = WeightedRandomList<String>().apply {
+					this.addMany(this@Wreck.encounters)
+				}
+			}
+			@kotlinx.serialization.Transient
+			val weightedWrecks = WeightedRandomList<Wreck>().apply {
+				this.addMany(
+					wrecks.associateWith { it.weight }
+				)
+			}
+		}
+
+		@kotlinx.serialization.Transient
+		val weightedWreckList = WeightedRandomList<WeightedRandomList<WreckClass.Wreck>>().apply {
+			this.addMany(
+				wreckClasses.associate { wreckClass -> wreckClass.weightedWrecks to wreckClass.weight }
+			)
+		}
+
+// 		val mappedAdditionalInfo = wreckClasses.flatMap { it.key }.map { wreckConfig ->
+// 			val schematicName = wreckConfig.wreckSchematicName
+//
+// 			wreckConfig.encounters.map { (wreckEncounters, _) ->
+// 				wreckEncounters.encounterIdentifier + schematicName to wreckEncounters.additionalInfo
+// 			}.toMap()
+// 		}.flatMap { it.entries }.associate { it.key to it.value }
 
 		fun paletteWeightedList(): WeightedRandomList<WeightedRandomList<BlockState>> {
 			val list = WeightedRandomList<WeightedRandomList<BlockState>>()
