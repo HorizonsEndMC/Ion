@@ -46,7 +46,7 @@ class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T,
 	 **/
 	fun getEntry(pos: Double): T {
 		check((0.0..1.0).contains(pos)) {
-			val exception = IndexOutOfBoundsException("Values provided must be between 0 and 1!")
+			val exception = IndexOutOfBoundsException("Values provided must be between 0 and 1! Provided: $pos")
 			exception.printStackTrace()
 			throw exception
 		}
