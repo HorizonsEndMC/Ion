@@ -109,26 +109,26 @@ class AsteroidCommand(val configuration: ServerConfiguration) : BaseCommand() {
 	@Suppress("unused")
 	@CommandPermission("ion.space.regenerate")
 	@Subcommand("create wreck")
+	@CommandCompletion("x|y|z|@wreckSchematics|@wreckEncounters")
 	fun onGenerateWreck(sender: Player, @Optional wreck: String?, @Optional encounter: String?) {
 		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
 			.userError("No generator found for ${sender.world.name}")
 
-		val encounterData = encounter?.let {
-			SpaceGenerator.WreckGenerationData.WreckEncounterData(
-				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(),
-				it
-			)
-		}
+		val data = wreck?.let { wreckName ->
+			encounter?.let { encounterName ->
+				// val mappedAdditionalInfo = generator.configuration.mappedAdditionalInfo
 
-		val completed = wreck?.let {
+				SpaceGenerator.WreckGenerationData.WreckEncounterData(
+					encounterName, null
+					// mappedAdditionalInfo[encounterName + wreckName]
+				)
+			}
+
 			SpaceGenerator.WreckGenerationData(
-				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(), it, encounterData
+				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(), wreckName, null
 			)
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
-		println(completed.encounter)
-
-		generator.generateWreck(completed)
-		println(0)
+		generator.generateWreck(data)
 	}
 }
