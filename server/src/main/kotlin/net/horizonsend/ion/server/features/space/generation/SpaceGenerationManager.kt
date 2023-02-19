@@ -80,16 +80,15 @@ object SpaceGenerationManager : Listener {
 		for (count in 0..ceil(chunkDensity * generator.configuration.wreckMultiplier).roundToInt()) {
 			// random number out of 100, chance of asteroid's generation. For use in selection.
 			val chance = random.nextDouble(100.0)
-
 			// Selects some wrecks that are generated. Allows for densities of 0<X<1 wrecks per chunk.
 			if (chance > (chunkDensity * generator.configuration.wreckMultiplier * 10)) continue
-
 			// Random coordinate generation.
-			val wreckX = random.nextInt(0, 15) + worldX
-			val wreckY = random.nextInt(0, 15) + worldZ
-			val wreckZ = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
 
-			val wreck = generator.generateRandomWreckData(wreckX, wreckZ, wreckY)
+			val wreckX = random.nextInt(0, 15) + worldX
+			val wreckY = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
+			val wreckZ = random.nextInt(0, 15) + worldZ
+
+			val wreck = generator.generateRandomWreckData(wreckX, wreckY, wreckZ)
 
 			generator.generateWreck(wreck)
 		}
