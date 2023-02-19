@@ -80,10 +80,10 @@ class SpaceGenerator(
 	}
 
 	// World asteroid palette noise
-	private val worldSimplexNoise = SimplexOctaveGenerator(random, 1)
+	private val worldSimplexNoise = SimplexOctaveGenerator(random, 1).apply { this.setScale(0.0005) }
 
 	// Palettes weighted
-	val weightedPalettes = configuration.paletteWeightedList()
+	private val weightedPalettes = configuration.paletteWeightedList()
 
 	// 	private val weightedPalettes = configuration.blockPalettes.associateWith { it.materialWeights() }
 	private val weightedOres = oreWeights()
@@ -337,35 +337,41 @@ class SpaceGenerator(
 		return asteroid.palette.getEntry(paletteSample)
 	}
 
-	fun generateWorldAsteroid(x: Int, y: Int, z: Int, random: Random): AsteroidGenerationData {
-		val noise = (
+	/**
+	 * Generates an asteroid with optional specification for the parameters
+	 **/
+	fun generateWorldAsteroid(
+		x: Int,
+		y: Int,
+		z: Int,
+		size: Double? = null,
+		index: Int? = null,
+		octaves: Int? = null
+	): AsteroidGenerationData {
+		val formattedSize = size ?: random.nextDouble(10.0, configuration.maxAsteroidSize)
+
+		val b = weightedPalettes.getEntry(
 			(
 				worldSimplexNoise.noise(
 					x.toDouble(),
-					y.toDouble(),
 					z.toDouble(),
 					1.0,
 					1.0,
 					true
 				) + 1
 				) / 2
-			)
+		)
 
-		val blockPalette: WeightedRandomList<BlockState> = weightedPalettes.getEntry(noise)
+		val blockPalette = index?.let {
+			if (!IntRange(0, configuration.blockPalettes.size - 1).contains(index)) {
+				throw IndexOutOfBoundsException("ERROR: index out of range: 0..${configuration.blockPalettes.size - 1}")
+			}
+			weightedPalettes[it]
+		} ?: b
 
-		val size = random.nextDouble(10.0, configuration.maxAsteroidSize)
-		val octaves = floor(3 * 0.998.pow(size)).toInt().coerceAtLeast(1)
+		val formattedOctaves = octaves ?: floor(3 * 0.998.pow(formattedSize)).toInt().coerceAtLeast(1)
 
-		return AsteroidGenerationData(x, y, z, blockPalette, size, octaves)
-	}
-
-	fun generateRandomAsteroid(x: Int, y: Int, z: Int, random: Random): AsteroidGenerationData {
-		val blockPalette: WeightedRandomList<BlockState> = weightedPalettes.random()
-
-		val size = random.nextDouble(10.0, configuration.maxAsteroidSize)
-		val octaves = floor(3 * 0.998.pow(size)).toInt().coerceAtLeast(1)
-
-		return AsteroidGenerationData(x, y, z, blockPalette, size, octaves)
+		return AsteroidGenerationData(x, y, z, blockPalette, formattedSize, formattedOctaves)
 	}
 
 	fun parseDensity(x: Double, y: Double, z: Double): Double {
@@ -491,7 +497,6 @@ class SpaceGenerator(
 												if (blockState.block == Blocks.CHEST) {
 													encounterChest = BlockPos(worldX, worldY, worldZ)
 													blockState = encounter.constructChestState()
-													wreck.encounter.getEncounter().generate(worldX, worldY, worldZ)
 												}
 											}
 
@@ -565,7 +570,7 @@ class SpaceGenerator(
 
 							// Won't be null if the encounter is not null, unless someone messed up
 							wreck.encounter?.let {
-								existingWrecks += it.NMS(
+								existingWrecks += it.nms(
 									encounterChest!!.x,
 									encounterChest!!.y,
 									encounterChest!!.z
@@ -630,7 +635,7 @@ class SpaceGenerator(
 		) {
 			fun getEncounter(): Encounter = Encounters.getByIdentifier(identifier)!!
 
-			fun NMS(x: Int, y: Int, z: Int): CompoundTag {
+			fun nms(x: Int, y: Int, z: Int): CompoundTag {
 				val beginningTag = CompoundTag()
 
 				beginningTag.putInt("x", x)

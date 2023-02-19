@@ -64,7 +64,11 @@ object SpaceGenerationManager : Listener {
 			val asteroidZ = random.nextInt(0, 15) + worldZ
 			val asteroidY = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
 
-			val asteroid = generator.generateWorldAsteroid(asteroidX, asteroidY, asteroidZ, random)
+			val asteroid = generator.generateWorldAsteroid(
+				asteroidX,
+				asteroidY,
+				asteroidZ
+			)
 
 			if (asteroid.size + asteroidY > event.world.maxHeight) continue
 
@@ -78,7 +82,7 @@ object SpaceGenerationManager : Listener {
 			val chance = random.nextDouble(100.0)
 
 			// Selects some wrecks that are generated. Allows for densities of 0<X<1 wrecks per chunk.
-			if (chance > (chunkDensity * 10)) continue
+			if (chance > (chunkDensity * generator.configuration.wreckMultiplier * 10)) continue
 
 			// Random coordinate generation.
 			val wreckX = random.nextInt(0, 15) + worldX
