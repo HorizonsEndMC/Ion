@@ -24,7 +24,7 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {
-			player.userError("&cCannot toggle tube in an active ship")
+			player.userError("Cannot toggle tube in an active ship")
 			return
 		}
 
