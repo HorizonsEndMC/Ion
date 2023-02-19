@@ -267,7 +267,7 @@ data class BalancingConfiguration(
 		// Heavy Weapons
 		val HeavyLaser: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
-			speed = 50.0,
+			speed = 85.0,
 			shieldDamageMultiplier = 2,
 			thickness = 0.35,
 			particleThickness = 1.0,
@@ -368,7 +368,7 @@ data class BalancingConfiguration(
 		// Auto Turret Stuff
 		val LightTurret: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
-			speed = 250.0,
+			speed = 350.0,
 			shieldDamageMultiplier = 2,
 			thickness = 0.0,
 			particleThickness = 0.3,
@@ -384,7 +384,7 @@ data class BalancingConfiguration(
 			fireCooldownNanos = 250,
 			boostChargeNanos = 0,
 			aimDistance = 0,
-			inaccuracyRadians = 2.0
+			inaccuracyRadians = 1.75
 		),
 		val HeavyTurret: StarshipWeapon = StarshipWeapon(
 			range = 300.0,

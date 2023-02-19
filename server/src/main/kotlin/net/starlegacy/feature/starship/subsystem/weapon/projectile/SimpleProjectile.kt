@@ -1,6 +1,12 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
+import net.horizonsend.ion.server.miscellaneous.handle
+import net.minecraft.core.Holder
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.sounds.SoundEvent
+import net.minecraft.sounds.SoundSource
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -18,8 +24,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class SimpleProjectile(
@@ -57,7 +62,30 @@ abstract class SimpleProjectile(
 	protected fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float = 1f) {
 		loc.world.players.forEach {
 			if (it.location.distance(loc) < range) {
-				loc.world.playSound(it.location, soundName, SoundCategory.PLAYERS, 1.0f, pitch)
+				val x = it.location.x
+				val y = it.location.y
+				val z = it.location.z
+
+				val packet = ClientboundSoundPacket(
+					Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation(soundName))),
+					SoundSource.valueOf(SoundCategory.PLAYERS.name),
+					x,
+					y,
+					z,
+					volume.toFloat(),
+					pitch,
+					Random().nextLong()
+				)
+
+				loc.world.handle.server.playerList.broadcast(
+					null,
+					x,
+					y,
+					z,
+					if (volume > 1.0f) 16.0f * volume.toDouble() else 16.0,
+					loc.world.handle.dimension(),
+					packet
+				)
 			}
 		}
 	}

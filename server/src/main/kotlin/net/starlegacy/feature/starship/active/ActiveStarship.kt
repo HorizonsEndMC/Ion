@@ -87,7 +87,7 @@ abstract class ActiveStarship(
 			_world = value.world
 		}
 
-	@Deprecated("Prefer Minecraft - `net.minecraft.server.level.ServerLevel`")
+	// @Deprecated("Prefer Minecraft - `net.minecraft.server.level.ServerLevel`") fuck you
 	var world: World
 		get() = _world
 		set(value) {
