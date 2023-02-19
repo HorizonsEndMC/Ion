@@ -4,11 +4,10 @@ import com.sk89q.jnbt.NBTInputStream
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
 import com.sk89q.worldedit.math.BlockVector3
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.Encounters
-import net.horizonsend.ion.server.features.space.encounters.Encounters.ITS_A_TRAP
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
@@ -80,10 +79,13 @@ class SpaceGenerator(
 		it.material to Bukkit.createBlockData(it.material).nms
 	}
 
+	// World asteroid palette noise
+	private val worldSimplexNoise = SimplexOctaveGenerator(random, 1)
+
 	// Palettes weighted
 	val weightedPalettes = configuration.paletteWeightedList()
 
-// 	private val weightedPalettes = configuration.blockPalettes.associateWith { it.materialWeights() }
+	// 	private val weightedPalettes = configuration.blockPalettes.associateWith { it.materialWeights() }
 	private val weightedOres = oreWeights()
 
 	// Multiple of the radius of the asteroid to mark chunks as might contain an asteroid
@@ -335,6 +337,28 @@ class SpaceGenerator(
 		return asteroid.palette.getEntry(paletteSample)
 	}
 
+	fun generateWorldAsteroid(x: Int, y: Int, z: Int, random: Random): AsteroidGenerationData {
+		val noise = (
+			(
+				worldSimplexNoise.noise(
+					x.toDouble(),
+					y.toDouble(),
+					z.toDouble(),
+					1.0,
+					1.0,
+					true
+				) + 1
+				) / 2
+			)
+
+		val blockPalette: WeightedRandomList<BlockState> = weightedPalettes.getEntry(noise)
+
+		val size = random.nextDouble(10.0, configuration.maxAsteroidSize)
+		val octaves = floor(3 * 0.998.pow(size)).toInt().coerceAtLeast(1)
+
+		return AsteroidGenerationData(x, y, z, blockPalette, size, octaves)
+	}
+
 	fun generateRandomAsteroid(x: Int, y: Int, z: Int, random: Random): AsteroidGenerationData {
 		val blockPalette: WeightedRandomList<BlockState> = weightedPalettes.random()
 
@@ -376,12 +400,20 @@ class SpaceGenerator(
 	// Asteroids end
 
 	// Wrecks start
-	val weightedWreckList = WeightedRandomList<String>().apply { this.addMany(configuration.wrecks) }
+	val schematicMap = configuration.wreckClasses.flatMap { wreckClass -> wreckClass.wrecks }.associate { wreck ->
+		wreck.wreckSchematicName to schematic(wreck.wreckSchematicName)
+	}
+
+	private fun schematic(schematicName: String): Clipboard {
+		val file: File = IonServer.Ion.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
+
+		return SpongeSchematicReader(NBTInputStream(GZIPInputStream(FileInputStream(file)))).read()
+	}
 
 	fun generateWreck(wreck: WreckGenerationData) {
 		val encounter = wreck.encounter?.getEncounter()
 		Tasks.async {
-			val schematic = wreck.schematic()
+			val schematic: Clipboard = schematicMap[wreck.schematicName]!!
 
 			serverLevel.world.worldEditSession(true) {
 				val region = schematic.region.clone()
@@ -432,7 +464,8 @@ class SpaceGenerator(
 											val schematicRelative = BlockVector3.at(worldX, worldY, worldZ).subtract(offset)
 
 											val baseBlock = schematic.getFullBlock(schematicRelative)
-											var blockState = baseBlock.toImmutableState().toBukkitBlockData().nms
+											var blockState: BlockState = baseBlock.toImmutableState().toBukkitBlockData().nms
+											val blockNBT = if (blockState.hasBlockEntity()) baseBlock.nbtData else null
 
 											if (blockState.isAir) {
 												storedBlocks[index] = 0
@@ -440,10 +473,25 @@ class SpaceGenerator(
 												continue
 											}
 
+											encounter?.let {
+												blockNBT?.let {
+													if (blockState.block == Blocks.CHEST &&
+														blockNBT.getString("CustomName").contains(
+																"Encounter Chest",
+																true
+															)
+													) {
+														encounterChest = BlockPos(worldX, worldY, worldZ)
+														blockState = encounter.constructChestState()
+													}
+												}
+											}
+
 											if (encounter != null) {
 												if (blockState.block == Blocks.CHEST) {
 													encounterChest = BlockPos(worldX, worldY, worldZ)
 													blockState = encounter.constructChestState()
+													wreck.encounter.getEncounter().generate(worldX, worldY, worldZ)
 												}
 											}
 
@@ -515,12 +563,13 @@ class SpaceGenerator(
 								)
 							val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
 
+							// Won't be null if the encounter is not null, unless someone messed up
 							wreck.encounter?.let {
 								existingWrecks += it.NMS(
 									encounterChest!!.x,
-									encounterChest.y,
-									encounterChest.z
-								) // TODO better way of getting chest pos
+									encounterChest!!.y,
+									encounterChest!!.z
+								)
 							}
 
 							val newFinishedData = CompoundTag()
@@ -556,24 +605,6 @@ class SpaceGenerator(
 				}
 			}
 		}
-
-		val chunk = serverLevel.world.getChunkAt(0, 0) // placeholder
-
-		val existingWrecksBaseTag = BlockSerialization.readChunkCompoundTag(chunk, NamespacedKeys.STORED_CHUNK_BLOCKS)
-		val existingWrecks = existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
-
-		// wreck.encounter?.NMS()?.let { existingWrecks += it }
-
-		val newFinishedData = CompoundTag()
-		newFinishedData.put("wrecks", existingWrecks)
-		val outputStream = ByteArrayOutputStream()
-		NbtIo.writeCompressed(newFinishedData, outputStream)
-
-		chunk.persistentDataContainer.set(
-			NamespacedKeys.WRECK_ENCOUNTER_DATA,
-			PersistentDataType.BYTE_ARRAY,
-			outputStream.toByteArray()
-		)
 	}
 
 	/**
@@ -588,24 +619,14 @@ class SpaceGenerator(
 		val schematicName: String,
 		val encounter: WreckEncounterData?
 	) {
-		fun schematic(): Clipboard {
-			val file: File = Ion.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
-// 			val compoundTag = NbtIo.readCompressed(FileInputStream(file))
-// 			encounter?.let { compoundTag.put("encounter", it.NMS()) }
-
-			return SpongeSchematicReader(NBTInputStream(GZIPInputStream(FileInputStream(file)))).read()
-		}
-
 		/**
 		 * This is serialized and stored in the chunk alongside the wreck.
 		 *
 		 * @param identifier The identifier string for the encounter class
 		 **/
 		data class WreckEncounterData(
-			val chestX: Int,
-			val chestY: Int,
-			val chestZ: Int,
-			val identifier: String
+			val identifier: String,
+			val additonalInfo: String?
 		) {
 			fun getEncounter(): Encounter = Encounters.getByIdentifier(identifier)!!
 
@@ -624,16 +645,18 @@ class SpaceGenerator(
 	}
 
 	fun generateRandomWreckData(x: Int, y: Int, z: Int): WreckGenerationData {
+		val wreckClass = configuration.weightedWreckList.random()
+		val wreck = wreckClass.random()
+		val encounter = wreck.encounterWeightedRandomList.random()
+
 		return WreckGenerationData(
 			x,
 			y,
 			z,
-			weightedWreckList.random(),
+			wreck.wreckSchematicName,
 			WreckGenerationData.WreckEncounterData(
-				0,
-				0,
-				0,
-				ITS_A_TRAP.identifier
+				encounter,
+				null
 			)
 		)
 	}
