@@ -6,6 +6,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.vectorToBlockFace
 import org.bukkit.block.BlockFace
@@ -19,7 +20,7 @@ abstract class TurretWeaponSubsystem(
 	pos: Vec3i,
 	override var face: BlockFace
 ) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem, AutoWeaponSubsystem {
-	private fun getSign() = starship.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign
+	private fun getSign() = Tasks.getSyncBlocking { starship.world.getBlockState(pos.toLocation(starship.world)) as? Sign }
 
 	protected abstract val multiblock: TurretMultiblock
 	protected abstract val inaccuracyRadians: Double
@@ -42,7 +43,7 @@ abstract class TurretWeaponSubsystem(
 		}
 
 		val sign = getSign() ?: return false
-		this.face = multiblock.rotate(sign, this.face, face)
+		this.face = Tasks.getSyncBlocking { multiblock.rotate(sign, this.face, face) }
 		return this.face == face
 	}
 
