@@ -278,4 +278,8 @@ object Hyperspace : SLComponent() {
 	fun onStarshipRotate(event: StarshipRotateEvent) {
 		onStarshipMove(event)
 	}
+
+	fun getHyperspaceMovement(ship : ActivePlayerStarship) : HyperspaceMovement? {
+		return movementTasks[ship]
+	}
 }
