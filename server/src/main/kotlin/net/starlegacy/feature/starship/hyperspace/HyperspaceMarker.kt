@@ -1,11 +1,11 @@
 package net.starlegacy.feature.starship.hyperspace
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
+import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
 import org.litote.kmongo.util.idValue
 
-class HyperspaceMarker(val org : Location, val ship : ActivePlayerStarship, val dest: Location) {
+class HyperspaceMarker(val org : Location, var ship : ActiveStarship, val dest: Location) {
 	/** How long an arrow lasts after a ship moves to hyperspace */
 	private val ARROWDURATION = 30
 	/** bol to hold if the marker should draw the arrow*/
@@ -32,7 +32,7 @@ class HyperspaceMarker(val org : Location, val ship : ActivePlayerStarship, val 
 	/** Calculates the arrow vectors
 	 * #TODO: do the math for dymap arrows*/
 	private fun calculateArrow(): MutableList<Vector> {
-		var output = mutableListOf<Vector>()
+		val output = mutableListOf<Vector>()
 		output += org.toVector()
 		output += output[0].clone().add(Vector(100.0,0.0,0.0))
 		output += output[1].clone().add(Vector(-30.0,0.0,-10.0))
@@ -40,7 +40,7 @@ class HyperspaceMarker(val org : Location, val ship : ActivePlayerStarship, val 
 		return output
 	}
 
-	fun updatePos() {
+	private fun updatePos() {
 		if (inHyperspace) {
 			pos = Vector(movement.x,0.0,movement.z)
 		}
@@ -55,8 +55,4 @@ class HyperspaceMarker(val org : Location, val ship : ActivePlayerStarship, val 
 		}
 		updatePos()
 	}
-
-
-
-	fun isHyperspaceWorld(world: World): Boolean = world.name.endsWith("_Hyperspace")
 }
