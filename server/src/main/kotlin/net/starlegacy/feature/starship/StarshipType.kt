@@ -47,7 +47,7 @@ enum class StarshipType(
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
-		minSize = 250,
+		minSize = 350,
 		maxSize = 500,
 		minLevel = 1,
 		containerPercent = 0.025,
