@@ -1,21 +1,24 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.client.Packets
+import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
+import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
+import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customItems.CustomItems
-import net.horizonsend.ion.server.features.whereisit.mod.FoundS2C
-import net.horizonsend.ion.server.features.whereisit.mod.SearchC2S
-import net.horizonsend.ion.server.features.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.miscellaneous.commands
 import net.horizonsend.ion.server.miscellaneous.handle
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
 import net.horizonsend.ion.server.miscellaneous.listeners
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -24,6 +27,7 @@ import net.starlegacy.feature.space.SpaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("Unused")
@@ -70,8 +74,30 @@ class IonServer : JavaPlugin() {
 			// The listeners are defined in a separate file for the sake of keeping the main class clean.
 			for (listener in listeners) pluginManager.registerEvents(listener, this)
 
+			// WIT networking
 			Bukkit.getMessenger().registerIncomingPluginChannel(this, SearchC2S.ID.toString(), Searcher::handle)
 			Bukkit.getMessenger().registerOutgoingPluginChannel(this, FoundS2C.ID.toString())
+
+			// Void networking
+			for (packet in Packets.values()) {
+				logger.info("Registering ${packet.id}")
+
+				if (packet.s2c != null) {
+					Bukkit.getMessenger().registerOutgoingPluginChannel(this, packet.id.toString())
+				}
+
+				if (packet.c2s != null) {
+					Bukkit.getMessenger().registerIncomingPluginChannel(
+						this,
+						packet.id.toString()
+					) { s: String, player: Player, bytes: ByteArray ->
+						logger.info("Received message on $s by ${player.name}")
+						val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))
+						val c2s = packet.c2s!!
+						c2s.invoke(buf, player)
+					}
+				}
+			}
 
 			// Same deal as listeners.
 			initializeCrafting()

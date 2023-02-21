@@ -25,6 +25,9 @@ import kotlin.math.roundToInt
 // budget minecraft registry lmao
 object CustomItems {
 	// If we want to be extra fancy we can replace this with some fastutils thing later.
+	val ALL
+		get() = customItems.toMap() // not mutable
+
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
 	val PISTOL =
