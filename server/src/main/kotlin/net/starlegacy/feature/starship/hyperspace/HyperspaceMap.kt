@@ -23,7 +23,7 @@ object HyperspaceMap : SLComponent() {
 		println("Hyperspacemap enabled")
 
 		markerAPI.getMarkerSet("hyperspace")?.deleteMarkerSet()
-		markerSet = markerAPI.createMarkerSet("hyperspace", "Hyperspace", null, false)
+
 		Tasks.syncRepeat(5, 20) {
 			refresh()
 		}
@@ -31,6 +31,10 @@ object HyperspaceMap : SLComponent() {
 
 	/** Synchronous refresh of hyperspace markers*/
 	fun refresh() = Tasks.sync {
+		// Its possible that the dymap hasnt created the markerset yet so this
+		// just keeps trying until its created
+		val spaceSet = markerAPI.getMarkerSet("space") ?: return@sync
+		markerSet = spaceSet
 		println("refreshing")
 		for (marker in markers.values) {
 			marker.tick()
@@ -58,9 +62,9 @@ object HyperspaceMap : SLComponent() {
 	 * #TODO: fix deletion*/
 	private fun deleteDraw(marker: HyperspaceMarker, delArrow: Boolean = false, delTracker: Boolean = false) {
 		if (delArrow) {
-			var dynMarker = markerSet.findMarker(marker.id.toString() + "arrowBody")
+			var dynMarker = markerSet.findPolyLineMarker(marker.id.toString() + "arrowBody")
 			dynMarker?.deleteMarker()
-			dynMarker = markerSet.findMarker(marker.id.toString() + "arrowHead")
+			dynMarker = markerSet.findPolyLineMarker(marker.id.toString() + "arrowHead")
 			dynMarker?.deleteMarker()
 		}
 		if (delTracker) {
@@ -84,7 +88,7 @@ object HyperspaceMap : SLComponent() {
 	/** uses the Dynmap API to draw a spline arrow */
 	private fun drawArrow(marker: HyperspaceMarker) {
 		// Check if arrow already exists
-		if (markerSet.findMarker(marker.id.toString() + "arrowBody") != null) { return }
+		if (markerSet.findPolyLineMarker(marker.id.toString() + "arrowBody") != null) { return }
 		val vectors = marker.arrowVects
 		markerSet.createPolyLineMarker(
 			marker.id.toString() + "arrowBody",
