@@ -46,6 +46,9 @@ import org.litote.kmongo.eq
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
@@ -180,18 +183,43 @@ object MiscStarshipCommands : SLCommand() {
 			"Coords are out of world border."
 		}
 
-		if (MassShadows.find(
-				starship.serverLevel.world,
-				starship.centerOfMass.x.toDouble(),
-				starship.centerOfMass.z.toDouble()
-			) != null
-		) {
-			sender.userError("You're within a MassShadow, jump cancelled.")
+		val massShadowInfo = MassShadows.find(
+			starship.serverLevel.world,
+			starship.centerOfMass.x.toDouble(),
+			starship.centerOfMass.z.toDouble()
+		)
+
+		if (massShadowInfo != null) {
+			val escapeVector = starship.centerOfMass.toVector().setY(0)
+			escapeVector.subtract(Vector(massShadowInfo.x, 0, massShadowInfo.z)).rotateAroundY(PI / 2)
+			escapeVector.normalize()
+
+			// directionString differs from ContactsDisplay as this vector was rotated pi/2 radians
+			// This is so that the vector's 0 direction points south
+			var directionString = ""
+
+			if (escapeVector.x != 0.0 && abs(escapeVector.x) > 0.4) {
+				directionString += if (escapeVector.x > 0) "south" else "north"
+			}
+
+			if (escapeVector.z != 0.0 && abs(escapeVector.z) > 0.4) {
+				directionString += if (escapeVector.z > 0) "west" else "east"
+			}
+
+			sender.userError(
+				"Starship is within a gravity well; jump aborted. Move away from the gravity well source:\n" +
+					"  <gray>Object: <white>${massShadowInfo.description}\n" +
+					"  <gray>Location: <white>${massShadowInfo.x}, ${massShadowInfo.z}\n" +
+					"  <gray>Gravity well radius: <white>${massShadowInfo.radius}\n" +
+					"  <gray>Current distance from center: <white>${massShadowInfo.distance}\n" +
+					"  <gray>Cruise direction to escape: " +
+					"<green>$directionString <white>(${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})"
+			)
 			return
 		}
 
 		if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
-			sender.userError("Starship is cruising, jump aborted, try again when it fully stops.")
+			sender.userError("Starship is cruising; jump aborted. Try again when the starship fully stops moving.")
 			StarshipCruising.stopCruising(sender, starship)
 			return
 		}
