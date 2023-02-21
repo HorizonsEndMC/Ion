@@ -1,9 +1,9 @@
 package net.starlegacy.feature.starship.hyperspace
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.util.Vector
 import org.litote.kmongo.util.idValue
+import kotlin.math.PI
 
 class HyperspaceMarker(val org : Location, var ship : ActiveStarship, val dest: Location) {
 	/** How long an arrow lasts after a ship moves to hyperspace */
@@ -29,14 +29,20 @@ class HyperspaceMarker(val org : Location, var ship : ActiveStarship, val dest: 
 
 	private var seconds = 0
 
-	/** Calculates the arrow vectors
-	 * #TODO: do the math for dymap arrows*/
+	/** Calculates the arrow vectors*/
 	private fun calculateArrow(): MutableList<Vector> {
+		val k = 1000.0
+		val l = 200.0
+		val theta = 2 *  PI /  5 + PI / 2
 		val output = mutableListOf<Vector>()
 		output += org.toVector()
-		output += output[0].clone().add(Vector(100.0,0.0,0.0))
-		output += output[1].clone().add(Vector(-30.0,0.0,-10.0))
-		output += output[1].clone().add(Vector(-30.0,0.0,10.0))
+
+		val v = dest.toVector().clone().subtract(org.toVector())
+		val u = v.clone().normalize()
+		val dir = u.clone().multiply(minOf(v.length(), k))
+		output += output[0].clone().add(dir)
+		output += output[1].clone().add(u.clone().rotateAroundY(theta).multiply(l))
+		output += output[1].clone().add(u.clone().rotateAroundY(-theta).multiply(l))
 		return output
 	}
 
