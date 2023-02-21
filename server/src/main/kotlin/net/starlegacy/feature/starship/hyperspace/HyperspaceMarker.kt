@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.hyperspace
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
 import org.bukkit.util.Vector
+import java.util.UUID
 import kotlin.math.PI
 
 class HyperspaceMarker(val org: Location, var ship: ActiveStarship, val dest: Location) {
@@ -29,8 +30,8 @@ class HyperspaceMarker(val org: Location, var ship: ActiveStarship, val dest: Lo
 	lateinit var movement: HyperspaceMovement
 
 	/** Id of the marker to use in adding or removing markers in the render
-	 * currently just the ship id*/
-	var id = 888888
+	 * currently random uuid*/
+	var id: UUID = UUID.randomUUID()
 
 	private var seconds = 0
 
