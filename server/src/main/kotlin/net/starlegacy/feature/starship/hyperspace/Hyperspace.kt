@@ -75,7 +75,7 @@ object Hyperspace : SLComponent() {
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
-		//create a new marker and add it to the collection
+		// create a new marker and add it to the collection
 		val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.serverLevel.world), starship, dest)
 		HyperspaceMap.addMarker(starship, marker)
 		(starship as? ActivePlayerStarship)?.pilot?.let { it.rewardAchievement(Achievement.USE_HYPERSPACE) }
@@ -87,7 +87,7 @@ object Hyperspace : SLComponent() {
 		if (drive.isIntact()) {
 			drive.restoreFuel()
 		}
-		//remove hyperspace marker
+		// remove hyperspace marker
 		HyperspaceMap.deleteMarker(warmup.ship)
 	}
 
@@ -118,9 +118,6 @@ object Hyperspace : SLComponent() {
 			}
 		check(warmupTasks.remove(starship, warmup)) { "Warmup wasn't in the map!" }
 		warmup.cancel()
-		// Update the marker state (the ship went into hyperspace)
-		val marker = HyperspaceMap.getMarker(starship)
-		marker?.inHyperspace  = true
 
 		val world = getHyperspaceWorld(starship.serverLevel.world)
 		val x = starship.centerOfMass.x.toDouble()
@@ -135,6 +132,11 @@ object Hyperspace : SLComponent() {
 			val mass = starship.mass
 			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass) / 10
 			movementTasks[starship] = HyperspaceMovement(starship, speed, warmup.dest)
+
+			// Update the marker state (the ship went into hyperspace)
+			val marker = HyperspaceMap.getMarker(starship)
+			marker?.inHyperspace = true
+			marker?.movement = movementTasks[starship]!!
 		}
 	}
 
@@ -154,7 +156,7 @@ object Hyperspace : SLComponent() {
 			return
 		}
 
-		//Remove the marker from the map
+		// Remove the marker from the map
 		HyperspaceMap.deleteMarker(starship)
 
 		val dest = starship.centerOfMass.toLocation(world)
@@ -187,7 +189,7 @@ object Hyperspace : SLComponent() {
 
 		movement.cancel()
 
-		//Remove the marker from the map
+		// Remove the marker from the map
 		HyperspaceMap.deleteMarker(starship)
 
 		StarshipTeleportation.teleportStarship(starship, movement.dest)
@@ -294,7 +296,7 @@ object Hyperspace : SLComponent() {
 		onStarshipMove(event)
 	}
 
-	fun getHyperspaceMovement(ship : ActivePlayerStarship) : HyperspaceMovement? {
+	fun getHyperspaceMovement(ship: ActivePlayerStarship): HyperspaceMovement? {
 		return movementTasks[ship]
 	}
 }
