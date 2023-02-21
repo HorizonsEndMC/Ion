@@ -190,8 +190,8 @@ object MiscStarshipCommands : SLCommand() {
 		)
 
 		if (massShadowInfo != null) {
-			val escapeVector = starship.centerOfMass.toVector().setY(0)
-			escapeVector.subtract(Vector(massShadowInfo.x, 0, massShadowInfo.z)).rotateAroundY(PI / 2)
+			val escapeVector = starship.centerOfMass.toVector().setY(128)
+			escapeVector.subtract(Vector(massShadowInfo.x, 128, massShadowInfo.z)).rotateAroundY(PI / 2)
 			escapeVector.normalize()
 
 			// directionString differs from ContactsDisplay as this vector was rotated pi/2 radians
