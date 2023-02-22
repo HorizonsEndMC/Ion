@@ -1,8 +1,8 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
-import net.horizonsend.ion.server.extensions.successActionMessage
-import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
@@ -28,7 +28,7 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {
-			player.userError("&cCannot toggle tube in an active ship")
+			player.userError("Cannot toggle tube in an active ship")
 			return
 		}
 

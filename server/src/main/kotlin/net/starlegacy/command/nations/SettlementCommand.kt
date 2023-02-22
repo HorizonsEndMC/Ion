@@ -429,7 +429,7 @@ internal object SettlementCommand : SLCommand() {
 			is Player -> {
 				when (settlement) {
 					null -> PlayerCache[sender].settlement
-						?: SettlementCommand.fail { "You need to specify a settlement. /n info <settlement>" }
+						?: SettlementCommand.fail { "You need to specify a settlement. /s info <settlement>" }
 
 					else -> resolveSettlement(settlement)
 				}

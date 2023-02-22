@@ -12,7 +12,7 @@ import java.util.Locale
 import java.util.UUID
 
 enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String?>) {
-	CRUISE("[cruise]", arrayOf("&3Cruise".colorize(), "&8Control".colorize(), null, null)) {
+	CRUISE("[cruise]", arrayOf("&3Cruise".colorize(), "&8Control".colorize(), "&c- Look Direction".colorize(), "&c- /cruise ".colorize())) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPilotedPlayerStarship(player) ?: return
 
@@ -23,7 +23,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 			}
 		}
 	},
-	HELM("[helm]", arrayOf("\\  ||  /", "==      ==", "/  ||  \\", null)) {
+	HELM("[helm]", arrayOf("\\  ||  /", "==      ==", "/  ||  \\", "&cPress Q or F".colorize())) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPilotedPlayerStarship(player) ?: return
 

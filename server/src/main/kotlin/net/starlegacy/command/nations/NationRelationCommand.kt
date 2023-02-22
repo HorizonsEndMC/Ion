@@ -3,9 +3,7 @@ package net.starlegacy.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
@@ -46,7 +44,7 @@ internal object NationRelationCommand : SLCommand() {
 		val otherNation = resolveNation(nation)
 
 		if (senderNation == otherNation && wish != NationRelation.Level.NATION) {
-			sender.sendFeedbackMessage(USER_ERROR, "Error: Cannot {0} your own nation", wish.name)
+			sender.userError("Error: Cannot ${wish.name} your own nation")
 			return@asyncCommand
 		}
 

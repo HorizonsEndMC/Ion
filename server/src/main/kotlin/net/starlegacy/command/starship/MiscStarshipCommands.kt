@@ -5,17 +5,13 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.FeedbackType.INFORMATION
-import net.horizonsend.ion.server.extensions.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.extensions.alert
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.sendFeedbackActionMessage
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.success
-import net.horizonsend.ion.server.extensions.successActionMessage
-import net.horizonsend.ion.server.extensions.userError
-import net.horizonsend.ion.server.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.serverError
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userErrorActionMessage
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
@@ -47,9 +43,12 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
@@ -184,18 +183,43 @@ object MiscStarshipCommands : SLCommand() {
 			"Coords are out of world border."
 		}
 
-		if (MassShadows.find(
-				starship.serverLevel.world,
-				starship.centerOfMass.x.toDouble(),
-				starship.centerOfMass.z.toDouble()
-			) != null
-		) {
-			sender.userError("You're within a MassShadow, jump cancelled.")
+		val massShadowInfo = MassShadows.find(
+			starship.serverLevel.world,
+			starship.centerOfMass.x.toDouble(),
+			starship.centerOfMass.z.toDouble()
+		)
+
+		if (massShadowInfo != null) {
+			val escapeVector = starship.centerOfMass.toVector().setY(128)
+			escapeVector.subtract(Vector(massShadowInfo.x, 128, massShadowInfo.z)).rotateAroundY(PI / 2)
+			escapeVector.normalize()
+
+			// directionString differs from ContactsDisplay as this vector was rotated pi/2 radians
+			// This is so that the vector's 0 direction points south
+			var directionString = ""
+
+			if (escapeVector.x != 0.0 && abs(escapeVector.x) > 0.4) {
+				directionString += if (escapeVector.x > 0) "south" else "north"
+			}
+
+			if (escapeVector.z != 0.0 && abs(escapeVector.z) > 0.4) {
+				directionString += if (escapeVector.z > 0) "west" else "east"
+			}
+
+			sender.userError(
+				"Starship is within a gravity well; jump aborted. Move away from the gravity well source:\n" +
+					"  <gray>Object: <white>${massShadowInfo.description}\n" +
+					"  <gray>Location: <white>${massShadowInfo.x}, ${massShadowInfo.z}\n" +
+					"  <gray>Gravity well radius: <white>${massShadowInfo.radius}\n" +
+					"  <gray>Current distance from center: <white>${massShadowInfo.distance}\n" +
+					"  <gray>Cruise direction to escape: " +
+					"<green>$directionString <white>(${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})"
+			)
 			return
 		}
 
 		if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
-			sender.userError("Starship is cruising, jump aborted, try again when it fully stops.")
+			sender.userError("Starship is cruising; jump aborted. Try again when the starship fully stops moving.")
 			StarshipCruising.stopCruising(sender, starship)
 			return
 		}
@@ -218,7 +242,7 @@ object MiscStarshipCommands : SLCommand() {
 			)
 		}
 
-		sender.sendFeedbackMessage(SUCCESS, "Initiating Hyperspace Jump to approximately ({0}, {1})", x1, z1)
+		sender.success("Initiating Hyperspace Jump to approximately ($x1, $z1)")
 
 		val offset = ln(distance).toInt()
 
@@ -270,7 +294,7 @@ object MiscStarshipCommands : SLCommand() {
 							}
 						}
 					}
-					sender.sendFeedbackActionMessage(INFORMATION, "Unset targets of weaponssets containing {0}", weaponSet)
+					sender.information("Unset targets of weaponssets containing $weaponSet")
 				}
 			}
 		}
@@ -319,10 +343,9 @@ object MiscStarshipCommands : SLCommand() {
 			"You need to hold a starship controller to enable direct control"
 		}
 		if (starship.initialBlockCount > StarshipType.CORVETTE.maxSize) {
-			sender.sendFeedbackMessage(
-				FeedbackType.SERVER_ERROR,
-				"Only ships of size {0} or less can use direct control, this is mostly a performance thing, and will probably change in the future.",
-				StarshipType.CORVETTE.maxSize
+			sender.serverError(
+				"Only ships of size ${StarshipType.CORVETTE.maxSize} or less can use direct control, " +
+					"this is mostly a performance thing, and will probably change in the future."
 			)
 			return
 		}

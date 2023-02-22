@@ -2,9 +2,8 @@ package net.starlegacy.feature.economy.cargotrade
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackAction
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.trade.CargoCrates
@@ -60,9 +59,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
 import java.time.Instant
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
@@ -385,12 +382,8 @@ object ShipmentManager : SLComponent() {
 				val siegeBonusPercent = capturedStationCount * 5
 				val siegeBonus = totalRevenue * siegeBonusPercent / 100
 
-				player.sendFeedbackAction(
-					FeedbackType.INFORMATION,
-					"Received {0}% (C{1}) bonus from {2} captured stations.",
-					siegeBonusPercent,
-					siegeBonus,
-					capturedStationCount
+				player.information(
+					"Received $siegeBonusPercent% (C$siegeBonus) bonus from $capturedStationCount captured stations."
 				)
 
 				totalRevenue += siegeBonus

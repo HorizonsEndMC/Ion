@@ -1,13 +1,10 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.server.extensions.FeedbackType.INFORMATION
-import net.horizonsend.ion.server.extensions.FeedbackType.SUCCESS
-import net.horizonsend.ion.server.extensions.FeedbackType.USER_ERROR
-import net.horizonsend.ion.server.extensions.sendFeedbackActionMessage
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.successActionMessage
-import net.horizonsend.ion.server.extensions.userError
-import net.horizonsend.ion.server.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.userErrorActionMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -42,7 +39,7 @@ import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.Locale
+import java.util.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -131,13 +128,10 @@ object PilotedStarships : SLComponent() {
 		val player = starship.pilot ?: error("Starship $starship is not piloted")
 		if (normal) {
 			ActiveStarships.allPlayerShips().filter { it.oldpilot == player }.forEach {
-				player.sendFeedbackActionMessage(
-					INFORMATION,
-					"You already have a ship unpiloted, on {0} at {1} {2} {3}, that ship will now be released.",
-					it.serverLevel.world.name,
-					it.centerOfMass.x,
-					it.centerOfMass.y,
-					it.centerOfMass.z
+				player.information(
+					"You already have a ship unpiloted, on ${it.serverLevel.world.name} at " +
+						"${it.centerOfMass.x} ${it.centerOfMass.y} ${it.centerOfMass.z}, " +
+						"that ship will now be released."
 				)
 				DeactivatedPlayerStarships.deactivateAsync(it)
 			}
@@ -164,7 +158,7 @@ object PilotedStarships : SLComponent() {
 		if (!data.isPilot(player)) {
 			val captain = SLPlayer.getName(data.captain) ?: "null, <red>something's gone wrong, please contact staff"
 
-			player.sendFeedbackActionMessage(USER_ERROR, "You're not a pilot of this, the captain is {0}", captain)
+			player.userErrorActionMessage("You're not a pilot of this, the captain is $captain")
 
 			return false
 		}
@@ -231,38 +225,24 @@ object PilotedStarships : SLComponent() {
 			if (blockData.material != foundData.material) {
 				val expected: String = blockData.material.name
 				val found: String = foundData.material.name
-				player.sendFeedbackActionMessage(
-					USER_ERROR,
-					"Block at {0}, {1}, {2} does not match! Expected {3} but found {4}",
-					x,
-					y,
-					z,
-					expected,
-					found
+				player.userError(
+					"Block at $x, $y, $z does not match! Expected $expected but found $found"
 				)
 				return false
 			}
 
 			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
 				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
-					player.sendFeedbackMessage(
-						USER_ERROR,
-						"Block at {0}, {1}, {2} is the computer of a piloted ship!",
-						x,
-						y,
-						z
+					player.userError(
+						"Block at $x, $y, $z is the computer of a piloted ship!"
 					)
 					return false
 				}
 
 				DeactivatedPlayerStarships[world, x, y, z]?.takeIf { it._id != data._id }?.also { carried ->
 					if (!carried.isPilot(player)) {
-						player.sendFeedbackActionMessage(
-							USER_ERROR,
-							"Block at {0} {1} {2} is a ship computer which you are not a pilot of!",
-							x,
-							y,
-							z
+						player.userError(
+							"Block at $x $y $z is a ship computer which you are not a pilot of!"
 						)
 						return false
 					}
@@ -286,18 +266,13 @@ object PilotedStarships : SLComponent() {
 			}
 
 			pilot(activePlayerStarship, player)
-			player.sendFeedbackActionMessage(
-				SUCCESS,
-				"Activated and piloted {0} with {1} blocks.",
-				getDisplayName(data),
-				activePlayerStarship.initialBlockCount
+			player.success(
+				"Activated and piloted ${getDisplayName(data)} with ${activePlayerStarship.initialBlockCount} blocks."
 			)
 
 			if (carriedShips.any()) {
-				player.sendFeedbackMessage(
-					INFORMATION,
-					"{0} carried ship${if (carriedShips.size != 1) "s" else ""}.",
-					carriedShips.size
+				player.information(
+					"${carriedShips.size} carried ship${if (carriedShips.size != 1) "s" else ""}."
 				)
 			}
 
@@ -318,7 +293,7 @@ object PilotedStarships : SLComponent() {
 		for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
 			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
-		player.sendFeedbackActionMessage(SUCCESS, "Released {0}", getDisplayName(starship.data))
+		player.successActionMessage("Released ${getDisplayName(starship.data)}")
 		return true
 	}
 

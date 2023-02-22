@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.starlegacy.feature.space.Space
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
@@ -56,7 +57,16 @@ object MassShadows {
 				continue
 			}
 			dist = sqrt(dist)
-			return MassShadowInfo("Anomaly", otherX, otherY, otherZ, dist.toInt())
+			val interdictingShip = otherShip as? ActivePlayerStarship
+			val interdictingShipName = interdictingShip?.data?.name ?: otherShip.type
+			val interdictingShipPilot = interdictingShip?.pilot?.name ?: "none"
+			return MassShadowInfo(
+				"$interdictingShipName <white>piloted by $interdictingShipPilot",
+				otherX,
+				otherZ,
+				otherShip.interdictionRange,
+				dist.toInt()
+			)
 		}
 
 		return null
