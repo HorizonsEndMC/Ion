@@ -5,6 +5,7 @@ plugins {
 	alias(libs.plugins.shadow) apply false
 	alias(libs.plugins.spotless)
 	alias(libs.plugins.kotlin)
+	id("maven-publish")
 }
 
 allprojects {
@@ -19,6 +20,30 @@ allprojects {
 		tasks.build {
 			dependsOn("shadowJar")
 		}
+
+		apply(plugin = "maven-publish")
+
+		configure<PublishingExtension> {
+			repositories {
+				maven {
+					name = "GitHubPackages"
+					url = uri("https://maven.pkg.github.com/HorizonsEndMC/Ion")
+					credentials {
+						username = System.getenv("GITHUB_ACTOR")
+						password = System.getenv("GITHUB_TOKEN")
+					}
+				}
+			}
+
+			publications {
+				register<MavenPublication>("gpr") {
+					groupId = "net.horizonsend.ion"
+					version = System.getenv("GITHUB_REF_NAME")
+						.replace("dev/", "pr-").replace("/", "")
+					artifact(tasks["shadowJar"])
+				}
+			}
+		}
 	}
 
 	repositories {
@@ -31,6 +56,7 @@ allprojects {
 		maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
 		maven("https://repo.codemc.io/repository/maven-snapshots/") // WorldEdit
 		maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
+		maven("https://s01.oss.sonatype.org/content/repositories/snapshots") // DiscordSRV Depends
 		maven("https://jitpack.io") // Dynmap (Spigot), Vault, NuVotifier
 		maven("https://maven.citizensnpcs.co/repo") // Citizens
 	}
@@ -43,12 +69,14 @@ allprojects {
 
 	spotless {
 		kotlin {
-			ktlint("0.47.1").editorConfigOverride(mapOf(
-				"ktlint_disabled_rules" to arrayOf(
-					"annotation", // Inlining annotations is cleaner sometimes
-					"argument-list-wrapping" // This seems to break arbitrarily with MenuHelper.kt, come back to this
-				).joinToString()
-			))
+			ktlint("0.47.1").editorConfigOverride(
+				mapOf(
+					"ktlint_disabled_rules" to arrayOf(
+						"annotation", // Inlining annotations is cleaner sometimes
+						"argument-list-wrapping" // This seems to break arbitrarily with MenuHelper.kt, come back to this
+					).joinToString()
+				)
+			)
 
 			trimTrailingWhitespace()
 			indentWithTabs()

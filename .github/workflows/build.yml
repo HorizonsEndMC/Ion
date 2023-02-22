@@ -20,7 +20,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build
-        uses: gradle/gradle-build-action@v2.3.3
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
         with:
-          arguments: build
+          key: ion
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+
+      - name: Build and publish
+        uses: gradle/gradle-build-action@v2.4.0
+        with:
+          arguments: build publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
