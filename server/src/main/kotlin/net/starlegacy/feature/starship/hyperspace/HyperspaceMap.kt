@@ -34,7 +34,6 @@ object HyperspaceMap : SLComponent() {
 		// just keeps trying until its created
 		val spaceSet = markerAPI.getMarkerSet("space") ?: return@sync
 		markerSet = spaceSet
-		println("refreshing")
 		for (marker in markers.values) {
 			marker.tick()
 			drawMarker(marker)
@@ -44,7 +43,6 @@ object HyperspaceMap : SLComponent() {
 	/** Adds a new marker to the collection*/
 	fun addMarker(ship: ActiveStarship, marker: HyperspaceMarker) {
 		markers[ship] = marker
-		println("added marker")
 	}
 
 	/**Deletes the marker from the collection and removes drawn components*/
