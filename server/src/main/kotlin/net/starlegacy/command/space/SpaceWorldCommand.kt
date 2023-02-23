@@ -4,9 +4,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.space.SpaceWorlds
 import org.bukkit.Bukkit
@@ -21,7 +20,7 @@ object SpaceWorldCommand : SLCommand() {
 	@CommandCompletion("@worlds true|false")
 	fun onSet(sender: CommandSender, world: World, spaceWorld: Boolean) {
 		SpaceWorlds.setSpaceWorld(world, spaceWorld)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Set {0} to space world: {1}", world.name, spaceWorld)
+		sender.success("Set ${world.name} to space world: $spaceWorld")
 		onList(sender)
 	}
 

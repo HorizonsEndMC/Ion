@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.blasters
 
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
-import net.horizonsend.ion.server.extensions.alert
-import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
+import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
@@ -113,9 +113,11 @@ class RayTracedParticleProjectile(
 				val shooterNation = SLPlayer[shooter as Player].nation
 				val isInBedWithEachother = shooterNation?.let { shoot_nation ->
 					hitNation?.let { hit_nation ->
-					NationRelation.getRelationActual(
-						hit_nation, shoot_nation).ordinal <5
-				} }  ?: false
+						NationRelation.getRelationActual(
+							hit_nation, shoot_nation
+						).ordinal < 5
+					}
+				} ?: false
 				if (isInBedWithEachother && !flyingHitEntity.world.name.lowercase().contains("arena")) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable

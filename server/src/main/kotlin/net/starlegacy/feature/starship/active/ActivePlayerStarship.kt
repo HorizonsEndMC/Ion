@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship.active
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.miscellaneous.handle
 import net.minecraft.core.BlockPos
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -26,11 +27,10 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.boss.BossBar
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.lang.Math.cbrt
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -44,7 +44,7 @@ class ActivePlayerStarship(
 	// map of carried ship to its blocks
 	carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 ) : ActiveStarship(
-	(data.bukkitWorld() as CraftWorld).handle,
+	data.bukkitWorld().handle,
 	blocks,
 	mass,
 	centerOfMass,

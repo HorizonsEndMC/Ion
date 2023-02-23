@@ -4,10 +4,8 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
@@ -67,7 +65,7 @@ object CollectorCommand : SLCommand() {
 		)
 
 		for (ecoStation in EcoStations.getAll()) {
-			sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Station {0}:", ecoStation.name)
+			sender.information("Station ${ecoStation.name}:")
 
 			val items = CollectedItem.findAllAt(ecoStation._id).toList()
 
@@ -82,7 +80,7 @@ object CollectorCommand : SLCommand() {
 					else -> "<gold>"
 				}.toString() + item.sold.toString()
 
-				sender.sendFeedbackMessage(FeedbackType.INFORMATION, "  {0} >> {1} stacks sold ({2} in stock)", item.itemString, sold, item.stock)
+				sender.information("  ${item.itemString} >> $sold stacks sold (${item.stock} in stock)")
 			}
 		}
 	}

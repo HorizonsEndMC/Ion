@@ -2,11 +2,11 @@ package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.extensions.alert
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.informationAction
-import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache

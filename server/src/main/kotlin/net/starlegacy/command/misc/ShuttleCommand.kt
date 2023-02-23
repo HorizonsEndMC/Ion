@@ -10,8 +10,8 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.Shuttle
 import net.starlegacy.feature.misc.Shuttles
@@ -23,7 +23,7 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import java.util.Locale
+import java.util.*
 
 @CommandAlias("shuttle")
 @CommandPermission("starlegacy.shuttle.admin")
@@ -52,14 +52,10 @@ object ShuttleCommand : SLCommand() {
 		writeSchematic(clipboard, file)
 
 		val region: Region = clipboard.region
-		sender.sendFeedbackMessage(
-			FeedbackType.INFORMATION,
-			"Dimensions: {0}x{1}x{2}",
-			region.width,
-			region.height,
-			region.length
+		sender.information(
+			"Dimensions: ${region.width}x${region.height}x${region.length}"
 		)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Saved schematic file {0}", file.absolutePath)
+		sender.success("Saved schematic file ${file.absolutePath}")
 		Shuttles.invalidateSchematicCache(name)
 	}
 
@@ -69,13 +65,8 @@ object ShuttleCommand : SLCommand() {
 		for (name in Shuttles.getAllSchematics()) {
 			val schematic: Clipboard = readSchematic(Shuttles.getSchematicFile(name)) ?: fail { "Failed to read $name" }
 			val region: Region = schematic.region
-			sender.sendFeedbackMessage(
-				FeedbackType.INFORMATION,
-				"{0} :: {1}x{2}x{3}",
-				name,
-				region.width,
-				region.height,
-				region.length
+			sender.information(
+				"$name :: ${region.width}x${region.height}x${region.length}"
 			)
 		}
 	}
@@ -91,7 +82,7 @@ object ShuttleCommand : SLCommand() {
 		val session: LocalSession = worldEditPlugin.getSession(sender)
 		val clipboard: Clipboard = readSchematic(file) ?: fail { "Failed to read schematic" }
 		session.clipboard = ClipboardHolder(clipboard)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Copied shuttle schematic {0} to clipboard", name)
+		sender.success("Copied shuttle schematic $name to clipboard")
 	}
 
 	@Subcommand("create")
@@ -101,7 +92,7 @@ object ShuttleCommand : SLCommand() {
 		failIf(Shuttle[name] != null) { "A shuttle named $name already existed" }
 		validateSchematicFile(schematicName)
 		Shuttle.create(name, schematicName)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Created shuttle {0}", name)
+		sender.success("Created shuttle $name")
 	}
 
 	@Subcommand("delete")
@@ -112,19 +103,15 @@ object ShuttleCommand : SLCommand() {
 			Shuttles.removeShuttleFromWorld(shuttle)
 		}
 		Shuttle.delete(shuttle._id)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted shuttle {0}", shuttleName)
+		sender.success("Deleted shuttle $shuttleName")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("list")
 	fun onList(sender: Player) {
 		for (shuttle in Shuttle.all()) {
-			sender.sendFeedbackMessage(
-				FeedbackType.INFORMATION,
-				"{0} :: {1} destinations in worlds [{2}]",
-				shuttle.name,
-				shuttle.destinations.size,
-				shuttle.destinations.joinToString { it.world }
+			sender.information(
+				"${shuttle.name} :: ${shuttle.destinations.size} destinations in worlds [${shuttle.destinations.joinToString { it.world }}]"
 			)
 		}
 	}
@@ -142,7 +129,7 @@ object ShuttleCommand : SLCommand() {
 		Shuttles.moveShuttle(shuttle, newPosition)
 
 		val destination = shuttle.destinations[newPosition]
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Moved shuttle to {0}", destination)
+		sender.success("Moved shuttle to $destination")
 	}
 
 	@Suppress("Unused")
@@ -152,11 +139,8 @@ object ShuttleCommand : SLCommand() {
 		val shuttle = validateShuttle(shuttleName)
 		validateSchematicFile(schematicName)
 		Shuttle.setSchematic(shuttle._id, schematicName)
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Set schematic of shuttle {0} to {1}",
-			shuttleName,
-			schematicName
+		sender.success(
+			"Set schematic of shuttle $shuttleName to $schematicName"
 		)
 	}
 
@@ -193,11 +177,8 @@ object ShuttleCommand : SLCommand() {
 		}
 
 		Shuttle.addDestination(shuttle._id, Shuttle.Destination(destinationName, world.name, ox, oy, oz))
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Added destination {0} to shuttle {1}",
-			destinationName,
-			shuttleName
+		sender.success(
+			"Added destination $destinationName to shuttle $shuttleName"
 		)
 	}
 
@@ -206,16 +187,10 @@ object ShuttleCommand : SLCommand() {
 	@CommandCompletion("@shuttles")
 	fun onDestinationList(sender: Player, shuttleName: String) {
 		val shuttle = validateShuttle(shuttleName)
-		sender.sendFeedbackMessage(FeedbackType.INFORMATION, "Destinations of shuttle {0}:", shuttleName)
+		sender.information("Destinations of shuttle $shuttleName:")
 		for (dest in shuttle.destinations) {
-			sender.sendFeedbackMessage(
-				FeedbackType.INFORMATION,
-				"   ::> {0} ({1}@[{2},{3},{4}])",
-				dest.name,
-				dest.world,
-				dest.x,
-				dest.y,
-				dest.z
+			sender.information(
+				"   ::> ${dest.name} (${dest.world}@[${dest.x},${dest.y},${dest.z}])"
 			)
 		}
 	}
@@ -238,11 +213,8 @@ object ShuttleCommand : SLCommand() {
 			Shuttles.moveShuttle(shuttle, newPosition)
 		}
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Removed destination {0} from {1}",
-			destinationName,
-			shuttleName
+		sender.success(
+			"Removed destination $destinationName from $shuttleName"
 		)
 	}
 }

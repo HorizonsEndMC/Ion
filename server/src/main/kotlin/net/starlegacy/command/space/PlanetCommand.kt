@@ -6,9 +6,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.space.Planet
 import net.starlegacy.feature.space.CachedPlanet
@@ -73,7 +72,7 @@ object PlanetCommand : SLCommand() {
 
 		val planet: CachedPlanet = Space.planetNameCache[name].get()
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Created planet {0} at {1} ", name, planet.location)
+		sender.success("Created planet $name at ${planet.location}")
 	}
 
 	@Suppress("Unused")
@@ -218,11 +217,8 @@ object PlanetCommand : SLCommand() {
 	fun onSetSun(sender: CommandSender, planet: CachedPlanet, newSun: CachedStar) {
 		val oldSun = planet.sun
 		planet.changeSun(newSun)
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Updated sun from {0} to {1}, moved the planet, and updated database",
-			oldSun.name,
-			newSun.name
+		sender.success(
+			"Updated sun from ${oldSun.name} to ${newSun.name}, moved the planet, and updated database"
 		)
 	}
 
@@ -234,12 +230,8 @@ object PlanetCommand : SLCommand() {
 		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
 
 		planet.toggleRogue(newValue)
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Updated {0} rogue to {1} from {2}",
-			planet.name,
-			newValue,
-			oldValue
+		sender.success(
+			"Updated ${planet.name} rogue to $newValue from $oldValue"
 		)
 		planet.setLocation(true)
 		spaceWorld.save()
@@ -254,8 +246,8 @@ object PlanetCommand : SLCommand() {
 
 		planet.changeX(x)
 		planet.changeZ(z)
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Moved {0} to {1}, {2}", planet.name, x, z)
-		planet.setLocation(true, true)
+		sender.success("Moved ${planet.name} to $x, $z")
+		planet.setLocation(urgent = true, updateDb = true)
 		spaceWorld.save()
 		SpaceMap.refresh()
 	}
@@ -266,11 +258,8 @@ object PlanetCommand : SLCommand() {
 	fun onSetOrbitDistance(sender: CommandSender, planet: CachedPlanet, newDistance: Int) {
 		val oldDistance = planet.orbitDistance
 		planet.changeOrbitDistance(newDistance)
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Updated distance from {0} to {1}, moved the planet, and updated database",
-			oldDistance,
-			newDistance
+		sender.success(
+			"Updated distance from $oldDistance to $newDistance, moved the planet, and updated database"
 		)
 	}
 
@@ -278,13 +267,9 @@ object PlanetCommand : SLCommand() {
 	@Subcommand("getpos")
 	@CommandCompletion("@planets")
 	fun onGetPos(sender: CommandSender, planet: CachedPlanet) {
-		sender.sendFeedbackMessage(
-			FeedbackType.INFORMATION,
-			"{0} is at {1} in {2}. Its planet world is {3}",
-			planet.name,
-			planet.location,
-			planet.spaceWorldName,
-			planet.planetWorldName
+		sender.information(
+			"${planet.name} is at ${planet.location} in ${planet.spaceWorldName}. " +
+				"Its planet world is ${planet.planetWorldName}"
 		)
 	}
 
@@ -326,11 +311,8 @@ object PlanetCommand : SLCommand() {
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Orbited {0} in {1}ms",
-			planet.name,
-			elapsedMilliseconds
+		sender.success(
+			"Orbited ${planet.name} in ${elapsedMilliseconds}ms"
 		)
 	}
 
@@ -342,8 +324,7 @@ object PlanetCommand : SLCommand() {
 		}
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
-
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Orbited everything in {0}ms", elapsedMilliseconds)
+		sender.success("Orbited everything in ${elapsedMilliseconds}ms")
 	}
 
 	@Suppress("Unused")
@@ -360,11 +341,8 @@ object PlanetCommand : SLCommand() {
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)
 
-		sender.sendFeedbackMessage(
-			FeedbackType.SUCCESS,
-			"Generated {0} in {1}ms",
-			planet.name,
-			elapsedMilliseconds
+		sender.success(
+			"Generated ${planet.name} in ${elapsedMilliseconds}ms"
 		)
 	}
 
@@ -380,7 +358,7 @@ object PlanetCommand : SLCommand() {
 
 		sender.teleport(location)
 
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Teleported to {0}", planet.name)
+		sender.success("Teleported to ${planet.name}")
 	}
 
 	@Subcommand("delete")
@@ -389,6 +367,6 @@ object PlanetCommand : SLCommand() {
 		planet.erase()
 		Planet.delete(planet.databaseId)
 		Space.reload()
-		sender.sendFeedbackMessage(FeedbackType.SUCCESS, "Deleted planet {0}", planet.name)
+		sender.success("Deleted planet ${planet.name}")
 	}
 }

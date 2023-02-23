@@ -1,9 +1,9 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.extensions.alertAction
-import net.horizonsend.ion.server.extensions.informationAction
-import net.horizonsend.ion.server.extensions.userErrorAction
+import net.horizonsend.ion.server.miscellaneous.extensions.alertAction
+import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
+import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.feature.starship.active.ActivePlayerStarship

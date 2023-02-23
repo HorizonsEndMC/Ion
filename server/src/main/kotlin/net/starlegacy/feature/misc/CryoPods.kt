@@ -5,10 +5,10 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.extensions.alert
-import net.horizonsend.ion.server.extensions.information
-import net.horizonsend.ion.server.extensions.serverError
-import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.serverError
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock

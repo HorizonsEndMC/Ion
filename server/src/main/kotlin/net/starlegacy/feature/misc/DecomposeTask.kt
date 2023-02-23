@@ -1,10 +1,9 @@
 package net.starlegacy.feature.misc
 
-import net.horizonsend.ion.server.extensions.FeedbackType
-import net.horizonsend.ion.server.extensions.sendFeedbackMessage
-import net.horizonsend.ion.server.extensions.serverError
-import net.horizonsend.ion.server.extensions.userError
 import net.horizonsend.ion.server.legacy.ores.Ore
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.serverError
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.starship.isFlyable
@@ -18,7 +17,7 @@ import org.bukkit.block.Sign
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.UUID
+import java.util.*
 
 /**
  * @param width Iterated first,
@@ -67,7 +66,7 @@ class DecomposeTask(
 
 		Decomposers.busySigns.remove(signLoc)
 		Bukkit.getPlayer(playerID)
-			?.sendFeedbackMessage(FeedbackType.INFORMATION, "Decomposer broke {0} blocks.", blocksBroken)
+			?.information("Decomposer broke $blocksBroken blocks.")
 	}
 
 	private fun breakStrip(): Boolean {

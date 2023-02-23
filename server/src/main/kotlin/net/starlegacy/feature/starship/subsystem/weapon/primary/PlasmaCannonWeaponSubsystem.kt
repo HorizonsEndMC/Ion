@@ -22,7 +22,7 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 		return true
 	}
 
-	override fun isForwardOnly(): Boolean = true
+	override fun isForwardOnly(): Boolean = IonServer.Ion.balancing.starshipWeapons.PlasmaCannon.fowardOnly
 
 	override fun getMaxPerShot(): Int {
 		return 1
