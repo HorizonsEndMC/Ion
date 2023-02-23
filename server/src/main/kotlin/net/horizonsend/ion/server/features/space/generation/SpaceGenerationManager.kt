@@ -1,9 +1,13 @@
 package net.horizonsend.ion.server.features.space.generation
 
 import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
+import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.ChunkPos
+import net.starlegacy.util.Tasks
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -11,13 +15,27 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.persistence.PersistentDataType
 import java.util.Random
+import java.util.concurrent.LinkedBlockingDeque
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+import kotlin.reflect.jvm.jvmName
 
 object SpaceGenerationManager : Listener {
 	val worldGenerators: MutableMap<ServerLevel, SpaceGenerator?> = mutableMapOf()
+	val generationTasks = LinkedBlockingDeque<SpaceGenerationTask>()
+	private val generationThreadPool = ThreadGroup("Space Generation")
+	val chunkLock = mutableListOf<ChunkPos>()
 
 	fun getGenerator(serverLevel: ServerLevel): SpaceGenerator? = worldGenerators[serverLevel]
+
+	fun primeGeneration() {
+		Tasks.syncRepeat(0, 10) { processQueue() }
+	}
+
+	private fun processQueue() {
+		val task = generationTasks.take()
+		Thread(generationThreadPool, task, task::class.jvmName)
+	}
 
 	@EventHandler
 	fun onWorldInit(event: WorldInitEvent) {
@@ -74,7 +92,7 @@ object SpaceGenerationManager : Listener {
 
 			if (asteroidY - asteroid.size < event.world.minHeight) continue
 
-			generator.generateAsteroid(asteroid)
+			generationTasks.put(GenerateAsteroidTask(generator, asteroid))
 		}
 
 		for (count in 0..ceil(chunkDensity * generator.configuration.wreckMultiplier).roundToInt()) {
@@ -90,7 +108,14 @@ object SpaceGenerationManager : Listener {
 
 			val wreck = generator.generateRandomWreckData(wreckX, wreckY, wreckZ)
 
-			generator.generateWreck(wreck)
+			generationTasks.put(GenerateWreckTask(generator, wreck))
 		}
 	}
+}
+
+/**
+ * Simple tagging class
+ **/
+abstract class SpaceGenerationTask : Runnable {
+	abstract val generator: SpaceGenerator
 }
