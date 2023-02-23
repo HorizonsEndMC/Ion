@@ -1,14 +1,15 @@
 package net.starlegacy.feature.starship.hyperspace
+import net.kyori.adventure.text.TextComponent
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
 import org.bukkit.util.Vector
-import java.util.UUID
 import kotlin.math.PI
 
 class HyperspaceMarker(val org: Location, var ship: ActiveStarship, val dest: Location) {
 
 	/** How long an arrow lasts after a ship moves to hyperspace */
-	private val ARROWDURATION = 5
+	private val ARROWDURATION = 10
 
 	/** bol to hold if the marker should draw the arrow*/
 	var isArrow = true
@@ -30,15 +31,15 @@ class HyperspaceMarker(val org: Location, var ship: ActiveStarship, val dest: Lo
 	lateinit var movement: HyperspaceMovement
 
 	/** Id of the marker to use in adding or removing markers in the render
-	 * currently random uuid*/
-	var id: UUID = UUID.randomUUID()
+	 * currently player name*/
+	var id = ((ship as ActivePlayerStarship).pilot?.name() as TextComponent).content()
 
 	private var seconds = 0
 
 	/** Calculates the arrow vectors*/
 	private fun calculateArrow(): MutableList<Vector> {
-		val k = 1000.0
-		val l = 200.0
+		val k = 30000.0
+		val l = 6000.0
 		val theta = 2 * PI / 5 + PI / 2
 		val output = mutableListOf<Vector>()
 		output += org.toVector()
