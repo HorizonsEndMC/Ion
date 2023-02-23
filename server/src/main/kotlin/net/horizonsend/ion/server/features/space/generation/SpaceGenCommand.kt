@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.extensions.information
 import net.horizonsend.ion.server.extensions.serverError
 import net.horizonsend.ion.server.extensions.success
 import net.horizonsend.ion.server.extensions.userError
+import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
+import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
@@ -56,7 +58,7 @@ class SpaceGenCommand : BaseCommand() {
 				octaves
 			)
 
-			generator.generateAsteroid(asteroid)
+			SpaceGenerationManager.generationTasks.put(GenerateAsteroidTask(generator, asteroid))
 		} catch (err: java.lang.Exception) {
 			sender.serverError(err.message ?: "Error generating asteroid")
 			err.printStackTrace()
@@ -86,6 +88,6 @@ class SpaceGenCommand : BaseCommand() {
 			)
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
-		generator.generateWreck(data)
+		SpaceGenerationManager.generationTasks.put(GenerateWreckTask(generator, data))
 	}
 }
