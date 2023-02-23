@@ -3,9 +3,9 @@ package net.starlegacy.feature.progression
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import github.scarsz.discordsrv.DiscordSRV
-import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
-import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
-import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
