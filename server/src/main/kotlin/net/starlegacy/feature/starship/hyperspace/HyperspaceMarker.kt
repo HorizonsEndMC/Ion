@@ -61,7 +61,6 @@ class HyperspaceMarker(val org: Location, var ship: ActiveStarship, val dest: Lo
 
 	/** Updates the state of the marker*/
 	fun tick() {
-		println("marker ticking")
 		if (inHyperspace) {
 			seconds++
 		}
