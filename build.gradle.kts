@@ -5,7 +5,6 @@ plugins {
 	alias(libs.plugins.shadow) apply false
 	alias(libs.plugins.spotless)
 	alias(libs.plugins.kotlin)
-	id("maven-publish")
 }
 
 allprojects {
@@ -19,30 +18,6 @@ allprojects {
 
 		tasks.build {
 			dependsOn("shadowJar")
-		}
-
-		apply(plugin = "maven-publish")
-
-		configure<PublishingExtension> {
-			repositories {
-				maven {
-					name = "GitHubPackages"
-					url = uri("https://maven.pkg.github.com/HorizonsEndMC/Ion")
-					credentials {
-						username = System.getenv("GITHUB_ACTOR")
-						password = System.getenv("GITHUB_TOKEN")
-					}
-				}
-			}
-
-			publications {
-				register<MavenPublication>("gpr") {
-					groupId = "net.horizonsend.ion"
-					version = System.getenv("GITHUB_REF_NAME")
-						.replace("dev/", "pr-").replace("/", "")
-					artifact(tasks["shadowJar"])
-				}
-			}
 		}
 	}
 
