@@ -3,7 +3,6 @@ acf = "0.5.1-SNAPSHOT"
 anvilgui = "1.6.3-SNAPSHOT"
 citizens = "2.0.30-SNAPSHOT"
 config4k = "0.5.0"
-configurate = "4.1.2"
 cqengine = "3.6.0"
 discordsrv = "1.26.1"
 dynmap = "3.1"
@@ -29,8 +28,6 @@ acfPaper = { module = "co.aikar:acf-paper", version.ref = "acf" }
 anvilgui = { module = "net.wesjd:anvilgui", version.ref = "anvilgui" }
 citizens = { module = "net.citizensnpcs:citizens-main", version.ref = "citizens" }
 config4k = { module = "io.github.config4k:config4k", version.ref = "config4k" }
-configurate-hocon = { module = "org.spongepowered:configurate-hocon", version.ref = "configurate" }
-configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin", version.ref = "configurate" }
 cqengine = { module = "com.googlecode.cqengine:cqengine", version.ref = "cqengine" }
 discordsrv = { module = "com.discordsrv:discordsrv", version.ref = "discordsrv" }
 dynmap = { module = "com.github.webbukkit.dynmap:spigot", version.ref = "dynmap" }
@@ -53,7 +50,6 @@ miniMessage = { module = "net.kyori:adventure-text-minimessage" }
 
 [bundles]
 common = [ "jedis", "kmongo" ]
-configurate = [ "configurate-hocon", "configurate-kotlin" ]
 kotlin = [ "kotlin-reflect", "kotlin-stdlib" ]
 nuvotifier = [ "nuvotifier-api", "nuvotifier-bungee" ]
 miniMessageBungee = [ "miniMessage", "adventureBungee" ]
