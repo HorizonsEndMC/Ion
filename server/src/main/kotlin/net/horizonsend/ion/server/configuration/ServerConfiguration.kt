@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.configuration
 
+import kotlinx.serialization.Serializable
 import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
-@ConfigSerializable
+@Serializable
 data class ServerConfiguration(
 	val serverName: String? = null,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
@@ -17,7 +17,7 @@ data class ServerConfiguration(
 		)
 	)
 ) {
-	@ConfigSerializable
+	@Serializable
 	data class HyperspaceBeacon(
 		val name: String,
 		val radius: Double,
@@ -26,7 +26,7 @@ data class ServerConfiguration(
 		val destinationName: String? = null
 	)
 
-	@ConfigSerializable
+	@Serializable
 	data class Pos(
 		val world: String,
 		val x: Int,
