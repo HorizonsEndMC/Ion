@@ -1,6 +1,8 @@
 package net.starlegacy.feature.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
@@ -63,10 +65,10 @@ object StarshipFactories : SLComponent() {
 		val blueprintOwner = UUID.fromString(sign.getLine(1)).slPlayerId
 		val blueprintName = sign.getLine(2)
 		val blueprint = Blueprint.col.findOne(and(Blueprint::name eq blueprintName, Blueprint::owner eq blueprintOwner))
-			?: return player msg "&cBlueprint not found"
+			?: return player.userError("Blueprint not found")
 
 		if (!blueprint.canAccess(player)) {
-			player msg "&cYou don't have access to that blueprint"
+			player.userError("You don't have access to that blueprint")
 			return
 		}
 
@@ -122,7 +124,7 @@ object StarshipFactories : SLComponent() {
 				return@getSyncBlocking
 			}
 
-			player msg "&aComplete!"
+			player.success("Complete!")
 		}
 	}
 
@@ -133,11 +135,11 @@ object StarshipFactories : SLComponent() {
 		if (missingItems.isNotEmpty() || missingCredits > 0) {
 			if (missingItems.isNotEmpty()) {
 				val string = getPrintItemCountString(missingItems)
-				player msg "&e&lMissing Materials &8:&b-&8:&r $string"
+				player.userError("&e&lMissing Materials &8:&b-&8:&r $string")
 			}
 
 			if (missingCredits > 0) {
-				player msg "&e&lMissing Credits &8:&b-&8:&r ${missingCredits.toCreditsString()}"
+				player.userError("&e&lMissing Credits &8:&b-&8:&r ${missingCredits.toCreditsString()}")
 			}
 
 			return true
@@ -166,14 +168,14 @@ object StarshipFactories : SLComponent() {
 			color = !color
 
 			if (color) {
-				list.add("&3$item&8: &b$count")
+				list.add("<dark_aqua>$item<dark_gray>: <aqua>$count")
 				continue
 			}
 
-			list.add("&c$item&8: &d$count")
+			list.add("<red>$item<dark_gray>: <light_purple>$count")
 		}
 
-		return list.joinToString("&e, ").lowercase(Locale.getDefault())
+		return list.joinToString("<yellow>, ").lowercase(Locale.getDefault())
 	}
 
 	fun getRequiredAmount(data: BlockData): Int {
