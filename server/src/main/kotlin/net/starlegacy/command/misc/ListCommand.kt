@@ -41,7 +41,7 @@ object ListCommand : SLCommand() {
 			val nationText = nationId?.let { "<dark_purple>${NationCache[it].name}" } ?: "<yellow><italic>Nationless"
 
 			sender.sendRichMessage(
-				"$nationText <dark_purple>:(<light_purple>${members.count()}<dark_purple>)<dark_gray>:<gray> ${
+				"$nationText <dark_purple>(<light_purple>${members.count()}<dark_purple>)<dark_gray>:<gray> ${
 				members.joinToString { player ->
 // 					val nationPrefix = PlayerCache[player].nationTag?.let { "<reset>$it " } ?: ""
 					return@joinToString "<gray>[<aqua>${Levels[player]}<gray>] " +
