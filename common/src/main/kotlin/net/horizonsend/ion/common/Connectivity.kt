@@ -18,7 +18,7 @@ object Connectivity {
 	private lateinit var jedisPool: JedisPooled
 
 	fun open(dataDirectory: File) {
-		val configuration: SharedConfiguration = loadConfiguration(dataDirectory.resolve("shared"), "shared.conf")
+		val configuration: SharedConfiguration = Configuration.load(dataDirectory.resolve("shared"), "shared.json")
 
 		setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
