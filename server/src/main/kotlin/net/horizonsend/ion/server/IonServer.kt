@@ -24,6 +24,7 @@ import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.space.SpaceMap
+import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
@@ -113,10 +114,10 @@ class IonServer : JavaPlugin() {
 				Runnable {
 					SpaceMap.onEnable()
 					NationsMap.onEnable()
+					HyperspaceMap.onEnable()
 					HyperspaceBeacons.reloadDynmap()
 					Collectors.onEnable()
 					CityNPCs.onEnable()
-
 					pluginManager.registerEvents(CityNPCs, this)
 				},
 				1
