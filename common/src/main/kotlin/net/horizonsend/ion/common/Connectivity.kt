@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
+import kotlinx.serialization.Serializable
 import org.bson.UuidRepresentation
 import org.litote.kmongo.KMongo.createClient
 import org.litote.kmongo.util.KMongoJacksonFeature
@@ -18,7 +19,7 @@ object Connectivity {
 	private lateinit var jedisPool: JedisPooled
 
 	fun open(dataDirectory: File) {
-		val configuration: SharedConfiguration = Configuration.load(dataDirectory, "database.json")
+		val configuration: DatabaseConfiguration = Configuration.load(dataDirectory, "database.json")
 
 		setProperty("org.litote.mongo.test.mapping.service", "org.litote.kmongo.jackson.JacksonClassMappingTypeService")
 
@@ -41,4 +42,11 @@ object Connectivity {
 		jedisPool.close()
 		mongoClient.close()
 	}
+
+	@Serializable
+	internal data class DatabaseConfiguration(
+		internal val mongoConnectionUri: String = "mongodb://test:test@mongo",
+		internal val redisConnectionUri: String = "redis",
+		internal val databaseName: String = "ion"
+	)
 }
