@@ -280,7 +280,7 @@ object ShipKillXP : SLComponent() {
 				val channel: TextChannel = (
 					DiscordSRV.getPlugin()
 						.getDestinationTextChannelForGameChannelName("events") ?: return@async
-					) as TextChannel
+					)
 
 				// Formatting the messages
 				val killedShipDiscordName = data.name?.let { it.replace("<[^>]*>".toRegex(), "") + ", a" } ?: " a"
