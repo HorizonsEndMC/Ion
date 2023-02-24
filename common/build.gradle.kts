@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
 	api(libs.bundles.kotlin)
 	api(libs.jedis)
