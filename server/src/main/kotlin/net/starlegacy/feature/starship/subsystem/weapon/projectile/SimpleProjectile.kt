@@ -25,8 +25,8 @@ import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale
-import java.util.UUID
 import java.util.Random
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class SimpleProjectile(
