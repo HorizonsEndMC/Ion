@@ -20,9 +20,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build and publish
+      - name: Build
         uses: gradle/gradle-build-action@v2.4.0
         with:
-          arguments: build publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          arguments: build
