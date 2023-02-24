@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
-import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
@@ -38,7 +38,7 @@ class IonProxy : Plugin() {
 		@JvmStatic lateinit var Ion: IonProxy private set
 	}
 
-	val configuration: ProxyConfiguration = loadConfiguration(dataFolder, "proxy.conf")
+	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
 
 	val jda = try {
 		JDABuilder.createLight(configuration.discordBotToken)
