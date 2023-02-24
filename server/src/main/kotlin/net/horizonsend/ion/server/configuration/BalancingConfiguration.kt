@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.configuration
 
-import org.spongepowered.configurate.objectmapping.ConfigSerializable
+import kotlinx.serialization.Serializable
 
-@ConfigSerializable
+@Serializable
 data class BalancingConfiguration(
 	val energyWeapons: EnergyWeapon = EnergyWeapon(),
 	val starshipWeapons: StarshipWeapons = StarshipWeapons()
 ) {
-	@ConfigSerializable
+	@Serializable
 	data class EnergyWeapon(
 		val pistol: Singleshot = Singleshot(
 			damage = 3.0,
@@ -106,7 +106,7 @@ data class BalancingConfiguration(
 			capacity = 60
 		)
 	) {
-		@ConfigSerializable
+		@Serializable
 		data class Singleshot(
 			override val damage: Double,
 			override val damageFalloffMultiplier: Double,
@@ -126,7 +126,7 @@ data class BalancingConfiguration(
 			override val shotDeviation: Double
 		) : Balancing()
 
-		@ConfigSerializable
+		@Serializable
 		data class Multishot(
 			val shotCount: Int,
 			val offsetMax: Double,
@@ -150,7 +150,7 @@ data class BalancingConfiguration(
 			override val shotDeviation: Double
 		) : Balancing()
 
-		@ConfigSerializable
+		@Serializable
 		data class AmmoStorage(
 			override val capacity: Int
 		) : AmmoStorageBalancing
@@ -182,7 +182,7 @@ data class BalancingConfiguration(
 		}
 	}
 
-	@ConfigSerializable
+	@Serializable
 	class StarshipWeapons(
 		// Light Weapons
 		val PlasmaCannon: StarshipWeapon = StarshipWeapon(
@@ -464,7 +464,7 @@ data class BalancingConfiguration(
 			aimDistance = 0
 		)
 	) {
-		@ConfigSerializable
+		@Serializable
 		data class StarshipWeapon(
 			override val range: Double,
 			override val speed: Double,
@@ -489,7 +489,7 @@ data class BalancingConfiguration(
 			override val inaccuracyRadians: Double = 2.0
 		) : ProjectileBalancing()
 
-		@ConfigSerializable
+		@Serializable
 		abstract class ProjectileBalancing : SubSystem() {
 			abstract val range: Double
 			abstract val speed: Double
@@ -502,7 +502,7 @@ data class BalancingConfiguration(
 			abstract val soundName: String
 		}
 
-		@ConfigSerializable
+		@Serializable
 		abstract class SubSystem {
 			abstract val powerusage: Int
 			abstract val length: Int
