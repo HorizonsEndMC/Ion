@@ -277,8 +277,10 @@ object ShipKillXP : SLComponent() {
 
 		if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV") && !arena) {
 			Tasks.async {
-				val channel: TextChannel = DiscordSRV.getPlugin()
-					.getDestinationTextChannelForGameChannelName("events") ?: return@async
+				val channel: TextChannel = (
+					DiscordSRV.getPlugin()
+						.getDestinationTextChannelForGameChannelName("events") ?: return@async
+					) as TextChannel
 
 				// Formatting the messages
 				val killedShipDiscordName = data.name?.let { it.replace("<[^>]*>".toRegex(), "") + ", a" } ?: " a"
