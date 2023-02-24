@@ -1,8 +1,8 @@
 package net.horizonsend.ion.proxy
 
-import org.spongepowered.configurate.objectmapping.ConfigSerializable
+import kotlinx.serialization.Serializable
 
-@ConfigSerializable
+@Serializable
 data class ProxyConfiguration(
 	val discordBotToken: String = "",
 	val motdFirstLine: String = "",
@@ -10,16 +10,9 @@ data class ProxyConfiguration(
 	val discordServer: Long = 0,
 	val globalChannel: Long = 0,
 	val linkedRole: Long = 0,
-	val roleMap: Map<String, Long> = mapOf("" to 0),
-	val voteSites: List<VoteSite> = listOf(
-		VoteSite("TESTNET", "Test Server List", "https://Test.net/HorizonsEnd"),
-		VoteSite("TESTNET2", "Test Server List2", "https://Test2.net/HorizonsEnd")
-	)
+	val roleMap: Map<String, Long> = mapOf(),
+	val voteSites: List<VoteSite> = listOf()
 ) {
-	@ConfigSerializable
-	data class VoteSite(
-		val serviceName: String,
-		val displayName: String,
-		val displayAddress: String
-	)
+	@Serializable
+	data class VoteSite(val serviceName: String, val displayName: String, val displayAddress: String)
 }

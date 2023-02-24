@@ -2,9 +2,9 @@ package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
 import io.netty.buffer.Unpooled
+import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.loadConfiguration
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.client.Packets
@@ -41,8 +41,8 @@ class IonServer : JavaPlugin() {
 		lateinit var Ion: IonServer private set
 	}
 
-	var balancing = loadConfiguration<BalancingConfiguration>(dataFolder, "balancing.conf")
-	var configuration = loadConfiguration<ServerConfiguration>(dataFolder, "server.conf")
+	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
+	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
 
 	override fun onEnable() {
 		try {

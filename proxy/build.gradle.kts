@@ -1,3 +1,7 @@
+plugins {
+	kotlin("plugin.serialization")
+}
+
 dependencies {
 	compileOnly(libs.waterfall) // Platform
 
