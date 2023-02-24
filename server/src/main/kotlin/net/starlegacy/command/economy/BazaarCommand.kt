@@ -211,7 +211,7 @@ object BazaarCommand : SLCommand() {
 			val price = item.price.toCreditsString()
 			sender.sendRichMessage(
 				"<aqua>$name <dark_purple>@ <light_purple>$city <dark_gray>[<gray>stock: " +
-					"<red>$stock <gray>, balance: <gold>$uncollected<gray>, price: <yellow>$price<dark_gray>]"
+					"<red>$stock<gray>, balance: <gold>$uncollected<gray>, price: <yellow>$price<dark_gray>]"
 			)
 		}
 	}

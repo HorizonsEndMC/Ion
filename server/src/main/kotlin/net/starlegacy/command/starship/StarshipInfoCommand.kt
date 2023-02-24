@@ -88,10 +88,10 @@ object StarshipInfoCommand : SLCommand() {
 			for (shield in ship.shields) {
 				val percent = createPercent(shield.power, shield.maxPower)
 				val shieldClass = shield.multiblock.signText[3]?.let { legacyAmpersand().serialize(it) }
-				p.sendRichMessage("      <gray>${shield.name}: <aqua>$percent ($shieldClass<aqua>)")
+				p.sendRichMessage("      <gray>${shield.name}: <aqua>$percent ($shieldClass)")
 			}
-			p.sendRichMessage("	  <gray>Shield Regen Efficiency: <aqua>${ship.shieldEfficiency}")
-			p.sendRichMessage("   <gray>Maximum Shields the starship can handle:&b ${ship.maxShields}")
+			p.sendRichMessage("   <gray>Shield Regen Efficiency: <aqua>${ship.shieldEfficiency}")
+			p.sendRichMessage("   <gray>Maximum Shields the starship can handle: <aqua>${ship.maxShields}")
 		}
 
 		p.sendRichMessage("   <gray>Hull Integrity: <white>${ship.hullIntegrity().times(100).roundToInt()}%")
