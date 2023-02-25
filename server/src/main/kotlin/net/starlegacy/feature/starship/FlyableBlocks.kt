@@ -118,6 +118,43 @@ import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
 import org.bukkit.Material.WEATHERED_COPPER
+import org.bukkit.Material.PLAYER_HEAD
+import org.bukkit.Material.ZOMBIE_HEAD
+import org.bukkit.Material.DRAGON_HEAD
+import org.bukkit.Material.CREEPER_HEAD
+import org.bukkit.Material.WITHER_SKELETON_SKULL
+import org.bukkit.Material.SKELETON_SKULL
+import org.bukkit.Material.LOOM
+import org.bukkit.Material.COMPOSTER
+import org.bukkit.Material.SMOKER
+import org.bukkit.Material.BLAST_FURNACE
+import org.bukkit.Material.CARTOGRAPHY_TABLE
+import org.bukkit.Material.FLETCHING_TABLE
+import org.bukkit.Material.SMITHING_TABLE
+import org.bukkit.Material.STONECUTTER
+import org.bukkit.Material.LANTERN
+import org.bukkit.Material.SOUL_LANTERN
+import org.bukkit.Material.CAMPFIRE
+import org.bukkit.Material.SOUL_CAMPFIRE
+import org.bukkit.Material.SOUL_TORCH
+import org.bukkit.Material.BEEHIVE
+import org.bukkit.Material.OCHRE_FROGLIGHT
+import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.PEARLESCENT_FROGLIGHT
+import org.bukkit.Material.LIGHTNING_ROD
+import org.bukkit.Material.CHIPPED_ANVIL
+import org.bukkit.Material.DAMAGED_ANVIL
+import org.bukkit.Material.NETHERITE_BLOCK
+import org.bukkit.Material.OAK_FENCE_GATE
+import org.bukkit.Material.BIRCH_FENCE_GATE
+import org.bukkit.Material.SPRUCE_FENCE_GATE
+import org.bukkit.Material.JUNGLE_FENCE_GATE
+import org.bukkit.Material.ACACIA_FENCE_GATE
+import org.bukkit.Material.DARK_OAK_FENCE_GATE
+import org.bukkit.Material.MANGROVE_FENCE_GATE
+import org.bukkit.Material.CRIMSON_FENCE_GATE
+import org.bukkit.Material.WARPED_FENCE_GATE
+
 import java.util.EnumSet
 
 val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
@@ -230,7 +267,49 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	POTTED_WHITE_TULIP,
 	POTTED_WITHER_ROSE,
 
-	SCULK
+	SCULK,
+
+	PLAYER_HEAD,
+	DRAGON_HEAD,
+	CREEPER_HEAD,
+	ZOMBIE_HEAD,
+	WITHER_SKELETON_SKULL,
+	SKELETON_SKULL,
+
+	DAMAGED_ANVIL,
+	CHIPPED_ANVIL,
+
+
+	BEEHIVE,
+	SMITHING_TABLE,
+	STONECUTTER,
+	CAMPFIRE,
+	SOUL_CAMPFIRE,
+	LANTERN,
+	SOUL_LANTERN,
+	SOUL_TORCH,
+	LOOM,
+	COMPOSTER,
+	SMOKER,
+	BLAST_FURNACE,
+	CARTOGRAPHY_TABLE,
+	FLETCHING_TABLE,
+	OCHRE_FROGLIGHT,
+	PEARLESCENT_FROGLIGHT,
+	VERDANT_FROGLIGHT,
+
+	OAK_FENCE_GATE,
+	BIRCH_FENCE_GATE,
+	SPRUCE_FENCE_GATE,
+	JUNGLE_FENCE_GATE,
+	ACACIA_FENCE_GATE,
+	DARK_OAK_FENCE_GATE,
+	MANGROVE_FENCE_GATE,
+	CRIMSON_FENCE_GATE,
+	WARPED_FENCE_GATE,
+
+	LIGHTNING_ROD,
+	NETHERITE_BLOCK
 
 ).also {
 	it.addAll(CONCRETE_TYPES)
