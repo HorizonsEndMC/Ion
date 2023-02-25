@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.whereisit.mod
+package net.horizonsend.ion.server.features.client.whereisit.mod
 
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.server.miscellaneous.extensions.information
