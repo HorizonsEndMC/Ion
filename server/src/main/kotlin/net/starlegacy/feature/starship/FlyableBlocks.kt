@@ -25,27 +25,41 @@ import net.starlegacy.util.TRAPDOOR_TYPES
 import net.starlegacy.util.WALL_TYPES
 import net.starlegacy.util.WOOL_TYPES
 import org.bukkit.Material
+import org.bukkit.Material.ACACIA_FENCE_GATE
 import org.bukkit.Material.ANVIL
 import org.bukkit.Material.BARREL
+import org.bukkit.Material.BEEHIVE
 import org.bukkit.Material.BELL
+import org.bukkit.Material.BIRCH_FENCE_GATE
+import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.BOOKSHELF
 import org.bukkit.Material.BREWING_STAND
 import org.bukkit.Material.BROWN_MUSHROOM_BLOCK
+import org.bukkit.Material.CAMPFIRE
+import org.bukkit.Material.CARTOGRAPHY_TABLE
 import org.bukkit.Material.CAULDRON
 import org.bukkit.Material.CHAIN
 import org.bukkit.Material.CHEST
+import org.bukkit.Material.CHIPPED_ANVIL
 import org.bukkit.Material.COMPARATOR
+import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.CRAFTING_TABLE
+import org.bukkit.Material.CREEPER_HEAD
+import org.bukkit.Material.CRIMSON_FENCE_GATE
+import org.bukkit.Material.DAMAGED_ANVIL
+import org.bukkit.Material.DARK_OAK_FENCE_GATE
 import org.bukkit.Material.DAYLIGHT_DETECTOR
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
+import org.bukkit.Material.DRAGON_HEAD
 import org.bukkit.Material.DROPPER
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.ENDER_CHEST
 import org.bukkit.Material.END_PORTAL_FRAME
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.EXPOSED_COPPER
+import org.bukkit.Material.FLETCHING_TABLE
 import org.bukkit.Material.FLOWER_POT
 import org.bukkit.Material.FURNACE
 import org.bukkit.Material.GLASS
@@ -57,19 +71,29 @@ import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BARS
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.JUKEBOX
+import org.bukkit.Material.JUNGLE_FENCE_GATE
 import org.bukkit.Material.LADDER
+import org.bukkit.Material.LANTERN
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LECTERN
 import org.bukkit.Material.LEVER
+import org.bukkit.Material.LIGHTNING_ROD
 import org.bukkit.Material.LODESTONE
+import org.bukkit.Material.LOOM
 import org.bukkit.Material.MAGMA_BLOCK
+import org.bukkit.Material.MANGROVE_FENCE_GATE
 import org.bukkit.Material.MOVING_PISTON
+import org.bukkit.Material.NETHERITE_BLOCK
 import org.bukkit.Material.NETHER_PORTAL
 import org.bukkit.Material.NOTE_BLOCK
+import org.bukkit.Material.OAK_FENCE_GATE
 import org.bukkit.Material.OBSERVER
+import org.bukkit.Material.OCHRE_FROGLIGHT
 import org.bukkit.Material.OXIDIZED_COPPER
+import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.Material.PISTON
 import org.bukkit.Material.PISTON_HEAD
+import org.bukkit.Material.PLAYER_HEAD
 import org.bukkit.Material.POTTED_AZURE_BLUET
 import org.bukkit.Material.POTTED_BAMBOO
 import org.bukkit.Material.POTTED_BIRCH_SAPLING
@@ -108,53 +132,28 @@ import org.bukkit.Material.SCAFFOLDING
 import org.bukkit.Material.SCULK
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
+import org.bukkit.Material.SKELETON_SKULL
+import org.bukkit.Material.SMITHING_TABLE
+import org.bukkit.Material.SMOKER
+import org.bukkit.Material.SOUL_CAMPFIRE
+import org.bukkit.Material.SOUL_LANTERN
+import org.bukkit.Material.SOUL_TORCH
 import org.bukkit.Material.SPONGE
+import org.bukkit.Material.SPRUCE_FENCE_GATE
 import org.bukkit.Material.STICKY_PISTON
+import org.bukkit.Material.STONECUTTER
 import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
+import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
+import org.bukkit.Material.WARPED_FENCE_GATE
 import org.bukkit.Material.WAXED_COPPER_BLOCK
 import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
 import org.bukkit.Material.WEATHERED_COPPER
-import org.bukkit.Material.PLAYER_HEAD
-import org.bukkit.Material.ZOMBIE_HEAD
-import org.bukkit.Material.DRAGON_HEAD
-import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.WITHER_SKELETON_SKULL
-import org.bukkit.Material.SKELETON_SKULL
-import org.bukkit.Material.LOOM
-import org.bukkit.Material.COMPOSTER
-import org.bukkit.Material.SMOKER
-import org.bukkit.Material.BLAST_FURNACE
-import org.bukkit.Material.CARTOGRAPHY_TABLE
-import org.bukkit.Material.FLETCHING_TABLE
-import org.bukkit.Material.SMITHING_TABLE
-import org.bukkit.Material.STONECUTTER
-import org.bukkit.Material.LANTERN
-import org.bukkit.Material.SOUL_LANTERN
-import org.bukkit.Material.CAMPFIRE
-import org.bukkit.Material.SOUL_CAMPFIRE
-import org.bukkit.Material.SOUL_TORCH
-import org.bukkit.Material.BEEHIVE
-import org.bukkit.Material.OCHRE_FROGLIGHT
-import org.bukkit.Material.VERDANT_FROGLIGHT
-import org.bukkit.Material.PEARLESCENT_FROGLIGHT
-import org.bukkit.Material.LIGHTNING_ROD
-import org.bukkit.Material.CHIPPED_ANVIL
-import org.bukkit.Material.DAMAGED_ANVIL
-import org.bukkit.Material.NETHERITE_BLOCK
-import org.bukkit.Material.OAK_FENCE_GATE
-import org.bukkit.Material.BIRCH_FENCE_GATE
-import org.bukkit.Material.SPRUCE_FENCE_GATE
-import org.bukkit.Material.JUNGLE_FENCE_GATE
-import org.bukkit.Material.ACACIA_FENCE_GATE
-import org.bukkit.Material.DARK_OAK_FENCE_GATE
-import org.bukkit.Material.MANGROVE_FENCE_GATE
-import org.bukkit.Material.CRIMSON_FENCE_GATE
-import org.bukkit.Material.WARPED_FENCE_GATE
-
+import org.bukkit.Material.ZOMBIE_HEAD
 import java.util.EnumSet
 
 val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
@@ -278,7 +277,6 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 
 	DAMAGED_ANVIL,
 	CHIPPED_ANVIL,
-
 
 	BEEHIVE,
 	SMITHING_TABLE,

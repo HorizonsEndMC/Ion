@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.SLComponent
@@ -16,7 +17,6 @@ import net.starlegacy.util.blockKey
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.isSign
-import net.starlegacy.util.msg
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.toBukkitBlockData
 import net.starlegacy.util.toCreditsString
@@ -135,11 +135,11 @@ object StarshipFactories : SLComponent() {
 		if (missingItems.isNotEmpty() || missingCredits > 0) {
 			if (missingItems.isNotEmpty()) {
 				val string = getPrintItemCountString(missingItems)
-				player.userError("&e&lMissing Materials &8:&b-&8:&r $string")
+				player.userError("Missing Materials: $string")
 			}
 
 			if (missingCredits > 0) {
-				player.userError("&e&lMissing Credits &8:&b-&8:&r ${missingCredits.toCreditsString()}")
+				player.userError("Missing Credits: ${missingCredits.toCreditsString()}")
 			}
 
 			return true
@@ -151,7 +151,7 @@ object StarshipFactories : SLComponent() {
 	private fun chargeMoney(printer: StarshipFactoryPrinter, player: Player) {
 		val usedCredits = printer.usedCredits
 		player.withdrawMoney(usedCredits)
-		player msg "&7Charged &b${usedCredits.toCreditsString()}"
+		player.information("Charged ${usedCredits.toCreditsString()}")
 	}
 
 	fun getPrintItemCountString(map: Map<PrintItem, Int>): String {
