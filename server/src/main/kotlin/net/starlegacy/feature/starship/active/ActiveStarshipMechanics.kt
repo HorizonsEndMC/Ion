@@ -37,7 +37,7 @@ object ActiveStarshipMechanics : SLComponent() {
 	private fun scheduleTasks() {
 		Tasks.syncRepeat(20L, 20L, this::deactivateUnpilotedPlayerStarships)
 		Tasks.syncRepeat(1L, 1L, this::chargeSubsystems)
-		Tasks.asyncRepeat(5L, 5L, this::fireAutoWeapons)
+		Tasks.syncRepeat(5L, 5L, this::fireAutoWeapons)
 		Tasks.syncRepeat(60L, 60L, this::destroyLowHullIntegrityShips)
 		Tasks.syncRepeat(20L, 20L, this::tickPlayers)
 	}
