@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 
 abstract class Collection<D : Document>(kClass: KClass<D>) {
 	protected var collection: MongoCollection<D> =
-		Connectivity.database.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
+		Connectivity.mongoDatabase.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
 
 	protected abstract fun construct(id: UUID): D
 
