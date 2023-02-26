@@ -13,7 +13,7 @@ import java.io.File
 import java.lang.System.setProperty
 
 object Connectivity {
-	internal lateinit var database: MongoDatabase private set
+	internal lateinit var mongoDatabase: MongoDatabase private set
 	private lateinit var mongoClient: MongoClient
 
 	private lateinit var jedisPool: JedisPooled
@@ -33,7 +33,7 @@ object Connectivity {
 				.build()
 		)
 
-		database = mongoClient.getDatabase(configuration.databaseName)
+		mongoDatabase = mongoClient.getDatabase(configuration.databaseName)
 
 		jedisPool = JedisPooled(configuration.redisConnectionUri)
 	}
