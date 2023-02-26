@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.whereisit.mod
+package net.horizonsend.ion.server.features.client.whereisit.mod
 
 import net.minecraft.network.chat.Component
 

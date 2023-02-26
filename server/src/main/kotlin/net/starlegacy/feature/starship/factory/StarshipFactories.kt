@@ -1,6 +1,9 @@
 package net.starlegacy.feature.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
@@ -14,7 +17,6 @@ import net.starlegacy.util.blockKey
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.isSign
-import net.starlegacy.util.msg
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.toBukkitBlockData
 import net.starlegacy.util.toCreditsString
@@ -63,10 +65,10 @@ object StarshipFactories : SLComponent() {
 		val blueprintOwner = UUID.fromString(sign.getLine(1)).slPlayerId
 		val blueprintName = sign.getLine(2)
 		val blueprint = Blueprint.col.findOne(and(Blueprint::name eq blueprintName, Blueprint::owner eq blueprintOwner))
-			?: return player msg "&cBlueprint not found"
+			?: return player.userError("Blueprint not found")
 
 		if (!blueprint.canAccess(player)) {
-			player msg "&cYou don't have access to that blueprint"
+			player.userError("You don't have access to that blueprint")
 			return
 		}
 
@@ -122,7 +124,7 @@ object StarshipFactories : SLComponent() {
 				return@getSyncBlocking
 			}
 
-			player msg "&aComplete!"
+			player.success("Complete!")
 		}
 	}
 
@@ -133,11 +135,11 @@ object StarshipFactories : SLComponent() {
 		if (missingItems.isNotEmpty() || missingCredits > 0) {
 			if (missingItems.isNotEmpty()) {
 				val string = getPrintItemCountString(missingItems)
-				player msg "&e&lMissing Materials &8:&b-&8:&r $string"
+				player.userError("Missing Materials: $string")
 			}
 
 			if (missingCredits > 0) {
-				player msg "&e&lMissing Credits &8:&b-&8:&r ${missingCredits.toCreditsString()}"
+				player.userError("Missing Credits: ${missingCredits.toCreditsString()}")
 			}
 
 			return true
@@ -149,7 +151,7 @@ object StarshipFactories : SLComponent() {
 	private fun chargeMoney(printer: StarshipFactoryPrinter, player: Player) {
 		val usedCredits = printer.usedCredits
 		player.withdrawMoney(usedCredits)
-		player msg "&7Charged &b${usedCredits.toCreditsString()}"
+		player.information("Charged ${usedCredits.toCreditsString()}")
 	}
 
 	fun getPrintItemCountString(map: Map<PrintItem, Int>): String {
@@ -166,14 +168,14 @@ object StarshipFactories : SLComponent() {
 			color = !color
 
 			if (color) {
-				list.add("&3$item&8: &b$count")
+				list.add("<dark_aqua>$item<dark_gray>: <aqua>$count")
 				continue
 			}
 
-			list.add("&c$item&8: &d$count")
+			list.add("<red>$item<dark_gray>: <light_purple>$count")
 		}
 
-		return list.joinToString("&e, ").lowercase(Locale.getDefault())
+		return list.joinToString("<yellow>, ").lowercase(Locale.getDefault())
 	}
 
 	fun getRequiredAmount(data: BlockData): Int {
