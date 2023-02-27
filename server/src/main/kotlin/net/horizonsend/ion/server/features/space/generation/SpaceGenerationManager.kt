@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.space.generation.generators.SpaceGene
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
-import net.starlegacy.util.Tasks
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -29,7 +28,7 @@ object SpaceGenerationManager : Listener {
 	fun getGenerator(serverLevel: ServerLevel): SpaceGenerator? = worldGenerators[serverLevel]
 
 	fun primeGeneration() {
-		Tasks.syncRepeat(0, 10) { processQueue() }
+// 		Tasks.syncRepeat(0, 10) { processQueue() }
 	}
 
 	private fun processQueue() {
