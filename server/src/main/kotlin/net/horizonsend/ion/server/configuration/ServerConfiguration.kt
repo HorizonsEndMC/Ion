@@ -7,18 +7,9 @@ import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.nms
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.World
 
-/**
- * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
- * @param maxAsteroidSize: Maximum Size for an Asteroid
- * @param maxAsteroidOctaves: Maximum number of octaves for noise generation
- * @param blockPalettes: list of Palettes use for the asteroid materials
- * @param ores:  list of Palettes used for ore placement
- * @param oreRatio: Number of attempts to place an ore blob per chunk
- * @param features List of AsteroidFeature
- * @see Palette
- */
 @Serializable
 data class ServerConfiguration(
 	val serverName: String? = null,
@@ -70,7 +61,7 @@ data class ServerConfiguration(
 	 * @param features List of AsteroidFeature
 	 * @see Palette
 	 */
-	@ConfigSerializable
+	@Serializable
 	data class AsteroidConfig(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
@@ -116,13 +107,16 @@ data class ServerConfiguration(
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
 		 */
-		@ConfigSerializable
+		@Serializable
 		data class Ore(
 			val material: String, // Serialized BlockData
 			val maxBlobSize: Int,
 			val rolls: Int
 		) {
+			@kotlinx.serialization.Transient
 			val blockData = Bukkit.createBlockData(this.material)
+
+			@kotlinx.serialization.Transient
 			val blockState = blockData.nms
 		}
 
@@ -149,7 +143,7 @@ data class ServerConfiguration(
 		 * @param wrecks: List of Wrecks
 		 * @param weight: Weight of the wreck class
 		 **/
-		@ConfigSerializable
+		@Serializable
 		data class WreckClass(
 			val className: String,
 			val wrecks: List<Wreck>,
@@ -161,17 +155,19 @@ data class ServerConfiguration(
 			 * @param weight: Number of rolls for this wreck
 			 * @param encounters: Map of possible scenarios to information about them
 			 **/
-			@ConfigSerializable
+			@Serializable
 			data class Wreck(
 				val wreckSchematicName: String,
 				val weight: Int,
 				val encounters: Map<String, Int>
 			) {
+				@kotlinx.serialization.Transient
 				val encounterWeightedRandomList = WeightedRandomList<String>().apply {
 					this.addMany(this@Wreck.encounters)
 				}
 			}
 
+			@kotlinx.serialization.Transient
 			val weightedWrecks = WeightedRandomList<Wreck>().apply {
 				this.addMany(
 					wrecks.associateWith { it.weight }
@@ -179,6 +175,7 @@ data class ServerConfiguration(
 			}
 		}
 
+		@kotlinx.serialization.Transient
 		val weightedWreckList = WeightedRandomList<WeightedRandomList<WreckClass.Wreck>>().apply {
 			this.addMany(
 				wreckClasses.associate { wreckClass -> wreckClass.weightedWrecks to wreckClass.weight }
