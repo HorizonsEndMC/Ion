@@ -108,7 +108,10 @@ data class ServerConfiguration(
 			val maxBlobSize: Int,
 			val rolls: Int
 		) {
+			@kotlinx.serialization.Transient
 			val blockData = Bukkit.createBlockData(this.material)
+
+			@kotlinx.serialization.Transient
 			val blockState = blockData.nms
 		}
 
@@ -135,7 +138,7 @@ data class ServerConfiguration(
 		 * @param wrecks: List of Wrecks
 		 * @param weight: Weight of the wreck class
 		 **/
-		@ConfigSerializable
+		@Serializable
 		data class WreckClass(
 			val className: String,
 			val wrecks: List<Wreck>,
@@ -147,17 +150,19 @@ data class ServerConfiguration(
 			 * @param weight: Number of rolls for this wreck
 			 * @param encounters: Map of possible scenarios to information about them
 			 **/
-			@ConfigSerializable
+			@Serializable
 			data class Wreck(
 				val wreckSchematicName: String,
 				val weight: Int,
 				val encounters: Map<String, Int>
 			) {
+				@kotlinx.serialization.Transient
 				val encounterWeightedRandomList = WeightedRandomList<String>().apply {
 					this.addMany(this@Wreck.encounters)
 				}
 			}
 
+			@kotlinx.serialization.Transient
 			val weightedWrecks = WeightedRandomList<Wreck>().apply {
 				this.addMany(
 					wrecks.associateWith { it.weight }
@@ -165,6 +170,7 @@ data class ServerConfiguration(
 			}
 		}
 
+		@kotlinx.serialization.Transient
 		val weightedWreckList = WeightedRandomList<WeightedRandomList<WreckClass.Wreck>>().apply {
 			this.addMany(
 				wreckClasses.associate { wreckClass -> wreckClass.weightedWrecks to wreckClass.weight }
