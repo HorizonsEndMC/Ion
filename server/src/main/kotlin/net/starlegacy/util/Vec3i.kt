@@ -14,7 +14,7 @@ data class Vec3i(val x: Int, val y: Int, val z: Int) {
 
 	override fun toString() = "$x,$y,$z"
 
-	fun toLocation(world: World): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+	fun toLocation(world: World?): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 
 	@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 	fun toBlockKey(): Long = blockKey(x, y, z)
