@@ -4,9 +4,11 @@ import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.Tasks
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isShulkerBox
 import net.starlegacy.util.leftFace
@@ -24,15 +26,17 @@ import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.annotations.Nullable
 import java.util.Arrays
 import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
 
 abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
-	PowerStoringMultiblock(),
+	Multiblock(),
+	PowerStoringMultiblock,
 	FurnaceMultiblock {
+	override val inputComputerOffset = Vec3i(0, -1, 0)
+
 	companion object {
 		private val DISABLED = ChatColor.RED.toString() + "[DISABLED]"
 		private val blacklist = EnumSet.of(
@@ -122,7 +126,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		super.onTransformSign(player, sign)
+		super<PowerStoringMultiblock>.onTransformSign(player, sign)
 		sign.setLine(3, DISABLED)
 	}
 
@@ -183,14 +187,13 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 	private fun breakBlocks(
 		sign: Sign,
-		fuel: @Nullable ItemStack,
+		fuel: ItemStack? = null,
 		maxBroken: Int,
 		toDestroy: MutableList<Block>,
-		player: @Nullable Player
+		player: Player
 	): Int {
 		var broken = 0
 		val output = getOutput(sign.block)
-		val isPick = fuel.type.name.contains("PICK")
 
 		for (block in toDestroy) {
 			if (isBlacklisted(block)) {
@@ -205,9 +208,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 			val customBlock = CustomBlocks[block]
 			var drops = if (customBlock == null) block.drops else Arrays.asList(*customBlock.getDrops())
-			if (isPick && customBlock == null) {
-				drops = block.getDrops(fuel)
-			}
 
 			if (block.type.isShulkerBox) drops = listOf()
 

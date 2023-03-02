@@ -12,7 +12,6 @@ object CarbonPrinterMultiblock : PrinterMultiblock() {
 		"",
 		"&7-:[=]:-"
 	)
-
 	override fun getOutput(product: Material): ItemStack = ItemStack(product, 2)
 
 	override fun LegacyMultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()

@@ -3,17 +3,21 @@ package net.starlegacy.feature.multiblock.powerfurnace
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
+import net.starlegacy.util.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
-abstract class PowerFurnaceMultiblock(tierText: String) : PowerStoringMultiblock(), FurnaceMultiblock {
+abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name = "powerfurnace"
 
 	protected abstract val burnTime: Int
 	protected abstract val tierMaterial: Material
+	override val inputComputerOffset = Vec3i(0, -1, 0)
 
 	override val signText = createSignText(
 		line1 = "&6Power",
@@ -21,6 +25,10 @@ abstract class PowerFurnaceMultiblock(tierText: String) : PowerStoringMultiblock
 		line3 = null,
 		line4 = tierText
 	)
+
+	override fun onTransformSign(player: Player, sign: Sign) {
+		super<PowerStoringMultiblock>.onTransformSign(player, sign)
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {

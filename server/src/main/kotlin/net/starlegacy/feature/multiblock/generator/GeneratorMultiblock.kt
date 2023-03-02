@@ -5,19 +5,28 @@ import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
 import org.bukkit.Effect
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
 abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) :
-	PowerStoringMultiblock(),
+	Multiblock(),
+	PowerStoringMultiblock,
 	FurnaceMultiblock {
 	abstract val speed: Double
+	override val inputComputerOffset = Vec3i(0, -1, 0)
+
+	override fun onTransformSign(player: Player, sign: Sign) {
+		super<PowerStoringMultiblock>.onTransformSign(player, sign)
+	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		event.isBurning = false
