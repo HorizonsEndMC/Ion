@@ -1,10 +1,13 @@
 package net.starlegacy.feature.multiblock.powerbank
 
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.Vec3i
+import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 
-object PowerCellMultiblock : PowerStoringMultiblock() {
+object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock {
 	override val name = "powercell"
 
 	override val signText = createSignText(
@@ -17,6 +20,10 @@ object PowerCellMultiblock : PowerStoringMultiblock() {
 	override val maxPower = 50_000
 
 	override val inputComputerOffset = Vec3i(0, 0, 0)
+
+	override fun onTransformSign(player: Player, sign: Sign) {
+		super<PowerStoringMultiblock>.onTransformSign(player, sign)
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
