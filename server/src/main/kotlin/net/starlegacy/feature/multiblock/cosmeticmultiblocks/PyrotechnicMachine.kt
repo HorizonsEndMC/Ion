@@ -1,10 +1,20 @@
 package net.starlegacy.feature.multiblock.cosmeticmultiblocks
 
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
+import net.starlegacy.util.Vec3i
 import org.bukkit.Material
+import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 
-abstract class PyrotechnicMachine : PowerStoringMultiblock() {
+abstract class PyrotechnicMachine : Multiblock(), PowerStoringMultiblock {
+
+	override val inputComputerOffset = Vec3i(0, -1, 0)
+
+	override fun onTransformSign(player: Player, sign: Sign) {
+		super<PowerStoringMultiblock>.onTransformSign(player, sign)
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
