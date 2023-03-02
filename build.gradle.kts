@@ -1,10 +1,63 @@
 import java.net.URL
 
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-	id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+	kotlin("plugin.serialization") version "1.8.10" apply false
+	alias(libs.plugins.shadow) apply false
+	alias(libs.plugins.spotless)
+	alias(libs.plugins.kotlin)
+}
 
-	kotlin("plugin.serialization") version "1.8.20" apply false
-	kotlin("jvm") version "1.8.21" apply false
+allprojects {
+	apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
+	apply(plugin = rootProject.libs.plugins.kotlin.get().pluginId)
+
+	if (name != "common" && rootProject != this) {
+		apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
+
+		dependencies { implementation(project(":common")) }
+
+		tasks.build {
+			dependsOn("shadowJar")
+		}
+	}
+
+	repositories {
+		mavenCentral()
+
+		maven("https://repo.horizonsend.net/mirror")
+
+		maven("https://repo.papermc.io/repository/maven-public/") // Waterfall
+		maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper)
+		maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
+		maven("https://repo.codemc.io/repository/maven-snapshots/") // WorldEdit
+		maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
+		maven("https://s01.oss.sonatype.org/content/repositories/snapshots") // DiscordSRV Depends
+		maven("https://jitpack.io") // Dynmap (Spigot), Vault, NuVotifier, GuardianBeam
+		maven("https://maven.citizensnpcs.co/repo") // Citizens
+		maven("https://m2.dv8tion.net/releases/")
+	}
+
+	kotlin.jvmToolchain(17)
+
+	tasks.build {
+		dependsOn("spotlessApply")
+	}
+
+	spotless {
+		kotlin {
+			ktlint("0.47.1").editorConfigOverride(mapOf(
+				"ktlint_disabled_rules" to arrayOf(
+					"annotation", // Inlining annotations is cleaner sometimes
+					"argument-list-wrapping" // This seems to break arbitrarily with MenuHelper.kt, come back to this
+				).joinToString()
+			))
+
+			trimTrailingWhitespace()
+			indentWithTabs()
+			endWithNewline()
+		}
+	}
 }
 
 // TODO: Use Json

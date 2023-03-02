@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 
 abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsystem>(), PowerStoringMultiblock {
 	override val name = "mininglaser"
-	abstract val range: Int
+	abstract val range: Double
 	abstract val axis: Triple<Int, Int, Int>
 	abstract val circleRadius: Int
 	abstract val beamCount: Int
