@@ -32,6 +32,13 @@ class MiningLaserProjectile(
 	var guardians: MutableList<Guardian> = mutableListOf()
 	var target: LivingEntity? = null
 
+	override fun fire() {
+		for (point in points) {
+			point.world.spawnEntity(point, EntityType.LIGHTNING)
+		}
+		super.fire()
+	}
+
 	override fun tick() {
 		val result = loc.world.rayTrace(loc, dir, range, FluidCollisionMode.NEVER, true, 0.1, null)
 

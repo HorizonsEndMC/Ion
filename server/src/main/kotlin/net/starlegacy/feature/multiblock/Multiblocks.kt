@@ -4,8 +4,8 @@ import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.PMiningLaserMultiblockTier1Bottom
-import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.PMiningLaserMultiblockTier1Top
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier1Bottom
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier1Top
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockSide
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
@@ -191,8 +191,8 @@ object Multiblocks : SLComponent() {
 			SonicMissileWeaponMultiblock,
 			DecomposerMultiblock,
 
-			PMiningLaserMultiblockTier1Top,
-			PMiningLaserMultiblockTier1Bottom
+			MiningLaserMultiblockTier1Top,
+			MiningLaserMultiblockTier1Bottom
 		)
 	}
 
