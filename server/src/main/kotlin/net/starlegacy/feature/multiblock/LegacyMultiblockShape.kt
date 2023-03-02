@@ -35,7 +35,7 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Slab
-import java.util.EnumSet
+import java.util.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -137,7 +137,7 @@ class LegacyMultiblockShape {
 		}
 	}
 
-	private fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, BlockRequirement> {
+	fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, BlockRequirement> {
 		return requirements.getOrPut(inwardFace) {
 			require(CARDINAL_BLOCK_FACES.contains(inwardFace)) { "Unsupported inward direction: $inwardFace" }
 			return@getOrPut mutableMapOf()
