@@ -15,14 +15,14 @@ class CthulhuBeamProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : RayTracedProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.range
-	override var speed: Double = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.speed
-	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.shieldDamageMultiplier
-	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.thickness
-	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.explosionPower
-	override val volume: Float = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.volume.toFloat()
-	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.pitch
-	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.soundName
+	override val range: Double = IonServer.balancing.starshipWeapons.CthulhuBeam.range
+	override var speed: Double = IonServer.balancing.starshipWeapons.CthulhuBeam.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.CthulhuBeam.shieldDamageMultiplier
+	override val thickness: Double = IonServer.balancing.starshipWeapons.CthulhuBeam.thickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.CthulhuBeam.explosionPower
+	override val volume: Float = IonServer.balancing.starshipWeapons.CthulhuBeam.volume.toFloat()
+	override val pitch: Float = IonServer.balancing.starshipWeapons.CthulhuBeam.pitch
+	override val soundName: String = IonServer.balancing.starshipWeapons.CthulhuBeam.soundName
 
 	override fun visualize(loc: Location, targetLocation: Location) {
 		val crystal: EnderCrystal = (loc.world.spawnEntity(loc, EntityType.ENDER_CRYSTAL) as EnderCrystal)

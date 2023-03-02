@@ -104,13 +104,13 @@ class RocketProjectile(
 
 	override val blockMap: Map<Vec3i, BlockData> = blockMaps.getValue(face)
 
-	override val range: Double = IonServer.Ion.balancing.starshipWeapons.Rocket.range
-	override var speed: Double = IonServer.Ion.balancing.starshipWeapons.Rocket.speed
-	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.Rocket.shieldDamageMultiplier
-	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.Rocket.thickness
-	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.Rocket.explosionPower
-	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.Rocket.volume
-	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.Rocket.soundName
+	override val range: Double = IonServer.balancing.starshipWeapons.Rocket.range
+	override var speed: Double = IonServer.balancing.starshipWeapons.Rocket.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.Rocket.shieldDamageMultiplier
+	override val thickness: Double = IonServer.balancing.starshipWeapons.Rocket.thickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.Rocket.explosionPower
+	override val volume: Int = IonServer.balancing.starshipWeapons.Rocket.volume
+	override val soundName: String = IonServer.balancing.starshipWeapons.Rocket.soundName
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)

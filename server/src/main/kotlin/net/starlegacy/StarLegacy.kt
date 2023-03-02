@@ -4,7 +4,7 @@ import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -53,14 +53,14 @@ var INITIALIZATION_COMPLETE: Boolean = false
 val sharedDataFolder by lazy { File(SETTINGS.sharedFolder).apply { mkdirs() } }
 
 fun legacyEnable(commandManager: PaperCommandManager) {
-	SETTINGS = loadConfig(Ion.dataFolder, "config") // Settings
+	SETTINGS = loadConfig(IonServer.dataFolder, "config") // Settings
 	MongoManager.onEnable() // Database
 	redisPool = JedisPool(SETTINGS.redis.host, Protocol.DEFAULT_PORT) // Redis
 	for (component in components) { // Components
 		component.onEnable()
-		Ion.server.pluginManager.registerEvents(component, Ion)
+		IonServer.server.pluginManager.registerEvents(component, IonServer)
 	}
-	for (listeners in listeners) Ion.server.pluginManager.registerEvents(listeners, Ion) // Listeners
+	for (listeners in listeners) IonServer.server.pluginManager.registerEvents(listeners, IonServer) // Listeners
 	registerCommands(commandManager)
 	scheduleNationTasks()
 	INITIALIZATION_COMPLETE = true
@@ -202,12 +202,12 @@ inline fun <reified T : Event> listen(
 	ignoreCancelled: Boolean = false,
 	noinline block: (Listener, T) -> Unit
 ) {
-	Ion.server.pluginManager.registerEvent(
+	IonServer.server.pluginManager.registerEvent(
 		T::class.java,
 		object : Listener {},
 		priority,
 		{ listener, event -> block(listener, event as? T ?: return@registerEvent) },
-		Ion,
+		IonServer,
 		ignoreCancelled
 	)
 }

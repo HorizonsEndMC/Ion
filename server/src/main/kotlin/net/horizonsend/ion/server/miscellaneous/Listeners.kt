@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners
@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.listeners.MiscListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.ResourcePackListener
 
 val listeners = arrayOf(
-	ChunkLoadListener(Ion),
+	ChunkLoadListener(IonServer),
 	WorldListeners(),
 	HyperspaceBeaconManager,
 	InventoryClickListener(),

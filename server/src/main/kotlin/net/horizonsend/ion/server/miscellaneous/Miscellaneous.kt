@@ -29,7 +29,7 @@ inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
 /** Used for catching when a function that is not designed to be used async is being used async. */
 fun mainThreadCheck() {
 	if (!Bukkit.isPrimaryThread()) {
-		IonServer.Ion.slF4JLogger.warn(
+		IonServer.slF4JLogger.warn(
 			"This function may be unsafe to use asynchronously.",
 			Throwable()
 		)

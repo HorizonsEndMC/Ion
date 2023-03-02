@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.customItems.CustomItems
 import net.horizonsend.ion.server.features.customItems.CustomItems.CIRCUITRY
 import net.horizonsend.ion.server.features.customItems.CustomItems.GUN_BARREL
@@ -77,7 +77,7 @@ import org.bukkit.inventory.ShapelessRecipe
 
 fun initializeCrafting() {
 	// Prismarine Bricks
-	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(Ion, "prismarine_bricks"), ItemStack(PRISMARINE_BRICKS), PRISMARINE, 1f, 200))
+	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(IonServer, "prismarine_bricks"), ItemStack(PRISMARINE_BRICKS), PRISMARINE, 1f, 200))
 
 	// Bell
 	shapedRecipe("bell", BELL) {
@@ -294,19 +294,19 @@ fun initializeCrafting() {
 }
 
 private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
-	val recipe = ShapedRecipe(NamespacedKey(Ion, name), ItemStack(result))
+	val recipe = ShapedRecipe(NamespacedKey(IonServer, name), ItemStack(result))
 	execute(recipe)
 	Bukkit.addRecipe(recipe)
 }
 
 private fun itemStackShapeRecipe(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit) {
-	val recipe = ShapedRecipe(NamespacedKey(Ion, name), result)
+	val recipe = ShapedRecipe(NamespacedKey(IonServer, name), result)
 	execute(recipe)
 	Bukkit.addRecipe(recipe)
 }
 
 private fun shapelessRecipe(name: String, result: ItemStack, ingredients: Array<Material>) {
-	val recipe = ShapelessRecipe(NamespacedKey(Ion, name), result)
+	val recipe = ShapelessRecipe(NamespacedKey(IonServer, name), result)
 	for (ingredient in ingredients) recipe.addIngredient(ingredient)
 	Bukkit.addRecipe(recipe)
 }

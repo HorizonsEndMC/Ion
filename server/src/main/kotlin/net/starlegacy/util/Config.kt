@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import io.github.config4k.extract
 import io.github.config4k.toConfig
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -35,7 +35,7 @@ inline fun <reified T : Any> loadConfig(parent: File, name: String): T {
 	try {
 		saveConfig(config, parent, name)
 	} catch (exception: Exception) {
-		Ion.slF4JLogger.warn("Failed to save config file, this could be an issue, or intentional.")
+		IonServer.slF4JLogger.warn("Failed to save config file, this could be an issue, or intentional.")
 	}
 
 	if (json) jsonFile.delete()

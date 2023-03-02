@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
 import com.google.common.io.BaseEncoding
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.miscellaneous.extensions.serverError
 import net.horizonsend.ion.server.miscellaneous.extensions.userError
@@ -35,14 +35,14 @@ class ResourcePackListener : Listener {
 
 				"https://github.com/HorizonsEndMC/ResourcePack/releases/download/$tagName/HorizonsEndResourcePack.zip"
 			} catch (exception: Exception) {
-				Ion.slF4JLogger.warn("Exception was thrown while updating resource pack URL!", exception)
+				IonServer.slF4JLogger.warn("Exception was thrown while updating resource pack URL!", exception)
 				null
 			}
 
 			cachedHash = try {
 				BaseEncoding.base16().encode(MessageDigest.getInstance("SHA-1").digest(URL(cachedURL).readBytes()))
 			} catch (exception: Exception) {
-				Ion.slF4JLogger.warn("Exception was thrown while computing resource pack hash!", exception)
+				IonServer.slF4JLogger.warn("Exception was thrown while computing resource pack hash!", exception)
 				null
 			}
 

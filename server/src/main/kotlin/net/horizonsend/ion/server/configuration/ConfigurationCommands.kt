@@ -14,8 +14,8 @@ class ConfigurationCommands : BaseCommand() {
 	@Subcommand("config reload")
 	@CommandPermission("ion.config.reload")
 	fun onConfigReload(sender: CommandSender) {
-		IonServer.Ion.configuration = Configuration.load(IonServer.Ion.dataFolder, "server.json")
-		IonServer.Ion.balancing = Configuration.load(IonServer.Ion.dataFolder, "balancing.json")
+		IonServer.configuration = Configuration.load(IonServer.dataFolder, "server.json")
+		IonServer.balancing = Configuration.load(IonServer.dataFolder, "balancing.json")
 		sender.sendRichMessage("<bold><green>Configuration Reloaded")
 	}
 }

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.hyperspace
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerSet
@@ -14,7 +14,7 @@ object HyperspaceBeacons : SLComponent() {
 
 		set = api.createMarkerSet("starships.hyperspace", "Hyperspace", null, false)
 
-		for (beacon in Ion.configuration.beacons) {
+		for (beacon in IonServer.configuration.beacons) {
 			val split = beacon.name.split("_")
 
 			if (split.size != 2) continue

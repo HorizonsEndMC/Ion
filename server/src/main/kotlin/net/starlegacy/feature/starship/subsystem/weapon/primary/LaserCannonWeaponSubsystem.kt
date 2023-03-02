@@ -12,14 +12,14 @@ import org.bukkit.util.Vector
 
 class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 	CannonWeaponSubsystem(starship, pos, face) {
-	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.powerusage
-	override val length: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.length
-	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.LaserCannon.angleRadians)
-	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.LaserCannon.convergeDistance
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.LaserCannon.powerusage
+	override val length: Int = IonServer.balancing.starshipWeapons.LaserCannon.length
+	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.LaserCannon.angleRadians)
+	override val convergeDist: Double = IonServer.balancing.starshipWeapons.LaserCannon.convergeDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
 		CannonLaserProjectile(starship, loc, dir, shooter).fire()
 	}
 
-	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.LaserCannon.extraDistance
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.LaserCannon.extraDistance
 }
