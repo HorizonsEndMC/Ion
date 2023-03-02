@@ -38,11 +38,11 @@ class RocketWeaponSubsystem(
 		return true
 	}
 
-	override fun getAdjustedDir(dir: Vector, target: Vector?): Vector {
+	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		return dir
 	}
 
-	override fun canFire(dir: Vector, target: Vector?): Boolean {
+	override fun canFire(dir: Vector, target: Vector): Boolean {
 		if (vectorToBlockFace(dir, includeVertical = true) != this.face) {
 			return false
 		}
@@ -78,7 +78,7 @@ class RocketWeaponSubsystem(
 		return multiblock.blockMatchesStructure(block, inward)
 	}
 
-	override fun manualFire(shooter: Player, dir: Vector, target: Vector?) {
+	override fun manualFire(shooter: Player, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.serverLevel.world)
 		val projectile = RocketProjectile(starship, origin, this.face, shooter)
 		projectile.fire()
