@@ -35,6 +35,7 @@ allprojects {
 		maven("https://s01.oss.sonatype.org/content/repositories/snapshots") // DiscordSRV Depends
 		maven("https://jitpack.io") // Dynmap (Spigot), Vault, NuVotifier
 		maven("https://maven.citizensnpcs.co/repo") // Citizens
+		maven("https://m2.dv8tion.net/releases/")
 	}
 
 	kotlin.jvmToolchain(17)
