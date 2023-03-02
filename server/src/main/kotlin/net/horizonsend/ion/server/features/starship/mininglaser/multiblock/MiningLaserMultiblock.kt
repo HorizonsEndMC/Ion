@@ -11,10 +11,13 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 	abstract val range: Int
 	abstract val axis: Triple<Int, Int, Int>
 	abstract val circleRadius: Int
+	abstract val beamCount: Int
 
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): MiningLaserSubsystem {
-		return MiningLaserSubsystem(starship, pos, getAdjustedFace(face), this)
+		return MiningLaserSubsystem(starship, pos, face, this)
 	}
 
-	protected abstract fun getAdjustedFace(originalFace: BlockFace): BlockFace
+	abstract fun getFirePointOffset(): Vec3i
+
+	abstract fun upDownFace(): BlockFace
 }
