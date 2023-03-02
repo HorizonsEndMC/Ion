@@ -1,13 +1,17 @@
 package net.horizonsend.ion.server.features.starship.mininglaser
 
+import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.starlegacy.feature.starship.active.ActiveStarship
+import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.alongVector
+import net.starlegacy.util.getFacing
 import net.starlegacy.util.randomDouble
+import net.starlegacy.util.rightFace
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.BlockFace
@@ -15,9 +19,10 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Guardian
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import java.lang.Math.toRadians
-import kotlin.math.acos
 
 class MiningLaserSubsystem(
 	starship: ActiveStarship,
@@ -25,8 +30,9 @@ class MiningLaserSubsystem(
 	private val face: BlockFace,
 	val multiblock: MiningLaserMultiblock
 ) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
-	val trackedGuardians = listOf<Guardian>()
-	val trackedTargets = listOf<ArmorStand>()
+	val trackedGuardians = mutableListOf<Guardian>()
+	val trackedTargets = mutableListOf<ArmorStand>()
+	private val firingTasks = mutableListOf<BukkitTask>()
 	var isFiring = false
 	var target: Vector? = null
 
@@ -57,10 +63,14 @@ class MiningLaserSubsystem(
 	}
 
 	private fun getFirePos(): Vec3i {
+		val (x, y, z) = multiblock.getFirePointOffset()
+		val facing = getSign()?.getFacing() ?: face
+		val right = facing.rightFace
+
 		return Vec3i(
-			pos.x + face.modX * multiblock.axis.first,
-			pos.y + face.modY * multiblock.axis.second,
-			pos.z + face.modZ * multiblock.axis.third
+			x = (right.modX * x) + (facing.modX * z),
+			y = (multiblock.upDownFace().direction.y * y).toInt(),
+			z = (right.modZ * x) + (facing.modZ * z)
 		)
 	}
 
@@ -71,46 +81,58 @@ class MiningLaserSubsystem(
 		return multiblock.signMatchesStructure(sign, loadChunks = true, particles = false)
 	}
 
-	private fun getRingCenter(fireOrigin: Location): Location {
-		val pitch = fireOrigin.pitch
-		val elevation = toRadians((if (pitch > 0) pitch else pitch + 360).toDouble())
-		val heightBump = acos(elevation) * multiblock.circleRadius
+	private fun getPoints(axis: Vector): List<Location> {
+		val spread: Double = 360.0 / multiblock.beamCount
+		val points = mutableListOf<Location>()
+		val start = axis.normalize().rotateAroundZ(90.0).multiply(multiblock.circleRadius).add(axis)
 
-		val adjustedHeight = fireOrigin.y + heightBump
+		for (count in multiblock.beamCount.downTo(1)) {
+			val newLoc = start.rotateAroundNonUnitAxis(axis, spread * count)
+			points.add(newLoc.toLocation(starship.serverLevel.world))
+		}
 
-		return Location(
-			starship.serverLevel.world,
-			pos.x + face.modY * multiblock.axis.first.toDouble(),
-			adjustedHeight,
-			pos.z + face.modZ * multiblock.axis.third.toDouble()
-		)
+		return points
 	}
 
 	override fun manualFire(shooter: Player, dir: Vector, target: Vector?) {
-		isFiring != isFiring
+		if (!isFiring) { startFiringSequence() } else firingTasks.forEach { it.cancel() }; firingTasks.clear()
+		isFiring = !isFiring
 		this.target = target
 		shooter.information("Toggled mining laser! : $isFiring")
-		if (!isFiring) { fire() }
+	}
+
+	private fun startFiringSequence() {
+		val fireTask = object : BukkitRunnable() {
+			override fun run() {
+				if (isFiring) {
+					fire()
+				} else {
+					cancel()
+				}
+			}
+		}.runTaskTimer(Ion, 0L, 20L)
+
+		firingTasks.add(fireTask)
 	}
 
 	fun fire() {
-		val intialPos = getFirePos()
-		val adjustedPos = getRingCenter(intialPos.toLocation(null))
-		val adjustedVector = getAdjustedDir(this.pos.toVector(), target)
+		if (!ActiveStarships.isActive(starship)) {
+			firingTasks.forEach { it.cancel() }
+			return
+		}
+
+		val intialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
+		val adjustedVector = getAdjustedDir(pos.toVector(), target)
+		val points: List<Location> = getPoints(getAdjustedDir(pos.toVector(), target))
 
 		println(intialPos)
-		println(adjustedPos)
 		println(adjustedVector)
+		println(target)
 
-		for (loc in pos.toLocation(starship.world).alongVector(adjustedVector.multiply(multiblock.range), 300)) {
-			println(loc)
-			starship.world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+		for (loc in intialPos.toLocation(starship.serverLevel.world).alongVector(getAdjustedDir(pos.toVector(), target).normalize().multiply(multiblock.range), 300)) {
+			starship.serverLevel.world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
 
-		while (isFiring && canFire(adjustedVector, target)) {
-			if ((System.currentTimeMillis() % 1000) != 0.toLong()) continue
-			println("Shooting again!")
-			MiningLaserProjectile()
-		}
+		MiningLaserProjectile(starship, this, intialPos, points, getAdjustedDir(pos.toVector(), target)).fire()
 	}
 }

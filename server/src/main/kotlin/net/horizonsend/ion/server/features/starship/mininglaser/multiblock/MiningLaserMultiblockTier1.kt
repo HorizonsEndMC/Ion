@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
 
 import net.kyori.adventure.text.Component
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 
 sealed class MiningLaserMultiblockTier1 : MiningLaserMultiblock() {
@@ -15,10 +16,13 @@ sealed class MiningLaserMultiblockTier1 : MiningLaserMultiblock() {
 	override val axis = Triple(0, 3, 1)
 	override val range: Int = 30
 	override val circleRadius = 3
+	override val beamCount: Int = 1
 }
 
 object PMiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
-	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.UP
+	override fun upDownFace(): BlockFace = BlockFace.UP
+
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +4, -2)
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
@@ -81,8 +85,9 @@ object PMiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 }
 
 object PMiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
-	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.DOWN
+	override fun upDownFace(): BlockFace = BlockFace.DOWN
 
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, 1)
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
