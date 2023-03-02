@@ -8,7 +8,7 @@ interface ManualWeaponSubsystem {
 	/**
 	 * Does the actual firing of the weapon, does not use power or check for collision
 	 */
-	fun manualFire(shooter: Player, dir: Vector, target: Vector?)
+	fun manualFire(shooter: Player, dir: Vector, target: Vector)
 
 	fun isAcceptableDirection(face: BlockFace) = true
 }

@@ -14,7 +14,7 @@ abstract class TargetTrackingCannonWeaponSubsystem(
 	override val angleRadians: Double = Math.toRadians(180.0) // unrestricted
 	protected abstract val aimDistance: Int
 
-	override fun canFire(dir: Vector, target: Vector?): Boolean {
+	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return target != null &&
 			!isTargetObstructed(target) &&
 			isPathObstructed(dir)
@@ -30,7 +30,7 @@ abstract class TargetTrackingCannonWeaponSubsystem(
 		return starship.isInternallyObstructed(origin, direction)
 	}
 
-	override fun getAdjustedDir(dir: Vector, target: Vector?): Vector {
+	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		return this.face.direction
 	}
 }

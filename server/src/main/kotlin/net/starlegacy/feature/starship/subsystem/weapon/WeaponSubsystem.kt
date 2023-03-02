@@ -21,13 +21,13 @@ abstract class WeaponSubsystem(
 
 	open fun getMaxPerShot(): Int? = null
 
-	abstract fun getAdjustedDir(dir: Vector, target: Vector?): Vector
+	abstract fun getAdjustedDir(dir: Vector, target: Vector): Vector
 
 	/**
 	 * Check if the weapon is obstructed etc.
 	 * @return True if it should fire, false if it shouldn't
 	 */
-	abstract fun canFire(dir: Vector, target: Vector?): Boolean
+	abstract fun canFire(dir: Vector, target: Vector): Boolean
 
 	open fun isForwardOnly(): Boolean = false
 
