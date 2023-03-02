@@ -10,7 +10,6 @@ import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponS
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.alongVector
 import net.starlegacy.util.getFacing
-import net.starlegacy.util.randomDouble
 import net.starlegacy.util.rightFace
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -22,7 +21,6 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
-import java.lang.Math.toRadians
 
 class MiningLaserSubsystem(
 	starship: ActiveStarship,
@@ -34,28 +32,25 @@ class MiningLaserSubsystem(
 	val trackedTargets = mutableListOf<ArmorStand>()
 	private val firingTasks = mutableListOf<BukkitTask>()
 	var isFiring = false
-	var target: Vector? = null
+	var targetedBlock: Vector? = null
 
 	override val powerUsage: Int = 0
 	// override fun getAdjustedDir(dir: Vector, target: Vector?): Vector = target?.subtract(getFirePos().toVector()) ?: dir
 
 	override fun getAdjustedDir(dir: Vector, target: Vector?): Vector {
-		if (target != null) {
-			val origin = getFirePos().toCenterVector()
-			val adjustedDir = target.clone().subtract(origin)
+// 		if (target != null) {
+// 			val origin = getFirePos().toCenterVector()
+// 			val adjustedDir = target.clone().subtract(origin)
+//
+// 			val horizontalAxis = adjustedDir.clone()
+// 			horizontalAxis.y = 0.0
+// 			horizontalAxis.rotateAroundY(90.0)
+// 			horizontalAxis.normalize()
+//
+// 			return adjustedDir.normalize()
+// 		}
 
-			val horizontalAxis = adjustedDir.clone()
-			horizontalAxis.y = 0.0
-			horizontalAxis.rotateAroundY(90.0)
-			horizontalAxis.normalize()
-
-			adjustedDir.rotateAroundAxis(horizontalAxis, toRadians(randomDouble(-0.01, 0.01)))
-			adjustedDir.rotateAroundY(toRadians(randomDouble(-0.01, 0.01)))
-
-			return adjustedDir.normalize()
-		}
-
-		return dir
+		return target!!
 	}
 
 	override fun canFire(dir: Vector, target: Vector?): Boolean {
@@ -84,10 +79,10 @@ class MiningLaserSubsystem(
 	private fun getPoints(axis: Vector): List<Location> {
 		val spread: Double = 360.0 / multiblock.beamCount
 		val points = mutableListOf<Location>()
-		val start = axis.normalize().rotateAroundZ(90.0).multiply(multiblock.circleRadius).add(axis)
+		val start = axis.clone().normalize().rotateAroundZ(90.0).multiply(multiblock.circleRadius).add(axis.clone())
 
 		for (count in multiblock.beamCount.downTo(1)) {
-			val newLoc = start.rotateAroundNonUnitAxis(axis, spread * count)
+			val newLoc = start.rotateAroundNonUnitAxis(axis.clone(), spread * count)
 			points.add(newLoc.toLocation(starship.serverLevel.world))
 		}
 
@@ -95,10 +90,18 @@ class MiningLaserSubsystem(
 	}
 
 	override fun manualFire(shooter: Player, dir: Vector, target: Vector?) {
-		if (!isFiring) { startFiringSequence() } else firingTasks.forEach { it.cancel() }; firingTasks.clear()
+		if (!isFiring) {
+			startFiringSequence()
+			this.targetedBlock = target?.clone()
+			shooter.information(target.toString())
+			shooter.information("Enabled mining laser")
+		} else {
+			firingTasks.forEach { it.cancel() }
+			firingTasks.clear()
+			shooter.information("Disabled mining laser")
+		}
+
 		isFiring = !isFiring
-		this.target = target
-		shooter.information("Toggled mining laser! : $isFiring")
 	}
 
 	private fun startFiringSequence() {
@@ -121,18 +124,25 @@ class MiningLaserSubsystem(
 			return
 		}
 
+		println("firepos: ${getFirePos()}")
+		println("firepos location: ${getFirePos().toLocation(starship.serverLevel.world)}")
+		println("firepos centervector: ${getFirePos().toLocation(starship.serverLevel.world).toCenterLocation()}")
+		println("pos: ${pos.toVector()}")
+
 		val intialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
-		val adjustedVector = getAdjustedDir(pos.toVector(), target)
-		val points: List<Location> = getPoints(getAdjustedDir(pos.toVector(), target))
+		val adjustedVector = getAdjustedDir(pos.toVector(), targetedBlock)
+		val points: List<Location> = getPoints(getAdjustedDir(pos.toVector(), targetedBlock))
+
+		val targetVector = targetedBlock?.clone()!!.subtract(intialPos.toVector())
 
 		println(intialPos)
 		println(adjustedVector)
-		println(target)
+		println(targetedBlock)
 
-		for (loc in intialPos.toLocation(starship.serverLevel.world).alongVector(getAdjustedDir(pos.toVector(), target).normalize().multiply(multiblock.range), 300)) {
+		for (loc in intialPos.toLocation(starship.serverLevel.world).alongVector(targetVector.clone().normalize().multiply(multiblock.range), 300)) {
 			starship.serverLevel.world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
-
-		MiningLaserProjectile(starship, this, intialPos, points, getAdjustedDir(pos.toVector(), target)).fire()
+		//TODO rewrite all of the aiming stuff
+		MiningLaserProjectile(starship, this, intialPos, points, getAdjustedDir(pos.toVector(), targetedBlock!!.clone())).fire()
 	}
 }
