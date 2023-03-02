@@ -5,24 +5,32 @@ import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.feature.starship.active.ActiveStarship
+import net.starlegacy.feature.multiblock.drills.DrillMultiblock
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
+import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
+import org.bukkit.Bukkit.getPlayer
+import org.bukkit.ChatColor
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 
 class MiningLaserSubsystem(
-	starship: ActiveStarship,
+	override val starship: ActivePlayerStarship,
 	pos: Vec3i,
 	private val face: BlockFace,
 	val multiblock: MiningLaserMultiblock
@@ -121,30 +129,81 @@ class MiningLaserSubsystem(
 			firingTasks.forEach { it.cancel() }
 			return
 		}
+
 		val sign = getSign() ?: return
 		val power = PowerMachines.getPower(sign, true)
 
-		if (power == 0) return
+		if (power == 0) {
+			starship.passengerIDs.forEach {
+				getPlayer(it)?.sendMessage(
+					String.format(
+						"%sDrill at %s ran out of power!",
+						ChatColor.RED, sign.location.toVector()
+					)
+				)
+
+				return
+			}
+		}
 
 		val intialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
-		val points: List<Location> = getPoints(getAdjustedDir(pos.toVector(), targetedBlock))
-
 		val targetVector = targetedBlock.clone().subtract(intialPos.toVector())
 
-// 		for (loc in intialPos.toLocation(starship.serverLevel.world).alongVector(targetVector.clone().normalize().multiply(multiblock.range), 300)) {
-// 			starship.serverLevel.world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
-// 		}
 		// TODO rewrite all of the aiming stuff
-		PowerMachines.setPower(sign, power - blockBreakPowerUsage * 100, true)
 
-		val raytrace = starship.serverLevel.world.rayTrace(intialPos, targetVector.clone(), multiblock.range, FluidCollisionMode.NEVER, true, multiblock.circleRadius.toDouble()) { true }
-		raytrace?.hitBlock
+		val raytrace = starship.serverLevel.world.rayTrace(
+			intialPos,
+			targetVector.clone(),
+			multiblock.range,
+			FluidCollisionMode.NEVER,
+			true,
+			0.1,
+			null
+		)
 
 		val laserEnd = raytrace?.hitBlock?.location ?: targetedBlock.toLocation(starship.serverLevel.world)
-
 		val laser = CrystalLaser(intialPos, laserEnd, 5, -1).durationInTicks()
 		laser.start(Ion)
 
-		MiningLaserProjectile(starship, this, intialPos, points, getAdjustedDir(pos.toVector(), targetedBlock.clone())).fire()
+		val blocks = ArrayList<Block>()
+		val block = laserEnd.block
+
+		for (x in -2..2) {
+			for (y in -2..2) {
+				for (z in -2..2) {
+					val toExplode = block.getRelative(BlockFace.EAST, x)
+						.getRelative(BlockFace.UP, y)
+						.getRelative(BlockFace.SOUTH, z)
+
+					if (toExplode.type != Material.AIR) {
+						blocks.add(toExplode)
+					}
+				}
+			}
+		}
+
+		if (
+			DrillMultiblock.breakBlocks(
+				sign = sign,
+				maxBroken = 999,
+				toDestroy = blocks,
+				output = getOutput(sign),
+				isDrillMultiblock = false,
+				people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
+				player = starship.pilot!!
+			) > 0
+		) {
+			PowerMachines.setPower(sign, power - blockBreakPowerUsage * 100, true)
+		}
 	}
+}
+
+fun getOutput(sign: Sign): Inventory {
+	val direction = sign.getFacing().oppositeFace
+	return (
+		sign.block.getRelative(direction)
+			.getRelative(BlockFace.DOWN)
+			.getRelative(direction.leftFace)
+			.getState(false) as InventoryHolder
+		).inventory
 }

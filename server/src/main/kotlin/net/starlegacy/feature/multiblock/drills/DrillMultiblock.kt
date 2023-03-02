@@ -26,9 +26,7 @@ import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import java.util.Arrays
-import java.util.EnumSet
-import java.util.UUID
+import java.util.*
 import kotlin.math.max
 
 abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
@@ -76,6 +74,58 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 					.getState(false) as InventoryHolder
 				)
 				.inventory
+		}
+
+		fun breakBlocks(
+			sign: Sign,
+			fuel: ItemStack? = null,
+			maxBroken: Int,
+			toDestroy: MutableList<Block>,
+			output: Inventory,
+			player: Player,
+			isDrillMultiblock: Boolean = true,
+			vararg people: Player = emptyArray()
+		): Int {
+			var broken = 0
+
+			for (block in toDestroy) {
+				if (isBlacklisted(block)) {
+					continue
+				}
+
+				val testEvent = BlockBreakEvent(block, player)
+				testEvent.isDropItems = false
+				if (!testEvent.callEvent()) {
+					continue
+				}
+
+				val customBlock = CustomBlocks[block]
+				var drops = if (customBlock == null) block.drops else listOf(*customBlock.getDrops())
+
+				if (block.type.isShulkerBox) drops = listOf()
+
+				for (item in drops) {
+					if (!LegacyItemUtils.canFit(output, item)) {
+						player.sendMessage(ChatColor.RED.toString() + "Not enough space.")
+						people.forEach { it.sendMessage(ChatColor.RED.toString() + "Not enough space.") }
+						if (isDrillMultiblock) {
+							setUser(sign, null)
+						}
+						return broken
+					}
+
+					LegacyItemUtils.addToInventory(output, item)
+				}
+
+				val applyPhysics = block.type == Material.COBBLESTONE
+				block.setType(Material.AIR, applyPhysics)
+
+				broken++
+				if (broken >= maxBroken) {
+					break
+				}
+			}
+			return broken
 		}
 	}
 
@@ -179,57 +229,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 		val maxBroken = max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
 
-		val broken = breakBlocks(sign, fuel, maxBroken, toDestroy, player)
+		val broken = breakBlocks(sign, fuel, maxBroken, toDestroy, getOutput(sign.block), player)
 
 		val powerUsage = broken * 10
 		PowerMachines.setPower(sign, power - powerUsage, true)
-	}
-
-	private fun breakBlocks(
-		sign: Sign,
-		fuel: ItemStack? = null,
-		maxBroken: Int,
-		toDestroy: MutableList<Block>,
-		player: Player
-	): Int {
-		var broken = 0
-		val output = getOutput(sign.block)
-
-		for (block in toDestroy) {
-			if (isBlacklisted(block)) {
-				continue
-			}
-
-			val testEvent = BlockBreakEvent(block, player)
-			testEvent.isDropItems = false
-			if (!testEvent.callEvent()) {
-				continue
-			}
-
-			val customBlock = CustomBlocks[block]
-			var drops = if (customBlock == null) block.drops else Arrays.asList(*customBlock.getDrops())
-
-			if (block.type.isShulkerBox) drops = listOf()
-
-			for (item in drops) {
-				if (!LegacyItemUtils.canFit(output, item)) {
-					player.sendMessage(ChatColor.RED.toString() + "Not enough space.")
-					setUser(sign, null)
-					return broken
-				}
-
-				LegacyItemUtils.addToInventory(output, item)
-			}
-
-			val applyPhysics = block.type == Material.COBBLESTONE
-			block.setType(Material.AIR, applyPhysics)
-
-			broken++
-			if (broken >= maxBroken) {
-				break
-			}
-		}
-		return broken
 	}
 
 	private fun getBlocksToDestroy(sign: Sign): MutableList<Block> {
