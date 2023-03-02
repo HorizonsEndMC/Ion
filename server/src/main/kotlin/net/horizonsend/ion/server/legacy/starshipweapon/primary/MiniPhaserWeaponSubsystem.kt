@@ -21,12 +21,12 @@ class MiniPhaserWeaponSubsystem(
 	face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face),
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.length
-	override val convergeDist: Double = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.convergeDistance
-	override val extraDistance: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.extraDistance
-	override val angleRadians: Double = Math.toRadians(IonServer.Ion.balancing.starshipWeapons.MiniPhaser.angleRadians)
-	override val powerUsage: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.powerusage
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.Ion.balancing.starshipWeapons.MiniPhaser.fireCooldownNanos)
+	override val length: Int = IonServer.balancing.starshipWeapons.MiniPhaser.length
+	override val convergeDist: Double = IonServer.balancing.starshipWeapons.MiniPhaser.convergeDistance
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.MiniPhaser.extraDistance
+	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.MiniPhaser.angleRadians)
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.MiniPhaser.powerusage
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.MiniPhaser.fireCooldownNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 

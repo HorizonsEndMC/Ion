@@ -3,7 +3,7 @@ package net.starlegacy.feature.transport
 import co.aikar.timings.Timing
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -116,7 +116,7 @@ object Wires : SLComponent() {
 				}
 
 				if (System.nanoTime() - start > maxTime) {
-					Ion.slF4JLogger.warn("Power update took too long!")
+					IonServer.slF4JLogger.warn("Power update took too long!")
 				}
 			}
 

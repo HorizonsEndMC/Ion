@@ -1,6 +1,6 @@
 package net.starlegacy.feature.machine
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.areashield.AreaShield
@@ -43,7 +43,7 @@ object AreaShields : SLComponent() {
 
 	//region File data
 	fun loadData() {
-		val areaShieldFile = File(Ion.dataFolder, "areashields.yml")
+		val areaShieldFile = File(IonServer.dataFolder, "areashields.yml")
 		if (!areaShieldFile.exists()) {
 			return
 		}
@@ -67,7 +67,7 @@ object AreaShields : SLComponent() {
 	}
 
 	private fun saveData() {
-		val file = File(Ion.dataFolder, "areashields.yml")
+		val file = File(IonServer.dataFolder, "areashields.yml")
 
 		if (configuration == null) configuration = YamlConfiguration()
 

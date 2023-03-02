@@ -10,7 +10,7 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.md_5.bungee.api.ChatColor.RED
 import net.starlegacy.util.Skins
 import net.starlegacy.util.Tasks
@@ -112,7 +112,7 @@ class AnvilInput(val question: String, action: AnvilInputAction) {
 
 fun Player.input(question: String, action: AnvilInputAction) = Tasks.sync {
 	AnvilGUI.Builder()
-		.plugin(Ion)
+		.plugin(IonServer)
 		.text(question)
 		.onComplete { player, field ->
 			AnvilGUI.Response.text(action(player, field))

@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -63,7 +63,10 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val id = objId<PlayerStarshipData>()
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
-			val data = PlayerStarshipData(id, captain, type, Ion.configuration.serverName, worldName, blockKey, name = name)
+			val data = PlayerStarshipData(
+				id, captain, type,
+				IonServer.configuration.serverName, worldName, blockKey, name = name
+			)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
 
@@ -122,7 +125,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 	}
 
 	override fun onEnable() {
-		for (world in Ion.server.worlds) {
+		for (world in IonServer.server.worlds) {
 			load(world)
 		}
 

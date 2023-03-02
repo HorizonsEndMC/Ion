@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotedEvent
@@ -11,7 +11,7 @@ import org.bukkit.event.Listener
 import java.util.UUID
 
 object HyperspaceBeaconManager : Listener {
-	private val beaconWorlds get() = Ion.configuration.beacons.associateBy { it.spaceLocation.bukkitWorld() } // Your problem if it throws null pointers
+	private val beaconWorlds get() = IonServer.configuration.beacons.associateBy { it.spaceLocation.bukkitWorld() } // Your problem if it throws null pointers
 
 	// Make it yell at you once every couple seconds not every time your ship moves
 	private val activeRequests: MutableMap<UUID, Long> = mutableMapOf()

@@ -7,7 +7,7 @@ import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.bounties.BountyScreen
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.starlegacy.SLComponent
@@ -35,7 +35,7 @@ import java.util.UUID
  * Manages NPCs for cities, handles the synchronization of them with the worlds
  */
 object CityNPCs : SLComponent() {
-	private val isCitizensLoaded get() = Ion.server.pluginManager.isPluginEnabled("Citizens")
+	private val isCitizensLoaded get() = IonServer.server.pluginManager.isPluginEnabled("Citizens")
 
 	private lateinit var citizensRegistry: NPCRegistry
 	private val npcTypeMap = mutableMapOf<UUID, CityNPC.Type>()

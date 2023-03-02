@@ -31,16 +31,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
-@Suppress("Unused")
-class IonServer : JavaPlugin() {
-	init {
-		Ion = this
-	}
-
-	companion object {
-		lateinit var Ion: IonServer private set
-	}
-
+object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
 

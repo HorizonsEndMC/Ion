@@ -1,7 +1,7 @@
 package net.starlegacy.feature.machine
 
 import co.aikar.timings.Timing
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -32,14 +32,14 @@ object PowerMachines : SLComponent() {
 
 		val deadBush = ItemStack(Material.DEAD_BUSH)
 		if (Bukkit.getRecipesFor(deadBush).size == 0) {
-			val key = NamespacedKey(Ion, "focusing_crystal")
+			val key = NamespacedKey(IonServer, "focusing_crystal")
 			val recipe = FurnaceRecipe(key, deadBush, Material.PRISMARINE_CRYSTALS, 0.0f, 200)
 			Bukkit.addRecipe(recipe)
 		}
 
 		val yellowFlower = ItemStack(Material.DANDELION)
 		if (Bukkit.getRecipesFor(yellowFlower).size == 0) {
-			val key = NamespacedKey(Ion, "dud")
+			val key = NamespacedKey(IonServer, "dud")
 			val recipe = FurnaceRecipe(key, yellowFlower, Material.SNOWBALL, 0.0f, 200)
 			Bukkit.addRecipe(recipe)
 		}

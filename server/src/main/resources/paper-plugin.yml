@@ -1,0 +1,28 @@
+name: "Ion"
+version: "Unspecified"
+api-version: "1.19"
+
+bootstrapper: net.horizonsend.ion.server.IonBootstrapper
+main: net.horizonsend.ion.server.IonServer
+
+dependencies:
+  - name: WorldEdit
+    required: true
+
+  - name: Citizens
+    required: false
+
+  - name: DiscordSRV
+    required: false
+
+  - name: LuckPerms
+    required: false
+
+  - name: Multiverse-Core
+    required: false
+
+  - name: Vault
+    required: false
+
+  - name: dynmap
+    required: false

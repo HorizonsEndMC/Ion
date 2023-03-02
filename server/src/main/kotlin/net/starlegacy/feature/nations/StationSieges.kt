@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.extensions.information
@@ -90,12 +90,12 @@ object StationSieges : SLComponent() {
 		log.info("Siege quarter change: $lastQuarter -> $newQuarter")
 		lastQuarter = newQuarter
 		lastStations.forEach { lastStationName ->
-			Ion.server.broadcastMessage("&7Space Station &b$lastStationName&7's siege quarter has ended.".colorize())
+			IonServer.server.broadcastMessage("&7Space Station &b$lastStationName&7's siege quarter has ended.".colorize())
 		}
 		val stations = Regions.getAllOf<RegionCapturableStation>()
 			.filter { station -> station.siegeTimeFrame == lastQuarter }
 		for (station in stations) {
-			Ion.server.broadcastMessage("&7Space Station &b${station.name}&7's siege quarter has began! It can be besieged for the rest of the hour with /siege".colorize())
+			IonServer.server.broadcastMessage("&7Space Station &b${station.name}&7's siege quarter has began! It can be besieged for the rest of the hour with /siege".colorize())
 		}
 		lastStations = stations.map { it.name }
 	}

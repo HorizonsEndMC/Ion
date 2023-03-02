@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.extensions.alertAction
 import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
@@ -22,7 +22,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 	private var travelled = 0.0
 
 	init {
-		runTaskTimer(Ion, 2, 2)
+		runTaskTimer(IonServer, 2, 2)
 	}
 
 	private fun remainingDistance() = distance(x, 0.0, z, dest.x, 0.0, dest.z)

@@ -5,7 +5,7 @@ import com.google.common.collect.HashBiMap
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.slPlayerId
@@ -77,7 +77,7 @@ object CombatNPCs : SLComponent() {
 
 			val npcId: UUID = playerToEntity.remove(playerId) ?: return@listen
 
-			Ion.server.getEntity(npcId)?.remove()
+			IonServer.server.getEntity(npcId)?.remove()
 			inventories.remove(npcId)
 		}
 
@@ -86,14 +86,14 @@ object CombatNPCs : SLComponent() {
 			val player = event.player
 			val playerId = player.uniqueId
 			val chunk = player.chunk
-			chunk.addPluginChunkTicket(Ion)
+			chunk.addPluginChunkTicket(IonServer)
 
 			inventories.remove(playerId)
 			// attempt to remove entity from map based on player id.
 			// if one is removed, also attempt to get a currently loaded entity from the removed id.
 			// if it is present, remove that entity as well.
 			playerToEntity.remove(playerId)?.also { oldEntityId: UUID ->
-				Ion.server.getEntity(oldEntityId)?.remove()
+				IonServer.server.getEntity(oldEntityId)?.remove()
 				inventories.remove(oldEntityId)
 			}
 
@@ -118,9 +118,9 @@ object CombatNPCs : SLComponent() {
 
 			Tasks.syncDelay(20L * 60L * remainTimeMinutes) {
 				entityToPlayer.remove(entityId, playerId)
-				Ion.server.getEntity(entityId)?.remove()
+				IonServer.server.getEntity(entityId)?.remove()
 				inventories.remove(entityId)
-				chunk.removePluginChunkTicket(Ion)
+				chunk.removePluginChunkTicket(IonServer)
 			}
 		}
 
@@ -245,7 +245,7 @@ object CombatNPCs : SLComponent() {
 			/*type parameters: */ UUID::class.java, KilledPlayerData::class.java
 		).type
 
-		private val file = File(Ion.dataFolder, "combat_npc_killed_player_data.json")
+		private val file = File(IonServer.dataFolder, "combat_npc_killed_player_data.json")
 
 		fun load() {
 			synchronized(file) {

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import org.bukkit.NamespacedKey
 
 object NamespacedKeys {
@@ -14,5 +14,5 @@ object NamespacedKeys {
 
 	@Deprecated("") val POWER = key("power")
 
-	fun key(key: String) = NamespacedKey(Ion, key)
+	fun key(key: String) = NamespacedKey(IonServer, key)
 }

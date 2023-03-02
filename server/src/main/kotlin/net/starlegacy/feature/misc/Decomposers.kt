@@ -1,6 +1,6 @@
 package net.starlegacy.feature.misc
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.horizonsend.ion.server.miscellaneous.extensions.userError
@@ -78,7 +78,7 @@ object Decomposers : SLComponent() {
 				return
 			}
 
-			task.runTaskTimer(Ion, delay, delay)
+			task.runTaskTimer(IonServer, delay, delay)
 
 			event.player.success("Started Decomposer")
 
