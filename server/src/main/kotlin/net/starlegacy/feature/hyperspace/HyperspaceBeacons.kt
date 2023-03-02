@@ -17,6 +17,8 @@ object HyperspaceBeacons : SLComponent() {
 		for (beacon in Ion.configuration.beacons) {
 			val split = beacon.name.split("_")
 
+			if (split.size != 2) continue
+
 			val name =
 				"${split[0].replaceFirstChar { it.uppercase() }} System -> ${split[1].replaceFirstChar { it.uppercase() }} System"
 
