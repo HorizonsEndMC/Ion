@@ -23,7 +23,7 @@ object StarshipWeapons {
 		override val weapon: WeaponSubsystem,
 		val shooter: Player,
 		val direction: Vector,
-		val target: Vector?
+		val target: Vector
 	) : QueuedShot {
 		override fun shoot() {
 			check(weapon is ManualWeaponSubsystem)

@@ -18,7 +18,7 @@ sealed class MiningLaserMultiblockTier1 : MiningLaserMultiblock() {
 	override val inputComputerOffset = Vec3i(0, -1, 0)
 	override val maxPower: Int = 100000
 	override val axis = Triple(0, 3, 1)
-	override val range: Int = 30
+	override val range: Double = 100.0
 	override val circleRadius = 3
 	override val beamCount: Int = 1
 }
@@ -26,7 +26,7 @@ sealed class MiningLaserMultiblockTier1 : MiningLaserMultiblock() {
 object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 	override fun upDownFace(): BlockFace = BlockFace.UP
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +4, -2)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, -2)
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
@@ -102,7 +102,7 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 	override fun upDownFace(): BlockFace = BlockFace.DOWN
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -4, -2)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, -2)
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {

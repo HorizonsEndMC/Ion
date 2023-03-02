@@ -27,7 +27,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return this.face == face
 	}
 
-	override fun canFire(dir: Vector, target: Vector?): Boolean {
+	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return !starship.isInternallyObstructed(getFirePos(), dir)
 	}
 
@@ -40,11 +40,11 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 
 	protected abstract val angleRadians: Double
 
-	override fun getAdjustedDir(dir: Vector, target: Vector?): Vector {
-		val fireDir = target?.clone()
-			?.add(dir.clone().normalize().multiply(convergeDist))
-			?.subtract(getFireVec())
-			?.normalize() ?: dir
+	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
+		val fireDir = target.clone()
+			.add(dir.clone().normalize().multiply(convergeDist))
+			.subtract(getFireVec())
+			.normalize()
 		var yaw = atan2(-fireDir.x, fireDir.z)
 		var pitch = atan(-fireDir.y / sqrt(fireDir.x.pow(2) + fireDir.z.pow(2)))
 		val baseYaw = atan2(-face.modX.toDouble(), face.modZ.toDouble())
@@ -61,7 +61,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return Vector(x, y, z)
 	}
 
-	override fun manualFire(shooter: Player, dir: Vector, target: Vector?) {
+	override fun manualFire(shooter: Player, dir: Vector, target: Vector) {
 		fire(getFireVec().toLocation(starship.serverLevel.world), dir, shooter, target)
 	}
 
