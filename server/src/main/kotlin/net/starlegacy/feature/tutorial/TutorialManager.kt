@@ -1,7 +1,7 @@
 package net.starlegacy.feature.tutorial
 
 import com.destroystokyo.paper.Title
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
@@ -255,7 +255,7 @@ object TutorialManager : SLComponent() {
 	}
 
 	private fun loadShip(loc: Location) {
-		val file = File(Ion.dataFolder, "tutorial_ship.schem")
+		val file = File(IonServer.dataFolder, "tutorial_ship.schem")
 
 		if (!file.exists()) {
 			error("${file.absolutePath} doesn't exist!")

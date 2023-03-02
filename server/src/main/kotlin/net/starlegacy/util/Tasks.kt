@@ -1,7 +1,7 @@
 package net.starlegacy.util
 
 import co.aikar.timings.Timing
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
@@ -14,32 +14,32 @@ object Tasks {
 	fun checkMainThread() = check(Bukkit.isPrimaryThread()) { "Attempted to call non-thread-safe method async!" }
 
 	fun async(block: () -> Unit) {
-		Bukkit.getScheduler().runTaskAsynchronously(Ion, block)
+		Bukkit.getScheduler().runTaskAsynchronously(IonServer, block)
 	}
 
 	fun asyncDelay(delay: Long, block: () -> Unit) {
-		Bukkit.getScheduler().runTaskLaterAsynchronously(Ion, block, delay)
+		Bukkit.getScheduler().runTaskLaterAsynchronously(IonServer, block, delay)
 	}
 
 	fun asyncRepeat(delay: Long, interval: Long, block: () -> Unit) {
-		Bukkit.getScheduler().runTaskTimerAsynchronously(Ion, block, delay, interval)
+		Bukkit.getScheduler().runTaskTimerAsynchronously(IonServer, block, delay, interval)
 	}
 
 	inline fun sync(crossinline block: () -> Unit) { ; syncTask(block); }
 	inline fun syncTask(crossinline block: () -> Unit): BukkitTask {
-		return Bukkit.getScheduler().runTask(Ion, Runnable { block() })
+		return Bukkit.getScheduler().runTask(IonServer, Runnable { block() })
 	}
 
 	inline fun syncDelay(delay: Long, crossinline block: () -> Unit) { ; syncDelayTask(delay, block); }
 	inline fun syncDelayTask(delay: Long, crossinline block: () -> Unit): BukkitTask {
-		return Bukkit.getScheduler().runTaskLater(Ion, Runnable { block() }, delay)
+		return Bukkit.getScheduler().runTaskLater(IonServer, Runnable { block() }, delay)
 	}
 
 	inline fun syncRepeat(delay: Long, interval: Long, crossinline block: () -> Unit) =
 		syncRepeatTask(delay, interval, block)
 
 	inline fun syncRepeatTask(delay: Long, interval: Long, crossinline block: () -> Unit): BukkitTask =
-		Bukkit.getScheduler().runTaskTimer(Ion, Runnable { block() }, delay, interval)
+		Bukkit.getScheduler().runTaskTimer(IonServer, Runnable { block() }, delay, interval)
 
 	fun syncTimed(timing: Timing, block: () -> Unit): Unit = sync { timing.time(block) }
 
@@ -72,7 +72,7 @@ object Tasks {
 	fun <T> getSync(block: () -> T): Future<T> = if (Bukkit.isPrimaryThread()) {
 		CompletableFuture.completedFuture(block())
 	} else {
-		Bukkit.getScheduler().callSyncMethod(Ion, block)
+		Bukkit.getScheduler().callSyncMethod(IonServer, block)
 	}
 
 	fun <T> getSyncBlocking(block: () -> T): T = getSync(block).get()

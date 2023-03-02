@@ -6,8 +6,8 @@ object ProjectileManager {
 	private val rayTracedParticleProjectiles = mutableListOf<RayTracedParticleProjectile>()
 
 	init {
-		IonServer.Ion.server.scheduler.runTaskTimer(
-			IonServer.Ion,
+		IonServer.server.scheduler.runTaskTimer(
+			IonServer,
 			Runnable {
 				rayTracedParticleProjectiles.removeIf { projectile ->
 					projectile.tick()

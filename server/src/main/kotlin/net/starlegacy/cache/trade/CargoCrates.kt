@@ -1,7 +1,7 @@
 package net.starlegacy.cache.trade
 
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.cache.ManualCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.CargoCrate
@@ -74,7 +74,7 @@ object CargoCrates : ManualCache() {
 	}
 
 	private fun import() {
-		val file = File(Ion.dataFolder, fileName).takeIf(File::exists) ?: return
+		val file = File(IonServer.dataFolder, fileName).takeIf(File::exists) ?: return
 
 		val data = FileReader(file).use { Gson().fromJson(it, CrateListWrapper::class.java) }
 

@@ -2,7 +2,7 @@ package net.starlegacy.feature.nations.region
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -129,7 +129,7 @@ object Regions : SLComponent() {
 
 	fun refreshSettlementMembersLocally(settlementId: Oid<Settlement>) {
 		locked {
-			for (player in Ion.server.onlinePlayers) {
+			for (player in IonServer.server.onlinePlayers) {
 				if (PlayerCache[player].settlement == settlementId) {
 					cache.forEach(player.world.name) { region ->
 						region.cacheAccess(player)

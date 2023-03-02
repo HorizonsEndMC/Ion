@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -123,7 +123,7 @@ object StarshipDestruction {
 			} else {
 				newSinking.clear()
 			}
-		}.runTaskTimerAsynchronously(Ion, 20L, 20L)
+		}.runTaskTimerAsynchronously(IonServer, 20L, 20L)
 	}
 
 	private fun processQueue(

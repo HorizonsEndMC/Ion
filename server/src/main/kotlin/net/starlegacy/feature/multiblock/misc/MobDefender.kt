@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.misc
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.Tasks
@@ -76,7 +76,7 @@ object MobDefender : Multiblock() {
 	// TODO: come up with something less retarded for this
 	private val mobDefenders = ArrayList<Location>()
 	private var config = YamlConfiguration()
-	private val file = File(Ion.dataFolder, "mobdefenders.yml")
+	private val file = File(IonServer.dataFolder, "mobdefenders.yml")
 
 	init {
 		Tasks.sync {
