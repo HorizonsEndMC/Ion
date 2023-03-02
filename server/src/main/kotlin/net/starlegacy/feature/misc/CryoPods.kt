@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.horizonsend.ion.server.miscellaneous.extensions.serverError
@@ -31,7 +31,7 @@ import java.util.Optional
 import java.util.UUID
 
 object CryoPods : SLComponent() {
-	private val folder = File(Ion.dataFolder, "cryopods")
+	private val folder = File(IonServer.dataFolder, "cryopods")
 
 	override fun onEnable() {
 		folder.mkdir()

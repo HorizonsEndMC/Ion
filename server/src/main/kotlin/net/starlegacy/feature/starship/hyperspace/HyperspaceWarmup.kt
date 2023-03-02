@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.extensions.alertAction
 import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
 import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
@@ -37,7 +37,7 @@ class HyperspaceWarmup(
 			warmup = max(warmup, 0)
 		}
 
-		runTaskTimer(Ion, 20L, 20L)
+		runTaskTimer(IonServer, 20L, 20L)
 	}
 
 	private var seconds = 0

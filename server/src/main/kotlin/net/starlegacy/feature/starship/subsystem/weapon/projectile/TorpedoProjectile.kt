@@ -15,15 +15,15 @@ class TorpedoProjectile(
 	originalTarget: Vector,
 	baseAimDistance: Int
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
-	override val range: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.range
-	override val speed: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.speed
-	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.shieldDamageMultiplier
+	override val range: Double = IonServer.balancing.starshipWeapons.ProtonTorpedo.range
+	override val speed: Double = IonServer.balancing.starshipWeapons.ProtonTorpedo.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.ProtonTorpedo.shieldDamageMultiplier
 	override val color: Color = Color.fromRGB(255, 0, 255)
-	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.thickness
-	override val particleThickness: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.particleThickness
-	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.explosionPower
-	override val maxDegrees: Double = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.maxDegrees
-	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.volume
-	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.pitch
-	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.ProtonTorpedo.soundName
+	override val thickness: Double = IonServer.balancing.starshipWeapons.ProtonTorpedo.thickness
+	override val particleThickness: Double = IonServer.balancing.starshipWeapons.ProtonTorpedo.particleThickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.ProtonTorpedo.explosionPower
+	override val maxDegrees: Double = IonServer.balancing.starshipWeapons.ProtonTorpedo.maxDegrees
+	override val volume: Int = IonServer.balancing.starshipWeapons.ProtonTorpedo.volume
+	override val pitch: Float = IonServer.balancing.starshipWeapons.ProtonTorpedo.pitch
+	override val soundName: String = IonServer.balancing.starshipWeapons.ProtonTorpedo.soundName
 }

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.gear
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.util.FENCE_TYPES
 import net.starlegacy.util.LOG_TYPES
 import net.starlegacy.util.WOOD_TYPES
@@ -107,7 +107,7 @@ class TreeCutter(private val player: Player, private val startBlock: Block) : Bu
 					startBlock.type = Material.AIR
 					stop()
 				}
-			}.runTask(Ion)
+			}.runTask(IonServer)
 		}
 	}
 
@@ -171,6 +171,6 @@ class TreeCutter(private val player: Player, private val startBlock: Block) : Bu
 				stop()
 				super.cancel()
 			}
-		}.runTaskTimer(Ion, 0L, speed)
+		}.runTaskTimer(IonServer, 0L, speed)
 	}
 }

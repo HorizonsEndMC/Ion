@@ -1,6 +1,6 @@
 package net.starlegacy.feature.gear
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.feature.misc.CustomItems
@@ -15,7 +15,7 @@ object Gear : SLComponent() {
 		// Use async task and while loop with thread sleep so when it lags it doesnt sound weird
 		// The timing of the sounds is very important
 		Tasks.async {
-			while (Ion.isEnabled) {
+			while (IonServer.isEnabled) {
 				Tasks.sync {
 					for (player in Bukkit.getOnlinePlayers()) {
 						val main = player.inventory.itemInMainHand

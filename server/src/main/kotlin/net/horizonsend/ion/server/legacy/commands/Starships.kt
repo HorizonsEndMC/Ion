@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.legacy.commands
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.starships.PlayerStarshipData
 import net.starlegacy.database.slPlayerId
@@ -23,7 +23,10 @@ internal class Starships : BaseCommand() {
 			PlayerStarshipData.find(
 				and(
 					PlayerStarshipData::captain eq sender.slPlayerId,
-					or(PlayerStarshipData::serverName eq null, PlayerStarshipData::serverName eq Ion.configuration.serverName)
+					or(
+						PlayerStarshipData::serverName eq null,
+						PlayerStarshipData::serverName eq IonServer.configuration.serverName
+					)
 				)
 			).joinToString("\n", "<bold>Starships:</bold><gray>\n") {
 				val x = blockKeyX(it.blockKey)

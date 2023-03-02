@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.extensions.serverErrorActionMessage
 import net.horizonsend.ion.server.miscellaneous.extensions.success
@@ -219,7 +219,7 @@ object StarshipComputers : SLComponent() {
 					player.closeInventory()
 					player.beginConversation(
 						Conversation(
-							Ion, player,
+							IonServer, player,
 							object : StringPrompt() {
 								override fun getPromptText(context: ConversationContext): String {
 									return "Enter player name:"
@@ -276,7 +276,7 @@ object StarshipComputers : SLComponent() {
 		player.closeInventory()
 		player.beginConversation(
 			Conversation(
-				Ion, player,
+				IonServer, player,
 				object : StringPrompt() {
 					override fun getPromptText(context: ConversationContext): String {
 						return "Enter new starship name:"

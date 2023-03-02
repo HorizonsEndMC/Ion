@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.space.SpaceMechanics
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -34,7 +34,7 @@ class MiscListeners : Listener {
 			val distance = player.location.distance(otherPlayer.location)
 
 			if (distance <= 1_000) {
-				Ion.slF4JLogger.warn("\"${player.name}\" has potentially combat logged. \"${otherPlayer.name}\" is ${distance}m away.")
+				IonServer.slF4JLogger.warn("\"${player.name}\" has potentially combat logged. \"${otherPlayer.name}\" is ${distance}m away.")
 			}
 		}
 	}

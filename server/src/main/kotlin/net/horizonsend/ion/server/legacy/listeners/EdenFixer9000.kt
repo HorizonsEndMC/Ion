@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.legacy.listeners
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.core.BlockPos
 import net.starlegacy.util.randomDouble
@@ -29,7 +29,7 @@ class EdenFixer9000 : Listener {
 
 		val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
 		Bukkit.getScheduler().runTaskAsynchronously(
-			Ion,
+			IonServer,
 			Runnable {
 				val removedBlocks = mutableListOf<BlockPos>() // Everything
 
@@ -49,7 +49,7 @@ class EdenFixer9000 : Listener {
 				}
 
 				Bukkit.getScheduler().runTask(
-					Ion,
+					IonServer,
 					Runnable {
 						removedBlocks.forEach { position ->
 							event.chunk.getBlock(position.x, position.y, position.z).setBlockData(airBlockData, false)

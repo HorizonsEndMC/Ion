@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.customItems
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Multishot
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Singleshot
@@ -35,7 +35,7 @@ object CustomItems {
 				material = DIAMOND_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Pistol", RED, BOLD),
-				balancingSupplier = Ion.balancing.energyWeapons::pistol
+				balancingSupplier = IonServer.balancing.energyWeapons::pistol
 			) {}
 		)
 
@@ -46,7 +46,7 @@ object CustomItems {
 				material = IRON_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Rifle", RED, BOLD),
-				balancingSupplier = Ion.balancing.energyWeapons::rifle
+				balancingSupplier = IonServer.balancing.energyWeapons::rifle
 			) {}
 		)
 
@@ -57,7 +57,7 @@ object CustomItems {
 				material = IRON_HOE,
 				customModelData = 2,
 				displayName = text("Submachine Blaster", RED, BOLD),
-				balancingSupplier = Ion.balancing.energyWeapons::submachineBlaster
+				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
 				override fun handleSecondaryInteract(
@@ -89,7 +89,7 @@ object CustomItems {
 				material = GOLDEN_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Shotgun", RED, BOLD),
-				balancingSupplier = Ion.balancing.energyWeapons::shotgun
+				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
 					for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
@@ -104,7 +104,7 @@ object CustomItems {
 				material = GOLDEN_HOE,
 				customModelData = 2,
 				displayName = text("Blaster Sniper", RED, BOLD),
-				balancingSupplier = Ion.balancing.energyWeapons::sniper
+				balancingSupplier = IonServer.balancing.energyWeapons::sniper
 			) {}
 		)
 
@@ -115,7 +115,7 @@ object CustomItems {
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 1,
 				displayName = text("Magazine"),
-				balancingSupplier = Ion.balancing.energyWeapons::standardMagazine
+				balancingSupplier = IonServer.balancing.energyWeapons::standardMagazine
 			) {}
 		)
 

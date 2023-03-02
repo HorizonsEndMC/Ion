@@ -1,7 +1,7 @@
 package net.starlegacy.feature.transport
 
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.feature.transport.pipe.filter.FilterItemData
@@ -52,7 +52,7 @@ object Extractors : SLComponent() {
 	val BUSY_PIPE_EXTRACTORS: MutableSet<Vec3i> = ConcurrentHashMap.newKeySet()
 
 	override fun onEnable() {
-		Ion.server.worlds.forEach(Extractors::loadExtractors)
+		IonServer.server.worlds.forEach(Extractors::loadExtractors)
 
 		Tasks.asyncRepeat(20 * 2, 20 * 2) {
 			worldDataMap.keys.forEach { saveExtractors(it) }
@@ -88,7 +88,7 @@ object Extractors : SLComponent() {
 	}
 
 	override fun onDisable() {
-		Ion.server.worlds.forEach(Extractors::unloadExtractors)
+		IonServer.server.worlds.forEach(Extractors::unloadExtractors)
 		timer.cancel()
 	}
 

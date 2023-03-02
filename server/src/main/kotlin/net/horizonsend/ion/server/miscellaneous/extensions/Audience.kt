@@ -1,7 +1,7 @@
 @file:Suppress("Unused")
 package net.horizonsend.ion.server.miscellaneous.extensions
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -22,7 +22,7 @@ private inline val Audience.prefix get() = when (this) {
 private inline fun Audience.loggedMessage(
 	message: String,
 	color: Int,
-	crossinline loggingFunction: (Component) -> Unit = Ion.componentLogger::info
+	crossinline loggingFunction: (Component) -> Unit = IonServer.componentLogger::info
 ) {
 	val component = construct(message, color)
 	sendMessage(component)
@@ -42,8 +42,11 @@ object HEColors {
 private inline fun Audience.action(message: String, color: Int) = sendActionBar(construct(message, color))
 
 // Messages //
-fun Audience.serverError(message: String) = loggedMessage(message, HEColors.SERVER_ERROR, Ion.componentLogger::error)
-fun Audience.userError(message: String) = loggedMessage(message, HEColors.USER_ERROR, Ion.componentLogger::warn)
+fun Audience.serverError(message: String) = loggedMessage(
+	message, HEColors.SERVER_ERROR,
+	IonServer.componentLogger::error
+)
+fun Audience.userError(message: String) = loggedMessage(message, HEColors.USER_ERROR, IonServer.componentLogger::warn)
 fun Audience.alert(message: String) = loggedMessage(message, HEColors.ALERT)
 fun Audience.information(message: String) = loggedMessage(message, HEColors.INFORMATION)
 fun Audience.success(message: String) = loggedMessage(message, HEColors.SUCCESS)
@@ -59,12 +62,12 @@ fun Audience.hintAction(message: String) = action(message, HEColors.HINT)
 
 // Action Messages //
 fun Audience.serverErrorActionMessage(message: String) {
-	loggedMessage(message, HEColors.SERVER_ERROR, Ion.componentLogger::error)
+	loggedMessage(message, HEColors.SERVER_ERROR, IonServer.componentLogger::error)
 	action(message, HEColors.SERVER_ERROR)
 }
 
 fun Audience.userErrorActionMessage(message: String) {
-	loggedMessage(message, HEColors.USER_ERROR, Ion.componentLogger::warn)
+	loggedMessage(message, HEColors.USER_ERROR, IonServer.componentLogger::warn)
 	action(message, HEColors.USER_ERROR)
 }
 

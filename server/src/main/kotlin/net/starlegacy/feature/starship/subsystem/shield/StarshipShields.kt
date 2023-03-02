@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.minecraft.world.level.Level
@@ -463,7 +463,7 @@ object StarshipShields : SLComponent() {
 			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(10L)) {
 				cancel()
 			}
-		}.runTaskTimer(Ion, 20, 20)
+		}.runTaskTimer(IonServer, 20, 20)
 	}
 
 	private fun getBoxShieldBlocks(sign: Sign): List<Vec3i> {

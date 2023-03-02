@@ -14,14 +14,14 @@ class MiniPhaserProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.range
-	override var speed: Double = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.speed
-	override val shieldDamageMultiplier: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.shieldDamageMultiplier
-	override val thickness: Double = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.thickness
-	override val explosionPower: Float = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.explosionPower
-	override val volume: Int = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.volume
-	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.pitch
-	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.MiniPhaser.soundName
+	override val range: Double = IonServer.balancing.starshipWeapons.MiniPhaser.range
+	override var speed: Double = IonServer.balancing.starshipWeapons.MiniPhaser.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.MiniPhaser.shieldDamageMultiplier
+	override val thickness: Double = IonServer.balancing.starshipWeapons.MiniPhaser.thickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.MiniPhaser.explosionPower
+	override val volume: Int = IonServer.balancing.starshipWeapons.MiniPhaser.volume
+	override val pitch: Float = IonServer.balancing.starshipWeapons.MiniPhaser.pitch
+	override val soundName: String = IonServer.balancing.starshipWeapons.MiniPhaser.soundName
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val offset = 0.0
