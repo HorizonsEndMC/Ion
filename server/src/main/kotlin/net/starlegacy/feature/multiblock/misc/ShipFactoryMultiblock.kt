@@ -1,7 +1,9 @@
 package net.starlegacy.feature.multiblock.misc
 
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
 import org.bukkit.block.Sign
@@ -9,7 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-object ShipFactoryMultiblock : PowerStoringMultiblock() {
+object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock {
 	override val name = "shipfactory"
 
 	override val signText = createSignText(
@@ -18,6 +20,8 @@ object ShipFactoryMultiblock : PowerStoringMultiblock() {
 		line3 = null,
 		line4 = null
 	)
+
+	override val inputComputerOffset = Vec3i(0, -1, 0)
 
 	override val maxPower: Int = 1_000_000
 

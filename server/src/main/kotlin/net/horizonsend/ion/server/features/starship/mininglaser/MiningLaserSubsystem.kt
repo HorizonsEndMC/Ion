@@ -142,7 +142,7 @@ class MiningLaserSubsystem(
 		for (loc in intialPos.toLocation(starship.serverLevel.world).alongVector(targetVector.clone().normalize().multiply(multiblock.range), 300)) {
 			starship.serverLevel.world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
-		//TODO rewrite all of the aiming stuff
+		// TODO rewrite all of the aiming stuff
 		MiningLaserProjectile(starship, this, intialPos, points, getAdjustedDir(pos.toVector(), targetedBlock!!.clone())).fire()
 	}
 }
