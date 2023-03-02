@@ -1,7 +1,7 @@
 package net.starlegacy.util
 
 import github.scarsz.discordsrv.DiscordSRV
-import net.dv8tion.jda.api.entities.TextChannel
+import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid

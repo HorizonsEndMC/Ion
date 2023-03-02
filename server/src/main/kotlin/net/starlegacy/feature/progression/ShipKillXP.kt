@@ -3,9 +3,9 @@ package net.starlegacy.feature.progression
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import github.scarsz.discordsrv.DiscordSRV
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.entities.TextChannel
+import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
+import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
+import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.database.collections.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.database.update
@@ -277,10 +277,8 @@ object ShipKillXP : SLComponent() {
 
 		if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV") && !arena) {
 			Tasks.async {
-				val channel: TextChannel = (
-					DiscordSRV.getPlugin()
-						.getDestinationTextChannelForGameChannelName("events") ?: return@async
-					)
+				val channel: TextChannel = DiscordSRV.getPlugin()
+					.getDestinationTextChannelForGameChannelName("events") ?: return@async
 
 				// Formatting the messages
 				val killedShipDiscordName = data.name?.let { it.replace("<[^>]*>".toRegex(), "") + ", a" } ?: " a"
