@@ -12,13 +12,17 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Shulker
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
+import org.bukkit.Location
 import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
+import org.bukkit.entity.LivingEntity
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -42,6 +46,10 @@ fun mainThreadCheck() {
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).handle
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
 val World.minecraft: ServerLevel get() = (this as CraftWorld).handle
+
+@Suppress("UNCHECKED_CAST")
+fun <T : LivingEntity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
+	this.spawnEntity(location, type) as T
 
 fun highlightBlock(bukkitPlayer: Player, pos: BlockPos) {
 	val player = bukkitPlayer.minecraft
