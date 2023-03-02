@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.mininglaser
 import net.horizonsend.ion.server.IonServer.Companion.Ion
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
@@ -35,6 +36,7 @@ class MiningLaserSubsystem(
 	var targetedBlock: Vector? = null
 
 	override val powerUsage: Int = 0
+	val blockBreakPowerUsage: Int = 5
 	// override fun getAdjustedDir(dir: Vector, target: Vector?): Vector = target?.subtract(getFirePos().toVector()) ?: dir
 
 	override fun getAdjustedDir(dir: Vector, target: Vector?): Vector {
@@ -123,26 +125,22 @@ class MiningLaserSubsystem(
 			firingTasks.forEach { it.cancel() }
 			return
 		}
+		val sign = getSign() ?: return
+		val power = PowerMachines.getPower(sign, true)
 
-		println("firepos: ${getFirePos()}")
-		println("firepos location: ${getFirePos().toLocation(starship.serverLevel.world)}")
-		println("firepos centervector: ${getFirePos().toLocation(starship.serverLevel.world).toCenterLocation()}")
-		println("pos: ${pos.toVector()}")
+		if (power == 0) return
 
 		val intialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
-		val adjustedVector = getAdjustedDir(pos.toVector(), targetedBlock)
 		val points: List<Location> = getPoints(getAdjustedDir(pos.toVector(), targetedBlock))
 
 		val targetVector = targetedBlock?.clone()!!.subtract(intialPos.toVector())
-
-		println(intialPos)
-		println(adjustedVector)
-		println(targetedBlock)
 
 		for (loc in intialPos.toLocation(starship.serverLevel.world).alongVector(targetVector.clone().normalize().multiply(multiblock.range), 300)) {
 			starship.serverLevel.world.spawnParticle(Particle.SOUL_FIRE_FLAME, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
 		// TODO rewrite all of the aiming stuff
+		PowerMachines.setPower(sign, power - blockBreakPowerUsage * 100, true)
+
 		MiningLaserProjectile(starship, this, intialPos, points, getAdjustedDir(pos.toVector(), targetedBlock!!.clone())).fire()
 	}
 }
