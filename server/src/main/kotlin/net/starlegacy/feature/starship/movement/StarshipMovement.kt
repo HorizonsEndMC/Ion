@@ -2,7 +2,6 @@ package net.starlegacy.feature.starship.movement
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
@@ -105,8 +104,6 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		) {
 			// this part will run on the main thread
 			movePassengers(findPassengers(world1))
-
-			moveGaurdians()
 
 			starship.world = world2
 			starship.blocks = newLocationSet
@@ -271,13 +268,6 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	private fun movePassengers(passengers: List<Entity>) {
 		for (passenger: Entity in passengers) {
 			movePassenger(passenger)
-		}
-	}
-
-	fun moveGaurdians() {
-		val weaponSet = playerShip ?: return
-		for (guardianBeam in weaponSet.weapons.filterIsInstance<MiningLaserSubsystem>()) { // I love balls
-			guardianBeam.trackedGuardians.forEach(::movePassenger) // 𒍼
 		}
 	}
 }

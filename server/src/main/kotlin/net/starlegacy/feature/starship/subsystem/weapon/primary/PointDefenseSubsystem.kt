@@ -25,26 +25,22 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 
 	private fun getFirePos() = Vec3i(pos.x + face.modX * 3, pos.y + face.modY * 3, pos.z + face.modZ * 3)
 
-	override fun getAdjustedDir(dir: Vector, target: Vector?): Vector {
-		if (target != null) {
-			val origin = getFirePos().toCenterVector()
-			val adjustedDir = target.clone().subtract(origin)
+	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
+		val origin = getFirePos().toCenterVector()
+		val adjustedDir = target.clone().subtract(origin)
 
-			val horizontalAxis = adjustedDir.clone()
-			horizontalAxis.y = 0.0
-			horizontalAxis.rotateAroundY(90.0)
-			horizontalAxis.normalize()
+		val horizontalAxis = adjustedDir.clone()
+		horizontalAxis.y = 0.0
+		horizontalAxis.rotateAroundY(90.0)
+		horizontalAxis.normalize()
 
-			adjustedDir.rotateAroundAxis(horizontalAxis, Math.toRadians(randomDouble(-0.01, 0.01)))
-			adjustedDir.rotateAroundY(Math.toRadians(randomDouble(-0.01, 0.01)))
+		adjustedDir.rotateAroundAxis(horizontalAxis, Math.toRadians(randomDouble(-0.01, 0.01)))
+		adjustedDir.rotateAroundY(Math.toRadians(randomDouble(-0.01, 0.01)))
 
-			return adjustedDir.normalize()
-		}
-
-		return dir
+		return adjustedDir.normalize()
 	}
 
-	override fun canFire(dir: Vector, target: Vector?): Boolean {
+	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return !starship.isInternallyObstructed(getFirePos(), dir)
 	}
 

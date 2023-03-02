@@ -46,7 +46,7 @@ abstract class TurretWeaponSubsystem(
 		return this.face == face
 	}
 
-	override fun canFire(dir: Vector, target: Vector?): Boolean {
+	override fun canFire(dir: Vector, target: Vector): Boolean {
 		val blockLocation = multiblock.getPilotLoc(starship.world, pos.x, pos.y, pos.z, face).toBlockLocation()
 		if (pos.toLocation(starship.world).chunk.entities.any { it.location.toBlockLocation() == blockLocation }) {
 			return false
@@ -56,7 +56,7 @@ abstract class TurretWeaponSubsystem(
 		return getFirePoints().all { !starship.isInternallyObstructed(it, dir) }
 	}
 
-	override fun getAdjustedDir(dir: Vector, target: Vector?): Vector {
+	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		if (target == null) {
 			return dir
 		}
@@ -73,7 +73,7 @@ abstract class TurretWeaponSubsystem(
 	override fun manualFire(
 		shooter: Player,
 		dir: Vector,
-		target: Vector?
+		target: Vector
 	) {
 		multiblock.shoot(starship.world, pos, face, dir, starship, shooter)
 	}

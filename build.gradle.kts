@@ -33,7 +33,7 @@ allprojects {
 		maven("https://repo.codemc.io/repository/maven-snapshots/") // WorldEdit
 		maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 		maven("https://s01.oss.sonatype.org/content/repositories/snapshots") // DiscordSRV Depends
-		maven("https://jitpack.io") // Dynmap (Spigot), Vault, NuVotifier
+		maven("https://jitpack.io") // Dynmap (Spigot), Vault, NuVotifier, GuardianBeam
 		maven("https://maven.citizensnpcs.co/repo") // Citizens
 	}
 

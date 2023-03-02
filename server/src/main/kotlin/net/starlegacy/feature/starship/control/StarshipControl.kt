@@ -487,7 +487,7 @@ object StarshipControl : SLComponent() {
 		val playerFacing = player.facing
 		val dir = loc.direction.normalize()
 
-		val target: Vector? = getTarget(loc, dir, starship)
+		val target: Vector = getTarget(loc, dir, starship)
 
 		val weaponSet = starship.weaponSetSelections[player.uniqueId]
 		if (weaponSet == null && PilotedStarships[player] != starship) {
@@ -501,7 +501,7 @@ object StarshipControl : SLComponent() {
 		StarshipWeapons.fireQueuedShots(queuedShots, starship)
 	}
 
-	private fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship): Vector? {
+	private fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship): Vector {
 		val world = loc.world
 		var target: Vector = loc.toVector()
 		val x = loc.blockX
@@ -535,7 +535,7 @@ object StarshipControl : SLComponent() {
 		leftClick: Boolean,
 		playerFacing: BlockFace,
 		dir: Vector,
-		target: Vector?
+		target: Vector
 	): LinkedList<StarshipWeapons.ManualQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
 

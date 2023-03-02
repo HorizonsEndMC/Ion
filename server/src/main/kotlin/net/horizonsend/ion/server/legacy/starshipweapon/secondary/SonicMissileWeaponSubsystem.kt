@@ -33,7 +33,7 @@ class SonicMissileWeaponSubsystem(
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
-	override fun canFire(dir: Vector, target: Vector?): Boolean {
+	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return starship is ActivePlayerStarship && starship.pilot!!.hasPermission("ioncore.eventweapon") && super.canFire(
 			dir,
 			target
