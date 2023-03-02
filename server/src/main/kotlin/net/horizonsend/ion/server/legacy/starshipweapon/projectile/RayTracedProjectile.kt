@@ -71,7 +71,7 @@ abstract class RayTracedProjectile(
 
 	abstract fun visualize(loc: Location, targetLocation: Location)
 
-	private fun tryImpact(result: RayTraceResult): Boolean {
+	open fun tryImpact(result: RayTraceResult): Boolean {
 		if (starship?.let { it.serverLevel.world }?.name?.lowercase(Locale.getDefault())?.contains("hyperspace")!!) return false
 		if (GracePeriod.isGracePeriod) return false
 
