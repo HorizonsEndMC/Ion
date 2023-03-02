@@ -3,24 +3,32 @@ package net.starlegacy.feature.multiblock.printer
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.LegacyItemUtils
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
-abstract class PrinterMultiblock : PowerStoringMultiblock(), FurnaceMultiblock {
+abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name: String = "printer"
 	override val maxPower: Int = 50_000
+	override val inputComputerOffset = Vec3i(0, -1, 0)
 	abstract fun getOutput(product: Material): ItemStack
 
 	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerCoreBlock()
 	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerMachineryBlock()
 	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerProductBlock()
+
+	override fun onTransformSign(player: Player, sign: Sign) {
+		super<PowerStoringMultiblock>.onTransformSign(player, sign)
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
