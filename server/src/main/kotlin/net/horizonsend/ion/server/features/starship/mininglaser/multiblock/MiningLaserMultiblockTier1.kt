@@ -8,9 +8,9 @@ import org.bukkit.block.BlockFace
 
 sealed class MiningLaserMultiblockTier1 : MiningLaserMultiblock() {
 	override val signText: Array<Component?> = arrayOf(
-		Component.text("Mining ").color(NamedTextColor.GRAY)
+		Component.text("Mining ").color(NamedTextColor.DARK_GRAY)
 			.append(Component.text("Laser").color(NamedTextColor.GREEN)),
-		Component.text("Tier 3").color(NamedTextColor.AQUA),
+		Component.text("Tier 1").color(NamedTextColor.AQUA),
 		Component.text(""),
 		Component.text("")
 	)
@@ -31,8 +31,8 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
-				x(-1).noteBlock()
-				x(+0).anyPipedInventory()
+				x(-1).anyPipedInventory()
+				x(+0).noteBlock()
 				x(+1).craftingTable()
 			}
 
