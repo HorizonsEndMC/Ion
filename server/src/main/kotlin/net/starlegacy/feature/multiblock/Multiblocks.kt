@@ -86,6 +86,7 @@ import net.starlegacy.feature.multiblock.starshipweapon.turret.TopHeavyTurretMul
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopTriTurretMultiblock
 import org.bukkit.Location
+import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -206,6 +207,9 @@ object Multiblocks : SLComponent() {
 	override fun onEnable() {
 		initMultiblocks()
 
+		gettingTiming = timing("Multiblock Getting")
+		detectionTiming = timing("Multiblock Detection")
+
 		log.info("Loaded ${multiblocks.size} multiblocks")
 	}
 
@@ -295,6 +299,21 @@ object Multiblocks : SLComponent() {
 			player.userError(
 				"Improperly built ${lastMatch.name}. Make sure every block is correctly placed!"
 			)
+
+			val face = sign.getFacing().oppositeFace
+			lastMatch.shape.getRequirementMap(face).forEach { (coords, requirement) ->
+				val x = coords.x
+				val y = coords.y
+				val z = coords.z
+				val relative: Block = sign.block.getRelativeIfLoaded(x, y, z) ?: return
+
+				val requirementMet = requirement(relative, face)
+				if (!requirementMet) {
+					player.userError(
+						"Block at ${relative.location} doesn't match!"
+					)
+				}
+			}
 		}
 	}
 }

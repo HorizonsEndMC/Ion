@@ -41,11 +41,13 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 				x(+0).anyGlass()
 				x(+1).anyWall()
 			}
+
 			y(+1) {
 				x(-1).anyStairs()
 				x(+0).stainedTerracotta()
 				x(+1).anyStairs()
 			}
+
 			y(+2) {
 				x(+0).anyGlassPane()
 			}
@@ -87,11 +89,13 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 				x(+0).anyGlass()
 				x(+1).anyGlassPane()
 			}
+
 			y(+1) {
 				x(-1).anyStairs()
 				x(+0).stainedTerracotta()
 				x(+1).anyStairs()
 			}
+
 			y(+2) {
 				x(+0).anyGlassPane()
 			}
