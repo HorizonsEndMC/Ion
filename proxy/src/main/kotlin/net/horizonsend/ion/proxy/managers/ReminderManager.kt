@@ -1,6 +1,6 @@
 package net.horizonsend.ion.proxy.managers
 
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT
 import net.md_5.bungee.api.chat.hover.content.Text
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 object ReminderManager {
@@ -48,19 +49,9 @@ object ReminderManager {
 			)
 
 		for (player in Ion.proxy.players) {
-			val playerData = PlayerData[player.uniqueId]
-
-			val siteTime: Boolean = if (playerData.voteTimes.isNotEmpty()) {
-				playerData.voteTimes.values.min() - System.currentTimeMillis() >= 86400000
-			} else {
-				true
-			}
-
-			if (siteTime) {
-				player.sendMessage(*message.create())
-			} else {
-				continue
-			}
+			val playerData = PlayerData[player.uniqueId]!!
+			val shouldPrompt: Boolean = playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+			if (shouldPrompt) player.sendMessage(*message.create())
 		}
 	}
 }

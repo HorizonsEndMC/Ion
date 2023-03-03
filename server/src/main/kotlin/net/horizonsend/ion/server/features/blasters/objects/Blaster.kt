@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.blasters.objects
 
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
 import net.horizonsend.ion.server.features.blasters.ProjectileManager
 import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
@@ -150,14 +150,14 @@ abstract class Blaster<T : Balancing>(
 
 	private fun getParticleType(entity: LivingEntity): Particle {
 		if (entity !is Player) return REDSTONE // Not Player
-		PlayerData[entity.uniqueId].particle?.let { return CraftParticle.toBukkit(PARTICLE_TYPE.get(ResourceLocation(it))) } // Player
+		PlayerData[entity.uniqueId]?.particle?.let { return CraftParticle.toBukkit(PARTICLE_TYPE.get(ResourceLocation(it))) } // Player
 		return REDSTONE // Default
 	}
 
 	private fun getParticleColor(entity: LivingEntity): Color {
 		if (entity !is Player) return RED // Not Player
 		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
-		PlayerData[entity.uniqueId].color?.let { return fromRGB(it) } // Player
+		PlayerData[entity.uniqueId]?.color?.let { return fromRGB(it) } // Player
 		return RED // Not Player
 	}
 

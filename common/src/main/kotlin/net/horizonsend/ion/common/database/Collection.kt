@@ -9,7 +9,7 @@ import org.litote.kmongo.util.idValue
 import java.util.UUID
 import kotlin.reflect.KClass
 
-abstract class Collection<D : Document>(kClass: KClass<D>) {
+internal abstract class Collection<D : Document>(kClass: KClass<D>) {
 	protected var collection: MongoCollection<D> =
 		Connectivity.mongoDatabase.getCollection(KMongoUtil.defaultCollectionName(kClass), kClass.java)
 
