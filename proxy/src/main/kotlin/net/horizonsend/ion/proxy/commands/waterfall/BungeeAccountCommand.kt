@@ -6,8 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.JDA
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.managers.SyncManager
@@ -24,7 +23,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 	fun onStatusCommand(sender: ProxiedPlayer) {
 		val playerData = PlayerData[sender.uniqueId]
 
-		if (playerData.discordId == null) {
+		if (playerData?.snowflake == null) {
 			sender.sendMessage(
 				*ComponentBuilder("Your Minecraft account is not linked.")
 					.color(ChatColor.of("#8888ff"))
@@ -33,7 +32,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 			return
 		}
 
-		jda.retrieveUserById(playerData.discordId!!).queue {
+		jda.retrieveUserById(playerData.snowflake!!).queue {
 			sender.sendMessage(
 				*ComponentBuilder()
 					.append(
@@ -52,7 +51,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 							.create()
 					)
 					.append(
-						ComponentBuilder("\"${playerData.discordId!!}\"")
+						ComponentBuilder("\"${playerData.snowflake!!}\"")
 							.color(ChatColor.WHITE)
 							.create()
 					)
@@ -72,7 +71,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 	fun onUnlinkCommand(sender: ProxiedPlayer) {
 		val playerData = PlayerData[sender.uniqueId]
 
-		if (playerData.discordId == null) {
+		if (playerData?.snowflake == null) {
 			sender.sendMessage(
 				*ComponentBuilder("Your account is not linked.")
 					.color(ChatColor.of("#ff8844"))
@@ -82,13 +81,13 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 		}
 
 		jda.getGuildById(configuration.discordServer)!!.apply {
-			getMemberById(playerData.discordId!!)?.let { member ->
+			getMemberById(playerData.snowflake!!)?.let { member ->
 				removeRoleFromMember(member, getRoleById(configuration.linkedRole)!!).queue()
 			}
 		}
 
 		playerData.update {
-			discordId = null
+			snowflake = null
 		}
 
 		sender.sendMessage(

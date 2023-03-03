@@ -1,7 +1,6 @@
 package net.horizonsend.ion.proxy.listeners.waterfall
 
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ChatColor
@@ -10,6 +9,7 @@ import net.md_5.bungee.api.event.ServerConnectEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
+import java.time.LocalDateTime
 
 class ServerConnectListener : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -17,9 +17,17 @@ class ServerConnectListener : Listener {
 		Ion.playerServerMap[event.player] = event.target
 
 		if (event.reason == ServerConnectEvent.Reason.JOIN_PROXY) {
-			val playerData = PlayerData[event.player.uniqueId]
+			var isNew = false
 
-			if (playerData.minecraftUsername == null) {
+			var playerData = PlayerData[event.player.uniqueId]?.update { username = event.player.name }
+			if (playerData == null) {
+				playerData = PlayerData.new(event.player.uniqueId) {
+					username = event.player.name
+				}
+				isNew = true
+			}
+
+			if (isNew) {
 				Ion.proxy.broadcast(
 					*ComponentBuilder()
 						.append(ComponentBuilder("Welcome ").color(ChatColor.GOLD).create())
@@ -49,7 +57,9 @@ class ServerConnectListener : Listener {
 						.create()
 				)
 
-				if (PlayerData[event.player.name]?.voteTimes?.values?.any { it - System.currentTimeMillis() <= 86400000 } == false) {
+				val promptToVote = playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+
+				if (promptToVote) {
 					event.player.sendMessage(
 						*ComponentBuilder()
 							.append(
@@ -71,10 +81,6 @@ class ServerConnectListener : Listener {
 						)
 					).queue()
 				}
-			}
-
-			if (playerData.minecraftUsername != event.player.name) {
-				playerData.update { minecraftUsername = event.player.name }
 			}
 		} else {
 			Ion.proxy.broadcast(

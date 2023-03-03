@@ -1,14 +1,15 @@
 package net.horizonsend.ion.proxy.listeners.waterfall
 
 import com.vexsoftware.votifier.bungee.events.VotifierEvent
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.PlayerVoteTime
 import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
+import java.time.LocalDateTime
 
 class VotifierListener : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -19,8 +20,9 @@ class VotifierListener : Listener {
 		val siteName = siteEntry?.serviceName ?: event.vote.serviceName
 
 		if (Ion.configuration.voteSites.any { it.serviceName == event.vote.serviceName }) {
-			playerData.update {
-				voteTimes[siteName] = System.currentTimeMillis()
+			PlayerVoteTime.new {
+				player = playerData
+				dateTime = LocalDateTime.now()
 			}
 		}
 
