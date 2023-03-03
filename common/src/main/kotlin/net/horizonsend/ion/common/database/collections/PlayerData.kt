@@ -6,15 +6,16 @@ import net.horizonsend.ion.common.database.Collection
 import net.horizonsend.ion.common.database.Document
 import net.horizonsend.ion.common.database.enums.Achievement
 import org.bson.codecs.pojo.annotations.BsonId
+import org.bson.codecs.pojo.annotations.BsonProperty
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.UUID
 
 internal class PlayerData private constructor(
-	@BsonId val uuid: UUID,
-	var snowflake: Long? = null,
-	var username: String? = null,
+	@BsonId @BsonProperty("minecraftUUID") val uuid: UUID,
+	@BsonProperty("discordId") var snowflake: Long? = null,
+	@BsonProperty("minecraftUsername") var username: String? = null,
 	var achievements: MutableList<Achievement> = mutableListOf(),
 	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
 	var acceptedBounty: UUID? = null,
