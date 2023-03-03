@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.achievements
 
 import io.papermc.paper.adventure.PaperAdventure
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.features.screens.TextScreen
 import net.kyori.adventure.text.Component
@@ -21,7 +21,7 @@ class AchievementsScreen private constructor(
 ) : TextScreen(buildPageText(targetName, 0, targetAchievements)) {
 	private var pageNumber: Int = 0
 
-	constructor(targetName: String) : this(targetName, PlayerData[targetName]?.achievements ?: listOf())
+	constructor(targetName: String) : this(targetName, PlayerData[targetName]?.achievements?.map { it.achievement } ?: listOf())
 
 	init {
 		placeAchievementIcons()

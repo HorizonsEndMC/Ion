@@ -3,7 +3,7 @@ package net.horizonsend.ion.proxy.managers
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Role
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.luckperms.api.LuckPermsProvider
@@ -44,7 +44,7 @@ open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) 
 			if (member.user.isBot || membersWithLinkBypass.contains(member)) continue
 
 			val playerData = PlayerData[member.idLong]
-			val luckPermsUser = playerData?.let { api.userManager.getUser(it.minecraftUUID) } ?: continue
+			val luckPermsUser = playerData?.let { api.userManager.getUser(it.uuid.value) } ?: continue
 
 			// Sync Minecraft -> Discord
 			for (group in mappedRoles.keys) {
@@ -86,8 +86,8 @@ open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) 
 
 			playerData.let {
 				try {
-					if (member.effectiveName != it.minecraftUsername) {
-						member.modifyNickname(it.minecraftUsername).queue()
+					if (member.effectiveName != it.username) {
+						member.modifyNickname(it.username).queue()
 						changeLog += "- Updated name of ${member.asMention}"
 					} else {
 						if (member.nickname == member.user.name) {
