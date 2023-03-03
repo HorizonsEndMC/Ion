@@ -30,7 +30,7 @@ class RocketWeaponSubsystem(
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.rocket.powerusage
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.rocket.powerUsage
 
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.rocket.boostChargeNanos)
 
