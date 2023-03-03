@@ -11,24 +11,23 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.UUID
 
-class PlayerData private constructor(
-	@BsonId val minecraftUUID: UUID,
-	var discordId: Long? = null,
-	var minecraftUsername: String? = null,
+internal class PlayerData private constructor(
+	@BsonId val uuid: UUID,
+	var snowflake: Long? = null,
+	var username: String? = null,
 	var achievements: MutableList<Achievement> = mutableListOf(),
 	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
 	var acceptedBounty: UUID? = null,
 	var bounty: Int = 0,
-	var patreonMoney: Double = 0.0,
 	var particle: String? = null,
 	var color: Int? = null
 ) : Document() {
 	companion object : Collection<PlayerData>(PlayerData::class) {
 		init {
-			collection.ensureIndex(PlayerData::minecraftUUID)
-			collection.ensureIndex(PlayerData::discordId)
+			collection.ensureIndex(PlayerData::uuid)
+			collection.ensureIndex(PlayerData::snowflake)
 			collection.ensureIndex(
-				PlayerData::minecraftUsername,
+				PlayerData::username,
 				indexOptions = IndexOptions().collation(Collation.builder().locale("en").caseLevel(false).build())
 			)
 		}
@@ -36,11 +35,11 @@ class PlayerData private constructor(
 		override fun construct(id: UUID): PlayerData = PlayerData(id)
 
 		operator fun get(minecraftUsername: String): PlayerData? {
-			return collection.findOne(PlayerData::minecraftUsername eq minecraftUsername)
+			return collection.findOne(PlayerData::username eq minecraftUsername)
 		}
 
 		operator fun get(discordId: Long): PlayerData? {
-			return collection.findOne(PlayerData::discordId eq discordId)
+			return collection.findOne(PlayerData::snowflake eq discordId)
 		}
 	}
 

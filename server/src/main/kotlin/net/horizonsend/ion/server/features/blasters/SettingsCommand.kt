@@ -6,8 +6,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Values
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import org.bukkit.Color
@@ -21,14 +20,14 @@ class SettingsCommand : BaseCommand() {
 	@CommandCompletion("@particles")
 	@CommandPermission("ion.settings.particle")
 	fun onSettingsParticleCommand(sender: Player, @Values("@particles") particle: String) {
-		PlayerData[sender.uniqueId].update { this.particle = particle }
+		PlayerData[sender.uniqueId]?.update { this.particle = particle }
 		sender.information("Set particle to $particle")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("particle")
 	fun onSettingsParticleCommand(sender: Player) {
-		PlayerData[sender.uniqueId].update { this.particle = null }
+		PlayerData[sender.uniqueId]?.update { this.particle = null }
 		sender.information("Cleared particle")
 	}
 
@@ -61,14 +60,14 @@ class SettingsCommand : BaseCommand() {
 			return
 		}
 
-		PlayerData[sender.uniqueId].update { color = Color.fromRGB(red, green, blue).asRGB() }
+		PlayerData[sender.uniqueId]?.update { color = Color.fromRGB(red, green, blue).asRGB() }
 		sender.information("Set color to $red $green $blue")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("color")
 	fun onSettingsColorCommand(sender: Player) {
-		PlayerData[sender.uniqueId].update { color = null }
+		PlayerData[sender.uniqueId]?.update { color = null }
 		sender.information("Cleared color")
 	}
 }

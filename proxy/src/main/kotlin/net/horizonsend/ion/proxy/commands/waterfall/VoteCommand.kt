@@ -3,28 +3,28 @@ package net.horizonsend.ion.proxy.commands.waterfall
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import java.time.LocalDateTime
 
 @CommandAlias("vote|votes|votesites")
 class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand() {
 	@Default
 	@Suppress("Unused")
 	fun onVoteCommand(sender: ProxiedPlayer) {
-		val playerData = PlayerData[sender.uniqueId]
+		val playerData = PlayerData[sender.uniqueId]!!
 
 		val siteList = ComponentBuilder("Voting Websites")
 			.color(ChatColor.GOLD)
 			.underlined(true)
 
 		for (site in configuration.voteSites) {
-			val siteTime: Boolean = playerData.voteTimes[site.serviceName]?.let {
-				playerData.voteTimes[site.serviceName]!! - System.currentTimeMillis() >= 86400000
-			} ?: false
+			val dateTime = playerData.voteTimes.find { it.serviceName == site.serviceName }?.dateTime ?: LocalDateTime.now()
+			val siteTime = dateTime.isBefore(LocalDateTime.now().minusDays(1))
 
 			val color = if (siteTime) ChatColor.GREEN else ChatColor.RED
 

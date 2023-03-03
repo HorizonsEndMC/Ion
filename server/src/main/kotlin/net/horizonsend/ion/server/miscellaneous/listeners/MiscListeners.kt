@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.space.SpaceMechanics
 import org.bukkit.entity.Player
@@ -15,7 +14,7 @@ class MiscListeners : Listener {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPlayerLoginEvent(event: AsyncPlayerPreLoginEvent) {
-		PlayerData[event.uniqueId].update { minecraftUsername = event.name }
+		PlayerData[event.uniqueId]?.update { username = event.name } ?: PlayerData.new(event.uniqueId) { username = event.name }
 	}
 
 	@EventHandler

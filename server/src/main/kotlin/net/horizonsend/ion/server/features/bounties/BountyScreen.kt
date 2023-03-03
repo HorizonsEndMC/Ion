@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.bounties
 
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.server.features.screens.Screen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -84,7 +84,7 @@ class BountyScreen : Screen(Bukkit.createInventory(null, 54)) {
 					head.editMeta(SkullMeta::class.java) {
 						it.displayName(
 							MiniMessage.miniMessage()
-								.deserialize("<red>${currentPlayer.name}<red>: <gray>${PlayerData[currentPlayer.uniqueId].bounty}<gray>")
+								.deserialize("<red>${currentPlayer.name}<red>: <gray>${PlayerData[currentPlayer.uniqueId]!!.bounty}<gray>")
 						)
 						// add the skin to the head
 						it.owningPlayer = currentPlayer
@@ -104,12 +104,12 @@ class BountyScreen : Screen(Bukkit.createInventory(null, 54)) {
 				val slot = inventory.getItem(i)
 				if (slot == null) {
 					val currentPlayer = onlinePlayers.removeAt(0)
-					if (PlayerData[currentPlayer.uniqueId].bounty == 0) continue
+					if (PlayerData[currentPlayer.uniqueId]!!.bounty == 0) continue
 					val head = ItemStack(Material.PLAYER_HEAD)
 					head.editMeta(SkullMeta::class.java) {
 						it.displayName(
 							MiniMessage.miniMessage()
-								.deserialize("<red>$currentPlayer<red>: <gray>${PlayerData[currentPlayer.uniqueId].bounty}<gray>")
+								.deserialize("<red>$currentPlayer<red>: <gray>${PlayerData[currentPlayer.uniqueId]!!.bounty}<gray>")
 						)
 						it.owningPlayer = currentPlayer
 					}

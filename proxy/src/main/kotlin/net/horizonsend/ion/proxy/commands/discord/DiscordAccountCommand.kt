@@ -5,8 +5,7 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Name
 import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.messageEmbed
@@ -20,14 +19,14 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 	fun onStatusCommand(event: SlashCommandInteractionEvent) {
 		val playerData = PlayerData[event.user.idLong]
 
-		if (playerData?.discordId == null) {
+		if (playerData?.snowflake == null) {
 			event.replyEmbeds(messageEmbed(description = "Your Discord account is not linked.", color = 0xff8844))
 				.setEphemeral(true)
 				.queue()
 			return
 		}
 
-		event.replyEmbeds(messageEmbed(description = "Linked to ${playerData.minecraftUsername} (${playerData.minecraftUUID})."))
+		event.replyEmbeds(messageEmbed(description = "Linked to ${playerData.username} (${playerData.uuid})."))
 			.setEphemeral(true)
 			.queue()
 	}
@@ -37,7 +36,7 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 	@Description("Unlink Minecraft account.")
 	fun onUnlinkCommand(event: SlashCommandInteractionEvent) {
 		PlayerData[event.user.idLong]?.update {
-			discordId = event.user.idLong
+			snowflake = null
 		}
 
 		event.replyEmbeds(messageEmbed(description = "Your account is no longer linked, assuming it ever was."))
@@ -58,16 +57,11 @@ class DiscordAccountCommand(private val configuration: ProxyConfiguration) {
 			return
 		}
 
-		val playerData = PlayerData[playerUUID].update {
-			discordId = event.user.idLong
+		val playerData = PlayerData[playerUUID]!!.update {
+			snowflake = event.user.idLong
 		}
 
-		event.replyEmbeds(
-			messageEmbed(
-				description = "Account linked to ${playerData.minecraftUsername}.",
-				color = 0x00ff00
-			)
-		)
+		event.replyEmbeds(messageEmbed(description = "Account linked to $playerData.", color = 0x00ff00))
 			.setEphemeral(true)
 			.queue()
 

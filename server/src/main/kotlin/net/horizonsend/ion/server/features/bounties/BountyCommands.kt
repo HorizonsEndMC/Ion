@@ -6,8 +6,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.horizonsend.ion.server.miscellaneous.extensions.serverError
 import net.horizonsend.ion.server.miscellaneous.extensions.userError
@@ -78,7 +77,7 @@ class BountyCommands : BaseCommand() {
 			bounty += amount
 		}
 
-		sender.sendRichMessage("<gray>Added </gray>$amount<gray> to </gray>${targetData.minecraftUsername}'s<gray> bounty.")
+		sender.sendRichMessage("<gray>Added </gray>$amount<gray> to </gray>${targetData.username}'s<gray> bounty.")
 	}
 
 	@Subcommand("clear")
@@ -86,7 +85,7 @@ class BountyCommands : BaseCommand() {
 	@CommandCompletion("@players")
 	@CommandPermission("ion.bounty.clear")
 	fun onBountyClear(sender: Player) {
-		PlayerData[sender.uniqueId].update {
+		PlayerData[sender.uniqueId]?.update {
 			acceptedBounty = null
 		}
 
@@ -116,7 +115,7 @@ class BountyCommands : BaseCommand() {
 			bounty = amount
 		}
 
-		sender.sendRichMessage("<gray>Set </gray>${targetData.minecraftUsername}'s<gray> bounty to </gray>$amount<gray>.")
+		sender.sendRichMessage("<gray>Set </gray>${targetData.username}'s<gray> bounty to </gray>$amount<gray>.")
 	}
 
 	@Suppress("Unused")
@@ -135,6 +134,6 @@ class BountyCommands : BaseCommand() {
 			acceptedBounty = null
 		}
 
-		sender.sendRichMessage("<gray>Cleared ${targetData.minecraftUsername}'s accepted bounty.")
+		sender.sendRichMessage("<gray>Cleared ${targetData.username}'s accepted bounty.")
 	}
 }
