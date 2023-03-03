@@ -185,7 +185,7 @@ data class BalancingConfiguration(
 	@Serializable
 	class StarshipWeapons(
 		// Light Weapons
-		val PlasmaCannon: StarshipWeapon = StarshipWeapon(
+		val plasmaCannon: StarshipWeapon = StarshipWeapon(
 			range = 160.0,
 			speed = 400.0,
 			shieldDamageMultiplier = 3,
@@ -206,7 +206,7 @@ data class BalancingConfiguration(
 			fowardOnly = true,
 			maxPerShot = 2
 		),
-		val LaserCannon: StarshipWeapon = StarshipWeapon(
+		val laserCannon: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 250.0,
 			shieldDamageMultiplier = 1,
@@ -225,7 +225,7 @@ data class BalancingConfiguration(
 			boostChargeNanos = 0,
 			aimDistance = 0
 		),
-		val PulseCannon: StarshipWeapon = StarshipWeapon(
+		val pulseCannon: StarshipWeapon = StarshipWeapon(
 			range = 140.0,
 			speed = 170.0,
 			shieldDamageMultiplier = 1,
@@ -244,7 +244,7 @@ data class BalancingConfiguration(
 			boostChargeNanos = 0,
 			aimDistance = 0
 		),
-		val MiniPhaser: StarshipWeapon = StarshipWeapon(
+		val miniPhaser: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 600.0,
 			shieldDamageMultiplier = 1,
@@ -265,7 +265,7 @@ data class BalancingConfiguration(
 		),
 
 		// Heavy Weapons
-		val HeavyLaser: StarshipWeapon = StarshipWeapon(
+		val heavyLaser: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 50.0,
 			shieldDamageMultiplier = 2,
@@ -285,7 +285,7 @@ data class BalancingConfiguration(
 			aimDistance = 10,
 			maxDegrees = 25.0
 		),
-		val Phaser: StarshipWeapon = StarshipWeapon(
+		val phaser: StarshipWeapon = StarshipWeapon(
 			range = 140.0,
 			speed = 1.0,
 			shieldDamageMultiplier = 55,
@@ -304,7 +304,7 @@ data class BalancingConfiguration(
 			boostChargeNanos = 3,
 			aimDistance = 0
 		),
-		val ProtonTorpedo: StarshipWeapon = StarshipWeapon(
+		val protonTorpedo: StarshipWeapon = StarshipWeapon(
 			range = 100.0,
 			speed = 70.0,
 			shieldDamageMultiplier = 2,
@@ -326,7 +326,7 @@ data class BalancingConfiguration(
 			fowardOnly = true,
 			maxPerShot = 2
 		),
-		val Rocket: StarshipWeapon = StarshipWeapon(
+		val rocket: StarshipWeapon = StarshipWeapon(
 			range = 300.0,
 			speed = 5.0,
 			shieldDamageMultiplier = 5,
@@ -345,7 +345,7 @@ data class BalancingConfiguration(
 			boostChargeNanos = 7,
 			aimDistance = 0
 		),
-		val SonicMissile: StarshipWeapon = StarshipWeapon(
+		val sonicMissile: StarshipWeapon = StarshipWeapon(
 			range = 300.0,
 			speed = 200.0,
 			shieldDamageMultiplier = 10,
@@ -366,7 +366,7 @@ data class BalancingConfiguration(
 		),
 
 		// Auto Turret Stuff
-		val LightTurret: StarshipWeapon = StarshipWeapon(
+		val lightTurret: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 250.0,
 			shieldDamageMultiplier = 2,
@@ -386,7 +386,7 @@ data class BalancingConfiguration(
 			aimDistance = 0,
 			inaccuracyRadians = 2.0
 		),
-		val HeavyTurret: StarshipWeapon = StarshipWeapon(
+		val heavyTurret: StarshipWeapon = StarshipWeapon(
 			range = 300.0,
 			speed = 200.0,
 			shieldDamageMultiplier = 2,
@@ -405,7 +405,7 @@ data class BalancingConfiguration(
 			boostChargeNanos = 0,
 			aimDistance = 0
 		),
-		val TriTurret: StarshipWeapon = StarshipWeapon(
+		val triTurret: StarshipWeapon = StarshipWeapon(
 			range = 500.0,
 			speed = 125.0,
 			shieldDamageMultiplier = 3,
@@ -425,7 +425,7 @@ data class BalancingConfiguration(
 			aimDistance = 0,
 			inaccuracyRadians = 3.0
 		),
-		val PointDefence: StarshipWeapon = StarshipWeapon(
+		val pointDefence: StarshipWeapon = StarshipWeapon(
 			range = 120.0,
 			speed = 150.0,
 			shieldDamageMultiplier = 0,
@@ -444,7 +444,7 @@ data class BalancingConfiguration(
 			boostChargeNanos = 0,
 			aimDistance = 0
 		),
-		val CthulhuBeam: StarshipWeapon = StarshipWeapon(
+		val cthulhuBeam: StarshipWeapon = StarshipWeapon(
 			range = 64.0,
 			speed = 1.0,
 			shieldDamageMultiplier = 10,

@@ -30,9 +30,9 @@ class RocketWeaponSubsystem(
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.Rocket.powerusage
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.rocket.powerusage
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.Rocket.boostChargeNanos)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.rocket.boostChargeNanos)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true

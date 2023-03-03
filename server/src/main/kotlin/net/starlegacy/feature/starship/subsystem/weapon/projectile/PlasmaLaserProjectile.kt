@@ -24,14 +24,14 @@ class PlasmaLaserProjectile(
 	shooter: Player?
 ) : LaserProjectile(starship, loc, dir, shooter) {
 	var counter = 0
-	override val range: Double = IonServer.balancing.starshipWeapons.PlasmaCannon.range
-	override val speed: Double = IonServer.balancing.starshipWeapons.PlasmaCannon.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.PlasmaCannon.shieldDamageMultiplier
+	override val range: Double = IonServer.balancing.starshipWeapons.plasmaCannon.range
+	override val speed: Double = IonServer.balancing.starshipWeapons.plasmaCannon.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.plasmaCannon.shieldDamageMultiplier
 	override val color: Color
 		get() = if (starship!!.rainbowtoggle) flagcolors.random() else starship.weaponColor
-	override val thickness: Double = IonServer.balancing.starshipWeapons.PlasmaCannon.thickness
-	override val particleThickness: Double = IonServer.balancing.starshipWeapons.PlasmaCannon.particleThickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.PlasmaCannon.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.PlasmaCannon.volume
-	override val soundName: String = IonServer.balancing.starshipWeapons.PlasmaCannon.soundName
+	override val thickness: Double = IonServer.balancing.starshipWeapons.plasmaCannon.thickness
+	override val particleThickness: Double = IonServer.balancing.starshipWeapons.plasmaCannon.particleThickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.plasmaCannon.explosionPower
+	override val volume: Int = IonServer.balancing.starshipWeapons.plasmaCannon.volume
+	override val soundName: String = IonServer.balancing.starshipWeapons.plasmaCannon.soundName
 }
