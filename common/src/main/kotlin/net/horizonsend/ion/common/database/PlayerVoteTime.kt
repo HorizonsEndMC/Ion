@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class PlayerVoteTime(id: EntityID<Int>) : IntEntity(id) {
 	var player by PlayerData.EntityClass referencedOn Table.player
-	val serviceName by Table.serviceName
+	var serviceName by Table.serviceName
 	var dateTime by Table.dateTime
 
 	companion object {
