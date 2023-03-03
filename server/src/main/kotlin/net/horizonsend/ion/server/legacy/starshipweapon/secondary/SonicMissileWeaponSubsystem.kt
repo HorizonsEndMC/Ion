@@ -27,7 +27,7 @@ class SonicMissileWeaponSubsystem(
 	override val convergeDist: Double = IonServer.balancing.starshipWeapons.sonicMissile.convergeDistance
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.sonicMissile.extraDistance
 	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.sonicMissile.angleRadians)
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.sonicMissile.powerusage
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.sonicMissile.powerUsage
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.boostChargeNanos)
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.fireCooldownNanos)
 
