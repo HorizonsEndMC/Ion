@@ -21,11 +21,11 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 			.associateWith { DyeColor.valueOf(it.name.removeSuffix("_STAINED_GLASS")).color }
 	}
 
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.PulseCannon.powerusage
-	override val length: Int = IonServer.balancing.starshipWeapons.PulseCannon.length
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.PulseCannon.angleRadians) // unrestricted
-	override val convergeDist: Double = IonServer.balancing.starshipWeapons.PulseCannon.convergeDistance
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.PulseCannon.extraDistance
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.pulseCannon.powerusage
+	override val length: Int = IonServer.balancing.starshipWeapons.pulseCannon.length
+	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.pulseCannon.angleRadians) // unrestricted
+	override val convergeDist: Double = IonServer.balancing.starshipWeapons.pulseCannon.convergeDistance
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.pulseCannon.extraDistance
 
 	private val color: Color = getColor(starship, pos, face)
 

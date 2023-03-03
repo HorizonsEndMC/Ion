@@ -22,14 +22,14 @@ class HeavyLaserWeaponSubsystem(
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	private val sound = IonServer.balancing.starshipWeapons.HeavyLaser.soundName
+	private val sound = IonServer.balancing.starshipWeapons.heavyLaser.soundName
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.HeavyLaser.boostChargeNanos)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.heavyLaser.boostChargeNanos)
 
-	override val length: Int = IonServer.balancing.starshipWeapons.HeavyLaser.length
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.HeavyLaser.powerusage
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.HeavyLaser.extraDistance
-	override val aimDistance: Int = IonServer.balancing.starshipWeapons.HeavyLaser.aimDistance
+	override val length: Int = IonServer.balancing.starshipWeapons.heavyLaser.length
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.heavyLaser.powerusage
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.extraDistance
+	override val aimDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.aimDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
 		checkNotNull(target)

@@ -25,12 +25,12 @@ class PhaserWeaponSubsystem(
 ) : CannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = IonServer.balancing.starshipWeapons.Phaser.length
-	override val convergeDist: Double = IonServer.balancing.starshipWeapons.Phaser.convergeDistance
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.Phaser.extraDistance
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.Phaser.angleRadians) // unrestricted
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.Phaser.powerusage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.Phaser.boostChargeNanos)
+	override val length: Int = IonServer.balancing.starshipWeapons.phaser.length
+	override val convergeDist: Double = IonServer.balancing.starshipWeapons.phaser.convergeDistance
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.phaser.extraDistance
+	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.phaser.angleRadians) // unrestricted
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.phaser.powerusage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.phaser.boostChargeNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 

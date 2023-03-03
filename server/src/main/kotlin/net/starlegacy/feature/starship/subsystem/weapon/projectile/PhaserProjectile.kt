@@ -14,14 +14,14 @@ class PhaserProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.balancing.starshipWeapons.Phaser.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.Phaser.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.Phaser.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.Phaser.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.Phaser.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.Phaser.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.Phaser.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.Phaser.soundName
+	override val range: Double = IonServer.balancing.starshipWeapons.phaser.range
+	override var speed: Double = IonServer.balancing.starshipWeapons.phaser.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.phaser.shieldDamageMultiplier
+	override val thickness: Double = IonServer.balancing.starshipWeapons.phaser.thickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.phaser.explosionPower
+	override val volume: Int = IonServer.balancing.starshipWeapons.phaser.volume
+	override val pitch: Float = IonServer.balancing.starshipWeapons.phaser.pitch
+	override val soundName: String = IonServer.balancing.starshipWeapons.phaser.soundName
 
 	private val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
 	private val speedUpSpeed = 1000.0
