@@ -12,17 +12,17 @@ import org.bukkit.util.Vector
 
 class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 	CannonWeaponSubsystem(starship, pos, face) {
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.PlasmaCannon.powerusage
-	override val length: Int = IonServer.balancing.starshipWeapons.PlasmaCannon.length
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.PlasmaCannon.angleRadians)
-	override val convergeDist: Double = IonServer.balancing.starshipWeapons.PlasmaCannon.convergeDistance
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.PlasmaCannon.extraDistance
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.plasmaCannon.powerusage
+	override val length: Int = IonServer.balancing.starshipWeapons.plasmaCannon.length
+	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.plasmaCannon.angleRadians)
+	override val convergeDist: Double = IonServer.balancing.starshipWeapons.plasmaCannon.convergeDistance
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.plasmaCannon.extraDistance
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true
 	}
 
-	override fun isForwardOnly(): Boolean = IonServer.balancing.starshipWeapons.PlasmaCannon.fowardOnly
+	override fun isForwardOnly(): Boolean = IonServer.balancing.starshipWeapons.plasmaCannon.fowardOnly
 
 	override fun getMaxPerShot(): Int {
 		return 1

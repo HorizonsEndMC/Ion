@@ -14,13 +14,13 @@ class PointDefenseLaserProjectile(
 	override val range: Double,
 	shooter: Player?
 ) : LaserProjectile(starship, loc, dir, shooter) {
-	override val speed: Double = IonServer.balancing.starshipWeapons.PointDefence.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.PointDefence.shieldDamageMultiplier
+	override val speed: Double = IonServer.balancing.starshipWeapons.pointDefence.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pointDefence.shieldDamageMultiplier
 	override val color: Color = Color.BLUE
-	override val thickness: Double = IonServer.balancing.starshipWeapons.PointDefence.thickness
-	override val particleThickness: Double = IonServer.balancing.starshipWeapons.PointDefence.particleThickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.PointDefence.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.PointDefence.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.PointDefence.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.PointDefence.soundName
+	override val thickness: Double = IonServer.balancing.starshipWeapons.pointDefence.thickness
+	override val particleThickness: Double = IonServer.balancing.starshipWeapons.pointDefence.particleThickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.pointDefence.explosionPower
+	override val volume: Int = IonServer.balancing.starshipWeapons.pointDefence.volume
+	override val pitch: Float = IonServer.balancing.starshipWeapons.pointDefence.pitch
+	override val soundName: String = IonServer.balancing.starshipWeapons.pointDefence.soundName
 }

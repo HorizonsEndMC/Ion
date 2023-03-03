@@ -18,14 +18,14 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getYFactor(): Int
 
-	override val cooldownNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.TriTurret.fireCooldownNanos)
-	override val range: Double = IonServer.balancing.starshipWeapons.TriTurret.range
-	override val sound: String = IonServer.balancing.starshipWeapons.TriTurret.soundName
+	override val cooldownNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.triTurret.fireCooldownNanos)
+	override val range: Double = IonServer.balancing.starshipWeapons.triTurret.range
+	override val sound: String = IonServer.balancing.starshipWeapons.triTurret.soundName
 
-	override val projectileSpeed: Int = IonServer.balancing.starshipWeapons.TriTurret.speed.toInt()
-	override val projectileParticleThickness: Double = IonServer.balancing.starshipWeapons.TriTurret.particleThickness
-	override val projectileExplosionPower: Float = IonServer.balancing.starshipWeapons.TriTurret.explosionPower
-	override val projectileShieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.TriTurret.shieldDamageMultiplier
+	override val projectileSpeed: Int = IonServer.balancing.starshipWeapons.triTurret.speed.toInt()
+	override val projectileParticleThickness: Double = IonServer.balancing.starshipWeapons.triTurret.particleThickness
+	override val projectileExplosionPower: Float = IonServer.balancing.starshipWeapons.triTurret.explosionPower
+	override val projectileShieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.triTurret.shieldDamageMultiplier
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
 		Vec3i(-2, getYFactor() * 4, +3),
