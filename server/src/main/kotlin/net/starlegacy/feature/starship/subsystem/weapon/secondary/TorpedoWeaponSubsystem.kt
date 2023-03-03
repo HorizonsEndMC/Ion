@@ -23,7 +23,7 @@ class TorpedoWeaponSubsystem(
 	override fun isForwardOnly(): Boolean = IonServer.balancing.starshipWeapons.protonTorpedo.fowardOnly
 
 	override val length: Int = IonServer.balancing.starshipWeapons.protonTorpedo.length
-	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.protonTorpedo.powerusage
+	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.protonTorpedo.powerUsage
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.protonTorpedo.extraDistance
 	override val aimDistance: Int = IonServer.balancing.starshipWeapons.protonTorpedo.aimDistance
 
