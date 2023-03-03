@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerAchievement
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -16,11 +16,12 @@ import org.bukkit.entity.Player
 fun Player.rewardAchievement(achievement: Achievement) {
 	if (!SETTINGS.master) return
 
-	val playerData = PlayerData[this.uniqueId]
-	if (playerData.achievements.contains(achievement)) return
+	val playerData = PlayerData[this.uniqueId]!!
+	if (playerData.achievements.find { it.achievement == achievement } != null) return
 
-	playerData.update {
-		achievements.add(achievement)
+	PlayerAchievement.new {
+		player = playerData
+		this.achievement = achievement
 	}
 
 	vaultEconomy?.depositPlayer(this, achievement.creditReward.toDouble())

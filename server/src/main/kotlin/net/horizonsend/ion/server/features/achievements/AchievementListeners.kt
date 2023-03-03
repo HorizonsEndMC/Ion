@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.starlegacy.feature.misc.CustomItems
@@ -41,7 +41,7 @@ class AchievementListeners : Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onEnterPlanetEvent(event: EnterPlanetEvent) {
-		val playerData = PlayerData[event.player.uniqueId]
+		val playerData = PlayerData[event.player.uniqueId]!!
 
 		event.player.rewardAchievement(
 			when (event.newworld.name.lowercase()) {
@@ -66,7 +66,7 @@ class AchievementListeners : Listener {
 			}
 		)
 
-		val achievements = playerData.achievements
+		val achievements = playerData.achievements.map { it.achievement }
 		if (achievements.containsAll(
 				listOf(
 						Achievement.PLANET_CHANDRA,

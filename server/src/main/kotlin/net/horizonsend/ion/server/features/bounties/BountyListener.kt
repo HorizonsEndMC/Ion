@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.bounties
 
-import net.horizonsend.ion.common.database.collections.PlayerData
-import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.server.miscellaneous.extensions.serverError
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.starlegacy.feature.progression.Levels
@@ -15,9 +14,9 @@ class BountyListener : Listener {
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
 		val killer = event.entity.killer ?: return // Only player kills
 		val victim = event.player
-		val killerData = PlayerData[killer.uniqueId]
+		val killerData = PlayerData[killer.uniqueId]!!
 		val killerLevel = Levels[event.player]
-		val victimData = PlayerData[victim.uniqueId]
+		val victimData = PlayerData[victim.uniqueId]!!
 
 		killerData.update {
 			bounty += (killerLevel * killerLevel) + (200 * killerLevel) + 5000
@@ -33,7 +32,7 @@ class BountyListener : Listener {
 						this.bounty = 0
 					}
 
-					killer.sendRichMessage("<gray>Claimed </gray>$bounty<gray> bounty on </gray>${victimData.minecraftUsername}")
+					killer.sendRichMessage("<gray>Claimed </gray>$bounty<gray> bounty on </gray>${victimData.username}")
 				} else {
 					killer.serverError("Vault Economy is not loaded! Cannot reward bounty!")
 				}

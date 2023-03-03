@@ -6,9 +6,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.collections.PlayerData
+import net.horizonsend.ion.common.database.PlayerAchievement
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.horizonsend.ion.server.miscellaneous.extensions.userError
@@ -40,7 +40,7 @@ class AchievementsCommand : BaseCommand() {
 			return
 		}
 
-		val player = Bukkit.getPlayer(playerData.minecraftUUID)
+		val player = Bukkit.getPlayer(playerData.uuid.value)
 
 		if (player == null) {
 			sender.userError("Player $target must be online.")
@@ -65,9 +65,7 @@ class AchievementsCommand : BaseCommand() {
 			return
 		}
 
-		playerData.update {
-			achievements.remove(achievement)
-		}
+		PlayerAchievement.remove(playerData, achievement)
 
 		sender.success("Took achievement ${achievement.name} from $target.")
 	}
