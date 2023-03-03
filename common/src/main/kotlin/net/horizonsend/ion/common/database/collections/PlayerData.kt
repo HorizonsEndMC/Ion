@@ -6,16 +6,15 @@ import net.horizonsend.ion.common.database.Collection
 import net.horizonsend.ion.common.database.Document
 import net.horizonsend.ion.common.database.enums.Achievement
 import org.bson.codecs.pojo.annotations.BsonId
-import org.bson.codecs.pojo.annotations.BsonProperty
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.UUID
 
 internal class PlayerData private constructor(
-	@BsonId @BsonProperty("minecraftUUID") val uuid: UUID,
-	@BsonProperty("discordId") var snowflake: Long? = null,
-	@BsonProperty("minecraftUsername") var username: String? = null,
+	@BsonId val uuid: UUID,
+	var discordId: Long? = null,
+	var minecraftUsername: String? = null,
 	var achievements: MutableList<Achievement> = mutableListOf(),
 	var voteTimes: MutableMap<String, Long> = mutableMapOf(),
 	var acceptedBounty: UUID? = null,
@@ -26,9 +25,9 @@ internal class PlayerData private constructor(
 	companion object : Collection<PlayerData>(PlayerData::class) {
 		init {
 			collection.ensureIndex(PlayerData::uuid)
-			collection.ensureIndex(PlayerData::snowflake)
+			collection.ensureIndex(PlayerData::discordId)
 			collection.ensureIndex(
-				PlayerData::username,
+				PlayerData::minecraftUsername,
 				indexOptions = IndexOptions().collation(Collation.builder().locale("en").caseLevel(false).build())
 			)
 		}
@@ -36,11 +35,11 @@ internal class PlayerData private constructor(
 		override fun construct(id: UUID): PlayerData = PlayerData(id)
 
 		operator fun get(minecraftUsername: String): PlayerData? {
-			return collection.findOne(PlayerData::username eq minecraftUsername)
+			return collection.findOne(PlayerData::minecraftUsername eq minecraftUsername)
 		}
 
 		operator fun get(discordId: Long): PlayerData? {
-			return collection.findOne(PlayerData::snowflake eq discordId)
+			return collection.findOne(PlayerData::discordId eq discordId)
 		}
 	}
 
