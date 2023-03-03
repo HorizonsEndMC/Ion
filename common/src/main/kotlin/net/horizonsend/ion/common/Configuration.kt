@@ -9,12 +9,22 @@ import java.io.File
 import java.io.IOException
 
 object Configuration {
+	@PublishedApi
+	@OptIn(ExperimentalSerializationApi::class)
+	internal val json = Json {
+		encodeDefaults = true
+		ignoreUnknownKeys = true
+		isLenient = true
+		prettyPrint = true
+		prettyPrintIndent = "\t"
+	}
+
 	@OptIn(ExperimentalSerializationApi::class)
 	inline fun <reified T> load(directory: File, fileName: String): T {
 		directory.mkdirs()
 		val file = directory.resolve(fileName)
 
-		val configuration: T = if (file.exists()) Json.decodeFromStream(file.inputStream()) else Json.decodeFromString("{}")
+		val configuration: T = if (file.exists()) json.decodeFromStream(file.inputStream()) else json.decodeFromString("{}")
 
 		try { save(configuration, directory, fileName) } catch (_: IOException) {
 			System.err.println("Couldn't re-save configuration, this could cause problems later!")
@@ -28,6 +38,6 @@ object Configuration {
 		directory.mkdirs()
 		val file = directory.resolve(fileName)
 
-		Json.encodeToStream(clazz, file.outputStream())
+		json.encodeToStream(clazz, file.outputStream())
 	}
 }
