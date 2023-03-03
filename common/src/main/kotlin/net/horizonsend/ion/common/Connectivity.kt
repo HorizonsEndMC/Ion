@@ -19,6 +19,9 @@ import org.litote.kmongo.util.KMongoJacksonFeature
 import redis.clients.jedis.JedisPooled
 import java.io.File
 import java.lang.System.setProperty
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 object Connectivity {
 	private lateinit var database: Database
@@ -63,6 +66,44 @@ object Connectivity {
 		mongoDatabase = mongoClient.getDatabase(configuration.databaseName)
 
 		jedisPool = JedisPooled(configuration.redisConnectionUri)
+
+		println("Performing Data Migration")
+		val startTime = System.nanoTime()
+
+		net.horizonsend.ion.common.database.collections.PlayerData.collection.find().forEach {
+			if (PlayerData[it.uuid] != null) return@forEach
+			if (it.minecraftUsername == null) return@forEach // who tf decided username was String?
+
+			val playerData = PlayerData.new(it.uuid) {
+				username = it.minecraftUsername!!
+				snowflake = it.discordId
+				acceptedBounty = it.acceptedBounty
+				bounty = it.bounty
+				particle = it.particle
+				color = it.color
+			}
+
+			it.achievements.forEach {
+				PlayerAchievement.new {
+					player = playerData
+					achievement = it
+				}
+			}
+
+			it.voteTimes.forEach { (site, datetime) ->
+				PlayerVoteTime.new {
+					player = playerData
+					serviceName = site
+					dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.systemDefault())
+				}
+			}
+		}
+
+		val endTime = System.nanoTime()
+		val deltaTime = endTime - startTime
+		val timeMS = deltaTime / 1_000_000
+
+		println("Migration took ${timeMS}ms")
 	}
 
 	fun close() {
