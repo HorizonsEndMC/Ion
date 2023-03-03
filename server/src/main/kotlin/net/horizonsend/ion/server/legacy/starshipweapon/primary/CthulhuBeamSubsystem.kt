@@ -16,7 +16,7 @@ import kotlin.math.sqrt
 
 class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
 	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.cthulhuBeam.powerusage
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.cthulhuBeam.powerUsage
 	override val range: Double = IonServer.balancing.starshipWeapons.cthulhuBeam.range
 
 	override fun getMaxPerShot(): Int {

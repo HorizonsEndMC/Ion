@@ -27,7 +27,7 @@ class HeavyLaserWeaponSubsystem(
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.heavyLaser.boostChargeNanos)
 
 	override val length: Int = IonServer.balancing.starshipWeapons.heavyLaser.length
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.heavyLaser.powerusage
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.heavyLaser.powerUsage
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.extraDistance
 	override val aimDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.aimDistance
 
