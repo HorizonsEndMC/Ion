@@ -23,13 +23,13 @@ class SonicMissileWeaponSubsystem(
 ) : CannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = IonServer.balancing.starshipWeapons.SonicMissile.length
-	override val convergeDist: Double = IonServer.balancing.starshipWeapons.SonicMissile.convergeDistance
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.SonicMissile.extraDistance
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.SonicMissile.angleRadians)
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.SonicMissile.powerusage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.SonicMissile.boostChargeNanos)
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.SonicMissile.fireCooldownNanos)
+	override val length: Int = IonServer.balancing.starshipWeapons.sonicMissile.length
+	override val convergeDist: Double = IonServer.balancing.starshipWeapons.sonicMissile.convergeDistance
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.sonicMissile.extraDistance
+	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.sonicMissile.angleRadians)
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.sonicMissile.powerusage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.boostChargeNanos)
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.fireCooldownNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 

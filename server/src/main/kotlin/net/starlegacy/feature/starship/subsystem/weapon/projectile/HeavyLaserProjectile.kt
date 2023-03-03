@@ -16,13 +16,13 @@ class HeavyLaserProjectile(
 	baseAimDistance: Int,
 	sound: String
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
-	override val shieldDamageMultiplier = IonServer.balancing.starshipWeapons.HeavyLaser.shieldDamageMultiplier
-	override val maxDegrees: Double = IonServer.balancing.starshipWeapons.HeavyLaser.maxDegrees
-	override val range: Double = IonServer.balancing.starshipWeapons.HeavyLaser.range
-	override val speed: Double = IonServer.balancing.starshipWeapons.HeavyLaser.speed
+	override val shieldDamageMultiplier = IonServer.balancing.starshipWeapons.heavyLaser.shieldDamageMultiplier
+	override val maxDegrees: Double = IonServer.balancing.starshipWeapons.heavyLaser.maxDegrees
+	override val range: Double = IonServer.balancing.starshipWeapons.heavyLaser.range
+	override val speed: Double = IonServer.balancing.starshipWeapons.heavyLaser.speed
 	override val color: Color = Color.RED
-	override val thickness: Double = IonServer.balancing.starshipWeapons.HeavyLaser.thickness
-	override val particleThickness: Double = IonServer.balancing.starshipWeapons.HeavyLaser.particleThickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.HeavyLaser.explosionPower
+	override val thickness: Double = IonServer.balancing.starshipWeapons.heavyLaser.thickness
+	override val particleThickness: Double = IonServer.balancing.starshipWeapons.heavyLaser.particleThickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.heavyLaser.explosionPower
 	override val soundName: String = sound
 }

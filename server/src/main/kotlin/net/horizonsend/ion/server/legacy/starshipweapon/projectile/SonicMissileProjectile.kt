@@ -14,14 +14,14 @@ class SonicMissileProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.balancing.starshipWeapons.SonicMissile.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.SonicMissile.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.SonicMissile.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.SonicMissile.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.SonicMissile.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.SonicMissile.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.SonicMissile.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.SonicMissile.soundName
+	override val range: Double = IonServer.balancing.starshipWeapons.sonicMissile.range
+	override var speed: Double = IonServer.balancing.starshipWeapons.sonicMissile.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.sonicMissile.shieldDamageMultiplier
+	override val thickness: Double = IonServer.balancing.starshipWeapons.sonicMissile.thickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.sonicMissile.explosionPower
+	override val volume: Int = IonServer.balancing.starshipWeapons.sonicMissile.volume
+	override val pitch: Float = IonServer.balancing.starshipWeapons.sonicMissile.pitch
+	override val soundName: String = IonServer.balancing.starshipWeapons.sonicMissile.soundName
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val offset = 0.0

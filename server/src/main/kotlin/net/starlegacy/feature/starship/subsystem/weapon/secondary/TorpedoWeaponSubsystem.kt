@@ -18,14 +18,14 @@ class TorpedoWeaponSubsystem(
 	face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem {
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.ProtonTorpedo.boostChargeNanos)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.protonTorpedo.boostChargeNanos)
 
-	override fun isForwardOnly(): Boolean = IonServer.balancing.starshipWeapons.ProtonTorpedo.fowardOnly
+	override fun isForwardOnly(): Boolean = IonServer.balancing.starshipWeapons.protonTorpedo.fowardOnly
 
-	override val length: Int = IonServer.balancing.starshipWeapons.ProtonTorpedo.length
-	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.ProtonTorpedo.powerusage
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.ProtonTorpedo.extraDistance
-	override val aimDistance: Int = IonServer.balancing.starshipWeapons.ProtonTorpedo.aimDistance
+	override val length: Int = IonServer.balancing.starshipWeapons.protonTorpedo.length
+	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.protonTorpedo.powerusage
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.protonTorpedo.extraDistance
+	override val aimDistance: Int = IonServer.balancing.starshipWeapons.protonTorpedo.aimDistance
 
 	override fun getMaxPerShot() = 2
 
