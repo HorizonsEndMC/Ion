@@ -15,6 +15,7 @@ dependencies {
 	api("org.jetbrains.exposed:exposed-core:0.40.1")
 	api("org.jetbrains.exposed:exposed-dao:0.40.1")
 	api("org.jetbrains.exposed:exposed-jdbc:0.40.1")
+	api("org.jetbrains.exposed:exposed-java-time:0.40.1")
 
 	api("com.zaxxer:HikariCP:5.0.1")
 
