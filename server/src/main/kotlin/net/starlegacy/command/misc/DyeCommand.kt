@@ -4,7 +4,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.minecraft.world.item.DyeableArmorItem
 import net.starlegacy.command.SLCommand
 import net.starlegacy.util.enumValueOfOrNull
 import net.starlegacy.util.isBed
@@ -16,8 +17,10 @@ import net.starlegacy.util.isGlassPane
 import net.starlegacy.util.isGlazedTerracotta
 import net.starlegacy.util.isStainedTerracotta
 import net.starlegacy.util.isWool
+import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
+import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
@@ -38,6 +41,14 @@ object DyeCommand : SLCommand() {
 	}
 
 	private fun dyeItem(item: ItemStack, newDyeColor: DyeColor): DyeColor {
+		if (item.itemMeta is DyeableArmorItem){
+			val nmsItem = CraftItemStack.asNMSCopy(item)
+			val dyeableItemMeta = item.itemMeta as? DyeableArmorItem
+			val oldDyeColor = dyeableItemMeta?.getColor(nmsItem) ?: 0
+			dyeableItemMeta?.setColor(nmsItem, newDyeColor.color.asRGB())
+			(item.itemMeta as? DyeableArmorItem)?.setColor(nmsItem, newDyeColor.color.asRGB())
+			return DyeColor.getByColor(Color.fromRGB(oldDyeColor)) ?: DyeColor.PINK
+		}
 		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.isGlass || item.type.isGlassPane || item.type.isStainedTerracotta || item.type.isGlazedTerracotta || item.type.isCarpet || item.type.isBed)) {
 			fail { "This item can not be dyed." }
 		}
