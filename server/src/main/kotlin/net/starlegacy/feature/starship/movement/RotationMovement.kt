@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.movement
 
-import io.papermc.paper.entity.RelativeTeleportFlag
+import io.papermc.paper.entity.TeleportFlag
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.misc.CustomBlocks
@@ -64,7 +64,11 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		if (passenger is Player) {
 			newLoc.pitch = passenger.location.pitch
 			newLoc.yaw += passenger.location.yaw
-			passenger.teleport(newLoc, TeleportCause.PLUGIN, true, false, *RelativeTeleportFlag.values())
+			passenger.teleport(
+				newLoc,
+				TeleportCause.PLUGIN,
+				*TeleportFlag.Relative.values()
+			)
 		} else {
 			passenger.teleport(newLoc)
 		}

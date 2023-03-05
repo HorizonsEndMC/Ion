@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.control
 
-import io.papermc.paper.entity.RelativeTeleportFlag
+import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
@@ -208,9 +208,7 @@ object StarshipControl : SLComponent() {
 			pilot.teleport(
 				newLoc,
 				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				true,
-				false,
-				*RelativeTeleportFlag.values()
+				*TeleportFlag.Relative.values()
 			)
 		}
 
