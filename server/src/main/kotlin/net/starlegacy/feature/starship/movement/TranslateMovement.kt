@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.movement
 
-import io.papermc.paper.entity.RelativeTeleportFlag
+import io.papermc.paper.entity.TeleportFlag
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
@@ -89,9 +89,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			passenger.teleport(
 				location,
 				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				true,
-				false,
-				*RelativeTeleportFlag.values()
+				*TeleportFlag.Relative.values()
 			)
 		} else {
 			passenger.teleport(location)
