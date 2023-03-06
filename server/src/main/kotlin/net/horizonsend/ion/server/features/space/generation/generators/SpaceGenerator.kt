@@ -141,7 +141,7 @@ class SpaceGenerator(
 	}
 
 	private fun schematic(schematicName: String): Clipboard {
-		val file: File = IonServer.Ion.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
+		val file: File = IonServer.dataFolder.resolve("wrecks").resolve("$schematicName.schem")
 
 		return SpongeSchematicReader(NBTInputStream(GZIPInputStream(FileInputStream(file)))).read()
 	}
@@ -251,7 +251,7 @@ class SpaceGenerator(
 				}
 			}
 
-			levelChunk.playerChunk?.broadcastChanges(levelChunk)
+			levelChunk.playerChunk?.broadcastChanges(levelChunk) ?: println("WHYYYYYYYYYYYYYYYYY")
 			Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
 			levelChunk.isUnsaved = true
 		}
