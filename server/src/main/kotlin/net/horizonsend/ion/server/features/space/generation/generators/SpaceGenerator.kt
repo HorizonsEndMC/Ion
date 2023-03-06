@@ -3,20 +3,24 @@ package net.horizonsend.ion.server.features.space.generation.generators
 import com.sk89q.jnbt.NBTInputStream
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
+import kotlinx.coroutines.Deferred
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.Encounters
+import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.chunk.LevelChunk
+import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.util.nms
 import net.starlegacy.util.timing
 import org.bukkit.Bukkit
@@ -25,6 +29,7 @@ import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.util.Random
@@ -45,28 +50,6 @@ class SpaceGenerator(
 	val spaceGenerationVersion: Byte = 0
 	val timing = timing("Space Generation")
 	val random = Random(serverLevel.seed)
-
-	abstract class SpaceGenerationData {
-		abstract val x: Int
-		abstract val y: Int
-		abstract val z: Int
-	}
-
-	/**
-	 * This class contains information passed to the generation function.
-	 * @param [x, y ,z] Origin of the asteroid.
-	 * @param palette A weighted list of blocks.
-	 * @param size The radius of the asteroid before noise deformation.
-	 * @param octaves The number of octaves of noise to apply. Generally 1, but higher for small asteroids. Increases roughness.
-	 **/
-	data class AsteroidGenerationData(
-		override val x: Int,
-		override val y: Int,
-		override val z: Int,
-		val palette: WeightedRandomList<BlockState>,
-		val size: Double,
-		val octaves: Int
-	) : SpaceGenerationData()
 
 	// ASTEROIDS SECTION
 	val oreMap: Map<String, BlockState> = configuration.ores.associate {
@@ -218,7 +201,7 @@ class SpaceGenerator(
 	}
 
 	companion object {
-		fun rebuildChunkAsteroids(chunk: Chunk) {
+		fun buildChunkBlocks(chunk: Chunk) {
 			val storedAsteroidData =
 				chunk.persistentDataContainer.get(NamespacedKeys.STORED_CHUNK_BLOCKS, PersistentDataType.BYTE_ARRAY)
 					?: return
@@ -258,6 +241,7 @@ class SpaceGenerator(
 								index++
 								continue
 							}
+
 							levelChunkSection.setBlockState(x, y, z, block)
 							levelChunk.playerChunk?.blockChanged(BlockPos(worldX, y + sectionMinY, worldZ))
 
@@ -268,6 +252,90 @@ class SpaceGenerator(
 			}
 
 			levelChunk.playerChunk?.broadcastChanges(levelChunk)
+			Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
+			levelChunk.isUnsaved = true
+		}
+	}
+}
+
+abstract class SpaceGenerationTask<V : SpaceGenerationReturnData> {
+	abstract val generator: SpaceGenerator
+	abstract val returnData: Deferred<V>
+
+	abstract fun generate()
+
+	open fun postProcess(completedData: SpaceGenerationReturnData) {}
+}
+
+abstract class SpaceGenerationData() {
+	abstract val x: Int
+	abstract val y: Int
+	abstract val z: Int
+}
+
+abstract class SpaceGenerationReturnData {
+	abstract val completedSectionMap: Map<LevelChunk, List<CompletedSection>>
+	data class CompletedSection(
+		val y: Int,
+		val blocks: IntArray,
+		val palette: ListTag
+	)
+
+	abstract fun complete(generator: SpaceGenerator)
+
+	fun store(generator: SpaceGenerator) {
+		val level = generator.serverLevel
+		val holderLookup = level.level.holderLookup(Registries.BLOCK)
+
+		for ((levelChunk, sectionList) in completedSectionMap) {
+			val bukkitChunk = levelChunk.bukkitChunk
+			val sections = ListTag()
+
+			val existingStoredBlocks = BlockSerialization
+				.readChunkCompoundTag(
+					bukkitChunk,
+					NamespacedKeys.STORED_CHUNK_BLOCKS
+				)
+
+			for (completedSection in sectionList) {
+				val newBlocks = BlockSerialization
+					.formatSection(
+						completedSection.y,
+						completedSection.blocks,
+						completedSection.palette
+					)
+
+				sections.add(newBlocks)
+			}
+
+			// Format the new data
+			val finishedChunk = BlockSerialization.formatChunk(
+				sections,
+				generator.spaceGenerationVersion
+			)
+
+			// Combine and overwrite old data with new
+			val combined = BlockSerialization.combineSectionBlockStorage(
+				existingStoredBlocks,
+				finishedChunk,
+				holderLookup
+			)
+
+			val outputStream = ByteArrayOutputStream()
+			NbtIo.writeCompressed(combined, outputStream)
+
+			// Update PDCs
+			bukkitChunk.persistentDataContainer.set(
+				NamespacedKeys.STORED_CHUNK_BLOCKS,
+				PersistentDataType.BYTE_ARRAY,
+				outputStream.toByteArray()
+			)
+
+			bukkitChunk.persistentDataContainer.set(
+				NamespacedKeys.SPACE_GEN_VERSION,
+				PersistentDataType.BYTE,
+				generator.spaceGenerationVersion
+			)
 		}
 	}
 }

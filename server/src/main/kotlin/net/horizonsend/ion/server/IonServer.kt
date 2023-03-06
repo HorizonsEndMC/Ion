@@ -133,7 +133,6 @@ object IonServer : JavaPlugin() {
 
 					pluginManager.registerEvents(CityNPCs, this)
 
-					SpaceGenerationManager.primeGeneration()
 					commandManager.commandCompletions.registerCompletion("wreckSchematics") { context ->
 						SpaceGenerationManager.getGenerator(
 							(context.player.world as CraftWorld).handle
