@@ -18,6 +18,7 @@ val commands = arrayOf(
 	CustomItemCommand(),
 	SettingsCommand(),
 	IonCommand(),
+	SearchCommand(),
 
 	AchievementsCommand()
 )

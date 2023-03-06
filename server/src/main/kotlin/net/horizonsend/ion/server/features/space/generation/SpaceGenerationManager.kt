@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerationTask
@@ -24,15 +24,33 @@ import kotlin.math.roundToInt
 object SpaceGenerationManager : Listener {
 	val worldGenerators: MutableMap<ServerLevel, SpaceGenerator?> = mutableMapOf()
 
-	val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
+	val coroutineScope = CoroutineScope(Dispatchers.Default + Job())
 
 	fun getGenerator(serverLevel: ServerLevel): SpaceGenerator? = worldGenerators[serverLevel]
+
+	fun bootstrap() {
+		for (world in IonServer.server.worlds) {
+			val serverLevel = (world as CraftWorld).handle
+			println(world)
+
+			IonServer.configuration.spaceGenConfig[world.name]?.let { config ->
+				println("creating generator")
+				worldGenerators[serverLevel] =
+					SpaceGenerator(
+						serverLevel,
+						config
+					)
+			}
+		}
+	}
 
 	@EventHandler
 	fun onWorldInit(event: WorldInitEvent) {
 		val serverLevel = (event.world as CraftWorld).handle
+		println(event)
 
-		Ion.configuration.spaceGenConfig[event.world.name]?.let { config ->
+		IonServer.configuration.spaceGenConfig[event.world.name]?.let { config ->
+			println("creating generator")
 			worldGenerators[serverLevel] =
 				SpaceGenerator(
 					serverLevel,
