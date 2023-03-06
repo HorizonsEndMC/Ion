@@ -30,7 +30,7 @@ class SpaceGenCommand : BaseCommand() {
 				val chunk2 = sender.world.getChunkAt(x, z)
 
 				try {
-					SpaceGenerator.rebuildChunkAsteroids(chunk2)
+					SpaceGenerator.buildChunkBlocks(chunk2)
 				} catch (error: java.lang.Error) {
 					error.printStackTrace()
 					error.message?.let { sender.serverError(it) }
@@ -58,7 +58,7 @@ class SpaceGenCommand : BaseCommand() {
 				octaves
 			)
 
-			SpaceGenerationManager.generationTasks.put(GenerateAsteroidTask(generator, asteroid))
+			SpaceGenerationManager.generateFeature(GenerateAsteroidTask(generator, asteroid))
 		} catch (err: java.lang.Exception) {
 			sender.serverError(err.message ?: "Error generating asteroid")
 			err.printStackTrace()
@@ -88,6 +88,6 @@ class SpaceGenCommand : BaseCommand() {
 			)
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
-		SpaceGenerationManager.generationTasks.put(GenerateWreckTask(generator, data))
+//		SpaceGenerationManager.generationTasks.put(GenerateWreckTask(generator, data))
 	}
 }
