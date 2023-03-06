@@ -40,8 +40,8 @@ import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
+import org.bukkit.entity.Player
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
@@ -132,6 +132,7 @@ object IonServer : JavaPlugin() {
 					HyperspaceBeacons.reloadDynmap()
 					Collectors.onEnable()
 					CityNPCs.onEnable()
+					SpaceGenerationManager.bootstrap()
 
 					pluginManager.registerEvents(CityNPCs, this)
 
