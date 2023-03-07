@@ -79,6 +79,7 @@ class RayTracedParticleProjectile(
 
 			if (hitEntity is LivingEntity) {
 				if (balancing.shouldBypassHitTicks) hitEntity.noDamageTicks = 0
+				if (hitEntity !is Player) damage *= balancing.mobDamageMultiplier
 
 				// Headshots
 				if (balancing.shouldHeadshot && (hitEntity.eyeLocation.y - hitPosition.y) < (.3 * balancing.shotSize)) {
