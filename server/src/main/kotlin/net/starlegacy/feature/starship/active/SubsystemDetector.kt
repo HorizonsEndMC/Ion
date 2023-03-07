@@ -41,7 +41,7 @@ object SubsystemDetector {
 		val potentialWeaponBlocks = LinkedList<Block>()
 		val potentialSignBlocks = LinkedList<Block>()
 		starship.iterateBlocks { x, y, z ->
-			val block = starship.world.getBlockAt(x, y, z)
+			val block = starship.serverLevel.world.getBlockAt(x, y, z)
 			val type = block.type
 
 			if (type.isWallSign) {
