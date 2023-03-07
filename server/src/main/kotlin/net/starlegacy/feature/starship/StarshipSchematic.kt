@@ -25,7 +25,7 @@ object StarshipSchematic {
 
 		val origin = if (starship is ActivePlayerStarship) Vec3i(starship.data.blockKey) else starship.centerOfMassVec3i
 		clipboard.origin = BlockVector3.at(origin.x, origin.y, origin.z)
-		val weWorld: WEWorld = BukkitAdapter.adapt(starship.world)
+		val weWorld: WEWorld = BukkitAdapter.adapt(starship.serverLevel.world)
 		starship.iterateBlocks { x, y, z ->
 			val pos = BlockVector3.at(x, y, z)
 			clipboard.setBlock(pos, weWorld.getFullBlock(pos))

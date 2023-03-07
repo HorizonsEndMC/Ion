@@ -16,7 +16,7 @@ class SphereShieldSubsystem(
 	private val maxRangeSquared = maxRange.squared()
 
 	override fun containsBlock(block: Block): Boolean {
-		if (starship.world.uid != block.world.uid) {
+		if (starship.serverLevel.world.uid != block.world.uid) {
 			return false
 		}
 

@@ -30,7 +30,7 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	private val color: Color = getColor(starship, pos, face)
 
 	private fun getColor(starship: ActiveStarship, pos: Vec3i, face: BlockFace): Color {
-		val glassBlock = starship.world.getBlockAt(pos.x, pos.y, pos.z).getRelative(face)
+		val glassBlock = starship.serverLevel.world.getBlockAt(pos.x, pos.y, pos.z).getRelative(face)
 		return when (val material = glassBlock.type) {
 			Material.BLACK_STAINED_GLASS -> Color.WHITE
 			else -> colorMap.getValue(material)

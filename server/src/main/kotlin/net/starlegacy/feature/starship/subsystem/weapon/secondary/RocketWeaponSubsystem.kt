@@ -73,13 +73,13 @@ class RocketWeaponSubsystem(
 	}
 
 	override fun isIntact(): Boolean {
-		val block = pos.toLocation(starship.world).block
+		val block = pos.toLocation(starship.serverLevel.world).block
 		val inward = if (face in arrayOf(BlockFace.UP, BlockFace.DOWN)) BlockFace.NORTH else face
 		return multiblock.blockMatchesStructure(block, inward)
 	}
 
 	override fun manualFire(shooter: Player, dir: Vector, target: Vector?) {
-		val origin = getFirePos().toLocation(starship.world)
+		val origin = getFirePos().toLocation(starship.serverLevel.world)
 		val projectile = RocketProjectile(starship, origin, this.face, shooter)
 		projectile.fire()
 	}
