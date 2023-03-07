@@ -20,14 +20,14 @@ object StarshipInfoCommand : SLCommand() {
 	fun onExecute(p: Player) {
 		val ship = getStarshipPiloting(p)
 
-		val blocks = ship.blocks.map { Vec3i(it) }.associateWith { it.toLocation(ship.world).block.state }
+		val blocks = ship.blocks.map { Vec3i(it) }.associateWith { it.toLocation(ship.serverLevel.world).block.state }
 
 		val size = ship.initialBlockCount
 
 		p.sendRichMessage(
 			"<aqua>${ship.data.name} <white>(${ship.data.starshipType.displayName}) ($size blocks)\n" +
 				"   <gray>Mass:<white> ${ship.mass}\n" +
-				"   <gray>World:<white> ${ship.world.name}\n" +
+				"   <gray>World:<white> ${ship.serverLevel.world.name}\n" +
 				"   <gray>Pilot:<white> ${ship.pilot?.name}"
 		)
 

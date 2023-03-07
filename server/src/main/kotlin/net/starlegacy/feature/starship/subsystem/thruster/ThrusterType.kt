@@ -30,7 +30,7 @@ enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 	};
 
 	fun matchesStructure(starship: ActiveStarship, x: Int, y: Int, z: Int, face: BlockFace): Boolean {
-		val block = starship.world.getBlockAt(x, y, z)
+		val block = starship.serverLevel.world.getBlockAt(x, y, z)
 
 		if (!shape.checkRequirements(block, face, loadChunks = true, particles = false)) {
 			return false
@@ -41,7 +41,7 @@ enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 		var testZ = z - face.modZ
 
 		// allow one block to be glass
-		val firstType = starship.world.getBlockAt(testX, testY, testZ).type
+		val firstType = starship.serverLevel.world.getBlockAt(testX, testY, testZ).type
 		if (!firstType.isAir && !firstType.isGlass && !firstType.isGlassPane) {
 			return false
 		}
@@ -50,7 +50,12 @@ enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 			testX -= face.modX
 			testY -= face.modY
 			testZ -= face.modZ
-			if (starship.contains(testX, testY, testZ) && !starship.world.getBlockAt(testX, testY, testZ).type.isAir) {
+			if (starship.contains(testX, testY, testZ) && !starship.serverLevel.world.getBlockAt(
+					testX,
+					testY,
+					testZ
+				).type.isAir
+			) {
 				return false
 			}
 		}

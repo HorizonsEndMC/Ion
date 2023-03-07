@@ -19,7 +19,7 @@ abstract class TurretWeaponSubsystem(
 	pos: Vec3i,
 	override var face: BlockFace
 ) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem, AutoWeaponSubsystem {
-	private fun getSign() = starship.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign
+	private fun getSign() = starship.serverLevel.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign
 
 	protected abstract val multiblock: TurretMultiblock
 	protected abstract val inaccuracyRadians: Double
@@ -47,8 +47,8 @@ abstract class TurretWeaponSubsystem(
 	}
 
 	override fun canFire(dir: Vector, target: Vector?): Boolean {
-		val blockLocation = multiblock.getPilotLoc(starship.world, pos.x, pos.y, pos.z, face).toBlockLocation()
-		if (pos.toLocation(starship.world).chunk.entities.any { it.location.toBlockLocation() == blockLocation }) {
+		val blockLocation = multiblock.getPilotLoc(starship.serverLevel.world, pos.x, pos.y, pos.z, face).toBlockLocation()
+		if (pos.toLocation(starship.serverLevel.world).chunk.entities.any { it.location.toBlockLocation() == blockLocation }) {
 			return false
 		}
 		// return whether or not any of the fire points are not obstructed
@@ -75,11 +75,11 @@ abstract class TurretWeaponSubsystem(
 		dir: Vector,
 		target: Vector?
 	) {
-		multiblock.shoot(starship.world, pos, face, dir, starship, shooter)
+		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter)
 	}
 
 	override fun autoFire(target: Player, dir: Vector) {
 		val shooter = (starship as? ActivePlayerStarship)?.pilot
-		multiblock.shoot(starship.world, pos, face, dir, starship, shooter)
+		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter)
 	}
 }

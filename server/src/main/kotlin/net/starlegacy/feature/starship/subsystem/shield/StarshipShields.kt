@@ -74,7 +74,7 @@ object StarshipShields : SLComponent() {
 	@EventHandler
 	fun onActivate(event: StarshipActivatedEvent) {
 		val starship = event.starship
-		val worldID = starship.world.uid
+		val worldID = starship.serverLevel.world.uid
 
 		for (shield in starship.shields) {
 			val shieldPos = ShieldPos(worldID, shield.pos)
@@ -85,7 +85,7 @@ object StarshipShields : SLComponent() {
 	@EventHandler
 	fun onDeactivate(event: StarshipDeactivatedEvent) {
 		val starship = event.starship
-		val worldID = starship.world.uid
+		val worldID = starship.serverLevel.world.uid
 
 		for (shield in starship.shields) {
 			val shieldPos = ShieldPos(worldID, shield.pos)

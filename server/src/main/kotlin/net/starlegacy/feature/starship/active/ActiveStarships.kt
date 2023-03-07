@@ -46,7 +46,7 @@ object ActiveStarships : SLComponent() {
 
 	fun add(starship: ActiveStarship) {
 		Tasks.checkMainThread()
-		val world = starship.world
+		val world = starship.serverLevel.world
 
 		require(starship !is ActivePlayerStarship || !playerShipIdMap.containsKey(starship.dataId)) {
 			"Starship is already in the active id map"
@@ -65,7 +65,7 @@ object ActiveStarships : SLComponent() {
 		worldMap[world].add(starship)
 
 		starship.iterateBlocks { x, y, z ->
-			val block = starship.world.getBlockAt(x, y, z)
+			val block = starship.serverLevel.world.getBlockAt(x, y, z)
 			if (block.type == Material.REDSTONE_BLOCK) {
 				val below = block.getRelative(BlockFace.DOWN).blockData
 				if (below.material == Material.PISTON && (below as Directional).facing == BlockFace.DOWN) {
@@ -86,12 +86,12 @@ object ActiveStarships : SLComponent() {
 			playerShipIdMap.remove(starship.dataId)
 			val blockKey: Long = starship.data.blockKey
 			val data: PlayerStarshipData = starship.data
-			playerShipLocationMap[starship.world].remove(blockKey, data as Any)
+			playerShipLocationMap[starship.serverLevel.world].remove(blockKey, data as Any)
 		}
 
-		worldMap[starship.world].remove(starship)
+		worldMap[starship.serverLevel.world].remove(starship)
 
-		if (starship.world.name == "SpaceArena" && !starship.isExploding) {
+		if (starship.serverLevel.world.name == "SpaceArena" && !starship.isExploding) {
 			StarshipDestruction.vanish(starship)
 		}
 
@@ -154,5 +154,5 @@ object ActiveStarships : SLComponent() {
 		return getInWorld(world).firstOrNull { it.contains(x, y, z) }
 	}
 
-	fun isActive(starship: ActiveStarship) = worldMap[starship.world].contains(starship)
+	fun isActive(starship: ActiveStarship) = worldMap[starship.serverLevel.world].contains(starship)
 }

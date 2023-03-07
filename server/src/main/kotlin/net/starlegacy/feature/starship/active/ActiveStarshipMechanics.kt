@@ -77,7 +77,7 @@ object ActiveStarshipMechanics : SLComponent() {
 			for ((set: String, targetId: UUID) in ship.autoTurretTargets) {
 				val target = Bukkit.getPlayer(targetId) ?: continue
 
-				if (target.world != ship.world) {
+				if (target.world != ship.serverLevel.world) {
 					continue
 				}
 
@@ -95,7 +95,7 @@ object ActiveStarshipMechanics : SLComponent() {
 
 					val targetRiding = ActiveStarships.findByPassenger(target)
 					if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
-						targetLoc = Vec3i(targetRiding.blocks.random()).toLocation(ship.world).toCenterLocation()
+						targetLoc = Vec3i(targetRiding.blocks.random()).toLocation(ship.serverLevel.world).toCenterLocation()
 					}
 
 					val targetVec = targetLoc.toVector()
@@ -134,9 +134,9 @@ object ActiveStarshipMechanics : SLComponent() {
 						continue
 					}
 
-					for (p: Player in ship.world.players) {
-						if (!p.location.isInRange(weapon.pos.toLocation(weapon.starship.world), weapon.range)) continue
-						if (p.world != ship.world) continue
+					for (p: Player in ship.serverLevel.world.players) {
+						if (!p.location.isInRange(weapon.pos.toLocation(weapon.starship.serverLevel.world), weapon.range)) continue
+						if (p.world != ship.serverLevel.world) continue
 						if (ship.randomTargetBlacklist.contains(p.uniqueId)) continue
 						validTargets.add(p)
 					}
@@ -150,7 +150,7 @@ object ActiveStarshipMechanics : SLComponent() {
 
 					val targetRiding = ActiveStarships.findByPassenger(target)
 					if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
-						targetLoc = Vec3i(targetRiding.blocks.randomEntry()).toLocation(ship.world).toCenterLocation()
+						targetLoc = Vec3i(targetRiding.blocks.randomEntry()).toLocation(ship.serverLevel.world).toCenterLocation()
 					}
 
 					val targetVec = targetLoc.toVector()
