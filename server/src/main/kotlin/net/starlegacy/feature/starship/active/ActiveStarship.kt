@@ -4,6 +4,7 @@ import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
 import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.horizonsend.ion.server.miscellaneous.handle
@@ -68,7 +69,7 @@ abstract class ActiveStarship(
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
-) : ForwardingAudience {
+) : Starship(), ForwardingAudience {
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
