@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
 import net.horizonsend.ion.server.miscellaneous.extensions.success
-import net.horizonsend.ion.server.miscellaneous.handle
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -93,7 +93,7 @@ abstract class ActiveStarship(
 		get() = _world
 		set(value) {
 			ActiveStarships.updateWorld(this, value, value)
-			_serverLevel = value.handle
+			_serverLevel = value.minecraft
 			_world = value
 		}
 

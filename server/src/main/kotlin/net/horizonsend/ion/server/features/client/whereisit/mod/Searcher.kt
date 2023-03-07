@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.client.whereisit.mod
 
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.server.miscellaneous.extensions.information
-import net.horizonsend.ion.server.miscellaneous.handle
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.FriendlyByteBuf
@@ -29,8 +29,8 @@ object Searcher {
 		val itemToFind = searchContext.item
 		if (itemToFind == Items.AIR) return@async
 
-		val basePos = player.handle.blockPosition()
-		val world = player.world.handle
+		val basePos = player.minecraft.blockPosition()
+		val world = player.world.minecraft
 		val positions =
 			searchWorld(
 				basePos,
@@ -47,7 +47,7 @@ object Searcher {
 		if (positions.isNotEmpty()) {
 			val packet = FoundS2C(positions)
 
-			player.handle.connection.send(
+			player.minecraft.connection.send(
 				ClientboundCustomPayloadPacket(FoundS2C.ID, packet)
 			)
 		} else {
@@ -60,8 +60,8 @@ object Searcher {
 		val itemToFind = item.item
 		val tag = item.tag
 
-		val basePos = player.handle.blockPosition()
-		val world = player.world.handle
+		val basePos = player.minecraft.blockPosition()
+		val world = player.world.minecraft
 
 		return searchWorld(
 			basePos,

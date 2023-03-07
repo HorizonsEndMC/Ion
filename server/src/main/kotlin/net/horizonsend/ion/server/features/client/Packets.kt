@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.client
 
 import io.netty.buffer.Unpooled
-import net.horizonsend.ion.server.miscellaneous.handle
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
 import net.minecraft.resources.ResourceLocation
@@ -50,7 +50,7 @@ enum class Packets(
 		check(s2c != null) { "Packet is C2S only" }
 
 		println("Sending $id to ${player.name}")
-		player.handle.connection.send(
+		player.minecraft.connection.send(
 			ClientboundCustomPayloadPacket(
 				id,
 				FriendlyByteBuf(Unpooled.buffer()).apply {
