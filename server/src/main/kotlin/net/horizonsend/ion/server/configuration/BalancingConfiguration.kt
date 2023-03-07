@@ -25,7 +25,8 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = false,
 			speed = 2.0,
 			timeBetweenShots = 6,
-			shotDeviation = 0.0
+			shotDeviation = 0.0,
+			mobDamageMultiplier = 2.0
 		),
 		val rifle: Singleshot = Singleshot(
 			damage = 2.0,
@@ -43,7 +44,8 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = false,
 			speed = 2.0,
 			timeBetweenShots = 1,
-			shotDeviation = 0.0
+			shotDeviation = 0.0,
+			mobDamageMultiplier = 2.0
 		),
 		val submachineBlaster: Singleshot = Singleshot(
 			damage = 2.0,
@@ -61,7 +63,8 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = false,
 			speed = 2.0,
 			timeBetweenShots = 1,
-			shotDeviation = 0.05
+			shotDeviation = 0.05,
+			mobDamageMultiplier = 2.0
 		),
 		val sniper: Singleshot = Singleshot(
 			damage = 12.0,
@@ -79,7 +82,8 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = true,
 			speed = 2.0,
 			timeBetweenShots = 40,
-			shotDeviation = 0.0
+			shotDeviation = 0.0,
+			mobDamageMultiplier = 2.0
 		),
 		val shotgun: Multishot = Multishot(
 			damage = 4.0,
@@ -100,7 +104,8 @@ data class BalancingConfiguration(
 			shouldPassThroughEntities = false,
 			speed = 2.0,
 			timeBetweenShots = 20,
-			shotDeviation = 0.05
+			shotDeviation = 0.05,
+			mobDamageMultiplier = 2.0
 		),
 		val standardMagazine: AmmoStorage = AmmoStorage(
 			capacity = 60
@@ -123,7 +128,8 @@ data class BalancingConfiguration(
 			override val shouldPassThroughEntities: Boolean,
 			override val speed: Double,
 			override val timeBetweenShots: Int,
-			override val shotDeviation: Double
+			override val shotDeviation: Double,
+			override val mobDamageMultiplier: Double
 		) : Balancing()
 
 		@Serializable
@@ -147,7 +153,8 @@ data class BalancingConfiguration(
 			override val shouldPassThroughEntities: Boolean,
 			override val speed: Double,
 			override val timeBetweenShots: Int,
-			override val shotDeviation: Double
+			override val shotDeviation: Double,
+			override val mobDamageMultiplier: Double
 		) : Balancing()
 
 		@Serializable
@@ -175,6 +182,7 @@ data class BalancingConfiguration(
 			val shouldBypassHitTicks: Boolean
 			val range: Double
 			val shouldHeadshot: Boolean
+			val mobDamageMultiplier: Double
 		}
 
 		interface AmmoStorageBalancing {
