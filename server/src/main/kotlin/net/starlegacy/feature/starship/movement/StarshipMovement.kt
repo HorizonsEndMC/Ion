@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship.movement
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -44,7 +45,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 	/* should only be called by the ship itself */
 	fun execute() {
-		val world1: World = starship.world
+		val world1: World = starship.serverLevel.world
 		val world2 = newWorld ?: world1
 
 		val oldLocationSet: LongOpenHashSet = starship.blocks
@@ -105,7 +106,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			// this part will run on the main thread
 			movePassengers(findPassengers(world1))
 
-			starship.world = world2
+			starship.serverLevel = world2.minecraft
 			starship.blocks = newLocationSet
 			moveShipComputers(world2)
 			updateDirectControlCenter()

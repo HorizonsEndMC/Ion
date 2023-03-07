@@ -53,7 +53,7 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 			val x = pos.x + face.modX * i
 			val y = pos.y + face.modY * i
 			val z = pos.z + face.modZ * i
-			if (starship.world.getBlockAt(x, y, z).type.isAir) {
+			if (starship.serverLevel.world.getBlockAt(x, y, z).type.isAir) {
 				return false
 			}
 		}

@@ -1,3 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
-open class Starship
+import net.minecraft.server.level.ServerLevel
+
+open class Starship(
+	open var serverLevel: ServerLevel
+)

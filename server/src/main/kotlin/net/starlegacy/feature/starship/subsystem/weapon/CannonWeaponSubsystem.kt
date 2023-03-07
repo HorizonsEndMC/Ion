@@ -62,7 +62,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 	}
 
 	override fun manualFire(shooter: Player, dir: Vector, target: Vector?) {
-		fire(getFireVec().toLocation(starship.world), dir, shooter, target)
+		fire(getFireVec().toLocation(starship.serverLevel.world), dir, shooter, target)
 	}
 
 	override fun isIntact(): Boolean {
@@ -70,7 +70,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 			val x = pos.x + face.modX * i
 			val y = pos.y + face.modY * i
 			val z = pos.z + face.modZ * i
-			if (starship.world.getBlockAt(x, y, z).type.isAir) {
+			if (starship.serverLevel.world.getBlockAt(x, y, z).type.isAir) {
 				return false
 			}
 		}

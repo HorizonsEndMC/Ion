@@ -234,7 +234,7 @@ object CrateRestrictions : SLComponent() {
 	}
 
 	fun dropPassengerCrates(starship: ActiveStarship) {
-		val world = starship.world
+		val world = starship.serverLevel.world
 
 		for (player in world.players) {
 			if (!starship.isWithinHitbox(player)) {

@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
 import net.horizonsend.ion.server.miscellaneous.extensions.success
-import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -44,7 +43,6 @@ import net.starlegacy.util.title
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Entity
@@ -69,7 +67,7 @@ abstract class ActiveStarship(
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
-) : Starship(), ForwardingAudience {
+) : Starship(serverLevel), ForwardingAudience {
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
@@ -77,24 +75,11 @@ abstract class ActiveStarship(
 	private var _centerOfMass: BlockPos = centerOfMass
 	private var _centerOfMassVec3i: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
 
-	private var _serverLevel: ServerLevel = serverLevel
-	private var _world: World = serverLevel.world
-
-	var serverLevel: ServerLevel
-		get() = _serverLevel
+	override var serverLevel: ServerLevel
+		get() = super.serverLevel
 		set(value) {
 			ActiveStarships.updateWorld(this, value.world, value.world)
-			_serverLevel = value
-			_world = value.world
-		}
-
-	@Deprecated("Prefer Minecraft - `net.minecraft.server.level.ServerLevel`")
-	var world: World
-		get() = _world
-		set(value) {
-			ActiveStarships.updateWorld(this, value, value)
-			_serverLevel = value.minecraft
-			_world = value
+			super.serverLevel = value
 		}
 
 	var centerOfMass: BlockPos
