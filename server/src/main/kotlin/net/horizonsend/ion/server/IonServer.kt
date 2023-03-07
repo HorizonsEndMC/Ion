@@ -14,9 +14,9 @@ import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customItems.CustomItems
 import net.horizonsend.ion.server.features.worlds.IonWorld
 import net.horizonsend.ion.server.miscellaneous.commands
-import net.horizonsend.ion.server.miscellaneous.handle
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
 import net.horizonsend.ion.server.miscellaneous.listeners
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.feature.economy.city.CityNPCs
@@ -96,7 +96,7 @@ object IonServer : JavaPlugin() {
 
 			// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 			// such as reloading or other plugins doing things they probably shouldn't.
-			for (world in server.worlds) IonWorld.register(world.handle)
+			for (world in server.worlds) IonWorld.register(world.minecraft)
 
 			legacyEnable(commandManager)
 
