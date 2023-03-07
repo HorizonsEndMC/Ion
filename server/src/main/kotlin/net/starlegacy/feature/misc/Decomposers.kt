@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.horizonsend.ion.server.miscellaneous.extensions.success
 import net.horizonsend.ion.server.miscellaneous.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.handle
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
@@ -117,7 +117,7 @@ object Decomposers : SLComponent() {
 		up: BlockFace,
 		forward: BlockFace
 	): Int {
-		val serverLevel = origin.world.handle
+		val serverLevel = origin.world.minecraft
 
 		for (offsetUp: Int in 0 until height) {
 			for (offsetForward: Int in 0 until length) {
