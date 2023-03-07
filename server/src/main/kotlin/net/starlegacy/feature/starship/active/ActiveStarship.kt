@@ -67,12 +67,11 @@ abstract class ActiveStarship(
 	val mass: Double,
 	centerOfMass: BlockPos,
 	private val hitbox: ActiveStarshipHitbox
-) : Starship(serverLevel), ForwardingAudience {
+) : Starship(serverLevel, centerOfMass), ForwardingAudience {
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
 
-	private var _centerOfMass: BlockPos = centerOfMass
 	private var _centerOfMassVec3i: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
 
 	override var serverLevel: ServerLevel
@@ -82,10 +81,10 @@ abstract class ActiveStarship(
 			super.serverLevel = value
 		}
 
-	var centerOfMass: BlockPos
-		get() = _centerOfMass
+	override var centerOfMass: BlockPos
+		get() = super.centerOfMass
 		set(value) {
-			_centerOfMass = value
+			super.centerOfMass = value
 			_centerOfMassVec3i = Vec3i(value.x, value.y, value.z)
 		}
 
@@ -93,7 +92,7 @@ abstract class ActiveStarship(
 	var centerOfMassVec3i: Vec3i
 		get() = _centerOfMassVec3i
 		set(value) {
-			_centerOfMass = BlockPos(value.x, value.y, value.z)
+			super.centerOfMass = BlockPos(value.x, value.y, value.z)
 			_centerOfMassVec3i = value
 		}
 
