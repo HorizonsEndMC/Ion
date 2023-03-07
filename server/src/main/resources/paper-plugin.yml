@@ -4,6 +4,7 @@ api-version: "1.19"
 
 bootstrapper: net.horizonsend.ion.server.IonBootstrapper
 main: net.horizonsend.ion.server.IonServer
+load: STARTUP
 
 dependencies:
   - name: WorldEdit
