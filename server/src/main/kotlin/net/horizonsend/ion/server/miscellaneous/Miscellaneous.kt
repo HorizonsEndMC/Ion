@@ -36,14 +36,14 @@ fun mainThreadCheck() {
 	}
 }
 
-val Player.handle: ServerPlayer
+val Player.minecraft: ServerPlayer
 	get() = (this as CraftPlayer).handle
 
-val World.handle: ServerLevel
+val World.minecraft: ServerLevel
 	get() = (this as CraftWorld).handle
 
 fun highlightBlock(bukkitPlayer: Player, pos: BlockPos) {
-	val player = bukkitPlayer.handle
+	val player = bukkitPlayer.minecraft
 	val conn = player.connection
 	val shulker =
 		Shulker(EntityType.SHULKER, player.level).apply {
