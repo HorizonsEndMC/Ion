@@ -72,11 +72,11 @@ object HyperspaceMap : SLComponent() {
 
 	/** Draws the marker on the Dynmap*/
 	private fun drawMarker(marker: HyperspaceMarker) {
-		if (marker.isArrow) {
+		/*if (marker.isArrow) {
 			drawArrow(marker)
 		} else {
 			deleteDraw(marker, true)
-		}
+		}*/
 		if (marker.inHyperspace) {
 			drawShipTrack(marker)
 		}
