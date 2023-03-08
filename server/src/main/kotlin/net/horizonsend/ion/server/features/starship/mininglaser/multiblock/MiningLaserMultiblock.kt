@@ -14,8 +14,9 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 	override val name = "mininglaser"
 	abstract val range: Double
 	abstract val axis: Triple<Int, Int, Int>
-	abstract val circleRadius: Int
+	abstract val mineRadius: Int
 	abstract val beamCount: Int
+	abstract val maxBroken: Int
 
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): MiningLaserSubsystem {
 		if (starship is ActivePlayerStarship) {
