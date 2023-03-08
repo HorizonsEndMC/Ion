@@ -66,7 +66,7 @@ data class ServerConfiguration(
 		val oreRatio: Double = 0.25,
 		val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
 		val wreckClasses: ArrayList<WreckClass>,
-		val wreckMultiplier: Double
+		val wreckMultiplier: Double = 0.01
 	) {
 		/**
 		 * @param weight: Number of rolls for this Palette
