@@ -28,22 +28,6 @@ object SpaceGenerationManager : Listener {
 
 	fun getGenerator(serverLevel: ServerLevel): SpaceGenerator? = worldGenerators[serverLevel]
 
-	fun bootstrap() {
-		for (world in IonServer.server.worlds) {
-			val serverLevel = (world as CraftWorld).handle
-			println(world)
-
-			IonServer.configuration.spaceGenConfig[world.name]?.let { config ->
-				println("creating generator")
-				worldGenerators[serverLevel] =
-					SpaceGenerator(
-						serverLevel,
-						config
-					)
-			}
-		}
-	}
-
 	@EventHandler
 	fun onWorldInit(event: WorldInitEvent) {
 		val serverLevel = (event.world as CraftWorld).handle
@@ -104,11 +88,13 @@ object SpaceGenerationManager : Listener {
 			generateFeature(GenerateAsteroidTask(generator, asteroid))
 		}
 
-		for (count in 0..ceil(chunkDensity * generator.configuration.wreckMultiplier).roundToInt()) {
+		val wreckDensity = chunkDensity * generator.configuration.wreckMultiplier
+
+		for (count in 0..ceil(wreckDensity).roundToInt()) {
 			// random number out of 100, chance of asteroid's generation. For use in selection.
 			val chance = random.nextDouble(100.0)
 			// Selects some wrecks that are generated. Allows for densities of 0<X<1 wrecks per chunk.
-			if (chance > (chunkDensity * generator.configuration.wreckMultiplier * 10)) continue
+			if (chance > (chunkDensity * wreckDensity * 10)) continue
 			// Random coordinate generation.
 
 			val wreckX = random.nextInt(0, 15) + worldX
