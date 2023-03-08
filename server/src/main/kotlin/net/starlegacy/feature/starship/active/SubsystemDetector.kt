@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.active
 
 import net.starlegacy.feature.misc.CryoPods
 import net.starlegacy.feature.multiblock.Multiblocks
+import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblock
 import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
@@ -54,8 +55,10 @@ object SubsystemDetector {
 				potentialThrusterBlocks += block
 			}
 		}
+
 		starship.reactor = ReactorSubsystem(starship)
 		starship.subsystems += starship.reactor
+
 		for (block in potentialThrusterBlocks) {
 			detectThruster(starship, block)
 		}
@@ -113,6 +116,10 @@ object SubsystemDetector {
 
 			is MagazineMultiblock -> {
 				starship.subsystems += MagazineSubsystem(starship, sign, multiblock)
+			}
+
+			is DrillMultiblock -> {
+				starship.drillCount++
 			}
 
 			is CryoPodMultiblock -> {

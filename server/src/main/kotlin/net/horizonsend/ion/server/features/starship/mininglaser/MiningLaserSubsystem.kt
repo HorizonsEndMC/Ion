@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.mininglaser
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
-import net.horizonsend.ion.server.IonServer.Companion.Ion
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.starlegacy.feature.machine.PowerMachines
@@ -19,6 +19,7 @@ import org.bukkit.ChatColor
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -38,25 +39,26 @@ class MiningLaserSubsystem(
 	private val firingTasks = mutableListOf<BukkitTask>()
 	var isFiring = false
 	lateinit var targetedBlock: Vector
+	private val radiusSquared = multiblock.mineRadius * multiblock.mineRadius
 
 	override val powerUsage: Int = 0
-	private val blockBreakPowerUsage: Int = 5
-	// override fun getAdjustedDir(dir: Vector, target: Vector?): Vector = target?.subtract(getFirePos().toVector()) ?: dir
+	private val blockBreakPowerUsage: Double = 2.5
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
-// 		if (target != null) {
-// 			val origin = getFirePos().toCenterVector()
-// 			val adjustedDir = target.clone().subtract(origin)
-//
-// 			val horizontalAxis = adjustedDir.clone()
-// 			horizontalAxis.y = 0.0
-// 			horizontalAxis.rotateAroundY(90.0)
-// 			horizontalAxis.normalize()
-//
-// 			return adjustedDir.normalize()
-// 		}
+		val firePos = getFirePos()
+		val vector = target.clone().subtract(firePos.toVector())
+		val default = firePos.toVector().add(vector.clone().normalize().multiply(multiblock.range))
 
-		return target
+		return default
+// 		return starship.serverLevel.world.rayTrace(
+// 			firePos.toLocation(starship.serverLevel.world),
+// 			vector.clone(),
+// 			multiblock.range,
+// 			FluidCollisionMode.NEVER,
+// 			true,
+// 			0.1,
+// 			null
+// 		)?.hitPosition ?: default
 	}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
@@ -82,10 +84,11 @@ class MiningLaserSubsystem(
 		return multiblock.signMatchesStructure(sign, loadChunks = true, particles = false)
 	}
 
+	// TODO use this for the multiple guardian beams
 	private fun getPoints(axis: Vector): List<Location> {
 		val spread: Double = 360.0 / multiblock.beamCount
 		val points = mutableListOf<Location>()
-		val start = axis.clone().normalize().rotateAroundZ(90.0).multiply(multiblock.circleRadius).add(axis.clone())
+		val start = axis.clone().normalize().rotateAroundZ(90.0).multiply(multiblock.mineRadius).add(axis.clone())
 
 		for (count in multiblock.beamCount.downTo(1)) {
 			val newLoc = start.rotateAroundNonUnitAxis(axis.clone(), spread * count)
@@ -99,11 +102,9 @@ class MiningLaserSubsystem(
 		if (!isFiring) {
 			startFiringSequence()
 			this.targetedBlock = target.clone()
-			shooter.information(target.toString())
 			shooter.information("Enabled mining laser")
 		} else {
-			firingTasks.forEach { it.cancel() }
-			firingTasks.clear()
+			cancelTask()
 			shooter.information("Disabled mining laser")
 		}
 
@@ -119,16 +120,20 @@ class MiningLaserSubsystem(
 					cancel()
 				}
 			}
-		}.runTaskTimer(Ion, 0L, 5L)
+		}.runTaskTimer(IonServer, 0L, 5L)
+
+		// TODO Startup sound
 
 		firingTasks.add(fireTask)
 	}
 
 	fun fire() {
 		if (!ActiveStarships.isActive(starship)) {
-			firingTasks.forEach { it.cancel() }
+			cancelTask()
 			return
 		}
+
+		// TODO sustain sound
 
 		val sign = getSign() ?: return
 		val power = PowerMachines.getPower(sign, true)
@@ -146,13 +151,13 @@ class MiningLaserSubsystem(
 			}
 		}
 
-		val intialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
-		val targetVector = targetedBlock.clone().subtract(intialPos.toVector())
+		val initialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
+		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
 
 		// TODO rewrite all of the aiming stuff
 
 		val raytrace = starship.serverLevel.world.rayTrace(
-			intialPos,
+			initialPos,
 			targetVector.clone(),
 			multiblock.range,
 			FluidCollisionMode.NEVER,
@@ -161,40 +166,73 @@ class MiningLaserSubsystem(
 			null
 		)
 
+		targetedBlock = raytrace?.hitPosition ?: targetedBlock
+
 		val laserEnd = raytrace?.hitBlock?.location ?: targetedBlock.toLocation(starship.serverLevel.world)
-		val laser = CrystalLaser(intialPos, laserEnd, 5, -1).durationInTicks()
-		laser.start(Ion)
+		val laser = CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks()
+		laser.start(IonServer)
 
-		val blocks = ArrayList<Block>()
 		val block = laserEnd.block
+		val blocks = getBlocksToDestroy(block)
 
-		for (x in -2..2) {
-			for (y in -2..2) {
-				for (z in -2..2) {
-					val toExplode = block.getRelative(BlockFace.EAST, x)
+		val pilot = starship.pilot ?: return cancelTask()
+
+		if (
+			DrillMultiblock.breakBlocks(
+				sign = sign,
+				maxBroken = multiblock.maxBroken,
+				toDestroy = blocks,
+				output = getOutput(sign),
+				isDrillMultiblock = false,
+				people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
+				player = pilot
+			) > 0
+		) {
+			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocks.size).toInt(), true)
+		}
+
+		laserEnd.world.spawnParticle(Particle.EXPLOSION_HUGE, laserEnd, 1)
+	}
+
+	private fun getBlocksToDestroy(center: Block): MutableList<Block> {
+		val toDestroy = mutableListOf<Block>()
+
+		val range = IntRange(-multiblock.mineRadius, multiblock.mineRadius)
+
+		for (x in range) {
+			val xSquared = x * x
+
+			for (y in range) {
+				val ySquared = y * y
+
+				for (z in range) {
+					val zSquared = z * z
+
+					if ((xSquared + ySquared + zSquared) >= radiusSquared) continue
+
+					val toExplode = center.getRelative(BlockFace.EAST, x)
 						.getRelative(BlockFace.UP, y)
 						.getRelative(BlockFace.SOUTH, z)
 
+					if (toExplode.type == Material.AIR) continue
+					if (toExplode.type == Material.BEDROCK) continue
+					if (toExplode.type == Material.REINFORCED_DEEPSLATE) continue
+
 					if (toExplode.type != Material.AIR) {
-						blocks.add(toExplode)
+						toDestroy.add(toExplode)
 					}
 				}
 			}
 		}
 
-		if (
-			DrillMultiblock.breakBlocks(
-				sign = sign,
-				maxBroken = 999,
-				toDestroy = blocks,
-				output = getOutput(sign),
-				isDrillMultiblock = false,
-				people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
-				player = starship.pilot!!
-			) > 0
-		) {
-			PowerMachines.setPower(sign, power - blockBreakPowerUsage * 100, true)
-		}
+		toDestroy.sortBy { it.location.distanceSquared(pos.toLocation(center.world)) }
+
+		return toDestroy
+	}
+
+	fun cancelTask() {
+		firingTasks.forEach { it.cancel() }
+		firingTasks.clear()
 	}
 }
 
