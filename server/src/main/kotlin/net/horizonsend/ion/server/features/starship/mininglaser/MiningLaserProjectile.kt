@@ -27,8 +27,8 @@ class MiningLaserProjectile(
 	override val thickness: Double = 0.0
 	override val explosionPower: Float = 0f
 	override val volume: Float = 10f
-	override val pitch: Float = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.pitch
-	override val soundName: String = IonServer.Ion.balancing.starshipWeapons.CthulhuBeam.soundName
+	override val pitch: Float = IonServer.balancing.starshipWeapons.cthulhuBeam.pitch
+	override val soundName: String = IonServer.balancing.starshipWeapons.cthulhuBeam.soundName
 	var guardians: MutableList<Guardian> = mutableListOf()
 	var target: LivingEntity? = null
 
