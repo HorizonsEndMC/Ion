@@ -18,9 +18,10 @@ sealed class MiningLaserMultiblockTier1 : MiningLaserMultiblock() {
 	override val inputComputerOffset = Vec3i(0, -1, 0)
 	override val maxPower: Int = 100000
 	override val axis = Triple(0, 3, 1)
-	override val range: Double = 100.0
-	override val circleRadius = 3
+	override val range: Double = 60.0
+	override val mineRadius = 3
 	override val beamCount: Int = 1
+	override val maxBroken: Int = 5
 }
 
 object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {

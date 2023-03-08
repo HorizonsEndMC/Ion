@@ -265,6 +265,12 @@ object PilotedStarships : SLComponent() {
 				return@activateAsync
 			}
 
+			if (activePlayerStarship.drillCount > 16) {
+				player.userError("Ships can not have more that 16 drills! Count: ${activePlayerStarship.drillCount}")
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
+
 			pilot(activePlayerStarship, player)
 
 			player.sendMessage(
