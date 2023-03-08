@@ -29,8 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.listeners
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
-import net.horizonsend.ion.server.features.generation.generators.SpaceBiomeProvider
-import net.horizonsend.ion.server.features.generation.generators.SpaceChunkGenerator
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -108,7 +106,7 @@ object IonServer : JavaPlugin() {
 					) { s: String, player: Player, bytes: ByteArray ->
 						logger.info("Received message on $s by ${player.name}")
 						val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))
-						val c2s = packet.c2s!!
+						val c2s = packet.c2s
 						c2s.invoke(buf, player)
 					}
 				}
@@ -132,7 +130,6 @@ object IonServer : JavaPlugin() {
 					HyperspaceBeacons.reloadDynmap()
 					Collectors.onEnable()
 					CityNPCs.onEnable()
-					SpaceGenerationManager.bootstrap()
 
 					pluginManager.registerEvents(CityNPCs, this)
 
