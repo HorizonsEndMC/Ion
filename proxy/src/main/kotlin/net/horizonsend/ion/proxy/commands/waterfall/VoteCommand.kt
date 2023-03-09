@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
 @CommandAlias("vote|votes|votesites")
@@ -23,7 +24,7 @@ class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand()
 			.underlined(true)
 
 		for (site in configuration.voteSites) {
-			val dateTime = playerData.voteTimes.find { it.serviceName == site.serviceName }?.dateTime ?: LocalDateTime.now()
+			val dateTime = transaction { playerData.voteTimes.find { it.serviceName == site.serviceName }?.dateTime ?: LocalDateTime.now() }
 			val siteTime = dateTime.isBefore(LocalDateTime.now().minusDays(1))
 
 			val color = if (siteTime) ChatColor.GREEN else ChatColor.RED
