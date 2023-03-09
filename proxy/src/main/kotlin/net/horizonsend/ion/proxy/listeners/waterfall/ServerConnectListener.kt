@@ -1,6 +1,7 @@
 package net.horizonsend.ion.proxy.listeners.waterfall
 
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ChatColor
