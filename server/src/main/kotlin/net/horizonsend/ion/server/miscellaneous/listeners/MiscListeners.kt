@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.space.SpaceMechanics
 import org.bukkit.entity.Player
