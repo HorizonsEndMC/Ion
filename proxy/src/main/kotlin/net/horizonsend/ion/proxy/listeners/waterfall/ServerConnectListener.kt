@@ -10,6 +10,7 @@ import net.md_5.bungee.api.event.ServerConnectEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
 class ServerConnectListener : Listener {
@@ -57,7 +58,9 @@ class ServerConnectListener : Listener {
 						.create()
 				)
 
-				val promptToVote = playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+				val promptToVote = transaction {
+					playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+				}
 
 				if (promptToVote) {
 					event.player.sendMessage(
