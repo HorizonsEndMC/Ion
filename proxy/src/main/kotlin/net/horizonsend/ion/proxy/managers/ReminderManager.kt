@@ -1,14 +1,8 @@
 package net.horizonsend.ion.proxy.managers
 
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.extensions.special
 import net.horizonsend.ion.proxy.PLUGIN
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT
-import net.md_5.bungee.api.chat.hover.content.Text
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -33,26 +27,10 @@ object ReminderManager {
 	}
 
 	private fun voteReminder() {
-		val message = ComponentBuilder()
-			.append(
-				ComponentBuilder("Please vote for our server to help us grow the Horizon's End community!\n")
-					.color(ChatColor.GOLD)
-					.bold(true)
-					.create()
-			)
-			.append(
-				ComponentBuilder("Do /Vote to see where you can.")
-					.bold(false)
-					.color(ChatColor.GREEN)
-					.event(ClickEvent(RUN_COMMAND, "/vote"))
-					.event(HoverEvent(SHOW_TEXT, Text("/Vote")))
-					.create()
-			)
-
 		for (player in PLUGIN.proxy.players) {
 			val playerData = PlayerData[player.uniqueId]!!
 			val shouldPrompt: Boolean = transaction { playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null }
-			if (shouldPrompt) player.sendMessage(*message.create())
+			if (shouldPrompt) player.special("Please vote for the server to help grow the community!\n <green><click:run_command:/vote>Run /vote to see where!")
 		}
 	}
 }
