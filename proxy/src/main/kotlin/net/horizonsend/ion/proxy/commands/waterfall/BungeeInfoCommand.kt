@@ -9,7 +9,7 @@ import net.md_5.bungee.api.chat.ClickEvent.Action
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-@CommandAlias("info|map|wiki|patreon")
+@CommandAlias("info|map|wiki|patreon|rules")
 class BungeeInfoCommand : BaseCommand() {
 	@Default
 	@Suppress("Unused")
@@ -59,6 +59,13 @@ class BungeeInfoCommand : BaseCommand() {
 				.append(
 					ComponentBuilder("Patreon\n")
 						.event(ClickEvent(Action.OPEN_URL, "https://www.patreon.com/horizonsendmc"))
+						.color(ChatColor.WHITE)
+						.underlined(true)
+						.create()
+				)
+				.append(
+					ComponentBuilder("Server Rules")
+						.event(ClickEvent(Action.OPEN_URL, "https://docs.google.com/document/d/14CspgBExAxQQIHEODjyAFVbuJdJcM9ryhtuQjeLvGtA"))
 						.color(ChatColor.WHITE)
 						.underlined(true)
 						.create()
