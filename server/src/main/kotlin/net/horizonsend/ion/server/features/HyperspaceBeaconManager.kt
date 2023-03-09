@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotedEvent
 import net.starlegacy.util.isInRange

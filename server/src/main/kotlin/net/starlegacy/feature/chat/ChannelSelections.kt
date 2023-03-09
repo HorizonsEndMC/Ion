@@ -1,7 +1,7 @@
 package net.starlegacy.feature.chat
 
-import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
-import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
+import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.starlegacy.SLComponent
 import net.starlegacy.listen
 import net.starlegacy.redis

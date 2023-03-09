@@ -2,7 +2,7 @@ package net.starlegacy.command.progression
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
+import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.progression.LEVEL_BALANCING
 import net.starlegacy.feature.progression.SLXP
