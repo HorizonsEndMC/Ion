@@ -2,10 +2,10 @@ package net.horizonsend.ion.proxy.listeners.waterfall
 
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.event.ServerConnectEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
@@ -16,6 +16,7 @@ import java.time.LocalDateTime
 class ServerConnectListener : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onServerConnectEvent(event: ServerConnectEvent) {
+		val playerAudience = PLUGIN.adventure.player(event.player)
 		PLUGIN.playerServerMap[event.player] = event.target
 
 		if (event.reason == ServerConnectEvent.Reason.JOIN_PROXY) {
@@ -29,13 +30,7 @@ class ServerConnectListener : Listener {
 				}
 
 			if (isNew) {
-				PLUGIN.proxy.broadcast(
-					*ComponentBuilder()
-						.append(ComponentBuilder("Welcome ").color(ChatColor.GOLD).create())
-						.append(ComponentBuilder(event.player.name).color(ChatColor.WHITE).create())
-						.append(ComponentBuilder(" to the server!").color(ChatColor.GOLD).create())
-						.create()
-				)
+				PLUGIN.adventure.all().information("<gold>Welcome <white>${event.player.name}</white> to the server!")
 
 				PLUGIN.discord?.let { jda ->
 					val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
@@ -48,31 +43,7 @@ class ServerConnectListener : Listener {
 					).queue()
 				}
 			} else {
-				PLUGIN.proxy.broadcast(
-					*ComponentBuilder()
-						.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
-						.append(ComponentBuilder("+ ").color(ChatColor.GREEN).create())
-						.append(ComponentBuilder(event.target.name).color(ChatColor.GRAY).create())
-						.append(ComponentBuilder("] ").color(ChatColor.DARK_GRAY).create())
-						.append(ComponentBuilder(event.player.displayName).color(ChatColor.WHITE).create())
-						.create()
-				)
-
-				val promptToVote = transaction {
-					playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
-				}
-
-				if (promptToVote) {
-					event.player.sendMessage(
-						*ComponentBuilder()
-							.append(
-								ComponentBuilder("Hey ${event.player.displayName}! Remember to vote for the server to help us grow the Horizon's End community!")
-									.color(ChatColor.GOLD)
-									.create()
-							)
-							.create()
-					)
-				}
+				PLUGIN.adventure.all().information("<dark_gray>[<green>+ <gray>${event.target.name}<dark_gray>] <white>${event.player.name}")
 
 				PLUGIN.discord?.let { jda ->
 					val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
@@ -84,17 +55,17 @@ class ServerConnectListener : Listener {
 						)
 					).queue()
 				}
+
+				val promptToVote = transaction {
+					playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+				}
+
+				if (promptToVote) playerAudience.information(
+					"Hey ${event.player.name}! Remember to vote for the server to help us grow the Horizon's End community!"
+				)
 			}
 		} else {
-			PLUGIN.proxy.broadcast(
-				*ComponentBuilder()
-					.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
-					.append(ComponentBuilder("> ").color(ChatColor.BLUE).create())
-					.append(ComponentBuilder(event.target.name).color(ChatColor.GRAY).create())
-					.append(ComponentBuilder("] ").color(ChatColor.DARK_GRAY).create())
-					.append(ComponentBuilder(event.player.displayName).color(ChatColor.WHITE).create())
-					.create()
-			)
+			PLUGIN.adventure.all().information("<dark_gray>[<blue>> <gray>${event.target.name}<dark_gray>] <white>${event.player.name}")
 
 			PLUGIN.discord?.let { jda ->
 				val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
