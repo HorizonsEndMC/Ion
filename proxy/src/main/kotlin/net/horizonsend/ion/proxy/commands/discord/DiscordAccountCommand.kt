@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.Name
 import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.messageEmbed

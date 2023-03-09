@@ -24,11 +24,6 @@ class PlayerData(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
 	var particle by Table.particle
 	var color by Table.color
 
-	fun update(block: PlayerData.() -> Unit): PlayerData {
-		transaction { block(this@PlayerData) }
-		return this
-	}
-
 	companion object {
 		operator fun get(uuid: UUID): PlayerData? = transaction { EntityClass.findById(uuid) }
 
