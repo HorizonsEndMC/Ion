@@ -2,7 +2,7 @@ package net.horizonsend.ion.proxy.listeners.waterfall
 
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
+import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 class ServerConnectListener : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onServerConnectEvent(event: ServerConnectEvent) {
-		Ion.playerServerMap[event.player] = event.target
+		PLUGIN.playerServerMap[event.player] = event.target
 
 		if (event.reason == ServerConnectEvent.Reason.JOIN_PROXY) {
 			var isNew = false
@@ -29,7 +29,7 @@ class ServerConnectListener : Listener {
 				}
 
 			if (isNew) {
-				Ion.proxy.broadcast(
+				PLUGIN.proxy.broadcast(
 					*ComponentBuilder()
 						.append(ComponentBuilder("Welcome ").color(ChatColor.GOLD).create())
 						.append(ComponentBuilder(event.player.name).color(ChatColor.WHITE).create())
@@ -37,8 +37,8 @@ class ServerConnectListener : Listener {
 						.create()
 				)
 
-				Ion.jda?.let { jda ->
-					val globalChannel = jda.getTextChannelById(Ion.configuration.globalChannel) ?: return@let
+				PLUGIN.jda?.let { jda ->
+					val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
@@ -48,7 +48,7 @@ class ServerConnectListener : Listener {
 					).queue()
 				}
 			} else {
-				Ion.proxy.broadcast(
+				PLUGIN.proxy.broadcast(
 					*ComponentBuilder()
 						.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
 						.append(ComponentBuilder("+ ").color(ChatColor.GREEN).create())
@@ -74,8 +74,8 @@ class ServerConnectListener : Listener {
 					)
 				}
 
-				Ion.jda?.let { jda ->
-					val globalChannel = jda.getTextChannelById(Ion.configuration.globalChannel) ?: return@let
+				PLUGIN.jda?.let { jda ->
+					val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 					globalChannel.sendMessageEmbeds(
 						messageEmbed(
@@ -86,7 +86,7 @@ class ServerConnectListener : Listener {
 				}
 			}
 		} else {
-			Ion.proxy.broadcast(
+			PLUGIN.proxy.broadcast(
 				*ComponentBuilder()
 					.append(ComponentBuilder("[").color(ChatColor.DARK_GRAY).create())
 					.append(ComponentBuilder("> ").color(ChatColor.BLUE).create())
@@ -96,8 +96,8 @@ class ServerConnectListener : Listener {
 					.create()
 			)
 
-			Ion.jda?.let { jda ->
-				val globalChannel = jda.getTextChannelById(Ion.configuration.globalChannel) ?: return@let
+			PLUGIN.jda?.let { jda ->
+				val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 				globalChannel.sendMessageEmbeds(
 					messageEmbed(
