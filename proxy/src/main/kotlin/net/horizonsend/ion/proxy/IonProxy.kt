@@ -30,13 +30,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Plugin
 import java.util.concurrent.TimeUnit
 
+lateinit var PLUGIN: IonProxy private set
+
 @Suppress("Unused")
 class IonProxy : Plugin() {
-	init { Ion = this }
-
-	companion object {
-		@JvmStatic lateinit var Ion: IonProxy private set
-	}
+	init { PLUGIN = this }
 
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
 
