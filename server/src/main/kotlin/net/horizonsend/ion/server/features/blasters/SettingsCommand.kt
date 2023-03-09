@@ -8,8 +8,8 @@ import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Values
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.server.miscellaneous.extensions.information
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
 import org.bukkit.Color
 import org.bukkit.entity.Player
 import kotlin.math.pow

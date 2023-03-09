@@ -2,8 +2,8 @@ package net.starlegacy.feature.economy.cargotrade
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.trade.CargoCrates

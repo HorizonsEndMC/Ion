@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.server.miscellaneous.extensions.information
-import net.horizonsend.ion.server.miscellaneous.extensions.success
-import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.extensions.userErrorActionMessage
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.successActionMessage
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component

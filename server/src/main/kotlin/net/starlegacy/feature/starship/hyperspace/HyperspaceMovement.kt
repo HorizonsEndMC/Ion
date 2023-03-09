@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship.hyperspace
 
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.alertAction
+import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.extensions.alertAction
-import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships

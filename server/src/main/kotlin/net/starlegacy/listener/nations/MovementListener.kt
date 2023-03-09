@@ -1,6 +1,6 @@
 package net.starlegacy.listener.nations
 
-import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.common.extensions.information
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD

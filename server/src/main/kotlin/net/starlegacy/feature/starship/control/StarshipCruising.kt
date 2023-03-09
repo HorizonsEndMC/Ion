@@ -1,8 +1,8 @@
 package net.starlegacy.feature.starship.control
 
-import net.horizonsend.ion.server.miscellaneous.extensions.information
-import net.horizonsend.ion.server.miscellaneous.extensions.informationAction
-import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType.PLATFORM

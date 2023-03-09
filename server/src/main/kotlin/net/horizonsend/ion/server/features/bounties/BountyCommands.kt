@@ -8,9 +8,9 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
-import net.horizonsend.ion.server.miscellaneous.extensions.serverError
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.starlegacy.listener.misc.ProtectionListener
 import org.bukkit.command.CommandSender

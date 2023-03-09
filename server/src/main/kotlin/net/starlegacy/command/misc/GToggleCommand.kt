@@ -1,7 +1,7 @@
 package net.starlegacy.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
-import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
+import net.horizonsend.ion.common.extensions.successActionMessage
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.model.group.Group
 import net.luckperms.api.model.user.User
