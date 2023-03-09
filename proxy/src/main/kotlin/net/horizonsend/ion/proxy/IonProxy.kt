@@ -91,8 +91,6 @@ class IonProxy : Plugin() {
 		}
 
 		discord?.let {
-			SyncManager(it, configuration).onEnable()
-
 			commandManager.registerCommand(BungeeAccountCommand(discord, configuration))
 
 			JDACommandManager(discord, configuration).apply {
@@ -113,6 +111,10 @@ class IonProxy : Plugin() {
 	private val endTime = System.currentTimeMillis()
 
 	init { slF4JLogger.info("Loaded in %,3dms".format(endTime - startTime)) }
+
+	override fun onEnable() {
+		discord?.let{ SyncManager(it, configuration).onEnable() }
+	}
 
 	override fun onDisable() {
 		discord?.shutdown()
