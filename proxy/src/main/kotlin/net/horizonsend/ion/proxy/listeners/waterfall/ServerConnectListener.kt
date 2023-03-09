@@ -20,13 +20,12 @@ class ServerConnectListener : Listener {
 		if (event.reason == ServerConnectEvent.Reason.JOIN_PROXY) {
 			var isNew = false
 
-			var playerData = PlayerData[event.player.uniqueId]?.update { username = event.player.name }
-			if (playerData == null) {
-				playerData = PlayerData.new(event.player.uniqueId) {
+			val playerData = PlayerData[event.player.uniqueId]
+				?.update { username = event.player.name }
+				?: PlayerData.new(event.player.uniqueId) {
 					username = event.player.name
+					isNew = true
 				}
-				isNew = true
-			}
 
 			if (isNew) {
 				Ion.proxy.broadcast(
