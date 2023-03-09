@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class AchievementListeners : Listener {
 	@EventHandler
@@ -66,7 +67,7 @@ class AchievementListeners : Listener {
 			}
 		)
 
-		val achievements = playerData.achievements.map { it.achievement }
+		val achievements = transaction { playerData.achievements.map { it.achievement } }
 		if (achievements.containsAll(
 				listOf(
 						Achievement.PLANET_CHANDRA,
