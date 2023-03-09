@@ -69,8 +69,8 @@ class IonProxy : Plugin() {
 		prefixProvider = {
 			when (it) {
 				is WrappedProxy -> ""
-				is WrappedPlayer -> it.name
-				else -> "to [Unknown]:"
+				is WrappedPlayer -> "to ${it.name}: "
+				else -> "to [Unknown]: "
 			}
 		}
 
