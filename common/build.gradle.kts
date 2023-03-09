@@ -23,5 +23,4 @@ dependencies {
 	api("org.xerial:sqlite-jdbc:3.41.0.0")
 
 	api(libs.jedis)
-	api(libs.kmongo)
 }
