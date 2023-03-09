@@ -4,9 +4,8 @@ import com.vexsoftware.votifier.bungee.events.VotifierEvent
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerVoteTime
 import net.horizonsend.ion.common.database.update
+import net.horizonsend.ion.common.extensions.special
 import net.horizonsend.ion.proxy.PLUGIN
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
@@ -29,13 +28,6 @@ class VotifierListener : Listener {
 				dateTime = LocalDateTime.now()
 			}
 
-		val thanksMessage = ComponentBuilder()
-			.append(
-				ComponentBuilder("Thanks to ${event.vote.username} for voting on ${siteEntry?.displayName ?: siteName}! Remember to vote for the server to help us grow the Horizon's End community!")
-					.color(ChatColor.GOLD)
-					.create()
-			)
-
-		PLUGIN.proxy.broadcast(*thanksMessage.create())
+		PLUGIN.proxy.special("Thanks to ${event.vote.username} for voting on ${siteEntry?.displayName ?: siteName}! Remember to vote for the server to help us grow the Horizon's End community!")
 	}
 }
