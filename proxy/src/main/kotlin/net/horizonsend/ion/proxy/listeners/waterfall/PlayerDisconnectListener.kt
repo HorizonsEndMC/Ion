@@ -14,7 +14,7 @@ class PlayerDisconnectListener : Listener {
 	fun onPlayerDisconnectEvent(event: PlayerDisconnectEvent) {
 		val serverName = PLUGIN.playerServerMap.remove(event.player)!!.name
 
-		PLUGIN.proxy.information("<dark_gray>[<red>- <gray>$serverName<dark-gray>] <white>${event.player.displayName}")
+		PLUGIN.proxy.information("<dark_gray>[<red>- <gray>$serverName<dark_gray>] <white>${event.player.displayName}")
 
 		PLUGIN.discord?.let { jda ->
 			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
