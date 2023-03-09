@@ -12,12 +12,13 @@ import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Player.rewardAchievement(achievement: Achievement) {
 	if (!SETTINGS.master) return
 
 	val playerData = PlayerData[this.uniqueId]!!
-	if (playerData.achievements.find { it.achievement == achievement } != null) return
+	if (transaction { playerData.achievements.find { it.achievement == achievement } } != null) return
 
 	PlayerAchievement.new {
 		player = playerData
