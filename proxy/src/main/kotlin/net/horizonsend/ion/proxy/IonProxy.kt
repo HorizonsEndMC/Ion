@@ -1,6 +1,7 @@
 package net.horizonsend.ion.proxy
 
 import co.aikar.commands.BungeeCommandManager
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus.ONLINE
 import net.dv8tion.jda.api.entities.Activity.playing
@@ -29,83 +30,85 @@ import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Plugin
 import java.util.concurrent.TimeUnit
+import kotlin.system.measureTimeMillis
 
 lateinit var PLUGIN: IonProxy private set
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
-	init { PLUGIN = this }
-
-	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
-
-	val jda = try {
-		JDABuilder.createLight(configuration.discordBotToken)
-			.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
-			.setMemberCachePolicy(MemberCachePolicy.ALL)
-			.setChunkingFilter(ChunkingFilter.ALL)
-			.disableCache(CacheFlag.values().toList())
-			.setEnableShutdownHook(false)
-			.build()
-	} catch (e: Exception) {
-		slF4JLogger.warn("Failed to start JDA as it was unable to login to Discord!")
-		null
-	}
+	val configuration: ProxyConfiguration
+	val discord: JDA?
 
 	val playerServerMap = mutableMapOf<ProxiedPlayer, ServerInfo>()
 
-	override fun onEnable() {
-		try {
-			Connectivity.open(dataFolder)
+	init { try { slF4JLogger.info("Loaded in ${measureTimeMillis {
+		PLUGIN = this
 
-			jda?.let { SyncManager(it, configuration).onEnable() }
+		configuration = Configuration.load(dataFolder, "proxy.json")
 
-			// Schedule Reminders
-			ReminderManager.scheduleReminders()
+		Connectivity.open(dataFolder)
 
-			// Listener Registration
-			val pluginManager = proxy.pluginManager
+		// Schedule Reminders
+		ReminderManager.scheduleReminders()
 
-			pluginManager.registerListener(this, PlayerDisconnectListener())
-			pluginManager.registerListener(this, ProxyPingListener())
-			pluginManager.registerListener(this, ServerConnectListener())
-			try { pluginManager.registerListener(this, VotifierListener()) } catch (_: NoClassDefFoundError) {}
+		// Listener Registration
+		val pluginManager = proxy.pluginManager
 
-			// Minecraft Command Registration
-			val commandManager = BungeeCommandManager(this)
+		pluginManager.registerListener(this, PlayerDisconnectListener())
+		pluginManager.registerListener(this, ProxyPingListener())
+		pluginManager.registerListener(this, ServerConnectListener())
+		try { pluginManager.registerListener(this, VotifierListener()) } catch (_: NoClassDefFoundError) {}
 
-			commandManager.registerCommand(VoteCommand(configuration))
-			commandManager.registerCommand(BungeeInfoCommand())
-			commandManager.registerCommand(MessageCommand())
-			commandManager.registerCommand(ReplyCommand())
+		// Minecraft Command Registration
+		val commandManager = BungeeCommandManager(this)
 
-			// Discord
-			jda?.let {
-				// Commands
-				commandManager.registerCommand(BungeeAccountCommand(jda, configuration))
+		commandManager.registerCommand(VoteCommand(configuration))
+		commandManager.registerCommand(BungeeInfoCommand())
+		commandManager.registerCommand(MessageCommand())
+		commandManager.registerCommand(ReplyCommand())
 
-				// Discord Commands
-				val jdaCommandManager = JDACommandManager(jda, configuration)
-
-				jdaCommandManager.registerGuildCommand(DiscordAccountCommand(configuration))
-				jdaCommandManager.registerGuildCommand(DiscordInfoCommand())
-				jdaCommandManager.registerGuildCommand(PlayerListCommand(proxy))
-				jdaCommandManager.registerGuildCommand(ResyncCommand(jda, configuration))
-
-				jdaCommandManager.build()
-
-				// Live Player Count
-				proxy.scheduler.schedule(this, {
-					jda.presence.setPresence(ONLINE, playing("with ${proxy.onlineCount} players!"))
-				}, 0, 5, TimeUnit.SECONDS)
-			}
+		discord = try {
+			JDABuilder.createLight(configuration.discordBotToken)
+				.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
+				.setMemberCachePolicy(MemberCachePolicy.ALL)
+				.setChunkingFilter(ChunkingFilter.ALL)
+				.disableCache(CacheFlag.values().toList())
+				.setEnableShutdownHook(false)
+				.build()
 		} catch (exception: Exception) {
-			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
-			proxy.stop()
+			slF4JLogger.warn("Failed to start JDA", exception)
+			null
 		}
-	}
+
+		discord?.let {
+			SyncManager(it, configuration).onEnable()
+
+			// Commands
+			commandManager.registerCommand(BungeeAccountCommand(discord, configuration))
+
+			// Discord Commands
+			val jdaCommandManager = JDACommandManager(discord, configuration)
+
+			jdaCommandManager.registerGuildCommand(DiscordAccountCommand(configuration))
+			jdaCommandManager.registerGuildCommand(DiscordInfoCommand())
+			jdaCommandManager.registerGuildCommand(PlayerListCommand(proxy))
+			jdaCommandManager.registerGuildCommand(ResyncCommand(discord, configuration))
+
+			jdaCommandManager.build()
+
+			// Live Player Count
+			proxy.scheduler.schedule(this, {
+				discord.presence.setPresence(ONLINE, playing("with ${proxy.onlineCount} players!"))
+			}, 0, 5, TimeUnit.SECONDS)
+		}
+	}}ms") } catch (exception: Exception) {
+		proxy.stop()
+		slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.")
+		throw exception
+	}}
 
 	override fun onDisable() {
-		jda?.shutdown()
+		discord?.shutdown()
 
 		Connectivity.close()
 	}
