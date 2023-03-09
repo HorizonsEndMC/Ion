@@ -27,6 +27,7 @@ import net.horizonsend.ion.proxy.listeners.waterfall.ServerConnectListener
 import net.horizonsend.ion.proxy.listeners.waterfall.VotifierListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
 import net.horizonsend.ion.proxy.managers.SyncManager
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences
 import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Plugin
@@ -37,6 +38,7 @@ lateinit var PLUGIN: IonProxy private set
 
 @Suppress("Unused")
 class IonProxy : Plugin() {
+	val adventure: BungeeAudiences
 	val configuration: ProxyConfiguration
 	val discord: JDA?
 
@@ -49,10 +51,17 @@ class IonProxy : Plugin() {
 					measureTimeMillis {
 						PLUGIN = this
 
+						adventure = BungeeAudiences.create(this)
 						prefixProvider = {
 							when (it) {
-								is ProxiedPlayer -> "to ${it.name}"
-								else -> ""
+								adventure.all() -> "" // Proxy
+								adventure.players() -> "to [Players]:"
+								adventure.console() -> "to [Console]:"
+								else -> {
+									// This is horribly jank
+									for (player in proxy.players) if (it == adventure.player(player)) "to ${player.name}:"
+									"to [Unknown]:"
+								}
 							}
 						}
 
