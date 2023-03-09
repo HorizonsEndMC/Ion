@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Role
 import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.proxy.IonProxy
+import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.InheritanceNode
@@ -23,8 +23,8 @@ open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) 
 	open fun onEnable() {
 		if (guild == null) return
 
-		IonProxy.Ion.proxy.scheduler.schedule(
-			IonProxy.Ion,
+		PLUGIN.proxy.scheduler.schedule(
+			PLUGIN,
 			{ sync() },
 			0,
 			900,

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.proxy.listeners.waterfall
 
-import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
+import net.horizonsend.ion.proxy.PLUGIN
 import net.md_5.bungee.api.Favicon
 import net.md_5.bungee.api.ServerPing
 import net.md_5.bungee.api.chat.TextComponent
@@ -26,12 +26,12 @@ class ProxyPingListener : Listener {
 	fun onProxyPingEvent(event: ProxyPingEvent) = event.response.run {
 		version = protocol
 		players = ServerPing.Players(
-			Ion.proxy.onlineCount + 1,
-			Ion.proxy.onlineCount,
-			Ion.proxy.players.map { ServerPing.PlayerInfo(it.name, it.uniqueId) }.toTypedArray()
+			PLUGIN.proxy.onlineCount + 1,
+			PLUGIN.proxy.onlineCount,
+			PLUGIN.proxy.players.map { ServerPing.PlayerInfo(it.name, it.uniqueId) }.toTypedArray()
 		)
 		descriptionComponent = TextComponent(
-			*TextComponent.fromLegacyText("${Ion.configuration.motdFirstLine}\n${messages.random()}")
+			*TextComponent.fromLegacyText("${PLUGIN.configuration.motdFirstLine}\n${messages.random()}")
 		)
 		setFavicon(icon)
 	}
