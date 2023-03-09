@@ -40,6 +40,8 @@ lateinit var PLUGIN: IonProxy private set
 class IonProxy : Plugin() {
 	private val startTime = System.currentTimeMillis()
 
+	init { PLUGIN = this }
+
 	val adventure = BungeeAudiences.create(this)
 
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
@@ -62,8 +64,6 @@ class IonProxy : Plugin() {
 	val proxy = WrappedProxy(getProxy())
 
 	init {
-		PLUGIN = this
-
 		Connectivity.open(dataFolder)
 
 		prefixProvider = {
