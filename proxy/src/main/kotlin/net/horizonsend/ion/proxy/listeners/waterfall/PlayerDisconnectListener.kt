@@ -24,7 +24,7 @@ class PlayerDisconnectListener : Listener {
 				.create()
 		)
 
-		PLUGIN.jda?.let { jda ->
+		PLUGIN.discord?.let { jda ->
 			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 			globalChannel.sendMessageEmbeds(

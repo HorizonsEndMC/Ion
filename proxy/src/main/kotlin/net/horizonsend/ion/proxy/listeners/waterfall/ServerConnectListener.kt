@@ -37,7 +37,7 @@ class ServerConnectListener : Listener {
 						.create()
 				)
 
-				PLUGIN.jda?.let { jda ->
+				PLUGIN.discord?.let { jda ->
 					val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 					globalChannel.sendMessageEmbeds(
@@ -74,7 +74,7 @@ class ServerConnectListener : Listener {
 					)
 				}
 
-				PLUGIN.jda?.let { jda ->
+				PLUGIN.discord?.let { jda ->
 					val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 					globalChannel.sendMessageEmbeds(
@@ -96,7 +96,7 @@ class ServerConnectListener : Listener {
 					.create()
 			)
 
-			PLUGIN.jda?.let { jda ->
+			PLUGIN.discord?.let { jda ->
 				val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 				globalChannel.sendMessageEmbeds(
