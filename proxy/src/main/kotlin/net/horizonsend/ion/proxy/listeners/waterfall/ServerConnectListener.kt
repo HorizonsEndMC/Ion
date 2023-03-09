@@ -33,7 +33,7 @@ class ServerConnectListener : Listener {
 				}
 
 			if (isNew) {
-				PLUGIN.proxy.special("<gold>Welcome <white>${player.name}</white> to the server!")
+				PLUGIN.proxy.special("Welcome <white>${player.name}</white> to the server!")
 
 				PLUGIN.discord?.let { jda ->
 					val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
