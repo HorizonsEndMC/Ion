@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.TeleportFlag
-import net.horizonsend.ion.server.miscellaneous.extensions.userErrorAction
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space

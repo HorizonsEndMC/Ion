@@ -7,9 +7,9 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customItems.CustomItems
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
 import net.starlegacy.util.Tasks
 import org.bukkit.Material

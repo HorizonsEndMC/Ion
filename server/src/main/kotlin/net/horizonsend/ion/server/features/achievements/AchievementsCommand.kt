@@ -9,9 +9,9 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.PlayerAchievement
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
-import net.horizonsend.ion.server.miscellaneous.extensions.success
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player

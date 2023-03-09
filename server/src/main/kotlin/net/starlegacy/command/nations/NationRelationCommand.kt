@@ -3,7 +3,7 @@ package net.starlegacy.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
+import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole

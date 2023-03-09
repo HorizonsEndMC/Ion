@@ -10,8 +10,8 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
-import net.horizonsend.ion.server.miscellaneous.extensions.information
-import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.Shuttle
 import net.starlegacy.feature.misc.Shuttles

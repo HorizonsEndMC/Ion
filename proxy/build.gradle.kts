@@ -12,6 +12,7 @@ dependencies {
 	implementation(libs.acfBungee)
 	implementation(libs.jda)
 	implementation(libs.bundles.miniMessageBungee)
+	implementation(libs.bundles.paperProvided)
 }
 
 tasks.shadowJar { archiveFileName.set("../../../build/IonProxy.jar") }
