@@ -2,12 +2,12 @@ package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.serverErrorActionMessage
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.successActionMessage
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.extensions.serverErrorActionMessage
-import net.horizonsend.ion.server.miscellaneous.extensions.success
-import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage

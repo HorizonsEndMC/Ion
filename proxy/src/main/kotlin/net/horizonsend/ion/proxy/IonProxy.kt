@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
+import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
@@ -47,6 +48,13 @@ class IonProxy : Plugin() {
 				"Enabled in %,3dms".format(
 					measureTimeMillis {
 						PLUGIN = this
+
+						prefixProvider = {
+							when (it) {
+								is ProxiedPlayer -> "to ${it.name}"
+								else -> ""
+							}
+						}
 
 						configuration = Configuration.load(dataFolder, "proxy.json")
 

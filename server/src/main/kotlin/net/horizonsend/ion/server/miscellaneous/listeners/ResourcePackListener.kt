@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
 import com.google.common.io.BaseEncoding
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
-import net.horizonsend.ion.server.miscellaneous.extensions.serverError
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import org.bukkit.GameMode
 import org.bukkit.Material.CHAINMAIL_BOOTS
 import org.bukkit.Material.CHAINMAIL_CHESTPLATE

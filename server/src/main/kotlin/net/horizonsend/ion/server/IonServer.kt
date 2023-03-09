@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.client.Packets
@@ -38,6 +39,13 @@ object IonServer : JavaPlugin() {
 	override fun onEnable() {
 		try {
 			Connectivity.open(dataFolder)
+
+			prefixProvider = {
+				when (it) {
+					is Player -> "to ${it.name}:"
+					else -> ""
+				}
+			}
 
 			val pluginManager = server.pluginManager
 

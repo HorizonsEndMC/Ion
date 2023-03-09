@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
+import net.horizonsend.ion.common.extensions.successActionMessage
 import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player

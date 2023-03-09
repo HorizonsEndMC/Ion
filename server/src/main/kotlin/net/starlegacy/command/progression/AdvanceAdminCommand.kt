@@ -7,8 +7,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.miscellaneous.extensions.information
-import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CargoCrateShipment
 import net.starlegacy.database.schema.misc.SLPlayer

@@ -7,6 +7,9 @@ repositories {
 }
 
 dependencies {
+	compileOnly("net.kyori:adventure-api:4.12.0")
+	compileOnly(libs.bundles.paperProvided)
+
 	api(libs.bundles.kotlin)
 
 	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")

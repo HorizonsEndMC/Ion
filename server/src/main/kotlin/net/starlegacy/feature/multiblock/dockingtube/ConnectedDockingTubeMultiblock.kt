@@ -1,8 +1,8 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
+import net.horizonsend.ion.common.extensions.successActionMessage
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.extensions.successActionMessage
-import net.horizonsend.ion.server.miscellaneous.extensions.userError
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
