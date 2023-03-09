@@ -43,8 +43,7 @@ class IonProxy : Plugin() {
 
 	init {
 		try {
-			slF4JLogger.info(
-				"Loaded in ${measureTimeMillis {
+			slF4JLogger.info("Enabled in %,3dms".format(measureTimeMillis {
 					PLUGIN = this
 
 					configuration = Configuration.load(dataFolder, "proxy.json")
@@ -104,8 +103,7 @@ class IonProxy : Plugin() {
 							discord.presence.setPresence(ONLINE, playing("with ${proxy.onlineCount} players!"))
 						}, 0, 5, TimeUnit.SECONDS)
 					}
-				}}ms"
-			)
+			}))
 		} catch (exception: Exception) {
 			proxy.stop()
 			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.")
