@@ -4,7 +4,7 @@ import com.vexsoftware.votifier.bungee.events.VotifierEvent
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerVoteTime
 import net.horizonsend.ion.common.database.update
-import net.horizonsend.ion.proxy.IonProxy.Companion.Ion
+import net.horizonsend.ion.proxy.PLUGIN
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.plugin.Listener
@@ -17,7 +17,7 @@ class VotifierListener : Listener {
 	fun onVotifierEvent(event: VotifierEvent) {
 		val playerData = PlayerData[event.vote.username] ?: return
 
-		val siteEntry = Ion.configuration.voteSites.find { it.serviceName == event.vote.serviceName }
+		val siteEntry = PLUGIN.configuration.voteSites.find { it.serviceName == event.vote.serviceName }
 		val siteName = siteEntry?.serviceName ?: event.vote.serviceName
 
 		playerData.voteTimes // in voteTimes for playerData
@@ -36,6 +36,6 @@ class VotifierListener : Listener {
 					.create()
 			)
 
-		Ion.proxy.broadcast(*thanksMessage.create())
+		PLUGIN.proxy.broadcast(*thanksMessage.create())
 	}
 }
