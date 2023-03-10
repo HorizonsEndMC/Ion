@@ -16,7 +16,6 @@ import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
-import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.FluidCollisionMode
@@ -27,8 +26,6 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
@@ -204,7 +201,7 @@ class MiningLaserSubsystem(
 				sign = sign,
 				maxBroken = multiblock.maxBroken,
 				toDestroy = blocks,
-				output = getOutput(sign),
+				output = multiblock.getOutput(sign),
 				isDrillMultiblock = false,
 				people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
 				player = user
@@ -249,14 +246,4 @@ class MiningLaserSubsystem(
 
 		return toDestroy
 	}
-}
-
-fun getOutput(sign: Sign): Inventory {
-	val direction = sign.getFacing().oppositeFace
-	return (
-		sign.block.getRelative(direction)
-			.getRelative(BlockFace.DOWN)
-			.getRelative(direction.leftFace)
-			.getState(false) as InventoryHolder
-		).inventory
 }
