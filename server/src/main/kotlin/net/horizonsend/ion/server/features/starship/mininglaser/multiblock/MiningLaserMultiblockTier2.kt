@@ -27,7 +27,7 @@ sealed class MiningLaserMultiblockTier2 : MiningLaserMultiblock() {
 object MiningLaserMultiblockTier2Top : MiningLaserMultiblockTier2() {
 	override fun upDownFace(): BlockFace = BlockFace.UP
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +4, -2)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +5, -2)
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
