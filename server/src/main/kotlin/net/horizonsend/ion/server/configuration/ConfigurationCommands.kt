@@ -16,6 +16,8 @@ class ConfigurationCommands : BaseCommand() {
 	fun onConfigReload(sender: CommandSender) {
 		IonServer.configuration = Configuration.load(IonServer.dataFolder, "server.json")
 		IonServer.balancing = Configuration.load(IonServer.dataFolder, "balancing.json")
+		IonServer.soldShips = Configuration.load(IonServer.dataFolder, "soldShips.json")
+		IonServer.shipList = listOf(IonServer.soldShips.soldShips.miner, IonServer.soldShips.soldShips.shuttle)
 		sender.sendRichMessage("<bold><green>Configuration Reloaded")
 	}
 }

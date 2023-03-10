@@ -1,32 +1,33 @@
 package net.starlegacy.feature.starship
 
-import com.sk89q.worldedit.WorldEdit
+import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.citizensnpcs.api.event.NPCRightClickEvent
-import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
+import net.starlegacy.feature.nations.gui.item
+import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
-import net.starlegacy.util.msg
 import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.readSchematic
-import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.withdrawMoney
 import org.bukkit.Location
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.lang.System.currentTimeMillis
-import java.util.UUID
+import java.nio.file.Paths
+import java.util.*
 
 object StarshipDealers : SLComponent() {
-	private const val PRICE = 200.0
-	private const val SCHEMATIC_NAME = "noob_ship"
-
 	private val lastBuyTimes = mutableMapOf<UUID, Long>()
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -37,51 +38,64 @@ object StarshipDealers : SLComponent() {
 		if (!npc.name.endsWith("Ship Dealer")) {
 			return
 		}
+		val menu = MenuHelper.apply {
+			val ships: List<GuiItem> = IonServer.shipList.map { ship ->
+				val item: ItemStack = item(ship.material)
+				item.editMeta {
+					it.displayName(miniMessage().deserialize(ship.displayName))
+					it.lore(
+						listOf(
+							miniMessage().deserialize(ship.loreLine1),
+							miniMessage().deserialize(ship.loreLine2),
+							miniMessage().deserialize(ship.loreLine3),
+							miniMessage().deserialize(ship.loreLine4)
+						)
+					)
+				}
 
-		if (!player.hasProtection()) {
-			if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + (1000 * 60 * 60 * 2) > currentTimeMillis()) {
-				player.sendMessage(miniMessage().deserialize("<yellow>Didn't I sell you a ship not too long ago? These things are expensive, and I am already selling them at a discount, leave some for other people."))
-				return
+				return@map guiButton(item) {
+					val schematicFile: File? = getSchematicFile(ship.pathToSchem!!)
+					if (!player.hasProtection()) {
+						if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + ship.cost > currentTimeMillis()) {
+							player.sendMessage(miniMessage().deserialize("<yellow>Didn't I sell you a ship not too long ago? These things are expensive, and I am already selling them at a discount, leave some for other people."))
+							return@guiButton
+						}
+					}
+
+					if (!player.hasEnoughMoney(ship.cost)) {
+						player.userError("This ship is too expensive for you\n It costs ${ship.cost}, you currently have ${player.getMoneyBalance()}")
+						return@guiButton
+					}
+
+					if (schematicFile == null) {
+						player.serverError("Schematic for ${ship.name} not found, please alert an Admin!")
+						return@guiButton
+					}
+
+					val schematic = readSchematic(schematicFile)
+
+					if (schematic == null) {
+						player.serverError("Failed to read schematic file. Contact an admin!")
+						return@guiButton
+					}
+
+					var target = player.location
+					target.y = 196.0
+					target = resolveTarget(schematic, target)
+
+					val world = player.world
+					val targetVec3i = Vec3i(target)
+					placeSchematicEfficiently(schematic, world, targetVec3i, true) {
+						player.teleport(target.add(ship.teleportOffsetX, ship.teleportOffsetY, ship.teleportOffsetZ))
+
+						player.withdrawMoney(ship.cost)
+						lastBuyTimes[player.uniqueId] = currentTimeMillis()
+
+						player.success("Successfully bought a ${ship.name} (Cost: ${ship.cost}\n Remaining Balance: ${player.getMoneyBalance()})")
+					}
+				}.setName(miniMessage().deserialize(ship.displayName))
 			}
-		}
-
-		if (!player.hasEnoughMoney(PRICE)) {
-			player msg "&cYou can't afford that: " +
-				"You only have ${player.getMoneyBalance().toCreditsString()}, " +
-				"but it costs ${PRICE.toCreditsString()}"
-			return
-		}
-
-		val schematicFile = getSchematicFile()
-
-		if (schematicFile == null) {
-			player msg "&cSchematic $SCHEMATIC_NAME not found. Contact an admin!"
-			return
-		}
-
-		val schematic = readSchematic(schematicFile)
-
-		if (schematic == null) {
-			player msg "&cFailed to read schematic file. Contact an admin!"
-			return
-		}
-
-		var target = player.location
-		target.y = 196.0
-		target = resolveTarget(schematic, target)
-
-		val world = player.world
-		val targetVec3i = Vec3i(target)
-		placeSchematicEfficiently(schematic, world, targetVec3i, true) {
-			player.teleport(target.add(0.0, -3.0, 0.0))
-
-			player.withdrawMoney(PRICE)
-			lastBuyTimes[player.uniqueId] = currentTimeMillis()
-
-			player msg "&aPasted! (Cost: ${PRICE.toCreditsString()}; " +
-				"Remaining Balance: ${player.getMoneyBalance().toCreditsString()})"
-
-			player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
+			player.openPaginatedMenu("DealerShip", ships)
 		}
 	}
 
@@ -130,21 +144,11 @@ object StarshipDealers : SLComponent() {
 		return target
 	}
 
-	private fun getSchematicFile(): File? {
-		val file = WorldEdit.getInstance()
-			.getWorkingDirectoryPath("schematics/$SCHEMATIC_NAME.schem")
-			.toFile()
+	private fun getSchematicFile(filePath: String): File? {
+		val file = Paths.get(IonServer.dataFolder.path.plus("/$filePath")).toFile()
 
 		if (file.exists()) {
 			return file
-		}
-
-		val secondFile = WorldEdit.getInstance()
-			.getWorkingDirectoryPath("schematics/$SCHEMATIC_NAME.schematic")
-			.toFile()
-
-		if (secondFile.exists()) {
-			return secondFile
 		}
 
 		return null
