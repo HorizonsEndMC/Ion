@@ -8,6 +8,10 @@ import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.multiblocks.DisposalMultiblock
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier1Bottom
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier1Top
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier2Bottom
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier2Top
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier3Bottom
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier3Top
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockSide
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
@@ -195,7 +199,11 @@ object Multiblocks : SLComponent() {
 			DecomposerMultiblock,
 			DisposalMultiblock,
 			MiningLaserMultiblockTier1Top,
-			MiningLaserMultiblockTier1Bottom
+			MiningLaserMultiblockTier1Bottom,
+			MiningLaserMultiblockTier2Top,
+			MiningLaserMultiblockTier2Bottom,
+			MiningLaserMultiblockTier3Top,
+			MiningLaserMultiblockTier3Bottom
 		)
 	}
 
