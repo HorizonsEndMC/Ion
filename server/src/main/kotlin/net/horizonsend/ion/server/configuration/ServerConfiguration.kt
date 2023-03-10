@@ -9,7 +9,6 @@ import org.bukkit.World
 @Serializable
 data class ServerConfiguration(
 	val serverName: String? = null,
-	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(
 		HyperspaceBeacon(
 			"test", 100.0, Pos("space2", 100000, 128, 100000),
