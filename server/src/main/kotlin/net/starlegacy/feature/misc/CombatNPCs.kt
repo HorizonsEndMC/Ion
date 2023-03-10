@@ -30,7 +30,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
@@ -81,48 +80,49 @@ object CombatNPCs : SLComponent() {
 			inventories.remove(npcId)
 		}
 
+		// TODO: Combat NPCs are broken anyway, and they are the only thing creating chunk tickets so they could be the cause of lag right now, look into this whenever we try and bring back Combat NPCs.
 		// when a player quits, create a combat npc
-		listen<PlayerQuitEvent> { event ->
-			val player = event.player
-			val playerId = player.uniqueId
-			val chunk = player.chunk
-			chunk.addPluginChunkTicket(IonServer)
-
-			inventories.remove(playerId)
-			// attempt to remove entity from map based on player id.
-			// if one is removed, also attempt to get a currently loaded entity from the removed id.
-			// if it is present, remove that entity as well.
-			playerToEntity.remove(playerId)?.also { oldEntityId: UUID ->
-				IonServer.server.getEntity(oldEntityId)?.remove()
-				inventories.remove(oldEntityId)
-			}
-
-			// if this permission is granted, do not spawn the npc
-			if (player.hasPermission("starlegacy.combatnpc.bypass")) {
-				return@listen
-			}
-			// if they joined less than a second ago, don't do it
-			if (System.currentTimeMillis() - (lastJoinMap[playerId] ?: 0) < 1000) {
-				return@listen
-			}
-
-			val entity: ArmorStand = spawnEntity(player)
-			val entityId = entity.uniqueId
-
-			entityToPlayer[entityId] = playerId
-
-			val inventoryCopy: Array<ItemStack?> = player.inventory.contents!!
-				.map { item: ItemStack? -> item?.clone() }
-				.toTypedArray()
-			inventories[entityId] = inventoryCopy
-
-			Tasks.syncDelay(20L * 60L * remainTimeMinutes) {
-				entityToPlayer.remove(entityId, playerId)
-				IonServer.server.getEntity(entityId)?.remove()
-				inventories.remove(entityId)
-				chunk.removePluginChunkTicket(IonServer)
-			}
-		}
+		// listen<PlayerQuitEvent> { event ->
+		// 	val player = event.player
+		// 	val playerId = player.uniqueId
+		// 	val chunk = player.chunk
+		// 	chunk.addPluginChunkTicket(IonServer)
+		//
+		// 	inventories.remove(playerId)
+		// 	// attempt to remove entity from map based on player id.
+		// 	// if one is removed, also attempt to get a currently loaded entity from the removed id.
+		// 	// if it is present, remove that entity as well.
+		// 	playerToEntity.remove(playerId)?.also { oldEntityId: UUID ->
+		// 		IonServer.server.getEntity(oldEntityId)?.remove()
+		// 		inventories.remove(oldEntityId)
+		// 	}
+		//
+		// 	// if this permission is granted, do not spawn the npc
+		// 	if (player.hasPermission("starlegacy.combatnpc.bypass")) {
+		// 		return@listen
+		// 	}
+		// 	// if they joined less than a second ago, don't do it
+		// 	if (System.currentTimeMillis() - (lastJoinMap[playerId] ?: 0) < 1000) {
+		// 		return@listen
+		// 	}
+		//
+		// 	val entity: ArmorStand = spawnEntity(player)
+		// 	val entityId = entity.uniqueId
+		//
+		// 	entityToPlayer[entityId] = playerId
+		//
+		// 	val inventoryCopy: Array<ItemStack?> = player.inventory.contents!!
+		// 		.map { item: ItemStack? -> item?.clone() }
+		// 		.toTypedArray()
+		// 	inventories[entityId] = inventoryCopy
+		//
+		// 	Tasks.syncDelay(20L * 60L * remainTimeMinutes) {
+		// 		entityToPlayer.remove(entityId, playerId)
+		// 		IonServer.server.getEntity(entityId)?.remove()
+		// 		inventories.remove(entityId)
+		// 		chunk.removePluginChunkTicket(IonServer)
+		// 	}
+		// }
 
 		listen<PlayerArmorStandManipulateEvent> { event ->
 			if (isNPC(event.rightClicked)) {
