@@ -63,6 +63,7 @@ object HyperspaceBeaconManager : Listener {
 			if (activeRequests.containsKey(pilot.uniqueId)) return
 			val beacon = event.starship.beacon
 
+			if (beacon?.prompt != null) pilot.sendRichMessage(beacon.prompt)
 			pilot.sendRichMessage(
 				"<aqua>Detected signal from hyperspace beacon<yellow> ${beacon!!.name}<aqua>" + // not null if true
 					", destination<yellow> " +
