@@ -9,6 +9,7 @@ import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 
 abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsystem>(), PowerStoringMultiblock {
 	override val name = "mininglaser"
@@ -18,6 +19,8 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 	abstract val mineRadius: Int
 	abstract val beamCount: Int
 	abstract val maxBroken: Int
+
+	abstract fun getOutput(sign: Sign): Inventory
 
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): MiningLaserSubsystem {
 		if (starship is ActivePlayerStarship) {
