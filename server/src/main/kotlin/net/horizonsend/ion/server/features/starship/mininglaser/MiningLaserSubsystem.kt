@@ -3,7 +3,11 @@ package net.horizonsend.ion.server.features.starship.mininglaser
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
+import net.horizonsend.ion.server.miscellaneous.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -15,7 +19,6 @@ import net.starlegacy.util.getFacing
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
 import org.bukkit.Bukkit.getPlayer
-import org.bukkit.ChatColor
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -39,10 +42,12 @@ class MiningLaserSubsystem(
 	private val firingTasks = mutableListOf<BukkitTask>()
 	var isFiring = false
 	lateinit var targetedBlock: Vector
-	private val radiusSquared = multiblock.mineRadius * multiblock.mineRadius
+
+	private val DISABLED = Component.text("[DISABLED]").color(NamedTextColor.RED)
 
 	override val powerUsage: Int = 0
-	private val blockBreakPowerUsage: Double = 2.5
+	private val blockBreakPowerUsage: Double = 0.5
+	private val radiusSquared = multiblock.mineRadius * multiblock.mineRadius
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		val firePos = getFirePos()
@@ -61,6 +66,12 @@ class MiningLaserSubsystem(
 // 		)?.hitPosition ?: default
 	}
 
+	private fun setUser(sign: Sign, player: String?) {
+		val line3 = player?.let { Component.text(player) } ?: DISABLED
+		sign.line(3, line3)
+		sign.update(false, false)
+	}
+
 	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return !starship.isInternallyObstructed(getFirePos(), dir)
 	}
@@ -72,7 +83,7 @@ class MiningLaserSubsystem(
 
 		return Vec3i(
 			x = (right.modX * x) + (facing.modX * z),
-			y = (multiblock.upDownFace().direction.y * y).toInt(),
+			y = y,
 			z = (right.modZ * x) + (facing.modZ * z)
 		)
 	}
@@ -99,16 +110,28 @@ class MiningLaserSubsystem(
 	}
 
 	override fun manualFire(shooter: Player, dir: Vector, target: Vector) {
-		if (!isFiring) {
-			startFiringSequence()
-			this.targetedBlock = target.clone()
-			shooter.information("Enabled mining laser")
-		} else {
-			cancelTask()
-			shooter.information("Disabled mining laser")
-		}
+		val sign = getSign() ?: return
 
-		isFiring = !isFiring
+		setFiring(!isFiring, sign, shooter)
+		this.targetedBlock = target.clone()
+	}
+
+	private fun setFiring(firing: Boolean, sign: Sign, user: Player? = null) {
+		isFiring = firing
+
+		when (firing) {
+			true -> {
+				setUser(sign, user!!.name)
+				starship.information("Enabled mining laser at $pos")
+				startFiringSequence()
+			}
+
+			false -> {
+				setUser(sign, null)
+				starship.information("Disabled mining laser at $pos")
+				cancelTask()
+			}
+		}
 	}
 
 	private fun startFiringSequence() {
@@ -127,6 +150,12 @@ class MiningLaserSubsystem(
 		firingTasks.add(fireTask)
 	}
 
+	private fun cancelTask() {
+		isFiring = false
+		firingTasks.forEach { it.cancel() }
+		firingTasks.clear()
+	}
+
 	fun fire() {
 		if (!ActiveStarships.isActive(starship)) {
 			cancelTask()
@@ -136,19 +165,14 @@ class MiningLaserSubsystem(
 		// TODO sustain sound
 
 		val sign = getSign() ?: return
+		val user = getPlayer((sign.line(3) as TextComponent).content()) ?: return cancelTask()
 		val power = PowerMachines.getPower(sign, true)
 
 		if (power == 0) {
-			starship.passengerIDs.forEach {
-				getPlayer(it)?.sendMessage(
-					String.format(
-						"%sDrill at %s ran out of power!",
-						ChatColor.RED, sign.location.toVector()
-					)
-				)
+			starship.alert("Drill at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} ran out of power and was disabled!")
 
-				return
-			}
+			setFiring(false, sign)
+			return
 		}
 
 		val initialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
@@ -175,8 +199,6 @@ class MiningLaserSubsystem(
 		val block = laserEnd.block
 		val blocks = getBlocksToDestroy(block)
 
-		val pilot = starship.pilot ?: return cancelTask()
-
 		if (
 			DrillMultiblock.breakBlocks(
 				sign = sign,
@@ -185,7 +207,7 @@ class MiningLaserSubsystem(
 				output = getOutput(sign),
 				isDrillMultiblock = false,
 				people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
-				player = pilot
+				player = user
 			) > 0
 		) {
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocks.size).toInt(), true)
@@ -218,9 +240,7 @@ class MiningLaserSubsystem(
 					if (toExplode.type == Material.BEDROCK) continue
 					if (toExplode.type == Material.REINFORCED_DEEPSLATE) continue
 
-					if (toExplode.type != Material.AIR) {
-						toDestroy.add(toExplode)
-					}
+					toDestroy.add(toExplode)
 				}
 			}
 		}
@@ -228,11 +248,6 @@ class MiningLaserSubsystem(
 		toDestroy.sortBy { it.location.distanceSquared(pos.toLocation(center.world)) }
 
 		return toDestroy
-	}
-
-	fun cancelTask() {
-		firingTasks.forEach { it.cancel() }
-		firingTasks.clear()
 	}
 }
 
