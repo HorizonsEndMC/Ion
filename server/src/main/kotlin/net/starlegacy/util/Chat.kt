@@ -100,24 +100,6 @@ fun String.style(style: SLTextStyle) = text().style(style)
 fun TextComponent.style(style: SLTextStyle): TextComponent = apply { color = style.wrappedColor }
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.darkAqua() = style(SLTextStyle.DARK_AQUA)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.darkPurple() = style(SLTextStyle.DARK_PURPLE)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.gold() = style(SLTextStyle.GOLD)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.green() = style(SLTextStyle.GREEN)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.aqua() = style(SLTextStyle.AQUA)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun TextComponent.yellow() = style(SLTextStyle.YELLOW)
-
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun TextComponent.bold() = apply { isBold = true }
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
