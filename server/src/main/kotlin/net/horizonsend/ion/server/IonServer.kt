@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.configuration.SoldShipsConfiguration
 import net.horizonsend.ion.server.features.client.Packets
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
@@ -34,6 +35,8 @@ import org.bukkit.plugin.java.JavaPlugin
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
+	var soldShips: SoldShipsConfiguration = Configuration.load(dataFolder, "soldShips.json")
+	var shipList: List<SoldShipsConfiguration.Ships.Ship> = listOf(soldShips.soldShips.miner, soldShips.soldShips.shuttle)
 
 	override fun onEnable() {
 		try {
