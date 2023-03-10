@@ -17,7 +17,8 @@ data class ServerConfiguration(
 		val radius: Double,
 		val spaceLocation: Pos,
 		val destination: Pos,
-		val destinationName: String? = null
+		val destinationName: String? = null,
+		val prompt: String? = null
 	)
 
 	@Serializable
