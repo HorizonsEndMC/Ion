@@ -4,7 +4,12 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.Vec3i
+import net.starlegacy.util.getFacing
+import net.starlegacy.util.leftFace
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 
 sealed class MiningLaserMultiblockTier2 : MiningLaserMultiblock() {
 	override val signText: Array<Component?> = arrayOf(
@@ -28,6 +33,16 @@ object MiningLaserMultiblockTier2Top : MiningLaserMultiblockTier2() {
 	override fun upDownFace(): BlockFace = BlockFace.UP
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +5, -2)
+
+	override fun getOutput(sign: Sign): Inventory {
+		val direction = sign.getFacing().oppositeFace
+		return (
+			sign.block.getRelative(direction)
+				.getRelative(BlockFace.DOWN)
+				.getRelative(direction.leftFace)
+				.getState(false) as InventoryHolder
+			).inventory
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
@@ -142,6 +157,16 @@ object MiningLaserMultiblockTier2Bottom : MiningLaserMultiblockTier2() {
 	override fun upDownFace(): BlockFace = BlockFace.DOWN
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -5, -2)
+
+	override fun getOutput(sign: Sign): Inventory {
+		val direction = sign.getFacing().oppositeFace
+		return (
+			sign.block.getRelative(direction)
+				.getRelative(BlockFace.UP)
+				.getRelative(direction.leftFace)
+				.getState(false) as InventoryHolder
+			).inventory
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
