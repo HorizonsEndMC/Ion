@@ -26,7 +26,8 @@ enum class StarshipType(
 	val colour: String,
 	val overridePermission: String,
 	val eventship: Boolean = false,
-	val poweroverrider: Double = 1.0
+	val poweroverrider: Double = 1.0,
+	val canMine: Boolean = false
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -190,7 +191,8 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#008033",
 		overridePermission = "ion.ships.override.1",
-		poweroverrider = 0.7
+		poweroverrider = 0.7,
+		canMine = true
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -207,7 +209,8 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#008066",
 		overridePermission = "ion.ships.override.10",
-		poweroverrider = 0.7
+		poweroverrider = 0.7,
+		canMine = true
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -224,7 +227,8 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#008099",
 		overridePermission = "ion.ships.override.20",
-		poweroverrider = 0.7
+		poweroverrider = 0.7,
+		canMine = true
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -241,7 +245,8 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#0080cc",
 		overridePermission = "ion.ships.override.40",
-		poweroverrider = 0.7
+		poweroverrider = 0.7,
+		canMine = true
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -258,7 +263,8 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#0080ff",
 		overridePermission = "ion.ships.override.80",
-		poweroverrider = 0.7
+		poweroverrider = 0.7,
+		canMine = true
 	),
 	PLATFORM(
 		displayName = "Platform",
