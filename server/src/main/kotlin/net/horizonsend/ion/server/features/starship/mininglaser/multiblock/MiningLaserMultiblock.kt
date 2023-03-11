@@ -19,6 +19,7 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 	abstract val mineRadius: Int
 	abstract val beamCount: Int
 	abstract val maxBroken: Int
+	abstract val sound: String
 
 	abstract fun getOutput(sign: Sign): Inventory
 

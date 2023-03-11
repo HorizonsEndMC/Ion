@@ -27,6 +27,7 @@ sealed class MiningLaserMultiblockTier3 : MiningLaserMultiblock() {
 	override val mineRadius = 7
 	override val beamCount: Int = 6
 	override val maxBroken: Int = 10
+	override val sound: String = "starship.weapon.mining_laser.mining_laser_t3_loop"
 }
 
 object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
