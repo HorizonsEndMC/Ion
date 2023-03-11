@@ -17,11 +17,13 @@ import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponS
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
+import net.starlegacy.util.toLocation
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.SoundCategory
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -142,7 +144,7 @@ class MiningLaserSubsystem(
 			}
 		}.runTaskTimer(IonServer, 0L, 5L)
 
-		// TODO Startup sound
+		starship.world.playSound(multiblock.getFirePointOffset().toLocation(starship.world), "starship.weapon.mining_laser.mining_laser_start", 1f, 1f)
 
 		firingTasks.add(fireTask)
 	}
@@ -151,6 +153,11 @@ class MiningLaserSubsystem(
 		isFiring = false
 		firingTasks.forEach { it.cancel() }
 		firingTasks.clear()
+		starship.centerOfMass.toLocation(starship.world).world.players.forEach {
+			if (it.location.distance(starship.centerOfMass.toLocation(starship.world)) < multiblock.range) {
+				starship.centerOfMass.toLocation(starship.world).world.playSound(it.location, "starship.weapon.mining_laser.mining_laser_stop", 1.0f, 1f)
+			}
+		}
 	}
 
 	fun fire() {
@@ -158,8 +165,6 @@ class MiningLaserSubsystem(
 			cancelTask()
 			return
 		}
-
-		// TODO sustain sound
 
 		val sign = getSign() ?: return
 		val user = getPlayer((sign.line(3) as TextComponent).content()) ?: return cancelTask()
@@ -208,6 +213,7 @@ class MiningLaserSubsystem(
 			) > 0
 		) {
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocks.size).toInt(), true)
+			sign.world.playSound(laserEnd, multiblock.sound, 1f, 1f)
 		}
 
 		laserEnd.world.spawnParticle(Particle.EXPLOSION_HUGE, laserEnd, 1)
