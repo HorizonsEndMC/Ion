@@ -3,6 +3,9 @@ package net.horizonsend.ion.server.features.starship.mininglaser
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier1
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier2
+import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier3
 import net.horizonsend.ion.server.miscellaneous.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.kyori.adventure.text.Component
@@ -10,6 +13,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
+import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
@@ -63,6 +67,29 @@ class MiningLaserSubsystem(
 // 			0.1,
 // 			null
 // 		)?.hitPosition ?: default
+	}
+
+	override fun getMaxPerShot(): Int? {
+		if (multiblock is MiningLaserMultiblockTier1 && starship.type.canMine && starship.initialBlockCount <= StarshipType.SHUTTLE.maxSize) {
+			return 1
+		}
+		if (multiblock is MiningLaserMultiblockTier2 && starship.type.canMine) {
+			if (starship.initialBlockCount in 1000..2000){
+				return 1
+			}
+			if (starship.initialBlockCount in 2000..4000){
+				return 2
+			}
+		}
+		if (multiblock is MiningLaserMultiblockTier3 && starship.type.canMine) {
+			if (starship.initialBlockCount in 4000..8000){
+				return 4
+			}
+			if (starship.initialBlockCount in 8000..12000){
+				return 6
+			}
+		}
+		return null
 	}
 
 	private fun setUser(sign: Sign, player: String?) {
