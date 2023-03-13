@@ -8,5 +8,11 @@
 			"matchStrings": ["  - \"(?<depName>.*):(?<currentValue>.*)\""],
 			"datasourceTemplate": "maven"
 		}
+	],
+	"packageRules": [
+	  {
+		"matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
+		"automerge": true
+	  }
 	]
 }
