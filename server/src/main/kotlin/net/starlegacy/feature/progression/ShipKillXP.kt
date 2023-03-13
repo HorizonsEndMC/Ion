@@ -119,8 +119,6 @@ object ShipKillXP : SLComponent() {
 	}
 
 	private fun onShipKill(killed: UUID, killedName: String, data: ShipDamageData, arena: Boolean) {
-		killMessage(killedName, data, arena)
-
 		val dataMap: Map<Damager, Int> = data.map.filterKeys { damager ->
 			// require they be online to get xp
 			// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
@@ -129,7 +127,7 @@ object ShipKillXP : SLComponent() {
 
 		val sum = dataMap.values.sum().toDouble()
 
-		processDamagers(dataMap, data, sum, killedName, killed)
+		processDamagers(dataMap, data, sum, killedName, killed, arena)
 
 		map.invalidate(killed)
 	}
@@ -139,7 +137,8 @@ object ShipKillXP : SLComponent() {
 		data: ShipDamageData,
 		sum: Double,
 		killedName: String,
-		killed: UUID
+		killed: UUID,
+		arena: Boolean
 	) {
 		for ((damager, points) in dataMap.entries) {
 			val player = getPlayer(damager.id) ?: continue // shouldn't happen
@@ -149,7 +148,10 @@ object ShipKillXP : SLComponent() {
 			val killedNation = SLPlayer[getPlayer(killedName)!!].nation
 
 			if (pilotNation != null && killedNation != null) {
-				if (NationRelation.getRelationActual(pilotNation, killedNation).ordinal >= 5) return
+				if (NationRelation.getRelationActual(pilotNation, killedNation).ordinal >= 5) {
+					data.map.remove(damager)
+					continue
+				}
 			}
 
 			val percent = points / sum
@@ -167,10 +169,11 @@ object ShipKillXP : SLComponent() {
 				}
 			}
 		}
+		killMessage(killedName, data, arena)
 	}
 
 	private fun killMessage(killedName: String, data: ShipDamageData, arena: Boolean) {
-		val descending = data.map.toList().sortedBy { it.second.get() }.toMutableList()
+		val descending = data.map.toList().sortedByDescending { it.second.get() }.toMutableList()
 		val alertFeedbackColor = TextColor.color(Colors.ALERT)
 
 		// Begin killed ship formatting
