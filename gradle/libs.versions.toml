@@ -46,8 +46,8 @@ vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
 waterfall = { module = "io.github.waterfallmc:waterfall-api", version.ref = "waterfall" }
 worldedit = { module = "com.sk89q.worldedit:worldedit-bukkit", version.ref = "worldedit" }
 adventureBungee = { module = "net.kyori:adventure-platform-bungeecord", version.ref = "adventureBungee"}
-miniMessage = "net.kyori:adventure-text-minimessage:4.12.0"
-componentLogger = "net.kyori:adventure-text-logger-slf4j:4.12.0"
+miniMessage = "net.kyori:adventure-text-minimessage:4.13.0"
+componentLogger = "net.kyori:adventure-text-logger-slf4j:4.13.0"
 
 [bundles]
 common = [ "jedis", "kmongo" ]
