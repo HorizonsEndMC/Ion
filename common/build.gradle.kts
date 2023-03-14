@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-	compileOnly("net.kyori:adventure-api:4.12.0")
+	compileOnly("net.kyori:adventure-api:4.13.0")
 	compileOnly(libs.bundles.paperProvided)
 
 	api(libs.bundles.kotlin)
