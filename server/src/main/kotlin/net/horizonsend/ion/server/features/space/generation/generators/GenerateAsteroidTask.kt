@@ -9,9 +9,6 @@ import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.chunk.LevelChunk
-import net.minecraft.world.level.chunk.LevelChunkSection
-import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import kotlin.math.abs
 import kotlin.math.pow
@@ -25,14 +22,13 @@ class GenerateAsteroidTask(
 	private val sizeFactor = asteroid.size / 15
 	private val shapingNoise = SimplexOctaveGenerator(generator.random, 1)
 	private val materialNoise = SimplexOctaveGenerator(generator.random, 1)
-	val scope = SpaceGenerationManager.coroutineScope
 
 	override val returnData = CompletableDeferred<AsteroidGenerationData.AsteroidReturnData>()
 
 	override fun generate() {
-		val sectionMap = mutableMapOf<LevelChunk, List<SpaceGenerationReturnData.CompletedSection>>()
+		val sectionMap = mutableMapOf<ChunkPos, List<SpaceGenerationReturnData.CompletedSection>>()
 
-		scope.launch {
+		SpaceGenerationManager.coroutineScope.launch {
 			// save some time
 			materialNoise.setScale(0.15 / sqrt(sizeFactor))
 
@@ -81,33 +77,25 @@ class GenerateAsteroidTask(
 
 			// For each covered chunk
 			for ((nmsChunkPos, sectionList) in coveredChunks) {
-				generator.serverLevel.world.getChunkAtAsync(
-					nmsChunkPos.x,
-					nmsChunkPos.z
-				).thenAcceptAsync completedChunk@{ bukkitChunk ->
-					val levelChunk = (bukkitChunk as CraftChunk).handle
-					val chunkCompletedSections = mutableListOf<SpaceGenerationReturnData.CompletedSection>()
+				val chunkCompletedSections = mutableListOf<SpaceGenerationReturnData.CompletedSection>()
 
-					val chunkMinX = levelChunk.pos.x.shl(4)
-					val chunkMinZ = levelChunk.pos.z.shl(4)
+				val chunkMinX = nmsChunkPos.x.shl(4)
+				val chunkMinZ = nmsChunkPos.z.shl(4)
 
-					for (sectionPos in sectionList) {
-						val levelChunkSection = levelChunk.sections[sectionPos]
-						val newlyCompleted = generateSection(
-							levelChunkSection,
-							sectionPos,
-							chunkMinX,
-							chunkMinZ
-						) ?: continue
+				for (sectionPos in sectionList) {
+					val newlyCompleted = generateSection(
+						sectionPos,
+						chunkMinX,
+						chunkMinZ
+					) ?: continue
 
-						chunkCompletedSections.add(newlyCompleted)
-					}
-
-					// Return if chunk has no new blocks
-					if (chunkCompletedSections.isEmpty()) return@completedChunk
-
-					sectionMap[levelChunk] = chunkCompletedSections
+					chunkCompletedSections.add(newlyCompleted)
 				}
+
+				// Return if chunk has no new blocks
+				if (chunkCompletedSections.isEmpty()) continue
+
+				sectionMap[nmsChunkPos] = chunkCompletedSections
 			}
 
 			returnData.complete(
@@ -118,8 +106,12 @@ class GenerateAsteroidTask(
 		}
 	}
 
+	/**
+	 * Generates one level chunk section (16 * 16 * 16)
+	 *
+	 *
+	 **/
 	private fun generateSection(
-		levelChunkSection: LevelChunkSection,
 		sectionY: Int,
 		chunkMinX: Int,
 		chunkMinZ: Int
@@ -127,7 +119,7 @@ class GenerateAsteroidTask(
 		val palette = mutableSetOf<BlockState>()
 		val storedBlocks = arrayOfNulls<Int>(4096)
 		var index = 0
-		val sectionMinY = levelChunkSection.bottomBlockY()
+		val sectionMinY = sectionY.shl(4)
 
 		palette.add(Blocks.AIR.defaultBlockState())
 		val paletteListTag = ListTag()
@@ -146,15 +138,6 @@ class GenerateAsteroidTask(
 					val worldY = sectionMinY + y
 					val worldYDouble = worldY.toDouble()
 					val ySquared = (worldYDouble - asteroid.y) * (worldYDouble - asteroid.y)
-
-					val existingBlock = levelChunkSection.getBlockState(x, y, z)
-
-					if (!existingBlock.isAir) {
-						palette.add(existingBlock)
-						storedBlocks[index] = palette.indexOf(existingBlock)
-						index++
-						continue
-					}
 
 					var block: BlockState? =
 						checkBlockPlacement(
@@ -179,13 +162,6 @@ class GenerateAsteroidTask(
 					if (block != null) {
 						palette.add(block)
 						storedBlocks[index] = palette.indexOf(block)
-
-						levelChunkSection.setBlockState(
-							x,
-							y,
-							z,
-							block
-						)
 					} else { storedBlocks[index] = 0 }
 
 					index++
@@ -201,6 +177,7 @@ class GenerateAsteroidTask(
 		return SpaceGenerationReturnData.CompletedSection(
 			sectionY,
 			intArray,
+			palette,
 			paletteListTag
 		)
 	}
@@ -269,15 +246,6 @@ data class AsteroidGenerationData(
 ) : SpaceGenerationData() {
 
 	data class AsteroidReturnData(
-		override val completedSectionMap: Map<LevelChunk, List<CompletedSection>>
-	) : SpaceGenerationReturnData() {
-
-		override fun complete(generator: SpaceGenerator) {
-			for ((chunk, _) in completedSectionMap) {
-				SpaceGenerator.buildChunkBlocks(
-					chunk.bukkitChunk
-				)
-			}
-		}
-	}
+		override val completedSectionMap: Map<ChunkPos, List<CompletedSection>>
+	) : SpaceGenerationReturnData()
 }
