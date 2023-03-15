@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.generation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.space.generation.generators.SpaceGene
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.server.level.ServerLevel
+import net.starlegacy.util.Tasks
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -24,7 +25,7 @@ import kotlin.math.roundToInt
 object SpaceGenerationManager : Listener {
 	val worldGenerators: MutableMap<ServerLevel, SpaceGenerator?> = mutableMapOf()
 
-	val coroutineScope = CoroutineScope(Dispatchers.Default + Job())
+	val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	fun getGenerator(serverLevel: ServerLevel): SpaceGenerator? = worldGenerators[serverLevel]
 
@@ -114,10 +115,13 @@ object SpaceGenerationManager : Listener {
 
 		completableData.invokeOnCompletion {
 			val completed = completableData.getCompleted()
-			completed.store(task.generator)
-			completed.complete(task.generator)
 
-			task.postProcess(completed)
+			Tasks.sync {
+				val chunks = completed.complete(task.generator)
+				completed.store(task.generator, chunks)
+
+				task.postProcess(completed)
+			}
 		}
 	}
 }

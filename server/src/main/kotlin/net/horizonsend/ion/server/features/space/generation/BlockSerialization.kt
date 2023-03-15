@@ -68,10 +68,10 @@ object BlockSerialization {
 		val firstBlocks: IntArray = first.getIntArray("blocks")
 		val firstPalette = first.getList("palette", 10)
 		val firstMap = firstBlocks.associateWith {
-			val b = NbtUtils.readBlockState(holderLookup, firstPalette[firstBlocks[it]] as CompoundTag)
-			combinedPalette.add(b)
+			val a = NbtUtils.readBlockState(holderLookup, firstPalette[firstBlocks[it]] as CompoundTag)
+			combinedPalette.add(a)
 
-			return@associateWith b
+			return@associateWith a
 		}
 
 		val secondBlocks: IntArray = second.getIntArray("blocks")
@@ -84,17 +84,27 @@ object BlockSerialization {
 		}
 
 		// Iterate through both palettes to
-		for (index in 0 until 4096) {
-			val firstBlock = firstMap[index]!! // Not null
-			val secondBlock = secondMap[index]!!
+		for (index in 1..4096) {
+			try {
+				val firstBlock = firstMap[index]!! // Not null
+				val secondBlock = secondMap[index]!!
 
-			val block: Int = if (secondBlock.isAir) {
-				if (firstBlock.isAir) {
-					0
-				} else { combinedPalette.indexOf(firstBlock) }
-			} else { combinedPalette.indexOf(secondBlock) }
+				val block: Int = if (secondBlock.isAir) {
+					if (firstBlock.isAir) {
+						0
+					} else {
+						combinedPalette.indexOf(firstBlock)
+					}
+				} else {
+					combinedPalette.indexOf(secondBlock)
+				}
 
-			combinedBlocks[index] = block
+				combinedBlocks[index] = block
+			} catch (e: Error) {
+				e.printStackTrace()
+				println(index)
+				continue
+			}
 		}
 
 		val finishedCombinedBlocks = combinedBlocks.requireNoNulls().toIntArray()

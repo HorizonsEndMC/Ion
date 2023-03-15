@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.space.generation.generators
 import com.sk89q.jnbt.NBTInputStream
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounter
@@ -17,9 +19,9 @@ import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.util.nms
 import net.starlegacy.util.timing
@@ -33,6 +35,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.util.Random
+import java.util.concurrent.CompletableFuture
 import java.util.zip.GZIPInputStream
 import kotlin.math.floor
 import kotlin.math.pow
@@ -202,6 +205,9 @@ class SpaceGenerator(
 
 	companion object {
 		fun buildChunkBlocks(chunk: Chunk) {
+			val levelChunk = (chunk as CraftChunk).handle
+			val changedBlocks = CompletableDeferred<List<BlockPos>>()
+
 			val storedAsteroidData =
 				chunk.persistentDataContainer.get(NamespacedKeys.STORED_CHUNK_BLOCKS, PersistentDataType.BYTE_ARRAY)
 					?: return
@@ -211,7 +217,6 @@ class SpaceGenerator(
 				error.printStackTrace(); throw Throwable("Could not serialize stored asteroid data!")
 			}
 
-			val levelChunk = (chunk as CraftChunk).handle
 			val sections = nbt.getList("sections", 10) // 10 is compound tag, list of compound tags
 
 			val chunkOriginX = chunk.x.shl(4)
@@ -236,7 +241,8 @@ class SpaceGenerator(
 						val worldZ = z + chunkOriginZ
 
 						for (y in 0..15) {
-							val block = NbtUtils.readBlockState(holderLookup, paletteList[blocks[index]] as CompoundTag)
+							val block =
+								NbtUtils.readBlockState(holderLookup, paletteList[blocks[index]] as CompoundTag)
 							if (block == Blocks.AIR.defaultBlockState()) {
 								index++
 								continue
@@ -251,7 +257,8 @@ class SpaceGenerator(
 				}
 			}
 
-			levelChunk.playerChunk?.broadcastChanges(levelChunk) ?: println("WHYYYYYYYYYYYYYYYYY")
+			levelChunk.playerChunk?.broadcastChanges(levelChunk)
+
 			Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
 			levelChunk.isUnsaved = true
 		}
@@ -274,68 +281,136 @@ abstract class SpaceGenerationData() {
 }
 
 abstract class SpaceGenerationReturnData {
-	abstract val completedSectionMap: Map<LevelChunk, List<CompletedSection>>
+	abstract val completedSectionMap: Map<ChunkPos, List<CompletedSection>>
 	data class CompletedSection(
 		val y: Int,
 		val blocks: IntArray,
-		val palette: ListTag
+		val palette: Set<BlockState>,
+		val nmsPalette: ListTag
 	)
 
-	abstract fun complete(generator: SpaceGenerator)
+	open fun complete(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
+		val asyncChunks = completedSectionMap.map { (chunkPos, _) ->
+			generator.serverLevel.world.getChunkAtAsync(chunkPos.x, chunkPos.z)
+		}.toTypedArray()
 
-	fun store(generator: SpaceGenerator) {
+		val chunks = CompletableDeferred<Map<ChunkPos, Chunk>>()
+
+		CompletableFuture.allOf(*asyncChunks).thenAccept {
+			val completedLevelChunks = asyncChunks.map {
+				val levelChunk = (it.get() as CraftChunk).handle
+				return@map levelChunk.pos to levelChunk
+			}.toMap()
+
+			for ((levelChunkPos, completedSections) in completedSectionMap) {
+				val chunkMinX = levelChunkPos.x.shl(4)
+				val chunkMinZ = levelChunkPos.z.shl(4)
+
+				val levelChunk = completedLevelChunks[levelChunkPos]!!
+
+				for (completedSection in completedSections) {
+					val section = levelChunk.sections[completedSection.y]
+					val palette = completedSection.palette
+					val map = palette.associateBy { palette.indexOf(it) }
+
+					val sectionMinY = section.bottomBlockY()
+
+					var index = 0
+
+					for (x in 0..15) {
+						for (z in 0..15) {
+							for (y in 0..15) {
+								val block = map[completedSection.blocks[index]]!!
+
+								if (block.isAir) {
+									index++
+									continue
+								}
+
+								section.setBlockState(x, y, z, block)
+								levelChunk.playerChunk?.blockChanged(
+									BlockPos(
+										chunkMinX + x,
+										sectionMinY + y,
+										chunkMinZ + z
+									)
+								)
+
+								index++
+							}
+						}
+					}
+				}
+
+				Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
+				levelChunk.playerChunk?.broadcastChanges(levelChunk)
+				levelChunk.isUnsaved = true
+			}
+
+			chunks.complete(completedLevelChunks.mapValues { (_, levelChunk) -> levelChunk.bukkitChunk })
+		}
+
+		return chunks
+	}
+
+	@OptIn(ExperimentalCoroutinesApi::class)
+	fun store(generator: SpaceGenerator, chunks: Deferred<Map<ChunkPos, Chunk>>) {
 		val level = generator.serverLevel
 		val holderLookup = level.level.holderLookup(Registries.BLOCK)
 
-		for ((levelChunk, sectionList) in completedSectionMap) {
-			val bukkitChunk = levelChunk.bukkitChunk
-			val sections = ListTag()
+		chunks.invokeOnCompletion {
+			val finishedBukkitChunks = chunks.getCompleted()
 
-			val existingStoredBlocks = BlockSerialization
-				.readChunkCompoundTag(
-					bukkitChunk,
-					NamespacedKeys.STORED_CHUNK_BLOCKS
-				)
+			for ((chunkPos, sectionList) in completedSectionMap) {
+				val bukkitChunk = finishedBukkitChunks[chunkPos]!!
+				val sections = ListTag()
 
-			for (completedSection in sectionList) {
-				val newBlocks = BlockSerialization
-					.formatSection(
-						completedSection.y,
-						completedSection.blocks,
-						completedSection.palette
+				val existingStoredBlocks = BlockSerialization
+					.readChunkCompoundTag(
+						bukkitChunk,
+						NamespacedKeys.STORED_CHUNK_BLOCKS
 					)
 
-				sections.add(newBlocks)
+				for (completedSection in sectionList) {
+					val newBlocks = BlockSerialization
+						.formatSection(
+							completedSection.y,
+							completedSection.blocks,
+							completedSection.nmsPalette
+						)
+
+					sections.add(newBlocks)
+				}
+
+				// Format the new data
+				val finishedChunk = BlockSerialization.formatChunk(
+					sections,
+					generator.spaceGenerationVersion
+				)
+
+				// Combine and overwrite old data with new
+				val combined = BlockSerialization.combineSectionBlockStorage(
+					existingStoredBlocks,
+					finishedChunk,
+					holderLookup
+				)
+
+				val outputStream = ByteArrayOutputStream()
+				NbtIo.writeCompressed(combined, outputStream)
+
+				// Update PDCs
+				bukkitChunk.persistentDataContainer.set(
+					NamespacedKeys.STORED_CHUNK_BLOCKS,
+					PersistentDataType.BYTE_ARRAY,
+					outputStream.toByteArray()
+				)
+
+				bukkitChunk.persistentDataContainer.set(
+					NamespacedKeys.SPACE_GEN_VERSION,
+					PersistentDataType.BYTE,
+					generator.spaceGenerationVersion
+				)
 			}
-
-			// Format the new data
-			val finishedChunk = BlockSerialization.formatChunk(
-				sections,
-				generator.spaceGenerationVersion
-			)
-
-			// Combine and overwrite old data with new
-			val combined = BlockSerialization.combineSectionBlockStorage(
-				existingStoredBlocks,
-				finishedChunk,
-				holderLookup
-			)
-
-			val outputStream = ByteArrayOutputStream()
-			NbtIo.writeCompressed(combined, outputStream)
-
-			// Update PDCs
-			bukkitChunk.persistentDataContainer.set(
-				NamespacedKeys.STORED_CHUNK_BLOCKS,
-				PersistentDataType.BYTE_ARRAY,
-				outputStream.toByteArray()
-			)
-
-			bukkitChunk.persistentDataContainer.set(
-				NamespacedKeys.SPACE_GEN_VERSION,
-				PersistentDataType.BYTE,
-				generator.spaceGenerationVersion
-			)
 		}
 	}
 }

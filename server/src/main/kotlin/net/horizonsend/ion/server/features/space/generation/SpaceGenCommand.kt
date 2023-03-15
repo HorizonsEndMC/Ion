@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
+import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.horizonsend.ion.server.miscellaneous.extensions.serverError
@@ -87,6 +88,6 @@ class SpaceGenCommand : BaseCommand() {
 			)
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
-// 		SpaceGenerationManager.generationTasks.put(GenerateWreckTask(generator, data))
+		SpaceGenerationManager.generateFeature(GenerateWreckTask(generator, data))
 	}
 }
