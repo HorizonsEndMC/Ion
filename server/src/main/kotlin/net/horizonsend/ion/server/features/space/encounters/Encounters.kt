@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.space.encounters
 
-import net.horizonsend.ion.server.miscellaneous.extensions.alert
+import net.horizonsend.ion.common.extensions.alert
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.toNMSBlockData
 import org.bukkit.Material
