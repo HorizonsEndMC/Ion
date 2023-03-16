@@ -26,7 +26,6 @@ data class ServerConfiguration(
 	 * @param maxAsteroidSize: Maximum Size for an Asteroid
 	 * @param maxAsteroidOctaves: Maximum number of octaves for noise generation
 	 * @param blockPalettes: list of Palettes use for the asteroid materials
-	 * @param ores:  list of Palettes used for ore placement
 	 * @param oreRatio: Number of attempts to place an ore blob per chunk
 	 * @param features List of AsteroidFeature
 	 * @see Palette
@@ -36,8 +35,7 @@ data class ServerConfiguration(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
 		val maxAsteroidOctaves: Int = 4,
-		val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, listOf(Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)))),
-		val ores: Set<Ore> = setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)),
+		val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, listOf(Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)), setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)))),
 		val oreRatio: Double = 0.25,
 		val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
 		val wreckClasses: ArrayList<WreckClass>,
@@ -46,13 +44,15 @@ data class ServerConfiguration(
 		/**
 		 * @param weight: Number of rolls for this Palette
 		 * @param materials: Map of Materials to their Weight
+		 * @param ores:  list of Palettes used for ore placement
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
 		 */
 		@Serializable
 		data class Palette(
 			val weight: Int,
-			val materials: List<PaletteEntry>
+			val materials: List<PaletteEntry>,
+			val ores: Set<Ore>
 		) {
 			@Serializable
 			data class PaletteEntry(
@@ -71,7 +71,7 @@ data class ServerConfiguration(
 		}
 
 		/**
-		 * @param material: Map of Materials to their Weight
+		 * @param material: String representation of the blockstate
 		 * @param maxBlobSize: Size of the ore blob (Official Mojang term)
 		 * @param rolls: Number of rolls for this Palette
 		 *
@@ -90,7 +90,9 @@ data class ServerConfiguration(
 			val blockState = blockData.nms
 		}
 
-		/**Asteroid Feature
+		/**
+		 * Asteroid Feature
+		 *
 		 * All asteroid features are stored as tauruses, but the values can be manipulated to make spheres or other shapes.
 		 * @param name Unused, for readability.
 		 * @param baseDensity Asteroid density inside the tube
@@ -152,17 +154,11 @@ data class ServerConfiguration(
 			)
 		}
 
-// 		val mappedAdditionalInfo = wreckClasses.flatMap { it.key }.map { wreckConfig ->
-// 			val schematicName = wreckConfig.wreckSchematicName
-//
-// 			wreckConfig.encounters.map { (wreckEncounters, _) ->
-// 				wreckEncounters.encounterIdentifier + schematicName to wreckEncounters.additionalInfo
-// 			}.toMap()
-// 		}.flatMap { it.entries }.associate { it.key to it.value }
-
-		fun paletteWeightedList(): WeightedRandomList<WeightedRandomList<BlockState>> {
-			val list = WeightedRandomList<WeightedRandomList<BlockState>>()
-			val transformed = blockPalettes.associate { it.blockStateWeightedList() to it.weight }
+		fun paletteWeightedList(): WeightedRandomList<Pair<Int, WeightedRandomList<BlockState>>> {
+			val list = WeightedRandomList<Pair<Int, WeightedRandomList<BlockState>>>()
+			val transformed = blockPalettes.associate {
+				(blockPalettes.indexOf(it) to it.blockStateWeightedList()) to it.weight
+			}.toMap()
 
 			list.addMany(transformed)
 
@@ -196,27 +192,6 @@ data class ServerConfiguration(
 		fun toLocation(): Location = Location(bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
 	}
 
-	/**
-	 * @param cooldown ticks
-	 **/
-	@Serializable
-	data class Ship(
-		val price: Double,
-		val displayName: String,
-		val name: String,
-		val guiMaterial: Material,
-		val cooldown: Long,
-		val teleportOffsetX: Double, // teleport offsets to teleport the player to after the ship is placed (away from schematic origin)
-		val teleportOffsetY: Double,
-		val teleportOffsetZ: Double,
-		val lore: List<String>
-	) {
-		@kotlinx.serialization.Transient
-		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$name.schem")
-
-		fun schematic(): Clipboard = readSchematic(schematicFile)!!
-	}
-
 	/**Asteroid Feature
 	 * All asteroid features are stored as tauruses, but the values can be manipulated to make spheres or other shapes.
 	 * @param name Unused, for readability.
@@ -240,4 +215,25 @@ data class ServerConfiguration(
 		val y: Int,
 		val z: Int
 	)
+
+	/**
+	 * @param cooldown ticks
+	 **/
+	@Serializable
+	data class Ship(
+		val price: Double,
+		val displayName: String,
+		val name: String,
+		val guiMaterial: Material,
+		val cooldown: Long,
+		val teleportOffsetX: Double, // teleport offsets to teleport the player to after the ship is placed (away from schematic origin)
+		val teleportOffsetY: Double,
+		val teleportOffsetZ: Double,
+		val lore: List<String>
+	) {
+		@kotlinx.serialization.Transient
+		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$name.schem")
+
+		fun schematic(): Clipboard = readSchematic(schematicFile)!!
+	}
 }
