@@ -11,6 +11,7 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.database.schema.nations.Nation
+import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.SpaceStation
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.uuid
@@ -135,7 +136,7 @@ object NationSpaceStationCommand : SLCommand() {
 		failIf(!SpaceWorlds.contains(sender.world)) { "You can only create a space station in space" }
 
 		val nation: Oid<Nation> = requireNationIn(sender)
-		requireNationLeader(sender, nation)
+		requireNationPermission(sender, nation,NationRole.Permission.CREATE_STATION)
 
 		validateName(name, stationId = null)
 
@@ -167,7 +168,7 @@ object NationSpaceStationCommand : SLCommand() {
 		val nation: Oid<Nation> = requireNationIn(sender)
 		val spaceStation: SpaceStation = requireStation(nation, name)
 		if (!spaceStation.managers.contains(sender.slPlayerId)) {
-			requireNationLeader(sender, nation)
+			requireNationPermission(sender, nation,NationRole.Permission.MANAGE_STATION)
 		}
 		return nation to spaceStation
 	}
@@ -176,7 +177,7 @@ object NationSpaceStationCommand : SLCommand() {
 	@Description("Delete a space station")
 	fun onAbandon(sender: Player, station: String) = asyncCommand(sender) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationLeader(sender, nation) // also require that they're the leader
+		requireNationPermission(sender, nation,NationRole.Permission.DELETE_STATION)
 		SpaceStation.delete(spaceStation._id)
 		Notify.all("&d${getNationName(nation)} &7abandoned space station &b$station")
 	}
@@ -185,7 +186,7 @@ object NationSpaceStationCommand : SLCommand() {
 	@Description("Resize the station")
 	fun onResize(sender: Player, station: String, newRadius: Int, @Optional cost: Int?) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationLeader(sender, nation) // also require that they're the leader
+		requireNationPermission(sender, nation,NationRole.Permission.MANAGE_STATION)
 		val stationName = spaceStation.name
 
 		val location = sender.location
@@ -222,7 +223,7 @@ object NationSpaceStationCommand : SLCommand() {
 	@Subcommand("manager add")
 	fun onManagerAdd(sender: Player, station: String, player: String) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationLeader(sender, nation) // also require that they're the leader
+		requireNationPermission(sender, nation,NationRole.Permission.MANAGE_STATION)
 		val stationName = spaceStation.name
 		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
 		val playerName: String = getPlayerName(playerId)
@@ -239,7 +240,7 @@ object NationSpaceStationCommand : SLCommand() {
 	@Subcommand("manager list")
 	fun onManagerList(sender: Player, station: String) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationLeader(sender, nation) // also require that they're the leader
+		requireNationPermission(sender, nation,NationRole.Permission.MANAGE_STATION)
 		val stationName: String = spaceStation.name
 		val managers: String = spaceStation.managers.map(::getPlayerName).sorted().joinToString()
 		sender msg "&7Managers in $stationName:&c $managers"
@@ -249,7 +250,7 @@ object NationSpaceStationCommand : SLCommand() {
 	@Description("Revoke a player's manager status at the station")
 	fun onManagerRemove(sender: Player, station: String, player: String) = asyncCommand(sender) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationLeader(sender, nation) // also require that they're the leader
+		requireNationPermission(sender, nation,NationRole.Permission.MANAGE_STATION)
 		val stationName = spaceStation.name
 		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
 		val playerName: String = getPlayerName(playerId)
