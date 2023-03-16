@@ -38,7 +38,8 @@ class SpaceGenCommand : BaseCommand() {
 				}
 			}
 		}
-		sender.success("Success!")
+
+		sender.success("Success! Regenerated all chunks in a $range chunk radius")
 	}
 
 	@Suppress("unused")
@@ -48,24 +49,21 @@ class SpaceGenCommand : BaseCommand() {
 		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
 			.userError("No generator found for ${sender.world.name}")
 
-		try {
-			val asteroid = generator.generateWorldAsteroid(
-				sender.location.blockX,
-				sender.location.blockY,
-				sender.location.blockZ,
-				size,
-				index,
-				octaves
-			)
+		val asteroid = generator.generateWorldAsteroid(
+			sender.location.blockX,
+			sender.location.blockY,
+			sender.location.blockZ,
+			size,
+			index,
+			octaves
+		)
 
-			SpaceGenerationManager.generateFeature(GenerateAsteroidTask(generator, asteroid))
-		} catch (err: java.lang.Exception) {
-			sender.serverError(err.message ?: "Error generating asteroid")
-			err.printStackTrace()
-			return
-		}
+		SpaceGenerationManager.generateFeature(GenerateAsteroidTask(generator, asteroid))
 
-		sender.success("Success!")
+		sender.success(
+			"Success! Generated an asteroid of size ${asteroid.size} with palette" +
+				" ${asteroid.palette.entries().map { it.bukkitMaterial }} and octaves ${asteroid.octaves}"
+		)
 	}
 
 	@Suppress("unused")
@@ -89,6 +87,6 @@ class SpaceGenCommand : BaseCommand() {
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
 		SpaceGenerationManager.generateFeature(GenerateWreckTask(generator, data))
-		sender.success("Success!")
+		sender.success("Success! Generated wreck ${data.schematicName} with encounter ${data.encounter}")
 	}
 }
