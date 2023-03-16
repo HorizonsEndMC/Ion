@@ -1,20 +1,18 @@
 package net.horizonsend.ion.server.features.space.generation
 
-import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtUtils
-import net.minecraft.world.level.block.Block
+import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayInputStream
 
 object BlockSerialization {
-	fun readChunkCompoundTag(chunk: Chunk, key: NamespacedKey): CompoundTag {
+	fun readChunkCompoundTag(chunk: Chunk, key: NamespacedKey): CompoundTag? {
 		val dataContainer = chunk.persistentDataContainer.get(
 			key,
 			PersistentDataType.BYTE_ARRAY
@@ -29,7 +27,7 @@ object BlockSerialization {
 						dataContainer.size
 					)
 				)
-			} ?: CompoundTag()
+			}
 		} catch (error: Error) {
 			error.printStackTrace(); CompoundTag()
 		}
@@ -58,59 +56,41 @@ object BlockSerialization {
 	 *
 	 * Where there are conflicts, the second will be preferred.
 	 **/
-	fun combineSectionBlockStorage(first: CompoundTag, second: CompoundTag, holderLookup: HolderLookup<Block>): CompoundTag {
-		val combinedPalette = mutableSetOf<BlockState>()
+	fun combineSectionBlockStorage(first: CompoundTag, second: CompoundTag): CompoundTag {
+		val combinedPalette = mutableSetOf<Tag>()
 		val combinedBlocks = arrayOfNulls<Int>(4096)
 		val sectionY = second.getByte("y").toInt()
 
-		combinedPalette.add(Blocks.AIR.defaultBlockState())
+		combinedPalette.add(NbtUtils.writeBlockState(Blocks.AIR.defaultBlockState()))
 
 		val firstBlocks: IntArray = first.getIntArray("blocks")
 		val firstPalette = first.getList("palette", 10)
-		val firstMap = firstBlocks.associateWith {
-			val a = NbtUtils.readBlockState(holderLookup, firstPalette[firstBlocks[it]] as CompoundTag)
-			combinedPalette.add(a)
-
-			return@associateWith a
-		}
+		val firstMap = firstBlocks.associateWith { firstPalette[firstBlocks[it]] }
 
 		val secondBlocks: IntArray = second.getIntArray("blocks")
 		val secondPalette = second.getList("palette", 10)
-		val secondMap = secondBlocks.associateWith {
-			val b = NbtUtils.readBlockState(holderLookup, secondPalette[firstBlocks[it]] as CompoundTag)
-			combinedPalette.add(b)
-
-			return@associateWith b
-		}
+		val secondMap = secondBlocks.associateWith { secondPalette[secondBlocks[it]] }
 
 		// Iterate through both palettes to
 		for (index in 1..4096) {
-			try {
-				val firstBlock = firstMap[index]!! // Not null
-				val secondBlock = secondMap[index]!!
+			val firstBlock = firstMap[index]
+			val secondBlock = secondMap[index]
 
-				val block: Int = if (secondBlock.isAir) {
-					if (firstBlock.isAir) {
-						0
-					} else {
-						combinedPalette.indexOf(firstBlock)
-					}
+			val block: Int = if (secondBlocks[index] == 0) {
+				if (firstBlocks[index] == 0) {
+					0
 				} else {
-					combinedPalette.indexOf(secondBlock)
+					combinedPalette.indexOf(firstBlock)
 				}
-
-				combinedBlocks[index] = block
-			} catch (e: Error) {
-				e.printStackTrace()
-				println(index)
-				continue
+			} else {
+				combinedPalette.indexOf(secondBlock)
 			}
+
+			combinedBlocks[index] = block
 		}
 
 		val finishedCombinedBlocks = combinedBlocks.requireNoNulls().toIntArray()
 		val finishedPalette = ListTag()
-
-		combinedPalette.forEach { blockState -> finishedPalette.add(NbtUtils.writeBlockState(blockState)) }
 
 		return formatSection(sectionY, finishedCombinedBlocks, finishedPalette)
 	}
