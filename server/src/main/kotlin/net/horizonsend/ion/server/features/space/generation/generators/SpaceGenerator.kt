@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
@@ -23,9 +24,7 @@ import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.Heightmap
-import net.starlegacy.util.nms
 import net.starlegacy.util.timing
-import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
 import org.bukkit.persistence.PersistentDataType
@@ -55,8 +54,8 @@ class SpaceGenerator(
 	val random = Random(serverLevel.seed)
 
 	// ASTEROIDS SECTION
-	val oreMap: Map<String, BlockState> = configuration.ores.associate {
-		it.material to Bukkit.createBlockData(it.material).nms
+	val oreMap: Map<String, BlockState> = configuration.blockPalettes.flatMap { it.ores }.associate {
+		it.material to it.blockState
 	}
 
 	// World asteroid palette noise
@@ -65,7 +64,7 @@ class SpaceGenerator(
 	// Palettes weighted
 	private val weightedPalettes = configuration.paletteWeightedList()
 
-	val weightedOres = oreWeights()
+	val weightedOres = configuration.blockPalettes.associate { configuration.blockPalettes.indexOf(it) to oreWeights(it) }
 
 	// Multiple of the radius of the asteroid to mark chunks as might contain an asteroid
 	val searchRadius = 1.25
@@ -104,7 +103,7 @@ class SpaceGenerator(
 
 		val formattedOctaves = octaves ?: floor(3 * 0.998.pow(formattedSize)).toInt().coerceAtLeast(1)
 
-		return AsteroidGenerationData(x, y, z, blockPalette, formattedSize, formattedOctaves)
+		return AsteroidGenerationData(x, y, z, blockPalette.second, blockPalette.first, formattedSize, formattedOctaves)
 	}
 
 	fun parseDensity(x: Double, y: Double, z: Double): Double {
@@ -125,14 +124,10 @@ class SpaceGenerator(
 		return densities.max()
 	}
 
-	private fun oreWeights(): List<ServerConfiguration.AsteroidConfig.Ore> {
-		val weightedList = mutableListOf<ServerConfiguration.AsteroidConfig.Ore>()
+	private fun oreWeights(palette: ServerConfiguration.AsteroidConfig.Palette): WeightedRandomList<String> {
+		val weightedList = WeightedRandomList<String>()
 
-		for (ore in configuration.ores) {
-			for (occurrence in ore.rolls downTo 0) {
-				weightedList.add(ore)
-			}
-		}
+		weightedList.addMany(palette.ores.associate { it.material to it.rolls })
 
 		return weightedList
 	}
