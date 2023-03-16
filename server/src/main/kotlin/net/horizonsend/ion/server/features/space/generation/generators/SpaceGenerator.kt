@@ -206,7 +206,6 @@ class SpaceGenerator(
 	companion object {
 		fun buildChunkBlocks(chunk: Chunk) {
 			val levelChunk = (chunk as CraftChunk).handle
-			val changedBlocks = CompletableDeferred<List<BlockPos>>()
 
 			val storedAsteroidData =
 				chunk.persistentDataContainer.get(NamespacedKeys.STORED_CHUNK_BLOCKS, PersistentDataType.BYTE_ARRAY)
@@ -355,9 +354,6 @@ abstract class SpaceGenerationReturnData {
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	fun store(generator: SpaceGenerator, chunks: Deferred<Map<ChunkPos, Chunk>>) {
-		val level = generator.serverLevel
-		val holderLookup = level.level.holderLookup(Registries.BLOCK)
-
 		chunks.invokeOnCompletion {
 			val finishedBukkitChunks = chunks.getCompleted()
 
@@ -389,11 +385,12 @@ abstract class SpaceGenerationReturnData {
 				)
 
 				// Combine and overwrite old data with new
-				val combined = BlockSerialization.combineSectionBlockStorage(
-					existingStoredBlocks,
-					finishedChunk,
-					holderLookup
-				)
+				val combined = existingStoredBlocks?.let {
+					BlockSerialization.combineSectionBlockStorage(
+						existingStoredBlocks,
+						finishedChunk
+					)
+				} ?: finishedChunk
 
 				val outputStream = ByteArrayOutputStream()
 				NbtIo.writeCompressed(combined, outputStream)

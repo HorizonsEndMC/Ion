@@ -225,12 +225,13 @@ data class WreckGenerationData(
 							NamespacedKeys.WRECK_ENCOUNTER_DATA
 						)
 
-					val existingWrecks =
-						existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
+					// list of compound tags (10)
+					val existingWrecks = existingWrecksBaseTag?.getList("wrecks", 10) ?: ListTag()
 
 					existingWrecks.add(data)
 
 					val newFinishedData = CompoundTag()
+
 					newFinishedData.put("wrecks", existingWrecks)
 
 					val wreckDataOutputStream = ByteArrayOutputStream()
