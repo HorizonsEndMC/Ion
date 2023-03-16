@@ -112,7 +112,7 @@ object MiscStarshipCommands : SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("x|z")
-	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String) {
+	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
@@ -122,7 +122,7 @@ object MiscStarshipCommands : SLCommand() {
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
 
-		tryJump(starship, x, z, maxRange, sender)
+		tryJump(starship, x, z, maxRange, sender, hyperdriveTier)
 	}
 
 	private fun parseNumber(string: String, originCoord: Int): Int = when {
@@ -136,7 +136,7 @@ object MiscStarshipCommands : SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("@planets")
-	fun onJump(sender: Player, planet: String) {
+	fun onJump(sender: Player, planet: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
@@ -158,13 +158,15 @@ object MiscStarshipCommands : SLCommand() {
 		val x = cachedPlanet.location.x
 		val z = cachedPlanet.location.z
 
-		tryJump(starship, x, z, maxRange, sender)
+		tryJump(starship, x, z, maxRange, sender, hyperdriveTier)
 	}
 
-	private fun tryJump(starship: ActivePlayerStarship, x: Int, z: Int, maxRange: Int, sender: Player) {
-		val hyperdrive: HyperdriveSubsystem = Hyperspace.findHyperdrive(starship) ?: fail {
-			"Intact hyperdrive not found"
-		}
+	private fun tryJump(starship: ActivePlayerStarship, x: Int, z: Int, maxRange: Int, sender: Player, tier: Int? ) {
+		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) } ?:
+				Hyperspace.findHyperdrive(starship) ?: fail {
+					"Intact hyperdrive not found"
+				}
+
 
 		failIf(!hyperdrive.hasFuel()) {
 			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
@@ -463,7 +465,7 @@ object MiscStarshipCommands : SLCommand() {
 
 		if (ship.beacon != null) {
 			val other = ship.beacon!!.destination
-			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender)
+			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender, null)
 			ship.beacon = null
 		} else {
 			sender.userError("Starship is not near beacon!")
