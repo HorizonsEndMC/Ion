@@ -12,6 +12,8 @@ import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayInputStream
 
 object BlockSerialization {
+	val AIR: CompoundTag = NbtUtils.writeBlockState(Blocks.AIR.defaultBlockState())
+
 	fun readChunkCompoundTag(chunk: Chunk, key: NamespacedKey): CompoundTag? {
 		val dataContainer = chunk.persistentDataContainer.get(
 			key,
@@ -61,15 +63,24 @@ object BlockSerialization {
 		val combinedBlocks = arrayOfNulls<Int>(4096)
 		val sectionY = second.getByte("y").toInt()
 
-		combinedPalette.add(NbtUtils.writeBlockState(Blocks.AIR.defaultBlockState()))
+		combinedPalette.add(AIR)
 
 		val firstBlocks: IntArray = first.getIntArray("blocks")
 		val firstPalette = first.getList("palette", 10)
-		val firstMap = firstBlocks.associateWith { firstPalette[firstBlocks[it]] }
 
 		val secondBlocks: IntArray = second.getIntArray("blocks")
 		val secondPalette = second.getList("palette", 10)
-		val secondMap = secondBlocks.associateWith { secondPalette[secondBlocks[it]] }
+
+		if (secondBlocks.isEmpty() && firstBlocks.isEmpty()) return formatSection(sectionY, IntArray(4096), ListTag())
+		if (firstPalette.isEmpty() && secondPalette.isEmpty()) return formatSection(sectionY, IntArray(4096), ListTag())
+
+		val firstMap = firstBlocks.associateWith {
+			if (firstPalette.isNotEmpty()) { firstPalette[firstBlocks[it]] } else AIR
+		}
+
+		val secondMap =	secondBlocks.associateWith {
+			if (secondPalette.isNotEmpty()) { secondPalette[secondBlocks[it]] } else AIR
+		}
 
 		// Iterate through both palettes to
 		for (index in 1..4096) {

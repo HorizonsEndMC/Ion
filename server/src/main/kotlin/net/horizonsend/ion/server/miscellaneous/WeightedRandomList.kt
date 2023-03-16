@@ -71,9 +71,13 @@ class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T,
 		throw NoSuchElementException("Weighted random list is empty!")
 	}
 
+	fun entries(): List<T> {
+		return weightedEntryList.map { it.parent }
+	}
+
 	operator fun get(index: Int): T = weightedEntryList[index].parent
 
 	override fun toString(): String {
-		return "WeightedRandomList$weightedEntryList"
+		return "WeightedRandomList $weightedEntryList"
 	}
 }
