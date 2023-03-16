@@ -20,7 +20,7 @@ spotless = "6.17.0"
 vault = "1.7.1"
 waterfall = "1.19-R0.1-SNAPSHOT"
 worldedit = "7.2.8"
-adventureBungee = "4.2.0"
+adventureBungee = "4.3.0"
 
 [libraries]
 acfBungee = { module = "co.aikar:acf-bungee", version.ref = "acf" }
