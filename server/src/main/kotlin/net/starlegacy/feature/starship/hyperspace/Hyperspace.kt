@@ -229,6 +229,12 @@ object Hyperspace : SLComponent() {
 		.sortedBy { it.hasFuel() }
 		.lastOrNull()
 
+	fun findHyperdrive(starship: ActiveStarship, tier: Int): HyperdriveSubsystem? = starship.hyperdrives.asSequence()
+		.filter { it.isIntact() }
+		.filter { it.multiblock.hyperdriveClass == tier }
+		.sortedBy { it.hasFuel() }
+		.lastOrNull()
+
 	/** returns the intact nav computer with the highest range, or null */
 	fun findNavComp(starship: ActiveStarship): NavCompSubsystem? = starship.navComps.asSequence()
 		.filter { it.isIntact() }
