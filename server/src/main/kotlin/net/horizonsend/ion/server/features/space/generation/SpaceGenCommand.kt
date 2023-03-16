@@ -89,5 +89,6 @@ class SpaceGenCommand : BaseCommand() {
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
 		SpaceGenerationManager.generateFeature(GenerateWreckTask(generator, data))
+		sender.success("Success!")
 	}
 }
