@@ -23,10 +23,10 @@ data class ServerConfiguration(
 			arrayListOf(
 				AsteroidConfig.Palette(
 					1,
-					listOf(AsteroidConfig.Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1))
+					listOf(AsteroidConfig.Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)),
+					setOf(AsteroidConfig.Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), AsteroidConfig.Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3))
 				)
 			),
-			setOf(AsteroidConfig.Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), AsteroidConfig.Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)),
 			0.25,
 			arrayListOf(AsteroidConfig.AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
 			arrayListOf(
@@ -51,7 +51,6 @@ data class ServerConfiguration(
 	 * @param maxAsteroidSize: Maximum Size for an Asteroid
 	 * @param maxAsteroidOctaves: Maximum number of octaves for noise generation
 	 * @param blockPalettes: list of Palettes use for the asteroid materials
-	 * @param ores:  list of Palettes used for ore placement
 	 * @param oreRatio: Number of attempts to place an ore blob per chunk
 	 * @param features List of AsteroidFeature
 	 * @see Palette
@@ -61,8 +60,7 @@ data class ServerConfiguration(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
 		val maxAsteroidOctaves: Int = 4,
-		val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, listOf(Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)))),
-		val ores: Set<Ore> = setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)),
+		val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, listOf(Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)), setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)))),
 		val oreRatio: Double = 0.25,
 		val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
 		val wreckClasses: ArrayList<WreckClass>,
@@ -71,13 +69,15 @@ data class ServerConfiguration(
 		/**
 		 * @param weight: Number of rolls for this Palette
 		 * @param materials: Map of Materials to their Weight
+		 * @param ores:  list of Palettes used for ore placement
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
 		 */
 		@Serializable
 		data class Palette(
 			val weight: Int,
-			val materials: List<PaletteEntry>
+			val materials: List<PaletteEntry>,
+			val ores: Set<Ore>
 		) {
 			@Serializable
 			data class PaletteEntry(
@@ -96,7 +96,7 @@ data class ServerConfiguration(
 		}
 
 		/**
-		 * @param material: Map of Materials to their Weight
+		 * @param material: String representation of the blockstate
 		 * @param maxBlobSize: Size of the ore blob (Official Mojang term)
 		 * @param rolls: Number of rolls for this Palette
 		 *
@@ -115,7 +115,9 @@ data class ServerConfiguration(
 			val blockState = blockData.nms
 		}
 
-		/**Asteroid Feature
+		/**
+		 * Asteroid Feature
+		 *
 		 * All asteroid features are stored as tauruses, but the values can be manipulated to make spheres or other shapes.
 		 * @param name Unused, for readability.
 		 * @param baseDensity Asteroid density inside the tube
@@ -177,17 +179,11 @@ data class ServerConfiguration(
 			)
 		}
 
-// 		val mappedAdditionalInfo = wreckClasses.flatMap { it.key }.map { wreckConfig ->
-// 			val schematicName = wreckConfig.wreckSchematicName
-//
-// 			wreckConfig.encounters.map { (wreckEncounters, _) ->
-// 				wreckEncounters.encounterIdentifier + schematicName to wreckEncounters.additionalInfo
-// 			}.toMap()
-// 		}.flatMap { it.entries }.associate { it.key to it.value }
-
-		fun paletteWeightedList(): WeightedRandomList<WeightedRandomList<BlockState>> {
-			val list = WeightedRandomList<WeightedRandomList<BlockState>>()
-			val transformed = blockPalettes.associate { it.blockStateWeightedList() to it.weight }
+		fun paletteWeightedList(): WeightedRandomList<Pair<Int, WeightedRandomList<BlockState>>> {
+			val list = WeightedRandomList<Pair<Int, WeightedRandomList<BlockState>>>()
+			val transformed = blockPalettes.associate {
+				(blockPalettes.indexOf(it) to it.blockStateWeightedList()) to it.weight
+			}.toMap()
 
 			list.addMany(transformed)
 
@@ -219,28 +215,4 @@ data class ServerConfiguration(
 
 		fun toLocation(): Location = Location(bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
 	}
-
-	/**Asteroid Feature
-	 * All asteroid features are stored as tauruses, but the values can be manipulated to make spheres or other shapes.
-	 * @param name Unused, for readability.
-	 * @param worldName World to place the feature
-	 * @param baseDensity Asteroid density inside the tube
-	 * @param tubeSize Distance from the center of the tube to the center of the taurus
-	 * @param tubeRadius Radius of the tube
-	 * @param x X Asis Location
-	 * @param y Y Asis Location
-	 * @param z Z Asis Location
-	 * @see baseAsteroidDensity
-	 */
-	@Serializable
-	data class AsteroidFeature(
-		val name: String = "",
-		val worldName: String = "",
-		val baseDensity: Double = 1.0,
-		val tubeSize: Double = 0.0,
-		val tubeRadius: Double = 0.0,
-		val x: Int,
-		val y: Int,
-		val z: Int
-	)
 }

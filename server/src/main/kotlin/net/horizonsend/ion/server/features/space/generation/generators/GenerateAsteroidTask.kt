@@ -155,8 +155,8 @@ class GenerateAsteroidTask(
 								block != null
 							) && !block.isAir
 					) {
-						val ore = generator.weightedOres[generator.random.nextInt(0, generator.weightedOres.size - 1)]
-						block = generator.oreMap[ore.material]
+						val ore = generator.weightedOres[asteroid.paletteID]!!.random()
+						block = generator.oreMap[ore]
 					}
 
 					if (block != null) {
@@ -241,6 +241,7 @@ data class AsteroidGenerationData(
 	override val y: Int,
 	override val z: Int,
 	val palette: WeightedRandomList<BlockState>,
+	val paletteID: Int,
 	val size: Double,
 	val octaves: Int
 ) : SpaceGenerationData() {
