@@ -32,10 +32,9 @@ object SpaceGenerationManager : Listener {
 	@EventHandler
 	fun onWorldInit(event: WorldInitEvent) {
 		val serverLevel = (event.world as CraftWorld).handle
-		println(event)
 
 		IonServer.configuration.spaceGenConfig[event.world.name]?.let { config ->
-			println("creating generator")
+			println("creating generator for ${serverLevel.serverLevelData.levelName}")
 			worldGenerators[serverLevel] =
 				SpaceGenerator(
 					serverLevel,
@@ -117,6 +116,7 @@ object SpaceGenerationManager : Listener {
 			val completed = completableData.getCompleted()
 
 			Tasks.sync {
+// 				println(completed)
 				val chunks = completed.complete(task.generator)
 				completed.store(task.generator, chunks)
 

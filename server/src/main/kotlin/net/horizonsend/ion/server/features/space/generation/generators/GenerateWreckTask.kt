@@ -75,53 +75,32 @@ class GenerateWreckTask(
 					if (chunkCompletedSections.isEmpty()) continue
 
 					sectionMap[nmsChunkPos] = chunkCompletedSections
-
-					val serializedWreckData: Pair<ChunkPos, CompoundTag>? = encounterPrimaryChest?.let { chestPos ->
-						// Won't be null if the encounter chest is not null, unless someone messed up reaaalllly bad
-						val chestPosCompound = wreck.encounter!!.nms(
-							chestPos.second.x,
-							chestPos.second.y,
-							chestPos.second.z
-						)
-
-						val newFinishedData = CompoundTag()
-						newFinishedData.put("wrecks", chestPosCompound)
-
-						return@let chestPos.first to newFinishedData
-					}
-
-					returnData.complete(
-						WreckGenerationData.WreckReturnData(
-							sectionMap,
-							serializedWreckData
-
-						)
-					)
 				}
+
+				val serializedWreckData: Pair<ChunkPos, CompoundTag>? = encounterPrimaryChest?.let { chestPos ->
+					// Won't be null if the encounter chest is not null, unless someone messed up reaaalllly bad
+					val chestPosCompound = wreck.encounter!!.nms(
+						chestPos.second.x,
+						chestPos.second.y,
+						chestPos.second.z
+					)
+
+					val newFinishedData = CompoundTag()
+					newFinishedData.put("wrecks", chestPosCompound)
+
+					return@let chestPos.first to newFinishedData
+				}
+
+				returnData.complete(
+					WreckGenerationData.WreckReturnData(
+						sectionMap,
+						serializedWreckData
+					)
+				)
 			}
 		}
 	}
 
-/*
-
-						val wreckDataOutputStream = ByteArrayOutputStream()
-						NbtIo.writeCompressed(newFinishedData, wreckDataOutputStream)
-
-						levelChunk.bukkitChunk.persistentDataContainer.set(
-							NamespacedKeys.WRECK_ENCOUNTER_DATA,
-							PersistentDataType.BYTE_ARRAY,
-							wreckDataOutputStream.toByteArray()
-						)
-
-						val existingWrecksBaseTag = BlockSerialization
-							.readChunkCompoundTag(
-								levelChunk.bukkitChunk,
-								NamespacedKeys.WRECK_ENCOUNTER_DATA
-							)
-						val existingWrecks =
-							existingWrecksBaseTag.getList("wrecks", 10) // list of compound tags (10)
-
- */
 	private fun generateSection(
 		sectionY: Int,
 		chunkMinX: Int,
@@ -205,8 +184,7 @@ data class WreckGenerationData(
 
 	data class WreckReturnData(
 		override val completedSectionMap: Map<ChunkPos, List<CompletedSection>>,
-		val serializedWreckData: Pair<ChunkPos, CompoundTag>? = null,
-		val callback: () -> Unit = {}
+		val serializedWreckData: Pair<ChunkPos, CompoundTag>? = null
 	) : SpaceGenerationReturnData() {
 		@OptIn(ExperimentalCoroutinesApi::class)
 		override fun complete(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {

@@ -273,7 +273,7 @@ abstract class SpaceGenerationTask<V : SpaceGenerationReturnData> {
 	open fun postProcess(completedData: SpaceGenerationReturnData) {}
 }
 
-abstract class SpaceGenerationData() {
+abstract class SpaceGenerationData {
 	abstract val x: Int
 	abstract val y: Int
 	abstract val z: Int
