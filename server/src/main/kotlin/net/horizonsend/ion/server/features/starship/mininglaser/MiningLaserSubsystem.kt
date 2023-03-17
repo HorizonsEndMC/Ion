@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.Minin
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier3
 import net.horizonsend.ion.server.miscellaneous.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.extensions.information
+import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -31,7 +32,6 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 
@@ -173,15 +173,14 @@ class MiningLaserSubsystem(
 	}
 
 	private fun startFiringSequence() {
-		val fireTask = object : BukkitRunnable() {
-			override fun run() {
+		val fireTask =
+			runnable {
 				if (isFiring) {
 					fire()
 				} else {
 					cancel()
 				}
-			}
-		}.runTaskTimer(IonServer, 0L, 5L)
+			}.runTaskTimer(IonServer, 0L, 5L)
 
 		starship.serverLevel.world.playSound(
 			multiblock.getFirePointOffset().toLocation(starship.serverLevel.world),
@@ -303,17 +302,18 @@ class MiningLaserSubsystem(
 						.getRelative(BlockFace.UP, y)
 						.getRelative(BlockFace.SOUTH, z)
 
-					if (toExplode.type == Material.AIR) continue
-					if (toExplode.type == Material.BEDROCK) continue
-					if (toExplode.type == Material.REINFORCED_DEEPSLATE) continue
+					if (listOf(
+							Material.AIR,
+							Material.BEDROCK,
+							Material.REINFORCED_DEEPSLATE
+						).any { it == toExplode.type }
+					) continue
 
 					toDestroy.add(toExplode)
 				}
 			}
 		}
 
-		toDestroy.sortBy { it.location.distanceSquared(pos.toLocation(center.world)) }
-
-		return toDestroy
+		return toDestroy.apply { sortBy { it.location.distanceSquared(pos.toLocation(center.world)) } }
 	}
 }
