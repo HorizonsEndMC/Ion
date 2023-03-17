@@ -161,12 +161,11 @@ object MiscStarshipCommands : SLCommand() {
 		tryJump(starship, x, z, maxRange, sender, hyperdriveTier)
 	}
 
-	private fun tryJump(starship: ActivePlayerStarship, x: Int, z: Int, maxRange: Int, sender: Player, tier: Int? ) {
-		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) } ?:
-				Hyperspace.findHyperdrive(starship) ?: fail {
-					"Intact hyperdrive not found"
-				}
-
+	private fun tryJump(starship: ActivePlayerStarship, x: Int, z: Int, maxRange: Int, sender: Player, tier: Int?) {
+		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
+			?: Hyperspace.findHyperdrive(starship) ?: fail {
+			"Intact hyperdrive not found"
+		}
 
 		failIf(!hyperdrive.hasFuel()) {
 			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
