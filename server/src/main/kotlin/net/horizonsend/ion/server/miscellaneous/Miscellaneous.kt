@@ -18,6 +18,7 @@ import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -46,6 +47,10 @@ fun mainThreadCheck() {
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).handle
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
 val World.minecraft: ServerLevel get() = (this as CraftWorld).handle
+
+fun runnable(e: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunnable() {
+	override fun run() = e()
+}
 
 @Suppress("UNCHECKED_CAST")
 fun <T : LivingEntity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
