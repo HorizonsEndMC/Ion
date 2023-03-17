@@ -25,7 +25,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.math.max
 
@@ -78,12 +77,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 		fun breakBlocks(
 			sign: Sign,
-			fuel: ItemStack? = null,
 			maxBroken: Int,
 			toDestroy: MutableList<Block>,
 			output: Inventory,
 			player: Player,
-			isDrillMultiblock: Boolean = true,
 			vararg people: Player = emptyArray()
 		): Int {
 			var broken = 0
@@ -108,9 +105,9 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 					if (!LegacyItemUtils.canFit(output, item)) {
 						player.sendMessage(ChatColor.RED.toString() + "Not enough space.")
 						people.forEach { it.sendMessage(ChatColor.RED.toString() + "Not enough space.") }
-						if (isDrillMultiblock) {
-							setUser(sign, null)
-						}
+
+						setUser(sign, null)
+
 						return broken
 					}
 
@@ -229,7 +226,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 		val maxBroken = max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
 
-		val broken = breakBlocks(sign, fuel, maxBroken, toDestroy, getOutput(sign.block), player)
+		val broken = breakBlocks(sign, maxBroken, toDestroy, getOutput(sign.block), player)
 
 		val powerUsage = broken * 10
 		PowerMachines.setPower(sign, power - powerUsage, true)

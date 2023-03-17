@@ -6,10 +6,13 @@ import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
+import net.starlegacy.util.getFacing
+import net.starlegacy.util.leftFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 
 abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsystem>(), PowerStoringMultiblock {
 	override val name = "mininglaser"
@@ -20,8 +23,18 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 	abstract val beamCount: Int
 	abstract val maxBroken: Int
 	abstract val sound: String
+	abstract val side: BlockFace
 
-	abstract fun getOutput(sign: Sign): Inventory
+	fun getOutput(sign: Sign): Inventory {
+		val direction = sign.getFacing().oppositeFace
+
+		return (
+			sign.block.getRelative(direction)
+				.getRelative(side.oppositeFace)
+				.getRelative(direction.leftFace)
+				.getState(false) as InventoryHolder
+			).inventory
+	}
 
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): MiningLaserSubsystem {
 		if (starship is ActivePlayerStarship) {
@@ -38,6 +51,4 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 	}
 
 	abstract fun getFirePointOffset(): Vec3i
-
-	abstract fun upDownFace(): BlockFace
 }
