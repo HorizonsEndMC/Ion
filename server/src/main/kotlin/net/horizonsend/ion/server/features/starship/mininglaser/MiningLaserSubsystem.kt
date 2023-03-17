@@ -27,7 +27,6 @@ import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.SoundCategory
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -46,10 +45,16 @@ class MiningLaserSubsystem(
 	var isFiring = false
 	lateinit var targetedBlock: Vector
 
+	// Const disabled sign text
 	private val DISABLED = Component.text("[DISABLED]").color(NamedTextColor.RED)
 
+	// Starship power usage, 0
 	override val powerUsage: Int = 0
-	private val blockBreakPowerUsage: Double = 0.5
+
+	// Power used per block broken
+	private val blockBreakPowerUsage: Double = 6.0
+
+	// Save some calc time
 	private val radiusSquared = multiblock.mineRadius * multiblock.mineRadius
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
@@ -74,18 +79,18 @@ class MiningLaserSubsystem(
 			return 1
 		}
 		if (multiblock is MiningLaserMultiblockTier2 && starship.type.canMine) {
-			if (starship.initialBlockCount in 1000..2000){
+			if (starship.initialBlockCount in 1000..2000) {
 				return 1
 			}
-			if (starship.initialBlockCount in 2000..4000){
+			if (starship.initialBlockCount in 2000..4000) {
 				return 2
 			}
 		}
 		if (multiblock is MiningLaserMultiblockTier3 && starship.type.canMine) {
-			if (starship.initialBlockCount in 4000..8000){
+			if (starship.initialBlockCount in 4000..8000) {
 				return 4
 			}
-			if (starship.initialBlockCount in 8000..12000){
+			if (starship.initialBlockCount in 8000..12000) {
 				return 6
 			}
 		}
@@ -138,8 +143,14 @@ class MiningLaserSubsystem(
 	override fun manualFire(shooter: Player, dir: Vector, target: Vector) {
 		val sign = getSign() ?: return
 
+		// Calculate a vector in the direction from the fire point to the targeted block
+		val vectorToTarget = target.clone().subtract((getFirePos() + pos).toVector()).normalize().multiply(multiblock.range)
+
+		// Add this vector to the fire position to find the position in the direction at max range.
+		this.targetedBlock = (getFirePos() + pos).toVector().add(vectorToTarget)
 		setFiring(!isFiring, sign, shooter)
-		this.targetedBlock = target.clone()
+
+		// If it is within range, the raycast will move it forward.
 	}
 
 	private fun setFiring(firing: Boolean, sign: Sign, user: Player? = null) {
@@ -171,7 +182,12 @@ class MiningLaserSubsystem(
 			}
 		}.runTaskTimer(IonServer, 0L, 5L)
 
-		starship.world.playSound(multiblock.getFirePointOffset().toLocation(starship.world), "starship.weapon.mining_laser.mining_laser_start", 1f, 1f)
+		starship.serverLevel.world.playSound(
+			multiblock.getFirePointOffset().toLocation(starship.serverLevel.world),
+			"starship.weapon.mining_laser.mining_laser_start",
+			1f,
+			1f
+		)
 
 		firingTasks.add(fireTask)
 	}
@@ -180,25 +196,40 @@ class MiningLaserSubsystem(
 		isFiring = false
 		firingTasks.forEach { it.cancel() }
 		firingTasks.clear()
-		starship.centerOfMass.toLocation(starship.world).world.players.forEach {
-			if (it.location.distance(starship.centerOfMass.toLocation(starship.world)) < multiblock.range) {
-				starship.centerOfMass.toLocation(starship.world).world.playSound(it.location, "starship.weapon.mining_laser.mining_laser_stop", 1.0f, 1f)
+
+		// Stop sound
+		for (player in starship.centerOfMass.toLocation(starship.serverLevel.world).world.players) {
+			if (
+				player.location.distance(
+					starship.centerOfMass.toLocation(starship.serverLevel.world)
+				) > multiblock.range
+			) {
+				continue
 			}
+
+			starship.centerOfMass.toLocation(starship.serverLevel.world).world.playSound(
+				player.location,
+				"starship.weapon.mining_laser.mining_laser_stop",
+				1.0f,
+				1f
+			)
 		}
 	}
 
 	fun fire() {
+		// Cancel if
+		val sign = getSign() ?: return cancelTask()
+
 		if (!ActiveStarships.isActive(starship)) {
-			cancelTask()
+			setFiring(false, sign)
 			return
 		}
 
-		val sign = getSign() ?: return
-		val user = getPlayer((sign.line(3) as TextComponent).content()) ?: return cancelTask()
+		val user = getPlayer((sign.line(3) as TextComponent).content()) ?: return setFiring(false, sign)
 		val power = PowerMachines.getPower(sign, true)
 
 		if (power == 0) {
-			starship.alert("Drill at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} ran out of power and was disabled!")
+			starship.alert("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} ran out of power and was disabled!")
 
 			setFiring(false, sign)
 			return
@@ -207,8 +238,13 @@ class MiningLaserSubsystem(
 		val initialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
 		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
 
-		// TODO rewrite all of the aiming stuff
+		if (starship.isInternallyObstructed(getFirePos(), targetVector)) {
+			starship.sendMessage( //TODO make this work
+				Component.text("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!")
+			)
+		}
 
+		// Ray trace to get the hit position
 		val raytrace = starship.serverLevel.world.rayTrace(
 			initialPos,
 			targetVector.clone(),
@@ -219,27 +255,29 @@ class MiningLaserSubsystem(
 			null
 		)
 
-		targetedBlock = raytrace?.hitPosition ?: targetedBlock
+		// Set the targeted block to the nearest hit block (if not null)
+		raytrace?.hitPosition?.let { targetedBlock = it }
 
-		val laserEnd = raytrace?.hitBlock?.location ?: targetedBlock.toLocation(starship.serverLevel.world)
+		// Create a laser to visualize the beam with a life of 5 ticks
+		val laserEnd = targetedBlock.toLocation(starship.serverLevel.world)
 		val laser = CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks()
 		laser.start(IonServer)
 
-		val block = laserEnd.block
-		val blocks = getBlocksToDestroy(block)
+		val blocks = getBlocksToDestroy(laserEnd.block)
+
+		val blocksBroken = DrillMultiblock.breakBlocks(
+			sign = sign,
+			maxBroken = multiblock.maxBroken,
+			toDestroy = blocks,
+			output = multiblock.getOutput(sign),
+			people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
+			player = user
+		)
 
 		if (
-			DrillMultiblock.breakBlocks(
-				sign = sign,
-				maxBroken = multiblock.maxBroken,
-				toDestroy = blocks,
-				output = multiblock.getOutput(sign),
-				isDrillMultiblock = false,
-				people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
-				player = user
-			) > 0
+			blocksBroken > 0
 		) {
-			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocks.size).toInt(), true)
+			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocksBroken).toInt(), true)
 			sign.world.playSound(laserEnd, multiblock.sound, 1f, 1f)
 		}
 
