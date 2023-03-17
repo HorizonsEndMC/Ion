@@ -144,7 +144,8 @@ class MiningLaserSubsystem(
 		val sign = getSign() ?: return
 
 		// Calculate a vector in the direction from the fire point to the targeted block
-		val vectorToTarget = target.clone().subtract((getFirePos() + pos).toVector()).normalize().multiply(multiblock.range)
+		val vectorToTarget =
+			target.clone().subtract((getFirePos() + pos).toVector()).normalize().multiply(multiblock.range)
 
 		// Add this vector to the fire position to find the position in the direction at max range.
 		this.targetedBlock = (getFirePos() + pos).toVector().add(vectorToTarget)
@@ -260,11 +261,9 @@ class MiningLaserSubsystem(
 
 		// Create a laser to visualize the beam with a life of 5 ticks
 		val laserEnd = targetedBlock.toLocation(starship.serverLevel.world)
-		val laser = CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks()
-		laser.start(IonServer)
+		CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks().apply { start(IonServer) }
 
-		val blocks = getBlocksToDestroy(laserEnd.block)
-
+		val blocks = getBlocksToDestroy(laserEnd.block).apply { removeIf { ActiveStarships.findByBlock(it) != null } }
 		val blocksBroken = DrillMultiblock.breakBlocks(
 			sign = sign,
 			maxBroken = multiblock.maxBroken,
