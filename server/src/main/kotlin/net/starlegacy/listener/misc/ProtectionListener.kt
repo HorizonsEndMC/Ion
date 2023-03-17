@@ -63,8 +63,8 @@ object ProtectionListener : SLEventListener() {
 	/** Called on block break etc. GriefPrevention check should be done first.
 	 *  Loops through protected regions at location, checks each one for access message
 	 *  @return true if the event should be cancelled, false if it should stay the same. */
-	fun denyBlockAccess(player: Player, location: Location): Boolean {
-		if (isRegionDenied(player, location)) {
+	fun denyBlockAccess(player: Player, location: Location, shouldMsg: Boolean = true): Boolean {
+		if (isRegionDenied(player, location, shouldMsg)) {
 			return true
 		}
 
@@ -75,7 +75,7 @@ object ProtectionListener : SLEventListener() {
 		return false
 	}
 
-	private fun isRegionDenied(player: Player, location: Location): Boolean {
+	private fun isRegionDenied(player: Player, location: Location, shouldMsg: Boolean): Boolean {
 		var denied = false
 
 		for (region in Regions.find(location).sortedByDescending { it.priority }) {
@@ -88,7 +88,8 @@ object ProtectionListener : SLEventListener() {
 					region.cacheAccess(player)
 				}
 
-				player msg "&eCaching... &o(you probably shouldn't see this, it's probably a bug, but it's harmless)"
+				if (shouldMsg)
+					player msg "&eCaching... &o(you probably shouldn't see this, it's probably a bug, but it's harmless)"
 				denied = true
 				continue
 			}
@@ -99,13 +100,16 @@ object ProtectionListener : SLEventListener() {
 
 			// Only cancel if they're not in dutymode, otherwise tell them they are bypassing
 			if (player.hasPermission("dutymode")) {
-				player action "&eBypassed ${region.javaClass.simpleName.removePrefix("Region")} protection in dutymode"
+				if (shouldMsg)
+					player action "&eBypassed ${region.javaClass.simpleName.removePrefix("Region")} protection in dutymode"
 				break // only show one message, they will bypass anything else anyway
 			} else {
 				if (!denied) { // only if no other region has already reached this, in order to maintain the priority of region messages
 					// Send them the detailed message
-					player.sendTitle("", "&e$message".colorize(), 5, 20, 5)
-					player.sendActionBar("&cThis place is claimed! Find an unclaimed territory with the map (https://survival.horizonsend.net)".colorize())
+					if (shouldMsg) {
+						player.sendTitle("", "&e$message".colorize(), 5, 20, 5)
+						player.sendActionBar("&cThis place is claimed! Find an unclaimed territory with the map (https://survival.horizonsend.net)".colorize())
+					}
 					denied = true
 					region.onFailedToAccess(player)
 				}

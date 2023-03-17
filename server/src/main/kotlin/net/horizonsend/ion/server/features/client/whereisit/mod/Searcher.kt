@@ -40,7 +40,8 @@ object Searcher {
 			).filterNot {
 				ProtectionListener.denyBlockAccess(
 					player,
-					it.key.toLocation(player.world)
+					it.key.toLocation(player.world),
+					false
 				)
 			}
 
@@ -71,7 +72,8 @@ object Searcher {
 		).filterNot {
 			ProtectionListener.denyBlockAccess(
 				player,
-				it.key.toLocation(player.world)
+				it.key.toLocation(player.world),
+				false
 			)
 		}
 	}

@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.combatnpcs
 
-import net.horizonsend.ion.server.IonServer.Companion.Ion
-import net.horizonsend.ion.server.extensions.information
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.IonServer
+import net.starlegacy.listener.misc.ProtectionListener
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -67,14 +68,16 @@ class CombatNPCs : Listener {
 					removeWhenFarAway = false
 				}
 
-			val chunk = player.chunk.apply { addPluginChunkTicket(Ion) }
+			val chunk = player.chunk.apply { addPluginChunkTicket(IonServer) }
 			stands[stand] = Pair(player.uniqueId, player.inventory)
 
 			Tasks.syncDelay(1200) {
+				if (ProtectionListener.denyBlockAccess(player, player.location, false)) return@syncDelay
+
 				stands[stand] ?: return@syncDelay
 				stands.remove(stand)
 				stand.health = 0.0
-				chunk.removePluginChunkTicket(Ion)
+				chunk.removePluginChunkTicket(IonServer)
 			}
 		}
 	}
@@ -87,7 +90,7 @@ class CombatNPCs : Listener {
 		if (possibleStand != null) {
 			stands.remove(possibleStand)
 			possibleStand.remove()
-			event.player.chunk.removePluginChunkTicket(Ion)
+			event.player.chunk.removePluginChunkTicket(IonServer)
 		}
 
 		if (!deadPlayers.containsKey(event.player.uniqueId)) return
@@ -114,7 +117,7 @@ class CombatNPCs : Listener {
 		Bukkit.getPluginManager().callEvent(CombatNPCKillEvent(player.uniqueId, player.name!!, stand.killer))
 
 		stands.remove(stand)
-		stand.chunk.removePluginChunkTicket(Ion)
+		stand.chunk.removePluginChunkTicket(IonServer)
 		deadPlayers[player.uniqueId] = (stand.lastDamageCause as? EntityDamageByEntityEvent)?.damager?.uniqueId
 		event.drops.clear() // don't want to drop the stand
 	}
