@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
 import net.minecraft.resources.ResourceLocation
 import net.starlegacy.feature.misc.CustomItems
 import org.bukkit.Bukkit
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import net.horizonsend.ion.server.features.customItems.CustomItems as NewCustomItems
 

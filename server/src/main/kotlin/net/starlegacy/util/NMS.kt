@@ -17,12 +17,12 @@ import org.bukkit.advancement.Advancement
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
-import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
-import org.bukkit.craftbukkit.v1_19_R2.advancement.CraftAdvancement
-import org.bukkit.craftbukkit.v1_19_R2.block.data.CraftBlockData
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R3.advancement.CraftAdvancement
+import org.bukkit.craftbukkit.v1_19_R3.block.data.CraftBlockData
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import net.minecraft.advancements.Advancement as MinecraftAdvancement
