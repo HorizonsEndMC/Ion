@@ -83,7 +83,7 @@ object BlockSerialization {
 		}
 
 		// Iterate through both palettes to
-		for (index in 1..4096) {
+		for (index in 0 until 4096) {
 			val firstBlock = firstMap[index]
 			val secondBlock = secondMap[index]
 

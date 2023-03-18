@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.extensions.alert
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.toNMSBlockData
 import org.bukkit.Material
@@ -56,4 +58,20 @@ abstract class Encounter(
 	open fun onChestInteract(event: PlayerInteractEvent) {}
 
 	open fun generate(chestX: Int, chestY: Int, chestZ: Int) {}
+}
+
+enum class SecondaryChests(val blockState: BlockState, val NBT: CompoundTag?, val money: Int?) {
+	REPAIR_MATERIALS(Blocks.CHEST.defaultBlockState(), null, 500),
+	FOOD(Blocks.CHEST.defaultBlockState(), null, 500),
+	GUN_PARTS(Blocks.CHEST.defaultBlockState(), null, 500),
+	POWER_ARMOR_MODS(Blocks.CHEST.defaultBlockState(), null, 500),
+	ORES_POOR(Blocks.CHEST.defaultBlockState(), null, 500),
+	ORES_GOOD(Blocks.CHEST.defaultBlockState(), null, 500),
+	ORES_GREAT(Blocks.CHEST.defaultBlockState(), null, 500);
+
+	companion object {
+		private val map = SecondaryChests.values().associate { it.name to it }
+
+		operator fun get(value: String): SecondaryChests? = map[value]
+	}
 }

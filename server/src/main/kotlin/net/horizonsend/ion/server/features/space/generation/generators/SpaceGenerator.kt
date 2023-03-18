@@ -22,6 +22,7 @@ import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.Heightmap
 import net.starlegacy.util.timing
@@ -199,6 +200,62 @@ class SpaceGenerator(
 	}
 
 	companion object {
+		fun regenerateChunk(chunk: Chunk) {
+			chunk.persistentDataContainer.get(
+				NamespacedKeys.WRECK_ENCOUNTER_DATA,
+				PersistentDataType.BYTE_ARRAY
+			)?.let { data ->
+				val wreckData = try { // get existing asteroid data
+					NbtIo.readCompressed(
+						ByteArrayInputStream(
+							data,
+							0,
+							data.size
+						)
+					)
+				} catch (error: Error) {
+					error.printStackTrace(); return
+				}
+
+				val existingChests = wreckData.getList("SecondaryChests", 10)
+				val existingWrecks = wreckData.getList("Wrecks", 10)
+				wreckData.remove("SecondaryChests")
+				wreckData.remove("Wrecks")
+
+				for (existingChest in existingChests) {
+					(existingChest as CompoundTag)
+
+					existingChests.remove(existingChest)
+					existingChest.putBoolean("inactive", false)
+					existingChests.add(existingChest)
+				}
+
+				for (existingWreck in existingWrecks) {
+					(existingWreck as CompoundTag)
+
+					existingWrecks.remove(existingWreck)
+					existingWreck.putBoolean("inactive", false)
+					existingWrecks.add(existingWreck)
+				}
+
+				wreckData.put("SecondaryChests", existingChests)
+				wreckData.put("SecondaryChests", existingWrecks)
+
+				val wreckDataOutputStream = ByteArrayOutputStream()
+				NbtIo.writeCompressed(wreckData, wreckDataOutputStream)
+
+				chunk.persistentDataContainer.set(
+					NamespacedKeys.WRECK_ENCOUNTER_DATA,
+					PersistentDataType.BYTE_ARRAY,
+					wreckDataOutputStream.toByteArray()
+				)
+
+
+			}
+
+			buildChunkBlocks(chunk)
+		}
+
 		fun buildChunkBlocks(chunk: Chunk) {
 			val levelChunk = (chunk as CraftChunk).handle
 
@@ -279,7 +336,7 @@ abstract class SpaceGenerationReturnData {
 	data class CompletedSection(
 		val y: Int,
 		val blocks: IntArray,
-		val palette: Set<BlockState>,
+		val palette: Set<Pair<BlockState, CompoundTag?>>,
 		val nmsPalette: ListTag
 	)
 
@@ -312,16 +369,33 @@ abstract class SpaceGenerationReturnData {
 					var index = 0
 
 					for (x in 0..15) {
+						val worldX = x + chunkMinX
+
 						for (z in 0..15) {
+							val worldZ = z + chunkMinZ
+
 							for (y in 0..15) {
+								val worldY = sectionMinY + y
+
 								val block = map[completedSection.blocks[index]]!!
 
-								if (block.isAir) {
+								if (block.first.isAir) {
 									index++
 									continue
 								}
 
-								section.setBlockState(x, y, z, block)
+								section.setBlockState(x, y, z, block.first)
+
+								block.second?.let { compoundTag ->
+									val blockEntity = BlockEntity.loadStatic(
+										BlockPos(worldX, worldY, worldZ),
+										block.first,
+										compoundTag
+									) ?: return@let
+
+									levelChunk.addAndRegisterBlockEntity(blockEntity)
+								}
+
 								levelChunk.playerChunk?.blockChanged(
 									BlockPos(
 										chunkMinX + x,
