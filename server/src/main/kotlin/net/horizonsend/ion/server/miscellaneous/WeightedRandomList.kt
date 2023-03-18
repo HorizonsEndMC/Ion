@@ -19,11 +19,12 @@ class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T,
 	)
 
 	fun addEntry(entry: T, weight: Int): WeightedRandomList<T> {
-		rollingWeight += weight
 		weightedEntryList += WeightedEntry(
 			entry,
 			rollingWeight
 		)
+
+		rollingWeight += weight
 		return this
 	}
 
@@ -62,8 +63,7 @@ class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T,
 	 * Gets a random weighted entry.
 	 **/
 	fun random(): T {
-		val selection = random.nextInt(0, rollingWeight)
-
+		val selection = Random().nextInt(0, rollingWeight)
 		for ((parent, weight) in weightedEntryList) {
 			if (weight >= selection) return parent
 		}
