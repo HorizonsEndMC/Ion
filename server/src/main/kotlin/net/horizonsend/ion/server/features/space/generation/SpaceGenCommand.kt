@@ -14,6 +14,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.minecraft.nbt.NbtUtils
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
 
@@ -30,7 +32,7 @@ class SpaceGenCommand : BaseCommand() {
 				val chunk2 = sender.world.getChunkAt(x, z)
 
 				try {
-					SpaceGenerator.buildChunkBlocks(chunk2)
+					SpaceGenerator.regenerateChunk(chunk2)
 				} catch (error: java.lang.Error) {
 					error.printStackTrace()
 					error.message?.let { sender.serverError(it) }
@@ -88,5 +90,24 @@ class SpaceGenCommand : BaseCommand() {
 
 		SpaceGenerationManager.generateFeature(GenerateWreckTask(generator, data))
 		sender.success("Success! Generated wreck ${data.schematicName} with encounter ${data.encounter}")
+	}
+
+	@Suppress("unused")
+	@Subcommand("get")
+	@CommandCompletion("WRECK_ENCOUNTER_DATA|STORED_CHUNK_BLOCKS")
+	fun get(sender: Player, namespacedKey: String) {
+		val chunk = sender.world.getChunkAt(sender.location)
+
+		val key = when (namespacedKey) {
+			"WRECK_ENCOUNTER_DATA" -> NamespacedKeys.WRECK_ENCOUNTER_DATA
+			"STORED_CHUNK_BLOCKS" -> NamespacedKeys.STORED_CHUNK_BLOCKS
+			else -> return sender.userError("No data found")
+		}
+
+		val data = BlockSerialization.readChunkCompoundTag(chunk, key)
+		data?.let {
+			val snbt = NbtUtils.structureToSnbt(it)
+			sender.information(snbt)
+		} ?: sender.userError("No data found")
 	}
 }
