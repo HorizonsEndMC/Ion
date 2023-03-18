@@ -6,6 +6,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.space.encounters.SecondaryChests
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
@@ -39,6 +40,7 @@ class GenerateWreckTask(
 
 	private val encounter = wreck.encounter?.getEncounter()
 	var encounterPrimaryChest: Pair<ChunkPos, BlockPos>? = null
+	val secondaryChests: MutableMap<ChunkPos, MutableList<CompoundTag>> = mutableMapOf()
 
 	override fun generate() {
 		val sectionMap = mutableMapOf<ChunkPos, List<SpaceGenerationReturnData.CompletedSection>>()
@@ -85,16 +87,14 @@ class GenerateWreckTask(
 						chestPos.second.z
 					)
 
-					val newFinishedData = CompoundTag()
-					newFinishedData.put("wrecks", chestPosCompound)
-
-					return@let chestPos.first to newFinishedData
+					return@let chestPos.first to chestPosCompound
 				}
 
 				returnData.complete(
 					WreckGenerationData.WreckReturnData(
 						sectionMap,
-						serializedWreckData
+						serializedWreckData,
+						secondaryChests
 					)
 				)
 			}
@@ -107,12 +107,12 @@ class GenerateWreckTask(
 		chunkMinZ: Int,
 		chunkPos: ChunkPos
 	): SpaceGenerationReturnData.CompletedSection? {
-		val palette = mutableSetOf<BlockState>()
+		val palette = mutableSetOf<Pair<BlockState, CompoundTag?>>()
 		val storedBlocks = arrayOfNulls<Int>(4096)
 		var index = 0
 		val sectionMinY = sectionY.shl(4)
 
-		palette.add(Blocks.AIR.defaultBlockState())
+		palette.add(Blocks.AIR.defaultBlockState() to null)
 		val paletteListTag = ListTag()
 
 		for (x in 0..15) {
@@ -135,6 +135,8 @@ class GenerateWreckTask(
 						continue
 					}
 
+					var combined = blockState to blockNBT?.nms()
+
 					encounter?.let {
 						blockNBT?.let {
 							if (blockState.block == Blocks.CHEST &&
@@ -146,8 +148,39 @@ class GenerateWreckTask(
 						}
 					}
 
-					palette.add(blockState)
-					storedBlocks[index] = palette.indexOf(blockState)
+					blockNBT?.let {
+						if (blockState.block != Blocks.CHEST) return@let
+						val name = blockNBT.getString("CustomName")
+
+						if (!name.contains("Secondary: ", ignoreCase = true)) return@let
+
+						val chestType: String = name.substringAfter("Secondary: ").substringBefore("\"")
+
+						val secondaryChest = SecondaryChests[chestType] ?: return@let
+
+						combined = secondaryChest.blockState to secondaryChest.NBT
+
+						// Format the block entity
+						(combined.second)?.putInt("x", worldX)
+						(combined.second)?.putInt("y", worldY)
+						(combined.second)?.putInt("z", worldZ)
+
+						val serialized = CompoundTag()
+
+						serialized.putInt("x", worldX)
+						serialized.putInt("y", worldY)
+						serialized.putInt("z", worldZ)
+
+						secondaryChest.money?.let { money -> serialized.putInt("Money", money) }
+
+						val newList = secondaryChests.getOrDefault(chunkPos, mutableListOf())
+						newList.add(serialized)
+
+						secondaryChests[chunkPos] = newList
+					}
+
+					palette.add(combined)
+					storedBlocks[index] = palette.indexOf(combined)
 
 					index++
 				}
@@ -156,7 +189,7 @@ class GenerateWreckTask(
 
 		if (storedBlocks.all { it == 0 }) return null // don't write it if it's all empty
 
-		palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
+		palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState.first)) }
 		val intArray = storedBlocks.requireNoNulls().toIntArray()
 
 		return SpaceGenerationReturnData.CompletedSection(
@@ -184,15 +217,17 @@ data class WreckGenerationData(
 
 	data class WreckReturnData(
 		override val completedSectionMap: Map<ChunkPos, List<CompletedSection>>,
-		val serializedWreckData: Pair<ChunkPos, CompoundTag>? = null
+		val serializedWreckData: Pair<ChunkPos, CompoundTag>? = null,
+		val secondaryChests: Map<ChunkPos, List<CompoundTag>>
 	) : SpaceGenerationReturnData() {
 		@OptIn(ExperimentalCoroutinesApi::class)
 		override fun complete(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
 			val chunks = super.complete(generator)
 
 			chunks.invokeOnCompletion {
+				val finishedChunks = chunks.getCompleted()
+
 				serializedWreckData?.let { (chunkPos, data) ->
-					val finishedChunks = chunks.getCompleted()
 
 					// It is most definitely inside the covered chunks
 					val encounterChunk = finishedChunks[chunkPos]!!
@@ -204,13 +239,45 @@ data class WreckGenerationData(
 						)
 
 					// list of compound tags (10)
-					val existingWrecks = existingWrecksBaseTag?.getList("wrecks", 10) ?: ListTag()
+					val existingWrecks = existingWrecksBaseTag?.getList("Wrecks", 10) ?: ListTag()
 
 					existingWrecks.add(data)
 
 					val newFinishedData = CompoundTag()
 
-					newFinishedData.put("wrecks", existingWrecks)
+					newFinishedData.put("Wrecks", existingWrecks)
+
+					val wreckDataOutputStream = ByteArrayOutputStream()
+					NbtIo.writeCompressed(newFinishedData, wreckDataOutputStream)
+
+					encounterChunk.persistentDataContainer.set(
+						NamespacedKeys.WRECK_ENCOUNTER_DATA,
+						PersistentDataType.BYTE_ARRAY,
+						wreckDataOutputStream.toByteArray()
+					)
+				}
+
+				for ((chunkPos, chests) in secondaryChests) {
+					val encounterChunk = finishedChunks[chunkPos]!!
+
+					val existingWrecksBaseTag = BlockSerialization
+						.readChunkCompoundTag(
+							encounterChunk,
+							NamespacedKeys.WRECK_ENCOUNTER_DATA
+						)
+
+					// list of compound tags (10)
+					val existingChests = existingWrecksBaseTag?.getList("SecondaryChests", 10) ?: ListTag()
+					val existingWrecks = existingWrecksBaseTag?.getList("Wrecks", 10) ?: ListTag()
+
+					for (chest in chests) {
+						existingChests.add(chest)
+					}
+
+					val newFinishedData = CompoundTag()
+
+					newFinishedData.put("SecondaryChests", existingChests)
+					newFinishedData.put("Wrecks", existingWrecks)
 
 					val wreckDataOutputStream = ByteArrayOutputStream()
 					NbtIo.writeCompressed(newFinishedData, wreckDataOutputStream)
@@ -227,48 +294,3 @@ data class WreckGenerationData(
 		}
 	}
 }
-
-//  EloMilo by Nova0471
-// 	################################################################################
-// 	################################################################################
-// 	####################################* ,#%%%&&&&&%* (############################
-// 	###############################, #%%%&&&&&&&&&%%%, * (##########################
-// 	#############################*(##, *#%%#/,  *(##%%&%&(*#########################
-// 	############################//%&%&&%%%%%%&&&&&&&&&&&%&#*########################
-// 	############################ %%&&&&&&&&&&&&&&&&&&&&%#..( (######################
-// 	#########################**%%(. *#%%%%%%%%&&%%#, ,##%%&&& ######################
-// 	######################## %&&%&&%&%%%########%%%%&%%%&&&%&*.#####################
-// 	#######################//&&&&&&&&&&&&&&&&&&&&&&&&&%&%# ,##&/*###################
-// 	#####################,,%( (%%&&&&&&&&&&&&&%%%%/. ,(##%&&&%%&/*##################
-//  ###################.#&%&&%####(,.....,*(######%%&&%&&&&&&&&&&.##################
-//  ##################*#&&&&&&&&&&&&&%%%%&&&&&&&&&&&&&&&&&&&&&&&&,*# ###############
-//  ################## %&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&%&% /#&&%.(#############
-//  ##################*#%%&&&%&&&&&&&&&%&&&&&&&&&&&&&&&%&&( *#%%&&&&&% #############
-//  ################### (/.  ,#%&%%%%%&&&&&&%&%%&%%/  ,##%&&&&&&&&&&&%(/############
-//  #################(,&&%%%&%%%%#####(((((######%%%&&&&&&&&&&&&&&&&&%#,############
-//  #################,&&&&&&&&&&&&&&&&&&&&%%&%%&&&&&&&&&&&&&&&&&&&&&&&,(############
-//  ##########, .... %&&&&&&&&&&&&&&&&&&&&#   /&&&&&&&&&%&&&&&&&&&&%(  (############
-//  ############* .  %&&&&&&&&&&%&&&&&&&%*      &&&&&&&&&&&&&&&%%,  ... /###########
-//  ##############/   &&&&&&&&&&&&&&&&&&%       .&%%&&%%%&%(. (%  .. ... ###########
-//  ############/ ....  /(##%%%%%%&%%&&%%        (#/. ,(/ (%%%%# .. .%%%( ##########
-//  ############/    /## ........ ,%%% %%% %%%%%%#*,..%%%%%(.%%#  (%%,. #% #########
-//  #################(......... / ,%%%% %(*%%%%%%%%%%%%%%%%%%.%(  %%,%% %% #########
-//  ###################  %%.   @@@@@%%% %#.%&@@@@(     %%%%%% %.. %%%%%%% ##########
-//  ###################  %*    @@@@@@@% %%.%@@@@@      .%%%%#*( ../%%%,.############
-//  ##################***%*    @@@@@@%%(  %%&@@@@&     .%%%(,%*.. . ... ############
-//  #################,( %%%#//%%%%%%%%%%%%%%%%%&@@@@%%%%%%*/%%( ,  ..../############
-// 	################ %,#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//%%%%*( ....,#############
-// 	##############(,%% %%%%%%%%%# ,,,.    ... /%%%%%%%%%% %%%%%%,.. /*##############
-//  ############## %%% %%%%%%%%% ,,,,,,,,,,,,,,,%%%%%%%%%#,%%%%%(  #################
-//  ##############/,%%% %%%%%%%%% ,,,,,,,,,,,, %%%%%%%%%%%%,   .(###################
-//  ################.*%%% (%%%%%%%%%%%%%%%%%%%%%%%%%%%%%,.####* ####################
-//  ########################, (%%%%%%%%%%%%%%%%%%%%#,.#(*##### %.(##################
-//  ##############################(*.         ,/#%%%%%%#,####(.#,/##################
-//  #################################### %%%%%%%%%%%%%%%.###########################
-//  ###################################.#%%%%%%%%%%%%%%%%.(#########################
-//  ################################## %%%%%%%%%%%%%%%%%%%% (#######################
-//  ###############################(  /%%%%%%%%%%%%%%%%%%%,.#( *####################
-//  ########################,,. ./#######/.  ..,.   .*(############(/(##############
-//  ################################################################################
-//  ################################################################################
-//  ################################################################################

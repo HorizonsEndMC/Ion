@@ -28,55 +28,55 @@ class GenerateAsteroidTask(
 	override fun generate() {
 		val sectionMap = mutableMapOf<ChunkPos, List<SpaceGenerationReturnData.CompletedSection>>()
 
-		SpaceGenerationManager.coroutineScope.launch {
-			// save some time
-			materialNoise.setScale(0.15 / sqrt(sizeFactor))
+		// save some time
+		materialNoise.setScale(0.15 / sqrt(sizeFactor))
 
-			val radiusSquared = asteroid.size * asteroid.size
+		val radiusSquared = asteroid.size * asteroid.size
 
-			// Get every chunk section covered by the asteroid.
-			val coveredChunks = mutableMapOf<ChunkPos, List<Int>>()
+		// Get every chunk section covered by the asteroid.
+		val coveredChunks = mutableMapOf<ChunkPos, List<Int>>()
 
-			// generate ranges ahead of time
-			val xRange =
-				IntRange(asteroid.x - (asteroid.size * generator.searchRadius).toInt(), asteroid.x + (asteroid.size * generator.searchRadius).toInt())
-			val zRange =
-				IntRange(asteroid.z - (asteroid.size * generator.searchRadius).toInt(), asteroid.z + (asteroid.size * generator.searchRadius).toInt())
-			val yRange = IntRange(
-				(asteroid.y - (asteroid.size * generator.searchRadius).toInt()).coerceAtLeast(generator.serverLevel.minBuildHeight),
-				(asteroid.y + (asteroid.size * generator.searchRadius).toInt()).coerceAtMost(generator.serverLevel.maxBuildHeight)
-			)
+		// generate ranges ahead of time
+		val xRange =
+			IntRange(asteroid.x - (asteroid.size * generator.searchRadius).toInt(), asteroid.x + (asteroid.size * generator.searchRadius).toInt())
+		val zRange =
+			IntRange(asteroid.z - (asteroid.size * generator.searchRadius).toInt(), asteroid.z + (asteroid.size * generator.searchRadius).toInt())
+		val yRange = IntRange(
+			(asteroid.y - (asteroid.size * generator.searchRadius).toInt()).coerceAtLeast(generator.serverLevel.minBuildHeight),
+			(asteroid.y + (asteroid.size * generator.searchRadius).toInt()).coerceAtMost(generator.serverLevel.maxBuildHeight)
+		)
 
-			val chunkXRange = IntRange(xRange.first.shr(4), xRange.last.shr(4))
-			val chunkZRange = IntRange(zRange.first.shr(4), zRange.last.shr(4))
-			val chunkYRange = IntRange(yRange.first.shr(4), yRange.last.shr(4) + generator.serverLevel.minBuildHeight.shr(4))
+		val chunkXRange = IntRange(xRange.first.shr(4), xRange.last.shr(4))
+		val chunkZRange = IntRange(zRange.first.shr(4), zRange.last.shr(4))
+		val chunkYRange = IntRange(yRange.first.shr(4), yRange.last.shr(4) + generator.serverLevel.minBuildHeight.shr(4))
 
-			for (chunkPosX in chunkXRange) {
-				val xSqr = (chunkPosX - asteroid.x.shr(4)) * (chunkPosX - asteroid.x.shr(4))
+		for (chunkPosX in chunkXRange) {
+			val xSqr = (chunkPosX - asteroid.x.shr(4)) * (chunkPosX - asteroid.x.shr(4))
 
-				for (chunkPosZ in chunkZRange) {
-					val zSqr = (chunkPosZ - asteroid.z.shr(4)) * (chunkPosZ - asteroid.z.shr(4))
-					val circle = xSqr + zSqr
+			for (chunkPosZ in chunkZRange) {
+				val zSqr = (chunkPosZ - asteroid.z.shr(4)) * (chunkPosZ - asteroid.z.shr(4))
+				val circle = xSqr + zSqr
 
-					if (circle >= radiusSquared) continue // if out of equatorial radius continue
+				if (circle >= radiusSquared) continue // if out of equatorial radius continue
 
-					val sections = mutableListOf<Int>()
+				val sections = mutableListOf<Int>()
 
-					for (chunkSectionY in chunkYRange) {
-						val ySqr = (chunkSectionY - asteroid.y.shr(4)) * (chunkSectionY - asteroid.y.shr(4))
+				for (chunkSectionY in chunkYRange) {
+					val ySqr = (chunkSectionY - asteroid.y.shr(4)) * (chunkSectionY - asteroid.y.shr(4))
 
-						if ((circle + ySqr) <= radiusSquared) {
-							sections += chunkSectionY
-						}
+					if ((circle + ySqr) <= radiusSquared) {
+						sections += chunkSectionY
 					}
-
-					coveredChunks[ChunkPos(chunkPosX, chunkPosZ)] = sections
 				}
-			}
-			// Covered chunks acquired
 
-			// For each covered chunk
-			for ((nmsChunkPos, sectionList) in coveredChunks) {
+				coveredChunks[ChunkPos(chunkPosX, chunkPosZ)] = sections
+			}
+		}
+		// Covered chunks acquired
+
+		// For each covered chunk
+		for ((nmsChunkPos, sectionList) in coveredChunks) {
+			SpaceGenerationManager.coroutineScope.launch section@{
 				val chunkCompletedSections = mutableListOf<SpaceGenerationReturnData.CompletedSection>()
 
 				val chunkMinX = nmsChunkPos.x.shl(4)
@@ -93,17 +93,17 @@ class GenerateAsteroidTask(
 				}
 
 				// Return if chunk has no new blocks
-				if (chunkCompletedSections.isEmpty()) continue
+				if (chunkCompletedSections.isEmpty()) return@section
 
 				sectionMap[nmsChunkPos] = chunkCompletedSections
 			}
-
-			returnData.complete(
-				AsteroidGenerationData.AsteroidReturnData(
-					sectionMap
-				)
-			)
 		}
+
+		returnData.complete(
+			AsteroidGenerationData.AsteroidReturnData(
+				sectionMap
+			)
+		)
 	}
 
 	/**
@@ -177,7 +177,7 @@ class GenerateAsteroidTask(
 		return SpaceGenerationReturnData.CompletedSection(
 			sectionY,
 			intArray,
-			palette,
+			palette.map { it to null }.toSet(),
 			paletteListTag
 		)
 	}

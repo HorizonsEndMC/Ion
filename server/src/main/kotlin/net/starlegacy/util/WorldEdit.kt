@@ -1,5 +1,8 @@
 package net.starlegacy.util
 
+import com.sk89q.jnbt.CompoundTag
+import com.sk89q.jnbt.NBTUtils
+import com.sk89q.jnbt.Tag
 import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -11,6 +14,18 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.minecraft.nbt.ByteArrayTag
+import net.minecraft.nbt.ByteTag
+import net.minecraft.nbt.DoubleTag
+import net.minecraft.nbt.EndTag
+import net.minecraft.nbt.FloatTag
+import net.minecraft.nbt.IntArrayTag
+import net.minecraft.nbt.IntTag
+import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.LongArrayTag
+import net.minecraft.nbt.LongTag
+import net.minecraft.nbt.ShortTag
+import net.minecraft.nbt.StringTag
 import net.starlegacy.util.blockplacement.BlockPlacement
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -91,5 +106,48 @@ fun WorldEditBlockState.toBukkitBlockData(): BlockData {
 	val string = this.asString
 	return blockDataCache.getOrPut(string) {
 		Bukkit.createBlockData(string)
+	}
+}
+
+fun CompoundTag.nms(): net.minecraft.nbt.CompoundTag {
+	val base = net.minecraft.nbt.CompoundTag()
+
+	for ((key, tag) in this.value) {
+		val nmsTag = tag.nms()
+
+		base.put(key, nmsTag)
+	}
+
+	return base
+}
+
+fun com.sk89q.jnbt.ListTag.nms(): ListTag {
+	val base = ListTag()
+
+	for (tag in this.value) {
+		val nmsTag = tag.nms()
+
+		base.add(nmsTag)
+	}
+
+	return base
+}
+
+fun Tag.nms(): net.minecraft.nbt.Tag {
+	return when (NBTUtils.getTypeCode(this.javaClass)) {
+		0 -> EndTag.INSTANCE
+		1 -> ByteTag.valueOf((this as com.sk89q.jnbt.ByteTag).value)
+		2 -> ShortTag.valueOf((this as com.sk89q.jnbt.ShortTag).value)
+		3 -> IntTag.valueOf((this as com.sk89q.jnbt.IntTag).value)
+		4 -> LongTag.valueOf((this as com.sk89q.jnbt.LongTag).value)
+		5 -> FloatTag.valueOf((this as com.sk89q.jnbt.FloatTag).value)
+		6 -> DoubleTag.valueOf((this as com.sk89q.jnbt.DoubleTag).value)
+		7 -> ByteArrayTag((this as com.sk89q.jnbt.ByteArrayTag).value)
+		8 -> StringTag.valueOf((this as com.sk89q.jnbt.StringTag).value)
+		9 -> (this as com.sk89q.jnbt.ListTag).nms()
+		10 -> (this as CompoundTag).nms()
+		11 -> IntArrayTag((this as com.sk89q.jnbt.IntArrayTag).value)
+		12 -> LongArrayTag((this as com.sk89q.jnbt.LongArrayTag).value)
+		else -> throw IllegalArgumentException()
 	}
 }
