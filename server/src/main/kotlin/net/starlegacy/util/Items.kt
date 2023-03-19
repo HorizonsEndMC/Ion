@@ -1,6 +1,7 @@
 package net.starlegacy.util
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
@@ -16,12 +17,15 @@ fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = updateMeta { it.se
 
 fun ItemStack.setDisplayNameAndGet(name: Component): ItemStack = updateMeta { it.displayName(name) }
 
-val ItemStack.displayName
+val ItemStack.displayNameComponent: Component
 	get() =
 		if (this.hasItemMeta() && this.itemMeta.hasDisplayName()) {
-			this.itemMeta.displayName
+			this.itemMeta.displayName()!!
 		} else {
-			this.i18NDisplayName ?: this.type.name
+			this.displayName()
 		}
+
+val ItemStack.displayNameString
+	get() = PlainTextComponentSerializer.plainText().serialize(this.displayNameComponent)
 
 fun ItemStack.setLoreAndGet(lines: List<String>): ItemStack = apply { this.lore = lines }

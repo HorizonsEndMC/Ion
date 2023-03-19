@@ -7,7 +7,7 @@ import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.displayName
+import net.starlegacy.util.displayNameComponent
 import net.starlegacy.util.toCreditsString
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -112,7 +112,7 @@ object Merchants : SLComponent() {
 				val itemStack = Bazaars.fromItemString(itemString)
 				val priceString = price.toCreditsString()
 				return@mapNotNull guiButton(itemStack)
-					.setName(itemStack.displayName)
+					.setName(itemStack.displayNameComponent)
 					.setLore(
 						"$priceString per item",
 						"/bazaar merchant buy $itemString <amount>"
