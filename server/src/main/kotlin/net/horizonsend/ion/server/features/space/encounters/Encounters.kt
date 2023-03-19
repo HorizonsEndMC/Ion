@@ -24,8 +24,16 @@ object Encounters {
 				val targetedBlock = event.clickedBlock!!
 				event.player.alert("it worked")
 				for (count in 0..100) {
-					targetedBlock.location.world.spawnEntity(targetedBlock.location, EntityType.BAT)
+					targetedBlock.location.world.spawnEntity(targetedBlock.location, EntityType.LIGHTNING)
 				}
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
 			}
 		}
 	)
@@ -51,8 +59,8 @@ object Encounters {
 abstract class Encounter(
 	val identifier: String
 ) {
-	open fun constructChestState(): BlockState {
-		return Material.CHEST.toNMSBlockData()
+	open fun constructChestState(): Pair<BlockState, CompoundTag?> {
+		return Material.CHEST.toNMSBlockData() to null
 	}
 
 	open fun onChestInteract(event: PlayerInteractEvent) {}

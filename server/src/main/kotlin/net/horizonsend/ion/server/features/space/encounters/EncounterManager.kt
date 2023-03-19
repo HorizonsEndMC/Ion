@@ -27,7 +27,9 @@ object EncounterManager : Listener {
 		// Quick check if the world of the event would contain a wreck
 		if (!SpaceGenerationManager.worldGenerators.containsKey(serverLevel)) return
 
-		val pdc = event.clickedBlock!!.location.chunk.persistentDataContainer.get(
+		val chunk = event.clickedBlock!!.location.chunk
+
+		val pdc = chunk.persistentDataContainer.get(
 			NamespacedKeys.WRECK_ENCOUNTER_DATA,
 			PersistentDataType.BYTE_ARRAY
 		) ?: return
@@ -76,9 +78,18 @@ object EncounterManager : Listener {
 
 				encounter.onChestInteract(event)
 			}
-
-			wreckData.put("Wrecks", existingWrecks)
 		}
+
+		wreckData.put("Wrecks", existingWrecks)
+
+		val wreckDataOutputStream = ByteArrayOutputStream()
+		NbtIo.writeCompressed(wreckData, wreckDataOutputStream)
+
+		chunk.persistentDataContainer.set(
+			NamespacedKeys.WRECK_ENCOUNTER_DATA,
+			PersistentDataType.BYTE_ARRAY,
+			wreckDataOutputStream.toByteArray()
+		)
 	}
 
 	// Handles secondary chests
