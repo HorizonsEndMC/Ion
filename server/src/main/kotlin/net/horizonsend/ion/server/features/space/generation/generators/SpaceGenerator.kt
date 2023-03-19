@@ -239,7 +239,7 @@ class SpaceGenerator(
 				}
 
 				wreckData.put("SecondaryChests", existingChests)
-				wreckData.put("SecondaryChests", existingWrecks)
+				wreckData.put("Wrecks", existingWrecks)
 
 				val wreckDataOutputStream = ByteArrayOutputStream()
 				NbtIo.writeCompressed(wreckData, wreckDataOutputStream)
@@ -249,8 +249,6 @@ class SpaceGenerator(
 					PersistentDataType.BYTE_ARRAY,
 					wreckDataOutputStream.toByteArray()
 				)
-
-
 			}
 
 			buildChunkBlocks(chunk)
@@ -292,15 +290,33 @@ class SpaceGenerator(
 						val worldZ = z + chunkOriginZ
 
 						for (y in 0..15) {
-							val block =
-								NbtUtils.readBlockState(holderLookup, paletteList[blocks[index]] as CompoundTag)
+							val worldY = y + sectionMinY
+
+							val entry = paletteList[blocks[index]]
+
+							val block = NbtUtils.readBlockState(holderLookup, entry as CompoundTag)
 							if (block == Blocks.AIR.defaultBlockState()) {
 								index++
 								continue
 							}
 
+							val tileEntity: CompoundTag = entry.getCompound("TileEntity")
+
 							levelChunkSection.setBlockState(x, y, z, block)
-							levelChunk.playerChunk?.blockChanged(BlockPos(worldX, y + sectionMinY, worldZ))
+
+							if (!tileEntity.isEmpty) {
+								let {
+									val blockEntity = BlockEntity.loadStatic(
+										BlockPos(worldX, worldY, worldZ),
+										block,
+										tileEntity
+									) ?: return@let
+
+									levelChunk.addAndRegisterBlockEntity(blockEntity)
+								}
+							}
+
+							levelChunk.playerChunk?.blockChanged(BlockPos(worldX, worldY, worldZ))
 
 							index++
 						}
