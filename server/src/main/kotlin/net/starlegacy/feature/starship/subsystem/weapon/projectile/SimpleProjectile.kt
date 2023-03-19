@@ -128,6 +128,9 @@ abstract class SimpleProjectile(
 		if (GracePeriod.isGracePeriod) return
 
 		val world = newLoc.world
+		if (world.environment == World.Environment.NETHER || world.name.lowercase().contains("hyperspace")) {
+			return
+		}
 
 		// use these so we dont use hardcoded Material values
 		val armorBlastResist = CraftMagicNumbers.getBlock(Material.STONE).explosionResistance
@@ -158,7 +161,7 @@ abstract class SimpleProjectile(
 			addToDamagers(world, block)
 		}
 
-		if (entity != null && entity is LivingEntity && !world.name.contains("Hyperspace")) {
+		if (entity != null && entity is LivingEntity) {
 			entity.damage(10.0, shooter)
 		}
 	}
