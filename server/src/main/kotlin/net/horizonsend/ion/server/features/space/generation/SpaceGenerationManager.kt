@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
@@ -26,7 +25,7 @@ import kotlin.math.roundToInt
 object SpaceGenerationManager : Listener {
 	val worldGenerators: MutableMap<ServerLevel, SpaceGenerator?> = mutableMapOf()
 
-	val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+	val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	fun getGenerator(serverLevel: ServerLevel): SpaceGenerator? = worldGenerators[serverLevel]
 
@@ -64,50 +63,52 @@ object SpaceGenerationManager : Listener {
 		val random = Random(System.currentTimeMillis() + event.world.seed + event.chunk.hashCode())
 
 		// Generate a number of random asteroids in a chunk, proportional to the density in a portion of the chunk. Allows densities of X>1 asteroid per chunk.
-		coroutineScope.launch {
-			for (count in 0..ceil(chunkDensity).toInt()) {
-				// random number out of 100, chance of asteroid's generation. For use in selection.
-				val chance = random.nextDouble(100.0)
+		// coroutineScope.launch {
+		for (count in 0..ceil(chunkDensity).toInt()) {
+			// random number out of 100, chance of asteroid's generation. For use in selection.
+			val chance = random.nextDouble(100.0)
 
-				// Selects some asteroids that are generated. Allows for densities of 0<X<1 asteroids per chunk.
-				if (chance > (chunkDensity * 10)) continue
+			// Selects some asteroids that are generated. Allows for densities of 0<X<1 asteroids per chunk.
+			if (chance > (chunkDensity * 10)) continue
 
-				// Random coordinate generation.
-				val asteroidX = random.nextInt(0, 15) + worldX
-				val asteroidZ = random.nextInt(0, 15) + worldZ
-				val asteroidY = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
+			// Random coordinate generation.
+			val asteroidX = random.nextInt(0, 15) + worldX
+			val asteroidZ = random.nextInt(0, 15) + worldZ
+			val asteroidY = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
 
-				val asteroid = generator.generateWorldAsteroid(
-					asteroidX,
-					asteroidY,
-					asteroidZ
-				)
+			val asteroid = generator.generateWorldAsteroid(
+				asteroidX,
+				asteroidY,
+				asteroidZ
+			)
 
-				if (asteroid.size + asteroidY > event.world.maxHeight) continue
+			if (asteroid.size + asteroidY > event.world.maxHeight) continue
 
-				if (asteroidY - asteroid.size < event.world.minHeight) continue
+			if (asteroidY - asteroid.size < event.world.minHeight) continue
 
-				generateFeature(GenerateAsteroidTask(generator, asteroid))
-			}
+			println(asteroid.palette)
 
-			val wreckDensity = chunkDensity * generator.configuration.wreckMultiplier
-
-			for (count in 0..ceil(wreckDensity).roundToInt()) {
-				// random number out of 100, chance of asteroid's generation. For use in selection.
-				val chance = random.nextDouble(100.0)
-				// Selects some wrecks that are generated. Allows for densities of 0<X<1 wrecks per chunk.
-				if (chance > (chunkDensity * wreckDensity * 10)) continue
-				// Random coordinate generation.
-
-				val wreckX = random.nextInt(0, 15) + worldX
-				val wreckY = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
-				val wreckZ = random.nextInt(0, 15) + worldZ
-
-				val wreck = generator.generateRandomWreckData(wreckX, wreckY, wreckZ)
-
-				generateFeature(GenerateWreckTask(generator, wreck))
-			}
+			generateFeature(GenerateAsteroidTask(generator, asteroid))
 		}
+
+		val wreckDensity = chunkDensity * generator.configuration.wreckMultiplier
+
+		for (count in 0..ceil(wreckDensity).roundToInt()) {
+			// random number out of 100, chance of asteroid's generation. For use in selection.
+			val chance = random.nextDouble(100.0)
+			// Selects some wrecks that are generated. Allows for densities of 0<X<1 wrecks per chunk.
+			if (chance > (chunkDensity * wreckDensity * 10)) continue
+			// Random coordinate generation.
+
+			val wreckX = random.nextInt(0, 15) + worldX
+			val wreckY = random.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
+			val wreckZ = random.nextInt(0, 15) + worldZ
+
+			val wreck = generator.generateRandomWreckData(wreckX, wreckY, wreckZ)
+
+			generateFeature(GenerateWreckTask(generator, wreck))
+		}
+		// }
 	}
 
 	@OptIn(ExperimentalCoroutinesApi::class)

@@ -53,7 +53,7 @@ class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T,
 		}
 
 		for ((parent, weight) in weightedEntryList) {
-			if ((weight.toDouble() / rollingWeight) >= pos) return parent
+			if ((weight.toDouble() / (rollingWeight + 1)) >= pos) return parent
 		}
 
 		throw NoSuchElementException("Weighted random list is empty!")
