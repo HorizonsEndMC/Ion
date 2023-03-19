@@ -244,30 +244,26 @@ object StationSieges : SLComponent() {
 		if (oldNation != null) {
 			var count = 0
 			for (otherPlayer in world.players) {
-				if (!station.contains(otherPlayer.location)) {
-					continue
-				}
-				if (!isInBigShip(otherPlayer)) {
-					continue
-				}
-				val otherNation = PlayerCache[otherPlayer].nation
-					?: continue
+				if (!station.contains(otherPlayer.location)) continue
+
+				if (!isInBigShip(otherPlayer)) continue
+
+				val otherNation = PlayerCache[otherPlayer].nation ?: continue
+
 				// includes NATION relation, so this includes same nation
-				var isOldNationAlly = false
-				for (relation in NationRelation.find(NationRelation::nation eq oldNation)) {
-					if (relation.other == otherNation && relation.actual == NationRelation.Level.ALLY) {
-						isOldNationAlly = true
-					}
-				}
-				var isNotNewNationAlly = false
-				for (relation in NationRelation.find(NationRelation::nation eq playerNation)) {
-					if (relation.other == otherNation && relation.actual == NationRelation.Level.ALLY) {
-						isNotNewNationAlly = true
-					}
-				}
-				if (isOldNationAlly && isNotNewNationAlly) {
-					count++
-				}
+
+				// Get the relation between the current station holder and the other players inside
+				val relationOld = NationRelation.getRelationActual(oldNation, otherNation)
+
+				if (relationOld.ordinal <= 4) continue
+
+				// Get the relation between the sieging nation and the other players inside
+				val relationNew = NationRelation.getRelationActual(playerNation, otherNation)
+
+				// Ignore this player if they're also allies to the sieging nation
+				if (relationNew.ordinal >= 5) continue
+
+				count++
 			}
 			if (count > 0) {
 				player.alert(
