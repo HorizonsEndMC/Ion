@@ -7,6 +7,12 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.citizensnpcs.api.event.NPCLeftClickEvent
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.horizonsend.ion.common.extensions.userError
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.Style
+import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.EcoStations
 import net.starlegacy.database.Oid
@@ -21,7 +27,8 @@ import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.colorize
-import net.starlegacy.util.displayName
+import net.starlegacy.util.displayNameComponent
+import net.starlegacy.util.displayNameString
 import net.starlegacy.util.loadConfig
 import net.starlegacy.util.msg
 import net.starlegacy.util.randomRange
@@ -135,7 +142,7 @@ object CollectionMissions : SLComponent() {
 		itemStack.amount = mission.stacks
 
 		val stacks: Int = mission.stacks
-		val itemName: String = itemStack.displayName
+		val itemName: String = (itemStack.displayNameComponent as TextComponent).content()
 		val rewardCredits: String = mission.reward.toCreditsString()
 		val xp: Int = mission.xp
 
@@ -164,7 +171,7 @@ object CollectionMissions : SLComponent() {
 		val items: List<CollectedItem> = itemCache[station._id]
 			.takeIf { it.isNotEmpty() } ?: error("No items available at ${station.name}")
 
-		val freeSpace: Int = player.inventory.storageContents!!.count { it == null || it.type == Material.AIR }
+		val freeSpace: Int = player.inventory.storageContents.count { it == null || it.type == Material.AIR }
 
 		MenuHelper.apply {
 			val buttons: List<GuiItem> = items.map { collectedItem ->
@@ -172,15 +179,19 @@ object CollectionMissions : SLComponent() {
 
 				val cost: String = getBuyCost(collectedItem).toCreditsString()
 				val fillCost: String = getBuyCost(collectedItem).times(freeSpace).toCreditsString()
-
 				val stock: String = if (collectedItem.stock == 0) "&c0" else "&a${collectedItem.stock}"
 
-				icon.lore = listOf(
-					"&7Cost per stack:&c $cost".colorize(),
-					"&7Cost to fill remaining slots:&c $fillCost".colorize(),
-					"&7Available Stacks:&a $stock".colorize(),
-					"&7&o(Left click to buy one stack)".colorize(),
-					"&7&o(SHIFT left click to fill remaining slots)".colorize()
+				icon.lore(
+					listOf(
+						Component.text("Cost per stack: ").color(NamedTextColor.GRAY)
+							.append(Component.text(cost).color(NamedTextColor.RED)),
+						Component.text("Cost to fill remaining slots: ").color(NamedTextColor.GRAY)
+							.append(Component.text(fillCost).color(NamedTextColor.RED)),
+						Component.text("Available Stacks: ").color(NamedTextColor.GRAY)
+							.append(Component.text(stock).color(NamedTextColor.GREEN)),
+						Component.text("(Left click to buy one stack)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
+						Component.text("(SHIFT left click to fill remaining slots)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
+					)
 				)
 
 				return@map guiButton(icon) {
@@ -201,7 +212,7 @@ object CollectionMissions : SLComponent() {
 		val station = EcoStations[stationId]
 
 		if (!missions[stationId].contains(mission)) { // This could happen if someone else turned in the mission before they clicked the button.
-			player msg "&cMission is no longer available."
+			player.userError("Mission is no longer available.")
 			return
 		}
 
@@ -211,8 +222,16 @@ object CollectionMissions : SLComponent() {
 		val fullStackSlots: List<Int> = getMatchingFullStackSlots(itemStack, player, mission.stacks)
 
 		if (fullStackSlots.size < mission.stacks) {
-			player msg "&cYou don't have enough of ${itemStack.displayName}&c! " +
-				"You need ${mission.stacks} stack(s), but only have ${fullStackSlots.size} stack(s)."
+			player.sendMessage(
+				Component.text("You don't have enough of ").color(NamedTextColor.RED)
+					.append(itemStack.displayNameComponent)
+					.append(
+						Component.text(
+							"You need ${mission.stacks} stack(s), but only have ${fullStackSlots.size} stack(s)."
+						).color(NamedTextColor.RED)
+					)
+			)
+
 			return
 		}
 
@@ -227,7 +246,7 @@ object CollectionMissions : SLComponent() {
 		giveXP(player, mission)
 
 		player msg "&2Completed collection mission! " +
-			"Delivered &a${mission.stacks}&2 stack(s) of &f${itemStack.displayName}&2 " +
+			"Delivered &a${mission.stacks}&2 stack(s) of &f${itemStack.displayNameString}&2 " +
 			"and received &6${money.toCreditsString()}&2."
 	}
 
@@ -318,7 +337,7 @@ object CollectionMissions : SLComponent() {
 		updateLocalValue(collectedItem, buyAmount)
 		updateDatabaseValue(collectedItem, buyAmount)
 
-		player msg "&2Bought &a$buyAmount stack(s)&2 of &f${itemStack.displayName}&2 for &6${totalCost.toCreditsString()}&2. " +
+		player msg "&2Bought &a$buyAmount stack(s)&2 of &f${itemStack.displayNameString}&2 for &6${totalCost.toCreditsString()}&2. " +
 			"Remaining stacks in stock: &e${collectedItem.stock}&2."
 	}
 

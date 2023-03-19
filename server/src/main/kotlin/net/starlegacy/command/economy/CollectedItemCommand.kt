@@ -12,7 +12,7 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.CollectedItem
 import net.starlegacy.database.schema.economy.EcoStation
 import net.starlegacy.feature.economy.collectors.CollectionMissions
-import net.starlegacy.util.displayName
+import net.starlegacy.util.displayNameString
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -70,7 +70,7 @@ object CollectedItemCommand : SLCommand() {
 
 		val itemString = CollectionMissions.getString(item)
 
-		sender.information("${item.displayName} item string: $itemString")
+		sender.information("${item.displayNameString} item string: $itemString")
 	}
 
 	@Suppress("Unused")

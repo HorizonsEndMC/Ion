@@ -1,6 +1,12 @@
 package net.starlegacy.feature.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.BazaarItem
@@ -16,9 +22,8 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
-import net.starlegacy.util.colorize
-import net.starlegacy.util.displayName
-import net.starlegacy.util.msg
+import net.starlegacy.util.displayNameComponent
+import net.starlegacy.util.displayNameString
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -80,7 +85,7 @@ object Bazaars : SLComponent() {
 		remote: Boolean
 	): Unit = Tasks.async {
 		val city: TradeCityData = TradeCities.getIfCity(Regions[terrId])
-			?: return@async player msg "&cTerritory is no longer a city"
+			?: return@async player.serverError("Territory is no longer a city")
 		MenuHelper.run {
 			val lore = listOf("Left click to sort descending,", "right click to sort ascending.")
 			val titleItems: List<GuiItem> = SortingBy.values().map { newSort ->
@@ -105,7 +110,7 @@ object Bazaars : SLComponent() {
 				}
 				.toList()
 
-			val name = fromItemString(item).displayName
+			val name = fromItemString(item).displayNameString
 
 			Tasks.sync {
 				player.openPaginatedMenu("$name @ ${city.displayName}", items, titleItems)
@@ -138,8 +143,10 @@ object Bazaars : SLComponent() {
 							val cost: Double = newAmount * item.price * priceMult
 
 							if (!VAULT_ECO.has(playerClicker, cost)) {
-								playerClicker msg "&cYou don't have enough credits! Cost for $newAmount: ${cost.toCreditsString()}" +
-									if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
+								playerClicker.userError(
+									"You don't have enough credits! Cost for $newAmount: ${cost.toCreditsString()}" +
+										if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
+								)
 							} else {
 								openPurchaseMenu(playerClicker, item, sellerName, newAmount, remote)
 							}
@@ -162,7 +169,7 @@ object Bazaars : SLComponent() {
 				}.setName("Go Back")
 			)
 
-			val name = fromItemString(item.itemString).displayName
+			val name = fromItemString(item.itemString).displayNameString
 
 			if (currentAmount == 0) {
 				pane.addItem(guiButton(Material.BARRIER).setName("Buy at least one item"))
@@ -179,7 +186,7 @@ object Bazaars : SLComponent() {
 					guiButton(Material.HOPPER) {
 						playerClicker.closeInventory()
 						tryBuy(playerClicker, item, currentAmount, remote)
-					}.setName("&aPurchase".colorize()).setLore(lore)
+					}.setName(Component.text("Purchase").color(NamedTextColor.GREEN)).setLore(lore)
 				)
 			}
 
@@ -194,19 +201,21 @@ object Bazaars : SLComponent() {
 		val cost: Double = revenue * priceMult
 
 		if (!VAULT_ECO.has(player, cost)) {
-			return player msg "&cYou can't afford that! Cost for $amount: ${cost.toCreditsString()}" +
-				if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
+			return player.userError(
+				"You can't afford that! Cost for $amount: ${cost.toCreditsString()}" +
+					if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
+			)
 		}
 
 		val city: TradeCityData = TradeCities.getIfCity(Regions[item.cityTerritory]) ?: return
 
 		Tasks.async {
 			if (!BazaarItem.hasStock(item._id, amount)) {
-				return@async player msg "&cItem no longer has $amount in stock"
+				return@async player.information("Item no longer has $amount in stock")
 			}
 
 			if (BazaarItem.matches(item._id, BazaarItem::price ne price)) {
-				return@async player msg "Price has changed"
+				return@async player.userError("Price has changed")
 			}
 
 			val itemStack = fromItemString(item.itemString)
@@ -222,20 +231,54 @@ object Bazaars : SLComponent() {
 			Tasks.sync {
 				VAULT_ECO.withdrawPlayer(player, cost)
 				val (fullStacks, remainder) = dropItems(itemStack, amount, player)
-				player msg "&aBought $amount of ${itemStack.displayName} " +
-					"($fullStacks stack(s) and $remainder item(s)) " +
-					"for ${cost.toCreditsString()}" +
-					if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
+
+				val buyMessage = Component.text().color(NamedTextColor.GREEN)
+					.append(Component.text("Bought "))
+					.append(Component.text(fullStacks).color(NamedTextColor.WHITE))
+
+				if (itemStack.maxStackSize == 1) {
+					buyMessage
+						.append(Component.text(" "))
+						.append(
+							itemStack.displayNameComponent.append(
+								if (fullStacks == 1) Component.text("") else Component.text("s")
+							)
+						)
+				} else {
+					buyMessage
+						.append(if (fullStacks == 1) Component.text(" stack and ") else Component.text(" stacks and "))
+						.append(Component.text(remainder).color(NamedTextColor.WHITE))
+						.append(if (remainder == 1) Component.text(" item") else Component.text(" items"))
+						.append(Component.text(" of "))
+						.append(itemStack.displayNameComponent)
+				}
+
+				buyMessage
+					.append(Component.text(" for "))
+					.append(Component.text(cost.toCreditsString()).color(NamedTextColor.GOLD))
+
+				if (priceMult > 1) {
+					buyMessage
+						.append(Component.text(" (Price multiplied by ").color(NamedTextColor.YELLOW))
+						.append(Component.text(priceMult).color(NamedTextColor.WHITE))
+						.append(Component.text(" due to browsing remotely)").color(NamedTextColor.YELLOW))
+				}
+
+				player.sendMessage(
+					buyMessage
+				)
 			}
 		}
 	}
 
 	fun toItemString(item: ItemStack): String {
-		return CustomItems[item]?.id ?: item.type.toString()
+		return item.customItem?.identifier ?: CustomItems[item]?.id ?: item.type.toString()
 	}
 
 	fun fromItemString(string: String): ItemStack {
 		// if a custom item is found, use that
+
+		net.horizonsend.ion.server.features.customItems.CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
 		CustomItems[string]?.let { return it.itemStack(1) }
 		val material: Material = Material.valueOf(string)
 		check(material.isItem) { "$material is not an item" }

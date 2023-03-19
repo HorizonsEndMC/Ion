@@ -22,7 +22,7 @@ import net.starlegacy.listen
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.d
-import net.starlegacy.util.displayName
+import net.starlegacy.util.displayNameString
 import net.starlegacy.util.isLava
 import net.starlegacy.util.isSign
 import net.starlegacy.util.isWater
@@ -490,10 +490,12 @@ object StarshipControl : SLComponent() {
 
 		if (itemStack.type != CONTROLLER_TYPE) return
 
-		if (starship.weaponSets.keys().contains(itemStack.displayName.lowercase())) {
+		val itemName = itemStack.displayNameString.lowercase()
+
+		if (starship.weaponSets.keys().contains(itemName)) {
 			event.player.sendActionBar(
 				MiniMessage.miniMessage().deserialize(
-					"<gray>Now firing <aqua>${itemStack.displayName.lowercase()}<gray> weaponSet"
+					"<gray>Now firing <aqua>$itemName<gray> weaponSet"
 				)
 			)
 		}
@@ -507,8 +509,9 @@ object StarshipControl : SLComponent() {
 		val target: Vector? = getTarget(loc, dir, starship)
 
 		var weaponSet = starship.weaponSetSelections[player.uniqueId]
-		val clockWeaponSet = clock.displayName.lowercase()
-		if (starship.weaponSets.keys().contains(clock.displayName.lowercase())) weaponSet = clockWeaponSet
+		val clockWeaponSet = clock.displayNameString.lowercase()
+
+		if (starship.weaponSets.keys().contains(clockWeaponSet)) weaponSet = clockWeaponSet
 		if (weaponSet == null && PilotedStarships[player] != starship) {
 			return
 		}

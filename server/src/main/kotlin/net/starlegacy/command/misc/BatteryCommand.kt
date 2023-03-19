@@ -11,7 +11,7 @@ import net.starlegacy.feature.misc.addPower
 import net.starlegacy.feature.misc.isPowerable
 import net.starlegacy.feature.misc.removePower
 import net.starlegacy.feature.misc.setPower
-import net.starlegacy.util.displayName
+import net.starlegacy.util.displayNameString
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -34,7 +34,7 @@ object BatteryCommand : SLCommand() {
 	fun onSet(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		setPower(item, amount)
-		sender.success("Set power of ${item.displayName} to $amount")
+		sender.success("Set power of ${item.displayNameString} to $amount")
 	}
 
 	@Suppress("Unused")
@@ -42,7 +42,7 @@ object BatteryCommand : SLCommand() {
 	fun onAdd(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		addPower(item, amount)
-		sender.success("Added $amount power to ${item.displayName}")
+		sender.success("Added $amount power to ${item.displayNameString}")
 	}
 
 	@Suppress("Unused")
@@ -50,6 +50,6 @@ object BatteryCommand : SLCommand() {
 	fun onRemove(sender: Player, amount: Int) {
 		val item = getPowerableItemInHand(sender)
 		removePower(item, amount)
-		sender.success("Removed $amount power from ${item.displayName}")
+		sender.success("Removed $amount power from ${item.displayNameString}")
 	}
 }

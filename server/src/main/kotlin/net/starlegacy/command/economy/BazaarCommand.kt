@@ -7,6 +7,8 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.economy.BazaarItem
 import net.starlegacy.database.schema.economy.CityNPC
@@ -28,7 +30,8 @@ import net.starlegacy.feature.space.Space
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
-import net.starlegacy.util.displayName
+import net.starlegacy.util.displayNameComponent
+import net.starlegacy.util.displayNameString
 import net.starlegacy.util.roundToHundredth
 import net.starlegacy.util.toCreditsString
 import org.bukkit.DyeColor
@@ -62,7 +65,7 @@ object BazaarCommand : SLCommand() {
 	fun onString(sender: Player) {
 		val item = requireItemInHand(sender)
 		sender.information(
-			"Item string of ${item.displayName}: ${Bazaars.toItemString(item)}"
+			"Item string of ${item.displayNameString}: ${Bazaars.toItemString(item)}"
 		)
 	}
 
@@ -204,14 +207,25 @@ object BazaarCommand : SLCommand() {
 		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
 		sender.information("Your Items (${items.size})")
 		for (item in items) {
-			val name = Bazaars.fromItemString(item.itemString).displayName
+			val itemDisplayName = Bazaars.fromItemString(item.itemString).displayNameComponent
 			val city = cityName(Regions[item.cityTerritory])
 			val stock = item.stock
 			val uncollected = item.balance.toCreditsString()
 			val price = item.price.toCreditsString()
-			sender.sendRichMessage(
-				"<aqua>$name <dark_purple>@ <light_purple>$city <dark_gray>[<gray>stock: " +
-					"<red>$stock<gray>, balance: <gold>$uncollected<gray>, price: <yellow>$price<dark_gray>]"
+
+			sender.sendMessage(
+				Component.text()
+					.append(itemDisplayName)
+					.append(Component.text(" @ ").color(NamedTextColor.DARK_PURPLE))
+					.append(Component.text(city).color(NamedTextColor.LIGHT_PURPLE))
+					.append(Component.text(" [").color(NamedTextColor.DARK_GRAY))
+					.append(Component.text("stock: ").color(NamedTextColor.GRAY))
+					.append(Component.text(stock).color(NamedTextColor.GRAY))
+					.append(Component.text(", balance: ").color(NamedTextColor.GRAY))
+					.append(Component.text(uncollected).color(NamedTextColor.GOLD))
+					.append(Component.text(", price: ").color(NamedTextColor.GRAY))
+					.append(Component.text(price).color(NamedTextColor.YELLOW))
+					.append(Component.text("]").color(NamedTextColor.DARK_GRAY))
 			)
 		}
 	}
@@ -284,9 +298,19 @@ object BazaarCommand : SLCommand() {
 		requireMoney(sender, price + tax)
 		VAULT_ECO.withdrawPlayer(sender, price + tax)
 		Bazaars.dropItems(item, amount, sender)
-		sender.success(
-			"Bought $amount of {item.displayName} for {price.toCreditsString()} (+ {tax.toCreditsString()} tax)"
+
+		sender.sendMessage(
+			Component.text("Bought ").color(NamedTextColor.GREEN)
+				.append(Component.text(amount).color(NamedTextColor.WHITE))
+				.append(Component.text(" of "))
+				.append(item.displayNameComponent)
+				.append(Component.text(" for "))
+				.append(Component.text(price.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(Component.text(" (+ "))
+				.append(Component.text(tax.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(Component.text(" tax"))
 		)
+
 		if (city.type == TradeCityType.SETTLEMENT) {
 			Settlement.deposit(city.settlementId, tax)
 		}
@@ -329,7 +353,7 @@ object BazaarCommand : SLCommand() {
 				.map { (itemString, price) ->
 					val item = Bazaars.fromItemString(itemString)
 					return@map guiButton(item) { playerClicker.closeInventory() }
-						.setName(item.displayName)
+						.setName(item.displayNameComponent)
 						.setLore("Price: ${price.toCreditsString()}")
 				}.toList()
 
