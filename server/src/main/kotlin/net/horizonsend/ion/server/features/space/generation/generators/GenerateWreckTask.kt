@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.space.generation.generators
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.session.ClipboardHolder
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,6 +35,7 @@ class GenerateWreckTask(
 	override val returnData = CompletableDeferred<WreckGenerationData.WreckReturnData>()
 
 	val clipboard: Clipboard = generator.schematicMap[wreck.schematicName]!!
+
 	val region = clipboard.region.clone()
 	private val targetBlockVector: BlockVector3 = BlockVector3.at(wreck.x, wreck.y, wreck.z)
 	private val offset: BlockVector3 = targetBlockVector.subtract(clipboard.origin)
@@ -47,6 +49,10 @@ class GenerateWreckTask(
 		SpaceGenerationManager.coroutineScope.launch {
 			serverLevel.world.worldEditSession(true) {
 				region.shift(offset)
+
+				val holder = ClipboardHolder(clipboard)
+				holder.transform = com.sk89q.worldedit.math.transform.AffineTransform().rotateY(generator.random.nextDouble(0.0, 180.0))
+				holder.clipboard
 
 				val sectionsSet = mutableSetOf<Int>()
 
@@ -126,58 +132,57 @@ class GenerateWreckTask(
 					val schematicRelative = BlockVector3.at(worldX, worldY, worldZ).subtract(offset)
 
 					val baseBlock = clipboard.getFullBlock(schematicRelative)
-					var blockState: BlockState = baseBlock.toImmutableState().toBukkitBlockData().nms
-					val blockNBT = if (blockState.hasBlockEntity()) baseBlock.nbtData else null
+					val originalBlockState: BlockState = baseBlock.toImmutableState().toBukkitBlockData().nms
+					val blockNBT = if (originalBlockState.hasBlockEntity()) baseBlock.nbtData else null
 
-					if (blockState.isAir) {
+					if (originalBlockState.isAir) {
 						storedBlocks[index] = 0
 						index++
 						continue
 					}
 
-					var combined = blockState to blockNBT?.nms()
+					var combined = originalBlockState to blockNBT?.nms()
 
-					encounter?.let {
-						blockNBT?.let {
-							if (blockState.block == Blocks.CHEST &&
-								blockNBT.getString("CustomName").contains("Encounter Chest", true)
-							) {
-								encounterPrimaryChest = chunkPos to BlockPos(worldX, worldY, worldZ)
-								blockState = encounter.constructChestState()
+					blockNBT?.let blockNBT@{
+						val name = blockNBT.getString("CustomName")
+
+						encounter?.let encounter@{ encounter ->
+							if (originalBlockState.block != Blocks.CHEST) return@encounter
+							if (!name.contains("Encounter Chest", true)) return@encounter
+
+							encounterPrimaryChest = chunkPos to BlockPos(worldX, worldY, worldZ)
+							combined = encounter.constructChestState()
+						}
+
+						// Use let to be able to exit out of the statement
+						if (name.contains("Secondary: ", ignoreCase = true)) {
+							let secondaryChest@{
+								val chestType = name.substringAfter("Secondary: ").substringBefore("\"")
+
+								val secondaryChest = SecondaryChests[chestType] ?: return@secondaryChest
+
+								combined = secondaryChest.blockState to secondaryChest.NBT
+
+								val serialized = CompoundTag()
+
+								serialized.putInt("x", worldX)
+								serialized.putInt("y", worldY)
+								serialized.putInt("z", worldZ)
+
+								secondaryChest.money?.let { money -> serialized.putInt("Money", money) }
+
+								val newList = secondaryChests.getOrDefault(chunkPos, mutableListOf())
+								newList.add(serialized)
+
+								secondaryChests[chunkPos] = newList
 							}
 						}
 					}
 
-					blockNBT?.let {
-						if (blockState.block != Blocks.CHEST) return@let
-						val name = blockNBT.getString("CustomName")
-
-						if (!name.contains("Secondary: ", ignoreCase = true)) return@let
-
-						val chestType: String = name.substringAfter("Secondary: ").substringBefore("\"")
-
-						val secondaryChest = SecondaryChests[chestType] ?: return@let
-
-						combined = secondaryChest.blockState to secondaryChest.NBT
-
-						// Format the block entity
-						(combined.second)?.putInt("x", worldX)
-						(combined.second)?.putInt("y", worldY)
-						(combined.second)?.putInt("z", worldZ)
-
-						val serialized = CompoundTag()
-
-						serialized.putInt("x", worldX)
-						serialized.putInt("y", worldY)
-						serialized.putInt("z", worldZ)
-
-						secondaryChest.money?.let { money -> serialized.putInt("Money", money) }
-
-						val newList = secondaryChests.getOrDefault(chunkPos, mutableListOf())
-						newList.add(serialized)
-
-						secondaryChests[chunkPos] = newList
-					}
+					// Format the block entity
+					(combined.second)?.putInt("x", worldX)
+					(combined.second)?.putInt("y", worldY)
+					(combined.second)?.putInt("z", worldZ)
 
 					palette.add(combined)
 					storedBlocks[index] = palette.indexOf(combined)
@@ -189,7 +194,12 @@ class GenerateWreckTask(
 
 		if (storedBlocks.all { it == 0 }) return null // don't write it if it's all empty
 
-		palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState.first)) }
+		palette.forEach { blockState ->
+			val base = NbtUtils.writeBlockState(blockState.first)
+			blockState.second?.let { base.put("TileEntity", it) }
+			paletteListTag.add(base)
+		}
+
 		val intArray = storedBlocks.requireNoNulls().toIntArray()
 
 		return SpaceGenerationReturnData.CompletedSection(
