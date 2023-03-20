@@ -1,10 +1,10 @@
 package net.starlegacy.feature.starship
 
-import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
