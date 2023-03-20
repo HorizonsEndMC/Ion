@@ -28,7 +28,7 @@ object DisposalMultiblock : PowerStoringMultiblock(), FurnaceMultiblock {
 
 	override val maxPower: Int = 150_000
 
-	private const val powerConsumed = 3
+	private const val powerConsumed = 0.5
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
