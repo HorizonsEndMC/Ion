@@ -4,7 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.miscellaneous.extensions.success
+import net.horizonsend.ion.common.extensions.success
 import net.minecraft.world.item.DyeableArmorItem
 import net.starlegacy.command.SLCommand
 import net.starlegacy.util.enumValueOfOrNull
@@ -41,7 +41,7 @@ object DyeCommand : SLCommand() {
 	}
 
 	private fun dyeItem(item: ItemStack, newDyeColor: DyeColor): DyeColor {
-		if (item.itemMeta is DyeableArmorItem){
+		if (item.itemMeta is DyeableArmorItem) {
 			val nmsItem = CraftItemStack.asNMSCopy(item)
 			val dyeableItemMeta = item.itemMeta as? DyeableArmorItem
 			val oldDyeColor = dyeableItemMeta?.getColor(nmsItem) ?: 0
