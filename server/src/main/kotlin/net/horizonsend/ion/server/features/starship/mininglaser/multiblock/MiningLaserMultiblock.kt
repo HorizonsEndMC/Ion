@@ -24,6 +24,7 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 	abstract val maxBroken: Int
 	abstract val sound: String
 	abstract val side: BlockFace
+	abstract val tier: Int
 
 	fun getOutput(sign: Sign): Inventory {
 		val direction = sign.getFacing().oppositeFace
