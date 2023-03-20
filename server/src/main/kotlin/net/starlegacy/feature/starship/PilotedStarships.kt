@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship
 
+import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
@@ -267,6 +268,19 @@ object PilotedStarships : SLComponent() {
 
 			if (activePlayerStarship.drillCount > 16) {
 				player.userError("Ships can not have more that 16 drills! Count: ${activePlayerStarship.drillCount}")
+				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+				return@activateAsync
+			}
+
+			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
+			if (miningLasers.size <= activePlayerStarship.type.maxMiningLasers) {
+				if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.maxMiningLaserTier }) {
+					player.userError("Your starship can only support tier ${activePlayerStarship.type.maxMiningLaserTier} mining lasers!")
+					DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+					return@activateAsync
+				}
+			} else {
+				player.userError("Your starship can only support ${activePlayerStarship.type.maxMiningLasers} mining lasers! count: ${miningLasers.size}")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
