@@ -273,14 +273,8 @@ object PilotedStarships : SLComponent() {
 			}
 
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
-			if (miningLasers.size <= activePlayerStarship.type.maxMiningLasers) {
-				if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.maxMiningLaserTier }) {
-					player.userError("Your starship can only support tier ${activePlayerStarship.type.maxMiningLaserTier} mining lasers!")
-					DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-					return@activateAsync
-				}
-			} else {
-				player.userError("Your starship can only support ${activePlayerStarship.type.maxMiningLasers} mining lasers! count: ${miningLasers.size}")
+			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
+				player.userError("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
