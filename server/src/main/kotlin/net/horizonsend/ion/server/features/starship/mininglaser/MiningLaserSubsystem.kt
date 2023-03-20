@@ -147,6 +147,7 @@ class MiningLaserSubsystem(
 	}
 
 	private fun startFiringSequence() {
+		tick = 0
 		val fireTask =
 			runnable {
 				if (isFiring) {
