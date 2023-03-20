@@ -102,6 +102,7 @@ abstract class ActiveStarship(
 
 	val subsystems = LinkedList<StarshipSubsystem>()
 	var drillCount = 0
+
 	lateinit var reactor: ReactorSubsystem
 	val shields = LinkedList<ShieldSubsystem>()
 	val weapons = LinkedList<WeaponSubsystem>()
