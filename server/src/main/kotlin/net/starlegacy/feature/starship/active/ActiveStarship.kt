@@ -4,6 +4,7 @@ import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.starship.Starship
