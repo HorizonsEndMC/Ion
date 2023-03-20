@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship.mininglaser
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
+import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
-import net.horizonsend.ion.server.miscellaneous.extensions.alert
-import net.horizonsend.ion.server.miscellaneous.extensions.information
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
