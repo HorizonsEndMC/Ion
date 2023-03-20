@@ -27,7 +27,8 @@ enum class StarshipType(
 	val overridePermission: String,
 	val eventship: Boolean = false,
 	val poweroverrider: Double = 1.0,
-	val canMine: Boolean = false
+	val maxMiningLasers: Int = 0,
+	val maxMiningLaserTier: Int = 0
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -192,7 +193,8 @@ enum class StarshipType(
 		colour = "#008033",
 		overridePermission = "ion.ships.override.1",
 		poweroverrider = 0.7,
-		canMine = true
+		maxMiningLasers = 1,
+		maxMiningLaserTier = 1
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -210,7 +212,8 @@ enum class StarshipType(
 		colour = "#008066",
 		overridePermission = "ion.ships.override.10",
 		poweroverrider = 0.7,
-		canMine = true
+		maxMiningLasers = 1,
+		maxMiningLaserTier = 2
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -228,7 +231,8 @@ enum class StarshipType(
 		colour = "#008099",
 		overridePermission = "ion.ships.override.20",
 		poweroverrider = 0.7,
-		canMine = true
+		maxMiningLasers = 2,
+		maxMiningLaserTier = 2
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -246,7 +250,8 @@ enum class StarshipType(
 		colour = "#0080cc",
 		overridePermission = "ion.ships.override.40",
 		poweroverrider = 0.7,
-		canMine = true
+		maxMiningLasers = 4,
+		maxMiningLaserTier = 3
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -264,7 +269,8 @@ enum class StarshipType(
 		colour = "#0080ff",
 		overridePermission = "ion.ships.override.80",
 		poweroverrider = 0.7,
-		canMine = true
+		maxMiningLasers = 6,
+		maxMiningLaserTier = 3
 	),
 	PLATFORM(
 		displayName = "Platform",
