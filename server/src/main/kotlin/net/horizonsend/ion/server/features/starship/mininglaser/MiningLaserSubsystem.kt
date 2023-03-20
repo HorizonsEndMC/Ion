@@ -120,16 +120,24 @@ class MiningLaserSubsystem(
 	}
 
 	private fun setFiring(firing: Boolean, sign: Sign, user: Player? = null) {
-		isFiring = firing
+		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
 
 		when (firing) {
 			true -> {
-				setUser(sign, user!!.name)
-				starship.information("Enabled mining laser at $pos")
-				startFiringSequence()
+				// Less than but not equal to because it will increase by 1
+				if (alreadyFiring < starship.type.maxMiningLasers) {
+					isFiring = true
+					setUser(sign, user!!.name)
+					starship.information("Enabled mining laser at $pos")
+					startFiringSequence()
+				} else {
+					starship.information("Your ship can only fire ${starship.type.maxMiningLasers} mining lasers at once!")
+					isFiring = false
+				}
 			}
 
 			false -> {
+				isFiring = false
 				setUser(sign, null)
 				starship.information("Disabled mining laser at $pos")
 				starship
@@ -148,12 +156,19 @@ class MiningLaserSubsystem(
 				}
 			}.runTaskTimer(IonServer, 0L, 5L)
 
-		starship.serverLevel.world.playSound(
-			multiblock.getFirePointOffset().plus(pos).toLocation(starship.serverLevel.world),
-			"starship.weapon.mining_laser.start",
-			1f,
-			1f
-		)
+		starship.serverLevel.world.players.forEach {
+			if (it.location.distance(multiblock.getFirePointOffset().plus(pos).toLocation(starship.serverLevel.world)) < multiblock.range * 2) {
+				it.stopSound(multiblock.sound)
+
+				starship.serverLevel.world.playSound(
+					it.location,
+					"starship.weapon.mining_laser.start",
+					SoundCategory.PLAYERS,
+					1.0f,
+					1.0f
+				)
+			}
+		}
 
 		firingTasks.add(fireTask)
 	}
@@ -164,7 +179,7 @@ class MiningLaserSubsystem(
 		firingTasks.clear()
 
 		// Stop sound
-		for (player in starship.centerOfMass.toLocation(starship.serverLevel.world).world.players) {
+		for (player in starship.serverLevel.world.players) {
 			if (
 				player.location.distance(
 					starship.centerOfMass.toLocation(starship.serverLevel.world)
@@ -240,6 +255,8 @@ class MiningLaserSubsystem(
 
 		if (blocksBroken > 0) {
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocksBroken).toInt(), true)
+
+			laserEnd.world.spawnParticle(Particle.EXPLOSION_HUGE, laserEnd, 1)
 		}
 
 		// Sound is 5 seconds, ticks every quarter second
@@ -257,7 +274,6 @@ class MiningLaserSubsystem(
 			tick = 0
 		}
 
-		laserEnd.world.spawnParticle(Particle.EXPLOSION_HUGE, laserEnd, 1)
 		tick++
 	}
 
