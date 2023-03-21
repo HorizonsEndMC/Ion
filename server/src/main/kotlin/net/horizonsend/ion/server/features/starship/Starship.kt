@@ -21,7 +21,8 @@ open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
 
 	var controller: Controller? = null
 		set(value) {
-			value?.information("Updated control mode to ${value.name}.")
+			(value ?: field)?.information("Updated control mode to ${value?.name ?: "None"}.")
+			field?.destroy()
 			field = value
 		}
 }
