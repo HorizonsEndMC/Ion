@@ -43,7 +43,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
 import kotlin.math.PI
