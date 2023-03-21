@@ -31,7 +31,7 @@ import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.lang.Math.cbrt
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -61,7 +61,7 @@ class ActivePlayerStarship(
 	var pilot: Player?
 		get() = (controller as? LegacyController)?.serverPlayer?.bukkitEntity
 		set(value) {
-			controller = if (value == null) null else LegacyController(this, value.minecraft)
+			controller = if (value == null) null else LegacyController(value.minecraft, this)
 		}
 
 	var oldpilot: Player? = null
