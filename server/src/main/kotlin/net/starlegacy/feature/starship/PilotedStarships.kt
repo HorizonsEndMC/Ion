@@ -1,7 +1,6 @@
 package net.starlegacy.feature.starship
 
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
@@ -308,7 +307,6 @@ object PilotedStarships : SLComponent() {
 	fun getDisplayNameComponent(data: PlayerStarshipData): Component = data.name?.let {
 		MiniMessage.miniMessage().deserialize(it)
 	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.formatted)
-
 
 	fun getRawDisplayName(data: PlayerStarshipData): String {
 		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()
