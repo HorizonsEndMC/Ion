@@ -9,6 +9,7 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -268,7 +269,7 @@ object PilotedStarships : SLComponent() {
 			pilot(activePlayerStarship, player)
 
 			player.sendMessage(
-				Component.text("Activated and piloted ")
+				Component.text("Activated and piloted ").color(NamedTextColor.GREEN)
 					.append(getDisplayNameComponent(data))
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
