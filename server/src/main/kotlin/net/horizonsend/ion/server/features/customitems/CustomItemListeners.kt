@@ -1,10 +1,12 @@
-package net.horizonsend.ion.server.features.customItems
+package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 
@@ -23,6 +25,18 @@ class CustomItemListeners : Listener {
 
 			else -> return // Unknown Action Enum - We probably don't care, silently fail
 		}
+	}
+
+	@EventHandler
+	@Suppress("Unused")
+	fun onEntityShootBow(event: EntityShootBowEvent) {
+		val entity = event.entity as? LivingEntity ?: return
+		val offhand = entity.equipment?.itemInOffHand ?: return
+
+		val customItem = offhand.customItem ?: return
+
+		customItem.handleSecondaryInteract(entity, offhand)
+		event.isCancelled = true
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

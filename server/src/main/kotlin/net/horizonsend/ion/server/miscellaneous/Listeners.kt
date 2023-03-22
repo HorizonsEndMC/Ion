@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.bounties.BountyListener
 import net.horizonsend.ion.server.features.client.VoidNetwork
-import net.horizonsend.ion.server.features.customItems.CustomItemListeners
+import net.horizonsend.ion.server.features.customitems.CustomItemListeners
 import net.horizonsend.ion.server.features.qol.RecipeListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
