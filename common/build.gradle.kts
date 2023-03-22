@@ -23,7 +23,7 @@ dependencies {
 	api("com.zaxxer:HikariCP:5.0.1")
 
 	api("org.mariadb.jdbc:mariadb-java-client:3.1.3")
-	api("org.xerial:sqlite-jdbc:3.41.0.1")
+	api("com.h2database:h2:2.1.214")
 
 	api(libs.jedis)
 }

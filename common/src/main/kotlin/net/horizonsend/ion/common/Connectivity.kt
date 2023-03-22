@@ -23,7 +23,7 @@ object Connectivity {
 
 		// Manually loaded because classloaders are weird
 		Class.forName("org.mariadb.jdbc.Driver")
-		Class.forName("org.sqlite.JDBC")
+		Class.forName("org.h2.Driver")
 
 		val hikariConfiguration = HikariConfig()
 		hikariConfiguration.jdbcUrl = configuration.connectionUri
@@ -47,7 +47,7 @@ object Connectivity {
 
 	@Serializable
 	internal data class DatabaseConfiguration(
-		internal val connectionUri: String = "jdbc:sqlite:plugins/Ion/database.db",
+		internal val connectionUri: String = "jdbc:h2:./plugins/Ion/database",
 		internal val redisConnectionUri: String = "redis"
 	)
 }
