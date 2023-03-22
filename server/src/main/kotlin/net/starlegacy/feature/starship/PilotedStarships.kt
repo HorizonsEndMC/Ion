@@ -266,8 +266,11 @@ object PilotedStarships : SLComponent() {
 			}
 
 			pilot(activePlayerStarship, player)
-			player.success(
-				"Activated and piloted ${getDisplayName(data)} with ${activePlayerStarship.initialBlockCount} blocks."
+
+			player.sendMessage(
+				Component.text("Activated and piloted ")
+					.append(getDisplayNameComponent(data))
+					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
 
 			if (carriedShips.any()) {
@@ -301,9 +304,10 @@ object PilotedStarships : SLComponent() {
 		return data.name ?: data.starshipType.formatted
 	}
 
-	fun getDisplayNameComponent(data: PlayerStarshipData): Component? {
-		return data.name?.let { MiniMessage.miniMessage().deserialize(it) }
-	}
+	fun getDisplayNameComponent(data: PlayerStarshipData): Component = data.name?.let {
+		MiniMessage.miniMessage().deserialize(it)
+	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.formatted)
+
 
 	fun getRawDisplayName(data: PlayerStarshipData): String {
 		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()
