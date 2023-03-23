@@ -4,7 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
@@ -278,7 +278,7 @@ object Bazaars : SLComponent() {
 	fun fromItemString(string: String): ItemStack {
 		// if a custom item is found, use that
 
-		net.horizonsend.ion.server.features.customItems.CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
+		net.horizonsend.ion.server.features.customitems.CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
 		CustomItems[string]?.let { return it.itemStack(1) }
 		val material: Material = Material.valueOf(string)
 		check(material.isItem) { "$material is not an item" }

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.blasters.objects
 
-import net.horizonsend.ion.server.features.customItems.CustomItem
+import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.AMMO
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.CUSTOM_ITEM
 import net.kyori.adventure.text.Component
@@ -27,11 +27,12 @@ abstract class AmmunitionHoldingItem(
 			it.displayName(displayName)
 			it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
 			it.persistentDataContainer.set(AMMO, INTEGER, getMaximumAmmunition())
-			it.lore(listOf(Component.text("Ammo: ${getMaximumAmmunition()}/${getMaximumAmmunition()}")))
+			it.lore(listOf(Component.text("Ammo: ${getMaximumAmmunition()} / ${getMaximumAmmunition()}")))
 		}
 	}
 
 	protected abstract fun getMaximumAmmunition(): Int
+	protected abstract fun getTypeAmmunition(): String
 
 	fun getAmmunition(itemStack: ItemStack): Int {
 		// stupid undefined nullability

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.customitems
 
-import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
