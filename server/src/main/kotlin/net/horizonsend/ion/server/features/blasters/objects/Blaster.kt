@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
 import net.horizonsend.ion.server.features.blasters.ProjectileManager
 import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
-import net.horizonsend.ion.server.features.customItems.CustomItems.STANDARD_MAGAZINE
-import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.CustomItem
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -61,13 +61,14 @@ abstract class Blaster<T : Balancing>(
 		if (ammo == ((itemStack.customItem as? Blaster<*>)?.getMaximumAmmunition() ?: return)) return
 
 		for (magazineItem in livingEntity.inventory) {
-			if (ammo >= balancing.magazineSize) continue // Check if magazine is full
-			if (magazineItem == null) continue // Check not null
-			if (magazineItem.customItem !is Magazine<*>) continue // Only Magazines
+			if (magazineItem == null) continue // check not null
+			val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // turn into custom item
+			if (ammo >= balancing.magazineSize) continue // Check if blaster magazine is full
+			if (magazineCustomItem.identifier != balancing.magazineType) continue // Only Magazines
 
-			val magazineAmmo = STANDARD_MAGAZINE.getAmmunition(magazineItem)
+			val magazineAmmo = (magazineCustomItem as AmmunitionHoldingItem).getAmmunition(magazineItem)
 			val amountToTake = (balancing.magazineSize - ammo).coerceAtMost(magazineAmmo)
-			STANDARD_MAGAZINE.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
+			magazineCustomItem.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
 
 			ammo += amountToTake
 		}
@@ -116,6 +117,7 @@ abstract class Blaster<T : Balancing>(
 	}
 
 	override fun getMaximumAmmunition(): Int = balancing.magazineSize
+	override fun getTypeAmmunition(): String = balancing.ammoType
 
 	override fun setAmmunition(itemStack: ItemStack, inventory: Inventory, ammunition: Int) {
 		super.setAmmunition(itemStack, inventory, ammunition)

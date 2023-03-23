@@ -12,7 +12,9 @@ import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserSta
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.starlegacy.SLComponent
-import net.starlegacy.feature.multiblock.ammoreloader.AmmoReloaderTier1
+import net.starlegacy.feature.multiblock.ammoreloader.AmmoReloaderMultiblockTier1
+import net.starlegacy.feature.multiblock.ammoreloader.AmmoReloaderMultiblockTier2
+import net.starlegacy.feature.multiblock.ammoreloader.AmmoReloaderMultiblockTier3
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
 import net.starlegacy.feature.multiblock.areashield.AreaShield30
@@ -108,7 +110,9 @@ object Multiblocks : SLComponent() {
 			PowerBankMultiblockTier2,
 			PowerBankMultiblockTier3,
 
-			AmmoReloaderTier1,
+			AmmoReloaderMultiblockTier1,
+			AmmoReloaderMultiblockTier2,
+			AmmoReloaderMultiblockTier3,
 
 			PowerCellMultiblock,
 

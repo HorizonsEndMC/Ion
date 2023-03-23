@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.customItems
+package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
@@ -114,8 +114,19 @@ object CustomItems {
 				identifier = "STANDARD_MAGAZINE",
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 1,
-				displayName = text("Magazine"),
+				displayName = text("Standard Magazine"),
 				balancingSupplier = IonServer.balancing.energyWeapons::standardMagazine
+			) {}
+		)
+
+	val SPECIAL_MAGAZINE =
+		register(
+			object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>(
+				identifier = "SPECIAL_MAGAZINE",
+				material = WARPED_FUNGUS_ON_A_STICK,
+				customModelData = 2,
+				displayName = text("Special Magazine"),
+				balancingSupplier = IonServer.balancing.energyWeapons::specialMagazine
 			) {}
 		)
 

@@ -13,6 +13,8 @@ data class BalancingConfiguration(
 			damage = 3.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 15,
+			ammoType = "LAPIS_LAZULI",
+			magazineType = "STANDARD_MAGAZINE",
 			packetsPerShot = 5,
 			pitch = 2f,
 			range = 100.0,
@@ -32,6 +34,8 @@ data class BalancingConfiguration(
 			damage = 2.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 30,
+			ammoType = "LAPIS_LAZULI",
+			magazineType = "STANDARD_MAGAZINE",
 			packetsPerShot = 1,
 			pitch = 2f,
 			range = 100.0,
@@ -51,6 +55,8 @@ data class BalancingConfiguration(
 			damage = 2.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 30,
+			ammoType = "LAPIS_LAZULI",
+			magazineType = "STANDARD_MAGAZINE",
 			packetsPerShot = 1,
 			pitch = 2f,
 			range = 100.0,
@@ -70,6 +76,8 @@ data class BalancingConfiguration(
 			damage = 12.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 5,
+			ammoType = "EMERALD",
+			magazineType = "SPECIAL_MAGAZINE",
 			packetsPerShot = 5,
 			pitch = 0f,
 			range = 100.0,
@@ -90,6 +98,8 @@ data class BalancingConfiguration(
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			magazineSize = 4,
+			ammoType = "EMERALD",
+			magazineType = "SPECIAL_MAGAZINE",
 			offsetMax = 0.05,
 			packetsPerShot = 2,
 			pitch = 0.0f,
@@ -108,7 +118,12 @@ data class BalancingConfiguration(
 			mobDamageMultiplier = 2.0
 		),
 		val standardMagazine: AmmoStorage = AmmoStorage(
-			capacity = 60
+			capacity = 60,
+			ammoType = "LAPIS_LAZULI"
+		),
+		val specialMagazine: AmmoStorage = AmmoStorage(
+			capacity = 20,
+			ammoType = "EMERALD"
 		)
 	) {
 		@Serializable
@@ -116,6 +131,8 @@ data class BalancingConfiguration(
 			override val damage: Double,
 			override val damageFalloffMultiplier: Double,
 			override val magazineSize: Int,
+			override val ammoType: String,
+			override val magazineType: String,
 			override val packetsPerShot: Int,
 			override val pitch: Float,
 			override val range: Double,
@@ -141,6 +158,8 @@ data class BalancingConfiguration(
 			override val damage: Double,
 			override val damageFalloffMultiplier: Double,
 			override val magazineSize: Int,
+			override val ammoType: String,
+			override val magazineType: String,
 			override val packetsPerShot: Int,
 			override val pitch: Float,
 			override val range: Double,
@@ -159,11 +178,14 @@ data class BalancingConfiguration(
 
 		@Serializable
 		data class AmmoStorage(
-			override val capacity: Int
+			override val capacity: Int,
+			override val ammoType: String
 		) : AmmoStorageBalancing
 
 		abstract class Balancing : ProjectileBalancing {
 			abstract val magazineSize: Int
+			abstract val ammoType: String
+			abstract val magazineType: String
 			abstract val packetsPerShot: Int
 			abstract val pitch: Float
 			abstract val recoil: Float
@@ -187,6 +209,7 @@ data class BalancingConfiguration(
 
 		interface AmmoStorageBalancing {
 			val capacity: Int
+			val ammoType: String
 		}
 	}
 
