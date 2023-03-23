@@ -252,6 +252,7 @@ class LegacyMultiblockShape {
 		fun netheriteBlock() = type(Material.NETHERITE_BLOCK)
 		fun emeraldBlock() = type(Material.EMERALD_BLOCK)
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
+		fun lapisBlock() = type(Material.LAPIS_BLOCK)
 		fun copperBlock() = anyType(
 			Material.COPPER_BLOCK,
 			Material.EXPOSED_COPPER,
