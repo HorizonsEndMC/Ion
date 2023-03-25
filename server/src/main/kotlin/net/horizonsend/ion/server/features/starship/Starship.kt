@@ -25,4 +25,9 @@ open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
 			field?.destroy()
 			field = value
 		}
+
+	/** Called when a starship is removed. Any cleanup logic should be done here. */
+	fun destroy() {
+		controller?.destroy()
+	}
 }

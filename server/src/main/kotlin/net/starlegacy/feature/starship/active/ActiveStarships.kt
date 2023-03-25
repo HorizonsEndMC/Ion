@@ -96,6 +96,8 @@ object ActiveStarships : SLComponent() {
 		}
 
 		StarshipDeactivatedEvent(starship).callEvent()
+
+		starship.destroy()
 	}
 
 	fun updateLocation(playerStarshipData: PlayerStarshipData, newWorld: World, newKey: Long) {
