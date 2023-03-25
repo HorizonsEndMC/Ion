@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldUnloadEvent
+import kotlin.DeprecationLevel.ERROR
 
 class IonWorld private constructor(
 	val serverLevel: ServerLevel,
@@ -37,17 +38,17 @@ class IonWorld private constructor(
 			ionWorlds.clear()
 		}
 
-		@Deprecated("Event Listener")
+		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
 		@Suppress("DeprecatedCallableAddReplaceWith")
 		fun onWorldInitEvent(event: WorldInitEvent) = register(event.world.minecraft)
 
-		@Deprecated("Event Listener")
+		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
 		@Suppress("DeprecatedCallableAddReplaceWith")
 		fun onWorldUnloadEvent(event: WorldUnloadEvent) = unregister(event.world.minecraft)
 
-		@Deprecated("Event Listener")
+		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
 		fun onServerTickStartEvent(@Suppress("UNUSED_PARAMETER") event: ServerTickStartEvent) {
 			for (ionWorld in ionWorlds.values) for (starship in ionWorld.starships) {
