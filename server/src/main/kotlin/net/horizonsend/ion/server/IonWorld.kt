@@ -19,7 +19,7 @@ class IonWorld private constructor(
 	companion object : Listener {
 		private val ionWorlds = mutableMapOf<ServerLevel, IonWorld>()
 
-		operator fun get(serverLevel: ServerLevel): IonWorld = ionWorlds[serverLevel]!!
+		operator fun get(serverLevel: ServerLevel) = ionWorlds[serverLevel]
 
 		fun register(serverLevel: ServerLevel) {
 			if (ionWorlds.contains(serverLevel)) {
