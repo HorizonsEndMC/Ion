@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.extensions.hint
+import net.horizonsend.ion.server.IonWorld
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.mainThreadCheck
 import net.minecraft.core.BlockPos
@@ -26,8 +27,20 @@ open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
 			field = value
 		}
 
+	/** Called on each server tick. */
+	fun tick() {
+		controller?.tick()
+		println("tick")
+	}
+
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
 	fun destroy() {
+		IonWorld[serverLevel].starships.remove(this)
 		controller?.destroy()
+	}
+
+	init {
+		@Suppress("LeakingThis") // This is done right at the end of the class's initialization, it *should* be fine
+		IonWorld[serverLevel].starships.add(this)
 	}
 }

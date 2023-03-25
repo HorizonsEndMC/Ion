@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonWorld
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners
@@ -12,7 +13,6 @@ import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListe
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
-import net.horizonsend.ion.server.features.worlds.WorldListeners
 import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
 import net.horizonsend.ion.server.miscellaneous.listeners.CancelListeners
@@ -22,23 +22,23 @@ import net.horizonsend.ion.server.miscellaneous.listeners.MiscListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.ResourcePackListener
 
 val listeners = arrayOf(
+	BlasterListeners(),
+	BountyListener(),
+	CancelListeners(),
 	ChunkLoadListener(IonServer),
-	WorldListeners(),
+	CustomItemListeners(),
+	EdenFixer9000(),
+	GameplayTweaksListeners(),
+	HeadListener(),
 	HyperspaceBeaconManager,
 	InventoryClickListener(),
 	InventoryCloseListener(),
 	InventoryDragListener(),
 	InventoryMoveItemListener(),
-	CancelListeners(),
-	HeadListener(),
-	GameplayTweaksListeners(),
-	ResourcePackListener(),
+	IonWorld,
 	MiscListeners(),
-	CustomItemListeners(),
-	BlasterListeners(),
-	BountyListener(),
-	EdenFixer9000(),
 	RecipeListener(),
+	ResourcePackListener(),
 	VoidNetwork(),
 
 	// Achievement Listeners
