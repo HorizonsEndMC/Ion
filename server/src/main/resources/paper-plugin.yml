@@ -27,3 +27,12 @@ dependencies:
 
   - name: dynmap
     required: false
+
+load-after:
+  - name: WorldEdit
+  - name: Citizens
+  - name: DiscordSRV
+  - name: LuckPerms
+  - name: Multiverse-Core
+  - name: Vault
+  - name: dynmap
