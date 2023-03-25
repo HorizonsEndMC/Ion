@@ -30,10 +30,6 @@ class IonWorld private constructor(
 			AreaShields.loadData()
 		}
 
-		fun unregister(serverLevel: ServerLevel) {
-			ionWorlds.remove(serverLevel)
-		}
-
 		fun unregisterAll() {
 			ionWorlds.clear()
 		}
@@ -45,8 +41,9 @@ class IonWorld private constructor(
 
 		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
-		@Suppress("DeprecatedCallableAddReplaceWith")
-		fun onWorldUnloadEvent(event: WorldUnloadEvent) = unregister(event.world.minecraft)
+		fun onWorldUnloadEvent(event: WorldUnloadEvent) {
+			ionWorlds.remove(event.world.minecraft)
+		}
 
 		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
