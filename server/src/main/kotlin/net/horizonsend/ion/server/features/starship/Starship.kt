@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship
 
-import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.mainThreadCheck
 import net.minecraft.core.BlockPos
@@ -21,7 +21,7 @@ open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
 
 	var controller: Controller? = null
 		set(value) {
-			(value ?: field)?.information("Updated control mode to ${value?.name ?: "None"}.")
+			(value ?: field)?.hint("Updated control mode to ${value?.name ?: "None"}.")
 			field?.destroy()
 			field = value
 		}
