@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.movement
 
 import co.aikar.commands.ConditionFailedException
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.BaseEntityBlock
@@ -150,7 +151,7 @@ object OptimizedMovement {
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>
 	) {
-		val lightEngine = world1.nms.lightEngine
+		val lightEngine = world1.minecraft.lightEngine
 		val air = Blocks.AIR.defaultBlockState()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
@@ -197,7 +198,7 @@ object OptimizedMovement {
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		blockDataTransform: (BlockState) -> BlockState
 	) {
-		val lightEngine = world2.nms.lightEngine
+		val lightEngine = world2.minecraft.lightEngine
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
 			val chunk = world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))

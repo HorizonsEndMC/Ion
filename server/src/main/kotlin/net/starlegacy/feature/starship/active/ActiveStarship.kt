@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -37,7 +38,6 @@ import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.d
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.msg
-import net.starlegacy.util.nms
 import net.starlegacy.util.squared
 import net.starlegacy.util.title
 import org.bukkit.Bukkit
@@ -224,7 +224,7 @@ abstract class ActiveStarship(
 	}
 
 	fun isWithinHitbox(loc: Location, tolerance: Int = 2): Boolean {
-		return serverLevel == loc.world.nms && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
+		return serverLevel == loc.world.minecraft && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
 	}
 
 	fun isWithinHitbox(entity: Entity, tolerance: Int = 2): Boolean {

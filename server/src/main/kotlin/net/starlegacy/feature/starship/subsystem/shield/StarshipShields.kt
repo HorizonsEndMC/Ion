@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.minecraft.world.level.Level
@@ -212,7 +213,7 @@ object StarshipShields : SLComponent() {
 		LAST_EXPLOSION_ABSORBED = false
 
 		val world: World = location.world
-		val nmsWorld = world.nms
+		val nmsWorld = world.minecraft
 		val chunkKey: Long = location.chunk.chunkKey
 
 		val time: Long = world.time

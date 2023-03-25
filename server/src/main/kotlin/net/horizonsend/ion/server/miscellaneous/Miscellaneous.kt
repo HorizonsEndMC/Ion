@@ -36,11 +36,8 @@ fun mainThreadCheck() {
 	}
 }
 
-val Player.minecraft: ServerPlayer
-	get() = (this as CraftPlayer).handle
-
-val World.minecraft: ServerLevel
-	get() = (this as CraftWorld).handle
+val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
+val World.minecraft: ServerLevel get() = (this as CraftWorld).handle
 
 fun highlightBlock(bukkitPlayer: Player, pos: BlockPos) {
 	val player = bukkitPlayer.minecraft

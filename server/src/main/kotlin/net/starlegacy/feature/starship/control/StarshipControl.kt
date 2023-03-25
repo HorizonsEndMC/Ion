@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
@@ -26,7 +27,6 @@ import net.starlegacy.util.displayNameString
 import net.starlegacy.util.isLava
 import net.starlegacy.util.isSign
 import net.starlegacy.util.isWater
-import net.starlegacy.util.nms
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
@@ -360,7 +360,7 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun getPing(player: Player): Int {
-		return player.nms.connection.player.latency
+		return player.minecraft.connection.player.latency
 	}
 
 	private fun rotation() {
