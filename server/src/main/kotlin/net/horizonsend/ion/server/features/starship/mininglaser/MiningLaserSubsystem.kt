@@ -11,6 +11,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
+import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
@@ -199,12 +200,21 @@ class MiningLaserSubsystem(
 	}
 
 	fun fire() {
+		val initialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
+		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
 		// Cancel if
 		val sign = getSign() ?: return cancelTask()
 
 		if (!ActiveStarships.isActive(starship)) {
 			setFiring(false, sign)
 			return
+		}
+
+		if (!SpaceWorlds.contains(starship.serverLevel.world)){
+			starship.sendMessage(
+				Component.text("The Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} wasn't able to initialize its gravitational collection beam and was disabled! (Move to a space world)")
+			)
+			return setFiring(false, sign, null)
 		}
 
 		val user = getPlayer((sign.line(3) as TextComponent).content()) ?: return setFiring(false, sign)
@@ -215,15 +225,6 @@ class MiningLaserSubsystem(
 
 			setFiring(false, sign)
 			return
-		}
-
-		val initialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
-		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
-
-		if (starship.isInternallyObstructed(getFirePos(), targetVector)) {
-			starship.sendMessage( // TODO make this work
-				Component.text("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!")
-			)
 		}
 
 		// Ray trace to get the hit position
@@ -245,6 +246,12 @@ class MiningLaserSubsystem(
 		CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks().apply { start(IonServer) }
 
 		val blocks = getBlocksToDestroy(laserEnd.block)
+		if (blocks.any() == starship.blocks.any()) {
+			starship.sendMessage(
+				Component.text("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!")
+			)
+			return setFiring(false, sign, null)
+		}
 		val blocksBroken = DrillMultiblock.breakBlocks(
 			sign = sign,
 			maxBroken = multiblock.maxBroken,
