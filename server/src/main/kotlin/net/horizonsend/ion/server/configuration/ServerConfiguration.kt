@@ -15,36 +15,7 @@ data class ServerConfiguration(
 	val serverName: String? = null,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
-	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(
-		"space2" to AsteroidConfig(
-			0.25,
-			14.0,
-			4,
-			arrayListOf(
-				AsteroidConfig.Palette(
-					1,
-					listOf(AsteroidConfig.Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)),
-					setOf(AsteroidConfig.Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), AsteroidConfig.Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3))
-				)
-			),
-			0.25,
-			arrayListOf(AsteroidConfig.AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
-			arrayListOf(
-				AsteroidConfig.WreckClass(
-					"biiiihg",
-					wrecks = listOf(
-						AsteroidConfig.WreckClass.Wreck(
-							"megayacht",
-							1,
-							mapOf("ITS_A_TRAP" to 1)
-						)
-					),
-					1
-				)
-			),
-			1.0
-		)
-	)
+	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf()
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -209,7 +180,7 @@ data class ServerConfiguration(
 		val z: Int
 	) {
 		fun bukkitWorld(): World = Bukkit.getWorld(world) ?: throw
-		java.lang.NullPointerException("Could not find world $world")
+		kotlin.NullPointerException("Could not find world $world")
 
 		fun toBlockPos(): BlockPos = BlockPos(x, y, z)
 
