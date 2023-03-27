@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.space.generation.generators
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
+import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerationReturnData.CompletedSection
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtUtils
@@ -26,7 +28,7 @@ class GenerateAsteroidTask(
 	override val returnData = CompletableDeferred<AsteroidGenerationData.AsteroidReturnData>()
 
 	override fun generate() {
-		val sectionMap = mutableMapOf<ChunkPos, List<SpaceGenerationReturnData.CompletedSection>>()
+		val completableSectionMap = mutableMapOf<ChunkPos, Map<Int, CompletableDeferred<CompletedSection>>>()
 
 		SpaceGenerationManager.coroutineScope.launch {
 			// save some time
@@ -69,124 +71,144 @@ class GenerateAsteroidTask(
 
 					val sections = mutableListOf<Int>()
 
+					val completableSections = mutableMapOf<Int, CompletableDeferred<CompletedSection>>()
+
 					for (chunkSectionY in chunkYRange) {
 						val ySqr = (chunkSectionY - asteroid.y.shr(4)) * (chunkSectionY - asteroid.y.shr(4))
 
 						if ((circle + ySqr) <= radiusSquared) {
+							// Create the deferred now so that they may be awaited on later
+							completableSections[chunkSectionY] = CompletableDeferred()
 							sections += chunkSectionY
 						}
 					}
 
-					coveredChunks[ChunkPos(chunkPosX, chunkPosZ)] = sections
+					val chunkPos = ChunkPos(chunkPosX, chunkPosZ)
+
+					coveredChunks[chunkPos] = sections
+					completableSectionMap[chunkPos] = completableSections
 				}
 			}
 			// Covered chunks acquired
 
 			// For each covered chunk
 			for ((nmsChunkPos, sectionList) in coveredChunks) {
-				val chunkCompletedSections = mutableListOf<SpaceGenerationReturnData.CompletedSection>()
+				// if this is null, something is seriously wrong and the nullpo is the least of your concerns
+				val chunkCompletedSections = completableSectionMap[nmsChunkPos]!!
 
 				val chunkMinX = nmsChunkPos.x.shl(4)
 				val chunkMinZ = nmsChunkPos.z.shl(4)
 
 				for (sectionPos in sectionList) {
-					val newlyCompleted = generateSection(
+					val future = chunkCompletedSections[sectionPos]!!
+
+					generateSection(
+						future,
 						sectionPos,
 						chunkMinX,
 						chunkMinZ
-					) ?: continue
-
-					chunkCompletedSections.add(newlyCompleted)
+					)
 				}
-
-				// Return if chunk has no new blocks
-				if (chunkCompletedSections.isEmpty()) continue
-
-				sectionMap[nmsChunkPos] = chunkCompletedSections
 			}
 
-			returnData.complete(
-				AsteroidGenerationData.AsteroidReturnData(
-					sectionMap
-				)
-			)
+			complete(completableSectionMap)
 		}
+	}
+
+	private suspend fun complete(chunks: Map<ChunkPos, Map<Int, CompletableDeferred<CompletedSection>>>) {
+		val completedSections = mutableMapOf<ChunkPos, List<CompletedSection?>>()
+
+		for ((chunk, sections) in chunks) {
+			completedSections[chunk] = sections.values.awaitAll()
+		}
+
+		val nullRemoved = completedSections.mapValues { (_, sections) -> sections.filterNotNull() }
+
+		returnData.complete(
+			AsteroidGenerationData.AsteroidReturnData(nullRemoved)
+		)
 	}
 
 	/**
 	 * Generates one level chunk section (16 * 16 * 16)
-	 *
+	 * @param completable pre-created completable future that is completed by this function
 	 *
 	 **/
 	private fun generateSection(
+		completable: CompletableDeferred<CompletedSection>,
 		sectionY: Int,
 		chunkMinX: Int,
 		chunkMinZ: Int
-	): SpaceGenerationReturnData.CompletedSection? {
-		val palette = mutableSetOf<BlockState>()
-		val storedBlocks = arrayOfNulls<Int>(4096)
-		var index = 0
-		val sectionMinY = sectionY.shl(4)
+	): CompletableDeferred<CompletedSection> {
+		SpaceGenerationManager.coroutineScope.launch {
+			val palette = mutableSetOf<BlockState>()
+			val storedBlocks = arrayOfNulls<Int>(4096)
+			var index = 0
+			val sectionMinY = sectionY.shl(4)
 
-		palette.add(Blocks.AIR.defaultBlockState())
-		val paletteListTag = ListTag()
+			palette.add(Blocks.AIR.defaultBlockState())
+			val paletteListTag = ListTag()
 
-		for (x in 0..15) {
-			val worldX = chunkMinX + x
-			val worldXDouble = worldX.toDouble()
-			val xSquared = (worldXDouble - asteroid.x) * (worldXDouble - asteroid.x)
+			for (x in 0..15) {
+				val worldX = chunkMinX + x
+				val worldXDouble = worldX.toDouble()
+				val xSquared = (worldXDouble - asteroid.x) * (worldXDouble - asteroid.x)
 
-			for (z in 0..15) {
-				val worldZ = chunkMinZ + z
-				val worldZDouble = worldZ.toDouble()
-				val zSquared = (worldZDouble - asteroid.z) * (worldZDouble - asteroid.z)
+				for (z in 0..15) {
+					val worldZ = chunkMinZ + z
+					val worldZDouble = worldZ.toDouble()
+					val zSquared = (worldZDouble - asteroid.z) * (worldZDouble - asteroid.z)
 
-				for (y in 0..15) {
-					val worldY = sectionMinY + y
-					val worldYDouble = worldY.toDouble()
-					val ySquared = (worldYDouble - asteroid.y) * (worldYDouble - asteroid.y)
+					for (y in 0..15) {
+						val worldY = sectionMinY + y
+						val worldYDouble = worldY.toDouble()
+						val ySquared = (worldYDouble - asteroid.y) * (worldYDouble - asteroid.y)
 
-					var block: BlockState? =
-						checkBlockPlacement(
-							worldXDouble,
-							worldYDouble,
-							worldZDouble,
-							xSquared,
-							ySquared,
-							zSquared
-						)
+						var block: BlockState? =
+							checkBlockPlacement(
+								worldXDouble,
+								worldYDouble,
+								worldZDouble,
+								xSquared,
+								ySquared,
+								zSquared
+							)
 
-					if (
-						(
+						if ((
 							generator.random.nextDouble(0.0, 1.0) <= generator.configuration.oreRatio &&
 								block != null
 							) && !block.isAir
-					) {
-						val ore = generator.weightedOres[asteroid.paletteID]!!.random()
-						block = generator.oreMap[ore]
+						) {
+							val ore = generator.weightedOres[asteroid.paletteID]!!.random()
+							block = generator.oreMap[ore]
+						}
+
+						if (block != null) {
+							palette.add(block)
+							storedBlocks[index] = palette.indexOf(block)
+						} else {
+							storedBlocks[index] = 0
+						}
+
+						index++
 					}
-
-					if (block != null) {
-						palette.add(block)
-						storedBlocks[index] = palette.indexOf(block)
-					} else { storedBlocks[index] = 0 }
-
-					index++
 				}
 			}
+
+			palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
+			val intArray = storedBlocks.requireNoNulls().toIntArray()
+
+			completable.complete(
+				CompletedSection(
+					sectionY,
+					intArray,
+					palette.map { it to null }.toSet(),
+					paletteListTag
+				)
+			)
 		}
 
-		if (storedBlocks.all { it == 0 }) return null // don't write it if it's all empty
-
-		palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
-		val intArray = storedBlocks.requireNoNulls().toIntArray()
-
-		return SpaceGenerationReturnData.CompletedSection(
-			sectionY,
-			intArray,
-			palette.map { it to null }.toSet(),
-			paletteListTag
-		)
+		return completable
 	}
 
 	/**
@@ -232,8 +254,7 @@ class GenerateAsteroidTask(
 		// Continue if block is not inside any asteroid
 		if (worldXSquared + worldYSquared + worldZSquared >= fullNoise) return null
 
-		return asteroid.palette.random()
-// 		return asteroid.palette.getEntry(paletteSample)
+		return asteroid.palette.getEntry(paletteSample)
 	}
 }
 

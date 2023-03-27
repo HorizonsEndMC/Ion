@@ -231,8 +231,8 @@ data class WreckGenerationData(
 		val secondaryChests: Map<ChunkPos, List<CompoundTag>>
 	) : SpaceGenerationReturnData() {
 		@OptIn(ExperimentalCoroutinesApi::class)
-		override fun complete(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
-			val chunks = super.complete(generator)
+		override fun finishPlacement(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
+			val chunks = super.finishPlacement(generator)
 
 			chunks.invokeOnCompletion {
 				val finishedChunks = chunks.getCompleted()

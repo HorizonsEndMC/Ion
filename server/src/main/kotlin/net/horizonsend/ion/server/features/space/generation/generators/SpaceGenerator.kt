@@ -356,13 +356,15 @@ abstract class SpaceGenerationReturnData {
 		val nmsPalette: ListTag
 	)
 
-	open fun complete(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
+	open fun finishPlacement(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
 		val asyncChunks = completedSectionMap.map { (chunkPos, _) ->
 			generator.serverLevel.world.getChunkAtAsync(chunkPos.x, chunkPos.z)
 		}.toTypedArray()
 
 		val chunks = CompletableDeferred<Map<ChunkPos, Chunk>>()
 
+		// Using a completable future here, so I can thenAccept while keeping it sync.
+		// Using a .await() would require it to be in a suspend function or coroutine.
 		CompletableFuture.allOf(*asyncChunks).thenAccept {
 			val completedLevelChunks = asyncChunks.map {
 				val levelChunk = (it.get() as CraftChunk).handle
