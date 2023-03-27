@@ -116,7 +116,6 @@ class EncounterManager : Listener {
 				)
 			)
 
-
 		val player = event.player
 		val secondaryChests = wreckData.getList("SecondaryChests", 10) // list of compound tags (10)
 		wreckData.remove("SecondaryChests")
