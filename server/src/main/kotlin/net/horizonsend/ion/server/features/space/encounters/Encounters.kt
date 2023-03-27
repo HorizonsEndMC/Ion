@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.util.toNMSBlockData
+import net.starlegacy.util.nms
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
@@ -60,7 +60,7 @@ abstract class Encounter(
 	val identifier: String
 ) {
 	open fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		return Material.CHEST.toNMSBlockData() to null
+		return Material.CHEST.createBlockData().nms to null
 	}
 
 	open fun onChestInteract(event: PlayerInteractEvent) {}
