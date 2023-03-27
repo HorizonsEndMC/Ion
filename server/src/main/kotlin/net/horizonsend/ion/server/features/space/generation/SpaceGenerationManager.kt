@@ -86,8 +86,6 @@ object SpaceGenerationManager : Listener {
 
 			if (asteroidY - asteroid.size < event.world.minHeight) continue
 
-			println(asteroid.palette)
-
 			generateFeature(GenerateAsteroidTask(generator, asteroid))
 		}
 
@@ -116,11 +114,12 @@ object SpaceGenerationManager : Listener {
 		task.generate()
 		val completableData = task.returnData
 
-		completableData.invokeOnCompletion {
+		task.returnData.invokeOnCompletion {
 			val completed = completableData.getCompleted()
 
 			Tasks.sync {
-				val chunks = completed.complete(task.generator)
+				val chunks = completed.finishPlacement(task.generator)
+
 				completed.store(task.generator, chunks)
 
 				task.postProcess(completed)

@@ -43,8 +43,8 @@ val listeners = arrayOf(
 	MiscListeners(),
 	RecipeListener(),
 	SpaceGenerationManager,
-	ResourcePackListener(),
 	EncounterManager,
+	ResourcePackListener(),
 	VoidNetwork(),
 
 	// Achievement Listeners
