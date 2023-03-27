@@ -185,7 +185,7 @@ data class ServerConfiguration(
 		val z: Int
 	) {
 		fun bukkitWorld(): World = Bukkit.getWorld(world) ?: throw
-		java.lang.NullPointerException("Could not find world $world")
+		kotlin.NullPointerException("Could not find world $world")
 
 		fun toBlockPos(): BlockPos = BlockPos(x, y, z)
 

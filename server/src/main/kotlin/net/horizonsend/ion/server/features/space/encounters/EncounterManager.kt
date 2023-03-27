@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.nbt.CompoundTag
@@ -16,7 +17,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
-object EncounterManager : Listener {
+class EncounterManager : Listener {
 
 	// Handles primary chests
 	@EventHandler
@@ -36,17 +37,14 @@ object EncounterManager : Listener {
 
 		// Check if the chunk of the event contains an encounter, if not, return
 
-		val wreckData = try { // get existing asteroid data
-			NbtIo.readCompressed(
-				ByteArrayInputStream(
-					pdc,
-					0,
-					pdc.size
-				)
+		// get existing asteroid data
+		val wreckData = NbtIo.readCompressed(
+			ByteArrayInputStream(
+				pdc,
+				0,
+				pdc.size
 			)
-		} catch (error: Error) {
-			error.printStackTrace(); return
-		}
+		)
 
 		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
 		wreckData.remove("Wrecks")
@@ -67,9 +65,8 @@ object EncounterManager : Listener {
 				val encounter = Encounters.getByIdentifier(wreck.getString("Encounter Identifier"))
 
 				if (encounter == null) {
-					val exception = NoSuchElementException("could not find wreck encounter $wreck")
-					exception.printStackTrace()
-					throw exception
+					IonServer.slF4JLogger.error("could not find wreck encounter $wreck")
+					continue
 				}
 
 				existingWrecks.remove(wreck)
@@ -107,10 +104,10 @@ object EncounterManager : Listener {
 			NamespacedKeys.WRECK_ENCOUNTER_DATA,
 			PersistentDataType.BYTE_ARRAY
 		) ?: return
-
 		// Check if the chunk of the event contains an encounter, if not, return
 
-		val wreckData = try { // get existing asteroid data
+		// get existing wreck data
+		val wreckData =
 			NbtIo.readCompressed(
 				ByteArrayInputStream(
 					pdc,
@@ -118,9 +115,7 @@ object EncounterManager : Listener {
 					pdc.size
 				)
 			)
-		} catch (error: Error) {
-			error.printStackTrace(); return
-		}
+
 
 		val player = event.player
 		val secondaryChests = wreckData.getList("SecondaryChests", 10) // list of compound tags (10)
