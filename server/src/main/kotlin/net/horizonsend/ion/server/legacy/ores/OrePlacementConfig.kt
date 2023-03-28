@@ -125,7 +125,6 @@ enum class OrePlacementConfig(
 			Material.DIORITE
 		),
 		mapOf(
-			Ore.Netherite to 1,
 			Ore.Aluminium to 2
 		)
 	),
