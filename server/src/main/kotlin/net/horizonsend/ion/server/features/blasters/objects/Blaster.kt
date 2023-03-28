@@ -62,9 +62,9 @@ abstract class Blaster<T : Balancing>(
 
 		for (magazineItem in livingEntity.inventory) {
 			if (magazineItem == null) continue // check not null
-			val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // turn into custom item
+			val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // To get magazine properties
 			if (ammo >= balancing.magazineSize) continue // Check if blaster magazine is full
-			if (magazineCustomItem.identifier != balancing.magazineType) continue // Only Magazines
+			if (magazineCustomItem.identifier != balancing.magazineType) continue // Only correct magazine
 
 			val magazineAmmo = (magazineCustomItem as AmmunitionHoldingItem).getAmmunition(magazineItem)
 			val amountToTake = (balancing.magazineSize - ammo).coerceAtMost(magazineAmmo)

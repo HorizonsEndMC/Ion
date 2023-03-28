@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.client.Packets
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
-import net.horizonsend.ion.server.features.customItems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.commands
 import net.horizonsend.ion.server.miscellaneous.initializeCrafting
 import net.horizonsend.ion.server.miscellaneous.listeners
