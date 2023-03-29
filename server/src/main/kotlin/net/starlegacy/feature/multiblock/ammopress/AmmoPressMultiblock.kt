@@ -126,37 +126,34 @@ abstract class AmmoPressMultiblock() : PowerStoringMultiblock(), FurnaceMultiblo
 		furnace: Furnace,
 		sign: Sign
 	) {
-		event.isBurning = false
-		event.burnTime = 0
-		val inventory = furnace.inventory
-		val smelting = inventory.smelting
-		val item = event.fuel
-		val itemAsCustomItem = item.customItem
-		if (smelting == null || smelting.type != Material.PRISMARINE_CRYSTALS) {
-			return
-		}
-		if (PowerMachines.getPower(sign) == 0) {
-			event.isCancelled = true
-			return
-		}
-		if (itemAsCustomItem == null) {
-			return
-		}
-		if ((itemAsCustomItem as AmmunitionHoldingItem).getAmmunition(item) == itemAsCustomItem.getMaximumAmmunition()) {
-			val result = inventory.result
-			if (result != null && result.type != Material.AIR) return
-			inventory.result = event.fuel
-			inventory.fuel = null
+		event.isCancelled = true
+		val smelting = furnace.inventory.smelting
+		val fuel = furnace.inventory.fuel
+		val fuelCustomItem = fuel?.customItem
+
+		if (PowerMachines.getPower(sign) == 0 ||
+			smelting == null ||
+			smelting.type != Material.PRISMARINE_CRYSTALS ||
+			fuel == null ||
+			fuelCustomItem == null
+		) {
 			return
 		}
 
-		itemAsCustomItem.setAmmunition(item, furnace.inventory, itemAsCustomItem.getAmmunition(item) + 1)
-		PowerMachines.removePower(sign, 250)
-		furnace.cookTime = 20.toShort()
-		event.isCancelled = false
-		val fuel = furnace.inventory.fuel ?: return
-		PowerMachines.removePower(sign, 250)
 		event.isBurning = false
 		event.burnTime = 20
+		furnace.cookTime = (-1000).toShort()
+		event.isCancelled = false
+
+		if ((fuelCustomItem as AmmunitionHoldingItem).getAmmunition(fuel) == fuelCustomItem.getMaximumAmmunition()) {
+			val result = furnace.inventory.result
+			if (result != null && result.type != Material.AIR) return
+			furnace.inventory.result = event.fuel
+			furnace.inventory.fuel = null
+			return
+		}
+
+		fuelCustomItem.setAmmunition(fuel, furnace.inventory, fuelCustomItem.getAmmunition(fuel) + 1)
+		PowerMachines.removePower(sign, 250)
 	}
 }
