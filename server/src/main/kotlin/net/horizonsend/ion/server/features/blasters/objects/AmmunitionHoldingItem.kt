@@ -27,12 +27,19 @@ abstract class AmmunitionHoldingItem(
 			it.displayName(displayName)
 			it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
 			it.persistentDataContainer.set(AMMO, INTEGER, getMaximumAmmunition())
-			it.lore(listOf(Component.text("Ammo: ${getMaximumAmmunition()} / ${getMaximumAmmunition()}")))
+			it.lore(
+				listOf(
+					Component.text("Ammo: ${getMaximumAmmunition()} / ${getMaximumAmmunition()}"),
+					Component.text("Refill: ${getTypeAmmunition()}"),
+					if (this is Blaster<*>) Component.text("Magazine: ${getTypeMagazine()}") else null
+				)
+			)
 		}
 	}
 
 	protected abstract fun getMaximumAmmunition(): Int
 	protected abstract fun getTypeAmmunition(): String
+	protected abstract fun getTypeMagazine(): String
 
 	fun getAmmunition(itemStack: ItemStack): Int {
 		// stupid undefined nullability
@@ -43,7 +50,13 @@ abstract class AmmunitionHoldingItem(
 		@Suppress("NAME_SHADOWING") val ammunition = ammunition.coerceIn(0, getMaximumAmmunition())
 
 		itemStack.editMeta {
-			it.lore(listOf(Component.text("Ammo: $ammunition / ${getMaximumAmmunition()}")))
+			it.lore(
+				listOf(
+					Component.text("Ammo: $ammunition / ${getMaximumAmmunition()}"),
+					Component.text("Refill: ${getTypeAmmunition()}"),
+					if (this is Blaster<*>) Component.text("Magazine: ${getTypeMagazine()}") else null
+				)
+			)
 			it.persistentDataContainer.set(AMMO, INTEGER, ammunition)
 		}
 

@@ -118,6 +118,7 @@ abstract class Blaster<T : Balancing>(
 
 	override fun getMaximumAmmunition(): Int = balancing.magazineSize
 	override fun getTypeAmmunition(): String = balancing.ammoType
+	override fun getTypeMagazine(): String = balancing.magazineType
 
 	override fun setAmmunition(itemStack: ItemStack, inventory: Inventory, ammunition: Int) {
 		super.setAmmunition(itemStack, inventory, ammunition)
