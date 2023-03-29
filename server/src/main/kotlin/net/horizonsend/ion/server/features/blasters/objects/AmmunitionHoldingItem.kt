@@ -30,16 +30,17 @@ abstract class AmmunitionHoldingItem(
 			it.lore(
 				listOf(
 					Component.text("Ammo: ${getMaximumAmmunition()} / ${getMaximumAmmunition()}"),
-					Component.text("Refill: ${getTypeAmmunition()}"),
+					Component.text("Refill: ${getTypeRefill()}"),
 					if (this is Blaster<*>) Component.text("Magazine: ${getTypeMagazine()}") else null
 				)
 			)
+			it.isUnbreakable = true
 		}
 	}
 
-	protected abstract fun getMaximumAmmunition(): Int
-	protected abstract fun getTypeAmmunition(): String
-	protected abstract fun getTypeMagazine(): String
+	abstract fun getMaximumAmmunition(): Int
+	abstract fun getTypeRefill(): String
+	abstract fun getTypeMagazine(): String
 
 	fun getAmmunition(itemStack: ItemStack): Int {
 		// stupid undefined nullability
@@ -53,7 +54,7 @@ abstract class AmmunitionHoldingItem(
 			it.lore(
 				listOf(
 					Component.text("Ammo: $ammunition / ${getMaximumAmmunition()}"),
-					Component.text("Refill: ${getTypeAmmunition()}"),
+					Component.text("Refill: ${getTypeRefill()}"),
 					if (this is Blaster<*>) Component.text("Magazine: ${getTypeMagazine()}") else null
 				)
 			)
