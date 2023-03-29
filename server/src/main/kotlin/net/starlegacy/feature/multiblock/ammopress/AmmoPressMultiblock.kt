@@ -1,5 +1,8 @@
 package net.starlegacy.feature.multiblock.ammopress
 
+import net.horizonsend.ion.server.features.blasters.objects.AmmunitionHoldingItem
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
@@ -123,6 +126,37 @@ abstract class AmmoPressMultiblock() : PowerStoringMultiblock(), FurnaceMultiblo
 		furnace: Furnace,
 		sign: Sign
 	) {
-		TODO("Not yet implemented")
+		event.isBurning = false
+		event.burnTime = 0
+		val inventory = furnace.inventory
+		val smelting = inventory.smelting
+		val item = event.fuel
+		val itemAsCustomItem = item.customItem
+		if (smelting == null || smelting.type != Material.PRISMARINE_CRYSTALS) {
+			return
+		}
+		if (PowerMachines.getPower(sign) == 0) {
+			event.isCancelled = true
+			return
+		}
+		if (itemAsCustomItem == null) {
+			return
+		}
+		if ((itemAsCustomItem as AmmunitionHoldingItem).getAmmunition(item) == itemAsCustomItem.getMaximumAmmunition()) {
+			val result = inventory.result
+			if (result != null && result.type != Material.AIR) return
+			inventory.result = event.fuel
+			inventory.fuel = null
+			return
+		}
+
+		itemAsCustomItem.setAmmunition(item, furnace.inventory, itemAsCustomItem.getAmmunition(item) + 1)
+		PowerMachines.removePower(sign, 250)
+		furnace.cookTime = 20.toShort()
+		event.isCancelled = false
+		val fuel = furnace.inventory.fuel ?: return
+		PowerMachines.removePower(sign, 250)
+		event.isBurning = false
+		event.burnTime = 20
 	}
 }
