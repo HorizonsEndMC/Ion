@@ -10,6 +10,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import kotlin.DeprecationLevel.ERROR
+import net.horizonsend.ion.server.miscellaneous.mainThreadCheck
 
 class IonWorld private constructor(
 	val serverLevel: ServerLevel,
@@ -19,9 +20,15 @@ class IonWorld private constructor(
 	companion object : Listener {
 		private val ionWorlds = mutableMapOf<ServerLevel, IonWorld>()
 
-		operator fun get(serverLevel: ServerLevel) = ionWorlds[serverLevel]
+		operator fun get(serverLevel: ServerLevel): IonWorld? {
+			mainThreadCheck()
+
+			return ionWorlds[serverLevel]
+		}
 
 		fun register(serverLevel: ServerLevel) {
+			mainThreadCheck()
+
 			if (ionWorlds.contains(serverLevel)) {
 				throw IllegalStateException("Attempted to register server level which is already registered!")
 			}
@@ -31,29 +38,36 @@ class IonWorld private constructor(
 		}
 
 		fun unregisterAll() {
+			mainThreadCheck()
+
 			ionWorlds.clear()
 		}
 
 		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
-		@Suppress("DeprecatedCallableAddReplaceWith")
-		fun onWorldInitEvent(event: WorldInitEvent) = register(event.world.minecraft)
+		fun onWorldInitEvent(event: WorldInitEvent) {
+			mainThreadCheck()
+
+			register(event.world.minecraft)
+		}
 
 		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
 		fun onWorldUnloadEvent(event: WorldUnloadEvent) {
+			mainThreadCheck()
+
 			ionWorlds.remove(event.world.minecraft)
 		}
 
 		@Deprecated("Event Listener", level = ERROR)
 		@EventHandler
 		fun onServerTickStartEvent(@Suppress("UNUSED_PARAMETER") event: ServerTickStartEvent) {
-			for (ionWorld in ionWorlds.values) for (starship in ionWorld.starships) {
-				try {
-					starship.tick()
-				} catch (exception: Exception) {
-					IonServer.slF4JLogger.warn("Exception while ticking starship!", exception)
-				}
+			mainThreadCheck()
+
+			for (ionWorld in ionWorlds.values)
+			for (starship in ionWorld.starships) {
+				val result = runCatching(starship::tick)
+				IonServer.slF4JLogger.warn("Exception while ticking starship!", result.exceptionOrNull() ?: return)
 			}
 		}
 	}
