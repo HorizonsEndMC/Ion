@@ -29,6 +29,28 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
+	val STANDARD_MAGAZINE =
+		register(
+			object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>(
+				identifier = "STANDARD_MAGAZINE",
+				material = WARPED_FUNGUS_ON_A_STICK,
+				customModelData = 1,
+				displayName = text("Standard Magazine").decoration(ITALIC, false),
+				balancingSupplier = IonServer.balancing.energyWeapons::standardMagazine
+			) {}
+		)
+
+	val SPECIAL_MAGAZINE =
+		register(
+			object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>(
+				identifier = "SPECIAL_MAGAZINE",
+				material = WARPED_FUNGUS_ON_A_STICK,
+				customModelData = 2,
+				displayName = text("Special Magazine").decoration(ITALIC, false),
+				balancingSupplier = IonServer.balancing.energyWeapons::specialMagazine
+			) {}
+		)
+
 	val PISTOL =
 		register(
 			object : Blaster<Singleshot>(
@@ -36,6 +58,7 @@ object CustomItems {
 				material = DIAMOND_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Pistol", RED, BOLD).decoration(ITALIC, false),
+				magazineType = STANDARD_MAGAZINE,
 				balancingSupplier = IonServer.balancing.energyWeapons::pistol
 			) {}
 		)
@@ -47,6 +70,7 @@ object CustomItems {
 				material = IRON_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Rifle", RED, BOLD).decoration(ITALIC, false),
+				magazineType = STANDARD_MAGAZINE,
 				balancingSupplier = IonServer.balancing.energyWeapons::rifle
 			) {}
 		)
@@ -58,6 +82,7 @@ object CustomItems {
 				material = IRON_HOE,
 				customModelData = 2,
 				displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
+				magazineType = STANDARD_MAGAZINE,
 				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
@@ -90,6 +115,7 @@ object CustomItems {
 				material = GOLDEN_HOE,
 				customModelData = 1,
 				displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
+				magazineType = SPECIAL_MAGAZINE,
 				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
@@ -105,29 +131,8 @@ object CustomItems {
 				material = GOLDEN_HOE,
 				customModelData = 2,
 				displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
+				magazineType = SPECIAL_MAGAZINE,
 				balancingSupplier = IonServer.balancing.energyWeapons::sniper
-			) {}
-		)
-
-	val STANDARD_MAGAZINE =
-		register(
-			object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>(
-				identifier = "STANDARD_MAGAZINE",
-				material = WARPED_FUNGUS_ON_A_STICK,
-				customModelData = 1,
-				displayName = text("Standard Magazine").decoration(ITALIC, false),
-				balancingSupplier = IonServer.balancing.energyWeapons::standardMagazine
-			) {}
-		)
-
-	val SPECIAL_MAGAZINE =
-		register(
-			object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>(
-				identifier = "SPECIAL_MAGAZINE",
-				material = WARPED_FUNGUS_ON_A_STICK,
-				customModelData = 2,
-				displayName = text("Special Magazine").decoration(ITALIC, false),
-				balancingSupplier = IonServer.balancing.energyWeapons::specialMagazine
 			) {}
 		)
 

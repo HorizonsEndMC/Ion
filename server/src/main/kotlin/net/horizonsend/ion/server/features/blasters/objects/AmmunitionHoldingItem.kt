@@ -24,27 +24,27 @@ abstract class AmmunitionHoldingItem(
 
 	private val material: Material,
 	private val customModelData: Int,
-	private val displayName: Component,
+	val displayName: Component,
 
 	private val shouldDeleteItem: Boolean = false
 ) : CustomItem(identifier) {
 
 	override fun constructItemStack(): ItemStack {
-		val ammoCount = empty()
+		val ammoCountComponent = empty()
 			.decoration(ITALIC, false)
 			.append(text("Ammo: ", GRAY))
 			.append(text(getMaximumAmmunition(), AQUA))
 			.append(text(" / ", GRAY))
 			.append(text(getMaximumAmmunition(), AQUA))
-		val refillType = empty()
+		val refillTypeComponent = empty()
 			.decoration(ITALIC, false)
 			.append(text("Refill: ", GRAY))
 			.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
-		val magazineType = if (this is Blaster<*>) {
+		val magazineTypeComponent = if (this is Blaster<*>) {
 			empty()
 				.decoration(ITALIC, false)
 				.append(text("Magazine: ", GRAY))
-				.append(text(getTypeMagazine(), AQUA))
+				.append(magazineType.displayName).color(AQUA)
 		} else null
 
 		return ItemStack(material).updateMeta {
@@ -52,13 +52,12 @@ abstract class AmmunitionHoldingItem(
 			it.displayName(displayName)
 			it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
 			it.persistentDataContainer.set(AMMO, INTEGER, getMaximumAmmunition())
-			it.lore(listOf(ammoCount, refillType, magazineType))
+			it.lore(listOf(ammoCountComponent, refillTypeComponent, magazineTypeComponent))
 			it.isUnbreakable = true
 		}
 	}
 
 	abstract fun getMaximumAmmunition(): Int
-	abstract fun getTypeMagazine(): String
 	abstract fun getTypeRefill(): String
 	abstract fun getAmmoPerRefill(): Int
 
@@ -70,25 +69,25 @@ abstract class AmmunitionHoldingItem(
 	open fun setAmmunition(itemStack: ItemStack, inventory: Inventory, ammunition: Int) {
 		@Suppress("NAME_SHADOWING") val ammunition = ammunition.coerceIn(0, getMaximumAmmunition())
 
-		val ammoCount = empty()
+		val ammoCountComponent = empty()
 			.decoration(ITALIC, false)
 			.append(text("Ammo: ", GRAY))
 			.append(text(ammunition, AQUA))
 			.append(text(" / ", GRAY))
 			.append(text(getMaximumAmmunition(), AQUA))
-		val refillType = empty()
+		val refillTypeComponent = empty()
 			.decoration(ITALIC, false)
 			.append(text("Refill: ", GRAY))
 			.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
-		val magazineType = if (this is Blaster<*>) {
+		val magazineTypeComponent = if (this is Blaster<*>) {
 			empty()
 				.decoration(ITALIC, false)
 				.append(text("Magazine: ", GRAY))
-				.append(text(getTypeMagazine(), AQUA))
+				.append(magazineType.displayName).color(AQUA)
 		} else null
 
 		itemStack.editMeta {
-			it.lore(listOf(ammoCount, refillType, magazineType))
+			it.lore(listOf(ammoCountComponent, refillTypeComponent, magazineTypeComponent))
 			it.persistentDataContainer.set(AMMO, INTEGER, ammunition)
 		}
 
