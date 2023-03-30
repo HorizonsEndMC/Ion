@@ -4,12 +4,10 @@ import java.net.URL
 plugins {
 	kotlin("plugin.serialization") version "1.8.10" apply false
 	alias(libs.plugins.shadow) apply false
-	alias(libs.plugins.spotless)
 	alias(libs.plugins.kotlin)
 }
 
 allprojects {
-	apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
 	apply(plugin = rootProject.libs.plugins.kotlin.get().pluginId)
 
 	if (name != "common" && rootProject != this) {
@@ -39,25 +37,6 @@ allprojects {
 	}
 
 	kotlin.jvmToolchain(17)
-
-	tasks.build {
-		dependsOn("spotlessApply")
-	}
-
-	spotless {
-		kotlin {
-			ktlint("0.47.1").editorConfigOverride(mapOf(
-				"ktlint_disabled_rules" to arrayOf(
-					"annotation", // Inlining annotations is cleaner sometimes
-					"argument-list-wrapping" // This seems to break arbitrarily with MenuHelper.kt, come back to this
-				).joinToString()
-			))
-
-			trimTrailingWhitespace()
-			indentWithTabs()
-			endWithNewline()
-		}
-	}
 }
 
 // TODO: Use Json
