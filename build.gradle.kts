@@ -2,7 +2,7 @@ import java.net.URL
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-	kotlin("plugin.serialization") version "1.8.10" apply false
+	kotlin("plugin.serialization") version "1.8.20" apply false
 	alias(libs.plugins.shadow) apply false
 	alias(libs.plugins.kotlin)
 }
