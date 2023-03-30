@@ -13,7 +13,6 @@ data class BalancingConfiguration(
 			damage = 3.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 15,
-			magazineType = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
@@ -35,7 +34,6 @@ data class BalancingConfiguration(
 			damage = 2.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 30,
-			magazineType = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
@@ -57,7 +55,6 @@ data class BalancingConfiguration(
 			damage = 2.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 30,
-			magazineType = "STANDARD_MAGAZINE",
 			refillType = "minecraft:lapis_lazuli",
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
@@ -79,7 +76,6 @@ data class BalancingConfiguration(
 			damage = 12.0,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 5,
-			magazineType = "SPECIAL_MAGAZINE",
 			refillType = "minecraft:emerald",
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
@@ -102,7 +98,6 @@ data class BalancingConfiguration(
 			damageFalloffMultiplier = 0.25,
 			delay = 0,
 			magazineSize = 4,
-			magazineType = "SPECIAL_MAGAZINE",
 			refillType = "minecraft:emerald",
 			ammoPerRefill = 20,
 			offsetMax = 0.05,
@@ -138,7 +133,6 @@ data class BalancingConfiguration(
 			override val damage: Double,
 			override val damageFalloffMultiplier: Double,
 			override val magazineSize: Int,
-			override val magazineType: String,
 			override val refillType: String,
 			override val ammoPerRefill: Int,
 			override val packetsPerShot: Int,
@@ -166,7 +160,6 @@ data class BalancingConfiguration(
 			override val damage: Double,
 			override val damageFalloffMultiplier: Double,
 			override val magazineSize: Int,
-			override val magazineType: String,
 			override val refillType: String,
 			override val ammoPerRefill: Int,
 			override val packetsPerShot: Int,
@@ -194,7 +187,6 @@ data class BalancingConfiguration(
 
 		abstract class Balancing : ProjectileBalancing {
 			abstract val magazineSize: Int
-			abstract val magazineType: String
 			abstract val refillType: String
 			abstract val ammoPerRefill: Int
 			abstract val packetsPerShot: Int

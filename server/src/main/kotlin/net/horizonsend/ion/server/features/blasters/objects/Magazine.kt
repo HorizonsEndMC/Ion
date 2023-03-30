@@ -16,7 +16,6 @@ abstract class Magazine<T : BalancingConfiguration.EnergyWeapon.AmmoStorageBalan
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
 	val balancing get() = balancingSupplier.get()
 	override fun getMaximumAmmunition(): Int = balancing.capacity
-	override fun getTypeMagazine(): String = ""
 	override fun getTypeRefill(): String = balancing.refillType
 	override fun getAmmoPerRefill(): Int = balancing.ammoPerRefill
 }
