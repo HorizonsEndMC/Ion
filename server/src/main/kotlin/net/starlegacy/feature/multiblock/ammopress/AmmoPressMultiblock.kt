@@ -10,6 +10,7 @@ import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import java.lang.Integer.min
 
 abstract class AmmoPressMultiblock() : PowerStoringMultiblock(), FurnaceMultiblock {
 
@@ -153,7 +154,8 @@ abstract class AmmoPressMultiblock() : PowerStoringMultiblock(), FurnaceMultiblo
 			return
 		}
 
-		fuelCustomItem.setAmmunition(fuel, furnace.inventory, fuelCustomItem.getAmmunition(fuel) + 1)
+		val ammoToSet = min(fuelCustomItem.getMaximumAmmunition() - fuelCustomItem.getAmmunition(fuel), fuelCustomItem.getAmmoPerRefill())
+		fuelCustomItem.setAmmunition(fuel, furnace.inventory, fuelCustomItem.getAmmunition(fuel) + ammoToSet)
 		PowerMachines.removePower(sign, 250)
 	}
 }
