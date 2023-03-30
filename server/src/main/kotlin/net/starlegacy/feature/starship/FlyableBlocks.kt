@@ -142,6 +142,7 @@ import org.bukkit.Material.SPONGE
 import org.bukkit.Material.SPRUCE_FENCE_GATE
 import org.bukkit.Material.STICKY_PISTON
 import org.bukkit.Material.STONECUTTER
+import org.bukkit.Material.TERRACOTTA
 import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.VERDANT_FROGLIGHT
@@ -307,7 +308,9 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	WARPED_FENCE_GATE,
 
 	LIGHTNING_ROD,
-	NETHERITE_BLOCK
+	NETHERITE_BLOCK,
+
+	TERRACOTTA
 
 ).also {
 	it.addAll(CONCRETE_TYPES)
