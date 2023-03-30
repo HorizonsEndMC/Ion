@@ -235,7 +235,7 @@ object Extractors : SLComponent() {
 	}
 
 	// TODO: Make this mostly async
-	private fun handlePipe(world: World, extractorLocation: Vec3i, inventoryLocations: Set<Vec3i>, pipeLocations: Set<BlockFace>) {
+	private fun handlePipe(world: World, extractorLocation: Vec3i, inventoryLocations: Set<Vec3i>, pipeLocations: Set<BlockFace>) = Tasks.sync {
 		var cancelled = true
 
 		try {
@@ -262,7 +262,7 @@ object Extractors : SLComponent() {
 			}
 
 			if (inventories.isEmpty()) {
-				return
+				return@sync
 			}
 
 			// filter it to only locations that are still loaded and pipe blocks
@@ -274,7 +274,7 @@ object Extractors : SLComponent() {
 			}
 
 			if (pipes.isEmpty()) {
-				return
+				return@sync
 			}
 
 			val pipe: BlockFace = pipes.randomEntry()
