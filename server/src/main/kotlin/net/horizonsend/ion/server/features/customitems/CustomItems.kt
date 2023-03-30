@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.BOLD
+import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.updateMeta
 import org.bukkit.Material.DIAMOND_HOE
@@ -34,7 +35,7 @@ object CustomItems {
 				identifier = "PISTOL",
 				material = DIAMOND_HOE,
 				customModelData = 1,
-				displayName = text("Blaster Pistol", RED, BOLD),
+				displayName = text("Blaster Pistol", RED, BOLD).decoration(ITALIC, false),
 				balancingSupplier = IonServer.balancing.energyWeapons::pistol
 			) {}
 		)
@@ -45,7 +46,7 @@ object CustomItems {
 				identifier = "RIFLE",
 				material = IRON_HOE,
 				customModelData = 1,
-				displayName = text("Blaster Rifle", RED, BOLD),
+				displayName = text("Blaster Rifle", RED, BOLD).decoration(ITALIC, false),
 				balancingSupplier = IonServer.balancing.energyWeapons::rifle
 			) {}
 		)
@@ -56,7 +57,7 @@ object CustomItems {
 				identifier = "SUBMACHINE_BLASTER",
 				material = IRON_HOE,
 				customModelData = 2,
-				displayName = text("Submachine Blaster", RED, BOLD),
+				displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
 				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
@@ -88,7 +89,7 @@ object CustomItems {
 				identifier = "SHOTGUN",
 				material = GOLDEN_HOE,
 				customModelData = 1,
-				displayName = text("Blaster Shotgun", RED, BOLD),
+				displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
 				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
@@ -103,7 +104,7 @@ object CustomItems {
 				identifier = "SNIPER",
 				material = GOLDEN_HOE,
 				customModelData = 2,
-				displayName = text("Blaster Sniper", RED, BOLD),
+				displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
 				balancingSupplier = IonServer.balancing.energyWeapons::sniper
 			) {}
 		)
@@ -114,7 +115,7 @@ object CustomItems {
 				identifier = "STANDARD_MAGAZINE",
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 1,
-				displayName = text("Standard Magazine"),
+				displayName = text("Standard Magazine").decoration(ITALIC, false),
 				balancingSupplier = IonServer.balancing.energyWeapons::standardMagazine
 			) {}
 		)
@@ -125,7 +126,7 @@ object CustomItems {
 				identifier = "SPECIAL_MAGAZINE",
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 2,
-				displayName = text("Special Magazine"),
+				displayName = text("Special Magazine").decoration(ITALIC, false),
 				balancingSupplier = IonServer.balancing.energyWeapons::specialMagazine
 			) {}
 		)
@@ -145,7 +146,7 @@ object CustomItems {
 			override fun constructItemStack(): ItemStack {
 				return ItemStack(WARPED_FUNGUS_ON_A_STICK).updateMeta {
 					it.setCustomModelData(customModelData)
-					it.displayName(component)
+					it.displayName(component.decoration(ITALIC, false))
 					it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
 				}
 			}
