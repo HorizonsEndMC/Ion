@@ -8,6 +8,7 @@ import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.getFacing
 import org.bukkit.Material
+import org.bukkit.Material.matchMaterial
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
@@ -153,7 +154,7 @@ abstract class AmmoPressMultiblock() : PowerStoringMultiblock(), FurnaceMultiblo
 		val state = sign.block.getRelative(direction, 7).getState(false)
 			as? InventoryHolder ?: return
 		val inventory = state.inventory
-		val typeRefill = Material.values().find { it.name == fuelCustomItem.getTypeRefill() } ?: return
+		val typeRefill = matchMaterial(fuelCustomItem.getTypeRefill()) ?: return
 		if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
 
 		event.isBurning = false
