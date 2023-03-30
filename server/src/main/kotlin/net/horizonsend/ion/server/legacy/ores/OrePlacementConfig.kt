@@ -126,7 +126,8 @@ enum class OrePlacementConfig(
 		),
 		mapOf(
 			Ore.Aluminium to 2
-		)
+		),
+		configVersion = 1
 	),
 	Chimgara(
 		enumSetOf(
