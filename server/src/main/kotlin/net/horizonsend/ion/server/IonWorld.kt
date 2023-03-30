@@ -66,8 +66,8 @@ class IonWorld private constructor(
 
 			for (ionWorld in ionWorlds.values)
 			for (starship in ionWorld.starships) {
-				val result = runCatching(starship::tick)
-				IonServer.slF4JLogger.warn("Exception while ticking starship!", result.exceptionOrNull() ?: return)
+				val result = runCatching(starship::tick).exceptionOrNull() ?: return
+				IonServer.slF4JLogger.warn("Exception while ticking starship!", result)
 			}
 		}
 	}
