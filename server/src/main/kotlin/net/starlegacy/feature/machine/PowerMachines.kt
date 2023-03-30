@@ -8,8 +8,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.util.time
-import net.starlegacy.util.timing
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -25,9 +23,6 @@ object PowerMachines : SLComponent() {
 	private val prefix = "${ChatColor.YELLOW}E: ${ChatColor.GREEN}"
 
 	override fun onEnable() {
-		powerSettingTiming = timing("Power Machine Machine Power Setting")
-		powerGettingTiming = timing("Power Machine Power Getting")
-
 		// IIRC the below is a hacky fix for generators, it should be removed if possible, moved if not
 
 		val deadBush = ItemStack(Material.DEAD_BUSH)
@@ -48,20 +43,20 @@ object PowerMachines : SLComponent() {
 	private val prefixComponent = Component.text("E: ", NamedTextColor.YELLOW)
 
 	@JvmOverloads
-	fun setPower(sign: Sign, power: Int, fast: Boolean = true): Int = powerSettingTiming.time {
+	fun setPower(sign: Sign, power: Int, fast: Boolean = true): Int {
 		val correctedPower: Int = if (!fast) {
-			val multiblock = (Multiblocks[sign] ?: return@time 0) as? PowerStoringMultiblock ?: return@time 0
+			val multiblock = (Multiblocks[sign] ?: return 0) as? PowerStoringMultiblock ?: return 0
 			power.coerceIn(0, multiblock.maxPower)
 		} else {
 			power.coerceAtLeast(0)
 		}
 
-		if (!sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return@time power
+		if (!sign.persistentDataContainer.has(NamespacedKeys.MULTIBLOCK)) return power
 
 		sign.persistentDataContainer.set(NamespacedKeys.POWER, PersistentDataType.INTEGER, correctedPower)
 		sign.line(2, Component.text().append(prefixComponent, Component.text(correctedPower, NamedTextColor.GREEN)).build())
 		sign.update(false, false)
-		return@time power
+		return power
 	}
 
 	@JvmOverloads

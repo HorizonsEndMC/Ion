@@ -81,8 +81,6 @@ import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomTriTurretMu
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopTriTurretMultiblock
-import net.starlegacy.util.time
-import net.starlegacy.util.timing
 import org.bukkit.Location
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
@@ -199,9 +197,6 @@ object Multiblocks : SLComponent() {
 	override fun onEnable() {
 		initMultiblocks()
 
-		gettingTiming = timing("Multiblock Getting")
-		detectionTiming = timing("Multiblock Detection")
-
 		log.info("Loaded ${multiblocks.size} multiblocks")
 	}
 
@@ -209,11 +204,7 @@ object Multiblocks : SLComponent() {
 
 	@JvmStatic
 	@JvmOverloads
-	operator fun get(
-		sign: Sign,
-		checkStructure: Boolean = true,
-		loadChunks: Boolean = true
-	): Multiblock? = gettingTiming.time {
+	operator fun get(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true): Multiblock?  {
 		val location: Location = sign.location
 
 		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)
@@ -235,7 +226,7 @@ object Multiblocks : SLComponent() {
 				}
 
 				// it still matches so returned the cached one
-				return@time cached
+				return cached
 			} else {
 				// it no longer matches so remove it, and re-detect it afterwards
 				multiblockCache.remove(location)
@@ -258,11 +249,11 @@ object Multiblocks : SLComponent() {
 				if (checkStructure) {
 					multiblockCache[location] = multiblock
 				}
-				return@time multiblock
+				return multiblock
 			}
 		}
 
-		return@time null
+		return null
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

@@ -7,8 +7,6 @@ import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isWallSign
-import net.starlegacy.util.time
-import net.starlegacy.util.timing
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -19,12 +17,6 @@ import org.bukkit.event.inventory.FurnaceSmeltEvent
 import org.bukkit.inventory.ItemStack
 
 object FurnaceListener : SLEventListener() {
-	// lazy to ensure loaded after multiblocks
-	val timings by lazy {
-		Multiblocks.all().filterIsInstance<FurnaceMultiblock>()
-			.associateWith { timing("furnace-multiblock-${it.javaClass.simpleName}") }
-	}
-
 	// thing for generally all furnace multiblocks
 	@EventHandler
 	fun onFurnaceBurn(event: FurnaceBurnEvent) {
@@ -50,9 +42,8 @@ object FurnaceListener : SLEventListener() {
 				event.isCancelled = true
 				return
 			}
-			timings.getValue(multiblock).time {
-				multiblock.onFurnaceTick(event, state, sign)
-			}
+
+			multiblock.onFurnaceTick(event, state, sign)
 		}
 	}
 

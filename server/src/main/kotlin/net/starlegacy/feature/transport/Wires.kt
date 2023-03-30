@@ -1,6 +1,5 @@
 package net.starlegacy.feature.transport
 
-import co.aikar.timings.Timing
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServer
@@ -18,8 +17,6 @@ import net.starlegacy.util.getStateIfLoaded
 import net.starlegacy.util.matchesAxis
 import net.starlegacy.util.orNull
 import net.starlegacy.util.randomEntry
-import net.starlegacy.util.time
-import net.starlegacy.util.timing
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -40,10 +37,6 @@ object Wires : SLComponent() {
 
 	private lateinit var thread: ExecutorService
 
-	private val completionTiming: Timing = timing("Wire Completion")
-	private val powerMachineFindingTiming = timing("Power Machine Finding")
-	private val powerMachineUpdateTiming = timing("Power Machine Update")
-
 	// region cache stuff for sync code
 	// should only be updated from the checkComputers
 	private val powerSignUpdateCache = CacheBuilder.newBuilder()
@@ -61,16 +54,14 @@ object Wires : SLComponent() {
 		.build<Location, Optional<CachedPowerStore>>(
 			CacheLoader.from { loc ->
 				checkNotNull(loc)
-				return@from powerMachineFindingTiming.time {
-					for ((x, y, z) in offsets) {
-						val state = getStateIfLoaded(loc.world, loc.blockX + x, loc.blockY + y, loc.blockZ + z)
-						val sign = state as? Sign ?: continue
-						val multiblock = Multiblocks[sign, true, false] as? PowerStoringMultiblock
-							?: continue
-						return@time Optional.of(CachedPowerStore(multiblock, sign))
-					}
-					return@time Optional.empty()
+				for ((x, y, z) in offsets) {
+					val state = getStateIfLoaded(loc.world, loc.blockX + x, loc.blockY + y, loc.blockZ + z)
+					val sign = state as? Sign ?: continue
+					val multiblock = Multiblocks[sign, true, false] as? PowerStoringMultiblock
+						?: continue
+					return@from Optional.of(CachedPowerStore(multiblock, sign))
 				}
+				return@from Optional.empty()
 			}
 		)
 	private val computerCheckQueue = ConcurrentLinkedQueue<() -> Unit>()
@@ -110,20 +101,16 @@ object Wires : SLComponent() {
 
 			val maxTime = TimeUnit.MILLISECONDS.toNanos(transportConfig.wires.powerUpdateMaxTime)
 
-			completionTiming.time {
-				while (!computerCheckQueue.isEmpty() && System.nanoTime() - start < maxTime) {
-					computerCheckQueue.poll().invoke()
-				}
-
-				if (System.nanoTime() - start > maxTime) {
-					IonServer.slF4JLogger.warn("Power update took too long!")
-				}
+			while (!computerCheckQueue.isEmpty() && System.nanoTime() - start < maxTime) {
+				computerCheckQueue.poll().invoke()
 			}
 
-			powerMachineUpdateTiming.time {
-				for ((sign, power) in powerSignUpdateCache.asMap()) {
-					PowerMachines.setPower(sign, power, fast = true)
-				}
+			if (System.nanoTime() - start > maxTime) {
+				IonServer.slF4JLogger.warn("Power update took too long!")
+			}
+
+			for ((sign, power) in powerSignUpdateCache.asMap()) {
+				PowerMachines.setPower(sign, power, fast = true)
 			}
 
 			powerSignUpdateCache.invalidateAll()

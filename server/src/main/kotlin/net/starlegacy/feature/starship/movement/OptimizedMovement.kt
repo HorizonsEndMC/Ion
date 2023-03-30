@@ -22,8 +22,6 @@ import net.starlegacy.util.chunkKey
 import net.starlegacy.util.chunkKeyX
 import net.starlegacy.util.chunkKeyZ
 import net.starlegacy.util.nms
-import net.starlegacy.util.time
-import net.starlegacy.util.timing
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Material
@@ -38,8 +36,6 @@ object OptimizedMovement {
 	private val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW)
 		.map { it.createBlockData().nms }
 		.toSet()
-
-	private val timing = timing("Starship Movement")
 
 	fun moveStarship(
 		starship: ActiveStarship,
@@ -65,33 +61,31 @@ object OptimizedMovement {
 					return@syncBlocking
 				}
 
-				timing.time {
-					checkForCollision(world2, collisionChunkMap, hangars, newPositionArray)
+				checkForCollision(world2, collisionChunkMap, hangars, newPositionArray)
 
-					processOldBlocks(
-						oldChunkMap,
-						world1,
-						world2,
-						capturedStates,
-						capturedTiles
-					)
+				processOldBlocks(
+					oldChunkMap,
+					world1,
+					world2,
+					capturedStates,
+					capturedTiles
+				)
 
-					dissipateHangarBlocks(world2, hangars)
+				dissipateHangarBlocks(world2, hangars)
 
-					processNewBlocks(
-						newPositionArray,
-						newChunkMap,
-						world1,
-						world2,
-						capturedStates,
-						capturedTiles,
-						blockDataTransform
-					)
+				processNewBlocks(
+					newPositionArray,
+					newChunkMap,
+					world1,
+					world2,
+					capturedStates,
+					capturedTiles,
+					blockDataTransform
+				)
 
-					callback()
+				callback()
 
-					sendChunkUpdatesToPlayers(world1, world2, oldChunkMap, newChunkMap)
-				}
+				sendChunkUpdatesToPlayers(world1, world2, oldChunkMap, newChunkMap)
 			}
 		} catch (e: ExecutionException) {
 			throw e.cause ?: e

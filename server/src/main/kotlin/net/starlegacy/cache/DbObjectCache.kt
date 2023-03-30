@@ -1,6 +1,5 @@
 package net.starlegacy.cache
 
-import co.aikar.timings.Timing
 import com.googlecode.cqengine.ConcurrentIndexedCollection
 import com.googlecode.cqengine.attribute.support.FunctionalSimpleAttribute
 import com.googlecode.cqengine.attribute.support.SimpleFunction
@@ -11,7 +10,6 @@ import net.starlegacy.database.DbObject
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.oid
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.timing
 import org.litote.kmongo.Id
 import kotlin.reflect.KProperty1
 
@@ -23,11 +21,6 @@ abstract class DbObjectCache<T : DbObject, ID : Id<T>>(private val companion: Oi
 
 	//    private val mutex = Any()
 	//    private fun synced(block: () -> Unit): Unit = synchronized(mutex, block)
-	private fun synced(timing: Timing, block: () -> Unit): Unit = Tasks.syncTimed(timing, block)
-
-	private val insertTiming = timing("${javaClass.simpleName} Insert")
-	private val updateTiming = timing("${javaClass.simpleName} Update")
-	private val deleteTiming = timing("${javaClass.simpleName} Delete")
 
 	override fun load() {
 		cache = ConcurrentIndexedCollection()
@@ -38,21 +31,21 @@ abstract class DbObjectCache<T : DbObject, ID : Id<T>>(private val companion: Oi
 
 		companion.watchInserts { change ->
 			val fullDocument = change.fullDocument ?: return@watchInserts
-			synced(insertTiming) {
+			Tasks.sync {
 				cache.add(fullDocument)
 				onInsert(fullDocument)
 			}
 		}
 
 		companion.watchUpdates { change ->
-			synced(updateTiming) {
+			Tasks.sync {
 				val cached = this[change.oid as ID]
 				update(cached, change)
 			}
 		}
 
 		companion.watchDeletes {
-			synced(deleteTiming) {
+			Tasks.sync {
 				val cached = this[it.oid as ID]
 				cache.remove(cached)
 				onDelete(cached)

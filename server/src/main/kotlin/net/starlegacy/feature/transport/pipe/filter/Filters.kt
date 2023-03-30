@@ -6,8 +6,6 @@ import com.google.common.cache.LoadingCache
 import net.starlegacy.SLComponent
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.time
-import net.starlegacy.util.timing
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -25,25 +23,21 @@ import org.bukkit.inventory.ItemStack
 import java.util.concurrent.TimeUnit
 
 object Filters : SLComponent() {
-	private val timing = timing("Filter Caching")
-
 	private val cache: LoadingCache<FilterDataKey, FilterData> = CacheBuilder.newBuilder()
 		.expireAfterWrite(1L, TimeUnit.MINUTES)
 		.build(
 			CacheLoader.from { key ->
-				return@from timing.time {
-					checkNotNull(key)
-					val world = checkNotNull(Bukkit.getWorld(key.world))
-					val block = world.getBlockAtKey(key.pos.toBlockKey())
+				checkNotNull(key)
+				val world = checkNotNull(Bukkit.getWorld(key.world))
+				val block = world.getBlockAtKey(key.pos.toBlockKey())
 
-					val state = block.getState(false) as Hopper
+				val state = block.getState(false) as Hopper
 
-					val inventory = state.inventory
-					val items: Set<FilterItemData> = getItemData(inventory)
+				val inventory = state.inventory
+				val items: Set<FilterItemData> = getItemData(inventory)
 
-					val face: BlockFace = (state.blockData as Directional).facing
-					return@time FilterData(items, face)
-				}
+				val face: BlockFace = (state.blockData as Directional).facing
+				return@from FilterData(items, face)
 			}
 		)
 

@@ -22,8 +22,6 @@ import net.starlegacy.util.isGlassPane
 import net.starlegacy.util.isStainedGlass
 import net.starlegacy.util.isStainedGlassPane
 import net.starlegacy.util.randomEntry
-import net.starlegacy.util.time
-import net.starlegacy.util.timing
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -55,61 +53,58 @@ object Pipes : SLComponent() {
 	}
 
 	private fun schedule() {
-		val inventoryCheckTiming = timing("Pipe Inventory Checks")
-
 		val interval = transportConfig.pipes.inventoryCheckInterval
 
 		Tasks.syncRepeat(delay = interval, interval = interval) {
 			val start = System.nanoTime()
-			inventoryCheckTiming.time {
-				var drained = 0
 
-				val maxTime = TimeUnit.MILLISECONDS.toNanos(transportConfig.pipes.inventoryCheckMaxTime)
+			var drained = 0
 
-				while (!inventoryCheckTasks.isEmpty() && System.nanoTime() - start < maxTime) {
-					val task = inventoryCheckTasks.poll()
-					pending.decrementAndGet()
-					drained++
+			val maxTime = TimeUnit.MILLISECONDS.toNanos(transportConfig.pipes.inventoryCheckMaxTime)
 
-					val data = task.data
+			while (!inventoryCheckTasks.isEmpty() && System.nanoTime() - start < maxTime) {
+				val task = inventoryCheckTasks.poll()
+				pending.decrementAndGet()
+				drained++
 
-					if (!data.world.isChunkLoaded(task.x shr 4, task.z shr 4) || task.inventories.any {
-						!data.world.isChunkLoaded((task.x + it.modX) shr 4, (task.z + it.modZ) shr 4)
-					}
-					) {
-						queueNotBusy(data.extractor)
-						continue
-					}
+				val data = task.data
 
-					execute(task)
+				if (!data.world.isChunkLoaded(task.x shr 4, task.z shr 4) || task.inventories.any {
+					!data.world.isChunkLoaded((task.x + it.modX) shr 4, (task.z + it.modZ) shr 4)
+				}
+				) {
+					queueNotBusy(data.extractor)
+					continue
 				}
 
-				val pendingNow = pending.get()
-				if (pendingNow > 10_000) {
-					log.warn("$pendingNow tasks pending, $drained drained!")
-					if (pendingNow > 20_000) {
-						log.warn("Clearing queue!")
-						val worldCounts = mutableMapOf<World, AtomicInteger>()
-						val chunkCounts = mutableMapOf<Pair<World, Long>, AtomicInteger>()
-						while (!inventoryCheckTasks.isEmpty()) {
-							val task = inventoryCheckTasks.poll()
-							val data = task.data
-							Extractors.BUSY_PIPE_EXTRACTORS.remove(data.extractor)
-							pending.decrementAndGet()
-							val world = data.world
-							worldCounts.getOrPut(world, ::AtomicInteger).incrementAndGet()
-							val chunkKey = chunkKey(task.x shr 4, task.z shr 4)
-							chunkCounts.getOrPut(world to chunkKey, ::AtomicInteger).incrementAndGet()
-						}
-						for ((world, count) in worldCounts.entries.sortedByDescending { it.value.get() }) {
-							log.warn("Cleared ${count.get()} in ${world.name}")
-						}
-						for ((key, count) in chunkCounts.entries.sortedByDescending { it.value.get() }) {
-							val (world, chunkKey) = key
-							val cx = chunkKeyX(chunkKey)
-							val cz = chunkKeyZ(chunkKey)
-							log.warn("Cleared ${count.get()} in ${world.name} at $cx $cz")
-						}
+				execute(task)
+			}
+
+			val pendingNow = pending.get()
+			if (pendingNow > 10_000) {
+				log.warn("$pendingNow tasks pending, $drained drained!")
+				if (pendingNow > 20_000) {
+					log.warn("Clearing queue!")
+					val worldCounts = mutableMapOf<World, AtomicInteger>()
+					val chunkCounts = mutableMapOf<Pair<World, Long>, AtomicInteger>()
+					while (!inventoryCheckTasks.isEmpty()) {
+						val task = inventoryCheckTasks.poll()
+						val data = task.data
+						Extractors.BUSY_PIPE_EXTRACTORS.remove(data.extractor)
+						pending.decrementAndGet()
+						val world = data.world
+						worldCounts.getOrPut(world, ::AtomicInteger).incrementAndGet()
+						val chunkKey = chunkKey(task.x shr 4, task.z shr 4)
+						chunkCounts.getOrPut(world to chunkKey, ::AtomicInteger).incrementAndGet()
+					}
+					for ((world, count) in worldCounts.entries.sortedByDescending { it.value.get() }) {
+						log.warn("Cleared ${count.get()} in ${world.name}")
+					}
+					for ((key, count) in chunkCounts.entries.sortedByDescending { it.value.get() }) {
+						val (world, chunkKey) = key
+						val cx = chunkKeyX(chunkKey)
+						val cz = chunkKeyZ(chunkKey)
+						log.warn("Cleared ${count.get()} in ${world.name} at $cx $cz")
 					}
 				}
 			}

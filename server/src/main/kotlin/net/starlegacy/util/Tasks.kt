@@ -1,6 +1,5 @@
 package net.starlegacy.util
 
-import co.aikar.timings.Timing
 import net.horizonsend.ion.server.IonServer
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
@@ -40,8 +39,6 @@ object Tasks {
 
 	inline fun syncRepeatTask(delay: Long, interval: Long, crossinline block: () -> Unit): BukkitTask =
 		Bukkit.getScheduler().runTaskTimer(IonServer, Runnable { block() }, delay, interval)
-
-	fun syncTimed(timing: Timing, block: () -> Unit): Unit = sync { timing.time(block) }
 
 	/**
 	 * @param hour Hour of day, 0-23

@@ -31,7 +31,6 @@ import net.starlegacy.util.getFacing
 import net.starlegacy.util.getSphereBlocks
 import net.starlegacy.util.nms
 import net.starlegacy.util.rightFace
-import net.starlegacy.util.timing
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -203,8 +202,6 @@ object StarshipShields : SLComponent() {
 	}
 
 	private fun formatPercent(percent: Double): Double = (percent * 1000).toInt().toDouble() / 10.0
-
-	private val recentExplosionCheckTiming = timing("shields.recent_explosion_check")
 
 	private val flaringBlocks = PerWorld { LongOpenHashSet() }
 	private val flaringChunks = PerWorld { LongOpenHashSet() }

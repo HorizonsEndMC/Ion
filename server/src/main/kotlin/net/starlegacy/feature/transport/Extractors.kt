@@ -17,7 +17,6 @@ import net.starlegacy.util.getStateIfLoaded
 import net.starlegacy.util.gzip
 import net.starlegacy.util.randomEntry
 import net.starlegacy.util.randomFloat
-import net.starlegacy.util.timing
 import net.starlegacy.util.ungzip
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.Material
@@ -235,15 +234,8 @@ object Extractors : SLComponent() {
 			adjacentType == Material.HOPPER
 	}
 
-	private val pipeTiming = timing("Extractor Pipe Launching")
-
 	// TODO: Make this mostly async
-	private fun handlePipe(
-		world: World,
-		extractorLocation: Vec3i,
-		inventoryLocations: Set<Vec3i>,
-		pipeLocations: Set<BlockFace>
-	): Unit = Tasks.syncTimed(pipeTiming) {
+	private fun handlePipe(world: World, extractorLocation: Vec3i, inventoryLocations: Set<Vec3i>, pipeLocations: Set<BlockFace>) {
 		var cancelled = true
 
 		try {
@@ -270,7 +262,7 @@ object Extractors : SLComponent() {
 			}
 
 			if (inventories.isEmpty()) {
-				return@syncTimed
+				return
 			}
 
 			// filter it to only locations that are still loaded and pipe blocks
@@ -282,7 +274,7 @@ object Extractors : SLComponent() {
 			}
 
 			if (pipes.isEmpty()) {
-				return@syncTimed
+				return
 			}
 
 			val pipe: BlockFace = pipes.randomEntry()
