@@ -1,42 +1,10 @@
 import java.net.URL
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
+	id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+
 	kotlin("plugin.serialization") version "1.8.20" apply false
-	alias(libs.plugins.shadow) apply false
-	alias(libs.plugins.kotlin)
-}
-
-allprojects {
-	apply(plugin = rootProject.libs.plugins.kotlin.get().pluginId)
-
-	if (name != "common" && rootProject != this) {
-		apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
-
-		dependencies { implementation(project(":common")) }
-
-		tasks.build {
-			dependsOn("shadowJar")
-		}
-	}
-
-	repositories {
-		mavenCentral()
-
-		maven("https://repo.horizonsend.net/mirror")
-
-		maven("https://repo.papermc.io/repository/maven-public/") // Waterfall
-		maven("https://repo.aikar.co/content/groups/aikar/") // Annotation Command Framework (Paper)
-		maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
-		maven("https://repo.codemc.io/repository/maven-snapshots/") // WorldEdit
-		maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
-		maven("https://s01.oss.sonatype.org/content/repositories/snapshots") // DiscordSRV Depends
-		maven("https://jitpack.io") // Dynmap (Spigot), Vault, NuVotifier
-		maven("https://maven.citizensnpcs.co/repo") // Citizens
-		maven("https://m2.dv8tion.net/releases/")
-	}
-
-	kotlin.jvmToolchain(17)
+	kotlin("jvm") version "1.8.20" apply false
 }
 
 // TODO: Use Json
