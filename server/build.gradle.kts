@@ -30,7 +30,7 @@ dependencies {
 	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-	compileOnly("com.discordsrv:discordsrv:1.25.1")
+	compileOnly("com.discordsrv:discordsrv:1.26.2")
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies
