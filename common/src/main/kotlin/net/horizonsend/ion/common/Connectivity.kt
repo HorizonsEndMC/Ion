@@ -32,9 +32,7 @@ object Connectivity {
 		database = Database.connect(datasource)
 
 		transaction {
-			SchemaUtils.create(PlayerData.Table)
-			SchemaUtils.create(PlayerVoteTime.Table)
-			SchemaUtils.create(PlayerAchievement.Table)
+			SchemaUtils.createMissingTablesAndColumns(PlayerData.Table, PlayerVoteTime.Table, PlayerAchievement.Table)
 		}
 
 		jedisPool = JedisPooled(configuration.redisConnectionUri)
