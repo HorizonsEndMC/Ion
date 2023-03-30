@@ -18,9 +18,6 @@ class PlayerData(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
 	val achievements by PlayerAchievement.EntityClass referrersOn PlayerAchievement.Table.player
 	val voteTimes by PlayerVoteTime.EntityClass referrersOn PlayerVoteTime.Table.player
 
-	var acceptedBounty by Table.acceptedBounty
-	var bounty by Table.bounty
-
 	var particle by Table.particle
 	var color by Table.color
 
@@ -45,9 +42,6 @@ class PlayerData(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
 		val uuid = id
 		val username = varchar("username", 16).uniqueIndex()
 		val snowflake = long("snowflake").nullable().uniqueIndex()
-
-		val acceptedBounty = uuid("accepted_bounty").nullable()
-		val bounty = integer("bounty").default(0)
 
 		val particle = varchar("particle", 24).nullable()
 		val color = integer("color").nullable()

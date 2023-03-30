@@ -8,8 +8,6 @@ import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.bounties.BountyScreen
-import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.economy.CityNPC
@@ -188,7 +186,6 @@ object CityNPCs : SLComponent() {
 			CityNPC.Type.IMPORTER -> ShipmentManager.onImport(player, cityInfo)
 			CityNPC.Type.BAZAAR -> Bazaars.onClickBazaarNPC(player, cityInfo)
 			CityNPC.Type.MERCHANT -> Merchants.onClickMerchantNPC(player, cityInfo)
-			CityNPC.Type.BOUNTYBROKER -> player.openScreen(BountyScreen())
 		}
 	}
 
