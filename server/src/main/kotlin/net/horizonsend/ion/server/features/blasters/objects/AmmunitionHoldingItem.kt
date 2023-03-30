@@ -39,8 +39,9 @@ abstract class AmmunitionHoldingItem(
 	}
 
 	abstract fun getMaximumAmmunition(): Int
-	abstract fun getTypeRefill(): String
 	abstract fun getTypeMagazine(): String
+	abstract fun getTypeRefill(): String
+	abstract fun getAmmoPerRefill(): Int
 
 	fun getAmmunition(itemStack: ItemStack): Int {
 		// stupid undefined nullability
