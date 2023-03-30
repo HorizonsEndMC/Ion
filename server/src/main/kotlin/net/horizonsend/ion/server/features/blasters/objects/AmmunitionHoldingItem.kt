@@ -4,7 +4,11 @@ import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.AMMO
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.CUSTOM_ITEM
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.starlegacy.util.updateMeta
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -30,21 +34,21 @@ abstract class AmmunitionHoldingItem(
 			it.persistentDataContainer.set(AMMO, INTEGER, getMaximumAmmunition())
 			it.lore(
 				listOf(
-					Component.text(
-						"Ammo: ", NamedTextColor.GRAY
-					)
-						.append(Component.text("${getMaximumAmmunition()}", NamedTextColor.AQUA))
-						.append(Component.text(" / ", NamedTextColor.GRAY))
-						.append(Component.text("${getMaximumAmmunition()}", NamedTextColor.AQUA)),
-					Component.text(
-						"Refill: ", NamedTextColor.GRAY
-					)
-						.append(Component.text(getTypeRefill(), NamedTextColor.AQUA)),
+					empty()
+						.decoration(ITALIC, false)
+						.append(text("Ammo: ", GRAY))
+						.append(text(getMaximumAmmunition(), AQUA))
+						.append(text(" / ", GRAY))
+						.append(text(getMaximumAmmunition(), AQUA)),
+					empty()
+						.decoration(ITALIC, false)
+						.append(text("Refill: ", GRAY))
+						.append(text(getTypeRefill().lowercase().split('_').joinToString(separator = " ") { word -> word.replaceFirstChar { it.uppercase() } }, AQUA)),
 					if (this is Blaster<*>) {
-						Component.text(
-							"Magazine: ", NamedTextColor.GRAY
-						)
-							.append(Component.text(getTypeMagazine(), NamedTextColor.AQUA))
+						empty()
+							.decoration(ITALIC, false)
+							.append(text("Magazine: ", GRAY))
+							.append(text(getTypeMagazine().lowercase().split('_').joinToString(separator = " ") { word -> word.replaceFirstChar { it.uppercase() } }, AQUA))
 					} else {
 						null
 					}
@@ -70,21 +74,21 @@ abstract class AmmunitionHoldingItem(
 		itemStack.editMeta {
 			it.lore(
 				listOf(
-					Component.text(
-						"Ammo: ", NamedTextColor.GRAY
-					)
-						.append(Component.text("$ammunition", NamedTextColor.AQUA))
-						.append(Component.text(" / ", NamedTextColor.GRAY))
-						.append(Component.text("${getMaximumAmmunition()}", NamedTextColor.AQUA)),
-					Component.text(
-						"Refill: ", NamedTextColor.GRAY
-					)
-						.append(Component.text(getTypeRefill(), NamedTextColor.AQUA)),
+					empty()
+						.decoration(ITALIC, false)
+						.append(text("Ammo: ", GRAY))
+						.append(text("$ammunition", AQUA))
+						.append(text(" / ", GRAY))
+						.append(text(getMaximumAmmunition(), AQUA)),
+					empty()
+						.decoration(ITALIC, false)
+						.append(text("Refill: ", GRAY))
+						.append(text(getTypeRefill().lowercase().split('_').joinToString(separator = " ") { word -> word.replaceFirstChar { it.uppercase() } }, AQUA)),
 					if (this is Blaster<*>) {
-						Component.text(
-							"Magazine: ", NamedTextColor.GRAY
-						)
-							.append(Component.text(getTypeMagazine(), NamedTextColor.AQUA))
+						empty()
+							.decoration(ITALIC, false)
+							.append(text("Magazine: ", GRAY))
+							.append(text(getTypeMagazine().lowercase().split('_').joinToString(separator = " ") { word -> word.replaceFirstChar { it.uppercase() } }, AQUA))
 					} else {
 						null
 					}
