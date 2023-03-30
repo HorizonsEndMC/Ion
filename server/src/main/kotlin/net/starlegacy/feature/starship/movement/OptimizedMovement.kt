@@ -100,7 +100,7 @@ object OptimizedMovement {
 	) {
 		for ((chunkKey, sectionMap) in collisionChunkMap) {
 			val chunk = world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
-			val nmsChunk = chunk.nms
+			val nmsChunk = chunk.minecraft
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.sections[sectionKey]
@@ -150,7 +150,7 @@ object OptimizedMovement {
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
 			val chunk = world1.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
-			val nmsChunk = chunk.nms
+			val nmsChunk = chunk.minecraft
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.getSection(sectionKey)
@@ -196,7 +196,7 @@ object OptimizedMovement {
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
 			val chunk = world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
-			val nmsChunk = chunk.nms
+			val nmsChunk = chunk.minecraft
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.getSection(sectionKey)
@@ -234,7 +234,7 @@ object OptimizedMovement {
 			val data = blockDataTransform(tile.first)
 
 			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second) ?: continue
-			chunk.nms.addAndRegisterBlockEntity(blockEntity)
+			chunk.minecraft.addAndRegisterBlockEntity(blockEntity)
 		}
 	}
 
@@ -256,10 +256,10 @@ object OptimizedMovement {
 			blockKeyZ(blockKey)
 		)
 
-		val blockEntity = chunk.nms.getBlockEntity(blockPos) ?: return
+		val blockEntity = chunk.minecraft.getBlockEntity(blockPos) ?: return
 		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata())
 
-		chunk.nms.removeBlockEntity(blockPos)
+		chunk.minecraft.removeBlockEntity(blockPos)
 	}
 
 	private fun getChunkMap(positionArray: LongArray): ChunkMap {
@@ -310,7 +310,7 @@ object OptimizedMovement {
 	private fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
-				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).nms
+				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft
 				nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
 			}
 		}

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
+import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
@@ -15,7 +16,9 @@ import org.bukkit.World
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.bukkit.entity.Player
-import java.util.*
+import net.minecraft.world.level.chunk.LevelChunk
+import org.bukkit.Chunk
+import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -36,6 +39,7 @@ fun mainThreadCheck() {
 	}
 }
 
+val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).handle
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
 val World.minecraft: ServerLevel get() = (this as CraftWorld).handle
 

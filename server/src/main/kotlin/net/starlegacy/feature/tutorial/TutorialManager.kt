@@ -16,7 +16,6 @@ import net.starlegacy.util.Vec3i
 import net.starlegacy.util.execConsoleCmd
 import net.starlegacy.util.gray
 import net.starlegacy.util.msg
-import net.starlegacy.util.nms
 import net.starlegacy.util.paste
 import net.starlegacy.util.readSchematic
 import net.starlegacy.util.red
@@ -39,6 +38,7 @@ import java.lang.ref.WeakReference
 import java.util.UUID
 import kotlin.collections.set
 import kotlin.math.abs
+import net.horizonsend.ion.server.miscellaneous.minecraft
 
 object TutorialManager : SLComponent() {
 	private var playersInTutorials = mutableMapOf<Player, TutorialPhase>()
@@ -161,7 +161,7 @@ object TutorialManager : SLComponent() {
 
 	private fun clearChunk(chunkReference: WeakReference<Chunk>) {
 		val chunk = chunkReference.get() ?: return
-		val nmsChunk = chunk.nms
+		val nmsChunk = chunk.minecraft
 // 		val sections = nmsChunk.sections
 		for (it in nmsChunk.blockEntities.keys.toList()) {
 			nmsChunk.level.removeBlockEntity(it)

@@ -23,7 +23,6 @@ import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 //region Access Extensions
 inline val BlockData.nms: BlockState get() = (this as CraftBlockData).state
-inline val Chunk.nms: LevelChunk get() = (this as CraftChunk).handle
 inline val LevelChunk.cbukkit: CraftChunk get() = this.bukkitChunk as CraftChunk
 //endregion
 
