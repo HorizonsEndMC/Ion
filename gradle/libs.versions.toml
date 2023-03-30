@@ -16,7 +16,6 @@ luckperms = "5.4"
 moshipack = "1.0.1"
 nuvotifier = "2.7.2"
 shadow = "8.1.1"
-spotless = "6.17.0"
 vault = "1.7.1"
 waterfall = "1.19-R0.1-SNAPSHOT"
 worldedit = "7.2.8"
@@ -59,4 +58,3 @@ paperProvided = [ "componentLogger", "miniMessage" ]
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow"}
-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
