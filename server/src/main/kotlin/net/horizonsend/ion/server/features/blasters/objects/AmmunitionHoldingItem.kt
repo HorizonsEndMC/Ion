@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.AMMO
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.CUSTOM_ITEM
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.util.updateMeta
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -29,9 +30,24 @@ abstract class AmmunitionHoldingItem(
 			it.persistentDataContainer.set(AMMO, INTEGER, getMaximumAmmunition())
 			it.lore(
 				listOf(
-					Component.text("Ammo: ${getMaximumAmmunition()} / ${getMaximumAmmunition()}"),
-					Component.text("Refill: ${getTypeRefill()}"),
-					if (this is Blaster<*>) Component.text("Magazine: ${getTypeMagazine()}") else null
+					Component.text(
+						"Ammo: ", NamedTextColor.GRAY
+					)
+						.append(Component.text("${getMaximumAmmunition()}", NamedTextColor.AQUA))
+						.append(Component.text(" / ", NamedTextColor.GRAY))
+						.append(Component.text("${getMaximumAmmunition()}", NamedTextColor.AQUA)),
+					Component.text(
+						"Refill: ", NamedTextColor.GRAY
+					)
+						.append(Component.text(getTypeRefill(), NamedTextColor.AQUA)),
+					if (this is Blaster<*>) {
+						Component.text(
+							"Magazine: ", NamedTextColor.GRAY
+						)
+							.append(Component.text(getTypeMagazine(), NamedTextColor.AQUA))
+					} else {
+						null
+					}
 				)
 			)
 			it.isUnbreakable = true
@@ -54,9 +70,24 @@ abstract class AmmunitionHoldingItem(
 		itemStack.editMeta {
 			it.lore(
 				listOf(
-					Component.text("Ammo: $ammunition / ${getMaximumAmmunition()}"),
-					Component.text("Refill: ${getTypeRefill()}"),
-					if (this is Blaster<*>) Component.text("Magazine: ${getTypeMagazine()}") else null
+					Component.text(
+						"Ammo: ", NamedTextColor.GRAY
+					)
+						.append(Component.text("$ammunition", NamedTextColor.AQUA))
+						.append(Component.text(" / ", NamedTextColor.GRAY))
+						.append(Component.text("${getMaximumAmmunition()}", NamedTextColor.AQUA)),
+					Component.text(
+						"Refill: ", NamedTextColor.GRAY
+					)
+						.append(Component.text(getTypeRefill(), NamedTextColor.AQUA)),
+					if (this is Blaster<*>) {
+						Component.text(
+							"Magazine: ", NamedTextColor.GRAY
+						)
+							.append(Component.text(getTypeMagazine(), NamedTextColor.AQUA))
+					} else {
+						null
+					}
 				)
 			)
 			it.persistentDataContainer.set(AMMO, INTEGER, ammunition)
