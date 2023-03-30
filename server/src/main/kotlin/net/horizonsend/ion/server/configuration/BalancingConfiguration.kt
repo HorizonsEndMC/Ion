@@ -14,7 +14,7 @@ data class BalancingConfiguration(
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 15,
 			magazineType = "STANDARD_MAGAZINE",
-			refillType = "LAPIS_LAZULI",
+			refillType = "minecraft:lapis_lazuli",
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
 			pitch = 2f,
@@ -36,7 +36,7 @@ data class BalancingConfiguration(
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 30,
 			magazineType = "STANDARD_MAGAZINE",
-			refillType = "LAPIS_LAZULI",
+			refillType = "minecraft:lapis_lazuli",
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
 			pitch = 2f,
@@ -58,7 +58,7 @@ data class BalancingConfiguration(
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 30,
 			magazineType = "STANDARD_MAGAZINE",
-			refillType = "LAPIS_LAZULI",
+			refillType = "minecraft:lapis_lazuli",
 			ammoPerRefill = 20,
 			packetsPerShot = 1,
 			pitch = 2f,
@@ -80,7 +80,7 @@ data class BalancingConfiguration(
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 5,
 			magazineType = "SPECIAL_MAGAZINE",
-			refillType = "EMERALD",
+			refillType = "minecraft:emerald",
 			ammoPerRefill = 20,
 			packetsPerShot = 5,
 			pitch = 0f,
@@ -103,7 +103,7 @@ data class BalancingConfiguration(
 			delay = 0,
 			magazineSize = 4,
 			magazineType = "SPECIAL_MAGAZINE",
-			refillType = "EMERALD",
+			refillType = "minecraft:emerald",
 			ammoPerRefill = 20,
 			offsetMax = 0.05,
 			packetsPerShot = 2,
@@ -124,12 +124,12 @@ data class BalancingConfiguration(
 		),
 		val standardMagazine: AmmoStorage = AmmoStorage(
 			capacity = 60,
-			refillType = "LAPIS_LAZULI",
+			refillType = "minecraft:lapis_lazuli",
 			ammoPerRefill = 20
 		),
 		val specialMagazine: AmmoStorage = AmmoStorage(
 			capacity = 20,
-			refillType = "EMERALD",
+			refillType = "minecraft:emerald",
 			ammoPerRefill = 20
 		)
 	) {
