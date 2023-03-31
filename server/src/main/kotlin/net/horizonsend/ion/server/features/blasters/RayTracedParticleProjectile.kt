@@ -13,6 +13,7 @@ import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.alongVector
+import net.starlegacy.util.distance
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -35,6 +36,7 @@ class RayTracedParticleProjectile(
 
 	private var directionVector = location.direction.clone().multiply(balancing.speed)
 	var ticks: Int = 0
+	private val nearMissPlayers: MutableList<Player?> = mutableListOf(shooter as? Player)
 
 	fun tick(): Boolean {
 		if (ticks * balancing.speed > balancing.range) return true // Out of range
@@ -139,6 +141,23 @@ class RayTracedParticleProjectile(
 		}
 
 		damage = newDamage
+
+		val whizzDistance = 2
+		for (player in shooter.world.players) {
+			if ((player !in nearMissPlayers) &&
+				(distance(
+					player.location.x,
+					player.location.y,
+					player.location.z,
+					location.x,
+					location.y,
+					location.z
+				) <= whizzDistance)
+			) {
+				player.playSound(sound(key("minecraft:blaster.whizz"), Source.PLAYER, 1f, 1f))
+				nearMissPlayers.add(player)
+			}
+		}
 
 		ticks += 1
 		location.add(directionVector)

@@ -42,6 +42,8 @@ abstract class Blaster<T : Balancing>(
 	customModelData: Int,
 	displayName: Component,
 	val magazineType: Magazine<*>,
+	val soundFire: String,
+	val soundWhizz: String,
 
 	private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
@@ -148,7 +150,7 @@ abstract class Blaster<T : Balancing>(
 			}
 		}
 
-		livingEntity.location.world.playSound(livingEntity.location, "laser", 1f, balancing.pitch)
+		livingEntity.location.world.playSound(livingEntity.location, soundFire, 1f, 1f)
 		fireProjectiles(livingEntity)
 	}
 
