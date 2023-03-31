@@ -59,6 +59,8 @@ object CustomItems {
 				customModelData = 1,
 				displayName = text("Blaster Pistol", RED, BOLD).decoration(ITALIC, false),
 				magazineType = STANDARD_MAGAZINE,
+				soundFire = "blaster.pistol.shoot",
+				soundWhizz = "blaster.whizz",
 				balancingSupplier = IonServer.balancing.energyWeapons::pistol
 			) {}
 		)
@@ -71,6 +73,8 @@ object CustomItems {
 				customModelData = 1,
 				displayName = text("Blaster Rifle", RED, BOLD).decoration(ITALIC, false),
 				magazineType = STANDARD_MAGAZINE,
+				soundFire = "blaster.rifle.shoot",
+				soundWhizz = "blaster.whizz",
 				balancingSupplier = IonServer.balancing.energyWeapons::rifle
 			) {}
 		)
@@ -83,6 +87,8 @@ object CustomItems {
 				customModelData = 2,
 				displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
 				magazineType = STANDARD_MAGAZINE,
+				soundFire = "blaster.submachine_blaster.shoot",
+				soundWhizz = "blaster.whizz",
 				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
@@ -116,6 +122,8 @@ object CustomItems {
 				customModelData = 1,
 				displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
 				magazineType = SPECIAL_MAGAZINE,
+				soundFire = "blaster.shotgun.shoot",
+				soundWhizz = "blaster.whizz",
 				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
@@ -132,6 +140,8 @@ object CustomItems {
 				customModelData = 2,
 				displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
 				magazineType = SPECIAL_MAGAZINE,
+				soundFire = "blaster.sniper.shoot",
+				soundWhizz = "blaster.whizz",
 				balancingSupplier = IonServer.balancing.energyWeapons::sniper
 			) {}
 		)
