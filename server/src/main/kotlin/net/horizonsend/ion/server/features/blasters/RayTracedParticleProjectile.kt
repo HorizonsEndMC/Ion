@@ -23,6 +23,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class RayTracedParticleProjectile(
 	val location: Location,
@@ -40,14 +41,14 @@ class RayTracedParticleProjectile(
 		if (ticks * balancing.speed > balancing.range) return true // Out of range
 		if (!location.isChunkLoaded) return true // Unloaded chunks
 
-		for (loc in location.alongVector(directionVector, balancing.speed.toInt())) {
+		for (loc in location.alongVector(directionVector, balancing.speed.roundToInt())) {
 			location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 		}
 
 		// 2 ray traces are used, one for flying, one for ground
 		val rayTraceResult = location.world.rayTrace(
 			location,
-			location.direction.clone().multiply(balancing.speed),
+			location.direction.clone().multiply(balancing.speed).normalize(),
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
