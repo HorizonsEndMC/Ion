@@ -10,6 +10,7 @@ import net.starlegacy.util.STAINED_GLASS_PANE_TYPES
 import net.starlegacy.util.STAINED_GLASS_TYPES
 import net.starlegacy.util.STAINED_TERRACOTTA_TYPES
 import net.starlegacy.util.STAIR_TYPES
+import net.starlegacy.util.TRAPDOOR_TYPES
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -104,6 +105,7 @@ object GameplayTweaks : SLComponent() {
 		SLAB_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAIR_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 5.0f) }
+		TRAPDOOR_TYPES.forEach { setBlastResistance(it, 6.0f)}
 
 		// allow underwater explosions, cancel the liquid from actually exploding
 		setBlastResistance(Material.WATER, 0.0f)
