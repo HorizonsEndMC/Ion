@@ -44,6 +44,7 @@ abstract class Blaster<T : Balancing>(
 	customModelData: Int,
 	displayName: Component,
 	val magazineType: Magazine<*>,
+	val soundRange: Double,
 	val soundFire: String,
 	val soundWhizz: String,
 
@@ -155,15 +156,34 @@ abstract class Blaster<T : Balancing>(
 		// Shoot sound
 		val soundOrigin = livingEntity.location
 		soundOrigin.world.players.forEach {
-			if (it.location.distance(soundOrigin) < balancing.range * 0.5) {
-				soundOrigin.world.playSound(it.location, soundFire, SoundCategory.PLAYERS, 1.0f, 1.0f)
+
+			var distanceFactor = soundRange
+			var volumeFactor = 1.0
+			var pitchFactor = 1.0
+
+			// No sounds in space (somewhat)
+			if (livingEntity.world.toString().contains("Space")) {
+				distanceFactor *= 0.5
+				volumeFactor *= 0.25
+				pitchFactor *= 0.5
 			}
-			else if (it.location.distance(soundOrigin) < balancing.range) {
-				soundOrigin.world.playSound(it.location, soundFire, SoundCategory.PLAYERS, 0.5f, 0.75f)
+
+			// Sound is unmodified if players within 0.5*range distance of shooter
+			// Modify sound until fully inaudible at 2.0*range distance of shooter
+			if (it.location.distance(soundOrigin) >= distanceFactor * 0.5 &&
+				it.location.distance(soundOrigin) < distanceFactor * 2) {
+				volumeFactor *= (-1.0 / (2.0 * distanceFactor)) * it.location.distance(soundOrigin) + 1.25
+				pitchFactor *= (-1.0 / (3.0 * distanceFactor)) * it.location.distance(soundOrigin) + 1.165
 			}
-			else if (it.location.distance(soundOrigin) < balancing.range * 2) {
-				soundOrigin.world.playSound(it.location, soundFire, SoundCategory.PLAYERS, 0.25f, 0.50f)
-			}
+
+			if (it.location.distance(soundOrigin) < distanceFactor * 2)
+				soundOrigin.world.playSound(
+					it.location,
+					soundFire,
+					SoundCategory.PLAYERS,
+					volumeFactor.toFloat(),
+					pitchFactor.toFloat()
+				)
 		}
 
 		fireProjectiles(livingEntity)

@@ -68,6 +68,7 @@ class RayTracedParticleProjectile(
 		// Block Check
 		val hitBlock = rayTraceResult?.hitBlock
 		if (hitBlock != null) {
+			location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
 			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
 
 			return true
@@ -87,11 +88,12 @@ class RayTracedParticleProjectile(
 				if (balancing.shouldHeadshot && (hitEntity.eyeLocation.y - hitPosition.y) < (.3 * balancing.shotSize)) {
 					hitEntity.damage(damage * 1.5, shooter)
 
-					hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 1)
+					hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 10)
 					shooter.playSound(sound(key("minecraft:entity.arrow.hit_player"), Source.PLAYER, 5f, 1f))
 					shooter.sendActionBar(text("Headshot!", NamedTextColor.RED))
-					return true
+					if (!balancing.shouldPassThroughEntities) return true
 				}
+				location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
 			}
 
 			hitEntity.damage(damage, shooter)
@@ -142,11 +144,13 @@ class RayTracedParticleProjectile(
 
 		damage = newDamage
 
-		// whizz sound
+		// Whizz sound
 		val whizzDistance = 5
 		location.world.players.forEach {
 			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
-				it.playSound(it.location, soundWhizz, SoundCategory.PLAYERS, 1.0f, 1.0f)
+				var pitchFactor = 1.0f
+				if (it.world.toString().contains("Space")) pitchFactor = 0.5f
+				it.playSound(sound(key("minecraft:$soundWhizz"), Source.PLAYER, 1.0f, pitchFactor))
 				nearMissPlayers.add(it)
 			}
 		}
