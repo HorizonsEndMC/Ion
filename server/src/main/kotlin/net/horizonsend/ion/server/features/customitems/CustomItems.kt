@@ -59,8 +59,9 @@ object CustomItems {
 				customModelData = 1,
 				displayName = text("Blaster Pistol", RED, BOLD).decoration(ITALIC, false),
 				magazineType = STANDARD_MAGAZINE,
+				soundRange = 100.0,
 				soundFire = "blaster.pistol.shoot",
-				soundWhizz = "blaster.whizz",
+				soundWhizz = "blaster.whizz.standard",
 				balancingSupplier = IonServer.balancing.energyWeapons::pistol
 			) {}
 		)
@@ -73,8 +74,9 @@ object CustomItems {
 				customModelData = 1,
 				displayName = text("Blaster Rifle", RED, BOLD).decoration(ITALIC, false),
 				magazineType = STANDARD_MAGAZINE,
+				soundRange = 100.0,
 				soundFire = "blaster.rifle.shoot",
-				soundWhizz = "blaster.whizz",
+				soundWhizz = "blaster.whizz.standard",
 				balancingSupplier = IonServer.balancing.energyWeapons::rifle
 			) {}
 		)
@@ -87,8 +89,9 @@ object CustomItems {
 				customModelData = 2,
 				displayName = text("Submachine Blaster", RED, BOLD).decoration(ITALIC, false),
 				magazineType = STANDARD_MAGAZINE,
+				soundRange = 100.0,
 				soundFire = "blaster.submachine_blaster.shoot",
-				soundWhizz = "blaster.whizz",
+				soundWhizz = "blaster.whizz.standard",
 				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
@@ -122,8 +125,9 @@ object CustomItems {
 				customModelData = 1,
 				displayName = text("Blaster Shotgun", RED, BOLD).decoration(ITALIC, false),
 				magazineType = SPECIAL_MAGAZINE,
+				soundRange = 100.0,
 				soundFire = "blaster.shotgun.shoot",
-				soundWhizz = "blaster.whizz",
+				soundWhizz = "blaster.whizz.standard",
 				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
@@ -140,8 +144,9 @@ object CustomItems {
 				customModelData = 2,
 				displayName = text("Blaster Sniper", RED, BOLD).decoration(ITALIC, false),
 				magazineType = SPECIAL_MAGAZINE,
+				soundRange = 200.0,
 				soundFire = "blaster.sniper.shoot",
-				soundWhizz = "blaster.whizz",
+				soundWhizz = "blaster.whizz.sniper",
 				balancingSupplier = IonServer.balancing.energyWeapons::sniper
 			) {}
 		)
