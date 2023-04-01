@@ -25,6 +25,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
+import org.bukkit.SoundCategory
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -151,7 +152,20 @@ abstract class Blaster<T : Balancing>(
 			}
 		}
 
-		livingEntity.location.world.playSound(livingEntity.location, soundFire, 1f, 1f)
+		// Shoot sound
+		val soundOrigin = livingEntity.location
+		soundOrigin.world.players.forEach {
+			if (it.location.distance(soundOrigin) < balancing.range * 0.5) {
+				soundOrigin.world.playSound(it.location, soundFire, SoundCategory.PLAYERS, 1.0f, 1.0f)
+			}
+			else if (it.location.distance(soundOrigin) < balancing.range) {
+				soundOrigin.world.playSound(it.location, soundFire, SoundCategory.PLAYERS, 0.5f, 0.75f)
+			}
+			else if (it.location.distance(soundOrigin) < balancing.range * 2) {
+				soundOrigin.world.playSound(it.location, soundFire, SoundCategory.PLAYERS, 0.25f, 0.50f)
+			}
+		}
+
 		fireProjectiles(livingEntity)
 	}
 
@@ -190,7 +204,8 @@ abstract class Blaster<T : Balancing>(
 			livingEntity,
 			balancing,
 			getParticleType(livingEntity),
-			if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), 1f) else null
+			if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), 1f) else null,
+			soundWhizz
 		)
 
 		ProjectileManager.addProjectile(projectile)

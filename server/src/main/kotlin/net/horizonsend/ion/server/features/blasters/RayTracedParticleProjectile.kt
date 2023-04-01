@@ -13,7 +13,6 @@ import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.alongVector
-import net.starlegacy.util.distance
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -30,7 +29,8 @@ class RayTracedParticleProjectile(
 	val shooter: Entity,
 	val balancing: ProjectileBalancing,
 	val particle: Particle,
-	private val dustOptions: DustOptions?
+	private val dustOptions: DustOptions?,
+	private val soundWhizz: String
 ) {
 	var damage = balancing.damage
 
@@ -142,20 +142,12 @@ class RayTracedParticleProjectile(
 
 		damage = newDamage
 
-		val whizzDistance = 2
-		for (player in shooter.world.players) {
-			if ((player !in nearMissPlayers) &&
-				(distance(
-					player.location.x,
-					player.location.y,
-					player.location.z,
-					location.x,
-					location.y,
-					location.z
-				) <= whizzDistance)
-			) {
-				player.playSound(sound(key("minecraft:blaster.whizz"), Source.PLAYER, 1f, 1f))
-				nearMissPlayers.add(player)
+		// whizz sound
+		val whizzDistance = 5
+		location.world.players.forEach {
+			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
+				it.playSound(it.location, soundWhizz, SoundCategory.PLAYERS, 1.0f, 1.0f)
+				nearMissPlayers.add(it)
 			}
 		}
 
