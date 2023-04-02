@@ -36,6 +36,7 @@ class RayTracedParticleProjectile(
 
 	private var directionVector = location.direction.clone().multiply(balancing.speed)
 	var ticks: Int = 0
+	private val hitEntities: MutableList<Entity> = mutableListOf()
 	private val nearMissPlayers: MutableList<Player?> = mutableListOf(shooter as? Player)
 
 	fun tick(): Boolean {
@@ -69,16 +70,16 @@ class RayTracedParticleProjectile(
 		val hitBlock = rayTraceResult?.hitBlock
 		if (hitBlock != null) {
 			location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
-			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
-
+			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .7f, 1f)
 			return true
 		}
 
 		// Entity Check
 		val hitEntity = rayTraceResult?.hitEntity
-		if (hitEntity != null && hitEntity is Damageable) {
+		if (hitEntity != null && hitEntity is Damageable && hitEntity !in hitEntities) {
 			val hitLocation = rayTraceResult.hitPosition.toLocation(hitEntity.world)
 			val hitPosition = rayTraceResult.hitPosition
+			var hasHeadshot = false
 
 			if (hitEntity is LivingEntity) {
 				if (balancing.shouldBypassHitTicks) hitEntity.noDamageTicks = 0
@@ -86,21 +87,23 @@ class RayTracedParticleProjectile(
 
 				// Headshots
 				if (balancing.shouldHeadshot && (hitEntity.eyeLocation.y - hitPosition.y) < (.3 * balancing.shotSize)) {
+					hasHeadshot = true
 					hitEntity.damage(damage * 1.5, shooter)
 
-					hitLocation.world.spawnParticle(Particle.EXPLOSION_NORMAL, hitLocation, 10)
-					shooter.playSound(sound(key("minecraft:entity.arrow.hit_player"), Source.PLAYER, 5f, 1f))
+					hitLocation.world.spawnParticle(Particle.CRIT, hitLocation, 10)
+					shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
 					shooter.sendActionBar(text("Headshot!", NamedTextColor.RED))
 					if (!balancing.shouldPassThroughEntities) return true
 				}
-				location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
 			}
 
-			hitEntity.damage(damage, shooter)
+			if (!hasHeadshot) {
+				hitEntity.damage(damage, shooter)
+				shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
+				if (!balancing.shouldPassThroughEntities) return true
+			}
 
-			shooter.playSound(sound(key("minecraft:entity.arrow.hit_player"), Source.PLAYER, .25f, 0f))
-
-			if (!balancing.shouldPassThroughEntities) return true
+			hitEntities.add(hitEntity)
 		}
 
 		// Flying Entity Check
@@ -123,7 +126,12 @@ class RayTracedParticleProjectile(
 						).ordinal < 5
 					}
 				} ?: false
-				if (isSameNation && !flyingHitEntity.world.name.lowercase().contains("arena")) {
+				// Ignore nation if in arena
+				if (isSameNation && flyingHitEntity.world.name.lowercase().contains("arena")) {
+					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
+						System.currentTimeMillis() + 3000 // 3 second glide disable
+					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
+				} else if (!isSameNation) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
 					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
@@ -149,7 +157,7 @@ class RayTracedParticleProjectile(
 		location.world.players.forEach {
 			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
 				var pitchFactor = 1.0f
-				if (it.world.toString().contains("Space")) pitchFactor = 0.5f
+				if (it.world.name.lowercase().contains("space")) pitchFactor = 0.5f
 				it.playSound(sound(key("minecraft:$soundWhizz"), Source.PLAYER, 1.0f, pitchFactor))
 				nearMissPlayers.add(it)
 			}

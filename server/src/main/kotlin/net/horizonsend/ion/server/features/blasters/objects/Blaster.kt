@@ -161,7 +161,7 @@ abstract class Blaster<T : Balancing>(
 			var pitchFactor = 1.0
 
 			// No sounds in space (somewhat)
-			if (livingEntity.world.toString().contains("Space")) {
+			if (livingEntity.world.name.lowercase().contains("space")) {
 				distanceFactor *= 0.5
 				volumeFactor *= 0.25
 				pitchFactor *= 0.5
