@@ -8,7 +8,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
+import org.bukkit.inventory.meta.Damageable
 
 class CustomItemListeners : Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -25,6 +27,14 @@ class CustomItemListeners : Listener {
 
 			else -> return // Unknown Action Enum - We probably don't care, silently fail
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	@Suppress("Unused")
+	fun onPlayerItemDamageEvent(event: PlayerItemDamageEvent) {
+		if (event.item.customItem == null) return
+		val damageable = event.item.itemMeta as? Damageable ?: return // for potential durability manipulation in the future
+		event.isCancelled = true
 	}
 
 	@EventHandler
