@@ -16,7 +16,6 @@ import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.getStateIfLoaded
 import net.starlegacy.util.gzip
 import net.starlegacy.util.randomEntry
-import net.starlegacy.util.randomFloat
 import net.starlegacy.util.ungzip
 import org.bukkit.Bukkit.shutdown
 import org.bukkit.Material
@@ -297,14 +296,8 @@ object Extractors : SLComponent() {
 		Wires.startWireChain(world, x, y, z, wire, computer)
 	}
 
-	private const val SOLAR_PANEL_CHANCE = 0.05
-
 	private fun handleSolarPanel(world: World, x: Int, y: Int, z: Int, wires: Set<BlockFace>, sensor: BlockData) {
 		if (wires.isEmpty()) {
-			return
-		}
-
-		if (randomFloat() > (SOLAR_PANEL_CHANCE / extractorTicksPerSecond)) {
 			return
 		}
 
