@@ -127,11 +127,7 @@ class RayTracedParticleProjectile(
 					}
 				} ?: false
 				// Ignore nation if in arena
-				if (isSameNation && flyingHitEntity.world.name.lowercase().contains("arena")) {
-					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
-						System.currentTimeMillis() + 3000 // 3 second glide disable
-					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
-				} else if (!isSameNation) {
+				if (!isSameNation || flyingHitEntity.world.name.lowercase().contains("arena")) {
 					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
 						System.currentTimeMillis() + 3000 // 3 second glide disable
 					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
