@@ -2,18 +2,18 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.nms
 import org.bukkit.Material
+import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
 object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
@@ -53,8 +53,10 @@ object Encounters {
 		override fun onChestInteract(event: PlayerInteractEvent) {
 			//True for player, false for ai
 			var whoTurn: Boolean = true
-			val targetedBlock = event.clickedBlock!!
+			val targetedBlock = event.clickedBlock as? Chest ?: return
+			val lock = targetedBlock.persistentDataContainer.get(NamespacedKeys.WRECK_CHEST_LOCK, PersistentDataType.INTEGER)
 			val player = event.player
+			if (lock == 1)
 			MenuHelper.apply {MenuHelper
 				this.gui(5, "Tic tac toe")
 				val unclaimedButton = ItemStack(Material.GRAY_STAINED_GLASS_PANE)
@@ -138,7 +140,7 @@ object Encounters {
 							if(checkHasWon() == null) {
 								whoTurn = !whoTurn
 							} else if(checkHasWon() == true){
-
+								targetedBlock.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST_LOCK, PersistentDataType.SHORT, 0)
 							}
 							//AI below (highly advanced, with 100% quantum neural deeplearning frameworks)
 							if (!whoTurn){
@@ -149,7 +151,7 @@ object Encounters {
 									checkHasWon()
 								}
 							} else{
-
+								targetedBlock.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST_LOCK, PersistentDataType.SHORT, 0)
 							}
 						}
 					}
