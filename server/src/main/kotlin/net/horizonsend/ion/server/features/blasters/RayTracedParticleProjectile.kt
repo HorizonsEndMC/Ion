@@ -70,7 +70,7 @@ class RayTracedParticleProjectile(
 		val hitBlock = rayTraceResult?.hitBlock
 		if (hitBlock != null) {
 			location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
-			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .7f, 1f)
+			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
 			return true
 		}
 

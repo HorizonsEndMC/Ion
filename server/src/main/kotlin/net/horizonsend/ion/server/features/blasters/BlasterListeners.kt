@@ -33,20 +33,16 @@ class BlasterListeners : Listener {
 
 		val blaster = customItem.displayName
 		val victimColor =
-			"<#" + Integer.toHexString(
-				(
+			"<#" + Integer.toHexString((
 					SLPlayer[victim.uniqueId]?.nation?.let { Nation.findById(it) }?.color
 						?: 16777215
-					)
-			) + ">"
+					)) + ">"
 
 		val killerColor =
-			"<#" + Integer.toHexString(
-				(
+			"<#" + Integer.toHexString((
 					SLPlayer[killer.uniqueId]?.nation?.let { Nation.findById(it) }?.color
 						?: 16777215
-					)
-			) + ">"
+					)) + ">"
 
 		val distance = killer.location.distance(victim.location)
 		val verb = when (customItem.identifier) {
@@ -87,16 +83,16 @@ class BlasterListeners : Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	@Suppress("Unused")
-	fun leftClickBlock(event: PlayerInteractEvent) {
+	fun onLeftClick(event: PlayerInteractEvent) {
 		if (event.item == null) return
 
 		val customItem = event.item?.customItem ?: return
 		when (event.action) {
-			Action.LEFT_CLICK_BLOCK -> {
+			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
 				if (customItem is Blaster<*>) event.isCancelled = true
 			}
 
-			else -> return
+			else -> return // Unknown Action Enum - We probably don't care, silently fail
 		}
 	}
 
