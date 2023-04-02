@@ -12,6 +12,7 @@ object NamespacedKeys {
 	val STORED_CHUNK_BLOCKS = key("StoredChunkBlocks")
 	val SPACE_GEN_VERSION = key("SpaceGenVersion")
 	val WRECK_ENCOUNTER_DATA = key("WreckEncounterData")
+	val WRECK_CHEST_LOCK = key("WreckChestLock")
 
 	@Deprecated("") val MULTIBLOCK = key("multiblock")
 
