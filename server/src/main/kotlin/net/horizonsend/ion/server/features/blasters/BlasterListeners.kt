@@ -10,9 +10,12 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.Nation
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -82,20 +85,38 @@ class BlasterListeners : Listener {
 		)
 	}
 
+	@EventHandler(priority = EventPriority.LOWEST)
+	@Suppress("Unused")
+	fun leftClickBlock(event: PlayerInteractEvent) {
+		if (event.item == null) return
+
+		val customItem = event.item?.customItem ?: return
+		when (event.action) {
+			Action.LEFT_CLICK_BLOCK -> {
+				if (customItem is Blaster<*>) event.isCancelled = true
+			}
+
+			else -> return
+		}
+	}
+
 	@EventHandler
 	fun onPrepareItemCraftEvent(event: PrepareItemCraftEvent) {
 		if (!event.isRepair) return // Will always be a combination of 2 items.
 
-		val magazines = event.inventory.matrix.filter { it?.customItem is Magazine<*> }.filterNotNull()
+		val craftedItems = event.inventory.matrix.filter { it?.customItem is Magazine<*> }.filterNotNull()
 
-		if (magazines.isEmpty()) return
-		if (magazines.first().customItem?.identifier != magazines.last().customItem?.identifier) return
+		// Only magazines of the same type accepted
+		if (craftedItems.isEmpty() ||
+			craftedItems.first().customItem?.identifier != craftedItems.last().customItem?.identifier) {
+			event.inventory.result = null
+			return
+		}
 
-		val magazineType = magazines.first().customItem as Magazine<*>
-		val totalAmmo = magazines.sumOf { magazineType.getAmmunition(it) }.coerceIn(0..magazineType.balancing.capacity)
-		val resultItemStack = CustomItems.getByIdentifier(magazineType.identifier)!!.constructItemStack()
-
-		magazineType.setAmmunition(resultItemStack, event.inventory, totalAmmo)
+		val resultItem = craftedItems.first().customItem as Magazine<*>
+		val totalAmmo = craftedItems.sumOf { resultItem.getAmmunition(it) }.coerceIn(0..resultItem.balancing.capacity)
+		val resultItemStack = CustomItems.getByIdentifier(resultItem.identifier)!!.constructItemStack()
+		resultItem.setAmmunition(resultItemStack, event.inventory, totalAmmo)
 
 		event.inventory.result = resultItemStack
 	}

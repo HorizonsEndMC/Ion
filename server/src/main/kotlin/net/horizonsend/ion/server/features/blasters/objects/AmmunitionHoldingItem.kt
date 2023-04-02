@@ -16,8 +16,10 @@ import org.bukkit.Material.matchMaterial
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.STRING
+import kotlin.math.roundToInt
 
 abstract class AmmunitionHoldingItem(
 	identifier: String,
@@ -53,7 +55,6 @@ abstract class AmmunitionHoldingItem(
 			it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
 			it.persistentDataContainer.set(AMMO, INTEGER, getMaximumAmmunition())
 			it.lore(listOf(ammoCountComponent, refillTypeComponent, magazineTypeComponent))
-			it.isUnbreakable = true
 		}
 	}
 
@@ -89,6 +90,8 @@ abstract class AmmunitionHoldingItem(
 		itemStack.editMeta {
 			it.lore(listOf(ammoCountComponent, refillTypeComponent, magazineTypeComponent))
 			it.persistentDataContainer.set(AMMO, INTEGER, ammunition)
+			it.isUnbreakable = false
+			(it as Damageable).damage = (itemStack.type.maxDurability - ammunition.toDouble() / getMaximumAmmunition() * itemStack.type.maxDurability).roundToInt()
 		}
 
 		if (ammunition <= 0 && shouldDeleteItem) {
