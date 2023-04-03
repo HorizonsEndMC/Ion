@@ -246,9 +246,11 @@ class MiningLaserSubsystem(
 		CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks().apply { start(IonServer) }
 
 		val blocks = getBlocksToDestroy(laserEnd.block)
-		if (blocks.any() == starship.blocks.any()) {
+		if (blocks.any { starship.contains(it.x, it.y, it.z) }) {
 			starship.sendMessage(
-				Component.text("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!")
+				Component.text(
+					"Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!"
+				).color(NamedTextColor.RED)
 			)
 			return setFiring(false, sign, null)
 		}
