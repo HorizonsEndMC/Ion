@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.client.VoidNetwork
-import net.horizonsend.ion.server.features.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.customitems.CustomItemListeners
 import net.horizonsend.ion.server.features.qol.RecipeListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
@@ -15,7 +14,6 @@ import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListen
 import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
-import net.horizonsend.ion.server.features.worlds.WorldListeners
 import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
 import net.horizonsend.ion.server.migrator.DataMigrator
@@ -43,7 +41,7 @@ val listeners = arrayOf(
 	MiscListeners(),
 	RecipeListener(),
 	SpaceGenerationManager,
-	EncounterManager,
+	EncounterManager(),
 	ResourcePackListener(),
 	VoidNetwork(),
 
