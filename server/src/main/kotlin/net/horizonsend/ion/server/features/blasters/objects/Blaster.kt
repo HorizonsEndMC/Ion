@@ -8,7 +8,9 @@ import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.key.Key
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound.Source.PLAYER
+import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -18,6 +20,7 @@ import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.randomDouble
+import net.starlegacy.util.randomInt
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
@@ -25,7 +28,8 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
-import org.bukkit.SoundCategory
+import org.bukkit.SoundCategory.PLAYERS
+import org.bukkit.block.BlockFace.*
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -47,6 +51,7 @@ abstract class Blaster<T : Balancing>(
 	val soundRange: Double,
 	val soundFire: String,
 	val soundWhizz: String,
+	val soundShell: String,
 
 	private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
@@ -83,9 +88,9 @@ abstract class Blaster<T : Balancing>(
 
 		if (ammo - originalAmmo == 0) {
 			livingEntity.playSound(
-				net.kyori.adventure.sound.Sound.sound(
-					Key.key("minecraft:item.bundle.drop_contents"),
-					net.kyori.adventure.sound.Sound.Source.MASTER,
+				sound(
+					key("minecraft:item.bundle.drop_contents"),
+					PLAYER,
 					5f,
 					2.00f
 				)
@@ -100,22 +105,21 @@ abstract class Blaster<T : Balancing>(
 
 		Tasks.syncDelay(this.balancing.reload.toLong()) {
 			livingEntity.playSound(
-				net.kyori.adventure.sound.Sound.sound(
-					Key.key("minecraft:block.iron_door.close"), // TODO custom sound
-					net.kyori.adventure.sound.Sound.Source.MASTER,
+				sound(
+					key("minecraft:block.iron_door.close"), // TODO custom sound
+					PLAYER,
 					5f,
 					2.00f
 				)
 			)
 		}
 
-		// TODO: Use durability to indicate ammo
 		livingEntity.sendActionBar(text("Ammo: $ammo / ${balancing.magazineSize}", NamedTextColor.RED))
 
 		livingEntity.playSound(
-			net.kyori.adventure.sound.Sound.sound(
-				Key.key("minecraft:block.iron_door.close"), // TODO custom sound
-				net.kyori.adventure.sound.Sound.Source.MASTER,
+			sound(
+				key("minecraft:block.iron_door.close"), // TODO custom sound
+				PLAYER,
 				5f,
 				2.00f
 			)
@@ -131,16 +135,15 @@ abstract class Blaster<T : Balancing>(
 
 		if (getAmmunition(itemStack) == 0) {
 			(inventory.holder as? Player)?.playSound(
-				net.kyori.adventure.sound.Sound.sound(
-					Key.key("minecraft:block.iron_door.open"),
-					net.kyori.adventure.sound.Sound.Source.MASTER,
+				sound(
+					key("minecraft:block.iron_door.open"),
+					PLAYER,
 					5f,
 					2.00f
 				)
 			)
 		}
 
-		// TODO: Use durability to indicate ammo
 		(inventory.holder as? Audience)?.sendActionBar(text("Ammo: ${ammunition.coerceIn(0, balancing.magazineSize)} / ${balancing.magazineSize}", NamedTextColor.RED))
 	}
 
@@ -153,8 +156,25 @@ abstract class Blaster<T : Balancing>(
 			}
 		}
 
-		// Shoot sound
 		val soundOrigin = livingEntity.location
+
+		// Shell sound
+		var relativeBlock = livingEntity.location.block.getRelative(DOWN)
+		val maxDistance = 4 // Add 1 to this value for the actual distance
+
+		for (i in 0..maxDistance) {
+			if (!relativeBlock.isSolid) {
+				relativeBlock = relativeBlock.getRelative(DOWN)
+				continue
+			}
+
+			Tasks.syncDelay(randomInt(5, 10).toLong()) {
+				soundOrigin.world.playSound(soundOrigin, soundShell, PLAYERS, 0.5f, 1.0f)
+			}
+			break
+		}
+
+		// Shoot sound
 		soundOrigin.world.players.forEach {
 
 			var distanceFactor = soundRange
@@ -180,7 +200,7 @@ abstract class Blaster<T : Balancing>(
 				soundOrigin.world.playSound(
 					it.location,
 					soundFire,
-					SoundCategory.PLAYERS,
+					PLAYERS,
 					volumeFactor.toFloat(),
 					pitchFactor.toFloat()
 				)
@@ -239,9 +259,9 @@ abstract class Blaster<T : Balancing>(
 		val ammo = getAmmunition(itemStack)
 		if (ammo == 0) {
 			(livingEntity as? Player)?.playSound(
-				net.kyori.adventure.sound.Sound.sound(
-					Key.key("minecraft:block.iron_door.open"), // TODO custom sound
-					net.kyori.adventure.sound.Sound.Source.MASTER,
+				sound(
+					key("minecraft:block.iron_door.open"), // TODO custom sound
+					PLAYER,
 					5f,
 					2.00f
 				)
