@@ -131,7 +131,7 @@ object StarshipComputers : SLComponent() {
 	}
 
 	private fun tryOpenMenu(player: Player, data: PlayerStarshipData) {
-		if (!data.isPilot(player) && !player.hasPermission("ion.core.starship.override")) {
+		if (!data.isPilot(player) && !player.hasPermission("ion.core.starship.override") && !player.isTerritoryOwner()) {
 			Tasks.async {
 				val name: String? = SLPlayer.getName(data.captain)
 				if (name != null) {
@@ -188,16 +188,6 @@ object StarshipComputers : SLComponent() {
 				}.setName(MiniMessage.miniMessage().deserialize("<gray>Starship Name")),
 				8, 0
 			)
-
-			fun Player.isTerritoryOwner(): Boolean {
-				val territoryId = Regions.find(player.location)
-					.filterIsInstance<RegionTerritory>()
-					.firstOrNull() ?: return false
-				val territory = Territory.findById(territoryId.id) ?: return false
-				val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
-				val settlement = Settlement.findById(settlementId) ?: return false
-				return settlement.leader.uuid == uniqueId
-			}
 
 			if (player.isTerritoryOwner()) {
 				pane.addItem(
@@ -415,5 +405,15 @@ object StarshipComputers : SLComponent() {
 	private fun takeOwnership(player: Player, data: PlayerStarshipData) {
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::captain, player.slPlayerId))
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::pilots, mutableSetOf()))
+	}
+
+	fun Player.isTerritoryOwner(): Boolean {
+		val territoryId = Regions.find(this.location)
+			.filterIsInstance<RegionTerritory>()
+			.firstOrNull() ?: return false
+		val territory = Territory.findById(territoryId.id) ?: return false
+		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
+		val settlement = Settlement.findById(settlementId) ?: return false
+		return settlement.leader.uuid == uniqueId
 	}
 }
