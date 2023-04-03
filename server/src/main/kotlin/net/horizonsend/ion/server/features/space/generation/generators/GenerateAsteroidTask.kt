@@ -175,7 +175,7 @@ class GenerateAsteroidTask(
 							)
 
 						if ((
-							generator.random.nextDouble(0.0, 1.0) <= generator.configuration.oreRatio &&
+							generator.random.nextDouble(0.0, 1.0) <= asteroid.oreRatio &&
 								block != null
 							) && !block.isAir
 						) {
@@ -269,6 +269,7 @@ data class AsteroidGenerationData(
 	override val x: Int,
 	override val y: Int,
 	override val z: Int,
+	val oreRatio: Double,
 	val palette: WeightedRandomList<BlockState>,
 	val paletteID: Int,
 	val size: Double,

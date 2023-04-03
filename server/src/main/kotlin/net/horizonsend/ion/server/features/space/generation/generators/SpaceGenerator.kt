@@ -81,7 +81,7 @@ class SpaceGenerator(
 	): AsteroidGenerationData {
 		val formattedSize = size ?: random.nextDouble(10.0, configuration.maxAsteroidSize)
 
-		val b = weightedPalettes.getEntry(
+		val palette = weightedPalettes.getEntry(
 			(
 				worldSimplexNoise.noise(
 					x.toDouble(),
@@ -93,16 +93,29 @@ class SpaceGenerator(
 				) / 2
 		)
 
+		val oreRatio = index?.let {
+			configuration.blockPalettes[it].oreRatio
+		} ?: configuration.blockPalettes[palette.first].oreRatio
+
 		val blockPalette = index?.let {
 			if (!IntRange(0, configuration.blockPalettes.size - 1).contains(index)) {
 				throw IndexOutOfBoundsException("ERROR: index out of range: 0..${configuration.blockPalettes.size - 1}")
 			}
 			weightedPalettes[it]
-		} ?: b
+		} ?: palette
 
 		val formattedOctaves = octaves ?: floor(3 * 0.998.pow(formattedSize)).toInt().coerceAtLeast(1)
 
-		return AsteroidGenerationData(x, y, z, blockPalette.second, blockPalette.first, formattedSize, formattedOctaves)
+		return AsteroidGenerationData(
+			x,
+			y,
+			z,
+			oreRatio,
+			blockPalette.second,
+			blockPalette.first,
+			formattedSize,
+			formattedOctaves
+		)
 	}
 
 	fun parseDensity(x: Double, y: Double, z: Double): Double {
