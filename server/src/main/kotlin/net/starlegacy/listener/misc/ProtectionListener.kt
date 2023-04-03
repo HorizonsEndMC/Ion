@@ -75,7 +75,7 @@ object ProtectionListener : SLEventListener() {
 		return false
 	}
 
-	private fun isRegionDenied(player: Player, location: Location): Boolean {
+	fun isRegionDenied(player: Player, location: Location): Boolean {
 		var denied = false
 
 		for (region in Regions.find(location).sortedByDescending { it.priority }) {
