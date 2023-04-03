@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import java.util.LinkedList
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.serverErrorActionMessage
 import net.horizonsend.ion.common.extensions.success
@@ -42,7 +43,16 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
-import java.util.*
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.TextDecoration.BOLD
+import net.starlegacy.database.schema.nations.Nation
+import net.starlegacy.database.schema.nations.Settlement
+import net.starlegacy.database.schema.nations.Territory
+import net.starlegacy.database.slPlayerId
+import net.starlegacy.feature.nations.region.Regions
+import net.starlegacy.feature.nations.region.types.RegionTerritory
+import org.litote.kmongo.setValue
 
 object StarshipComputers : SLComponent() {
 
@@ -175,6 +185,26 @@ object StarshipComputers : SLComponent() {
 				}.setName(MiniMessage.miniMessage().deserialize("<gray>Starship Name")),
 				8, 0
 			)
+
+			fun Player.isTerritoryOwner(): Boolean {
+				val territoryId = Regions.find(player.location)
+					.filterIsInstance<RegionTerritory>()
+					.firstOrNull() ?: return false
+				val territory = Territory.findById(territoryId.id) ?: return false
+				val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
+				val settlement = Settlement.findById(settlementId) ?: return false
+				return settlement.leader.uuid == uniqueId
+			}
+
+			if (player.isTerritoryOwner()) {
+				pane.addItem(
+					guiButton(Material.RECOVERY_COMPASS) {
+						startRename(playerClicker, data)
+						takeOwnership(player, data)
+					}.setName(text("Take ownership", RED, BOLD)),
+					5, 0
+				)
+			}
 
 			pane.setOnClick { e ->
 				e.isCancelled = true
@@ -377,5 +407,10 @@ object StarshipComputers : SLComponent() {
 		} else {
 			player.success("Disabled Lock")
 		}
+	}
+
+	private fun takeOwnership(player: Player, data: PlayerStarshipData) {
+		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::captain, player.slPlayerId))
+		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::pilots, mutableSetOf()))
 	}
 }
