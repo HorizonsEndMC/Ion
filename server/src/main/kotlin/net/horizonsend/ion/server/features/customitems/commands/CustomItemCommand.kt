@@ -8,7 +8,8 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.customitems.CustomItems.getByIdentifier
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -26,7 +27,16 @@ class CustomItemCommand : BaseCommand() {
 	) {
 		val player = target?.player ?: sender as? Player ?: throw Throwable("Console must specify a target player")
 
-		val itemStack = CustomItems.getByIdentifier(customItem)?.constructItemStack() ?: return
+		val itemStack = getByIdentifier(customItem)?.constructItemStack()
+		if (itemStack == null) {
+			player.userError("No custom item $customItem found!")
+			return
+		}
+
+		if (amount != null && amount <= 0) {
+			player.userError("Amount cannot be less than 0!")
+			return
+		}
 		itemStack.amount = amount ?: 1
 
 		player.inventory.addItem(itemStack)
