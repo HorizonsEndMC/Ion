@@ -19,9 +19,7 @@ object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
 
 	// TODO, test encounter. Will spawn enemies when you open the chest
-	val ITS_A_TRAP = register(object : Encounter(
-		identifier = "ITS_A_TRAP"
-	) {
+	val ITS_A_TRAP = register(object : Encounter(identifier = "ITS_A_TRAP") {
 			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
 				TODO("Not yet implemented")
 			}
@@ -43,12 +41,11 @@ object Encounters {
 			}
 		}
 	)
-	val TIC_TAC_TOE = register(object : Encounter(
-		identifier = "TIC_TAC_TOE"
-	) {
-		override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
+	val TIC_TAC_TOE = register(
+			object : Encounter(identifier = "TIC_TAC_TOE") {
+			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
 			TODO("Not yet implemented")
-		}
+			}
 
 		override fun onChestInteract(event: PlayerInteractEvent) {
 			//True for player, false for ai
@@ -210,7 +207,7 @@ enum class SecondaryChests(val blockState: BlockState, val NBT: CompoundTag?, va
 	ORES_GREAT(Blocks.CHEST.defaultBlockState(), null, 500);
 
 	companion object {
-		private val map = SecondaryChests.values().associate { it.name to it }
+		private val map = SecondaryChests.values().associateBy { it.name }
 
 		operator fun get(value: String): SecondaryChests? = map[value]
 	}

@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.Heightmap
-import net.starlegacy.util.timing
 import org.bukkit.Chunk
 import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
 import org.bukkit.persistence.PersistentDataType
@@ -51,7 +50,6 @@ class SpaceGenerator(
 	val configuration: ServerConfiguration.AsteroidConfig
 ) {
 	val spaceGenerationVersion: Byte = 0
-	val timing = timing("Space Generation")
 	val random = Random(serverLevel.seed)
 
 	// ASTEROIDS SECTION
