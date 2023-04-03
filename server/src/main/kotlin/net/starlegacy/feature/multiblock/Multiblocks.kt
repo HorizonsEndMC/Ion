@@ -89,6 +89,8 @@ import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomTriTurretMu
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopTriTurretMultiblock
+import net.starlegacy.util.getFacing
+import net.starlegacy.util.getRelativeIfLoaded
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
@@ -214,9 +216,6 @@ object Multiblocks : SLComponent() {
 
 	override fun onEnable() {
 		initMultiblocks()
-
-		gettingTiming = timing("Multiblock Getting")
-		detectionTiming = timing("Multiblock Detection")
 
 		log.info("Loaded ${multiblocks.size} multiblocks")
 	}
