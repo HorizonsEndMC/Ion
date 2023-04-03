@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.blasters.SettingsCommand
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customItems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.customItems.commands.CustomItemCommand
-import net.horizonsend.ion.server.features.whereisit.SearchCommand
 import net.horizonsend.ion.server.miscellaneous.commands.CalcExpCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 

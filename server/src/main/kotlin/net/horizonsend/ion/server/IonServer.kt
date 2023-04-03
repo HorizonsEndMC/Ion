@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.client.Packets
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
-import net.horizonsend.ion.server.features.customItems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.identifiers
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
@@ -69,7 +69,7 @@ object IonServer : JavaPlugin() {
 			)
 
 			commandManager.commandCompletions.registerCompletion("customItem") { context ->
-				CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
+				identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
 			}
 			commandManager.commandCompletions.registerCompletion("wreckEncounters") { Encounters.identifiers }
 			commandManager.commandCompletions.registerCompletion("particles") { context ->

@@ -9,7 +9,7 @@ import net.starlegacy.feature.misc.CustomItems
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
 import org.bukkit.entity.Player
-import net.horizonsend.ion.server.features.customItems.CustomItems as NewCustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems as NewCustomItems
 
 enum class Packets(
 	val c2s: (FriendlyByteBuf.(player: Player) -> Unit)? = null,

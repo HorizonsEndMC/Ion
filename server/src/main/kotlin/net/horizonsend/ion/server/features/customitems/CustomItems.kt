@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.customItems
+package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration

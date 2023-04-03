@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
 import net.horizonsend.ion.server.features.blasters.ProjectileManager
 import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
-import net.horizonsend.ion.server.features.customItems.CustomItems.STANDARD_MAGAZINE
-import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component

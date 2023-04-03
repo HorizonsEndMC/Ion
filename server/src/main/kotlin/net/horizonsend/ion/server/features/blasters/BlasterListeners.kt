@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.blasters
 
 import net.horizonsend.ion.server.features.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.blasters.objects.Magazine
-import net.horizonsend.ion.server.features.customItems.CustomItems
-import net.horizonsend.ion.server.features.customItems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
