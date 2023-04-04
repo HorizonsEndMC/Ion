@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.schema.nations.Nation
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -34,13 +34,13 @@ class BlasterListeners : Listener {
 		val blaster = customItem.displayName
 		val victimColor =
 			"<#" + Integer.toHexString((
-					SLPlayer[victim.uniqueId]?.nation?.let { Nation.findById(it) }?.color
+					PlayerCache[victim].nation?.let { Nation.findById(it) }?.color
 						?: 16777215
 					)) + ">"
 
 		val killerColor =
 			"<#" + Integer.toHexString((
-					SLPlayer[killer.uniqueId]?.nation?.let { Nation.findById(it) }?.color
+					PlayerCache[killer].nation?.let { Nation.findById(it) }?.color
 						?: 16777215
 					)) + ">"
 
