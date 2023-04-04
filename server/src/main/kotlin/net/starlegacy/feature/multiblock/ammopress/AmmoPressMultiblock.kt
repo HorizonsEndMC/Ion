@@ -16,7 +16,7 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.lang.Integer.min
 
-abstract class AmmoPressMultiblock() : PowerStoringMultiblock(), FurnaceMultiblock {
+abstract class AmmoPressMultiblock : PowerStoringMultiblock(), FurnaceMultiblock {
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
