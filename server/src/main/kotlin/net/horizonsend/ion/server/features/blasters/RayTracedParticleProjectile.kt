@@ -134,6 +134,7 @@ class RayTracedParticleProjectile(
 				}
 			}
 
+			shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
 			if (!balancing.shouldPassThroughEntities) return true
 		}
 
