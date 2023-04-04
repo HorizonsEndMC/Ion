@@ -20,7 +20,6 @@ import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.randomDouble
-import net.starlegacy.util.randomInt
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
@@ -29,7 +28,6 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
 import org.bukkit.SoundCategory.PLAYERS
-import org.bukkit.block.BlockFace.*
 import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -52,6 +50,8 @@ abstract class Blaster<T : Balancing>(
 	val soundFire: String,
 	val soundWhizz: String,
 	val soundShell: String,
+	val soundReloadStart: String,
+	val soundReloadFinish: String,
 
 	private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
@@ -103,26 +103,26 @@ abstract class Blaster<T : Balancing>(
 
 		setAmmunition(itemStack, livingEntity.inventory, ammo)
 
+		// Finish reload
 		Tasks.syncDelay(this.balancing.reload.toLong()) {
-			livingEntity.playSound(
-				sound(
-					key("minecraft:block.iron_door.close"), // TODO custom sound
-					PLAYER,
-					5f,
-					2.00f
-				)
+			livingEntity.location.world.playSound(
+				livingEntity.location,
+				soundReloadFinish,
+				PLAYERS,
+				1.0f,
+				1.0f
 			)
 		}
 
 		livingEntity.sendActionBar(text("Ammo: $ammo / ${balancing.magazineSize}", NamedTextColor.RED))
 
-		livingEntity.playSound(
-			sound(
-				key("minecraft:block.iron_door.close"), // TODO custom sound
-				PLAYER,
-				5f,
-				2.00f
-			)
+		// Start reload
+		livingEntity.location.world.playSound(
+			livingEntity.location,
+			soundReloadStart,
+			PLAYERS,
+			1.0f,
+			1.0f
 		)
 	}
 
@@ -159,6 +159,7 @@ abstract class Blaster<T : Balancing>(
 		val soundOrigin = livingEntity.location
 
 		// Shell sound
+		/*
 		var relativeBlock = livingEntity.location.block.getRelative(DOWN)
 		val maxDistance = 4 // Add 1 to this value for the actual distance
 
@@ -173,6 +174,7 @@ abstract class Blaster<T : Balancing>(
 			}
 			break
 		}
+		*/
 
 		// Shoot sound
 		soundOrigin.world.players.forEach {
@@ -260,10 +262,10 @@ abstract class Blaster<T : Balancing>(
 		if (ammo == 0) {
 			(livingEntity as? Player)?.playSound(
 				sound(
-					key("minecraft:block.iron_door.open"), // TODO custom sound
+					key("minecraft:blaster.dry_shoot"),
 					PLAYER,
-					5f,
-					2.00f
+					1.0f,
+					1.0f
 				)
 			)
 			return false

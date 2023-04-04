@@ -63,6 +63,8 @@ object CustomItems {
 				soundFire = "blaster.pistol.shoot",
 				soundWhizz = "blaster.whizz.standard",
 				soundShell = "blaster.pistol.shell",
+				soundReloadStart = "blaster.pistol.reload.start",
+				soundReloadFinish = "blaster.pistol.reload.finish",
 				balancingSupplier = IonServer.balancing.energyWeapons::pistol
 			) {}
 		)
@@ -79,6 +81,8 @@ object CustomItems {
 				soundFire = "blaster.rifle.shoot",
 				soundWhizz = "blaster.whizz.standard",
 				soundShell = "blaster.rifle.shell",
+				soundReloadStart = "blaster.rifle.reload.start",
+				soundReloadFinish = "blaster.rifle.reload.finish",
 				balancingSupplier = IonServer.balancing.energyWeapons::rifle
 			) {}
 		)
@@ -95,6 +99,8 @@ object CustomItems {
 				soundFire = "blaster.submachine_blaster.shoot",
 				soundWhizz = "blaster.whizz.standard",
 				soundShell = "blaster.submachine_blaster.shell",
+				soundReloadStart = "blaster.submachine_blaster.reload.start",
+				soundReloadFinish = "blaster.submachine_blaster.reload.finish",
 				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
@@ -132,6 +138,8 @@ object CustomItems {
 				soundFire = "blaster.shotgun.shoot",
 				soundWhizz = "blaster.whizz.standard",
 				soundShell = "blaster.shotgun.shell",
+				soundReloadStart = "blaster.shotgun.reload.start",
+				soundReloadFinish = "blaster.shotgun.reload.finish",
 				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
@@ -152,6 +160,8 @@ object CustomItems {
 				soundFire = "blaster.sniper.shoot",
 				soundWhizz = "blaster.whizz.sniper",
 				soundShell = "blaster.sniper.shell",
+				soundReloadStart = "blaster.sniper.reload.start",
+				soundReloadFinish = "blaster.sniper.reload.finish",
 				balancingSupplier = IonServer.balancing.energyWeapons::sniper
 			) {}
 		)
