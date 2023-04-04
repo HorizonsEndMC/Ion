@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.database.schema.misc.SLPlayer
 import org.bukkit.entity.Player
 import kotlin.math.floor
@@ -17,6 +18,11 @@ class CalcExpCommand : BaseCommand() {
 		sender: Player,
 		targetLevel: Int
 	) {
+		if (targetLevel > 100) {
+			sender.userError("100 is the max level!")
+			return
+		}
+
 		val xp = f2(targetLevel, SLPlayer[sender].level, SLPlayer[sender].xp)
 		val creds = 2.5 * xp
 
