@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.util.LinkedList
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.serverErrorActionMessage
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
@@ -218,6 +219,7 @@ object StarshipComputers : SLComponent() {
 					StarshipDetection.detectNewState(data)
 				} catch (e: StarshipDetection.DetectionFailedException) {
 					player.serverErrorActionMessage("${e.message} Detection failed!")
+					player.hint("Is it touching another structure?")
 					return@async
 				} catch (e: Exception) {
 					e.printStackTrace()
