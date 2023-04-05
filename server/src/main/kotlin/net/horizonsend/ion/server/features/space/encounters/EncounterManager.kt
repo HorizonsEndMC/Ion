@@ -68,7 +68,6 @@ class EncounterManager : Listener {
 					continue
 				}
 
-				event.isCancelled = true
 				encounter.onChestInteract(event)
 			}
 		}
