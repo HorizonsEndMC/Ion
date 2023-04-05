@@ -23,16 +23,23 @@ class CalcExpCommand : BaseCommand() {
 			return
 		}
 
-		val xp = f2(targetLevel, SLPlayer[sender].level, SLPlayer[sender].xp)
-		val creds = 2.5 * xp
+		val SLPlayer = SLPlayer[sender]
+
+		if (SLPlayer.level <= targetLevel) {
+			sender.userError("You are already at or above that level!")
+			return
+		}
+
+		val xp = f2(targetLevel, SLPlayer.level, SLPlayer.xp)
+		val credits = 2.5 * xp
 
 		sender.sendRichMessage(
 			"""
 
-				<#b8e0d4><bold>Level ${SLPlayer[sender].level} -> Level $targetLevel</bold>
+				<#b8e0d4><bold>Level ${SLPlayer.level} -> Level $targetLevel</bold>
 
 				<dark_gray>▪ <#eac4d5>Target XP<gray>: <#d6eadf>$xp
-				<dark_gray>▪ <#eac4d5>Price<gray>: <#d6eadf>${creds}C
+				<dark_gray>▪ <#eac4d5>Price<gray>: <#d6eadf>${credits}C
 
 			""".trimIndent()
 		)

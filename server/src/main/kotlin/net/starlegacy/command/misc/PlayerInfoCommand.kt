@@ -75,7 +75,7 @@ object PlayerInfoCommand : SLCommand() {
 	}
 
 	private fun sendGracePeriodInfo(sender: CommandSender, slPlayer: SLPlayer) {
-		if (Bukkit.getPlayer(slPlayer.lastKnownName)?.hasProtection() != false) {
+		if (Bukkit.getPlayer(slPlayer._id.uuid)?.hasProtection() != false) {
 			sender.sendRichMessage("<yellow>GracePeriod: <gold>True")
 		}
 	}
