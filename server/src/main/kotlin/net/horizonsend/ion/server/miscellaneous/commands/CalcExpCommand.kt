@@ -25,7 +25,7 @@ class CalcExpCommand : BaseCommand() {
 
 		val SLPlayer = SLPlayer[sender]
 
-		if (SLPlayer.level <= targetLevel) {
+		if (SLPlayer.level >= targetLevel) {
 			sender.userError("You are already at or above that level!")
 			return
 		}
