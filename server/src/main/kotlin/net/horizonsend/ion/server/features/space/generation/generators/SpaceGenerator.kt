@@ -58,7 +58,7 @@ class SpaceGenerator(
 	}
 
 	// World asteroid palette noise
-	private val worldSimplexNoise = SimplexOctaveGenerator(random, 1).apply { this.setScale(0.0005) }
+	private val worldSimplexNoise = SimplexOctaveGenerator(random, 1).apply { this.setScale(0.0010) }
 
 	// Palettes weighted
 	private val weightedPalettes = configuration.paletteWeightedList()
