@@ -11,10 +11,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import java.util.function.Consumer
+import kotlin.math.PI
+import kotlin.math.acos
 import kotlin.math.atan
 import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 val Block.coordinates: Vec3i get() = Vec3i(x, y, z)
@@ -126,6 +130,26 @@ fun Location.alongVector(vector: Vector, points: Int): List<Location> {
 	}
 
 	return locationList
+}
+
+fun Location.spherePoints(radius: Double, points: Int): List<Location> {
+	val goldenRatio = (1.0 + 5.0.pow(0.5)) / 2.0
+	val coordinates = listOf<Location>()
+
+	for (count in 0..points) {
+		val theta = 2 * PI * count / goldenRatio
+		val phi = acos(1.0 - ((2.0 * (count + 0.5)) / points) )
+
+		val x = cos(theta) * sin(phi)
+		val y = sin(theta) * sin(phi)
+		val z = cos(phi)
+
+		println(Location(this.world, x, y, z).add(this))
+
+		coordinates.plus(Location(this.world, x, y, z).add(this))
+	}
+
+	return coordinates
 }
 
 private val directionArray = arrayOf(
