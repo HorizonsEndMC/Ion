@@ -4,16 +4,21 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtIo
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.nms
+import net.starlegacy.util.spherePoints
+import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 
 object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
@@ -157,14 +162,44 @@ object Encounters {
 			}
 		}
 
-		override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-			val tileEntityData = CompoundTag()
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
 
-			tileEntityData.putString("id", "minecraft:chest")
-			tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-			return Blocks.CHEST.defaultBlockState() to tileEntityData
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
 		}
-	}
+	)
+
+	val COOLANT_LEAK = register(object : Encounter(identifier = "COOLANT_LEAK") {
+			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
+				TODO("Not yet implemented")
+			}
+
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				val targetedBlock = event.clickedBlock!!
+				event.player.alert("it worked")
+
+				for (spherePoint in event.clickedBlock!!.location.spherePoints(10.0, 100)) {
+					spherePoint.world.spawnEntity(spherePoint, EntityType.LIGHTNING)
+					println(spherePoint)
+				}
+//
+//
+//				for (count in 0..100) {
+//					targetedBlock.location.world.spawnEntity(targetedBlock.location, EntityType.LIGHTNING)
+//				}
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
+		}
 	)
 
 	private fun <T : Encounter> register(encounter: T): T {
@@ -174,7 +209,78 @@ object Encounters {
 
 	val identifiers = encounters.keys
 
-	fun getByIdentifier(identifier: String): Encounter? = encounters[identifier]
+	operator fun get(identifier: String): Encounter? = encounters[identifier]
+
+	fun getChunkEncounters(chunk: Chunk): CompoundTag? {
+		val pdc = chunk.persistentDataContainer.get(
+			NamespacedKeys.WRECK_ENCOUNTER_DATA,
+			PersistentDataType.BYTE_ARRAY
+		) ?: return null
+
+		return NbtIo.readCompressed(
+			ByteArrayInputStream(
+				pdc,
+				0,
+				pdc.size
+			)
+		)
+	}
+
+	fun setChunkEncounters(chunk: Chunk, newData: CompoundTag) {
+		val wreckDataOutputStream = ByteArrayOutputStream()
+		NbtIo.writeCompressed(newData, wreckDataOutputStream)
+
+		chunk.persistentDataContainer.set(
+			NamespacedKeys.WRECK_ENCOUNTER_DATA,
+			PersistentDataType.BYTE_ARRAY,
+			wreckDataOutputStream.toByteArray()
+		)
+	}
+
+	fun setChestLock(chest: Chest, locked: Boolean) {
+		val wreckData = getChunkEncounters(chest.chunk) ?: return
+
+		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
+		wreckData.remove("Wrecks")
+
+		for (wreck in existingWrecks) {
+			wreck as CompoundTag
+
+			if (
+				wreck.getInt("x") != chest.x &&
+				wreck.getInt("y") != chest.y &&
+				wreck.getInt("z") != chest.z
+			) continue
+
+			existingWrecks.remove(wreck)
+			wreck.putBoolean("inactive", locked)
+			existingWrecks.add(wreck)
+		}
+
+		wreckData.put("Wrecks", existingWrecks)
+
+		setChunkEncounters(chest.chunk, wreckData)
+	}
+
+	operator fun get(chest: Chest): Encounter? {
+		val wreckData = getChunkEncounters(chest.chunk) ?: return null
+
+		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
+		for (wreck in existingWrecks) {
+			wreck as CompoundTag
+
+			if (!encounterMatchesChest(wreck, chest)) continue
+
+			return get(wreck.getString("Encounter Identifier"))
+		}
+
+		return null
+	}
+
+	fun encounterMatchesChest(wreck: CompoundTag, chest: Chest): Boolean = (
+			wreck.getInt("x") == chest.x &&
+			wreck.getInt("y") == chest.y &&
+			wreck.getInt("z") == chest.z)
 }
 
 /**

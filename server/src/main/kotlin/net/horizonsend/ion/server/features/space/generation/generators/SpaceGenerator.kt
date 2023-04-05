@@ -177,7 +177,7 @@ class SpaceGenerator(
 			val identifier: String,
 			val additonalInfo: String?
 		) {
-			fun getEncounter(): Encounter = Encounters.getByIdentifier(identifier)!!
+			fun getEncounter(): Encounter = Encounters.get(identifier)!!
 
 			fun nms(x: Int, y: Int, z: Int): CompoundTag {
 				val beginningTag = CompoundTag()

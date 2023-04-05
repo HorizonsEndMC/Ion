@@ -76,7 +76,7 @@ class SpaceGenCommand : BaseCommand() {
 			.userError("No generator found for ${sender.world.name}")
 
 		val data = wreck?.let { wreckName ->
-			encounter?.let { encounterName ->
+			val encounterData = encounter?.let { encounterName ->
 
 				SpaceGenerator.WreckGenerationData.WreckEncounterData(
 					encounterName, null
@@ -84,7 +84,7 @@ class SpaceGenCommand : BaseCommand() {
 			}
 
 			SpaceGenerator.WreckGenerationData(
-				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(), wreckName, null
+				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(), wreckName, encounterData
 			)
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
