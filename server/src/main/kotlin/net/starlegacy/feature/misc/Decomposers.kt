@@ -119,15 +119,16 @@ object Decomposers : SLComponent() {
 	): Int {
 		val serverLevel = origin.world.minecraft
 
-		for (offsetUp: Int in 0 until height) {
+		for (offsetWidth: Int in 0 until height) {
 			for (offsetForward: Int in 0 until length) {
-				for (offsetWidth: Int in 0 until width) {
+				for (offsetUp: Int in 0 until width) {
 					val originBlockPos = origin.toBlockPos().mutable()
 					originBlockPos.add(up.direction.multiply(offsetUp).toBlockPos())
 					originBlockPos.add(forward.direction.multiply(offsetForward).toBlockPos())
 					originBlockPos.add(right.direction.multiply(offsetWidth).toBlockPos())
 
-					if (serverLevel.getBlockIfLoaded(originBlockPos)?.isAir() == false) return offsetWidth
+					val block = serverLevel.getBlockIfLoaded(originBlockPos)
+					if (block?.isAir() == false) return offsetWidth
 				}
 			}
 		}

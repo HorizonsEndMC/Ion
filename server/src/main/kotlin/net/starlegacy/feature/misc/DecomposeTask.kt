@@ -12,8 +12,10 @@ import net.starlegacy.util.nms
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.SoundCategory
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.data.BlockData
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
@@ -84,6 +86,8 @@ class DecomposeTask(
 		val storage = DecomposerMultiblock.getStorage(sign)
 		val power = PowerMachines.getPower(sign, fast = true)
 
+		var firstBlock: BlockData? = null
+
 		for (offsetUp: Int in 0 until height) {
 			for (offsetForward: Int in 0 until length) {
 				val newLocation = origin.clone()
@@ -102,6 +106,8 @@ class DecomposeTask(
 				if (blockData.material.isAir) continue
 
 				if (!BlockBreakEvent(block, player).callEvent()) continue
+
+				if (firstBlock == null) { firstBlock = blockData }
 
 				if (power < 10) {
 					player.userError("Decomposer out of power!")
@@ -139,8 +145,24 @@ class DecomposeTask(
 			}
 		}
 
-		// TODO sounds
-		// TODO particles
+		firstBlock?.let {
+			val stripCenter: Location = origin.clone()
+				.add(right.direction.multiply(startWidthOffset))
+				.add(up.direction.multiply(height / 2.0))
+				.add(forward.direction.multiply(length / 2.0))
+				.toBlockLocation()
+
+			for (soundPlayer in origin.world.players) {
+				if (soundPlayer.location.distance(stripCenter) >= width * 1.5) continue
+				soundPlayer.playSound(
+					soundPlayer.location,
+					firstBlock.soundGroup.breakSound,
+					SoundCategory.BLOCKS,
+					0.5f,
+					1.0f
+				)
+			}
+		}
 
 		startWidthOffset++
 
