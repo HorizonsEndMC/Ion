@@ -47,7 +47,6 @@ class EncounterManager : Listener {
 		)
 
 		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
-		wreckData.remove("Wrecks")
 
 		for (wreck in existingWrecks) {
 			wreck as CompoundTag
@@ -69,24 +68,10 @@ class EncounterManager : Listener {
 					continue
 				}
 
-				existingWrecks.remove(wreck)
-				wreck.putBoolean("inactive", true)
-				existingWrecks.add(wreck)
-
+				event.isCancelled = true
 				encounter.onChestInteract(event)
 			}
 		}
-
-		wreckData.put("Wrecks", existingWrecks)
-
-		val wreckDataOutputStream = ByteArrayOutputStream()
-		NbtIo.writeCompressed(wreckData, wreckDataOutputStream)
-
-		chunk.persistentDataContainer.set(
-			NamespacedKeys.WRECK_ENCOUNTER_DATA,
-			PersistentDataType.BYTE_ARRAY,
-			wreckDataOutputStream.toByteArray()
-		)
 	}
 
 	// Handles secondary chests
