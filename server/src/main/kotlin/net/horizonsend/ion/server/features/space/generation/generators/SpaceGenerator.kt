@@ -66,7 +66,7 @@ class SpaceGenerator(
 	val weightedOres = configuration.blockPalettes.associate { configuration.blockPalettes.indexOf(it) to oreWeights(it) }
 
 	// Multiple of the radius of the asteroid to mark chunks as might contain an asteroid
-	val searchRadius = 1.25
+	val searchRadius = 1.0
 
 	/**
 	 * Generates an asteroid with optional specification for the parameters
