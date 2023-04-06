@@ -21,7 +21,7 @@ object ShipmentBalancing : SLComponent() {
 			val profitFactorMax: Double = 3.5,
 			val prices: Map<String, Double> = mapOf(),
 			val defaultPrice: Double = 50.0,
-			val settlementCityChance: Double = 1.0,
+			val settlementCityChance: Double = 0.15,
 			val npcCityChance: Double = 0.1,
 			val minExpireDays: Int = 1,
 			val maxExpireDays: Int = 6,
