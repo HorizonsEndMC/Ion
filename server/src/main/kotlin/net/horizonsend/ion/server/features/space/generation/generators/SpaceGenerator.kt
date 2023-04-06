@@ -177,7 +177,7 @@ class SpaceGenerator(
 			val identifier: String,
 			val additonalInfo: String?
 		) {
-			fun getEncounter(): Encounter = Encounters.get(identifier)!!
+			fun getEncounter(): Encounter = Encounters[identifier]!!
 
 			fun nms(x: Int, y: Int, z: Int): CompoundTag {
 				val beginningTag = CompoundTag()
@@ -265,7 +265,7 @@ class SpaceGenerator(
 			buildChunkBlocks(chunk)
 		}
 
-		fun buildChunkBlocks(chunk: Chunk) {
+		private fun buildChunkBlocks(chunk: Chunk) {
 			val levelChunk = (chunk as CraftChunk).handle
 
 			val storedAsteroidData =
@@ -465,6 +465,10 @@ abstract class SpaceGenerationReturnData {
 						NamespacedKeys.STORED_CHUNK_BLOCKS
 					)
 
+
+				val existingSections = existingStoredBlocks?.getList("sections", 10)
+				existingSections?.let { sections.addAll(existingSections) }
+
 				for (completedSection in sectionList) {
 					val newBlocks = BlockSerialization
 						.formatSection(
@@ -473,7 +477,21 @@ abstract class SpaceGenerationReturnData {
 							completedSection.nmsPalette
 						)
 
-					sections.add(newBlocks)
+					// Combine and overwrite old data with new
+					val combined = existingStoredBlocks?.let { _ ->
+						val existingSection = (existingSections?.firstOrNull {
+							(it as CompoundTag).getInt("y") == completedSection.y
+						} as? CompoundTag ) ?: return@let newBlocks
+
+						sections.remove(existingSection)
+
+						BlockSerialization.combineSectionBlockStorage(
+							existingSection,
+							newBlocks
+						)
+					}  ?: newBlocks
+
+					sections.add(combined)
 				}
 
 				// Format the new data
@@ -482,28 +500,14 @@ abstract class SpaceGenerationReturnData {
 					generator.spaceGenerationVersion
 				)
 
-				// Combine and overwrite old data with new
-				val combined = existingStoredBlocks?.let {
-					BlockSerialization.combineSectionBlockStorage(
-						existingStoredBlocks,
-						finishedChunk
-					)
-				} ?: finishedChunk
-
 				val outputStream = ByteArrayOutputStream()
-				NbtIo.writeCompressed(combined, outputStream)
+				NbtIo.writeCompressed(finishedChunk, outputStream)
 
 				// Update PDCs
 				bukkitChunk.persistentDataContainer.set(
 					NamespacedKeys.STORED_CHUNK_BLOCKS,
 					PersistentDataType.BYTE_ARRAY,
 					outputStream.toByteArray()
-				)
-
-				bukkitChunk.persistentDataContainer.set(
-					NamespacedKeys.SPACE_GEN_VERSION,
-					PersistentDataType.BYTE,
-					generator.spaceGenerationVersion
 				)
 			}
 		}

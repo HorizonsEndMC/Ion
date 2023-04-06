@@ -141,7 +141,7 @@ class GenerateAsteroidTask(
 		chunkMinZ: Int
 	): CompletableDeferred<CompletedSection> {
 		SpaceGenerationManager.coroutineScope.launch {
-			val palette = mutableSetOf<BlockState>()
+			val palette = mutableListOf<BlockState>()
 			val storedBlocks = arrayOfNulls<Int>(4096)
 			var index = 0
 			val sectionMinY = sectionY.shl(4)
@@ -183,12 +183,14 @@ class GenerateAsteroidTask(
 							block = generator.oreMap[ore]
 						}
 
-						if (block != null) {
-							palette.add(block)
-							storedBlocks[index] = palette.indexOf(block)
-						} else {
-							storedBlocks[index] = 0
-						}
+						val blockIndex = if (block != null) {
+							if (!palette.contains(block)) {
+								palette.add(block)
+								palette.lastIndex
+							} else palette.indexOf(block)
+						} else 0
+
+						storedBlocks[index] = blockIndex
 
 						index++
 					}
