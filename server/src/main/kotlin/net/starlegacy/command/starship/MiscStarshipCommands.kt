@@ -56,9 +56,7 @@ object MiscStarshipCommands : SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("release")
 	fun onRelease(sender: Player) {
-		DeactivatedPlayerStarships.deactivateAsync(getStarshipPiloting(sender)) {
-			sender.success("Released starship")
-		}
+		PilotedStarships.tryRelease(PilotedStarships[sender] ?: return  sender.userError("You are not piloting a starship"), sender)
 	}
 
 	@Suppress("unused")
