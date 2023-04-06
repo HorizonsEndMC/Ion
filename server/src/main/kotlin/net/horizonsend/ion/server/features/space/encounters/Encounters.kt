@@ -1,19 +1,15 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import com.sk89q.worldedit.util.formatting.text.format.TextColor
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.Style
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.MenuHelper
-import net.starlegacy.util.Tasks
 import net.starlegacy.util.Tasks.syncDelay
 import net.starlegacy.util.Tasks.syncRepeat
 import net.starlegacy.util.nms
