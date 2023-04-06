@@ -285,7 +285,7 @@ object PilotedStarships : SLComponent() {
 		return true
 	}
 
-	private fun tryRelease(starship: ActivePlayerStarship, player: Player): Boolean {
+	fun tryRelease(starship: ActivePlayerStarship, player: Player): Boolean {
 		if (!StarshipUnpilotEvent(starship, player).callEvent()) {
 			return false
 		}
