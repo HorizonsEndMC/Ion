@@ -34,7 +34,7 @@ object SpaceGenerationManager : Listener {
 		val serverLevel = (event.world as CraftWorld).handle
 
 		IonServer.configuration.spaceGenConfig[event.world.name]?.let { config ->
-			println("creating generator for ${serverLevel.serverLevelData.levelName}")
+			IonServer.slF4JLogger.info("Creating generator for ${serverLevel.serverLevelData.levelName}")
 			worldGenerators[serverLevel] =
 				SpaceGenerator(
 					serverLevel,
