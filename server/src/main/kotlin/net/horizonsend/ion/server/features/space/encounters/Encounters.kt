@@ -12,6 +12,7 @@ import net.starlegacy.util.nms
 import net.starlegacy.util.spherePoints
 import org.bukkit.Chunk
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
@@ -179,11 +180,14 @@ object Encounters {
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
-				event.player.alert("it worked")
 
-				for (spherePoint in event.clickedBlock!!.location.spherePoints(10.0, 100)) {
-					spherePoint.world.spawnEntity(spherePoint, EntityType.LIGHTNING)
-					println(spherePoint)
+				for (spherePoint in event.clickedBlock!!.location.spherePoints(10.0, 10000)) {
+
+					targetedBlock.world.spawnParticle(Particle.SOUL_FIRE_FLAME, spherePoint.x, spherePoint.y, spherePoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+//					event.clickedBlock!!.world.spawnParticle(Particle.SOUL_FIRE_FLAME, spherePoint, 1, 0.0)
+
+//					Particle.SOUL_FIRE_FLAME.dataType.name
+//					println(Particle.SOUL_FIRE_FLAME.dataType.name)
 				}
 //
 //
