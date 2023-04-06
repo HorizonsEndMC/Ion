@@ -134,19 +134,17 @@ fun Location.alongVector(vector: Vector, points: Int): List<Location> {
 
 fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 	val goldenRatio = (1.0 + 5.0.pow(0.5)) / 2.0
-	val coordinates = listOf<Location>()
+	val coordinates = mutableListOf<Location>()
 
 	for (count in 0..points) {
 		val theta = 2 * PI * count / goldenRatio
 		val phi = acos(1.0 - ((2.0 * (count + 0.5)) / points) )
 
-		val x = cos(theta) * sin(phi)
-		val y = sin(theta) * sin(phi)
-		val z = cos(phi)
+		val x = cos(theta) * sin(phi) * radius
+		val y = sin(theta) * sin(phi) * radius
+		val z = cos(phi) * radius
 
-		println(Location(this.world, x, y, z).add(this))
-
-		coordinates.plus(Location(this.world, x, y, z).add(this))
+		coordinates.add(Location(this.world, x, y, z).add(this))
 	}
 
 	return coordinates
