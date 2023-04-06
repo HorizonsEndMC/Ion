@@ -1,20 +1,30 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.sk89q.worldedit.util.formatting.text.format.TextColor
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.Style
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.MenuHelper
+import net.starlegacy.util.Tasks
+import net.starlegacy.util.Tasks.syncDelay
+import net.starlegacy.util.Tasks.syncRepeat
 import net.starlegacy.util.nms
 import net.starlegacy.util.spherePoints
 import org.bukkit.Chunk
 import org.bukkit.Material
+import org.bukkit.Sound.BLOCK_NOTE_BLOCK_COW_BELL
 import org.bukkit.Particle
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.EntityType.COW
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -25,7 +35,8 @@ object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
 
 	// TODO, test encounter. Will spawn enemies when you open the chest
-	val ITS_A_TRAP = register(object : Encounter(identifier = "ITS_A_TRAP") {
+	val ITS_A_TRAP = register(
+		object : Encounter(identifier = "ITS_A_TRAP") {
 			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
 				TODO("Not yet implemented")
 			}
@@ -47,121 +58,133 @@ object Encounters {
 			}
 		}
 	)
+
 	val TIC_TAC_TOE = register(
-			object : Encounter(identifier = "TIC_TAC_TOE") {
+		object : Encounter(identifier = "TIC_TAC_TOE") {
 			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
-			TODO("Not yet implemented")
+				TODO("Not yet implemented")
 			}
 
-		override fun onChestInteract(event: PlayerInteractEvent) {
-			//True for player, false for ai
-			var whoTurn: Boolean = true
-			val targetedBlock = event.clickedBlock as? Chest ?: return
-			val lock = targetedBlock.persistentDataContainer.get(NamespacedKeys.WRECK_CHEST_LOCK, PersistentDataType.INTEGER)
-			val player = event.player
-			if (lock == 1)
-			MenuHelper.apply {MenuHelper
-				this.gui(5, "Tic tac toe")
-				val unclaimedButton = ItemStack(Material.GRAY_STAINED_GLASS_PANE)
-				//player marker
-				val redClaimedButton = ItemStack(Material.RED_STAINED_GLASS_PANE)
-				//ai marker
-				val blueClaimedButton = ItemStack(Material.BLUE_STAINED_GLASS_PANE)
-				val indexesOfTheButtons = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)
-				val items = mutableListOf<GuiItem>()
-				indexesOfTheButtons.forEach { index ->
-					items[index] = guiButton(unclaimedButton){
-						fun checkHasWon(): Boolean? {
-							//Win condition of the top row
-							if ((items[12].item.type == items[13].item.type && items[13].item.type == items[14].item.type)){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				//True for player, false for ai
+				var whoTurn: Boolean = true
+				val targetedBlock = event.clickedBlock as? Chest ?: return
+				val lock = targetedBlock.persistentDataContainer.get(NamespacedKeys.WRECK_CHEST_LOCK, PersistentDataType.INTEGER)
+				val player = event.player
+				if (lock == 1) {
+					MenuHelper.apply {
+						MenuHelper
+						this.gui(5, "Tic tac toe")
+						val unclaimedButton = ItemStack(Material.GRAY_STAINED_GLASS_PANE)
+						//player marker
+						val redClaimedButton = ItemStack(Material.RED_STAINED_GLASS_PANE)
+						//ai marker
+						val blueClaimedButton = ItemStack(Material.BLUE_STAINED_GLASS_PANE)
+						val indexesOfTheButtons = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)
+						val items = mutableListOf<GuiItem>()
+						indexesOfTheButtons.forEach { index ->
+							items[index] = guiButton(unclaimedButton) {
+								fun checkHasWon(): Boolean? {
+									//Win condition of the top row
+									if ((items[12].item.type == items[13].item.type && items[13].item.type == items[14].item.type)) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									//Win condition of the Middle row
+									if (items[21].item.type == items[22].item.type && items[22].item.type == items[23].item.type) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									//Win condition of the bottom row
+									if (items[30].item.type == items[31].item.type && items[31].item.type == items[32].item.type) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									//Win condition for the leftmost column
+									if (items[12].item.type == items[21].item.type && items[21].item.type == items[30].item.type) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									//Win condition for the middle column
+									if (items[13].item.type == items[22].item.type && items[22].item.type == items[31].item.type) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									//Win condition for the rightmost column
+									if (items[14].item.type == items[23].item.type && items[23].item.type == items[32].item.type) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									//Win condition for the right diagonal
+									if (items[12].item.type == items[22].item.type && items[22].item.type == items[32].item.type) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									//Win condition for the left diagonal
+									if (items[14].item.type == items[22].item.type && items[22].item.type == items[30].item.type) {
+										return when (items[14].item.type) {
+											Material.RED_STAINED_GLASS_PANE -> true
+											Material.BLUE_STAINED_GLASS_PANE -> false
+											else -> null
+										}
+									}
+									return null
+								}
+								if (items[index] != blueClaimedButton && whoTurn) {
+									items[index] = guiButton(redClaimedButton) {}
+									if (checkHasWon() == null) {
+										whoTurn = !whoTurn
+									} else if (checkHasWon() == true) {
+										targetedBlock.persistentDataContainer.set(
+											NamespacedKeys.WRECK_CHEST_LOCK,
+											PersistentDataType.SHORT,
+											0
+										)
+									}
+									//AI below (highly advanced, with 100% quantum neural deeplearning frameworks)
+									if (!whoTurn) {
+										val freeButtons =
+											indexesOfTheButtons.filter { items[it].item == unclaimedButton }
+										if (freeButtons.isNotEmpty()) {
+											items[freeButtons.random()] = guiButton(blueClaimedButton) {}
+											whoTurn = !whoTurn
+											checkHasWon()
+										}
+									} else {
+										targetedBlock.persistentDataContainer.set(
+											NamespacedKeys.WRECK_CHEST_LOCK,
+											PersistentDataType.SHORT,
+											0
+										)
+									}
 								}
 							}
-							//Win condition of the Middle row
-							if (items[21].item.type ==  items[22].item.type  && items[22].item.type  == items[23].item.type){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
-								}
-							}
-							//Win condition of the bottom row
-							if (items[30].item.type ==  items[31].item.type  && items[31].item.type  == items[32].item.type){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
-								}
-							}
-							//Win condition for the leftmost column
-							if (items[12].item.type ==  items[21].item.type  && items[21].item.type  == items[30].item.type){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
-								}
-							}
-							//Win condition for the middle column
-							if (items[13].item.type ==  items[22].item.type  && items[22].item.type  == items[31].item.type){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
-								}
-							}
-							//Win condition for the rightmost column
-							if (items[14].item.type ==  items[23].item.type  && items[23].item.type  == items[32].item.type){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
-								}
-							}
-							//Win condition for the right diagonal
-							if (items[12].item.type ==  items[22].item.type  && items[22].item.type  == items[32].item.type){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
-								}
-							}
-							//Win condition for the left diagonal
-							if (items[14].item.type ==  items[22].item.type  && items[22].item.type  == items[30].item.type){
-								return when (items[14].item.type) {
-									Material.RED_STAINED_GLASS_PANE -> true
-									Material.BLUE_STAINED_GLASS_PANE -> false
-									else -> null
-								}
-							}
-							return null
 						}
-						if (items[index]!=blueClaimedButton && whoTurn) {
-							items[index] = guiButton(redClaimedButton) {}
-							if(checkHasWon() == null) {
-								whoTurn = !whoTurn
-							} else if(checkHasWon() == true){
-								targetedBlock.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST_LOCK, PersistentDataType.SHORT, 0)
-							}
-							//AI below (highly advanced, with 100% quantum neural deeplearning frameworks)
-							if (!whoTurn){
-								val freeButtons = indexesOfTheButtons.filter { items[it].item == unclaimedButton }
-								if (freeButtons.isNotEmpty()) {
-									items[freeButtons.random()] = guiButton(blueClaimedButton) {}
-									whoTurn = !whoTurn
-									checkHasWon()
-								}
-							} else{
-								targetedBlock.persistentDataContainer.set(NamespacedKeys.WRECK_CHEST_LOCK, PersistentDataType.SHORT, 0)
-							}
-						}
+						player.openPaginatedMenu("Tic Tic Toe", items)
 					}
 				}
-				player.openPaginatedMenu("Tic Tic Toe", items)
 			}
-		}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
 				val tileEntityData = CompoundTag()
@@ -206,6 +229,42 @@ object Encounters {
 		}
 	)
 
+	val COW_TIPPER = register(
+		object : Encounter(identifier = "COW_TIPPER") {
+			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
+				TODO("Not yet implemented")
+			}
+
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				val targetedBlock = event.clickedBlock!!
+				val timeLimit = 10 // seconds
+				event.player.alert("Slaughter the Explosive Cow in $timeLimit seconds or perish!!!")
+				val explosiveCow = targetedBlock.location.world.spawnEntity(targetedBlock.location, COW)
+				explosiveCow.customName(text("Explosive Cow", NamedTextColor.RED))
+				syncDelay((timeLimit * 20).toLong()) {
+					if (!explosiveCow.isDead) {
+						explosiveCow.location.createExplosion(20.0f)
+						val explosionDamage = 25.0
+						val explosionRadius = 15.0
+						explosiveCow.location.getNearbyLivingEntities(explosionRadius).forEach {
+							it.damage(explosionDamage * (explosionRadius - it.location.distance(explosiveCow.location) / explosionRadius), explosiveCow)
+						}
+					}
+				}
+				syncRepeat(1, 1) {
+					explosiveCow.location.world.playSound(explosiveCow, BLOCK_NOTE_BLOCK_COW_BELL, 5.0f, 1.0f)
+				}
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
+		}
+	)
 	private fun <T : Encounter> register(encounter: T): T {
 		encounters[encounter.identifier] = encounter
 		return encounter
