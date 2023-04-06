@@ -128,7 +128,7 @@ abstract class SimpleProjectile(
 		if (GracePeriod.isGracePeriod) return
 
 		val world = newLoc.world
-		if (world.environment == World.Environment.NETHER || world.name.lowercase().contains("hyperspace")) {
+		if (world.environment == World.Environment.NETHER && world.name.lowercase().contains("hyperspace")) {
 			return
 		}
 
