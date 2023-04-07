@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
@@ -31,6 +33,7 @@ object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
 
 	// TODO, test encounter. Will spawn enemies when you open the chest
+	@Suppress("Unused")
 	val ITS_A_TRAP = register(
 		object : Encounter(identifier = "ITS_A_TRAP") {
 			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
@@ -55,6 +58,7 @@ object Encounters {
 		}
 	)
 
+	@Suppress("Unused")
 	val TIC_TAC_TOE = register(
 		object : Encounter(identifier = "TIC_TAC_TOE") {
 			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
@@ -192,6 +196,7 @@ object Encounters {
 		}
 	)
 
+	@Suppress("Unused")
 	val COOLANT_LEAK = register(object : Encounter(identifier = "COOLANT_LEAK") {
 			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
 				TODO("Not yet implemented")
@@ -200,19 +205,47 @@ object Encounters {
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
 
-				for (spherePoint in event.clickedBlock!!.location.spherePoints(10.0, 10000)) {
+				event.isCancelled = true
+				val chest = (targetedBlock.state as? Chest) ?: return
 
-					targetedBlock.world.spawnParticle(Particle.SOUL_FIRE_FLAME, spherePoint.x, spherePoint.y, spherePoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
-//					event.clickedBlock!!.world.spawnParticle(Particle.SOUL_FIRE_FLAME, spherePoint, 1, 0.0)
+				var iteration = 0
+				val BLOCKS_PER_ITERATION = 0.05
+				val MAX_RADIUS = 10.0
 
-//					Particle.SOUL_FIRE_FLAME.dataType.name
-//					println(Particle.SOUL_FIRE_FLAME.dataType.name)
-				}
-//
-//
-//				for (count in 0..100) {
-//					targetedBlock.location.world.spawnEntity(targetedBlock.location, EntityType.LIGHTNING)
-//				}
+				runnable {
+					iteration++
+
+					val currentSize = iteration * BLOCKS_PER_ITERATION
+
+					if (currentSize >= MAX_RADIUS) cancel()
+
+					fun getBlocks() {}
+
+					val spherePoints = chest.location.toCenterLocation().spherePoints(currentSize, 500)
+
+					for (player in chest.world.players) {
+						if (player.location.distance(chest.location) >= 50.0) continue
+						for (spherePoint in spherePoints) {
+
+							player.spawnParticle(
+								Particle.SNOWFLAKE,
+								spherePoint.x,
+								spherePoint.y,
+								spherePoint.z,
+								1,
+								0.0,
+								0.0,
+								0.0,
+								0.1,
+								null
+							)
+						}
+
+						if (player.location.distance(chest.location) >= currentSize) continue
+
+						player.freezeTicks = player.freezeTicks++
+					}
+				}.runTaskTimer(IonServer, 0L, 1L)
 			}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
@@ -225,6 +258,7 @@ object Encounters {
 		}
 	)
 
+	@Suppress("Unused")
 	val COW_TIPPER = register(
 		object : Encounter(identifier = "COW_TIPPER") {
 			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
