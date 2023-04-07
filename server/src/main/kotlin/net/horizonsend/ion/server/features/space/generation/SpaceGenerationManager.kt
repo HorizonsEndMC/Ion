@@ -5,10 +5,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerationTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
+import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.server.level.ServerLevel
 import net.starlegacy.util.Tasks
@@ -119,6 +121,18 @@ object SpaceGenerationManager : Listener {
 
 			Tasks.sync {
 				val chunks = completed.finishPlacement(task.generator)
+
+				val serializedWreck = (completed as? WreckGenerationData.WreckReturnData)?.serializedWreckData?.second
+				serializedWreck?.let { wreck ->
+					val encounter = Encounters[wreck] ?: return@let
+
+					encounter.generate(
+						task.generator.serverLevel.world,
+						wreck.getInt("x"),
+						wreck.getInt("y"),
+						wreck.getInt("z")
+					)
+				}
 
 				completed.store(task.generator, chunks)
 

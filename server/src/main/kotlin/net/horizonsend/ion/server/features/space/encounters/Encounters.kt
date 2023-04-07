@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.world.level.block.Blocks
@@ -17,10 +18,16 @@ import net.starlegacy.util.Tasks.syncDelay
 import net.starlegacy.util.Tasks.syncRepeat
 import net.starlegacy.util.nms
 import net.starlegacy.util.spherePoints
+import net.starlegacy.util.toBlockPos
+import net.starlegacy.util.toLocation
 import org.bukkit.Chunk
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_COW_BELL
 import org.bukkit.Particle
+import org.bukkit.World
+import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.EntityType.COW
@@ -39,7 +46,7 @@ object Encounters {
 	@Suppress("Unused")
 	val ITS_A_TRAP = register(
 		object : Encounter(identifier = "ITS_A_TRAP") {
-			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
 				TODO("Not yet implemented")
 			}
 
@@ -64,7 +71,7 @@ object Encounters {
 	@Suppress("Unused")
 	val TIC_TAC_TOE = register(
 		object : Encounter(identifier = "TIC_TAC_TOE") {
-			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
 				TODO("Not yet implemented")
 			}
 
@@ -201,8 +208,72 @@ object Encounters {
 
 	@Suppress("Unused")
 	val COOLANT_LEAK = register(object : Encounter(identifier = "COOLANT_LEAK") {
-			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
-				TODO("Not yet implemented")
+			fun getBlocks(world: World, origin: BlockPos, radius: Double): List<Block> {
+				val radiusSquared = radius * radius
+
+				val blocks = mutableListOf<Block>()
+
+				for (x in (origin.x - ceil(radius).toInt())..(origin.x + ceil(radius).toInt())) {
+					val xSquared = (x - origin.x) * (x - origin.x)
+
+					for (y in (origin.y - ceil(radius).toInt())..(origin.y + ceil(radius).toInt())) {
+						val ySquared = (y - origin.y) * (y - origin.y)
+						for (z in (origin.z - ceil(radius).toInt())..(origin.z + ceil(radius).toInt())) {
+							val zSquared = (z - origin.z) * (z - origin.z)
+
+							if (xSquared + ySquared + zSquared > radiusSquared) continue
+
+							blocks += world.getBlockAt(x, y, z)
+						}
+					}
+				}
+
+				return blocks
+			}
+
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
+				val chestPos = BlockPos(chestX, chestY, chestZ)
+				val surroundingBlocks = getBlocks(world, chestPos, 15.0)
+
+				fun checkAir(block: Block): Boolean {
+					val up1 = block.getRelative(BlockFace.UP)
+					val up2 = up1.getRelative(BlockFace.UP)
+
+					return up1.isEmpty && up2.isEmpty
+				}
+
+				val leverOn = surroundingBlocks.first { checkAir(it) && it.isSolid }
+				leverOn.type = Material.REINFORCED_DEEPSLATE
+				val leverBlock = leverOn.getRelative(BlockFace.UP)
+
+				leverBlock.type = Material.LEVER
+
+				val chestChunk = world.getChunkAt(chestPos.toLocation(world))
+
+				val wreckData = getChunkEncounters(chestChunk) ?: return
+
+				val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
+				wreckData.remove("Wrecks")
+
+				for (wreck in existingWrecks) {
+					wreck as CompoundTag
+
+					if (
+						wreck.getInt("x") != chestPos.x &&
+						wreck.getInt("y") != chestPos.y &&
+						wreck.getInt("z") != chestPos.z
+					) continue
+
+					existingWrecks.remove(wreck)
+					wreck.putInt("leverPosX", leverBlock.x)
+					wreck.putInt("leverPosY", leverBlock.y)
+					wreck.putInt("leverPosZ", leverBlock.z)
+					existingWrecks.add(wreck)
+				}
+
+				wreckData.put("Wrecks", existingWrecks)
+
+				setChunkEncounters(chestChunk, wreckData)
 			}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
@@ -211,9 +282,11 @@ object Encounters {
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
 
+				setChestLock(chest, true)
+
 				var iteration = 0
 				val BLOCKS_PER_ITERATION = 0.10
-				val MAX_RADIUS = 100.0
+				val MAX_RADIUS = 15.0
 
 				val iceTypes = WeightedRandomList(
 					Material.ICE to 2,
@@ -226,51 +299,47 @@ object Encounters {
 				materialNoise.setScale(1.15)
 
 				runnable {
-					iteration++
-
 					val currentSize = iteration * BLOCKS_PER_ITERATION
-					val currentSizeSquared = currentSize * currentSize
+					var attempts = 0
 
-					if (currentSize >= MAX_RADIUS) cancel()
-
-					for (x in (chest.x - ceil(currentSize).toInt())..(chest.x + ceil(currentSize).toInt())) {
-						val xSquared = (x - chest.x) * (x - chest.x)
-
-						for (y in (chest.y - ceil(currentSize).toInt())..(chest.y + ceil(currentSize).toInt())) {
-							val ySquared = (y - chest.y) * (y - chest.y)
-							for (z in (chest.z - ceil(currentSize).toInt())..(chest.z + ceil(currentSize).toInt())) {
-								val zSquared = (z - chest.z) * (z - chest.z)
-
-								if (xSquared + ySquared + zSquared > currentSizeSquared) continue
-
-								val block = chest.world.getBlockAt(x, y, z)
-
-								if (block.isEmpty) continue
-								if (!block.isSolid) continue
-								if (block.type == Material.CHEST) continue
-								if (iceTypes.entries().contains(block.type)) continue
-
-								val paletteSample = ((
-										materialNoise.noise(
-											x.toDouble(),
-											y.toDouble(),
-											z.toDouble(),
-											1.0,
-											1.0,
-											true
-										) + 1
-										) / 2
-										)
-
-								block.type = iceTypes.getEntry(paletteSample)
-							}
+					val lever: Pair<Location, BlockState>? = null
+					fun tryEnd() {
+						if (lever == null && attempts < 500) {
+							attempts++
+							return
 						}
 					}
+
+					for (block in getBlocks(chest.world, chest.location.toCenterLocation().toBlockPos(), currentSize)) {
+						if (block.isEmpty) continue
+						if (!block.isSolid) continue
+						if (block.type == Material.CHEST) continue
+						if (iceTypes.entries().contains(block.type)) continue
+
+						val paletteSample = ((
+								materialNoise.noise(
+									block.x.toDouble(),
+									block.y.toDouble(),
+									block.z.toDouble(),
+									1.0,
+									1.0,
+									true
+								) + 1
+								) / 2
+								)
+
+						block.type = iceTypes.getEntry(paletteSample)
+
+					}
+
+					if (currentSize <= MAX_RADIUS) iteration++
+
+
 
 					val spherePoints = chest.location.toCenterLocation().spherePoints(currentSize, 500)
 
 					for (player in chest.world.players) {
-						if (player.location.distance(chest.location) >= 50.0) continue
+						if (player.location.distance(chest.location) >= maxOf(currentSize, 100.0)) continue
 						for (spherePoint in spherePoints) {
 
 							player.spawnParticle(
@@ -307,7 +376,7 @@ object Encounters {
 	@Suppress("Unused")
 	val COW_TIPPER = register(
 		object : Encounter(identifier = "COW_TIPPER") {
-			override fun generate(chestX: Int, chestY: Int, chestZ: Int) {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
 				TODO("Not yet implemented")
 			}
 
@@ -349,6 +418,26 @@ object Encounters {
 	val identifiers = encounters.keys
 
 	operator fun get(identifier: String): Encounter? = encounters[identifier]
+	operator fun get(serialzedEncounter: CompoundTag): Encounter? {
+		val identifier = serialzedEncounter.getString("Encounter Identifier")
+
+		return encounters[identifier]
+	}
+
+	operator fun get(chest: Chest): Encounter? {
+		val wreckData = getChunkEncounters(chest.chunk) ?: return null
+
+		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
+		for (wreck in existingWrecks) {
+			wreck as CompoundTag
+
+			if (!encounterMatchesChest(wreck, chest)) continue
+
+			return get(wreck.getString("Encounter Identifier"))
+		}
+
+		return null
+	}
 
 	fun getChunkEncounters(chunk: Chunk): CompoundTag? {
 		val pdc = chunk.persistentDataContainer.get(
@@ -401,21 +490,6 @@ object Encounters {
 		setChunkEncounters(chest.chunk, wreckData)
 	}
 
-	operator fun get(chest: Chest): Encounter? {
-		val wreckData = getChunkEncounters(chest.chunk) ?: return null
-
-		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
-		for (wreck in existingWrecks) {
-			wreck as CompoundTag
-
-			if (!encounterMatchesChest(wreck, chest)) continue
-
-			return get(wreck.getString("Encounter Identifier"))
-		}
-
-		return null
-	}
-
 	fun encounterMatchesChest(wreck: CompoundTag, chest: Chest): Boolean = (
 			wreck.getInt("x") == chest.x &&
 			wreck.getInt("y") == chest.y &&
@@ -439,7 +513,7 @@ abstract class Encounter(
 
 	open fun onChestInteract(event: PlayerInteractEvent) {}
 
-	open fun generate(chestX: Int, chestY: Int, chestZ: Int) {}
+	open fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 }
 
 enum class SecondaryChests(val blockState: BlockState, val NBT: CompoundTag?, val money: Int?) {
