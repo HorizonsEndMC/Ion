@@ -122,7 +122,7 @@ object StarshipComputers : SLComponent() {
 	}
 
 	private fun createComputer(player: Player, block: Block) {
-		if (isRegionDenied(player, player.location)) return player.userError("You can only detect computers in territories you can access.")
+//		if (isRegionDenied(player, player.location)) return player.userError("You can only detect computers in territories you can access.")
 
 		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, player.uniqueId) {
 			player.successActionMessage(
