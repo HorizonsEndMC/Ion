@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -26,8 +27,10 @@ import org.bukkit.entity.EntityType.COW
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import kotlin.math.ceil
 
 object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
@@ -209,17 +212,60 @@ object Encounters {
 				val chest = (targetedBlock.state as? Chest) ?: return
 
 				var iteration = 0
-				val BLOCKS_PER_ITERATION = 0.05
-				val MAX_RADIUS = 10.0
+				val BLOCKS_PER_ITERATION = 0.10
+				val MAX_RADIUS = 100.0
+
+				val iceTypes = WeightedRandomList(
+					Material.ICE to 2,
+					Material.PACKED_ICE to 4,
+					Material.BLUE_ICE to 2,
+					Material.PACKED_ICE to 4,
+					Material.ICE to 2
+				)
+				val materialNoise = SimplexOctaveGenerator(chest.world.seed, 1)
+				materialNoise.setScale(1.15)
 
 				runnable {
 					iteration++
 
 					val currentSize = iteration * BLOCKS_PER_ITERATION
+					val currentSizeSquared = currentSize * currentSize
 
 					if (currentSize >= MAX_RADIUS) cancel()
 
-					fun getBlocks() {}
+					for (x in (chest.x - ceil(currentSize).toInt())..(chest.x + ceil(currentSize).toInt())) {
+						val xSquared = (x - chest.x) * (x - chest.x)
+
+						for (y in (chest.y - ceil(currentSize).toInt())..(chest.y + ceil(currentSize).toInt())) {
+							val ySquared = (y - chest.y) * (y - chest.y)
+							for (z in (chest.z - ceil(currentSize).toInt())..(chest.z + ceil(currentSize).toInt())) {
+								val zSquared = (z - chest.z) * (z - chest.z)
+
+								if (xSquared + ySquared + zSquared > currentSizeSquared) continue
+
+								val block = chest.world.getBlockAt(x, y, z)
+
+								if (block.isEmpty) continue
+								if (!block.isSolid) continue
+								if (block.type == Material.CHEST) continue
+								if (iceTypes.entries().contains(block.type)) continue
+
+								val paletteSample = ((
+										materialNoise.noise(
+											x.toDouble(),
+											y.toDouble(),
+											z.toDouble(),
+											1.0,
+											1.0,
+											true
+										) + 1
+										) / 2
+										)
+
+								block.type = iceTypes.getEntry(paletteSample)
+							}
+						}
+					}
 
 					val spherePoints = chest.location.toCenterLocation().spherePoints(currentSize, 500)
 
@@ -245,7 +291,7 @@ object Encounters {
 
 						player.freezeTicks = player.freezeTicks++
 					}
-				}.runTaskTimer(IonServer, 0L, 1L)
+				}.runTaskTimer(IonServer, 0L, 2L)
 			}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
