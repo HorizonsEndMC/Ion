@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.space.SpaceMechanics
 import org.bukkit.entity.Player
@@ -10,12 +9,13 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class MiscListeners : Listener {
 	@EventHandler
 	@Suppress("Unused")
-	fun onPlayerLoginEvent(event: AsyncPlayerPreLoginEvent) {
-		PlayerData[event.uniqueId]?.update { username = event.name } ?: PlayerData.new(event.uniqueId) { username = event.name }
+	fun onPlayerLoginEvent(event: AsyncPlayerPreLoginEvent) = transaction {
+		(PlayerData[event.uniqueId] ?: PlayerData.new(event.uniqueId) {}).username = event.name
 	}
 
 	@EventHandler

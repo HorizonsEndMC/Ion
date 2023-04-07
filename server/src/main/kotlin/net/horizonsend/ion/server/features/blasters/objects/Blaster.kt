@@ -34,6 +34,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Locale
 import java.util.function.Supplier
+import org.jetbrains.exposed.sql.transactions.transaction
 
 abstract class Blaster<T : Balancing>(
 	identifier: String,
@@ -148,16 +149,18 @@ abstract class Blaster<T : Balancing>(
 		fireProjectiles(livingEntity)
 	}
 
-	private fun getParticleType(entity: LivingEntity): Particle {
-		if (entity !is Player) return REDSTONE // Not Player
-		PlayerData[entity.uniqueId]?.particle?.let { return CraftParticle.toBukkit(PARTICLE_TYPE.get(ResourceLocation(it))) } // Player
-		return REDSTONE // Default
+	private fun getParticleType(entity: LivingEntity): Particle = transaction {
+		if (entity !is Player) return@transaction REDSTONE // Not Player
+		PlayerData[entity.uniqueId]?.particle?.let {
+			return@transaction CraftParticle.toBukkit(PARTICLE_TYPE.get(ResourceLocation(it)))
+		} // Player
+		return@transaction REDSTONE // Default
 	}
 
 	private fun getParticleColor(entity: LivingEntity): Color {
 		if (entity !is Player) return RED // Not Player
 		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
-		PlayerData[entity.uniqueId]?.color?.let { return fromRGB(it) } // Player
+		transaction { PlayerData[entity.uniqueId] }?.color?.let { return fromRGB(it) } // Player
 		return RED // Not Player
 	}
 

@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("achievements")
 @Suppress("Unused")
@@ -32,38 +33,20 @@ class AchievementsCommand : BaseCommand() {
 	@Subcommand("grant")
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.grant")
-	fun onAchievementGrant(sender: CommandSender, achievement: Achievement, target: String) {
-		val playerData = PlayerData[target]
-
-		if (playerData == null) {
-			sender.userError("Player $target does not exist.")
-			return
-		}
-
-		val player = Bukkit.getPlayer(playerData.uuid.value)
-
-		if (player == null) {
-			sender.userError("Player $target must be online.")
-			return
-		}
+	fun onAchievementGrant(sender: CommandSender, achievement: Achievement, target: String) = transaction {
+		val playerData = PlayerData[target] ?: return@transaction sender.userError("Player $target does not exist.")
+		val player = Bukkit.getPlayer(playerData.uuid.value) ?: return@transaction sender.userError("Player $target must be online.")
 
 		player.rewardAchievement(achievement)
 
-		sender.success(
-			"Gave achievement ${achievement.name} to $target."
-		)
+		sender.success("Gave achievement ${achievement.name} to $target.")
 	}
 
 	@Subcommand("revoke")
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.revoke")
-	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
-		val playerData = PlayerData[target]
-
-		if (playerData == null) {
-			sender.userError("Player $target does not exist.")
-			return
-		}
+	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) = transaction {
+		val playerData = PlayerData[target] ?: return@transaction sender.userError("Player $target does not exist.")
 
 		PlayerAchievement.remove(playerData, achievement)
 

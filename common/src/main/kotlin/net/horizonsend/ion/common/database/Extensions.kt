@@ -1,9 +1,9 @@
 package net.horizonsend.ion.common.database
 
-import org.jetbrains.exposed.dao.Entity
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.Expression
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.lowerCase
 
-fun <T : Entity<*>> T.update(block: T.() -> Unit): T {
-	transaction { block(this@update) }
-	return this
-}
+@Suppress("UNCHECKED_CAST")
+infix fun <T: String?> Expression<T>.leq(value: String): Op<Boolean> = lowerCase() eq value.lowercase() as T

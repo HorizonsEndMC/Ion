@@ -26,11 +26,11 @@ object ReminderManager {
 		}
 	}
 
-	private fun voteReminder() {
+	private fun voteReminder() = transaction {
 		for (player in PLUGIN.proxy.players) {
-			val playerData = PlayerData[player.uniqueId]!!
-			val shouldPrompt: Boolean = transaction { playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null }
-			if (shouldPrompt) player.special("Please vote for the server to help grow the community!\n <green><click:run_command:/vote>Run /vote to see where!")
+			val playerData = PlayerData[player.uniqueId] ?: continue
+			val shouldPrompt: Boolean = playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+			if (shouldPrompt) player.special("Please vote for the server to help grow the community! <green><click:run_command:/vote>Run /vote to see where!")
 		}
 	}
 }

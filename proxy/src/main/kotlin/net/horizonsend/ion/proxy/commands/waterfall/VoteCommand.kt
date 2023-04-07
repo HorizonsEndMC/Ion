@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand() {
 	@Default
 	@Suppress("Unused")
-	fun onVoteCommand(sender: ProxiedPlayer) {
+	fun onVoteCommand(sender: ProxiedPlayer) = transaction {
 		val playerData = PlayerData[sender.uniqueId]!!
 
 		val siteList = ComponentBuilder("Voting Websites")
@@ -24,7 +24,7 @@ class VoteCommand(private val configuration: ProxyConfiguration) : BaseCommand()
 			.underlined(true)
 
 		for (site in configuration.voteSites) {
-			val dateTime = transaction { playerData.voteTimes.find { it.serviceName == site.serviceName }?.dateTime ?: LocalDateTime.now() }
+			val dateTime = playerData.voteTimes.find { it.serviceName == site.serviceName }?.dateTime ?: LocalDateTime.now()
 			val siteTime = dateTime.isBefore(LocalDateTime.now().minusDays(1))
 
 			val color = if (siteTime) ChatColor.GREEN else ChatColor.RED

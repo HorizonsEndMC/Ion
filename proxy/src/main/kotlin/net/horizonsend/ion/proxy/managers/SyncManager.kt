@@ -9,6 +9,7 @@ import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.InheritanceNode
 import java.util.concurrent.TimeUnit
+import org.jetbrains.exposed.sql.transactions.transaction
 
 open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) {
 	private val guild = jda.getGuildById(configuration.discordServer)
@@ -32,8 +33,8 @@ open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) 
 		)
 	}
 
-	open fun sync(): List<String> {
-		if (guild == null) return listOf()
+	open fun sync(): List<String> = transaction {
+		if (guild == null) return@transaction listOf()
 
 		val changeLog = mutableListOf<String>()
 
@@ -101,6 +102,6 @@ open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) 
 			}
 		}
 
-		return changeLog
+		return@transaction changeLog
 	}
 }

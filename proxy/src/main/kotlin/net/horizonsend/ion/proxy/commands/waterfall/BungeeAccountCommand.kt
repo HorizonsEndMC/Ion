@@ -7,13 +7,13 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.JDA
 import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
 import net.horizonsend.ion.proxy.managers.SyncManager
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("account")
 @Description("Manage the link between your Minecraft and Discord account.")
@@ -21,7 +21,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 	@Suppress("Unused")
 	@Subcommand("status")
 	@Description("Check linked Discord account.")
-	fun onStatusCommand(sender: ProxiedPlayer) {
+	fun onStatusCommand(sender: ProxiedPlayer) = transaction {
 		val playerData = PlayerData[sender.uniqueId]
 
 		if (playerData?.snowflake == null) {
@@ -30,7 +30,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 					.color(ChatColor.of("#8888ff"))
 					.create()
 			)
-			return
+			return@transaction
 		}
 
 		jda.retrieveUserById(playerData.snowflake!!).queue {
@@ -69,7 +69,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 	@Suppress("Unused")
 	@Subcommand("unlink")
 	@Description("Unlink Discord account.")
-	fun onUnlinkCommand(sender: ProxiedPlayer) {
+	fun onUnlinkCommand(sender: ProxiedPlayer) = transaction {
 		val playerData = PlayerData[sender.uniqueId]
 
 		if (playerData?.snowflake == null) {
@@ -78,7 +78,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 					.color(ChatColor.of("#ff8844"))
 					.create()
 			)
-			return
+			return@transaction
 		}
 
 		jda.getGuildById(configuration.discordServer)!!.apply {
@@ -87,9 +87,7 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 			}
 		}
 
-		playerData.update {
-			snowflake = null
-		}
+		playerData.snowflake = null
 
 		sender.sendMessage(
 			*ComponentBuilder("Your account is no longer linked.")

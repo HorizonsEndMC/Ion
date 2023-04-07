@@ -1,7 +1,6 @@
 package net.horizonsend.ion.proxy.listeners.waterfall
 
 import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.database.update
 import net.horizonsend.ion.common.extensions.Colors
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.special
@@ -18,19 +17,15 @@ import java.time.LocalDateTime
 
 class ServerConnectListener : Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onServerConnectEvent(event: ServerConnectEvent) {
+	fun onServerConnectEvent(event: ServerConnectEvent): Unit = transaction {
 		val player = WrappedPlayer(event.player)
 		PLUGIN.playerServerMap[event.player] = event.target
 
 		if (event.reason == ServerConnectEvent.Reason.JOIN_PROXY) {
 			var isNew = false
 
-			val playerData = PlayerData[player.uniqueId]
-				?.update { username = player.name }
-				?: PlayerData.new(player.uniqueId) {
-					username = player.name
-					isNew = true
-				}
+			val playerData = PlayerData[player.uniqueId] ?: PlayerData.new(player.uniqueId) { isNew = true }
+			if (playerData.username != player.name) playerData.username = player.name
 
 			if (isNew) {
 				PLUGIN.proxy.special("Welcome <white>${player.name}</white> to the server!")
@@ -59,13 +54,8 @@ class ServerConnectListener : Listener {
 					).queue()
 				}
 
-				val promptToVote = transaction {
-					playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
-				}
-
-				if (promptToVote) {
-					player.special("Hey ${player.name}! Remember to vote for the server to help us grow the Horizon's End community!")
-				}
+				val promptToVote = playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+				if (promptToVote) player.special("Hey ${player.name}! Remember to vote for the server to help us grow the Horizon's End community!")
 			}
 		} else {
 			PLUGIN.proxy.information("<dark_gray>[<blue>> <gray>${event.target.name}<dark_gray>] <white>${player.name}")
