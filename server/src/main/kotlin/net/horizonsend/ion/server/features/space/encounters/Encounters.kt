@@ -4,13 +4,15 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.core.BlockPos
+import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
+import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.MenuHelper
@@ -21,7 +23,6 @@ import net.starlegacy.util.spherePoints
 import net.starlegacy.util.toBlockPos
 import net.starlegacy.util.toLocation
 import org.bukkit.Chunk
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_COW_BELL
 import org.bukkit.Particle
@@ -29,12 +30,13 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
+import org.bukkit.block.data.FaceAttachable
+import org.bukkit.block.data.type.Switch
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.EntityType.COW
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.math.ceil
@@ -231,9 +233,29 @@ object Encounters {
 				return blocks
 			}
 
+			fun getLever(chest: Chest): BlockPos? {
+				val wreckData = getChunkEncounters(chest.chunk) ?: return null
+
+				val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
+
+				val encounter = existingWrecks.first { wreck ->
+					wreck as CompoundTag
+
+					return@first (wreck.getInt("x") == chest.x &&
+							wreck.getInt("y") == chest.y &&
+							wreck.getInt("z") == chest.z)
+				} as CompoundTag
+
+				return BlockPos(
+					encounter.getInt("leverPosX"),
+					encounter.getInt("leverPosY"),
+					encounter.getInt("leverPosZ")
+				)
+			}
+
 			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
 				val chestPos = BlockPos(chestX, chestY, chestZ)
-				val surroundingBlocks = getBlocks(world, chestPos, 15.0)
+				val surroundingBlocks = getBlocks(world, chestPos, 8.0)
 
 				fun checkAir(block: Block): Boolean {
 					val up1 = block.getRelative(BlockFace.UP)
@@ -242,11 +264,14 @@ object Encounters {
 					return up1.isEmpty && up2.isEmpty
 				}
 
-				val leverOn = surroundingBlocks.first { checkAir(it) && it.isSolid }
+				val leverOn = surroundingBlocks.filter { checkAir(it) && it.isSolid }.random()
 				leverOn.type = Material.REINFORCED_DEEPSLATE
 				val leverBlock = leverOn.getRelative(BlockFace.UP)
 
-				leverBlock.type = Material.LEVER
+				val blockData = (Material.LEVER.createBlockData() as Switch)
+				blockData.attachedFace = FaceAttachable.AttachedFace.FLOOR
+
+				leverBlock.blockData = blockData
 
 				val chestChunk = world.getChunkAt(chestPos.toLocation(world))
 
@@ -282,85 +307,82 @@ object Encounters {
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
 
-				setChestLock(chest, true)
+				addChestFlag(chest, "locked", ByteTag.valueOf(true))
 
 				var iteration = 0
 				val BLOCKS_PER_ITERATION = 0.10
 				val MAX_RADIUS = 15.0
 
-				val iceTypes = WeightedRandomList(
-					Material.ICE to 2,
-					Material.PACKED_ICE to 4,
-					Material.BLUE_ICE to 2,
-					Material.PACKED_ICE to 4,
-					Material.ICE to 2
+				val leverPos = getLever(chest)
+
+				getLever(chest)?.let { highlightBlock(event.player, it.below()) }
+
+				val iceTypes = listOf(
+					Material.ICE,
+					Material.PACKED_ICE,
+					Material.BLUE_ICE,
+					Material.PACKED_ICE,
+					Material.ICE,
 				)
-				val materialNoise = SimplexOctaveGenerator(chest.world.seed, 1)
-				materialNoise.setScale(1.15)
 
-				runnable {
-					val currentSize = iteration * BLOCKS_PER_ITERATION
-					var attempts = 0
+				var attempts = 0
 
-					val lever: Pair<Location, BlockState>? = null
-					fun tryEnd() {
-						if (lever == null && attempts < 500) {
-							attempts++
-							return
+				leverPos?.let {
+					runnable {
+						val currentSize = iteration * BLOCKS_PER_ITERATION
+
+						if (attempts > 500) cancel()
+						attempts++
+
+						val leverState = chest.world.getBlockAt(leverPos.x, leverPos.y, leverPos.z).state
+						if ((leverState.blockData as Switch).isPowered) {
+							addChestFlag(chest, "locked", ByteTag.valueOf(false))
+							addChestFlag(chest, "inactive", ByteTag.valueOf(true))
+							cancel()
 						}
-					}
 
-					for (block in getBlocks(chest.world, chest.location.toCenterLocation().toBlockPos(), currentSize)) {
-						if (block.isEmpty) continue
-						if (!block.isSolid) continue
-						if (block.type == Material.CHEST) continue
-						if (iceTypes.entries().contains(block.type)) continue
+						for (block in getBlocks(
+							chest.world,
+							chest.location.toCenterLocation().toBlockPos(),
+							currentSize
+						)) {
+							if (block.isEmpty) continue
+							if (!block.isSolid) continue
+							if (block.type == Material.CHEST) continue
+							if (iceTypes.contains(block.type)) continue
 
-						val paletteSample = ((
-								materialNoise.noise(
-									block.x.toDouble(),
-									block.y.toDouble(),
-									block.z.toDouble(),
-									1.0,
-									1.0,
-									true
-								) + 1
-								) / 2
+							block.type = iceTypes.random()
+
+						}
+
+						if (currentSize <= MAX_RADIUS) iteration++
+
+						val spherePoints = chest.location.toCenterLocation().spherePoints(currentSize, 500)
+
+						for (player in chest.world.players) {
+							if (player.location.distance(chest.location) >= maxOf(currentSize, 100.0)) continue
+							for (spherePoint in spherePoints) {
+
+								player.spawnParticle(
+									Particle.SNOWFLAKE,
+									spherePoint.x,
+									spherePoint.y,
+									spherePoint.z,
+									1,
+									0.0,
+									0.0,
+									0.0,
+									0.1,
+									null
 								)
+							}
 
-						block.type = iceTypes.getEntry(paletteSample)
+							if (player.location.distance(chest.location) >= currentSize) continue
 
-					}
-
-					if (currentSize <= MAX_RADIUS) iteration++
-
-
-
-					val spherePoints = chest.location.toCenterLocation().spherePoints(currentSize, 500)
-
-					for (player in chest.world.players) {
-						if (player.location.distance(chest.location) >= maxOf(currentSize, 100.0)) continue
-						for (spherePoint in spherePoints) {
-
-							player.spawnParticle(
-								Particle.SNOWFLAKE,
-								spherePoint.x,
-								spherePoint.y,
-								spherePoint.z,
-								1,
-								0.0,
-								0.0,
-								0.0,
-								0.1,
-								null
-							)
+							player.freezeTicks = player.freezeTicks + 10
 						}
-
-						if (player.location.distance(chest.location) >= currentSize) continue
-
-						player.freezeTicks = player.freezeTicks++
-					}
-				}.runTaskTimer(IonServer, 0L, 2L)
+					}.runTaskTimer(IonServer, 0L, 2L)
+				}
 			}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
@@ -432,6 +454,7 @@ object Encounters {
 			wreck as CompoundTag
 
 			if (!encounterMatchesChest(wreck, chest)) continue
+			if (wreck.getBoolean("inactive")) continue
 
 			return get(wreck.getString("Encounter Identifier"))
 		}
@@ -465,7 +488,7 @@ object Encounters {
 		)
 	}
 
-	fun setChestLock(chest: Chest, locked: Boolean) {
+	fun addChestFlag(chest: Chest, key: String, tag: Tag) {
 		val wreckData = getChunkEncounters(chest.chunk) ?: return
 
 		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
@@ -481,7 +504,8 @@ object Encounters {
 			) continue
 
 			existingWrecks.remove(wreck)
-			wreck.putBoolean("inactive", locked)
+			wreck.remove(key)
+			wreck.put(key, tag)
 			existingWrecks.add(wreck)
 		}
 
