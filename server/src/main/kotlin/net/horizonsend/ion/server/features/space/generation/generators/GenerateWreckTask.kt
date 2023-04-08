@@ -115,7 +115,6 @@ class GenerateWreckTask(
 	): SpaceGenerationReturnData.CompletedSection? {
 		val palette = mutableListOf<Pair<BlockState, CompoundTag?>>()
 		val storedBlocks = arrayOfNulls<Int>(4096)
-		var index = 0
 		val sectionMinY = sectionY.shl(4)
 
 		palette.add(Blocks.AIR.defaultBlockState() to null)
@@ -135,9 +134,10 @@ class GenerateWreckTask(
 					val originalBlockState: BlockState = baseBlock.toImmutableState().toBukkitBlockData().nms
 					val blockNBT = if (originalBlockState.hasBlockEntity()) baseBlock.nbtData else null
 
+					val index = BlockSerialization.posToIndex(x, y, z)
+
 					if (originalBlockState.isAir) {
 						storedBlocks[index] = 0
-						index++
 						continue
 					}
 
@@ -184,16 +184,12 @@ class GenerateWreckTask(
 					(combined.second)?.putInt("y", worldY)
 					(combined.second)?.putInt("z", worldZ)
 
-
 					val blockIndex = if (!palette.contains(combined)) {
 						palette.add(combined)
 						palette.lastIndex
 					} else palette.indexOf(combined)
 
-//					palette.add(combined)
 					storedBlocks[index] = blockIndex
-
-					index++
 				}
 			}
 		}
@@ -244,8 +240,6 @@ data class WreckGenerationData(
 				val finishedChunks = chunks.getCompleted()
 
 				serializedWreckData?.let { (chunkPos, data) ->
-					println(NbtUtils.structureToSnbt(serializedWreckData.second))
-
 					// It is most definitely inside the covered chunks
 					val encounterChunk = finishedChunks[chunkPos]!!
 

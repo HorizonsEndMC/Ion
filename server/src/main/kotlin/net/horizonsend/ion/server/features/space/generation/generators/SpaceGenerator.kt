@@ -290,8 +290,6 @@ class SpaceGenerator(
 
 				val holderLookup = levelChunk.level.level.holderLookup(Registries.BLOCK)
 
-				var index = 0
-
 				val sectionMinY = levelChunkSection.bottomBlockY()
 
 				for (x in 0..15) {
@@ -303,11 +301,10 @@ class SpaceGenerator(
 						for (y in 0..15) {
 							val worldY = y + sectionMinY
 
-							val entry = paletteList[blocks[index]]
+							val entry = paletteList[blocks[BlockSerialization.posToIndex(x, y, z)]]
 
 							val block = NbtUtils.readBlockState(holderLookup, entry as CompoundTag)
 							if (block == Blocks.AIR.defaultBlockState()) {
-								index++
 								continue
 							}
 
@@ -328,8 +325,6 @@ class SpaceGenerator(
 							}
 
 							levelChunk.playerChunk?.blockChanged(BlockPos(worldX, worldY, worldZ))
-
-							index++
 						}
 					}
 				}
@@ -395,8 +390,6 @@ abstract class SpaceGenerationReturnData {
 
 					val sectionMinY = section.bottomBlockY()
 
-					var index = 0
-
 					for (x in 0..15) {
 						val worldX = x + chunkMinX
 
@@ -406,12 +399,11 @@ abstract class SpaceGenerationReturnData {
 							for (y in 0..15) {
 								val worldY = sectionMinY + y
 
+								val index = BlockSerialization.posToIndex(x, y, z)
+
 								val block = map[completedSection.blocks[index]]!!
 
-								if (block.first.isAir) {
-									index++
-									continue
-								}
+								if (block.first.isAir) continue
 
 								section.setBlockState(x, y, z, block.first)
 
@@ -432,8 +424,6 @@ abstract class SpaceGenerationReturnData {
 										chunkMinZ + z
 									)
 								)
-
-								index++
 							}
 						}
 					}
