@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.space.generation
 
+import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType
@@ -54,6 +54,14 @@ object BlockSerialization {
 		return section
 	}
 
+	fun posToIndex(pos: BlockPos): Int {
+		return pos.x or (pos.z shl 4) or (pos.y shl 8)
+	}
+
+	fun posToIndex(x: Int, y: Int, z: Int): Int {
+		return x or (z shl 4) or (y shl 8)
+	}
+
 	/**
 	 * Combines the block storage of two compound tags
 	 *
@@ -93,11 +101,11 @@ object BlockSerialization {
 		}
 
 		fun pick(index: Int): Int {
-			if (firstMap[index] == null && secondMap[index] != null) return addCombined(secondMap[index]!!).apply { println(this) }
-			if (isAir(firstMap[index]) && secondMap[index] != null) return addCombined(secondMap[index]!!).apply { println(this) }
+			if (firstMap[index] == null && secondMap[index] != null) return addCombined(secondMap[index]!!)
+			if (isAir(firstMap[index]) && secondMap[index] != null) return addCombined(secondMap[index]!!)
 
-			if (secondMap[index] == null && firstMap[index] != null) return addCombined(firstMap[index]!!).apply { println(this) }
-			if (isAir(secondMap[index]) && firstMap[index] != null) return addCombined(firstMap[index]!!).apply { println(this) }
+			if (secondMap[index] == null && firstMap[index] != null) return addCombined(firstMap[index]!!)
+			if (isAir(secondMap[index]) && firstMap[index] != null) return addCombined(firstMap[index]!!)
 
 			return 0
 		}
