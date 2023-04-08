@@ -307,7 +307,7 @@ object Encounters {
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
 
-				addChestFlag(chest, "locked", ByteTag.valueOf(true))
+				setChestFlag(chest, "locked", ByteTag.valueOf(true))
 
 				var iteration = 0
 				val BLOCKS_PER_ITERATION = 0.10
@@ -336,8 +336,8 @@ object Encounters {
 
 						val leverState = chest.world.getBlockAt(leverPos.x, leverPos.y, leverPos.z).state
 						if ((leverState.blockData as Switch).isPowered) {
-							addChestFlag(chest, "locked", ByteTag.valueOf(false))
-							addChestFlag(chest, "inactive", ByteTag.valueOf(true))
+							setChestFlag(chest, "locked", ByteTag.valueOf(false))
+							setChestFlag(chest, "inactive", ByteTag.valueOf(true))
 							cancel()
 						}
 
@@ -432,6 +432,7 @@ object Encounters {
 			}
 		}
 	)
+
 	private fun <T : Encounter> register(encounter: T): T {
 		encounters[encounter.identifier] = encounter
 		return encounter
@@ -488,7 +489,7 @@ object Encounters {
 		)
 	}
 
-	fun addChestFlag(chest: Chest, key: String, tag: Tag) {
+	fun setChestFlag(chest: Chest, key: String, tag: Tag) {
 		val wreckData = getChunkEncounters(chest.chunk) ?: return
 
 		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)

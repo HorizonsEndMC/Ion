@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.space.generation.generators
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerationReturnData.CompletedSection
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
@@ -143,7 +144,6 @@ class GenerateAsteroidTask(
 		SpaceGenerationManager.coroutineScope.launch {
 			val palette = mutableListOf<BlockState>()
 			val storedBlocks = arrayOfNulls<Int>(4096)
-			var index = 0
 			val sectionMinY = sectionY.shl(4)
 
 			palette.add(Blocks.AIR.defaultBlockState())
@@ -190,9 +190,7 @@ class GenerateAsteroidTask(
 							} else palette.indexOf(block)
 						} else 0
 
-						storedBlocks[index] = blockIndex
-
-						index++
+						storedBlocks[BlockSerialization.posToIndex(x, y, z)] = blockIndex
 					}
 				}
 			}
