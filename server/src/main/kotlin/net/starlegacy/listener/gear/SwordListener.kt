@@ -7,6 +7,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.msg
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.Damageable
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.LivingEntity
@@ -79,7 +80,7 @@ object SwordListener : SLEventListener() {
 			return
 		}
 
-		event.setDamage(EntityDamageEvent.DamageModifier.BASE, 8.0)
+		event.setDamage(EntityDamageEvent.DamageModifier.BASE, 6.0)
 		damaged.world.playSound(damaged.location, "energy_sword.strike", 1.0f, 1.0f)
 	}
 
