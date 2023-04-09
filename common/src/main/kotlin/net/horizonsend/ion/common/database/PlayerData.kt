@@ -17,7 +17,7 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 	var particle by Table.particle
 	var color by Table.color
 
-	companion object : IonEntityClass<UUID, PlayerData>(Table) {
+	companion object : IonEntityClass<UUID, PlayerData>(Table, PlayerData::class.java, ::PlayerData) {
 		operator fun get(snowflake: Long): PlayerData? = find(Table.snowflake eq snowflake).firstOrNull()
 		operator fun get(username: String): PlayerData? = find(Table.username leq username).firstOrNull()
 	}

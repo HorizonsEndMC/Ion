@@ -13,7 +13,7 @@ class PlayerAchievement(id: EntityID<Int>) : Entity<Int>(id) {
 	var player by PlayerData referencedOn Table.player
 	var achievement by Table.achievement
 
-	companion object : IonEntityClass<Int, PlayerAchievement>(Table) {
+	companion object : IonEntityClass<Int, PlayerAchievement>(Table, PlayerAchievement::class.java, ::PlayerAchievement) {
 		fun remove(player: PlayerData, achievement: Achievement) = transaction { Table.deleteWhere { (Table.player eq player.uuid) and (Table.achievement eq achievement) } }
 	}
 

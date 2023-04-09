@@ -25,7 +25,7 @@ class ServerConnectListener : Listener {
 			var isNew = false
 
 			val playerData = PlayerData[player.uniqueId] ?: PlayerData.new(player.uniqueId) { isNew = true }
-			if (playerData.username != player.name) playerData.username = player.name
+			playerData.username = player.name
 
 			if (isNew) {
 				PLUGIN.proxy.special("Welcome <white>${player.name}</white> to the server!")

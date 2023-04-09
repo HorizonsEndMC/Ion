@@ -10,7 +10,7 @@ class PlayerVoteTime(id: EntityID<Int>) : Entity<Int>(id) {
 	var serviceName by Table.serviceName
 	var dateTime by Table.dateTime
 
-	companion object : IonEntityClass<Int, PlayerVoteTime>(Table)
+	companion object : IonEntityClass<Int, PlayerVoteTime>(Table, PlayerVoteTime::class.java, ::PlayerVoteTime)
 
 	internal object Table : IntIdTable("player_vote_times") {
 		val player = reference("player", PlayerData.Table).index()
