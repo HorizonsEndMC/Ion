@@ -20,11 +20,7 @@ class IonWorld private constructor(
 	companion object : Listener {
 		private val ionWorlds = mutableMapOf<ServerLevel, IonWorld>()
 
-		operator fun get(serverLevel: ServerLevel): IonWorld? {
-			mainThreadCheck()
-
-			return ionWorlds[serverLevel]
-		}
+		operator fun get(serverLevel: ServerLevel): IonWorld = ionWorlds[serverLevel]!!
 
 		fun register(serverLevel: ServerLevel) {
 			mainThreadCheck()

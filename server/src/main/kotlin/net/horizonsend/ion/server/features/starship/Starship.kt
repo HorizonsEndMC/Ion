@@ -34,12 +34,12 @@ open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
 	fun destroy() {
-		IonWorld[serverLevel]?.starships?.remove(this)
+		IonWorld[serverLevel].starships.remove(this)
 		controller?.destroy()
 	}
 
 	init {
 		@Suppress("LeakingThis") // This is done right at the end of the class's initialization, it *should* be fine
-		IonWorld[serverLevel]?.starships?.add(this)
+		IonWorld[serverLevel].starships.add(this)
 	}
 }
