@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-	compileOnly("net.kyori:adventure-api:4.13.0")
+	compileOnly("net.kyori:adventure-api:4.13.1")
 	compileOnly("net.kyori:adventure-text-logger-slf4j:4.13.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.13.0")
 
