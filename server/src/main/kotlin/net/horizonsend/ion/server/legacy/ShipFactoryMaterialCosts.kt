@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.legacy
 
-import net.minecraft.world.level.material.Material.DIRT
-import net.minecraft.world.level.material.Material.GRASS
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.util.isConcrete
 import net.starlegacy.util.isGlass
@@ -13,6 +11,7 @@ import net.starlegacy.util.isStainedTerracotta
 import net.starlegacy.util.isStairs
 import net.starlegacy.util.isWall
 import net.starlegacy.util.isWallSign
+import org.bukkit.Material
 import org.bukkit.Material.ACACIA_PLANKS
 import org.bukkit.Material.ANDESITE
 import org.bukkit.Material.BARREL
@@ -20,6 +19,7 @@ import org.bukkit.Material.BELL
 import org.bukkit.Material.BIRCH_PLANKS
 import org.bukkit.Material.BLACKSTONE
 import org.bukkit.Material.BRICKS
+import org.bukkit.Material.CALCITE
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHISELED_DEEPSLATE
 import org.bukkit.Material.CHISELED_NETHER_BRICKS
@@ -46,6 +46,7 @@ import org.bukkit.Material.DEEPSLATE_BRICKS
 import org.bukkit.Material.DEEPSLATE_TILES
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DIORITE
+import org.bukkit.Material.DIRT
 import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.DROPPER
 import org.bukkit.Material.END_PORTAL_FRAME
@@ -55,6 +56,8 @@ import org.bukkit.Material.EXPOSED_COPPER
 import org.bukkit.Material.FURNACE
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GRANITE
+import org.bukkit.Material.GRASS
+import org.bukkit.Material.GRASS_BLOCK
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BARS
@@ -113,7 +116,7 @@ import org.bukkit.Material.WEATHERED_COPPER
 import org.bukkit.block.data.BlockData
 
 object ShipFactoryMaterialCosts {
-	var blockprice = mapOf(
+	var blockprice = mapOf<Material, Double>(
 		IRON_BLOCK to 50.0,
 		DIAMOND_BLOCK to 50.0,
 		COPPER_BLOCK to 175.0,
@@ -216,7 +219,9 @@ object ShipFactoryMaterialCosts {
 		CRACKED_POLISHED_BLACKSTONE_BRICKS to 0.1,
 
 		DIRT to 0.1,
-		GRASS to 0.1
+		GRASS_BLOCK to 0.1,
+		GRASS to 0.1,
+		CALCITE to 0.1
 	)
 
 	fun getPrice(data: BlockData): Double {
