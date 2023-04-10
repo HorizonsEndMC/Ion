@@ -518,8 +518,8 @@ object Pipes : SLComponent() {
 	 */
 	private fun handleFurnaceMovement(itemStack: ItemStack, destination: FurnaceInventory): Int {
 		val toSlot = when {
-			destination.fuel == null -> 0
-			destination.smelting?.type == Material.PRISMARINE_CRYSTALS -> 1 // put it in fuel b/c its a machine thing
+			destination.smelting?.type == Material.PRISMARINE_CRYSTALS -> 1 // Smelting has crystals, put it in fuel
+			destination.fuel?.type == Material.PRISMARINE_CRYSTALS -> 0 // Fuel has crystals, put it in smelting
 			itemStack.type.isFuel || GeneratorFuel.getFuel(itemStack) != null -> 1 // slot 1 - fuel
 			else -> 0 // slot 0 - smelting
 		}
