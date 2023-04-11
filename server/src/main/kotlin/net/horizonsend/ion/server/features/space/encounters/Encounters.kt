@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.space.generation.BlockSerialization.readChunkCompoundTag
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.runnable
@@ -41,8 +42,8 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
 import kotlin.math.ceil
 
 object Encounters {
@@ -238,7 +239,7 @@ object Encounters {
 			}
 
 			fun getLever(chest: Chest): BlockPos? {
-				val wreckData = getChunkEncounters(chest.chunk) ?: return null
+				val wreckData = readChunkCompoundTag(chest.chunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return null
 
 				val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
 
@@ -279,7 +280,7 @@ object Encounters {
 
 				val chestChunk = world.getChunkAt(chestPos.toLocation(world))
 
-				val wreckData = getChunkEncounters(chestChunk) ?: return
+				val wreckData = readChunkCompoundTag(chestChunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return
 
 				val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
 				wreckData.remove("Wrecks")
@@ -590,7 +591,7 @@ object Encounters {
 	}
 
 	operator fun get(chest: Chest): Encounter? {
-		val wreckData = getChunkEncounters(chest.chunk) ?: return null
+		val wreckData = readChunkCompoundTag(chest.chunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return null
 
 		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
 		for (wreck in existingWrecks) {
@@ -605,29 +606,17 @@ object Encounters {
 		return null
 	}
 
-	fun getChunkEncounters(chunk: Chunk): CompoundTag? {
-		val pdc = chunk.persistentDataContainer.get(
-			NamespacedKeys.WRECK_ENCOUNTER_DATA,
-			PersistentDataType.BYTE_ARRAY
-		) ?: return null
-
-		return NbtIo.readCompressed(
-			ByteArrayInputStream(
-				pdc,
-				0,
-				pdc.size
-			)
-		)
-	}
-
 	fun setChunkEncounters(chunk: Chunk, newData: CompoundTag) {
-		val wreckDataOutputStream = ByteArrayOutputStream()
-		NbtIo.writeCompressed(newData, wreckDataOutputStream)
+		val byteArray = ByteArrayOutputStream()
 
+		val dataOutput = DataOutputStream(byteArray)
+		NbtIo.write(newData, dataOutput)
+
+		// Update PDCs
 		chunk.persistentDataContainer.set(
 			NamespacedKeys.WRECK_ENCOUNTER_DATA,
 			PersistentDataType.BYTE_ARRAY,
-			wreckDataOutputStream.toByteArray()
+			byteArray.toByteArray()
 		)
 	}
 
@@ -652,7 +641,7 @@ object Encounters {
 	}
 
 	fun setChestFlag(chest: Chest, key: String, tag: Tag) {
-		val wreckData = getChunkEncounters(chest.chunk) ?: return
+		val wreckData = readChunkCompoundTag(chest.chunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return
 
 		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
 		wreckData.remove("Wrecks")

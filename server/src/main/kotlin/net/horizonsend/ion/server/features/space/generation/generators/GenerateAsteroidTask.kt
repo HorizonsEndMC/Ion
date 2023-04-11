@@ -143,7 +143,7 @@ class GenerateAsteroidTask(
 	): CompletableDeferred<CompletedSection> {
 		SpaceGenerationManager.coroutineScope.launch {
 			val palette = mutableListOf<BlockState>()
-			val storedBlocks = arrayOfNulls<Int>(4096)
+			val storedBlocks = IntArray(4096)
 			val sectionMinY = sectionY.shl(4)
 
 			palette.add(Blocks.AIR.defaultBlockState())
@@ -196,13 +196,12 @@ class GenerateAsteroidTask(
 			}
 
 			palette.forEach { blockState -> paletteListTag.add(NbtUtils.writeBlockState(blockState)) }
-			val intArray = storedBlocks.requireNoNulls().toIntArray()
 
 			completable.complete(
 				CompletedSection(
 					sectionY,
-					intArray,
-					palette.map { it to null }.toSet(),
+					storedBlocks,
+					palette.map { it to null },
 					paletteListTag
 				)
 			)

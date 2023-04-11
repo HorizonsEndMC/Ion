@@ -31,6 +31,8 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
+import java.io.DataOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.util.Random
@@ -217,12 +219,14 @@ class SpaceGenerator(
 				PersistentDataType.BYTE_ARRAY
 			)?.let { data ->
 				val wreckData = try { // get existing asteroid data
-					NbtIo.readCompressed(
-						ByteArrayInputStream(
-							data,
-							0,
-							data.size
-						)
+					val bos = ByteArrayInputStream(
+						data,
+						0,
+						data.size
+					)
+
+					NbtIo.read(
+						DataInputStream(bos)
 					)
 				} catch (error: Error) {
 					error.printStackTrace(); return
@@ -252,13 +256,16 @@ class SpaceGenerator(
 				wreckData.put("SecondaryChests", existingChests)
 				wreckData.put("Wrecks", existingWrecks)
 
-				val wreckDataOutputStream = ByteArrayOutputStream()
-				NbtIo.writeCompressed(wreckData, wreckDataOutputStream)
+				val byteArray = ByteArrayOutputStream()
 
+				val dataOutput = DataOutputStream(byteArray)
+				NbtIo.write(wreckData, dataOutput)
+
+				// Update PDCs
 				chunk.persistentDataContainer.set(
 					NamespacedKeys.WRECK_ENCOUNTER_DATA,
 					PersistentDataType.BYTE_ARRAY,
-					wreckDataOutputStream.toByteArray()
+					byteArray.toByteArray()
 				)
 			}
 
@@ -272,7 +279,15 @@ class SpaceGenerator(
 				chunk.persistentDataContainer.get(NamespacedKeys.STORED_CHUNK_BLOCKS, PersistentDataType.BYTE_ARRAY)
 					?: return
 			val nbt = try {
-				NbtIo.readCompressed(ByteArrayInputStream(storedAsteroidData, 0, storedAsteroidData.size))
+				val bos = ByteArrayInputStream(
+					storedAsteroidData,
+					0,
+					storedAsteroidData.size
+				)
+
+				NbtIo.read(
+					DataInputStream(bos)
+				)
 			} catch (error: Error) {
 				error.printStackTrace(); throw Throwable("Could not serialize stored asteroid data!")
 			}
@@ -358,7 +373,7 @@ abstract class SpaceGenerationReturnData {
 	data class CompletedSection(
 		val y: Int,
 		val blocks: IntArray,
-		val palette: Set<Pair<BlockState, CompoundTag?>>,
+		val palette: List<Pair<BlockState, CompoundTag?>>,
 		val nmsPalette: ListTag
 	)
 
@@ -386,7 +401,6 @@ abstract class SpaceGenerationReturnData {
 				for (completedSection in completedSections) {
 					val section = levelChunk.sections[completedSection.y]
 					val palette = completedSection.palette
-					val map = palette.associateBy { palette.indexOf(it) }
 
 					val sectionMinY = section.bottomBlockY()
 
@@ -401,7 +415,7 @@ abstract class SpaceGenerationReturnData {
 
 								val index = BlockSerialization.posToIndex(x, y, z)
 
-								val block = map[completedSection.blocks[index]]!!
+								val block = palette[completedSection.blocks[index]]!!
 
 								if (block.first.isAir) continue
 
@@ -455,17 +469,27 @@ abstract class SpaceGenerationReturnData {
 						NamespacedKeys.STORED_CHUNK_BLOCKS
 					)
 
+				println("retrieved ${existingStoredBlocks?.let { it1 -> NbtUtils.structureToSnbt(it1) }}")
 
 				val existingSections = existingStoredBlocks?.getList("sections", 10)
 				existingSections?.let { sections.addAll(existingSections) }
 
 				for (completedSection in sectionList) {
+					// dont store if all air
+					if (completedSection.blocks.all { it == 0 }) continue
+					if (completedSection.blocks.isEmpty()) continue
+
+					println(completedSection.blocks.contains(1))
+
 					val newBlocks = BlockSerialization
 						.formatSection(
 							completedSection.y,
 							completedSection.blocks,
 							completedSection.nmsPalette
 						)
+
+					println(newBlocks.getIntArray("blocks").contains(1))
+					println("new blocks :::: ${ NbtUtils.structureToSnbt(newBlocks) }")
 
 					// Combine and overwrite old data with new
 					val combined = existingStoredBlocks?.let { _ ->
@@ -475,14 +499,24 @@ abstract class SpaceGenerationReturnData {
 
 						sections.remove(existingSection)
 
-						BlockSerialization.combineSectionBlockStorage(
+						println("existing blocks: ${existingSection.getIntArray("blocks").toList()}")
+						println("new blocks: ${completedSection.blocks.toList()}")
+
+						val combiend = BlockSerialization.combineSerializedSections(
 							existingSection,
 							newBlocks
 						)
+
+						println("combined blocks: ${combiend.getIntArray("blocks").toList()}")
+						combiend
 					}  ?: newBlocks
+
+					println("Combined ? ${ NbtUtils.structureToSnbt(combined) }")
 
 					sections.add(combined)
 				}
+
+				if (sections.isEmpty()) return@invokeOnCompletion
 
 				// Format the new data
 				val finishedChunk = BlockSerialization.formatChunk(
@@ -490,14 +524,16 @@ abstract class SpaceGenerationReturnData {
 					generator.spaceGenerationVersion
 				)
 
-				val outputStream = ByteArrayOutputStream()
-				NbtIo.writeCompressed(finishedChunk, outputStream)
+				val byteArrayOut = ByteArrayOutputStream()
+
+				val dataOutput = DataOutputStream(byteArrayOut)
+				NbtIo.write(finishedChunk, dataOutput)
 
 				// Update PDCs
 				bukkitChunk.persistentDataContainer.set(
 					NamespacedKeys.STORED_CHUNK_BLOCKS,
 					PersistentDataType.BYTE_ARRAY,
-					outputStream.toByteArray()
+					byteArrayOut.toByteArray()
 				)
 			}
 		}
