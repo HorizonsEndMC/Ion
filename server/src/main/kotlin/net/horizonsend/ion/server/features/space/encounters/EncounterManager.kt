@@ -2,19 +2,16 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.NbtIo
 import net.starlegacy.util.VAULT_ECO
-import net.starlegacy.util.toBlockPos
 import org.bukkit.block.Chest
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.persistence.PersistentDataType
-import java.io.ByteArrayOutputStream
 
 class EncounterManager : Listener {
 
@@ -41,10 +38,9 @@ class EncounterManager : Listener {
 		if (!SpaceGenerationManager.worldGenerators.containsKey(serverLevel)) return
 
 		val chunk = clickedBlock.location.chunk
-
-		val wreckData = Encounters.getChunkEncounters(chunk) ?: return
-
+		val wreckData = BlockSerialization.readChunkCompoundTag(chunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return
 		val player = event.player
+
 		val secondaryChests = wreckData.getList("SecondaryChests", 10) // list of compound tags (10)
 		wreckData.remove("SecondaryChests")
 
