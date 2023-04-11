@@ -58,3 +58,13 @@ fun highlightBlock(bukkitPlayer: Player, pos: BlockPos) {
 
 	Tasks.syncDelayTask(10 * 20) { conn.send(ClientboundRemoveEntitiesPacket(shulker.id)) }
 }
+
+fun repeatString(string: String, count: Int): String {
+	val builder = StringBuilder()
+
+	for (x in 0 until count) {
+		builder.append(string)
+	}
+
+	return builder.toString()
+}

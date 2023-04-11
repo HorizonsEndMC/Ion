@@ -8,10 +8,13 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.miscellaneous.repeatString
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
@@ -27,7 +30,6 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.Territory
@@ -43,17 +45,13 @@ import net.starlegacy.feature.nations.utils.isSemiActive
 import net.starlegacy.util.Notify
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.VAULT_ECO
-import net.starlegacy.util.colorize
 import net.starlegacy.util.darkAqua
 import net.starlegacy.util.darkGray
 import net.starlegacy.util.darkGreen
-import net.starlegacy.util.darkPurple
 import net.starlegacy.util.distance
 import net.starlegacy.util.fromLegacy
 import net.starlegacy.util.gray
-import net.starlegacy.util.joinToText
 import net.starlegacy.util.msg
-import net.starlegacy.util.plus
 import net.starlegacy.util.style
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.white
@@ -183,7 +181,7 @@ internal object NationCommand : SLCommand() {
 
 		if (!Nation.isInvited(nationId, settlementId)) {
 			Nation.addInvite(nationId, settlementId)
-			sender msg "&aInvited settlement ${getSettlementName(settlementId)} to your nation"
+			sender.success("Invited settlement ${getSettlementName(settlementId)} to your nation")
 			Notify.player(
 				player = leaderId,
 				message = "&bYour settlement is invited to the nation $nationName by ${sender.name}! " +
@@ -191,7 +189,7 @@ internal object NationCommand : SLCommand() {
 			)
 		} else {
 			Nation.removeInvite(nationId, settlementId)
-			sender msg "&eCancelled invite for settlement $settlementId to your nation"
+			sender.success("Cancelled invite for settlement $settlementId to your nation")
 			Notify.player(
 				player = leaderId,
 				message = "&eYour settlement's invite to the nation $nationName has been revoked by ${sender.name}"
@@ -497,16 +495,6 @@ internal object NationCommand : SLCommand() {
 	@Subcommand("info")
 	@CommandCompletion("@nations")
 	fun onInfo(sender: CommandSender, @Optional nation: String?): Unit = asyncCommand(sender) {
-		fun repeatString(string: String, count: Int): String {
-			val builder = StringBuilder()
-
-			for (x in 0 until count) {
-				builder.append(string)
-			}
-
-			return builder.toString()
-		}
-
 		val nationId: Oid<Nation> = when (sender) {
 			is Player -> {
 				when (nation) {
@@ -518,11 +506,11 @@ internal object NationCommand : SLCommand() {
 			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
 		}
 
-		val senderNationId: Oid<Nation> = when (sender) {
+		val senderNationId: Oid<Nation>? = when (sender) {
 			is Player -> {
 				PlayerCache[sender].nation ?: fail { "You need to specify a nation. /n info <nation>" }
 			}
-			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
+			else -> null
 		}
 
 		val message = text().color(TextColor.fromHexString("#b8e0d4"))
@@ -539,21 +527,24 @@ internal object NationCommand : SLCommand() {
 		message.append(text(repeatString(" ", leftPad.roundToInt()) + cached.name).color(color(cached.color)).decorate(TextDecoration.BOLD))
 		message.append(newline())
 
-		val relation = RelationCache[nationId, senderNationId]
-		val otherRelation = RelationCache.getWish(nationId, senderNationId)
-		val wish = RelationCache.getWish(senderNationId, nationId)
+		senderNationId?.let {
+			val relation = RelationCache[nationId, senderNationId]
+			val otherRelation = RelationCache.getWish(nationId, senderNationId)
+			val wish = RelationCache.getWish(senderNationId, nationId)
 
-		val relationHover = text("Your wish: ")
-			.append(MiniMessage.miniMessage().deserialize(wish.coloredName).decorate(TextDecoration.BOLD))
-			.append(newline())
-			.append(text("Their Wish: "))
-			.append(MiniMessage.miniMessage().deserialize(otherRelation.coloredName).decorate(TextDecoration.BOLD))
-			.asHoverEvent()
+			val relationHover = text("Your wish: ")
+				.append(MiniMessage.miniMessage().deserialize(wish.coloredName))
+				.append(newline())
+				.append(text("Their Wish: "))
+				.append(MiniMessage.miniMessage().deserialize(otherRelation.coloredName))
+				.asHoverEvent()
 
-		message.append(text("Relation: ").hoverEvent(relationHover)
-			.append(MiniMessage.miniMessage().deserialize(relation.coloredName).decorate(TextDecoration.BOLD)))
-
-		message.append(newline())
+			message.append(
+				text("Relation: ").hoverEvent(relationHover)
+					.append(MiniMessage.miniMessage().deserialize(relation.coloredName))
+			)
+			message.append(newline())
+		}
 
 		val outposts: List<RegionTerritory> = Regions.getAllOf<RegionTerritory>().filter { it.nation == nationId }
 		val outpostsText = text()
@@ -631,6 +622,7 @@ internal object NationCommand : SLCommand() {
 				.append(
 					text(cachedSettlement.name)
 						.hoverEvent(hoverTextBuilder.build().asHoverEvent())
+						.clickEvent(ClickEvent.runCommand("/s info ${cachedSettlement.name}"))
 					.color(NamedTextColor.WHITE)
 				)
 
