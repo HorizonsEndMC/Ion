@@ -5,12 +5,12 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtUtils
-import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
 import org.bukkit.Chunk
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayInputStream
+import java.io.DataInputStream
 
 object BlockSerialization {
 	val AIR: CompoundTag = NbtUtils.writeBlockState(Blocks.AIR.defaultBlockState())
@@ -23,12 +23,14 @@ object BlockSerialization {
 
 		return try { // get existing asteroid data
 			dataContainer?.let {
-				NbtIo.readCompressed(
-					ByteArrayInputStream(
-						dataContainer,
-						0,
-						dataContainer.size
-					)
+				val bos = ByteArrayInputStream(
+					dataContainer,
+					0,
+					dataContainer.size
+				)
+
+				return NbtIo.read(
+					DataInputStream(bos)
 				)
 			}
 		} catch (error: Error) {
@@ -48,8 +50,13 @@ object BlockSerialization {
 	fun formatSection(sectionY: Int, blocks: IntArray, palette: ListTag): CompoundTag {
 		val section = CompoundTag()
 		section.putInt("y", sectionY)
-		section.putIntArray("blocks", blocks)
+		section.putIntArray("blocks", blocks.toList())
 		section.put("palette", palette)
+
+		println("formatSection")
+		println(NbtUtils.structureToSnbt(section))
+		println(blocks.contains(1))
+		println(section.getIntArray("blocks").contains(1))
 
 		return section
 	}
@@ -67,58 +74,64 @@ object BlockSerialization {
 	 *
 	 * Where there are conflicts, the second will be preferred.
 	 **/
-	fun combineSectionBlockStorage(first: CompoundTag, second: CompoundTag): CompoundTag {
-		val combinedPalette = mutableListOf<Tag>()
-		val combinedBlocks = arrayOfNulls<Int>(4096)
-		val sectionY = second.getByte("y").toInt()
+	fun combineSerializedSections(original: CompoundTag, new: CompoundTag): CompoundTag {
+//		println("original: ${NbtUtils.structureToSnbt(original)}")
+//		println("new: ${NbtUtils.structureToSnbt(new)}")
 
-		combinedPalette.add(AIR)
+		val firstArray: IntArray = original.getIntArray("blocks")
+		val secondArray: IntArray = new.getIntArray("blocks")
+		val sectionY = new.getByte("y").toInt()
 
-		val firstBlocks: IntArray = first.getIntArray("blocks")
-		val firstPalette = first.getList("palette", 10)
+		val firstPalette = original.getList("palette", 10)
+		val secondPalette = new.getList("palette", 10)
 
-		val secondBlocks: IntArray = second.getIntArray("blocks")
-		val secondPalette = second.getList("palette", 10)
+		val combinedPalette = ListTag()
+		combinedPalette.add(secondPalette[0])
+		val combinedArray = IntArray(4096)
 
-		if (secondBlocks.isEmpty() && firstBlocks.isEmpty()) return formatSection(sectionY, IntArray(4096), ListTag())
-		if (firstPalette.isEmpty() && secondPalette.isEmpty()) return formatSection(sectionY, IntArray(4096), ListTag())
+		fun CompoundTag.isAir(): Boolean = this.getString("Name") == "minecraft:granite"
 
-		val firstMap = firstBlocks.associateWith {
-			if (firstPalette.isNotEmpty()) { firstPalette[firstBlocks[it]] } else AIR
+		fun compare(first: CompoundTag, second: CompoundTag): CompoundTag {
+			return if (second.isAir()) {
+				if (first.isAir()) second else first
+			} else second
 		}
 
-		val secondMap =	secondBlocks.associateWith {
-			if (secondPalette.isNotEmpty()) { secondPalette[secondBlocks[it]] } else AIR
+		fun pick(index: Int): CompoundTag {
+			val firstPaletteIndex = firstArray[index]
+			val firstBlock = firstPalette[firstPaletteIndex] as CompoundTag
+			val secondPaletteIndex = secondArray[index]
+
+			if (firstPaletteIndex == 0 && secondPaletteIndex == 0) return firstBlock
+
+			val secondBlock = secondPalette[secondPaletteIndex] as CompoundTag
+
+			val picked = compare(firstBlock, secondBlock)
+
+			if (!combinedPalette.contains(picked)) {
+				combinedPalette.add(picked)
+			}
+
+			return picked
 		}
 
-		fun isAir(tag: Tag?): Boolean = (tag as? CompoundTag)?.getString("Name") == "minecraft:air"
-
-		fun addCombined(block: Tag): Int {
-			return if (!combinedPalette.contains(block)) {
-				combinedPalette.add(block)
-				combinedPalette.lastIndex
-			} else combinedPalette.indexOf(block)
-		}
-
-		fun pick(index: Int): Int {
-			if (firstMap[index] == null && secondMap[index] != null) return addCombined(secondMap[index]!!)
-			if (isAir(firstMap[index]) && secondMap[index] != null) return addCombined(secondMap[index]!!)
-
-			if (secondMap[index] == null && firstMap[index] != null) return addCombined(firstMap[index]!!)
-			if (isAir(secondMap[index]) && firstMap[index] != null) return addCombined(firstMap[index]!!)
-
-			return 0
-		}
-
-		// Iterate through both palettes to
 		for (index in 0 until 4096) {
-			combinedBlocks[index] = pick(index)
+			val block = pick(index)
+
+
+
+			secondArray[index] = combinedPalette.indexOf(block)
 		}
+//		println("combined: ${formatSection(
+//			sectionY,
+//			combinedArray,
+//			combinedPalette
+//		)}")
 
-		val finishedCombinedBlocks = combinedBlocks.requireNoNulls().toIntArray()
-		val finishedPalette = ListTag()
-		finishedPalette.addAll(combinedPalette)
-
-		return formatSection(sectionY, finishedCombinedBlocks, finishedPalette)
+		return formatSection(
+			sectionY,
+			combinedArray,
+			combinedPalette
+		)
 	}
 }

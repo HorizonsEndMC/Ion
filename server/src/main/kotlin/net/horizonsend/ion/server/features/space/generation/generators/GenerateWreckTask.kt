@@ -25,6 +25,7 @@ import net.starlegacy.util.worldEditSession
 import org.bukkit.Chunk
 import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
 
 class GenerateWreckTask(
 	override val generator: SpaceGenerator,
@@ -114,7 +115,7 @@ class GenerateWreckTask(
 		chunkPos: ChunkPos
 	): SpaceGenerationReturnData.CompletedSection? {
 		val palette = mutableListOf<Pair<BlockState, CompoundTag?>>()
-		val storedBlocks = arrayOfNulls<Int>(4096)
+		val storedBlocks = IntArray(4096)
 		val sectionMinY = sectionY.shl(4)
 
 		palette.add(Blocks.AIR.defaultBlockState() to null)
@@ -202,12 +203,10 @@ class GenerateWreckTask(
 			paletteListTag.add(base)
 		}
 
-		val intArray = storedBlocks.requireNoNulls().toIntArray()
-
 		return SpaceGenerationReturnData.CompletedSection(
 			sectionY,
-			intArray,
-			palette.toSet(),
+			storedBlocks,
+			palette,
 			paletteListTag
 		)
 	}
@@ -258,13 +257,16 @@ data class WreckGenerationData(
 
 					newFinishedData.put("Wrecks", existingWrecks)
 
-					val wreckDataOutputStream = ByteArrayOutputStream()
-					NbtIo.writeCompressed(newFinishedData, wreckDataOutputStream)
+					val byteArray = ByteArrayOutputStream()
 
+					val dataOutput = DataOutputStream(byteArray)
+					NbtIo.write(newFinishedData, dataOutput)
+
+					// Update PDCs
 					encounterChunk.persistentDataContainer.set(
 						NamespacedKeys.WRECK_ENCOUNTER_DATA,
 						PersistentDataType.BYTE_ARRAY,
-						wreckDataOutputStream.toByteArray()
+						byteArray.toByteArray()
 					)
 				}
 
@@ -290,13 +292,16 @@ data class WreckGenerationData(
 					newFinishedData.put("SecondaryChests", existingChests)
 					newFinishedData.put("Wrecks", existingWrecks)
 
-					val wreckDataOutputStream = ByteArrayOutputStream()
-					NbtIo.writeCompressed(newFinishedData, wreckDataOutputStream)
+					val byteArray = ByteArrayOutputStream()
 
+					val dataOutput = DataOutputStream(byteArray)
+					NbtIo.write(newFinishedData, dataOutput)
+
+					// Update PDCs
 					encounterChunk.persistentDataContainer.set(
 						NamespacedKeys.WRECK_ENCOUNTER_DATA,
 						PersistentDataType.BYTE_ARRAY,
-						wreckDataOutputStream.toByteArray()
+						byteArray.toByteArray()
 					)
 				}
 			}
