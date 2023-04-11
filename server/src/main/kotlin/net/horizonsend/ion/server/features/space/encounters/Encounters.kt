@@ -26,6 +26,7 @@ import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_COW_BELL
 import org.bukkit.Particle
+import org.bukkit.Sound.BLOCK_NOTE_BLOCK_HARP
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -421,6 +422,49 @@ object Encounters {
 				syncRepeat(1, 1) {
 					explosiveCow.location.world.playSound(explosiveCow, BLOCK_NOTE_BLOCK_COW_BELL, 5.0f, 1.0f)
 				}
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
+		}
+	)
+
+
+	@Suppress("Unused")
+	val TIMED_BOMB = register(
+		object : Encounter(identifier = "TIMED_BOMB") {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
+				TODO("Not yet implemented")
+			}
+
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				val targetedBlock = event.clickedBlock!!
+				val timeLimit = 30 // seconds
+				var iteration = 0 // ticks
+				event.player.alert("Timed bomb activated! Loot and get out in $timeLimit seconds!")
+				runnable {
+					if (iteration % 5 == 0) {
+						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_HARP, 5.0f, 2.0f)
+					}
+					if (iteration >= timeLimit * 20 - 100) {
+						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_HARP, 5.0f, 2.0f)
+					}
+					if (timeLimit * 20 == iteration) {
+						targetedBlock.location.createExplosion(60.0f)
+						val explosionDamage = 50.0
+						val explosionRadius = 30.0
+						targetedBlock.location.getNearbyLivingEntities(explosionRadius).forEach {
+							it.damage(explosionDamage * (explosionRadius - it.location.distance(targetedBlock.location) / explosionRadius))
+						}
+						cancel()
+					}
+					iteration++
+				}.runTaskTimer(IonServer, 0L, 1L)
 			}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
