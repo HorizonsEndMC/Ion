@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
@@ -405,23 +407,47 @@ object Encounters {
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
-				val timeLimit = 10 // seconds
-				event.player.alert("Slaughter the Explosive Cow in $timeLimit seconds or perish!!!")
+
+				event.isCancelled = true
+				val chest = (targetedBlock.state as? Chest) ?: return
+
+				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true))
+					return
+
+				setChestFlag(chest, "locked", ByteTag.valueOf(true))
+
 				val explosiveCow = targetedBlock.location.world.spawnEntity(targetedBlock.location, COW)
 				explosiveCow.customName(text("Explosive Cow", NamedTextColor.RED))
-				syncDelay((timeLimit * 20).toLong()) {
-					if (!explosiveCow.isDead) {
-						explosiveCow.location.createExplosion(20.0f)
+				val timeLimit = 15 // seconds
+				var iteration = 0 // ticks
+				event.player.alert("Slaughter the Explosive Cow in $timeLimit seconds or perish!!!")
+
+				runnable {
+					if (iteration % 5 == 0) {
+						explosiveCow.location.world.playSound(explosiveCow, BLOCK_NOTE_BLOCK_COW_BELL, 5.0f, 1.0f)
+					}
+					if (iteration >= timeLimit * 20 - 100) {
+						explosiveCow.location.world.playSound(explosiveCow, BLOCK_NOTE_BLOCK_COW_BELL, 5.0f, 1.0f)
+					}
+					if (explosiveCow.isDead) {
+						setChestFlag(chest, "locked", ByteTag.valueOf(false))
+						setChestFlag(chest, "inactive", ByteTag.valueOf(true))
+						event.player.information("The chest was unlocked.")
+						cancel()
+					}
+					if (timeLimit * 20 == iteration) {
+						explosiveCow.location.createExplosion(30.0f)
 						val explosionDamage = 25.0
 						val explosionRadius = 15.0
 						explosiveCow.location.getNearbyLivingEntities(explosionRadius).forEach {
-							it.damage(explosionDamage * (explosionRadius - it.location.distance(explosiveCow.location) / explosionRadius), explosiveCow)
+							it.damage(explosionDamage * (explosionRadius - it.location.distance(targetedBlock.location) / explosionRadius), explosiveCow)
 						}
+						setChestFlag(chest, "locked", ByteTag.valueOf(false))
+						event.player.userError("You were tipped by the Explosive Cow!")
+						cancel()
 					}
-				}
-				syncRepeat(1, 1) {
-					explosiveCow.location.world.playSound(explosiveCow, BLOCK_NOTE_BLOCK_COW_BELL, 5.0f, 1.0f)
-				}
+					iteration++
+				}.runTaskTimer(IonServer, 0L, 1L)
 			}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
@@ -531,6 +557,26 @@ object Encounters {
 			PersistentDataType.BYTE_ARRAY,
 			wreckDataOutputStream.toByteArray()
 		)
+	}
+
+	fun getChestFlag(chest: Chest, key: String) : Tag? {
+		val wreckData = getChunkEncounters(chest.chunk) ?: return null
+
+		val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
+
+		for (wreck in existingWrecks) {
+			wreck as CompoundTag
+
+			if (
+				wreck.getInt("x") != chest.x &&
+				wreck.getInt("y") != chest.y &&
+				wreck.getInt("z") != chest.z
+			) continue
+
+			return wreck.get(key)
+		}
+
+		return null
 	}
 
 	fun setChestFlag(chest: Chest, key: String, tag: Tag) {
