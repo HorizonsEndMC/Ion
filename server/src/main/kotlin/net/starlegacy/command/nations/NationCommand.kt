@@ -7,10 +7,20 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextColor.color
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
@@ -56,6 +66,7 @@ import org.litote.kmongo.ne
 import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
 internal object NationCommand : SLCommand() {
@@ -292,7 +303,7 @@ internal object NationCommand : SLCommand() {
 
 		Nation.setColor(nationId, color.asRGB())
 
-		sender msg "&aUpdated nation color."
+		sender.information("Updated nation color.")
 	}
 
 	@Suppress("unused")
@@ -486,6 +497,16 @@ internal object NationCommand : SLCommand() {
 	@Subcommand("info")
 	@CommandCompletion("@nations")
 	fun onInfo(sender: CommandSender, @Optional nation: String?): Unit = asyncCommand(sender) {
+		fun repeatString(string: String, count: Int): String {
+			val builder = StringBuilder()
+
+			for (x in 0 until count) {
+				builder.append(string)
+			}
+
+			return builder.toString()
+		}
+
 		val nationId: Oid<Nation> = when (sender) {
 			is Player -> {
 				when (nation) {
@@ -497,59 +518,166 @@ internal object NationCommand : SLCommand() {
 			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
 		}
 
-		val lines = mutableListOf<TextComponent>()
-		lines += lineBreak().fromLegacy()
+		val senderNationId: Oid<Nation> = when (sender) {
+			is Player -> {
+				PlayerCache[sender].nation ?: fail { "You need to specify a nation. /n info <nation>" }
+			}
+			else -> resolveNation(nation ?: fail { "Non-players must specify a nation" })
+		}
+
+		val message = text().color(TextColor.fromHexString("#b8e0d4"))
+
+		val lineWidth = 45
+		val lineBreak = text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
 
 		val data = Nation.findById(nationId) ?: fail { "Failed to load data" }
 		val cached = NationCache[nationId]
 
-		lines += "                                 &6&b${data.name}".fromLegacy()
+		message.append(lineBreak)
 
-		val relation: NationRelation.Level = getRelation(sender, nationId)
+		val leftPad = (((lineWidth * (3.0 / 2.0)) - cached.name.length) / 2) + 3 // = is 3/2 the size of a space
+		message.append(text(repeatString(" ", leftPad.roundToInt()) + cached.name).color(color(cached.color)).decorate(TextDecoration.BOLD))
+		message.append(newline())
 
-		lines += "&5Relation: &r${relation.coloredName}".fromLegacy()
+		val relation = RelationCache[nationId, senderNationId]
+		val otherRelation = RelationCache.getWish(nationId, senderNationId)
+		val wish = RelationCache.getWish(senderNationId, nationId)
+
+		val relationHover = text("Your wish: ")
+			.append(MiniMessage.miniMessage().deserialize(wish.coloredName).decorate(TextDecoration.BOLD))
+			.append(newline())
+			.append(text("Their Wish: "))
+			.append(MiniMessage.miniMessage().deserialize(otherRelation.coloredName).decorate(TextDecoration.BOLD))
+			.asHoverEvent()
+
+		message.append(text("Relation: ").hoverEvent(relationHover)
+			.append(MiniMessage.miniMessage().deserialize(relation.coloredName).decorate(TextDecoration.BOLD)))
+
+		message.append(newline())
 
 		val outposts: List<RegionTerritory> = Regions.getAllOf<RegionTerritory>().filter { it.nation == nationId }
-		if (outposts.isNotEmpty()) {
-			lines += darkPurple("Outposts (${outposts.size}): ") + outposts.joinToText { territory ->
-				darkGreen(territory.name).hover(territory.toString())
-			}
+		val outpostsText = text()
+			.append(text("Outposts ("))
+			.append(text(outposts.size).color(NamedTextColor.WHITE))
+			.append(text("): "))
+
+		for (outpost in outposts) {
+			val outpostBuilder = text()
+			val hoverText = text().color(TextColor.fromHexString("#b8e0d4"))
+				.append(text(outpost.name).color(NamedTextColor.AQUA))
+				.append(newline())
+				.append(text("Planet: ").append(text(outpost.world).color(NamedTextColor.WHITE)))
+				.append(newline())
+				.append(text("Centered at ")
+					.append(text(outpost.centerX).color(NamedTextColor.WHITE))
+					.append(text(", "))
+					.append(text(outpost.centerZ).color(NamedTextColor.WHITE))
+				)
+				.build()
+				.asHoverEvent()
+
+			val isLast: Boolean = outposts.indexOf(outpost) == (outposts.size - 1)
+
+			outpostBuilder.append(
+				text(outpost.name)
+					.hoverEvent(hoverText)
+					.color(NamedTextColor.WHITE)
+			)
+
+			if (!isLast) outpostBuilder.append(text(", "))
+
+			outpostsText.append(outpostBuilder.build())
 		}
+
+		message.append(outpostsText)
+		message.append(newline())
 
 		val settlements: List<Oid<Settlement>> = Nation.getSettlements(nationId)
 			.sortedByDescending { SLPlayer.count(SLPlayer::settlement eq it) }
 			.toList()
-		if (settlements.isNotEmpty()) {
-			lines += darkPurple("Settlements (${settlements.size}): ") + settlements.joinToText { settlement ->
-				val settlementData = SettlementCache[settlement]
-				val settlementName = settlementData.name
-				val leaderName = getPlayerName(settlementData.leader)
-				val memberCount = SLPlayer.count(SLPlayer::settlement eq settlement)
-				return@joinToText darkAqua(settlementName)
-					.hover("$settlementName led by $leaderName with $memberCount members")
-					.cmd("/s info $settlementName")
-			}
+
+		val settlementsText = text()
+			.append(text("Settlements ("))
+			.append(text(settlements.size).color(NamedTextColor.WHITE))
+			.append(text("): "))
+
+		for (settlement in settlements) {
+			val cachedSettlement = SettlementCache[settlement]
+			val cachedTerritory = Regions.get<RegionTerritory>(cachedSettlement.territory)
+			val memberCount = SLPlayer.count(SLPlayer::settlement eq settlement).toInt()
+
+			val hoverTextBuilder = text().color(TextColor.fromHexString("#b8e0d4"))
+				.append(text(cachedSettlement.name).color(NamedTextColor.AQUA))
+				.append(newline())
+				.append(text("Led By: ").append(text(getPlayerName(cachedSettlement.leader)).color(NamedTextColor.AQUA)))
+				.append(newline())
+				.append(text(memberCount).color(NamedTextColor.WHITE)).append(text(" members"))
+				.append(newline())
+
+			if (cachedSettlement.cityState != null) hoverTextBuilder
+				.append(text("Trade city status: ${cachedSettlement.cityState}"))
+				.append(newline())
+
+			hoverTextBuilder
+				.append(text("Planet: ").append(text(cachedTerritory.world).color(NamedTextColor.WHITE)))
+				.append(newline())
+				.append(text("Centered at ")
+					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+					.append(text(", "))
+					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+				)
+
+			val settlementBuilder = text()
+				.append(
+					text(cachedSettlement.name)
+						.hoverEvent(hoverTextBuilder.build().asHoverEvent())
+					.color(NamedTextColor.WHITE)
+				)
+
+			val isLast: Boolean = settlements.indexOf(settlement) == (settlements.size - 1)
+
+			if (cachedSettlement.cityState != null) settlementBuilder.decorate(TextDecoration.BOLD)
+			if (!isLast) settlementBuilder.append(text(", "))
+
+			settlementsText.append(settlementBuilder)
 		}
 
-		lines += "&3Balance:&7 ${data.balance}".fromLegacy()
+		message.append(settlementsText)
+		message.append(newline())
+		message.append(text("Balance: ").append(text(data.balance).color(NamedTextColor.WHITE)))
+		message.append(newline())
 
-		val leader = cached.leader
-		lines += "&3Leader:&7 ${getNationTag(leader, getPlayerName(leader))}".fromLegacy()
+		val leaderRole = NationRole.getHighestRole(cached.leader)
+		val leaderRoleComp = leaderRole?.let { leader ->
+			text(leader.name).color(
+				color(
+					leader.color.wrappedColor.color.red,
+					leader.color.wrappedColor.color.green,
+					leader.color.wrappedColor.color.blue
+				)
+			)
+		} ?: text()
+		val leaderText = text("Leader: ")
+			.append(leaderRoleComp)
+			.append(text(getPlayerName(cached.leader)).color(NamedTextColor.WHITE))
 
-		val activeStyle = SLTextStyle.GREEN
-		val semiActiveStyle = SLTextStyle.GRAY
-		val inactiveStyle = SLTextStyle.RED
+		message.append(leaderText)
+		message.append(newline())
+
+		val activeStyle = NamedTextColor.GREEN
+		val semiActiveStyle = NamedTextColor.GRAY
+		val inactiveStyle = NamedTextColor.RED
 		val members: List<Triple<SLPlayerId, String, Date>> = SLPlayer
 			.findProps(SLPlayer::nation eq nationId, SLPlayer::lastKnownName, SLPlayer::lastSeen)
 			.map { Triple(it[SLPlayer::_id], it[SLPlayer::lastKnownName], it[SLPlayer::lastSeen]) }
 			.sortedByDescending { it.third }
 
-		val names = mutableListOf<String>()
+		val names = mutableListOf<Component>()
 		var active = 0
 		var semiActive = 0
 		var inactive = 0
 		for ((playerId, name, lastSeen) in members) {
-			val style: SLTextStyle = when {
+			val style: NamedTextColor = when {
 				isActive(lastSeen) -> {
 					active++
 					activeStyle
@@ -567,23 +695,50 @@ internal object NationCommand : SLCommand() {
 
 				else -> error("Impossible!")
 			}
-			names.add(getNationTag(playerId, name, style))
+			names.add(text(getNationTag(playerId, name)).color(style))
 		}
-		lines += "&3Members:&7 (${members.size}) &7(&a$active Active &7$semiActive Semi-Active &c$inactive Inactive&7)"
-			.fromLegacy()
+
+		val playerCountBuilder = text().color(TextColor.fromHexString("#b8e0d4"))
+			.append(text("Members ("))
+			.append(text(members.size).color(NamedTextColor.WHITE))
+			.append(text("): ("))
+			.append(text("$active Active").color(NamedTextColor.GREEN))
+			.append(text(" $semiActive Semi-Active").color(NamedTextColor.GRAY))
+			.append(text(" $inactive Inactive").color(NamedTextColor.RED))
+			.append(text(")"))
+
+		message.append(playerCountBuilder.build())
+		message.append(newline())
 
 		val limit = 10
-		lines += names.joinToString("&7, &r", limit = limit)
-			.replace("${SLTextStyle.RESET}", "&7")
-			.fromLegacy()
 
-		if (names.size > limit) {
-			lines += darkPurple("[Hover for full member list]").hover(names.joinToString("&7, &r").colorize())
+		val namesList = text()
+		val fullNamesList = text()
+
+		for (name in names) {
+			val isLast = names.indexOf(name) == (names.size - 1)
+			val nameBuilder = text()
+				.append(name)
+
+			if (!isLast) nameBuilder.append(text(", ").color(TextColor.fromHexString("#b8e0d4")).asComponent())
+
+			fullNamesList.append(nameBuilder)
+
+			if (names.indexOf(name) >= (limit)) continue
+
+			namesList.append(nameBuilder)
 		}
 
-		lines += lineBreak().fromLegacy()
+		if (names.size > limit) {
+			namesList.append(text("...").color(TextColor.fromHexString("#b8e0d4")))
+			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
+		}
 
-		lines.forEach(sender::msg)
+		message.append(namesList)
+		message.append(newline())
+		message.append(lineBreak)
+
+		sender.sendMessage(message.build())
 	}
 
 	@Suppress("unused")

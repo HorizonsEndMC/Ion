@@ -42,4 +42,10 @@ object RelationCache : DbObjectCache<NationRelation, Oid<NationRelation>>(Nation
 		else -> cache.retrieve(and(equal(nationAttr, nationId), equal(otherAttr, otherId)))?.firstOrNull()
 			?.actual ?: NationRelation.Level.NONE
 	}
+
+	fun getWish(nationId: Oid<Nation>, otherId: Oid<Nation>): NationRelation.Level = when (nationId) {
+		otherId -> NationRelation.Level.NATION
+		else -> cache.retrieve(and(equal(nationAttr, nationId), equal(otherAttr, otherId)))?.firstOrNull()
+			?.wish ?: NationRelation.Level.NONE
+	}
 }
