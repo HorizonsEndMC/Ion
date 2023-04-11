@@ -470,9 +470,13 @@ object Encounters {
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
+				val chest = (targetedBlock.state as? Chest) ?: return
+				setChestFlag(chest, "locked", ByteTag.valueOf(false))
+				setChestFlag(chest, "inactive", ByteTag.valueOf(true))
+
 				val timeLimit = 30 // seconds
 				var iteration = 0 // ticks
-				event.player.alert("Timed bomb activated! Loot and get out in $timeLimit seconds!")
+				event.player.alert("Timed bomb activated! Loot the wreck and get out in $timeLimit seconds before the explosion!")
 				runnable {
 					if (iteration % 5 == 0) {
 						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_HARP, 5.0f, 2.0f)
@@ -481,11 +485,15 @@ object Encounters {
 						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_HARP, 5.0f, 2.0f)
 					}
 					if (timeLimit * 20 == iteration) {
-						targetedBlock.location.createExplosion(60.0f)
-						val explosionDamage = 50.0
-						val explosionRadius = 30.0
-						targetedBlock.location.getNearbyLivingEntities(explosionRadius).forEach {
-							it.damage(explosionDamage * (explosionRadius - it.location.distance(targetedBlock.location) / explosionRadius))
+						val explosionRadius = 10.0 // For spawning actual explosions
+						val explosionDamage = 30.0
+						val explosionDamageRadius = 20.0 // For entity damage calculation
+						targetedBlock.location.spherePoints(explosionRadius, 10).forEach {
+							it.createExplosion(10.0f)
+						}
+						targetedBlock.location.getNearbyLivingEntities(explosionDamageRadius).forEach {
+							if (it.location.distance(targetedBlock.location) == 0.0) it.damage(explosionDamage)
+							else it.damage(explosionDamage * (explosionDamageRadius - it.location.distance(targetedBlock.location)) / explosionDamageRadius)
 						}
 						cancel()
 					}
