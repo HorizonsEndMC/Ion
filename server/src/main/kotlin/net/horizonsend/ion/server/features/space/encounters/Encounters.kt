@@ -298,10 +298,11 @@ object Encounters {
 				var iteration = 0
 				val BLOCKS_PER_ITERATION = 0.10
 				val MAX_RADIUS = 15.0
+				val MAX_ATTEMPTS = 500
 
 				val leverPos = getLever(chest)
 
-				getLever(chest)?.let { highlightBlock(event.player, it.below()) }
+				getLever(chest)?.let { highlightBlock(event.player, it.below(), (MAX_ATTEMPTS * 2).toLong()) }
 
 				val iceTypes = listOf(
 					Material.ICE,
@@ -320,7 +321,7 @@ object Encounters {
 					runnable {
 						val currentSize = iteration * BLOCKS_PER_ITERATION
 
-						if (attempts > 500) {
+						if (attempts > MAX_ATTEMPTS) {
 							event.player.userError("Coolant leak expired.")
 							cancel()
 						}
