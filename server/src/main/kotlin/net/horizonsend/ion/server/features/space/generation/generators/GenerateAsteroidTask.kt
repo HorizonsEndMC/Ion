@@ -19,7 +19,7 @@ import kotlin.math.sqrt
 
 class GenerateAsteroidTask(
 	override val generator: SpaceGenerator,
-	private val asteroid: AsteroidGenerationData
+	private val asteroid: AsteroidGenerationData,
 ) : SpaceGenerationTask<AsteroidGenerationData.AsteroidReturnData>() {
 	val config = generator.configuration
 	private val sizeFactor = asteroid.size / 15
@@ -139,7 +139,7 @@ class GenerateAsteroidTask(
 		completable: CompletableDeferred<CompletedSection>,
 		sectionY: Int,
 		chunkMinX: Int,
-		chunkMinZ: Int
+		chunkMinZ: Int,
 	): CompletableDeferred<CompletedSection> {
 		SpaceGenerationManager.coroutineScope.launch {
 			val palette = mutableListOf<BlockState>()
@@ -219,7 +219,7 @@ class GenerateAsteroidTask(
 		worldZ: Double,
 		worldXSquared: Double,
 		worldYSquared: Double,
-		worldZSquared: Double
+		worldZSquared: Double,
 	): BlockState? {
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (
@@ -272,10 +272,10 @@ data class AsteroidGenerationData(
 	val palette: WeightedRandomList<BlockState>,
 	val paletteID: Int,
 	val size: Double,
-	val octaves: Int
+	val octaves: Int,
 ) : SpaceGenerationData() {
 
 	data class AsteroidReturnData(
-		override val completedSectionMap: Map<ChunkPos, List<CompletedSection>>
+		override val completedSectionMap: Map<ChunkPos, List<CompletedSection>>,
 	) : SpaceGenerationReturnData()
 }

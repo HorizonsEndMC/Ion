@@ -298,9 +298,12 @@ class SpaceGenerator(
 			val chunkOriginZ = chunk.z.shl(4)
 
 			for (section in sections) {
-				val compound = section as CompoundTag
-				val levelChunkSection = levelChunk.sections[compound.getByte("y").toInt()]
-				val blocks: IntArray = compound.getIntArray("blocks")
+				val compound = (section as CompoundTag).getCompound("block_states")
+				val levelChunkSection = levelChunk.sections[section.getByte("y").toInt()]
+
+				println(NbtUtils.structureToSnbt(section))
+
+				val blocks: IntArray = compound.getIntArray("data")
 				val paletteList = compound.getList("palette", 10)
 
 				val holderLookup = levelChunk.level.level.holderLookup(Registries.BLOCK)
@@ -415,7 +418,7 @@ abstract class SpaceGenerationReturnData {
 
 								val index = BlockSerialization.posToIndex(x, y, z)
 
-								val block = palette[completedSection.blocks[index]]!!
+								val block = palette[completedSection.blocks[index]]
 
 								if (block.first.isAir) continue
 
@@ -455,87 +458,40 @@ abstract class SpaceGenerationReturnData {
 	}
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	fun store(generator: SpaceGenerator, chunks: Deferred<Map<ChunkPos, Chunk>>) {
-		chunks.invokeOnCompletion {
-			val finishedBukkitChunks = chunks.getCompleted()
+	fun store(generator: SpaceGenerator, chunks: Deferred<Map<ChunkPos, Chunk>>) = chunks.invokeOnCompletion {
+		// Cannot use await, since it can only be called from a coroutine. Storage needs to be sync.
+		val finishedBukkitChunks = chunks.getCompleted()
 
-			for ((chunkPos, sectionList) in completedSectionMap) {
-				val bukkitChunk = finishedBukkitChunks[chunkPos]!!
-				val sections = ListTag()
+		for ((chunkPos, bukkitChunk) in finishedBukkitChunks) {
+			val existingData = BlockSerialization.readChunkCompoundTag(bukkitChunk, NamespacedKeys.STORED_CHUNK_BLOCKS)
+			val existingSectionsList = existingData?.getList("sections", 10)?.toList()
+				?.associateBy { (it as CompoundTag).getInt("y") }
 
-				val existingStoredBlocks = BlockSerialization
-					.readChunkCompoundTag(
-						bukkitChunk,
-						NamespacedKeys.STORED_CHUNK_BLOCKS
-					)
+			val newChunkData = completedSectionMap[chunkPos]!!
 
-				println("retrieved ${existingStoredBlocks?.let { it1 -> NbtUtils.structureToSnbt(it1) }}")
+			val newCoveredSections = newChunkData.map { it.y }
 
-				val existingSections = existingStoredBlocks?.getList("sections", 10)
-				existingSections?.let { sections.addAll(existingSections) }
+			val combinedSections = ListTag()
 
-				for (completedSection in sectionList) {
-					// dont store if all air
-					if (completedSection.blocks.all { it == 0 }) continue
-					if (completedSection.blocks.isEmpty()) continue
+			val unchanged = existingSectionsList?.filter { !newCoveredSections.contains(it.key) }
+			unchanged?.let { combinedSections.addAll(it.values) }
 
-					println(completedSection.blocks.contains(1))
+			for ((y, newBlocks, _, nmsPalette) in newChunkData) {
+				val existingSection = existingSectionsList?.get(y) as? CompoundTag
 
-					val newBlocks = BlockSerialization
-						.formatSection(
-							completedSection.y,
-							completedSection.blocks,
-							completedSection.nmsPalette
-						)
+				val newSection = BlockSerialization.formatSection(y, newBlocks, nmsPalette)
 
-					println(newBlocks.getIntArray("blocks").contains(1))
-					println("new blocks :::: ${ NbtUtils.structureToSnbt(newBlocks) }")
+				val combined = existingSection?.let {
+					BlockSerialization.combineSerializedSections(y, existingSection, newSection)
+				} ?: newSection
 
-					// Combine and overwrite old data with new
-					val combined = existingStoredBlocks?.let { _ ->
-						val existingSection = (existingSections?.firstOrNull {
-							(it as CompoundTag).getInt("y") == completedSection.y
-						} as? CompoundTag ) ?: return@let newBlocks
-
-						sections.remove(existingSection)
-
-						println("existing blocks: ${existingSection.getIntArray("blocks").toList()}")
-						println("new blocks: ${completedSection.blocks.toList()}")
-
-						val combiend = BlockSerialization.combineSerializedSections(
-							existingSection,
-							newBlocks
-						)
-
-						println("combined blocks: ${combiend.getIntArray("blocks").toList()}")
-						combiend
-					}  ?: newBlocks
-
-					println("Combined ? ${ NbtUtils.structureToSnbt(combined) }")
-
-					sections.add(combined)
-				}
-
-				if (sections.isEmpty()) return@invokeOnCompletion
-
-				// Format the new data
-				val finishedChunk = BlockSerialization.formatChunk(
-					sections,
-					generator.spaceGenerationVersion
-				)
-
-				val byteArrayOut = ByteArrayOutputStream()
-
-				val dataOutput = DataOutputStream(byteArrayOut)
-				NbtIo.write(finishedChunk, dataOutput)
-
-				// Update PDCs
-				bukkitChunk.persistentDataContainer.set(
-					NamespacedKeys.STORED_CHUNK_BLOCKS,
-					PersistentDataType.BYTE_ARRAY,
-					byteArrayOut.toByteArray()
-				)
+				combinedSections.add(combined)
 			}
+
+			val chunk = BlockSerialization.formatChunk(combinedSections, generator.spaceGenerationVersion)
+
+			BlockSerialization.setChunkCompoundTag(bukkitChunk, NamespacedKeys.STORED_CHUNK_BLOCKS, chunk)
 		}
 	}
 }
+
