@@ -18,8 +18,6 @@ import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.MenuHelper
-import net.starlegacy.util.Tasks.syncDelay
-import net.starlegacy.util.Tasks.syncRepeat
 import net.starlegacy.util.nms
 import net.starlegacy.util.spherePoints
 import net.starlegacy.util.toBlockPos
@@ -28,7 +26,7 @@ import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_COW_BELL
 import org.bukkit.Particle
-import org.bukkit.Sound.BLOCK_NOTE_BLOCK_HARP
+import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -37,6 +35,7 @@ import org.bukkit.block.data.FaceAttachable
 import org.bukkit.block.data.type.Switch
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.EntityType.COW
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -411,8 +410,10 @@ object Encounters {
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
 
-				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true))
+				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true)) {
+					event.player.userError("You must slaughter the Explosive Cow before opening the chest!")
 					return
+				}
 
 				setChestFlag(chest, "locked", ByteTag.valueOf(true))
 
@@ -436,11 +437,17 @@ object Encounters {
 						cancel()
 					}
 					if (timeLimit * 20 == iteration) {
-						explosiveCow.location.createExplosion(30.0f)
-						val explosionDamage = 25.0
-						val explosionRadius = 15.0
+						val explosionRadius = 7.5 // For spawning actual explosions
+						val explosionDamage = 40.0
+						val explosionDamageRadius = 15.0 // For entity damage calculation
+						explosiveCow.location.spherePoints(explosionRadius, 10).forEach {
+							it.createExplosion(7.5f)
+						}
 						explosiveCow.location.getNearbyLivingEntities(explosionRadius).forEach {
-							it.damage(explosionDamage * (explosionRadius - it.location.distance(targetedBlock.location) / explosionRadius), explosiveCow)
+							it.damage(explosionDamage * (explosionDamageRadius - it.location.distance(explosiveCow.location)) / explosionDamageRadius, explosiveCow)
+						}
+						if (!explosiveCow.isDead) {
+							(explosiveCow as LivingEntity).damage(explosionDamage)
 						}
 						setChestFlag(chest, "locked", ByteTag.valueOf(false))
 						event.player.userError("You were tipped by the Explosive Cow!")
@@ -479,21 +486,20 @@ object Encounters {
 				event.player.alert("Timed bomb activated! Loot the wreck and get out in $timeLimit seconds before the explosion!")
 				runnable {
 					if (iteration % 5 == 0) {
-						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_HARP, 5.0f, 2.0f)
+						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
 					}
 					if (iteration >= timeLimit * 20 - 100) {
-						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_HARP, 5.0f, 2.0f)
+						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
 					}
 					if (timeLimit * 20 == iteration) {
 						val explosionRadius = 10.0 // For spawning actual explosions
-						val explosionDamage = 30.0
+						val explosionDamage = 50.0
 						val explosionDamageRadius = 20.0 // For entity damage calculation
 						targetedBlock.location.spherePoints(explosionRadius, 10).forEach {
 							it.createExplosion(10.0f)
 						}
 						targetedBlock.location.getNearbyLivingEntities(explosionDamageRadius).forEach {
-							if (it.location.distance(targetedBlock.location) == 0.0) it.damage(explosionDamage)
-							else it.damage(explosionDamage * (explosionDamageRadius - it.location.distance(targetedBlock.location)) / explosionDamageRadius)
+							it.damage(explosionDamage * (explosionDamageRadius - it.location.distance(targetedBlock.location)) / explosionDamageRadius)
 						}
 						cancel()
 					}
