@@ -301,8 +301,6 @@ class SpaceGenerator(
 				val compound = (section as CompoundTag).getCompound("block_states")
 				val levelChunkSection = levelChunk.sections[section.getByte("y").toInt()]
 
-				println(NbtUtils.structureToSnbt(section))
-
 				val blocks: IntArray = compound.getIntArray("data")
 				val paletteList = compound.getList("palette", 10)
 
