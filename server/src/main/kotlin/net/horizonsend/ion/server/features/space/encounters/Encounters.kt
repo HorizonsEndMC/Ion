@@ -29,12 +29,14 @@ import org.bukkit.Particle
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
+import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Chest
 import org.bukkit.block.data.FaceAttachable
 import org.bukkit.block.data.type.Switch
+import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.EntityType.COW
+import org.bukkit.entity.EntityType.ENDERMITE
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -260,15 +262,15 @@ object Encounters {
 				val surroundingBlocks = getBlocks(world, chestPos, 8.0)
 
 				fun checkAir(block: Block): Boolean {
-					val up1 = block.getRelative(BlockFace.UP)
-					val up2 = up1.getRelative(BlockFace.UP)
+					val up1 = block.getRelative(UP)
+					val up2 = up1.getRelative(UP)
 
 					return up1.isEmpty && up2.isEmpty
 				}
 
 				val leverOn = surroundingBlocks.filter { checkAir(it) && it.isSolid }.random()
 				leverOn.type = Material.REINFORCED_DEEPSLATE
-				val leverBlock = leverOn.getRelative(BlockFace.UP)
+				val leverBlock = leverOn.getRelative(UP)
 
 				val blockData = (Material.LEVER.createBlockData() as Switch)
 				blockData.attachedFace = FaceAttachable.AttachedFace.FLOOR
@@ -467,6 +469,62 @@ object Encounters {
 		}
 	)
 
+	@Suppress("Unused")
+	val INFESTED = register(
+		object : Encounter(identifier = "INFESTED") {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
+				TODO("Not yet implemented")
+			}
+
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				val targetedBlock = event.clickedBlock!!
+
+				event.isCancelled = true
+				val chest = (targetedBlock.state as? Chest) ?: return
+
+				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true)) {
+					event.player.userError("You must dispatch the Endermites before opening the chest!")
+					return
+				}
+
+				setChestFlag(chest, "locked", ByteTag.valueOf(true))
+
+				val endermites = mutableListOf<Entity>()
+				for (i in 0..4) {
+					val endermite = targetedBlock.location.world.spawnEntity(targetedBlock.getRelative(UP).location, ENDERMITE)
+					endermites.add(endermite)
+				}
+
+				val timeLimit = 20 // seconds
+				var iteration = 0 // ticks
+				event.player.alert("Seems like this chest is infested with Endermites! Eliminate the pests in $timeLimit seconds!")
+
+				runnable {
+					if (endermites.all { it.isDead } ) {
+						setChestFlag(chest, "locked", ByteTag.valueOf(false))
+						setChestFlag(chest, "inactive", ByteTag.valueOf(true))
+						event.player.information("The chest was unlocked.")
+						cancel()
+					}
+					if (timeLimit * 20 == iteration || event.player.isDead) {
+						endermites.forEach { it.remove() }
+						setChestFlag(chest, "locked", ByteTag.valueOf(false))
+						event.player.userError("You could not remove the infestation! The Endermites have returned to the chest.")
+						cancel()
+					}
+					iteration++
+				}.runTaskTimer(IonServer, 0L, 1L)
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
+		}
+	)
 
 	@Suppress("Unused")
 	val TIMED_BOMB = register(
