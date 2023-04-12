@@ -5,18 +5,20 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.getFacing
 import org.bukkit.Material
 import org.bukkit.Material.matchMaterial
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.lang.Integer.min
 
-abstract class AmmoPressMultiblock : PowerStoringMultiblock(), FurnaceMultiblock {
+abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
@@ -169,5 +171,9 @@ abstract class AmmoPressMultiblock : PowerStoringMultiblock(), FurnaceMultiblock
 		fuelCustomItem.setAmmunition(fuel, furnace.inventory, fuelCustomItem.getAmmunition(fuel) + ammoToSet)
 		inventory.removeItemAnySlot(ItemStack(typeRefill))
 		PowerMachines.removePower(sign, 250)
+	}
+
+	override fun onTransformSign(player: Player, sign: Sign) {
+		super<PowerStoringMultiblock>.onTransformSign(player, sign)
 	}
 }
