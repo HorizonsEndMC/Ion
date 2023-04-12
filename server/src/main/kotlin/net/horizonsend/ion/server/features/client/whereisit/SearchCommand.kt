@@ -65,7 +65,7 @@ class SearchCommand : BaseCommand() {
 		}
 
 		for (pos in res.keys) {
-			highlightBlock(player, pos)
+			highlightBlock(player, pos, 10 * 20)
 		}
 
 		player.sendRichMessage(

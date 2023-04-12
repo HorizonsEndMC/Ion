@@ -54,7 +54,7 @@ fun runnable(e: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunn
 fun <T : LivingEntity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
 	this.spawnEntity(location, type) as T
 
-fun highlightBlock(bukkitPlayer: Player, pos: BlockPos) {
+fun highlightBlock(bukkitPlayer: Player, pos: BlockPos, duration: Long) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
 	val shulker =
@@ -67,7 +67,7 @@ fun highlightBlock(bukkitPlayer: Player, pos: BlockPos) {
 	conn.send(ClientboundAddEntityPacket(shulker))
 	shulker.entityData.refresh(player)
 
-	Tasks.syncDelayTask(10 * 20) { conn.send(ClientboundRemoveEntitiesPacket(shulker.id)) }
+	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(shulker.id)) }
 }
 
 fun repeatString(string: String, count: Int): String {
