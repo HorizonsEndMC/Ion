@@ -41,7 +41,7 @@ dependencies {
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("io.github.config4k:config4k:0.5.0")
 	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
-	implementation("org.litote.kmongo:kmongo:4.8.0")
+	implementation("org.litote.kmongo:kmongo:4.9.0")
 }
 
 tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }
