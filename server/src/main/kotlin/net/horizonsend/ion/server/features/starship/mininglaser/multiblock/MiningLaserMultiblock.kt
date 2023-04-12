@@ -45,8 +45,6 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 		}
 	}
 
-	override val inputComputerOffset = Vec3i(0, -1, 0)
-
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super<PowerStoringMultiblock>.onTransformSign(player, sign)
 	}

@@ -15,7 +15,6 @@ sealed class MiningLaserMultiblockTier3 : MiningLaserMultiblock() {
 		Component.text("")
 	)
 
-	override val inputComputerOffset = Vec3i(0, -1, 0)
 	override val maxPower: Int = 500000
 	override val beamOrigin = Triple(0, 3, 1)
 	override val range: Double = 150.0

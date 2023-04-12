@@ -7,7 +7,6 @@ import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
 import org.bukkit.Effect
@@ -22,7 +21,6 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 	PowerStoringMultiblock,
 	FurnaceMultiblock {
 	abstract val speed: Double
-	override val inputComputerOffset = Vec3i(0, -1, 0)
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super<PowerStoringMultiblock>.onTransformSign(player, sign)
