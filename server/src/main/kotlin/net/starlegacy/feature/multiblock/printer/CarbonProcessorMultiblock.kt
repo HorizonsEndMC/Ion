@@ -6,7 +6,6 @@ import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.LegacyItemUtils
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isConcretePowder
 import org.bukkit.Material
@@ -22,8 +21,6 @@ import org.bukkit.inventory.ItemStack
 object CarbonProcessorMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val maxPower: Int = 30000
 	override val name = "processor"
-
-	override val inputComputerOffset = Vec3i(0, -1, 0)
 
 	override val signText = createSignText(
 		line1 = "&3Carbon",

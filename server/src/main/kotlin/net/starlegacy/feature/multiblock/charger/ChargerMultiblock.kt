@@ -9,7 +9,6 @@ import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.util.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -20,8 +19,6 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 	protected abstract val tierMaterial: Material
 
 	protected abstract val powerPerSecond: Int
-
-	override val inputComputerOffset = Vec3i(0, -1, 0)
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super<PowerStoringMultiblock>.onTransformSign(player, sign)

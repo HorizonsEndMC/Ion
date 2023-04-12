@@ -7,7 +7,6 @@ import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.leftFace
 import org.bukkit.Material
@@ -32,8 +31,6 @@ object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultibl
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super<PowerStoringMultiblock>.onTransformSign(player, sign)
 	}
-
-	override val inputComputerOffset: Vec3i = Vec3i(0, -1, 0)
 
 	override val maxPower: Int = 150_000
 

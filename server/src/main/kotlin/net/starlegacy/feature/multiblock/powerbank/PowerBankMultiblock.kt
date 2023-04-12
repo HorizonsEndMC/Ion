@@ -3,14 +3,12 @@ package net.starlegacy.feature.multiblock.powerbank
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.util.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), PowerStoringMultiblock {
 	abstract val tierMaterial: Material
-	override val inputComputerOffset = Vec3i(0, -1, 0)
 	override val name = "powerbank"
 
 	override val signText = createSignText(
