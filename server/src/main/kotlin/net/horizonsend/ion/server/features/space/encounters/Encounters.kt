@@ -42,7 +42,9 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
 import java.io.DataOutputStream
 import kotlin.math.ceil
 
@@ -618,6 +620,21 @@ object Encounters {
 			PersistentDataType.BYTE_ARRAY,
 			byteArray.toByteArray()
 		)
+	}
+
+	fun getChunkEncounters(chunk: Chunk): CompoundTag? {
+		val pdc = chunk.persistentDataContainer.get(
+			NamespacedKeys.WRECK_ENCOUNTER_DATA,
+			PersistentDataType.BYTE_ARRAY
+		) ?: return null
+
+		val bos = ByteArrayInputStream(
+			pdc,
+			0,
+			pdc.size
+		)
+
+		return NbtIo.read(DataInputStream(bos))
 	}
 
 	fun getChestFlag(chest: Chest, key: String) : Tag? {
