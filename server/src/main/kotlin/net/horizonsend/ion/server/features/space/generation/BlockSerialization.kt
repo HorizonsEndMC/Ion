@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.space.generation
 
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.IntArrayTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtUtils
@@ -10,7 +11,9 @@ import org.bukkit.Chunk
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
+import java.io.DataOutputStream
 
 object BlockSerialization {
 	val AIR: CompoundTag = NbtUtils.writeBlockState(Blocks.AIR.defaultBlockState())
@@ -38,6 +41,19 @@ object BlockSerialization {
 		}
 	}
 
+	fun setChunkCompoundTag(chunk: Chunk, key: NamespacedKey, data: CompoundTag) {
+		val bos = ByteArrayOutputStream()
+		val dataStream = DataOutputStream(bos)
+
+		NbtIo.write(data, dataStream)
+
+		chunk.persistentDataContainer.set(
+			key,
+			PersistentDataType.BYTE_ARRAY,
+			bos.toByteArray()
+		)
+	}
+
 	fun formatChunk(sections: ListTag, version: Byte): CompoundTag {
 		val chunkCompoundTag = CompoundTag()
 
@@ -49,14 +65,15 @@ object BlockSerialization {
 
 	fun formatSection(sectionY: Int, blocks: IntArray, palette: ListTag): CompoundTag {
 		val section = CompoundTag()
-		section.putInt("y", sectionY)
-		section.putIntArray("blocks", blocks.toList())
-		section.put("palette", palette)
 
-		println("formatSection")
-		println(NbtUtils.structureToSnbt(section))
-		println(blocks.contains(1))
-		println(section.getIntArray("blocks").contains(1))
+		val x = IntArrayTag(blocks)
+
+		val blockStates = CompoundTag()
+		blockStates.put("palette", palette)
+		blockStates.put("data", x)
+
+		section.put("block_states", blockStates)
+		section.putInt("y", sectionY)
 
 		return section
 	}
@@ -74,16 +91,19 @@ object BlockSerialization {
 	 *
 	 * Where there are conflicts, the second will be preferred.
 	 **/
-	fun combineSerializedSections(original: CompoundTag, new: CompoundTag): CompoundTag {
-//		println("original: ${NbtUtils.structureToSnbt(original)}")
-//		println("new: ${NbtUtils.structureToSnbt(new)}")
+	fun combineSerializedSections(sectionY: Int, original: CompoundTag, new: CompoundTag): CompoundTag {
+		val firstStates = original.getCompound("block_states")
+		val secondStates = new.getCompound("block_states")
 
-		val firstArray: IntArray = original.getIntArray("blocks")
-		val secondArray: IntArray = new.getIntArray("blocks")
-		val sectionY = new.getByte("y").toInt()
+		val firstArray: IntArray = firstStates.getIntArray("data")
+		val secondArray: IntArray = secondStates.getIntArray("data")
 
-		val firstPalette = original.getList("palette", 10)
-		val secondPalette = new.getList("palette", 10)
+
+		val firstPalette = firstStates.getList("palette", 10)
+		val secondPalette = secondStates.getList("palette", 10)
+
+		if (firstArray.isEmpty() || firstPalette.isEmpty()) return new
+		if (secondArray.isEmpty() || secondPalette.isEmpty()) return original
 
 		val combinedPalette = ListTag()
 		combinedPalette.add(secondPalette[0])
@@ -99,34 +119,30 @@ object BlockSerialization {
 
 		fun pick(index: Int): CompoundTag {
 			val firstPaletteIndex = firstArray[index]
-			val firstBlock = firstPalette[firstPaletteIndex] as CompoundTag
 			val secondPaletteIndex = secondArray[index]
 
-			if (firstPaletteIndex == 0 && secondPaletteIndex == 0) return firstBlock
-
 			val secondBlock = secondPalette[secondPaletteIndex] as CompoundTag
+			val firstBlock = firstPalette[firstPaletteIndex] as CompoundTag
 
-			val picked = compare(firstBlock, secondBlock)
+			if (firstPaletteIndex == 0 && secondPaletteIndex == 0) return firstBlock
+			if (firstPaletteIndex == 0) return secondBlock
+			if (secondPaletteIndex == 0) return firstBlock
 
-			if (!combinedPalette.contains(picked)) {
-				combinedPalette.add(picked)
-			}
-
-			return picked
+			return compare(firstBlock, secondBlock)
 		}
 
 		for (index in 0 until 4096) {
 			val block = pick(index)
 
+			val blockIndex = if (!block.isAir()) {
+				if (!combinedPalette.contains(block)) {
+					combinedPalette.add(block)
+					combinedPalette.lastIndex
+				} else combinedPalette.indexOf(block)
+			} else 0
 
-
-			secondArray[index] = combinedPalette.indexOf(block)
+			combinedArray[index] = blockIndex
 		}
-//		println("combined: ${formatSection(
-//			sectionY,
-//			combinedArray,
-//			combinedPalette
-//		)}")
 
 		return formatSection(
 			sectionY,
