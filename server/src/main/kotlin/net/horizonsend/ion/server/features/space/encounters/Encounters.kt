@@ -27,6 +27,7 @@ import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_COW_BELL
 import org.bukkit.Particle
+import org.bukkit.Sound.BLOCK_FIRE_EXTINGUISH
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -217,28 +218,6 @@ object Encounters {
 
 	@Suppress("Unused")
 	val COOLANT_LEAK = register(object : Encounter(identifier = "COOLANT_LEAK") {
-			fun getBlocks(world: World, origin: BlockPos, radius: Double): List<Block> {
-				val radiusSquared = radius * radius
-
-				val blocks = mutableListOf<Block>()
-
-				for (x in (origin.x - ceil(radius).toInt())..(origin.x + ceil(radius).toInt())) {
-					val xSquared = (x - origin.x) * (x - origin.x)
-
-					for (y in (origin.y - ceil(radius).toInt())..(origin.y + ceil(radius).toInt())) {
-						val ySquared = (y - origin.y) * (y - origin.y)
-						for (z in (origin.z - ceil(radius).toInt())..(origin.z + ceil(radius).toInt())) {
-							val zSquared = (z - origin.z) * (z - origin.z)
-
-							if (xSquared + ySquared + zSquared > radiusSquared) continue
-
-							blocks += world.getBlockAt(x, y, z)
-						}
-					}
-				}
-
-				return blocks
-			}
 
 			fun getLever(chest: Chest): BlockPos? {
 				val wreckData = readChunkCompoundTag(chest.chunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return null
@@ -334,17 +313,24 @@ object Encounters {
 
 				var attempts = 0
 
+				event.player.alert("The chest triggered a coolant leak! Find the lever to stop the leak!")
+				targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_FIRE_EXTINGUISH, 5.0f, 0.0f)
+
 				leverPos?.let {
 					runnable {
 						val currentSize = iteration * BLOCKS_PER_ITERATION
 
-						if (attempts > 500) cancel()
+						if (attempts > 500) {
+							event.player.userError("Coolant leak expired.")
+							cancel()
+						}
 						attempts++
 
 						val leverState = chest.world.getBlockAt(leverPos.x, leverPos.y, leverPos.z).state
 						if ((leverState.blockData as Switch).isPowered) {
 							setChestFlag(chest, "locked", ByteTag.valueOf(false))
 							setChestFlag(chest, "inactive", ByteTag.valueOf(true))
+							event.player.information("The chest was unlocked.")
 							cancel()
 						}
 
@@ -744,6 +730,29 @@ object Encounters {
 		wreckData.put("Wrecks", existingWrecks)
 
 		setChunkEncounters(chest.chunk, wreckData)
+	}
+
+	fun getBlocks(world: World, origin: BlockPos, radius: Double): List<Block> {
+		val radiusSquared = radius * radius
+
+		val blocks = mutableListOf<Block>()
+
+		for (x in (origin.x - ceil(radius).toInt())..(origin.x + ceil(radius).toInt())) {
+			val xSquared = (x - origin.x) * (x - origin.x)
+
+			for (y in (origin.y - ceil(radius).toInt())..(origin.y + ceil(radius).toInt())) {
+				val ySquared = (y - origin.y) * (y - origin.y)
+				for (z in (origin.z - ceil(radius).toInt())..(origin.z + ceil(radius).toInt())) {
+					val zSquared = (z - origin.z) * (z - origin.z)
+
+					if (xSquared + ySquared + zSquared > radiusSquared) continue
+
+					blocks += world.getBlockAt(x, y, z)
+				}
+			}
+		}
+
+		return blocks
 	}
 
 	fun encounterMatchesChest(wreck: CompoundTag, chest: Chest): Boolean = (
