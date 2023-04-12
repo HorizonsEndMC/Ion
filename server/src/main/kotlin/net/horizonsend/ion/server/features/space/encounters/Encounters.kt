@@ -578,6 +578,69 @@ object Encounters {
 		}
 	)
 
+	@Suppress("Unused")
+	val DEFUSE_BOMB = register(
+		object : Encounter(identifier = "DEFUSE_BOMB") {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
+				TODO("Not yet implemented")
+			}
+
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				val targetedBlock = event.clickedBlock!!
+
+				event.isCancelled = true
+				val chest = (targetedBlock.state as? Chest) ?: return
+
+				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true)) {
+					event.player.userError("You must dispatch the Endermites before opening the chest!")
+					return
+				}
+
+				setChestFlag(chest, "locked", ByteTag.valueOf(true))
+
+				val timeLimit = 60 // seconds
+				var iteration = 0 // ticks
+				event.player.alert("Defusable bomb activated! Press the buttons in the correct order within $timeLimit seconds!")
+				runnable {
+					if (iteration % 20 == 0) {
+						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
+					}
+					if (iteration >= timeLimit * 20 - 200 && iteration % 5 == 0) { // 10 seconds left
+						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
+					}
+					if (iteration >= timeLimit * 20 - 100) { // 5 seconds left
+						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
+					}
+					if (timeLimit * 20 == iteration) {
+						val explosionRadius = 15.0 // For spawning actual explosions
+						val explosionDamage = 50.0
+						val explosionDamageRadius = 30.0 // For entity damage calculation
+						targetedBlock.location.spherePoints(explosionRadius / 2, 10).forEach {
+							it.createExplosion(10.0f)
+						}
+						targetedBlock.location.spherePoints(explosionRadius, 20).forEach {
+							it.createExplosion(15.0f)
+						}
+						targetedBlock.location.getNearbyLivingEntities(explosionDamageRadius).forEach {
+							it.damage(explosionDamage * (explosionDamageRadius - it.location.distance(targetedBlock.location)) / explosionDamageRadius)
+						}
+						setChestFlag(chest, "locked", ByteTag.valueOf(false))
+						cancel()
+					}
+					iteration++
+				}.runTaskTimer(IonServer, 0L, 1L)
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
+		}
+	)
+
 	private fun <T : Encounter> register(encounter: T): T {
 		encounters[encounter.identifier] = encounter
 		return encounter
