@@ -8,7 +8,6 @@ import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isShulkerBox
 import net.starlegacy.util.leftFace
@@ -32,7 +31,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	Multiblock(),
 	PowerStoringMultiblock,
 	FurnaceMultiblock {
-	override val inputComputerOffset = Vec3i(0, -1, 0)
 
 	companion object {
 		private val DISABLED = ChatColor.RED.toString() + "[DISABLED]"
