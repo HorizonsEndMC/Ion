@@ -41,7 +41,7 @@ class CustomItemListeners : Listener {
 	@Suppress("Unused")
 	fun onEntityShootBow(event: EntityShootBowEvent) {
 		val entity = event.entity as? LivingEntity ?: return
-		val offhand = entity.equipment?.itemInOffHand ?: return
+		val offhand = entity.equipment?.itemInMainHand ?: return
 
 		val customItem = offhand.customItem ?: return
 

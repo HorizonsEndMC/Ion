@@ -4,14 +4,20 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization.readChunkCompoundTag
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
@@ -24,7 +30,9 @@ import net.starlegacy.util.nms
 import net.starlegacy.util.spherePoints
 import net.starlegacy.util.toBlockPos
 import net.starlegacy.util.toLocation
+import net.starlegacy.util.updateMeta
 import org.bukkit.Chunk
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Material.BLUE_GLAZED_TERRACOTTA
 import org.bukkit.Material.CHEST
@@ -50,7 +58,9 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.EntityType.COW
 import org.bukkit.entity.EntityType.ENDERMITE
+import org.bukkit.entity.EntityType.SKELETON
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Skeleton
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -63,13 +73,11 @@ import kotlin.math.ceil
 object Encounters {
 	private val encounters: MutableMap<String, Encounter> = mutableMapOf()
 
-	// TODO, test encounter. Will spawn enemies when you open the chest
+	// test encounter. Will spawn enemies when you open the chest
 	@Suppress("Unused")
 	val ITS_A_TRAP = register(
 		object : Encounter(identifier = "ITS_A_TRAP") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
-				TODO("Not yet implemented")
-			}
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
@@ -472,9 +480,7 @@ object Encounters {
 	@Suppress("Unused")
 	val INFESTED = register(
 		object : Encounter(identifier = "INFESTED") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
-				TODO("Not yet implemented")
-			}
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
@@ -529,9 +535,7 @@ object Encounters {
 	@Suppress("Unused")
 	val TIMED_BOMB = register(
 		object : Encounter(identifier = "TIMED_BOMB") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
-				TODO("Not yet implemented")
-			}
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
@@ -587,9 +591,7 @@ object Encounters {
 				MAGENTA_GLAZED_TERRACOTTA to "<#d460cf>Magenta Arrow"
 			)
 
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
-				TODO("Not yet implemented")
-			}
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
@@ -719,6 +721,110 @@ object Encounters {
 
 				tileEntityData.putString("id", "minecraft:chest")
 				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
+		}
+	)
+
+	@Suppress("Unused")
+	val DEFENSE_BOTS = register(
+		object : Encounter(identifier = "DEFENSE_BOTS") {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
+
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				val targetedBlock = event.clickedBlock!!
+				val chest = (targetedBlock.state as? Chest) ?: return
+
+				val keyCode = targetedBlock.location.toBlockPos().hashCode()
+					.toString().toList().chunked(4).map { chars ->
+						chars.joinToString().filter { it.isDigit() }.toInt().toChar()
+				}.joinToString()
+
+				if ((event.item?.lore()?.get(0) as? TextComponent)?.content() == keyCode) {
+					event.player.success("The key card unlocked the chest!")
+
+					setChestFlag(chest, "locked", ByteTag.valueOf(false))
+					setChestFlag(chest, "inactive", ByteTag.valueOf(true))
+					return
+				}
+
+				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true)) {
+					event.isCancelled = true
+					event.player.alert("The chest was still locked! More security droids have appeared!")
+				} else {
+					// Not a success condition, just if it hasn't been set yet
+					setChestFlag(chest, "locked", ByteTag.valueOf(true))
+
+					event.player.alert("The disturbance you caused has activated ancient security droids!")
+					event.player.hint("Maybe one of them still has a card to open this chest...")
+				}
+
+				val blocks = getBlocks(chest.world, chest.location.toBlockPos(), 10.0) { checkAir(it) && it.isSolid}
+				val firstFour = blocks.shuffled().subList(0, 3)
+
+				for (block in firstFour) {
+					val blockAboveLoc = block.location.add(Location(chest.world, 0.0, 1.0, 0.0)).toCenterLocation()
+
+					chest.world.castSpawnEntity<Skeleton>(blockAboveLoc, SKELETON).apply {
+						this.equipment.itemInMainHandDropChance = 0.0f
+						this.equipment.itemInOffHandDropChance = 1.0f
+
+						val weirdPistol = PISTOL.constructItemStack()
+						weirdPistol.type = Material.BOW
+						weirdPistol.updateMeta {
+							it.displayName(
+								text("Rusty Blaster Pistol").color(TextColor.fromHexString("#802716"))
+									.decoration(TextDecoration.ITALIC, false)
+									.decoration(TextDecoration.BOLD, false)
+							)
+						}
+
+						val keyCard = ItemStack(Material.PAPER).updateMeta {
+							it.displayName(
+								text("Key Card").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE)
+							)
+							it.lore(
+								listOf(text(keyCode).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.AQUA))
+							)
+						}
+
+						this.equipment.setItemInOffHand(keyCard)
+						this.equipment.setItemInMainHand(weirdPistol)
+						this.customName(text("Security Droid").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
+						this.isCustomNameVisible = true
+						this.isSilent = true
+						this.isPersistent = false
+					}
+				}
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "horizonsend:chests/guns")
+				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			}
+		}
+	)
+
+	@Suppress("Unused")
+	val DEFENSE_MATRIX = register(
+		object : Encounter(identifier = "DEFENSE_MATRIX") {
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
+
+			override fun onChestInteract(event: PlayerInteractEvent) {
+				val targetedBlock = event.clickedBlock!!
+
+				event.isCancelled = true
+				val chest = (targetedBlock.state as? Chest) ?: return
+			}
+
+			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
+				val tileEntityData = CompoundTag()
+
+				tileEntityData.putString("id", "minecraft:chest")
+				tileEntityData.putString("LootTable", "horizonsend:chests/guns")
 				return Blocks.CHEST.defaultBlockState() to tileEntityData
 			}
 		}
@@ -888,7 +994,13 @@ abstract class Encounter(
 }
 
 enum class SecondaryChests(val blockState: BlockState, val NBT: CompoundTag?, val money: Int?) {
-	REPAIR_MATERIALS(Blocks.CHEST.defaultBlockState(), null, 500),
+	REPAIR_MATERIALS(
+		Blocks.CHEST.defaultBlockState(),
+		CompoundTag().apply {
+			this.putString("id", "minecraft:chest")
+			this.putString("LootTable", "horizonsend:chests/starship_resource")
+		},
+		500),
 	FOOD(Blocks.CHEST.defaultBlockState(), null, 500),
 	GUN_PARTS(Blocks.CHEST.defaultBlockState(), null, 500),
 	POWER_ARMOR_MODS(Blocks.CHEST.defaultBlockState(), null, 500),
