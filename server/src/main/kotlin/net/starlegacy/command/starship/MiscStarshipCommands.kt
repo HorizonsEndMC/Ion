@@ -19,7 +19,6 @@ import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
-import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
 import net.starlegacy.feature.starship.StarshipDestruction
@@ -461,7 +460,7 @@ object MiscStarshipCommands : SLCommand() {
 		val ship = getStarshipRiding(sender) as? ActivePlayerStarship ?: return
 
 		if (ship.beacon != null) {
-			val other = ship.beacon!!.destination
+			val other = ship.beacon!!.exits?.randomOrNull() ?: ship.beacon!!.destination
 			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender, null)
 			ship.beacon = null
 		} else {
