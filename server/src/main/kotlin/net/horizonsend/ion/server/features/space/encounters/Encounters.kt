@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
@@ -25,12 +26,22 @@ import net.starlegacy.util.toBlockPos
 import net.starlegacy.util.toLocation
 import org.bukkit.Chunk
 import org.bukkit.Material
+import org.bukkit.Material.BLUE_GLAZED_TERRACOTTA
+import org.bukkit.Material.CHEST
+import org.bukkit.Material.MAGENTA_GLAZED_TERRACOTTA
+import org.bukkit.Material.ORANGE_GLAZED_TERRACOTTA
+import org.bukkit.Material.RED_GLAZED_TERRACOTTA
+import org.bukkit.Material.REINFORCED_DEEPSLATE
+import org.bukkit.Material.STONE_BUTTON
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_COW_BELL
 import org.bukkit.Particle
 import org.bukkit.Sound.BLOCK_FIRE_EXTINGUISH
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL
+import org.bukkit.Sound.ENTITY_WARDEN_SONIC_CHARGE
+import org.bukkit.Sound.ITEM_FLINTANDSTEEL_USE
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Chest
 import org.bukkit.block.data.FaceAttachable
@@ -243,15 +254,8 @@ object Encounters {
 				val chestPos = BlockPos(chestX, chestY, chestZ)
 				val surroundingBlocks = getBlocks(world, chestPos, 8.0)
 
-				fun checkAir(block: Block): Boolean {
-					val up1 = block.getRelative(UP)
-					val up2 = up1.getRelative(UP)
-
-					return up1.isEmpty && up2.isEmpty
-				}
-
 				val leverOn = surroundingBlocks.filter { checkAir(it) && it.isSolid }.random()
-				leverOn.type = Material.REINFORCED_DEEPSLATE
+				leverOn.type = REINFORCED_DEEPSLATE
 				val leverBlock = leverOn.getRelative(UP)
 
 				val blockData = (Material.LEVER.createBlockData() as Switch)
@@ -342,7 +346,7 @@ object Encounters {
 						)) {
 							if (block.isEmpty) continue
 							if (!block.isSolid) continue
-							if (block.type == Material.CHEST) continue
+							if (block.type == CHEST) continue
 							if (iceTypes.contains(block.type)) continue
 
 							block.type = iceTypes.random()
@@ -568,6 +572,15 @@ object Encounters {
 	@Suppress("Unused")
 	val DEFUSE_BOMB = register(
 		object : Encounter(identifier = "DEFUSE_BOMB") {
+
+			val validColors = listOf(ORANGE_GLAZED_TERRACOTTA, BLUE_GLAZED_TERRACOTTA, RED_GLAZED_TERRACOTTA, MAGENTA_GLAZED_TERRACOTTA)
+			val displayColorMap = mapOf(
+				ORANGE_GLAZED_TERRACOTTA to "<#eb9111>Orange Stripes",
+				BLUE_GLAZED_TERRACOTTA to "<#3c44aa>Blue Gem",
+				RED_GLAZED_TERRACOTTA to "<#b82f27>Red Swirl",
+				MAGENTA_GLAZED_TERRACOTTA to "<#d460cf>Magenta Arrow"
+			)
+
 			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
 				TODO("Not yet implemented")
 			}
@@ -579,7 +592,7 @@ object Encounters {
 				val chest = (targetedBlock.state as? Chest) ?: return
 
 				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true)) {
-					event.player.userError("You must dispatch the Endermites before opening the chest!")
+					event.player.userError("You must defuse the bomb before opening the chest!")
 					return
 				}
 
@@ -588,31 +601,105 @@ object Encounters {
 				val timeLimit = 60 // seconds
 				var iteration = 0 // ticks
 				event.player.alert("Defusable bomb activated! Press the buttons in the correct order within $timeLimit seconds!")
+
+				val surroundingBlocks = getBlocks(chest.world, chest.location.toBlockPos(), 10.0)
+				val buttonList = mutableListOf<Block>()
+
+				// Button placer
+				for (color in validColors) {
+					val buttonOn = surroundingBlocks.filter { checkAir(it) && it.isSolid && it.type != CHEST && it.type !in validColors }.random()
+					buttonOn.type = color
+					val buttonBlock = buttonOn.getRelative(UP)
+
+					val blockData = (STONE_BUTTON.createBlockData() as Switch)
+					blockData.attachedFace = FaceAttachable.AttachedFace.FLOOR
+
+					buttonBlock.blockData = blockData
+					buttonList.add(buttonBlock)
+					highlightBlock(event.player, buttonOn.location.toBlockPos(), (timeLimit * 20).toLong())
+				}
+
+				val correctOrder = validColors.shuffled()
+				val selected = mutableListOf<Material>()
+				var failed = false
+				event.player.information(
+					"Search for colored buttons in the wreck and press them in the right order:\n" +
+							"  <gray>1: ${displayColorMap[correctOrder[0]]}\n" +
+							"  <gray>2: ${displayColorMap[correctOrder[1]]}\n" +
+							"  <gray>3: ${displayColorMap[correctOrder[2]]}\n" +
+							"  <gray>4: ${displayColorMap[correctOrder[3]]}"
+				)
+				event.player.information("Do not attempt to break the buttons!")
+
 				runnable {
+					// timer sounds
 					if (iteration % 20 == 0) {
 						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
 					}
-					if (iteration >= timeLimit * 20 - 200 && iteration % 5 == 0) { // 10 seconds left
+					if (iteration >= timeLimit * 20 - 300 && iteration % 5 == 0) { // 15 seconds left
 						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
 					}
 					if (iteration >= timeLimit * 20 - 100) { // 5 seconds left
 						targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
 					}
+
+					// explosion
 					if (timeLimit * 20 == iteration) {
 						val explosionRadius = 15.0 // For spawning actual explosions
-						val explosionDamage = 50.0
+						val explosionDamage = 100.0
 						val explosionDamageRadius = 30.0 // For entity damage calculation
 						targetedBlock.location.spherePoints(explosionRadius / 2, 10).forEach {
-							it.createExplosion(10.0f)
+							it.createExplosion(10.0f) // inner explosion
 						}
 						targetedBlock.location.spherePoints(explosionRadius, 20).forEach {
-							it.createExplosion(15.0f)
+							it.createExplosion(15.0f) // outer explosion
 						}
 						targetedBlock.location.getNearbyLivingEntities(explosionDamageRadius).forEach {
 							it.damage(explosionDamage * (explosionDamageRadius - it.location.distance(targetedBlock.location)) / explosionDamageRadius)
 						}
 						setChestFlag(chest, "locked", ByteTag.valueOf(false))
+						event.player.userError("You failed to defuse the bomb!")
+						failed = true
 						cancel()
+					}
+
+					if (!failed) {
+						// button logic
+						buttonList.forEach { button ->
+							if (button.type != STONE_BUTTON) {
+								iteration = (timeLimit - 1) * 20
+								chest.location.world.playSound(chest.location, ENTITY_WARDEN_SONIC_CHARGE, 10.0f, 1.0f)
+								event.player.userError("You tampered with the bomb's disarming mechanism!")
+								failed = true
+								return@forEach
+							}
+							val buttonData = button.blockData as Switch
+							if (buttonData.isPowered) {
+								buttonData.isPowered = false
+								selected.add(button.getRelative(DOWN).type)
+								button.location.world.playSound(button.location, ITEM_FLINTANDSTEEL_USE, 5.0f, 1.0f)
+								event.player.hint("The bomb mechanism clicks...")
+							}
+							button.blockData = buttonData
+						}
+
+						// failure
+						if (selected.isNotEmpty() && (selected.size > correctOrder.size || selected.last() != correctOrder[selected.size - 1])
+						) {
+							iteration = (timeLimit - 1) * 20
+							chest.location.world.playSound(chest.location, ENTITY_WARDEN_SONIC_CHARGE, 10.0f, 1.0f)
+							event.player.userError("You pressed the button in the wrong order!")
+							failed = true
+						}
+
+						// success
+						if (selected == correctOrder) {
+							setChestFlag(chest, "locked", ByteTag.valueOf(false))
+							setChestFlag(chest, "inactive", ByteTag.valueOf(true))
+							event.player.information("The chest was unlocked.")
+							chest.location.world.playSound(chest.location, BLOCK_FIRE_EXTINGUISH, 5.0f, 0.0f)
+							cancel()
+						}
 					}
 					iteration++
 				}.runTaskTimer(IonServer, 0L, 1L)
@@ -756,10 +843,17 @@ object Encounters {
 		return blocks
 	}
 
+	fun checkAir(block: Block): Boolean {
+		val up1 = block.getRelative(UP)
+		val up2 = up1.getRelative(UP)
+
+		return up1.isEmpty && up2.isEmpty
+	}
+
 	fun encounterMatchesChest(wreck: CompoundTag, chest: Chest): Boolean = (
 			wreck.getInt("x") == chest.x &&
-			wreck.getInt("y") == chest.y &&
-			wreck.getInt("z") == chest.z)
+					wreck.getInt("y") == chest.y &&
+					wreck.getInt("z") == chest.z)
 }
 
 /**
@@ -774,7 +868,7 @@ abstract class Encounter(
 	val identifier: String
 ) {
 	open fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		return Material.CHEST.createBlockData().nms to null
+		return CHEST.createBlockData().nms to null
 	}
 
 	open fun onChestInteract(event: PlayerInteractEvent) {}
