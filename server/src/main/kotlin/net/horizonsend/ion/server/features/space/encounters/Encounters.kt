@@ -229,7 +229,6 @@ object Encounters {
 
 	@Suppress("Unused")
 	val COOLANT_LEAK = register(object : Encounter(identifier = "COOLANT_LEAK") {
-
 			fun getLever(chest: Chest): BlockPos? {
 				val wreckData = readChunkCompoundTag(chest.chunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return null
 
@@ -250,9 +249,19 @@ object Encounters {
 				)
 			}
 
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
-				val chestPos = BlockPos(chestX, chestY, chestZ)
-				val surroundingBlocks = getBlocks(world, chestPos, 8.0)
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
+
+			fun placeLever(chest: Chest) {
+				val chestPos = BlockPos(chest.x, chest.y, chest.z)
+
+				fun checkAir(block: Block): Boolean {
+					val up1 = block.getRelative(UP)
+					val up2 = up1.getRelative(UP)
+
+					return up1.isEmpty && up2.isEmpty
+				}
+
+				val surroundingBlocks = getBlocks(chest.world, chestPos, 8.0) { checkAir(it) && it.isSolid }
 
 				val leverOn = surroundingBlocks.filter { checkAir(it) && it.isSolid }.random()
 				leverOn.type = REINFORCED_DEEPSLATE
@@ -263,7 +272,7 @@ object Encounters {
 
 				leverBlock.blockData = blockData
 
-				val chestChunk = world.getChunkAt(chestPos.toLocation(world))
+				val chestChunk = chest.world.getChunkAt(chestPos.toLocation(chest.world))
 
 				val wreckData = readChunkCompoundTag(chestChunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return
 
@@ -297,6 +306,7 @@ object Encounters {
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
 
+				placeLever(chest)
 				setChestFlag(chest, "locked", ByteTag.valueOf(true))
 
 				var iteration = 0
@@ -343,14 +353,10 @@ object Encounters {
 							chest.world,
 							chest.location.toCenterLocation().toBlockPos(),
 							currentSize
-						)) {
-							if (block.isEmpty) continue
-							if (!block.isSolid) continue
-							if (block.type == CHEST) continue
-							if (iceTypes.contains(block.type)) continue
-
+						) {
+							!it.isEmpty && it.isSolid && !iceTypes.contains(it.type) && it.type != Material.CHEST
+						} ) {
 							block.type = iceTypes.random()
-
 						}
 
 						if (currentSize <= MAX_RADIUS) iteration++
@@ -396,9 +402,7 @@ object Encounters {
 	@Suppress("Unused")
 	val COW_TIPPER = register(
 		object : Encounter(identifier = "COW_TIPPER") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
-				TODO("Not yet implemented")
-			}
+			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
@@ -820,7 +824,7 @@ object Encounters {
 		setChunkEncounters(chest.chunk, wreckData)
 	}
 
-	fun getBlocks(world: World, origin: BlockPos, radius: Double): List<Block> {
+	fun getBlocks(world: World, origin: BlockPos, radius: Double, filter: (Block) -> Boolean): List<Block> {
 		val radiusSquared = radius * radius
 
 		val blocks = mutableListOf<Block>()
@@ -835,7 +839,9 @@ object Encounters {
 
 					if (xSquared + ySquared + zSquared > radiusSquared) continue
 
-					blocks += world.getBlockAt(x, y, z)
+					val block = world.getBlockAt(x, y, z)
+
+					if (filter(block)) blocks += block
 				}
 			}
 		}

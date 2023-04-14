@@ -7,8 +7,7 @@ import org.bukkit.generator.WorldInfo
 import java.util.Random
 
 class SpaceChunkGenerator : ChunkGenerator() {
-	override fun generateNoise(worldInfo: WorldInfo, random: Random, chunkX: Int, chunkZ: Int, chunkData: ChunkData) {
-	}
+	override fun generateNoise(worldInfo: WorldInfo, random: Random, chunkX: Int, chunkZ: Int, chunkData: ChunkData) {}
 
 	override fun getDefaultPopulators(world: World): MutableList<BlockPopulator> {
 		return mutableListOf()

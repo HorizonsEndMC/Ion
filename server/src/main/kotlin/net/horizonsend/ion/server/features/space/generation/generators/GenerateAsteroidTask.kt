@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.util.noise.PerlinOctaveGenerator
 import org.bukkit.util.noise.SimplexOctaveGenerator
 import kotlin.math.abs
 import kotlin.math.pow
@@ -27,6 +28,9 @@ class GenerateAsteroidTask(
 	private val materialNoise = SimplexOctaveGenerator(generator.random, 1)
 
 	override val returnData = CompletableDeferred<AsteroidGenerationData.AsteroidReturnData>()
+
+	private val cave1 = PerlinOctaveGenerator(generator.random.nextLong(), 1).apply { this.setScale(sqrt(0.05 * (1 / asteroid.size))) }
+	private val cave2 = PerlinOctaveGenerator(generator.random.nextLong(), 1).apply { this.setScale(sqrt(0.05 * (1 / asteroid.size))) }
 
 	override fun generate() {
 		val completableSectionMap = mutableMapOf<ChunkPos, Map<Int, CompletableDeferred<CompletedSection>>>()
@@ -139,7 +143,7 @@ class GenerateAsteroidTask(
 		completable: CompletableDeferred<CompletedSection>,
 		sectionY: Int,
 		chunkMinX: Int,
-		chunkMinZ: Int,
+		chunkMinZ: Int
 	): CompletableDeferred<CompletedSection> {
 		SpaceGenerationManager.coroutineScope.launch {
 			val palette = mutableListOf<BlockState>()
@@ -148,6 +152,8 @@ class GenerateAsteroidTask(
 
 			palette.add(Blocks.AIR.defaultBlockState())
 			val paletteListTag = ListTag()
+
+			//val sectionCaves = carve(sectionPos.x, sectionY, sectionPos.z)
 
 			for (x in 0..15) {
 				val worldX = chunkMinX + x
@@ -164,7 +170,18 @@ class GenerateAsteroidTask(
 						val worldYDouble = worldY.toDouble()
 						val ySquared = (worldYDouble - asteroid.y) * (worldYDouble - asteroid.y)
 
-						var block: BlockState? =
+						val index = BlockSerialization.posToIndex(x, y, z)
+
+						val isCave: Boolean =
+								(abs(cave1.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.07)
+								&&
+									(abs(cave2.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.07)
+
+						if (isCave) continue
+
+						//if (sectionCaves[index]) continue
+
+						var block: BlockState =
 							checkBlockPlacement(
 								worldXDouble,
 								worldYDouble,
@@ -172,25 +189,22 @@ class GenerateAsteroidTask(
 								xSquared,
 								ySquared,
 								zSquared
-							)
+							) ?: continue
 
 						if ((
-							generator.random.nextDouble(0.0, 1.0) <= asteroid.oreRatio &&
-								block != null
-							) && !block.isAir
+							generator.random.nextDouble(0.0, 1.0) <= asteroid.oreRatio) && !block.isAir
 						) {
 							val ore = generator.weightedOres[asteroid.paletteID]!!.random()
-							block = generator.oreMap[ore]
+							block = generator.oreMap[ore]!!
 						}
 
-						val blockIndex = if (block != null) {
+						val blockIndex =
 							if (!palette.contains(block)) {
 								palette.add(block)
 								palette.lastIndex
 							} else palette.indexOf(block)
-						} else 0
 
-						storedBlocks[BlockSerialization.posToIndex(x, y, z)] = blockIndex
+						storedBlocks[index] = blockIndex
 					}
 				}
 			}
@@ -275,6 +289,9 @@ data class AsteroidGenerationData(
 	val octaves: Int,
 ) : SpaceGenerationData() {
 
+	/**
+	 * @param completedSectionMap map of chunk positions to a list of completed sections, awaiting placement
+	 **/
 	data class AsteroidReturnData(
 		override val completedSectionMap: Map<ChunkPos, List<CompletedSection>>,
 	) : SpaceGenerationReturnData()

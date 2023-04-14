@@ -360,7 +360,11 @@ abstract class SpaceGenerationTask<V : SpaceGenerationReturnData> {
 
 	abstract fun generate()
 
-	open fun postProcess(completedData: SpaceGenerationReturnData) {}
+	// Work to be done after the task has completed, but before it is placed. EG caves
+	open fun postProcessSync(completedData: SpaceGenerationReturnData) {}
+
+	// Work to be done sync after the task has completed, but before it is placed. EG placing unsaved blocks
+	open fun postProcessASync(completedData: SpaceGenerationReturnData) {}
 }
 
 abstract class SpaceGenerationData {
@@ -377,6 +381,15 @@ abstract class SpaceGenerationReturnData {
 		val palette: List<Pair<BlockState, CompoundTag?>>,
 		val nmsPalette: ListTag
 	)
+
+	/**
+	 * Given a set of coordinates, finds the completed section
+	 */
+	fun getSection(x: Int, y: Int, z: Int): CompletedSection? {
+		val chunkPos = ChunkPos(x.shr(4), z.shr(4))
+
+		return completedSectionMap[chunkPos]?.firstOrNull { it.y == y.shr(4) }
+	}
 
 	open fun finishPlacement(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
 		val asyncChunks = completedSectionMap.map { (chunkPos, _) ->

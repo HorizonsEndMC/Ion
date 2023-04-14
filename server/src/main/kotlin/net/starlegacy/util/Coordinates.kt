@@ -249,6 +249,12 @@ fun BlockPos.toLocation(world: World?) = Location(world, this.x.toDouble(), this
 
 fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
+operator fun BlockPos.component1(): Int = this.x
+
+operator fun BlockPos.component2(): Int = this.y
+
+operator fun BlockPos.component3(): Int = this.z
+
 fun Vector.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
 fun getChunkSection(minHeight: Int, maxHeight: Int, y: Int): Int {
