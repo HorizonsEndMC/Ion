@@ -52,7 +52,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Chest
-import org.bukkit.block.data.FaceAttachable
+import org.bukkit.block.data.FaceAttachable.AttachedFace.FLOOR
 import org.bukkit.block.data.type.Switch
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -276,7 +276,7 @@ object Encounters {
 				val leverBlock = leverOn.getRelative(UP)
 
 				val blockData = (Material.LEVER.createBlockData() as Switch)
-				blockData.attachedFace = FaceAttachable.AttachedFace.FLOOR
+				blockData.attachedFace = FLOOR
 
 				leverBlock.blockData = blockData
 
@@ -353,7 +353,7 @@ object Encounters {
 						if ((leverState.blockData as Switch).isPowered) {
 							setChestFlag(chest, "locked", ByteTag.valueOf(false))
 							setChestFlag(chest, "inactive", ByteTag.valueOf(true))
-							event.player.information("The chest was unlocked.")
+							event.player.success("Coolant leak deactivated! The chest is now unlocked.")
 							cancel()
 						}
 
@@ -439,7 +439,7 @@ object Encounters {
 					if (explosiveCow.isDead) {
 						setChestFlag(chest, "locked", ByteTag.valueOf(false))
 						setChestFlag(chest, "inactive", ByteTag.valueOf(true))
-						event.player.information("The chest was unlocked.")
+						event.player.success("The Explosive Cow was put down! The chest is now unlocked.")
 						cancel()
 					}
 					if (timeLimit * 20 == iteration) {
@@ -503,7 +503,7 @@ object Encounters {
 					if (endermites.all { it.isDead } ) {
 						setChestFlag(chest, "locked", ByteTag.valueOf(false))
 						setChestFlag(chest, "inactive", ByteTag.valueOf(true))
-						event.player.information("The chest was unlocked.")
+						event.player.success("The infestation was removed and the chest is now unlocked.")
 						cancel()
 					}
 					if (timeLimit * 20 == iteration || event.player.isDead) {
@@ -613,7 +613,7 @@ object Encounters {
 					val buttonBlock = buttonOn.getRelative(UP)
 
 					val blockData = (STONE_BUTTON.createBlockData() as Switch)
-					blockData.attachedFace = FaceAttachable.AttachedFace.FLOOR
+					blockData.attachedFace = FLOOR
 
 					buttonBlock.blockData = blockData
 					buttonList.add(buttonBlock)
@@ -697,7 +697,7 @@ object Encounters {
 						if (selected == correctOrder) {
 							setChestFlag(chest, "locked", ByteTag.valueOf(false))
 							setChestFlag(chest, "inactive", ByteTag.valueOf(true))
-							event.player.information("The chest was unlocked.")
+							event.player.success("You successfully defused the bomb! The chest is now unlocked.")
 							chest.location.world.playSound(chest.location, BLOCK_FIRE_EXTINGUISH, 5.0f, 0.0f)
 							cancel()
 						}
