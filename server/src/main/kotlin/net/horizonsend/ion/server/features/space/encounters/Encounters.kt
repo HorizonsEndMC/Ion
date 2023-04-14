@@ -354,7 +354,7 @@ object Encounters {
 							chest.location.toCenterLocation().toBlockPos(),
 							currentSize
 						) {
-							!it.isEmpty && it.isSolid && !iceTypes.contains(it.type) && it.type != Material.CHEST
+							!it.isEmpty && it.isSolid && !iceTypes.contains(it.type) && it.type != CHEST
 						} ) {
 							block.type = iceTypes.random()
 						}
@@ -606,12 +606,12 @@ object Encounters {
 				var iteration = 0 // ticks
 				event.player.alert("Defusable bomb activated! Press the buttons in the correct order within $timeLimit seconds!")
 
-				val surroundingBlocks = getBlocks(chest.world, chest.location.toBlockPos(), 10.0)
+				val surroundingBlocks = getBlocks(chest.world, chest.location.toBlockPos(), 10.0) { checkAir(it) && it.isSolid && it.type != CHEST && it.type !in validColors }
 				val buttonList = mutableListOf<Block>()
 
 				// Button placer
 				for (color in validColors) {
-					val buttonOn = surroundingBlocks.filter { checkAir(it) && it.isSolid && it.type != CHEST && it.type !in validColors }.random()
+					val buttonOn = surroundingBlocks.random()
 					buttonOn.type = color
 					val buttonBlock = buttonOn.getRelative(UP)
 
