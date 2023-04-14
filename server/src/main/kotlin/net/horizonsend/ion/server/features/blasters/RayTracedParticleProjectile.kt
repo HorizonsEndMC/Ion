@@ -26,7 +26,7 @@ import kotlin.math.pow
 
 class RayTracedParticleProjectile(
 	val location: Location,
-	val shooter: Entity,
+	val shooter: Entity?,
 	val balancing: ProjectileBalancing,
 	val particle: Particle,
 	private val dustOptions: DustOptions?,
@@ -91,15 +91,15 @@ class RayTracedParticleProjectile(
 					hitEntity.damage(damage * 1.5, shooter)
 
 					hitLocation.world.spawnParticle(Particle.CRIT, hitLocation, 10)
-					shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
-					shooter.sendActionBar(text("Headshot!", NamedTextColor.RED))
+					shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+					shooter?.sendActionBar(text("Headshot!", NamedTextColor.RED))
 					if (!balancing.shouldPassThroughEntities) return true
 				}
 			}
 
 			if (!hasHeadshot) {
 				hitEntity.damage(damage, shooter)
-				shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
+				shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
 				if (!balancing.shouldPassThroughEntities) return true
 			}
 
@@ -134,7 +134,7 @@ class RayTracedParticleProjectile(
 				}
 			}
 
-			shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
+			shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
 			if (!balancing.shouldPassThroughEntities) return true
 		}
 
