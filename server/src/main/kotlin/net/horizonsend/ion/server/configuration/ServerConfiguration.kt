@@ -18,6 +18,7 @@ data class ServerConfiguration(
 		val spaceLocation: Pos,
 		val destination: Pos,
 		val destinationName: String? = null,
+		val exits: ArrayList<Pos>? = null,
 		val prompt: String? = null
 	)
 
