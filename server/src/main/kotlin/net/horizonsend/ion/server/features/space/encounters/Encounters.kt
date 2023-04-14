@@ -257,8 +257,6 @@ object Encounters {
 				)
 			}
 
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 			fun placeLever(chest: Chest) {
 				val chestPos = BlockPos(chest.x, chest.y, chest.z)
 
@@ -412,8 +410,6 @@ object Encounters {
 	@Suppress("Unused")
 	val COW_TIPPER = register(
 		object : Encounter(identifier = "COW_TIPPER") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
 
@@ -480,8 +476,6 @@ object Encounters {
 	@Suppress("Unused")
 	val INFESTED = register(
 		object : Encounter(identifier = "INFESTED") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
 
@@ -535,8 +529,6 @@ object Encounters {
 	@Suppress("Unused")
 	val TIMED_BOMB = register(
 		object : Encounter(identifier = "TIMED_BOMB") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
 				val chest = (targetedBlock.state as? Chest) ?: return
@@ -590,8 +582,6 @@ object Encounters {
 				RED_GLAZED_TERRACOTTA to "<#b82f27>Red Swirl",
 				MAGENTA_GLAZED_TERRACOTTA to "<#d460cf>Magenta Arrow"
 			)
-
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
@@ -729,8 +719,6 @@ object Encounters {
 	@Suppress("Unused")
 	val DEFENSE_BOTS = register(
 		object : Encounter(identifier = "DEFENSE_BOTS") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
 				val chest = (targetedBlock.state as? Chest) ?: return
@@ -811,8 +799,6 @@ object Encounters {
 	@Suppress("Unused")
 	val DEFENSE_MATRIX = register(
 		object : Encounter(identifier = "DEFENSE_MATRIX") {
-			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 			override fun onChestInteract(event: PlayerInteractEvent) {
 				val targetedBlock = event.clickedBlock!!
 
