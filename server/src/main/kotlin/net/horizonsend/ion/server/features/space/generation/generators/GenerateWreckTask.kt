@@ -43,7 +43,7 @@ class GenerateWreckTask(
 
 	private val encounter = wreck.encounter?.getEncounter()
 	var encounterPrimaryChest: Pair<ChunkPos, BlockPos>? = null
-	val secondaryChests: MutableMap<ChunkPos, MutableList<CompoundTag>> = mutableMapOf()
+	private val secondaryChests: MutableMap<ChunkPos, MutableList<CompoundTag>> = mutableMapOf()
 
 	override fun generate() {
 		val sectionMap = mutableMapOf<ChunkPos, List<SpaceGenerationReturnData.CompletedSection>>()

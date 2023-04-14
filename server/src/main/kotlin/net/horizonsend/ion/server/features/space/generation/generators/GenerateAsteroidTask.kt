@@ -29,8 +29,8 @@ class GenerateAsteroidTask(
 
 	override val returnData = CompletableDeferred<AsteroidGenerationData.AsteroidReturnData>()
 
-	private val cave1 = PerlinOctaveGenerator(generator.random.nextLong(), 1).apply { this.setScale(sqrt(0.05 * (1 / asteroid.size))) }
-	private val cave2 = PerlinOctaveGenerator(generator.random.nextLong(), 1).apply { this.setScale(sqrt(0.05 * (1 / asteroid.size))) }
+	private val cave1 = PerlinOctaveGenerator(generator.random.nextLong(), 3).apply { this.setScale(sqrt(0.05 * (1 / asteroid.size))) }
+	private val cave2 = PerlinOctaveGenerator(generator.random.nextLong(), 3).apply { this.setScale(sqrt(0.05 * (1 / asteroid.size))) }
 
 	override fun generate() {
 		val completableSectionMap = mutableMapOf<ChunkPos, Map<Int, CompletableDeferred<CompletedSection>>>()
