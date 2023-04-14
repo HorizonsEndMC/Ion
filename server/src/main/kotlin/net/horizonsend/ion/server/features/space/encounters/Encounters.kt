@@ -261,9 +261,11 @@ object Encounters {
 					return up1.isEmpty && up2.isEmpty
 				}
 
-				val surroundingBlocks = getBlocks(chest.world, chestPos, 8.0) { checkAir(it) && it.isSolid }
+				val surroundingBlocks = getBlocks(chest.world, chestPos, 8.0) {
+					checkAir(it) && it.isSolid && it.type != CHEST
+				}
 
-				val leverOn = surroundingBlocks.filter { checkAir(it) && it.isSolid }.random()
+				val leverOn = surroundingBlocks.random()
 				leverOn.type = REINFORCED_DEEPSLATE
 				val leverBlock = leverOn.getRelative(UP)
 
@@ -606,7 +608,10 @@ object Encounters {
 				var iteration = 0 // ticks
 				event.player.alert("Defusable bomb activated! Press the buttons in the correct order within $timeLimit seconds!")
 
-				val surroundingBlocks = getBlocks(chest.world, chest.location.toBlockPos(), 10.0) { checkAir(it) && it.isSolid && it.type != CHEST && it.type !in validColors }
+				val surroundingBlocks = getBlocks(chest.world, chest.location.toBlockPos(), 10.0) {
+					checkAir(it) && it.isSolid && it.type != CHEST && it.type !in validColors
+				}
+
 				val buttonList = mutableListOf<Block>()
 
 				// Button placer
