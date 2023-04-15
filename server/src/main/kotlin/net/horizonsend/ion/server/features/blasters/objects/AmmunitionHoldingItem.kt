@@ -38,11 +38,13 @@ abstract class AmmunitionHoldingItem(
 			.append(text(getMaximumAmmunition(), AQUA))
 			.append(text(" / ", GRAY))
 			.append(text(getMaximumAmmunition(), AQUA))
-		val refillTypeComponent = empty()
-			.decoration(ITALIC, false)
-			.append(text("Refill: ", GRAY))
-			.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
-		val magazineTypeComponent = if (this is Blaster<*>) {
+		val refillTypeComponent = if (getConsumesAmmo()) {
+			empty()
+				.decoration(ITALIC, false)
+				.append(text("Refill: ", GRAY))
+				.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
+		} else null
+		val magazineTypeComponent = if (this is Blaster<*> && getConsumesAmmo()) {
 			empty()
 				.decoration(ITALIC, false)
 				.append(text("Magazine: ", GRAY))
@@ -61,6 +63,7 @@ abstract class AmmunitionHoldingItem(
 	abstract fun getMaximumAmmunition(): Int
 	abstract fun getTypeRefill(): String
 	abstract fun getAmmoPerRefill(): Int
+	abstract fun getConsumesAmmo(): Boolean
 
 	fun getAmmunition(itemStack: ItemStack): Int {
 		// stupid undefined nullability
@@ -76,11 +79,13 @@ abstract class AmmunitionHoldingItem(
 			.append(text(ammunition, AQUA))
 			.append(text(" / ", GRAY))
 			.append(text(getMaximumAmmunition(), AQUA))
-		val refillTypeComponent = empty()
-			.decoration(ITALIC, false)
-			.append(text("Refill: ", GRAY))
-			.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
-		val magazineTypeComponent = if (this is Blaster<*>) {
+		val refillTypeComponent = if (getConsumesAmmo()) {
+			empty()
+				.decoration(ITALIC, false)
+				.append(text("Refill: ", GRAY))
+				.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
+		} else null
+		val magazineTypeComponent = if (this is Blaster<*> && getConsumesAmmo()) {
 			empty()
 				.decoration(ITALIC, false)
 				.append(text("Magazine: ", GRAY))
@@ -88,8 +93,8 @@ abstract class AmmunitionHoldingItem(
 		} else null
 
 		itemStack.editMeta {
-			it.lore(listOf(ammoCountComponent, refillTypeComponent, magazineTypeComponent))
 			it.persistentDataContainer.set(AMMO, INTEGER, ammunition)
+			it.lore(listOf(ammoCountComponent, refillTypeComponent, magazineTypeComponent))
 			it.isUnbreakable = false
 			(it as Damageable).damage = (itemStack.type.maxDurability - ammunition.toDouble() / getMaximumAmmunition() * itemStack.type.maxDurability).roundToInt()
 		}
