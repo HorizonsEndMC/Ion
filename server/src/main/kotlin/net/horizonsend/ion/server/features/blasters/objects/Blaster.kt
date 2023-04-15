@@ -37,6 +37,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Locale
 import java.util.function.Supplier
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 import org.jetbrains.exposed.sql.transactions.transaction
 
 abstract class Blaster<T : Balancing>(
@@ -250,11 +251,13 @@ abstract class Blaster<T : Balancing>(
 			soundWhizz
 		)
 
-		ProjectileManager.addProjectile(projectile)
+		if (livingEntity is CraftPlayer) {
+			// Projectile.tick() will return true if it needs to be removed
+			// If it needs to be removed, stop the lag compensation ticks, and never add it to the manager
+			for (i in 0..livingEntity.handle.latency.floorDiv(50)) if (projectile.tick()) return
+		}
 
-// 		if (livingEntity is CraftPlayer) {
-// 			for (i in 0..livingEntity.handle.latency.floorDiv(50)) projectile.tick()
-// 		}
+		ProjectileManager.addProjectile(projectile)
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
