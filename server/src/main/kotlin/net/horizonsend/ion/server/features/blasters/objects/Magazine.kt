@@ -18,4 +18,5 @@ abstract class Magazine<T : BalancingConfiguration.EnergyWeapon.AmmoStorageBalan
 	override fun getMaximumAmmunition(): Int = balancing.capacity
 	override fun getTypeRefill(): String = balancing.refillType
 	override fun getAmmoPerRefill(): Int = balancing.ammoPerRefill
+	override fun getConsumesAmmo(): Boolean = true // dummy value to satisfy the abstract class
 }
