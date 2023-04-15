@@ -72,20 +72,22 @@ abstract class Blaster<T : Balancing>(
 
 		if (ammo == ((itemStack.customItem as? Blaster<*>)?.getMaximumAmmunition() ?: return)) return
 
-		for (magazineItem in livingEntity.inventory) {
-			if (magazineItem == null) continue // check not null
-			val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // To get magazine properties
-			if (ammo >= balancing.magazineSize) continue // Check if blaster magazine is full
-			if (magazineCustomItem.identifier != magazineType.identifier) continue // Only correct magazine
+		if (balancing.consumesAmmo) {
+			for (magazineItem in livingEntity.inventory) {
+				if (magazineItem == null) continue // check not null
+				val magazineCustomItem: CustomItem = magazineItem.customItem ?: continue // To get magazine properties
+				if (ammo >= balancing.magazineSize) continue // Check if blaster magazine is full
+				if (magazineCustomItem.identifier != magazineType.identifier) continue // Only correct magazine
 
-			val magazineAmmo = (magazineCustomItem as AmmunitionHoldingItem).getAmmunition(magazineItem)
-			val amountToTake = (balancing.magazineSize - ammo).coerceAtMost(magazineAmmo)
-			magazineCustomItem.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
+				val magazineAmmo = (magazineCustomItem as AmmunitionHoldingItem).getAmmunition(magazineItem)
+				val amountToTake = (balancing.magazineSize - ammo).coerceAtMost(magazineAmmo)
+				magazineCustomItem.setAmmunition(magazineItem, livingEntity.inventory, magazineAmmo - amountToTake)
 
-			ammo += amountToTake
+				ammo += amountToTake
+			}
 		}
 
-		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena")) ammo = balancing.magazineSize
+		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena") || !balancing.consumesAmmo) ammo = balancing.magazineSize
 
 		if (ammo - originalAmmo == 0) {
 			livingEntity.playSound(

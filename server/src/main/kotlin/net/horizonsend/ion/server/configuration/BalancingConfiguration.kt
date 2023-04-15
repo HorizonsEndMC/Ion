@@ -27,7 +27,8 @@ data class BalancingConfiguration(
 			speed = 7.0,
 			timeBetweenShots = 6,
 			shotDeviation = 0.0,
-			mobDamageMultiplier = 2.0
+			mobDamageMultiplier = 2.0,
+			consumesAmmo = false
 		),
 		val rifle: Singleshot = Singleshot(
 			damage = 5.5,
@@ -47,7 +48,8 @@ data class BalancingConfiguration(
 			speed = 12.0,
 			timeBetweenShots = 8,
 			shotDeviation = 0.0,
-			mobDamageMultiplier = 2.0
+			mobDamageMultiplier = 2.0,
+			consumesAmmo = true
 		),
 		val submachineBlaster: Singleshot = Singleshot(
 			damage = 1.5,
@@ -67,7 +69,8 @@ data class BalancingConfiguration(
 			speed = 8.0,
 			timeBetweenShots = 2,
 			shotDeviation = 0.025,
-			mobDamageMultiplier = 2.0
+			mobDamageMultiplier = 2.0,
+			consumesAmmo = true
 		),
 		val sniper: Singleshot = Singleshot(
 			damage = 12.0,
@@ -87,7 +90,8 @@ data class BalancingConfiguration(
 			speed = 15.0,
 			timeBetweenShots = 40,
 			shotDeviation = 0.0,
-			mobDamageMultiplier = 2.0
+			mobDamageMultiplier = 2.0,
+			consumesAmmo = true
 		),
 		val shotgun: Multishot = Multishot(
 			damage = 1.75,
@@ -110,7 +114,8 @@ data class BalancingConfiguration(
 			speed = 6.5,
 			timeBetweenShots = 20,
 			shotDeviation = 0.1,
-			mobDamageMultiplier = 2.0
+			mobDamageMultiplier = 2.0,
+			consumesAmmo = true
 		),
 		val standardMagazine: AmmoStorage = AmmoStorage(
 			capacity = 60,
@@ -142,7 +147,8 @@ data class BalancingConfiguration(
 			override val speed: Double,
 			override val timeBetweenShots: Int,
 			override val shotDeviation: Double,
-			override val mobDamageMultiplier: Double
+			override val mobDamageMultiplier: Double,
+			override val consumesAmmo: Boolean
 		) : Balancing()
 
 		@Serializable
@@ -168,7 +174,8 @@ data class BalancingConfiguration(
 			override val speed: Double,
 			override val timeBetweenShots: Int,
 			override val shotDeviation: Double,
-			override val mobDamageMultiplier: Double
+			override val mobDamageMultiplier: Double,
+			override val consumesAmmo: Boolean
 		) : Balancing()
 
 		@Serializable
@@ -188,6 +195,7 @@ data class BalancingConfiguration(
 			abstract val shouldAkimbo: Boolean
 			abstract val timeBetweenShots: Int
 			abstract val shotDeviation: Double
+			abstract val consumesAmmo: Boolean
 		}
 
 		interface ProjectileBalancing {
