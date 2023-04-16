@@ -47,6 +47,7 @@ abstract class Blaster<T : Balancing>(
 	customModelData: Int,
 	displayName: Component,
 	val magazineType: Magazine<*>,
+	val particleSize: Float,
 	val soundRange: Double,
 	val soundFire: String,
 	val soundWhizz: String,
@@ -250,7 +251,7 @@ abstract class Blaster<T : Balancing>(
 			livingEntity,
 			balancing,
 			getParticleType(livingEntity),
-			if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), 1f) else null,
+			if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), particleSize) else null,
 			soundWhizz
 		)
 
