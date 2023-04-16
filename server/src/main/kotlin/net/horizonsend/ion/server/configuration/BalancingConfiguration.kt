@@ -27,7 +27,7 @@ data class BalancingConfiguration(
 			speed = 7.0,
 			timeBetweenShots = 6,
 			shotDeviation = 0.0,
-			mobDamageMultiplier = 2.0,
+			mobDamageMultiplier = 1.0,
 			consumesAmmo = false
 		),
 		val rifle: Singleshot = Singleshot(
