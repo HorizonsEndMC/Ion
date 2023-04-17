@@ -28,7 +28,8 @@ class CancelListeners : Listener {
 		Material.BROWN_CONCRETE_POWDER,
 		Material.GREEN_CONCRETE_POWDER,
 		Material.RED_CONCRETE_POWDER,
-		Material.BLACK_CONCRETE_POWDER
+		Material.BLACK_CONCRETE_POWDER,
+		Material.ICE
 	)
 
 	@EventHandler
