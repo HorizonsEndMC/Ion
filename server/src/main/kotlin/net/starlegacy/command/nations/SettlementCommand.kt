@@ -27,8 +27,6 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.schema.nations.NationRelation
-import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SettlementRole
 import net.starlegacy.database.schema.nations.Territory
@@ -45,10 +43,8 @@ import net.starlegacy.feature.nations.utils.isSemiActive
 import net.starlegacy.util.Notify
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.VAULT_ECO
-import net.starlegacy.util.colorize
 import net.starlegacy.util.darkAqua
 import net.starlegacy.util.darkGreen
-import net.starlegacy.util.darkPurple
 import net.starlegacy.util.depositMoney
 import net.starlegacy.util.fromLegacy
 import net.starlegacy.util.gray
@@ -550,6 +546,7 @@ internal object SettlementCommand : SLCommand() {
 		} ?: text()
 		val leaderText = text("Leader: ")
 			.append(leaderRoleComp)
+			.append(text(" "))
 			.append(text(getPlayerName(cached.leader)).color(NamedTextColor.WHITE))
 
 		message.append(leaderText)
@@ -586,7 +583,7 @@ internal object SettlementCommand : SLCommand() {
 
 				else -> error("Impossible!")
 			}
-			names.add(text(getNationTag(playerId, name)).color(style))
+			names.add(text(getSettlementTag(playerId, name)).color(style))
 		}
 
 		val playerCountBuilder = text().color(TextColor.fromHexString("#b8e0d4"))
