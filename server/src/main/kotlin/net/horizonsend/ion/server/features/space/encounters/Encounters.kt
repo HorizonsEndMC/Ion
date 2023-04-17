@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
+import net.horizonsend.ion.server.features.space.encounters.Encounters.createLootChest
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization.readChunkCompoundTag
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
@@ -957,6 +958,13 @@ object Encounters {
 			wreck.getInt("x") == chest.x &&
 					wreck.getInt("y") == chest.y &&
 					wreck.getInt("z") == chest.z)
+
+	fun createLootChest(lootTable: String): CompoundTag {
+		val tileEntityData = CompoundTag()
+		tileEntityData.putString("id", "minecraft:chest")
+		tileEntityData.putString("LootTable", lootTable)
+		return tileEntityData
+	}
 }
 
 /**
@@ -982,19 +990,19 @@ abstract class Encounter(
 enum class SecondaryChests(val blockState: BlockState, val NBT: CompoundTag?, val money: Int?) {
 	REPAIR_MATERIALS(
 		Blocks.CHEST.defaultBlockState(),
-		CompoundTag().apply {
-			this.putString("id", "minecraft:chest")
-			this.putString("LootTable", "horizonsend:chests/starship_resource")
-		},
-		500),
+		createLootChest("horizonsend:chests/starship_resource"),
+		500
+	),
 	FOOD(Blocks.CHEST.defaultBlockState(), null, 500),
 	GUN_PARTS(Blocks.CHEST.defaultBlockState(), null, 500),
 	POWER_ARMOR_MODS(Blocks.CHEST.defaultBlockState(), null, 500),
-	ORES_POOR(Blocks.CHEST.defaultBlockState(), null, 500),
-	ORES_GOOD(Blocks.CHEST.defaultBlockState(), null, 500),
-	ORES_GREAT(Blocks.CHEST.defaultBlockState(), null, 500);
+	ORES_LOW(Blocks.CHEST.defaultBlockState(), null, 500),
+	ORES_MEDIUM(Blocks.CHEST.defaultBlockState(), null, 500),
+	ORES_HIGH(Blocks.CHEST.defaultBlockState(), null, 500);
 
 	companion object {
+
+
 		private val map = SecondaryChests.values().associateBy { it.name }
 
 		operator fun get(value: String): SecondaryChests? = map[value]
