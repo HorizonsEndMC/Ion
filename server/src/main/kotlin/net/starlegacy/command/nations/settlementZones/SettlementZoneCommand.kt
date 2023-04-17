@@ -51,7 +51,7 @@ import kotlin.random.Random
 @CommandAlias("settlementzone|szone")
 internal object SettlementZoneCommand : SLCommand() {
 	private const val maxHorizontalArea = 200 * 200
-	private const val maxZonesPerSettlement = 100
+	private const val maxZonesPerSettlement = 150
 
 	private fun getSelectionKey(sender: Player): String = "nations.settlement_zone_command.selection.${sender.uniqueId}"
 
