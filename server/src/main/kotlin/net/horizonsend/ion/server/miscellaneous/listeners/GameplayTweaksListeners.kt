@@ -42,7 +42,8 @@ class GameplayTweaksListeners : Listener {
 				!state.blockMap.contains(blockKey(above.x, above.y, above.z))
 			) {
 				event.isCancelled = true
-				event.player.userError("Undetected crates found: redetect the craft before piloting!")
+				event.player.userError("Undetected crates found, redetect the craft before piloting!")
+				break
 			}
 		}
 	}
