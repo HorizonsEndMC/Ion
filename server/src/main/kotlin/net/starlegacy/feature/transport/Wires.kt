@@ -250,7 +250,8 @@ object Wires : SLComponent() {
 
 			var originPower = when {
 				originSign != null -> powerSignUpdateCache[originSign]
-				else -> transportConfig.wires.solarPanelPower
+				else -> transportConfig.wires.solarPanelPower /
+					if (world.environment == World.Environment.NORMAL) 1 else 2
 			}
 
 			// if it has no power then there is nothing to extract from it anymore
