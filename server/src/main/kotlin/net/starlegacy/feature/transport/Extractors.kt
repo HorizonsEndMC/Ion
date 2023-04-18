@@ -151,9 +151,6 @@ object Extractors : SLComponent() {
 	private fun tickExtractors(world: World) {
 		val extractorLocations: Set<Vec3i> = worldDataMap[world] ?: return
 
-		// used to ensure solar panels are processed only at day
-		val isDay: Boolean = world.environment != World.Environment.NORMAL || world.time < 12300 || world.time > 23850
-
 		extractorLoop@ for (extractorLocation: Vec3i in extractorLocations) {
 			val (x: Int, y: Int, z: Int) = extractorLocation
 
@@ -202,7 +199,7 @@ object Extractors : SLComponent() {
 						wires.add(face)
 					}
 
-					isDay && adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP -> {
+					adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP -> {
 						val sensor: BlockData = getBlockDataSafe(world, adjacentX, adjacentY + 1, adjacentZ)
 							?: continue@extractorLoop
 
@@ -305,13 +302,10 @@ object Extractors : SLComponent() {
 		val inverted: Boolean = sensor.isInverted
 		val power: Int = sensor.power
 
-		// make it so it works in the day only, whether it be a night sensor or a day sensor,
-		// and also only if it has sky light. tldr; based on the power
-		if ((power < 4 && !inverted) || (power > 2 && inverted)) {
-			return
+		if (!inverted && power > 6 && world.environment == World.Environment.NORMAL ||
+			inverted && power < 4 && world.environment != World.Environment.NORMAL) {
+			Wires.startWireChain(world, x, y, z, wires.randomEntry(), null)
 		}
-
-		Wires.startWireChain(world, x, y, z, wires.randomEntry(), null)
 	}
 
 	private fun getExtractorSet(world: World): MutableSet<Vec3i> {
