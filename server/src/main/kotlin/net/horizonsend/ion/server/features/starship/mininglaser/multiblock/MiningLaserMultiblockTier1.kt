@@ -75,7 +75,7 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 			}
 			y(+2) {
 				x(-1).anyGlassPane()
-				x(+0).titaniumBlock()
+				x(+0).ironBlock()
 				x(+1).anyGlassPane()
 			}
 		}
