@@ -21,7 +21,7 @@ import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
-import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Entity
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -51,7 +51,7 @@ fun runnable(e: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunn
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T : LivingEntity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
+fun <T : Entity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
 	this.spawnEntity(location, type) as T
 
 fun highlightBlock(bukkitPlayer: Player, pos: BlockPos, duration: Long) {

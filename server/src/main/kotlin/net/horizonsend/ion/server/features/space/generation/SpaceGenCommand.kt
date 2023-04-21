@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
@@ -14,10 +15,13 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
+import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.nbt.NbtUtils
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
+import java.util.Random
 
 @CommandPermission("ion.spacegen")
 @CommandAlias("spacegen")
@@ -52,6 +56,10 @@ class SpaceGenCommand : BaseCommand() {
 			.userError("No generator found for ${sender.world.name}")
 
 		val asteroid = generator.generateWorldAsteroid(
+			sender.chunk.chunkKey,
+			Random(sender.chunk.chunkKey),
+			sender.world.minHeight,
+			sender.world.maxHeight,
 			sender.location.blockX,
 			sender.location.blockY,
 			sender.location.blockZ,
@@ -60,7 +68,12 @@ class SpaceGenCommand : BaseCommand() {
 			octaves
 		)
 
-		SpaceGenerationManager.generateFeature(GenerateAsteroidTask(generator, asteroid))
+		SpaceGenerationManager.coroutineScope.launch {
+			SpaceGenerationManager.postGenerateFeature(
+				GenerateAsteroidTask(generator, sender.chunk.minecraft.pos, listOf(asteroid)),
+				SpaceGenerationManager.coroutineScope
+			)
+		}
 
 		sender.success(
 			"Success! Generated an asteroid of size ${asteroid.size} with palette" +
@@ -78,18 +91,24 @@ class SpaceGenCommand : BaseCommand() {
 		val data = wreck?.let { wreckName ->
 			val encounterData = encounter?.let { encounterName ->
 
-				SpaceGenerator.WreckGenerationData.WreckEncounterData(
+				WreckGenerationData.WreckEncounterData(
 					encounterName, null
 				)
 			}
 
-			SpaceGenerator.WreckGenerationData(
+			WreckGenerationData(
 				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(), wreckName, encounterData
 			)
 		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
-		SpaceGenerationManager.generateFeature(GenerateWreckTask(generator, data))
-		sender.success("Success! Generated wreck ${data.schematicName} with encounter ${data.encounter}")
+		SpaceGenerationManager.coroutineScope.launch {
+			SpaceGenerationManager.postGenerateFeature(
+				GenerateWreckTask(generator, sender.chunk.minecraft.pos, listOf(data)),
+				SpaceGenerationManager.coroutineScope
+			)
+		}
+
+		sender.success("Success! Generated wreck ${data.wreckName} with encounter ${data.encounter}")
 	}
 
 	@Suppress("unused")

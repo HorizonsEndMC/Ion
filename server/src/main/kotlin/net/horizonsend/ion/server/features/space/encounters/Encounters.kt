@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import fr.skytasul.guardianbeam.Laser.GuardianLaser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
@@ -27,12 +28,14 @@ import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.MenuHelper
+import net.starlegacy.util.distance
 import net.starlegacy.util.nms
 import net.starlegacy.util.spherePoints
 import net.starlegacy.util.toBlockPos
 import net.starlegacy.util.toLocation
 import net.starlegacy.util.updateMeta
 import org.bukkit.Chunk
+import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Material.BLUE_GLAZED_TERRACOTTA
@@ -61,10 +64,12 @@ import org.bukkit.entity.EntityType.COW
 import org.bukkit.entity.EntityType.ENDERMITE
 import org.bukkit.entity.EntityType.SKELETON
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.ShulkerBullet
 import org.bukkit.entity.Skeleton
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.Vector
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
@@ -805,6 +810,81 @@ object Encounters {
 
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
+
+				setChestFlag(chest, "locked", ByteTag.valueOf(true))
+				event.player.alert("[INTRUSION DETECTED] ... [ACTIVATING DEFENSE MATRIX]")
+
+				var iteration = 0
+
+				val playerLocation = event.player.eyeLocation.toCenterLocation().toVector()
+
+				val blocks = getBlocks(
+					event.player.world,
+					chest.location.toBlockPos(),
+					30.0,
+				) {
+					val rayCast = if (!it.isEmpty) {
+						val blockLocation = it.location.toCenterLocation()
+						val vector = blockLocation.toVector().subtract(playerLocation)
+
+						it.world.rayTrace(
+							blockLocation,
+							vector,
+							distance(
+								blockLocation.x,
+								blockLocation.y,
+								blockLocation.z,
+								playerLocation.x,
+								playerLocation.y,
+								playerLocation.z
+							),
+							FluidCollisionMode.NEVER,
+							true,
+							0.5,
+							null
+						)?.hitBlock
+					} else it
+
+					!it.isEmpty && rayCast == null
+				}.shuffled().subList(0, 5)
+
+				val defenseNodes = mutableListOf<ShulkerBullet>()
+
+				for (block in blocks) {
+					defenseNodes.add(
+							event.player.world.castSpawnEntity<ShulkerBullet>(
+								block.location.toCenterLocation(),
+								EntityType.SHULKER_BULLET
+							).apply {
+								this.target = event.player
+
+								this.flightSteps = 0
+								this.targetDelta = Vector(0.0, 0.0, 0.0)
+							}
+					)
+				}
+
+				runnable {
+					iteration++
+
+					// 3 minute timeout
+					if (iteration > 60) {
+						cancel()
+					}
+
+					defenseNodes.removeAll { it.isDead }
+
+					for (defenseNode in defenseNodes) {
+
+						GuardianLaser(
+							defenseNode.location,
+							event.player,
+							50,
+							30
+						).durationInTicks().apply { start(IonServer) }
+					}
+
+				}.runTaskTimer(IonServer, 20L, 60L)
 			}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
