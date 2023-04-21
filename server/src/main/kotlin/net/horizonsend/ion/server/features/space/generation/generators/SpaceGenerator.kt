@@ -4,15 +4,16 @@ import com.sk89q.jnbt.NBTInputStream
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.space.encounters.Encounter
-import net.horizonsend.ion.server.features.space.encounters.Encounters
+import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData.WreckEncounterData
 import net.horizonsend.ion.server.features.space.generation.BlockSerialization
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
@@ -24,6 +25,7 @@ import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.levelgen.Heightmap
 import org.bukkit.Chunk
 import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
@@ -36,7 +38,6 @@ import java.io.DataOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.util.Random
-import java.util.concurrent.CompletableFuture
 import java.util.zip.GZIPInputStream
 import kotlin.math.floor
 import kotlin.math.pow
@@ -74,6 +75,10 @@ class SpaceGenerator(
 	 * Generates an asteroid with optional specification for the parameters
 	 **/
 	fun generateWorldAsteroid(
+		chunkSeed: Long,
+		chunkRandom: Random,
+		maxHeight: Int,
+		minHeight: Int,
 		x: Int,
 		y: Int,
 		z: Int,
@@ -81,7 +86,20 @@ class SpaceGenerator(
 		index: Int? = null,
 		octaves: Int? = null
 	): AsteroidGenerationData {
-		val formattedSize = size ?: random.nextDouble(10.0, configuration.maxAsteroidSize)
+		var newY = y
+
+		fun generateSize(): Double {
+			val newSize = chunkRandom.nextDouble(10.0, configuration.maxAsteroidSize)
+			val downShift: Boolean = y + newSize > maxHeight
+			val upShift: Boolean = y - newSize < minHeight
+
+			if (upShift) newY = (y - (y + newSize - maxHeight)).toInt()
+			if (downShift) newY = (y + (y - newSize + minHeight)).toInt()
+
+			return newSize
+		}
+
+		val formattedSize = size ?: generateSize()
 
 		val palette = weightedPalettes.getEntry(
 			(
@@ -109,8 +127,9 @@ class SpaceGenerator(
 		val formattedOctaves = octaves ?: floor(3 * 0.998.pow(formattedSize)).toInt().coerceAtLeast(1)
 
 		return AsteroidGenerationData(
+			chunkSeed,
 			x,
-			y,
+			newY,
 			z,
 			oreRatio,
 			blockPalette.second,
@@ -158,43 +177,6 @@ class SpaceGenerator(
 		return SpongeSchematicReader(NBTInputStream(GZIPInputStream(FileInputStream(file)))).read()
 	}
 
-	/**
-	 * This information is not serialized. It is used in the generation of the wreck.
-	 * @param schematicName The name of the schematic file referenced, not including file extension
-	 * @param encounter The optional encounter data.
-	 **/
-	data class WreckGenerationData(
-		override val x: Int,
-		override val y: Int,
-		override val z: Int,
-		val schematicName: String,
-		val encounter: WreckEncounterData?
-	) : SpaceGenerationData() {
-		/**
-		 * This is serialized and stored in the chunk alongside the wreck.
-		 *
-		 * @param identifier The identifier string for the encounter class
-		 **/
-		data class WreckEncounterData(
-			val identifier: String,
-			val additonalInfo: String?
-		) {
-			fun getEncounter(): Encounter = Encounters[identifier]!!
-
-			fun nms(x: Int, y: Int, z: Int): CompoundTag {
-				val beginningTag = CompoundTag()
-
-				beginningTag.putInt("x", x)
-				beginningTag.putInt("y", y)
-				beginningTag.putInt("z", z)
-
-				beginningTag.putString("Encounter Identifier", identifier)
-
-				return beginningTag
-			}
-		}
-	}
-
 	fun generateRandomWreckData(x: Int, y: Int, z: Int): WreckGenerationData {
 		val wreckClass = configuration.weightedWreckList.random()
 		val wreck = wreckClass.random()
@@ -205,7 +187,7 @@ class SpaceGenerator(
 			y,
 			z,
 			wreck.wreckSchematicName,
-			WreckGenerationData.WreckEncounterData(
+			WreckEncounterData(
 				encounter,
 				null
 			)
@@ -357,8 +339,9 @@ class SpaceGenerator(
 abstract class SpaceGenerationTask<V : SpaceGenerationReturnData> {
 	abstract val generator: SpaceGenerator
 	abstract val returnData: Deferred<V>
+	abstract val chunk: ChunkPos
 
-	abstract fun generate()
+	abstract suspend fun generateChunk(scope: CoroutineScope)
 
 	// Work to be done after the task has completed, but before it is placed. EG caves
 	open fun postProcessSync(completedData: SpaceGenerationReturnData) {}
@@ -374,7 +357,7 @@ abstract class SpaceGenerationData {
 }
 
 abstract class SpaceGenerationReturnData {
-	abstract val completedSectionMap: Map<ChunkPos, List<CompletedSection>>
+	abstract val completedSectionMap: List<CompletedSection>
 	data class CompletedSection(
 		val y: Int,
 		val blocks: IntArray,
@@ -382,39 +365,22 @@ abstract class SpaceGenerationReturnData {
 		val nmsPalette: ListTag
 	)
 
-	/**
-	 * Given a set of coordinates, finds the completed section
-	 */
-	fun getSection(x: Int, y: Int, z: Int): CompletedSection? {
-		val chunkPos = ChunkPos(x.shr(4), z.shr(4))
+	open fun finishPlacement(chunk: ChunkPos, generator: SpaceGenerator): Deferred<LevelChunk> {
+		val asyncChunk = generator.serverLevel.world.getChunkAtAsync(chunk.x, chunk.z)
 
-		return completedSectionMap[chunkPos]?.firstOrNull { it.y == y.shr(4) }
-	}
-
-	open fun finishPlacement(generator: SpaceGenerator): Deferred<Map<ChunkPos, Chunk>> {
-		val asyncChunks = completedSectionMap.map { (chunkPos, _) ->
-			generator.serverLevel.world.getChunkAtAsync(chunkPos.x, chunkPos.z)
-		}.toTypedArray()
-
-		val chunks = CompletableDeferred<Map<ChunkPos, Chunk>>()
+		val chunks = CompletableDeferred<LevelChunk>()
 
 		// Using a completable future here, so I can thenAccept while keeping it sync.
 		// Using a .await() would require it to be in a suspend function or coroutine.
-		CompletableFuture.allOf(*asyncChunks).thenAccept {
-			val completedLevelChunks = asyncChunks.map {
-				val levelChunk = (it.get() as CraftChunk).handle
-				return@map levelChunk.pos to levelChunk
-			}.toMap()
+		asyncChunk.thenAccept {
+			for (completedSection in completedSectionMap) {
+				val chunkMinX = chunk.x.shl(4)
+				val chunkMinZ = chunk.z.shl(4)
 
-			for ((levelChunkPos, completedSections) in completedSectionMap) {
-				val chunkMinX = levelChunkPos.x.shl(4)
-				val chunkMinZ = levelChunkPos.z.shl(4)
+				val levelChunk = it.minecraft
 
-				val levelChunk = completedLevelChunks[levelChunkPos]!!
-
-				for (completedSection in completedSections) {
-					val section = levelChunk.sections[completedSection.y]
-					val palette = completedSection.palette
+				val section = levelChunk.sections[completedSection.y]
+				val palette = completedSection.palette
 
 					val sectionMinY = section.bottomBlockY()
 
@@ -455,30 +421,29 @@ abstract class SpaceGenerationReturnData {
 							}
 						}
 					}
-				}
+
 
 				Heightmap.primeHeightmaps(levelChunk, Heightmap.Types.values().toSet())
 				levelChunk.playerChunk?.broadcastChanges(levelChunk)
 				levelChunk.isUnsaved = true
-			}
 
-			chunks.complete(completedLevelChunks.mapValues { (_, levelChunk) -> levelChunk.bukkitChunk })
+				chunks.complete(levelChunk)
+			}
 		}
 
 		return chunks
 	}
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	fun store(generator: SpaceGenerator, chunks: Deferred<Map<ChunkPos, Chunk>>) = chunks.invokeOnCompletion {
+	fun store(generator: SpaceGenerator, chunk: Deferred<LevelChunk>) = chunk.invokeOnCompletion {
 		// Cannot use await, since it can only be called from a coroutine. Storage needs to be sync.
-		val finishedBukkitChunks = chunks.getCompleted()
+		val bukkitChunk = chunk.getCompleted().bukkitChunk
 
-		for ((chunkPos, bukkitChunk) in finishedBukkitChunks) {
 			val existingData = BlockSerialization.readChunkCompoundTag(bukkitChunk, NamespacedKeys.STORED_CHUNK_BLOCKS)
 			val existingSectionsList = existingData?.getList("sections", 10)?.toList()
 				?.associateBy { (it as CompoundTag).getInt("y") }
 
-			val newChunkData = completedSectionMap[chunkPos]!!
+			val newChunkData = completedSectionMap
 
 			val newCoveredSections = newChunkData.map { it.y }
 
@@ -499,10 +464,9 @@ abstract class SpaceGenerationReturnData {
 				combinedSections.add(combined)
 			}
 
-			val chunk = BlockSerialization.formatChunk(combinedSections, generator.spaceGenerationVersion)
+			val formattedChunk = BlockSerialization.formatChunk(combinedSections, generator.spaceGenerationVersion)
 
-			BlockSerialization.setChunkCompoundTag(bukkitChunk, NamespacedKeys.STORED_CHUNK_BLOCKS, chunk)
-		}
+			BlockSerialization.setChunkCompoundTag(bukkitChunk, NamespacedKeys.STORED_CHUNK_BLOCKS, formattedChunk)
 	}
 }
 

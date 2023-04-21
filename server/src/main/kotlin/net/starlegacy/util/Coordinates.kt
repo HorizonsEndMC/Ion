@@ -1,6 +1,7 @@
 package net.starlegacy.util
 
 import net.minecraft.core.BlockPos
+import net.minecraft.world.level.ChunkPos
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -56,6 +57,9 @@ fun distance(fromX: Double, fromY: Double, fromZ: Double, toX: Double, toY: Doub
 
 fun distance(fromX: Int, fromY: Int, fromZ: Int, toX: Int, toY: Int, toZ: Int): Double =
 	sqrt(distanceSquared(fromX.d(), fromY.d(), fromZ.d(), toX.d(), toY.d(), toZ.d()))
+
+fun distance(fromX: Int, fromZ: Int, toX: Int, toZ: Int): Double =
+	sqrt(((fromX - toX).squared() + (fromZ - toZ).squared()).d())
 
 fun magnitude(x: Double, y: Double, z: Double): Double = sqrt(x.squared() + y.squared() + z.squared())
 
@@ -254,6 +258,10 @@ operator fun BlockPos.component1(): Int = this.x
 operator fun BlockPos.component2(): Int = this.y
 
 operator fun BlockPos.component3(): Int = this.z
+
+operator fun ChunkPos.component1(): Int = this.x
+
+operator fun ChunkPos.component2(): Int = this.z
 
 fun Vector.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
