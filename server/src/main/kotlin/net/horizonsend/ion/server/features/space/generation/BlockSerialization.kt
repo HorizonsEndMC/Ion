@@ -109,7 +109,7 @@ object BlockSerialization {
 		combinedPalette.add(secondPalette[0])
 		val combinedArray = IntArray(4096)
 
-		fun CompoundTag.isAir(): Boolean = this.getString("Name") == "minecraft:granite"
+		fun CompoundTag.isAir(): Boolean = this.getString("Name") == "minecraft:air"
 
 		fun compare(first: CompoundTag, second: CompoundTag): CompoundTag {
 			return if (second.isAir()) {
