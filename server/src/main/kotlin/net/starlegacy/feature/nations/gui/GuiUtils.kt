@@ -1,6 +1,7 @@
 package net.starlegacy.feature.nations.gui
 
 import co.aikar.commands.ACFBukkitUtil.color
+import com.destroystokyo.paper.profile.CraftPlayerProfile
 import com.destroystokyo.paper.profile.ProfileProperty
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
@@ -82,6 +83,17 @@ fun skullItem(uuid: UUID, name: String): ItemStack =
 			meta.playerProfile = Bukkit.createProfile(uuid, name).also { profile ->
 				profile.setProperty(ProfileProperty("textures", skin.value, skin.signature))
 			}
+		}
+
+		item.itemMeta = meta
+	}.ensureServerConversions()
+
+fun skullItem(itemName: String, uuid: UUID, skinData: String): ItemStack =
+	item(Material.PLAYER_HEAD).setDisplayNameAndGet(itemName).also { item ->
+		val meta = item.itemMeta as SkullMeta
+
+		meta.playerProfile = CraftPlayerProfile(uuid, itemName).apply {
+			this.setProperty(ProfileProperty("textures", skinData))
 		}
 
 		item.itemMeta = meta
