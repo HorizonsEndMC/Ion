@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.IonServer
 import org.bukkit.NamespacedKey
 
 object NamespacedKeys {
+	val DATA_VERSION = key("data_version")
+
 	val AMMO = key("Ammo")
 	val CUSTOM_ITEM = key("CustomItem")
 	val EDEN_FIX = key("EdenFix")
