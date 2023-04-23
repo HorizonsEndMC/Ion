@@ -24,6 +24,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.IntTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
@@ -251,25 +252,11 @@ object Encounters {
 
 	@Suppress("Unused")
 	val COOLANT_LEAK = register(object : Encounter(identifier = "COOLANT_LEAK") {
-			fun getLever(chest: Chest): BlockPos? {
-				val wreckData = readChunkCompoundTag(chest.chunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return null
-
-				val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
-
-				val encounter = existingWrecks.first { wreck ->
-					wreck as CompoundTag
-
-					return@first (wreck.getInt("x") == chest.x &&
-							wreck.getInt("y") == chest.y &&
-							wreck.getInt("z") == chest.z)
-				} as CompoundTag
-
-				return BlockPos(
-					encounter.getInt("leverPosX"),
-					encounter.getInt("leverPosY"),
-					encounter.getInt("leverPosZ")
+			fun getLever(chest: Chest): BlockPos = BlockPos(
+					(getChestFlag(chest, "leverPosX") as IntTag).asInt,
+					(getChestFlag(chest, "leverPosY") as IntTag).asInt,
+					(getChestFlag(chest, "leverPosZ") as IntTag).asInt
 				)
-			}
 
 			fun placeLever(chest: Chest) {
 				val chestPos = BlockPos(chest.x, chest.y, chest.z)
@@ -294,32 +281,9 @@ object Encounters {
 
 				leverBlock.blockData = blockData
 
-				val chestChunk = chest.world.getChunkAt(chestPos.toLocation(chest.world))
-
-				val wreckData = readChunkCompoundTag(chestChunk, NamespacedKeys.WRECK_ENCOUNTER_DATA) ?: return
-
-				val existingWrecks = wreckData.getList("Wrecks", 10) // list of compound tags (10)
-				wreckData.remove("Wrecks")
-
-				for (wreck in existingWrecks) {
-					wreck as CompoundTag
-
-					if (
-						wreck.getInt("x") != chestPos.x &&
-						wreck.getInt("y") != chestPos.y &&
-						wreck.getInt("z") != chestPos.z
-					) continue
-
-					existingWrecks.remove(wreck)
-					wreck.putInt("leverPosX", leverBlock.x)
-					wreck.putInt("leverPosY", leverBlock.y)
-					wreck.putInt("leverPosZ", leverBlock.z)
-					existingWrecks.add(wreck)
-				}
-
-				wreckData.put("Wrecks", existingWrecks)
-
-				setChunkEncounters(chestChunk, wreckData)
+				setChestFlag(chest, "leverPosX", IntTag.valueOf(leverBlock.x))
+				setChestFlag(chest, "leverPosY", IntTag.valueOf(leverBlock.y))
+				setChestFlag(chest, "leverPosZ", IntTag.valueOf(leverBlock.z))
 			}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
@@ -344,7 +308,7 @@ object Encounters {
 
 				val leverPos = getLever(chest)
 
-				getLever(chest)?.let { highlightBlock(event.player, it.below(), (MAX_ATTEMPTS * 2).toLong()) }
+				highlightBlock(event.player, leverPos.below(), (MAX_ATTEMPTS * 2).toLong())
 
 				val iceTypes = listOf(
 					Material.ICE,
@@ -359,70 +323,64 @@ object Encounters {
 				event.player.alert("The chest triggered a coolant leak! Find the lever to stop the leak!")
 				targetedBlock.location.world.playSound(targetedBlock.location, BLOCK_FIRE_EXTINGUISH, 5.0f, 0.0f)
 
-				leverPos?.let {
-					runnable {
-						val currentSize = iteration * BLOCKS_PER_ITERATION
+				runnable {
+					val currentSize = iteration * BLOCKS_PER_ITERATION
 
-						if (attempts > MAX_ATTEMPTS) {
-							event.player.userError("Coolant leak expired.")
-							cancel()
+					if (attempts > MAX_ATTEMPTS) {
+						event.player.userError("Coolant leak expired.")
+						cancel()
+					}
+					attempts++
+
+					val leverState = chest.world.getBlockAt(leverPos.x, leverPos.y, leverPos.z).state
+					if ((leverState.blockData as Switch).isPowered) {
+						setChestFlag(chest, "locked", ByteTag.valueOf(false))
+						setChestFlag(chest, "inactive", ByteTag.valueOf(true))
+						event.player.success("Coolant leak deactivated! The chest is now unlocked.")
+						cancel()
+					}
+
+					for (block in getBlocks(
+						chest.world,
+						chest.location.toCenterLocation().toBlockPos(),
+						currentSize
+					) {
+						!it.isEmpty && it.isSolid && !iceTypes.contains(it.type) && it.type != CHEST
+					} ) {
+						block.type = iceTypes.random()
+					}
+
+					if (currentSize <= MAX_RADIUS) iteration++
+
+					val spherePoints = chest.location.toCenterLocation().spherePoints(currentSize, 500)
+
+					for (player in chest.world.players) {
+						if (player.location.distance(chest.location) >= maxOf(currentSize, 100.0)) continue
+
+						for (spherePoint in spherePoints) {
+							player.spawnParticle(
+								Particle.SNOWFLAKE,
+								spherePoint.x,
+								spherePoint.y,
+								spherePoint.z,
+								1,
+								0.0,
+								0.0,
+								0.0,
+								0.1,
+								null
+							)
 						}
-						attempts++
 
-						val leverState = chest.world.getBlockAt(leverPos.x, leverPos.y, leverPos.z).state
-						if ((leverState.blockData as Switch).isPowered) {
-							setChestFlag(chest, "locked", ByteTag.valueOf(false))
-							setChestFlag(chest, "inactive", ByteTag.valueOf(true))
-							event.player.success("Coolant leak deactivated! The chest is now unlocked.")
-							cancel()
-						}
+						if (player.location.distance(chest.location) >= currentSize) continue
 
-						for (block in getBlocks(
-							chest.world,
-							chest.location.toCenterLocation().toBlockPos(),
-							currentSize
-						) {
-							!it.isEmpty && it.isSolid && !iceTypes.contains(it.type) && it.type != CHEST
-						} ) {
-							block.type = iceTypes.random()
-						}
-
-						if (currentSize <= MAX_RADIUS) iteration++
-
-						val spherePoints = chest.location.toCenterLocation().spherePoints(currentSize, 500)
-
-						for (player in chest.world.players) {
-							if (player.location.distance(chest.location) >= maxOf(currentSize, 100.0)) continue
-							for (spherePoint in spherePoints) {
-
-								player.spawnParticle(
-									Particle.SNOWFLAKE,
-									spherePoint.x,
-									spherePoint.y,
-									spherePoint.z,
-									1,
-									0.0,
-									0.0,
-									0.0,
-									0.1,
-									null
-								)
-							}
-
-							if (player.location.distance(chest.location) >= currentSize) continue
-
-							player.freezeTicks = player.freezeTicks + 10
-						}
-					}.runTaskTimer(IonServer, 0L, 2L)
-				}
+						player.freezeTicks = player.freezeTicks + 10
+					}
+				}.runTaskTimer(IonServer, 0L, 2L)
 			}
 
 			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-				val tileEntityData = CompoundTag()
-
-				tileEntityData.putString("id", "minecraft:chest")
-				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-				return Blocks.CHEST.defaultBlockState() to tileEntityData
+				return Blocks.CHEST.defaultBlockState() to createLootChest("horizonsend:chests/starship_resource")
 			}
 		}
 	)
