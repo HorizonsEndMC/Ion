@@ -10,7 +10,6 @@ import net.starlegacy.util.readSchematic
 import net.starlegacy.util.nms
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.World
 
 @Serializable
@@ -24,7 +23,6 @@ data class ServerConfiguration(
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
 	 * @param maxAsteroidSize: Maximum Size for an Asteroid
-	 * @param maxAsteroidOctaves: Maximum number of octaves for noise generation
 	 * @param blockPalettes: list of Palettes use for the asteroid materials
 	 * @param features List of AsteroidFeature
 	 * @see Palette
@@ -33,9 +31,8 @@ data class ServerConfiguration(
 	data class AsteroidConfig(
 		val baseAsteroidDensity: Double = 0.25,
 		val maxAsteroidSize: Double = 14.0,
-		val maxAsteroidOctaves: Int = 4,
-		val blockPalettes: ArrayList<Palette> = arrayListOf(Palette(1, listOf(Palette.PaletteEntry(Material.STONE.createBlockData().getAsString(false), 1)), setOf(Ore(Material.IRON_ORE.createBlockData().getAsString(true), 3, 3), Ore(Material.LAPIS_ORE.createBlockData().getAsString(true), 2, 3)))),
-		val features: List<AsteroidFeature> = listOf(AsteroidFeature("Example", 1.0, 100.0, 10.0, Pos("ExampleWorld", 420, 100, 69000))),
+		val blockPalettes: ArrayList<Palette>,
+		val features: List<AsteroidFeature>,
 		val wreckClasses: ArrayList<WreckClass>,
 		val wreckMultiplier: Double = 0.01
 	) {
@@ -72,7 +69,6 @@ data class ServerConfiguration(
 
 		/**
 		 * @param material: String representation of the blockstate
-		 * @param maxBlobSize: Size of the ore blob (Official Mojang term)
 		 * @param rolls: Number of rolls for this Palette
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
@@ -80,7 +76,6 @@ data class ServerConfiguration(
 		@Serializable
 		data class Ore(
 			val material: String, // Serialized BlockData
-			val maxBlobSize: Int,
 			val rolls: Int
 		) {
 			@kotlinx.serialization.Transient
@@ -122,7 +117,7 @@ data class ServerConfiguration(
 			val weight: Int
 		) {
 			/**
-			 * The Wreck data class contains its schematic, weight and additional information
+			 * The Wreck data class contains its schematic, and weight
 			 * @param wreckSchematicName: Name of the wreck schematic
 			 * @param weight: Number of rolls for this wreck
 			 * @param encounters: Map of possible scenarios to information about them
