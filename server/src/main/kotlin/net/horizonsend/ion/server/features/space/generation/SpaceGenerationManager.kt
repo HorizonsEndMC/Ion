@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.generators.AsteroidGenerationData
@@ -56,9 +55,9 @@ object SpaceGenerationManager : Listener {
 
 	// Generate asteroids on chunk load
 	@EventHandler
-	fun onChunkLoad(event: ChunkLoadEvent) = runBlocking {
-		val generator = getGenerator((event.world as CraftWorld).handle) ?: return@runBlocking
-		if (event.chunk.persistentDataContainer.has(NamespacedKeys.SPACE_GEN_VERSION)) return@runBlocking
+	fun onChunkLoad(event: ChunkLoadEvent) = coroutineScope.launch {
+		val generator = getGenerator((event.world as CraftWorld).handle) ?: return@launch
+		if (event.chunk.persistentDataContainer.has(NamespacedKeys.SPACE_GEN_VERSION)) return@launch
 
 		event.chunk.persistentDataContainer.set(
 			NamespacedKeys.SPACE_GEN_VERSION,
@@ -71,7 +70,7 @@ object SpaceGenerationManager : Listener {
 		// Generate a number of random asteroids in a chunk, proportional to the density in a portion of the chunk. Allows densities of X>1 asteroid per chunk.
 		launch {
 			// Asteroids
-			val acquiredAsteroids = searchAsteroids(generator, chunkPos, 10)
+			val acquiredAsteroids = searchAsteroids(generator, chunkPos)
 
 			if (acquiredAsteroids.isNotEmpty()) {
 				generateFeature(
@@ -84,8 +83,8 @@ object SpaceGenerationManager : Listener {
 				)
 			}
 
-			// Asteroids
-			val acquiredWrecks = searchWrecks(generator, chunkPos, 10)
+			// Wrecks
+			val acquiredWrecks = searchWrecks(generator, chunkPos)
 
 			if (acquiredWrecks.isNotEmpty()) {
 				generateFeature(
@@ -97,58 +96,15 @@ object SpaceGenerationManager : Listener {
 					this
 				)
 			}
-			// Wrecks
-
-//			for (count in 0..ceil(chunkDensity).toInt()) {
-//				// random number out of 100, chance of asteroid's generation. For use in selection.
-//				val chance = chunkRandom.nextDouble(100.0)
-//
-//				// Selects some asteroids that are generated. Allows for densities of 0<X<1 asteroids per chunk.
-//				if (chance > (chunkDensity * 10)) continue
-//
-//				// Random coordinate generation.
-//				val asteroidX = chunkRandom.nextInt(0, 15) + worldX
-//				val asteroidZ = chunkRandom.nextInt(0, 15) + worldZ
-//				val asteroidY = chunkRandom.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
-//
-//				val asteroid = generator.generateWorldAsteroid(
-//
-//					asteroidX,
-//					asteroidY,
-//					asteroidZ
-//				)
-//
-//				if (asteroid.size + asteroidY > event.world.maxHeight) continue
-//
-//				if (asteroidY - asteroid.size < event.world.minHeight) continue
-//
-//				generateFeature(GenerateAsteroidTask(generator, asteroid))
-//			}
-//
-//			val wreckDensity = chunkDensity * generator.configuration.wreckMultiplier
-//
-//			for (count in 0..ceil(wreckDensity).roundToInt()) {
-//				// random number out of 100, chance of asteroid's generation. For use in selection.
-//				val chance = chunkRandom.nextDouble(100.0)
-//				// Selects some wrecks that are generated. Allows for densities of 0<X<1 wrecks per chunk.
-//				if (chance > (chunkDensity * wreckDensity * 10)) continue
-//				// Random coordinate generation.
-//
-//				val wreckX = chunkRandom.nextInt(0, 15) + worldX
-//				val wreckY = chunkRandom.nextInt(event.world.minHeight + 10, event.world.maxHeight - 10)
-//				val wreckZ = chunkRandom.nextInt(0, 15) + worldZ
-//
-//				val wreck = generator.generateRandomWreckData(wreckX, wreckY, wreckZ)
-//
-//				generateFeature(GenerateWreckTask(generator, wreck))
-//			}
 		}
 	}
 
-	private fun searchAsteroids(generator: SpaceGenerator, chunkPos: ChunkPos, radius: Int): List<AsteroidGenerationData> {
+	private fun searchAsteroids(generator: SpaceGenerator, chunkPos: ChunkPos): List<AsteroidGenerationData> {
 		val (x, z) = chunkPos
 		val cornerX = x.shl(4)
 		val cornerZ = z.shl(4)
+
+		val radius = 10
 
 		val radiusSquared = radius * radius
 
@@ -205,7 +161,7 @@ object SpaceGenerationManager : Listener {
 
 					val distance = distance(cornerX, cornerZ, asteroid.x, asteroid.z)
 
-					if (distance > asteroid.size) continue
+					if (distance > (asteroid.size * 1.25)) continue
 
 					nearbyFeatures.add(asteroid)
 				}
@@ -215,8 +171,10 @@ object SpaceGenerationManager : Listener {
 		return nearbyFeatures
 	}
 
-	private fun searchWrecks(generator: SpaceGenerator, chunkPos: ChunkPos, radius: Int): List<WreckGenerationData> {
+	private fun searchWrecks(generator: SpaceGenerator, chunkPos: ChunkPos): List<WreckGenerationData> {
 		val (x, z) = chunkPos
+
+		val radius = 9
 
 		val radiusSquared = radius * radius
 		val nearbyFeatures = mutableListOf<WreckGenerationData>()

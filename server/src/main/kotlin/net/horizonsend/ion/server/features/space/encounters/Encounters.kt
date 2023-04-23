@@ -328,6 +328,12 @@ object Encounters {
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
 
+				if (getChestFlag(chest, "locked") == ByteTag.valueOf(true)) {
+					event.player.information("The chest is frozen shut! Find the lever to stop the leak!")
+					event.isCancelled = true
+					return
+				}
+
 				placeLever(chest)
 				setChestFlag(chest, "locked", ByteTag.valueOf(true))
 
@@ -753,6 +759,7 @@ object Encounters {
 				if (getChestFlag(chest, "locked") as? ByteTag == ByteTag.valueOf(true)) {
 					event.isCancelled = true
 					event.player.alert("The chest was still locked! More security droids have appeared!")
+					event.isCancelled = true
 				} else {
 					// Not a success condition, just if it hasn't been set yet
 					setChestFlag(chest, "locked", ByteTag.valueOf(true))
