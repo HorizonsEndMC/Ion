@@ -39,6 +39,7 @@ import net.starlegacy.util.normalize
 import net.starlegacy.util.randomInt
 import net.starlegacy.util.toVector
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
@@ -119,7 +120,7 @@ object MiscStarshipCommands : SLCommand() {
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
 
-		tryJump(starship, x, z, maxRange, sender, hyperdriveTier)
+		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
 	}
 
 	private fun parseNumber(string: String, originCoord: Int): Int = when {
@@ -155,10 +156,18 @@ object MiscStarshipCommands : SLCommand() {
 		val x = cachedPlanet.location.x
 		val z = cachedPlanet.location.z
 
-		tryJump(starship, x, z, maxRange, sender, hyperdriveTier)
+		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
 	}
 
-	private fun tryJump(starship: ActivePlayerStarship, x: Int, z: Int, maxRange: Int, sender: Player, tier: Int?) {
+	private fun tryJump(
+		starship: ActivePlayerStarship,
+		x: Int,
+		z: Int,
+		destinationWorld: World,
+		maxRange: Int,
+		sender: Player,
+		tier: Int?
+	) {
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
 			"Intact hyperdrive not found"
@@ -168,16 +177,20 @@ object MiscStarshipCommands : SLCommand() {
 			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
 		}
 
-		val world = starship.serverLevel.world
-		failIf(!SpaceWorlds.contains(world)) {
+		val currentWorld = starship.serverLevel.world
+		failIf(!SpaceWorlds.contains(currentWorld)) {
 			"Not a space world!"
 		}
 
-		failIf(Hyperspace.getHyperspaceWorld(world) == null) {
+		failIf(!SpaceWorlds.contains(destinationWorld)) {
+			"Not a space world!"
+		}
+
+		failIf(Hyperspace.getHyperspaceWorld(currentWorld) == null) {
 			"Hyperspace is not charted in this sector"
 		}
 
-		failIf(!world.worldBorder.isInside(Location(world, x.toDouble(), 128.0, z.toDouble()))) {
+		failIf(!currentWorld.worldBorder.isInside(Location(currentWorld, x.toDouble(), 128.0, z.toDouble()))) {
 			"Coords are out of world border."
 		}
 
@@ -248,7 +261,7 @@ object MiscStarshipCommands : SLCommand() {
 		x1 += randomInt(-offset, offset)
 		z1 += randomInt(-offset, offset)
 
-		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, true)
+		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, destinationWorld,  true)
 	}
 
 	@Suppress("unused")
@@ -461,7 +474,15 @@ object MiscStarshipCommands : SLCommand() {
 
 		if (ship.beacon != null) {
 			val other = ship.beacon!!.exits?.randomOrNull() ?: ship.beacon!!.destination
-			tryJump(ship, other.x, other.z, Int.MAX_VALUE, sender, null)
+			tryJump(
+				ship,
+				other.x,
+				other.z,
+				other.bukkitWorld(),
+				Int.MAX_VALUE,
+				sender,
+				null
+			)
 			ship.beacon = null
 		} else {
 			sender.userError("Starship is not near beacon!")

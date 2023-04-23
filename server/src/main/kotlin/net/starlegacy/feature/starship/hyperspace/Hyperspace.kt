@@ -45,7 +45,14 @@ object Hyperspace : SLComponent() {
 		}
 	}
 
-	fun beginJumpWarmup(starship: ActiveStarship, hyperdrive: HyperdriveSubsystem, x: Int, z: Int, useFuel: Boolean) {
+	fun beginJumpWarmup(
+		starship: ActiveStarship,
+		hyperdrive: HyperdriveSubsystem,
+		x: Int,
+		z: Int,
+		destinationWorld: World,
+		useFuel: Boolean
+	) {
 		if (MassShadows.find(
 				starship.serverLevel.world,
 				starship.centerOfMass.x.toDouble(),
@@ -65,11 +72,14 @@ object Hyperspace : SLComponent() {
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }
 		check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
+
 		val spaceWorld = starship.serverLevel.world
 		check(SpaceWorlds.contains(spaceWorld)) { "${spaceWorld.name} is not a space world" }
+
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
 		checkNotNull(hyperspaceWorld) { "${spaceWorld.name} does not have a hyperspace world" }
-		val dest = Location(spaceWorld, x.toDouble(), 128.0, z.toDouble())
+
+		val dest = Location(destinationWorld, x.toDouble(), 128.0, z.toDouble())
 		val mass = starship.mass
 		val speed = calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
