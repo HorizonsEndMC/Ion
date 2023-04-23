@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.migrator
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.migrator.migrators.InitialMigrator
+import net.horizonsend.ion.server.migrator.migrators.Migrator
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.DATA_VERSION
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -14,25 +16,32 @@ import org.bukkit.persistence.PersistentDataType.INTEGER
 object DataMigrator : Listener {
 	const val LATEST_VERSION = 1
 
-	@Deprecated("Event Listener")
-	@EventHandler(priority = EventPriority.LOWEST)
-	fun onPlayerLoginEvent(event: PlayerLoginEvent) = event.player.migrate(event.player.name)
+	val MIGRATORS = arrayOf(
+		InitialMigrator, // 0 (None) -> 1 (Initial)
+	)
 
 	@Deprecated("Event Listener")
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onChunkLoadEvent(event: ChunkLoadEvent) = event.chunk.migrate("${event.chunk.x}, ${event.chunk.z} @ ${event.chunk.world.name}")
+	fun onPlayerLoginEvent(event: PlayerLoginEvent) =
+		event.player.migrate(event.player.name, Migrator::migratePlayer)
 
 	@Deprecated("Event Listener")
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onWorldInitEvent(event: WorldInitEvent) = event.world.migrate(event.world.name)
+	fun onChunkLoadEvent(event: ChunkLoadEvent) =
+		event.chunk.migrate("${event.chunk.x}, ${event.chunk.z} @ ${event.chunk.world.name}", Migrator::migrateChunk)
 
-	private fun PersistentDataHolder.migrate(name: String) {
+	@Deprecated("Event Listener")
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun onWorldInitEvent(event: WorldInitEvent) =
+		event.world.migrate(event.world.name, Migrator::migrateWorld)
+
+	private fun <T : PersistentDataHolder> T.migrate(name: String, migrate: Migrator.(T) -> Unit) {
 		val initialVersion = persistentDataContainer.get(DATA_VERSION, INTEGER) ?: 0
 
 		for (currentVersion in initialVersion until LATEST_VERSION) {
 			val newVersion = currentVersion + 1
 
-			// TODO: Actually do migrations - Aury @ Astralchroma
+			MIGRATORS[currentVersion].migrate(this)
 
 			persistentDataContainer.set(DATA_VERSION, INTEGER, newVersion)
 			IonServer.slF4JLogger.info("Migrated $name from $currentVersion to $newVersion")
