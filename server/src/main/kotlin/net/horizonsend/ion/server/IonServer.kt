@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.miscellaneous.listeners
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.world.level.chunk.storage.RegionFileVersion
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -38,10 +37,6 @@ object IonServer : JavaPlugin() {
 
 	override fun onEnable() {
 		try {
-			val field = RegionFileVersion::class.java.getDeclaredField("b")
-			field.isAccessible = true
-			field.set(null, RegionFileVersion.VERSION_NONE)
-
 			Connectivity.open(dataFolder)
 
 			prefixProvider = {
