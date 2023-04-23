@@ -38,7 +38,7 @@ object IonServer : JavaPlugin() {
 
 	override fun onEnable() {
 		try {
-			val field = RegionFileVersion::class.java.getDeclaredField("VERSION_DEFLATE")
+			val field = RegionFileVersion::class.java.getDeclaredField("b")
 			field.isAccessible = true
 			field.set(null, RegionFileVersion.VERSION_NONE)
 
