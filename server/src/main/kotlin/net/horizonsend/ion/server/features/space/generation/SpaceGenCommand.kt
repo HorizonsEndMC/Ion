@@ -16,9 +16,7 @@ import net.horizonsend.ion.server.features.space.generation.generators.GenerateA
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.minecraft
-import net.minecraft.nbt.NbtUtils
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
 import java.util.Random
@@ -70,7 +68,7 @@ class SpaceGenCommand : BaseCommand() {
 
 		SpaceGenerationManager.coroutineScope.launch {
 			SpaceGenerationManager.postGenerateFeature(
-				GenerateAsteroidTask(generator, sender.chunk.minecraft.pos, listOf(asteroid)),
+				GenerateAsteroidTask(generator, sender.chunk.minecraft, listOf(asteroid)),
 				SpaceGenerationManager.coroutineScope
 			)
 		}
@@ -103,30 +101,11 @@ class SpaceGenCommand : BaseCommand() {
 
 		SpaceGenerationManager.coroutineScope.launch {
 			SpaceGenerationManager.postGenerateFeature(
-				GenerateWreckTask(generator, sender.chunk.minecraft.pos, listOf(data)),
+				GenerateWreckTask(generator, sender.chunk.minecraft, listOf(data)),
 				SpaceGenerationManager.coroutineScope
 			)
 		}
 
 		sender.success("Success! Generated wreck ${data.wreckName} with encounter ${data.encounter}")
-	}
-
-	@Suppress("unused")
-	@Subcommand("get")
-	@CommandCompletion("WRECK_ENCOUNTER_DATA|STORED_CHUNK_BLOCKS")
-	fun get(sender: Player, namespacedKey: String) {
-		val chunk = sender.world.getChunkAt(sender.location)
-
-		val key = when (namespacedKey) {
-			"WRECK_ENCOUNTER_DATA" -> NamespacedKeys.WRECK_ENCOUNTER_DATA
-			"STORED_CHUNK_BLOCKS" -> NamespacedKeys.STORED_CHUNK_BLOCKS
-			else -> return sender.userError("No data found")
-		}
-
-		val data = BlockSerialization.readChunkCompoundTag(chunk, key)
-		data?.let {
-			val snbt = NbtUtils.structureToSnbt(it)
-			sender.information(snbt)
-		} ?: sender.userError("No data found")
 	}
 }
