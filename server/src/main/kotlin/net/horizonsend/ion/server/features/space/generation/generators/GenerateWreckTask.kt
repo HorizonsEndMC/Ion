@@ -4,19 +4,15 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.space.data.BlockData
+import net.horizonsend.ion.server.features.space.data.CompletedSection
+import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
 import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.Encounters
-import net.horizonsend.ion.server.features.space.encounters.SecondaryChests
-import net.horizonsend.ion.server.features.space.generation.BlockSerialization
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.features.space.encounters.SecondaryChest
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.NbtIo
-import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
@@ -24,24 +20,21 @@ import net.minecraft.world.level.chunk.LevelChunk
 import net.starlegacy.util.nms
 import net.starlegacy.util.toBukkitBlockData
 import net.starlegacy.util.worldEditSession
-import org.bukkit.persistence.PersistentDataType
-import java.io.ByteArrayOutputStream
-import java.io.DataOutputStream
 
 class GenerateWreckTask(
 	override val generator: SpaceGenerator,
-	override val chunk: ChunkPos,
+	override val chunk: LevelChunk,
 	val chunkCoveredWrecks: List<WreckGenerationData>
-) : SpaceGenerationTask<WreckGenerationData.WreckReturnData>() {
+) : SpaceGenerationTask() {
 	val serverLevel = generator.serverLevel
 
-	override val returnData = CompletableDeferred<WreckGenerationData.WreckReturnData>()
+	override val returnData = CompletableDeferred<StoredChunkBlocks>()
 
 	var encounterPrimaryChest: Pair<ChunkPos, BlockPos>? = null
 	private val secondaryChests: MutableList<CompoundTag> = mutableListOf()
 
 	override suspend fun generateChunk(scope: CoroutineScope) {
-		val chunkCompletedSections = mutableListOf<SpaceGenerationReturnData.CompletedSection>()
+		val chunkCompletedSections = mutableListOf<CompletedSection>()
 		scope.launch {
 			for (wreck in chunkCoveredWrecks) {
 				val clipboard: Clipboard = generator.schematicMap[wreck.wreckName]!!
@@ -63,8 +56,8 @@ class GenerateWreckTask(
 						sectionsSet.add(y.shr(4))
 					}
 
-					val chunkOriginX = chunk.x * 16
-					val chunkOriginZ = chunk.z * 16
+					val chunkOriginX = chunk.pos.x * 16
+					val chunkOriginZ = chunk.pos.z * 16
 
 					for (sectionPos in sectionsSet) {
 						val newlyCompleted = generateSection(
@@ -73,28 +66,14 @@ class GenerateWreckTask(
 							sectionPos,
 							chunkOriginX,
 							chunkOriginZ,
-							chunk,
+							chunk.pos,
 							encounter
 						) ?: continue
 
 						chunkCompletedSections.add(newlyCompleted)
 					}
 
-					val serializedWreckData: CompoundTag? = encounterPrimaryChest?.let { chestPos ->
-						return@let wreck.encounter!!.nms(
-							chestPos.second.x,
-							chestPos.second.y,
-							chestPos.second.z
-						)
-					}
-
-					returnData.complete(
-						WreckGenerationData.WreckReturnData(
-							chunkCompletedSections,
-							serializedWreckData,
-							secondaryChests
-						)
-					)
+					returnData.complete(StoredChunkBlocks(chunkCompletedSections))
 				}
 			}
 		}
@@ -108,13 +87,12 @@ class GenerateWreckTask(
 		chunkMinZ: Int,
 		chunkPos: ChunkPos,
 		encounter: Encounter?
-	): SpaceGenerationReturnData.CompletedSection? {
+	): CompletedSection? {
 		val palette = mutableListOf<Pair<BlockState, CompoundTag?>>()
 		val storedBlocks = IntArray(4096)
 		val sectionMinY = sectionY.shl(4)
 
 		palette.add(Blocks.AIR.defaultBlockState() to null)
-		val paletteListTag = ListTag()
 
 		for (x in 0..15) {
 			val worldX = x + chunkMinX
@@ -130,7 +108,7 @@ class GenerateWreckTask(
 					val originalBlockState: BlockState = baseBlock.toImmutableState().toBukkitBlockData().nms
 					val blockNBT = if (originalBlockState.hasBlockEntity()) baseBlock.nbtData else null
 
-					val index = BlockSerialization.posToIndex(x, y, z)
+					val index = CompletedSection.posToIndex(x, y, z)
 
 					if (originalBlockState.isAir) {
 						storedBlocks[index] = 0
@@ -149,13 +127,13 @@ class GenerateWreckTask(
 							encounterPrimaryChest = chunkPos to BlockPos(worldX, worldY, worldZ)
 							combined = encounter.constructChestState()
 						}
-
+						// TODO set chest persistent data containers here
 						// Use let to be able to exit out of the statement
 						if (name.contains("Secondary: ", ignoreCase = true)) {
 							let secondaryChest@{
 								val chestType = name.substringAfter("Secondary: ").substringBefore("\"")
 
-								val secondaryChest = SecondaryChests[chestType] ?: return@secondaryChest
+								val secondaryChest = SecondaryChest[chestType] ?: return@secondaryChest
 
 								combined = secondaryChest.blockState to secondaryChest.NBT
 
@@ -189,17 +167,12 @@ class GenerateWreckTask(
 
 		if (storedBlocks.all { it == 0 }) return null // don't write it if it's all empty
 
-		palette.forEach { blockState ->
-			val base = NbtUtils.writeBlockState(blockState.first)
-			blockState.second?.let { base.put("TileEntity", it) }
-			paletteListTag.add(base)
-		}
+		val blockData = palette.map { BlockData(it.first, it.second) }.toMutableList()
 
-		return SpaceGenerationReturnData.CompletedSection(
+		return CompletedSection(
 			sectionY,
-			storedBlocks,
-			palette,
-			paletteListTag
+			blockData,
+			storedBlocks
 		)
 	}
 }
@@ -227,95 +200,5 @@ data class WreckGenerationData(
 		val additonalInfo: String?
 	) {
 		fun getEncounter(): Encounter = Encounters[identifier]!!
-
-		fun nms(x: Int, y: Int, z: Int): CompoundTag {
-			val beginningTag = CompoundTag()
-
-			beginningTag.putInt("x", x)
-			beginningTag.putInt("y", y)
-			beginningTag.putInt("z", z)
-
-			beginningTag.putString("Encounter Identifier", identifier)
-
-			return beginningTag
-		}
-	}
-
-	data class WreckReturnData(
-		override val completedSectionMap: List<CompletedSection>,
-		val serializedWreckData: CompoundTag? = null,
-		val secondaryChests: List<CompoundTag>
-	) : SpaceGenerationReturnData() {
-		@OptIn(ExperimentalCoroutinesApi::class)
-		override fun finishPlacement(chunk: ChunkPos, generator: SpaceGenerator): Deferred<LevelChunk> {
-			val acquiredChunk = super.finishPlacement(chunk, generator)
-
-			acquiredChunk.invokeOnCompletion {
-				val finishedChunk = acquiredChunk.getCompleted().bukkitChunk
-
-				serializedWreckData?.let { data ->
-					// It is most definitely inside the covered chunks
-					val existingWrecksBaseTag = BlockSerialization
-						.readChunkCompoundTag(
-							finishedChunk,
-							NamespacedKeys.WRECK_ENCOUNTER_DATA
-						)
-
-					// list of compound tags (10)
-					val existingWrecks = existingWrecksBaseTag?.getList("Wrecks", 10) ?: ListTag()
-
-					existingWrecks.add(data)
-
-					val newFinishedData = CompoundTag()
-
-					newFinishedData.put("Wrecks", existingWrecks)
-
-					val byteArray = ByteArrayOutputStream()
-
-					val dataOutput = DataOutputStream(byteArray)
-					NbtIo.write(newFinishedData, dataOutput)
-
-					// Update PDCs
-					finishedChunk.persistentDataContainer.set(
-						NamespacedKeys.WRECK_ENCOUNTER_DATA,
-						PersistentDataType.BYTE_ARRAY,
-						byteArray.toByteArray()
-					)
-				}
-
-				for (chest in secondaryChests) {
-					val existingWrecksBaseTag = BlockSerialization
-						.readChunkCompoundTag(
-							finishedChunk,
-							NamespacedKeys.WRECK_ENCOUNTER_DATA
-						)
-
-					// list of compound tags (10)
-					val existingChests = existingWrecksBaseTag?.getList("SecondaryChests", 10) ?: ListTag()
-					val existingWrecks = existingWrecksBaseTag?.getList("Wrecks", 10) ?: ListTag()
-
-					existingChests.add(chest)
-
-					val newFinishedData = CompoundTag()
-
-					newFinishedData.put("SecondaryChests", existingChests)
-					newFinishedData.put("Wrecks", existingWrecks)
-
-					val byteArray = ByteArrayOutputStream()
-
-					val dataOutput = DataOutputStream(byteArray)
-					NbtIo.write(newFinishedData, dataOutput)
-
-					// Update PDCs
-					finishedChunk.persistentDataContainer.set(
-						NamespacedKeys.WRECK_ENCOUNTER_DATA,
-						PersistentDataType.BYTE_ARRAY,
-						byteArray.toByteArray()
-					)
-				}
-			}
-
-			return acquiredChunk
-		}
 	}
 }

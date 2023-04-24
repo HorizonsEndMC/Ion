@@ -8,32 +8,11 @@ import java.util.Random
 
 class SpaceChunkGenerator : ChunkGenerator() {
 	override fun generateNoise(worldInfo: WorldInfo, random: Random, chunkX: Int, chunkZ: Int, chunkData: ChunkData) {}
-
-	override fun getDefaultPopulators(world: World): MutableList<BlockPopulator> {
-		return mutableListOf()
-	}
-
-	override fun shouldGenerateSurface(): Boolean {
-		return false
-	}
-
-	override fun shouldGenerateCaves(): Boolean {
-		return true
-	}
-
-	override fun shouldGenerateMobs(): Boolean {
-		return false
-	}
-
-	override fun shouldGenerateDecorations(): Boolean {
-		return false
-	}
-
-	override fun shouldGenerateStructures(): Boolean {
-		return false
-	}
-
-	override fun shouldGenerateNoise(): Boolean {
-		return false
-	}
+	override fun getDefaultPopulators(world: World) = mutableListOf<BlockPopulator>()
+	override fun shouldGenerateSurface() = false
+	override fun shouldGenerateCaves() = true
+	override fun shouldGenerateMobs() = false
+	override fun shouldGenerateDecorations() = false
+	override fun shouldGenerateStructures() = false
+	override fun shouldGenerateNoise() = false
 }
