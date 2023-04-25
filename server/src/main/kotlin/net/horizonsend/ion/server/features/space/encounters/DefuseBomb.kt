@@ -11,8 +11,6 @@ import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.spherePoints
 import net.starlegacy.util.toBlockPos
 import org.bukkit.Material
@@ -162,11 +160,7 @@ object DefuseBomb: Encounter(identifier = "defuse_bomb") {
 		}.runTaskTimer(IonServer, 0L, 1L)
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		val tileEntityData = CompoundTag()
-
-		tileEntityData.putString("id", "minecraft:chest")
-		tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-		return Blocks.CHEST.defaultBlockState() to tileEntityData
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("horizonsend:chests/guns")
 	}
 }

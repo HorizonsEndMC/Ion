@@ -5,8 +5,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.spherePoints
 import org.bukkit.Sound
 import org.bukkit.block.Chest
@@ -44,11 +42,7 @@ object TimedBomb : Encounter(identifier = "timed_bomb") {
 		}.runTaskTimer(IonServer, 0L, 1L)
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		val tileEntityData = CompoundTag()
-
-		tileEntityData.putString("id", "minecraft:chest")
-		tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-		return Blocks.CHEST.defaultBlockState() to tileEntityData
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("horizonsend:chests/guns")
 	}
 }

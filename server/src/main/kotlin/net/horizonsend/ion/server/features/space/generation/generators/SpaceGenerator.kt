@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
-import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.io.File
 import java.io.FileInputStream
 import java.util.Random
@@ -41,9 +40,6 @@ class SpaceGenerator(
 	val oreMap: Map<String, BlockState> = configuration.blockPalettes.flatMap { it.ores }.associate {
 		it.material to it.blockState
 	}
-
-	// World asteroid palette noise
-	private val worldSimplexNoise = SimplexOctaveGenerator(random, 1).apply { this.setScale(0.0010) }
 
 	// Palettes weighted
 	private val weightedPalettes = configuration.paletteWeightedList()
@@ -83,17 +79,7 @@ class SpaceGenerator(
 
 		val formattedSize = size ?: generateSize()
 
-		val palette = weightedPalettes.getEntry(
-			(
-				worldSimplexNoise.noise(
-					x.toDouble(),
-					z.toDouble(),
-					1.0,
-					1.0,
-					true
-				) + 1
-				) / 2
-		)
+		val palette = weightedPalettes.random(chunkRandom)
 
 		val oreRatio = index?.let {
 			configuration.blockPalettes[it].oreRatio
@@ -119,6 +105,45 @@ class SpaceGenerator(
 			formattedSize,
 			formattedOctaves
 		)
+	}
+
+	fun generateRandomAsteroid(
+		chunkSeed: Long,
+		chunkRandom: Random,
+		maxHeight: Int,
+		minHeight: Int,
+		x: Int,
+		y: Int,
+		z: Int
+	): AsteroidGenerationData {
+		var newY = y
+
+		fun generateSize(): Double {
+			val newSize = chunkRandom.nextDouble(10.0, configuration.maxAsteroidSize)
+			val downShift: Boolean = y + newSize > maxHeight
+			val upShift: Boolean = y - newSize < minHeight
+
+			if (upShift) newY = (y - (y + newSize - maxHeight)).toInt()
+			if (downShift) newY = (y + (y - newSize + minHeight)).toInt()
+
+			return newSize
+		}
+
+		val size = generateSize()
+		val palette = weightedPalettes.random(chunkRandom)
+
+		return AsteroidGenerationData(
+			chunkSeed,
+			x,
+			newY,
+			z,
+			configuration.blockPalettes[palette.first].oreRatio,
+			palette.second,
+			palette.first,
+			size,
+			2
+		)
+
 	}
 
 	fun parseDensity(x: Double, y: Double, z: Double): Double {
@@ -159,20 +184,17 @@ class SpaceGenerator(
 		return SpongeSchematicReader(NBTInputStream(GZIPInputStream(FileInputStream(file)))).read()
 	}
 
-	fun generateRandomWreckData(x: Int, y: Int, z: Int): WreckGenerationData {
-		val wreckClass = configuration.weightedWreckList.random()
-		val wreck = wreckClass.random()
-		val encounter = wreck.encounterWeightedRandomList.random()
+	fun generateRandomWreckData(chunkRandom: Random, x: Int, y: Int, z: Int): WreckGenerationData {
+		val wreckClass = configuration.weightedWreckList.random(chunkRandom)
+		val wreck = wreckClass.random(chunkRandom)
+		val encounter = wreck.encounterWeightedRandomList.random(chunkRandom)
 
 		return WreckGenerationData(
 			x,
 			y,
 			z,
 			wreck.wreckSchematicName,
-			WreckEncounterData(
-				encounter,
-				null
-			)
+			WreckEncounterData(encounter)
 		)
 	}
 

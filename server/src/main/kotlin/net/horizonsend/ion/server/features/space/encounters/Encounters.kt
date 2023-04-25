@@ -11,8 +11,6 @@ import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.PASSCODE_CODE
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.nations.gui.skullItem
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.randomInt
@@ -152,12 +150,8 @@ object Encounters {
 				}
 			}
 
-			override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-				val tileEntityData = CompoundTag()
-
-				tileEntityData.putString("id", "minecraft:chest")
-				tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-				return Blocks.CHEST.defaultBlockState() to tileEntityData
+			override fun constructChestNBT(): CompoundTag {
+				return createLootChest("horizonsend:chests/guns")
 			}
 		}
 	)
@@ -223,8 +217,8 @@ object Encounters {
 					wreck.getInt("z") == chest.z)
 
 	fun createLootChest(lootTable: String): CompoundTag {
-		val tileEntityData = CompoundTag()
-		tileEntityData.putString("id", "minecraft:chest")
+		val tileEntityData = Encounter.baseChestNBT
+
 		tileEntityData.putString("LootTable", lootTable)
 		return tileEntityData
 	}
