@@ -7,7 +7,8 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER_DATA
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.PASSCODE_CODE
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.Blocks
@@ -117,11 +118,10 @@ object Encounters {
 				chest.location.world.playSound(chest.location, BLOCK_NOTE_BLOCK_SNARE, 5.0f, 1.0f)
 			}
 
-			var passcode = ""
-
 			override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
 				// Generate a new passcode unique to each wreck
-				passcode = randomInt(0, 999999).toString().padStart(6, '0')
+				val passcode = randomInt(0, 999999).toString().padStart(6, '0')
+				setChestFlag(world.getBlockAt(chestX, chestY, chestZ).state as Chest, PASSCODE_CODE, passcode)
 			}
 
 			override fun onChestInteract(event: PlayerInteractEvent) {
@@ -129,9 +129,10 @@ object Encounters {
 
 				event.isCancelled = true
 				val chest = (targetedBlock.state as? Chest) ?: return
+				val passcode = getChestFlag(chest, PASSCODE_CODE)
 				var currentCode = ""
 
-				event.player.information("DEBUG: $passcode")
+				event.player.information("DEBUG: Passcode: $passcode")
 
 				MenuHelper.apply {
 					val pane = staticPane(3, 0, 3, 4)
@@ -140,14 +141,14 @@ object Encounters {
 						pane.addItem(
 							guiButton(skullItem(i.toString(), headID[i]!!, skinID[i]!!)) {
 								currentCode += i.toString()
-								event.player.information("DEBUG: $currentCode")
-								paneInteractCheck(event.player, chest, passcode, currentCode)
-							}.setName(MiniMessage.miniMessage().deserialize(i.toString())),
+								event.player.information("DEBUG: Current code: $currentCode")
+								paneInteractCheck(event.player, chest, passcode!!, currentCode)
+							}.setName(miniMessage().deserialize(i.toString())),
 							coordinates[i]!!.first, coordinates[i]!!.second
 						)
 					}
 
-					gui(4, "test").withPane(pane).show(event.player)
+					gui(4, "Enter passcode:").withPane(pane).show(event.player)
 				}
 			}
 
