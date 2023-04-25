@@ -13,7 +13,7 @@ import org.bukkit.persistence.PersistentDataType
 enum class SecondaryChest(val blockState: BlockState, val NBT: CompoundTag?, val money: Int?) {
 	REPAIR_MATERIALS(
 		Blocks.CHEST.defaultBlockState(),
-        Encounters.createLootChest("horizonsend:chests/starship_resource"),
+		Encounters.createLootChest("horizonsend:chests/starship_resource"),
 		500
 	),
 	FOOD(Blocks.CHEST.defaultBlockState(), null, 500),

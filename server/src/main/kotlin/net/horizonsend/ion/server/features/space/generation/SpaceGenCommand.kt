@@ -90,14 +90,14 @@ class SpaceGenCommand : BaseCommand() {
 			val encounterData = encounter?.let { encounterName ->
 
 				WreckGenerationData.WreckEncounterData(
-					encounterName, null
+					encounterName
 				)
 			}
 
 			WreckGenerationData(
 				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(), wreckName, encounterData
 			)
-		} ?: generator.generateRandomWreckData(sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
+		} ?: generator.generateRandomWreckData(Random(sender.chunk.minecraft.pos.longKey), sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
 
 		SpaceGenerationManager.coroutineScope.launch {
 			SpaceGenerationManager.postGenerateFeature(

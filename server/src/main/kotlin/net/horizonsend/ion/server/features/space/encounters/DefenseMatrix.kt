@@ -7,8 +7,6 @@ import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.distance
 import net.starlegacy.util.toBlockPos
 import org.bukkit.FluidCollisionMode
@@ -101,11 +99,7 @@ object DefenseMatrix : Encounter(identifier = "DEFENSE_MATRIX") { // TODO
 		}.runTaskTimer(IonServer, 20L, 60L)
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		val tileEntityData = CompoundTag()
-
-		tileEntityData.putString("id", "minecraft:chest")
-		tileEntityData.putString("LootTable", "horizonsend:chests/guns")
-		return Blocks.CHEST.defaultBlockState() to tileEntityData
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("horizonsend:chests/guns")
 	}
 }

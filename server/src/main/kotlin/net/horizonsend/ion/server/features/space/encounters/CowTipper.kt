@@ -10,8 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.spherePoints
 import org.bukkit.Sound
 import org.bukkit.block.Chest
@@ -73,11 +71,7 @@ object CowTipper : Encounter(identifier = "cow_tipper") {
 		}.runTaskTimer(IonServer, 0L, 1L)
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		val tileEntityData = CompoundTag()
-
-		tileEntityData.putString("id", "minecraft:chest")
-		tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-		return Blocks.CHEST.defaultBlockState() to tileEntityData
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("minecraft:chests/abandoned_mineshaft")
 	}
 }

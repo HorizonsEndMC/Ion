@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.space.data
 
-import kotlinx.coroutines.sync.Mutex
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.BLOCKS
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.PALETTE
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.Y
@@ -16,7 +15,7 @@ import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.INTEGER_ARRAY
 import org.bukkit.persistence.PersistentDataType.TAG_CONTAINER_ARRAY
 
-data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, private val blocks: IntArray) {
+data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val blocks: IntArray) {
     companion object : PersistentDataType<PersistentDataContainer, CompletedSection> {
         override fun getPrimitiveType() = PersistentDataContainer::class.java
         override fun getComplexType() = CompletedSection::class.java
@@ -106,4 +105,6 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, pri
 
 		return palette[blocks[index]]
 	}
+
+	fun isEmpty(): Boolean = blocks.all { it == 0 }
 }

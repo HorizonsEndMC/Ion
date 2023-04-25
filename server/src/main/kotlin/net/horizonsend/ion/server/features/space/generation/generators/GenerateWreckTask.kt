@@ -11,15 +11,18 @@ import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
 import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest
-import net.minecraft.core.BlockPos
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.ChunkPos
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST
+import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import net.starlegacy.util.nms
 import net.starlegacy.util.toBukkitBlockData
 import net.starlegacy.util.worldEditSession
+import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataContainer
+import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataTypeRegistry
+import org.bukkit.persistence.PersistentDataType.STRING
 
 class GenerateWreckTask(
 	override val generator: SpaceGenerator,
@@ -29,9 +32,6 @@ class GenerateWreckTask(
 	val serverLevel = generator.serverLevel
 
 	override val returnData = CompletableDeferred<StoredChunkBlocks>()
-
-	var encounterPrimaryChest: Pair<ChunkPos, BlockPos>? = null
-	private val secondaryChests: MutableList<CompoundTag> = mutableListOf()
 
 	override suspend fun generateChunk(scope: CoroutineScope) {
 		val chunkCompletedSections = mutableListOf<CompletedSection>()
@@ -66,7 +66,6 @@ class GenerateWreckTask(
 							sectionPos,
 							chunkOriginX,
 							chunkOriginZ,
-							chunk.pos,
 							encounter
 						) ?: continue
 
@@ -85,14 +84,13 @@ class GenerateWreckTask(
 		sectionY: Int,
 		chunkMinX: Int,
 		chunkMinZ: Int,
-		chunkPos: ChunkPos,
 		encounter: Encounter?
 	): CompletedSection? {
-		val palette = mutableListOf<Pair<BlockState, CompoundTag?>>()
+		val palette = mutableListOf<BlockData>()
 		val storedBlocks = IntArray(4096)
 		val sectionMinY = sectionY.shl(4)
 
-		palette.add(Blocks.AIR.defaultBlockState() to null)
+		palette += BlockData(Blocks.AIR.defaultBlockState(), null)
 
 		for (x in 0..15) {
 			val worldX = x + chunkMinX
@@ -115,50 +113,21 @@ class GenerateWreckTask(
 						continue
 					}
 
-					var combined = originalBlockState to blockNBT?.nms()
+					val blockData = BlockData(originalBlockState, blockNBT?.nms())
 
-					blockNBT?.let blockNBT@{
-						val name = blockNBT.getString("CustomName")
-
-						encounter?.let encounter@{ encounter ->
-							if (originalBlockState.block != Blocks.CHEST) return@encounter
-							if (!name.contains("Encounter Chest", true)) return@encounter
-
-							encounterPrimaryChest = chunkPos to BlockPos(worldX, worldY, worldZ)
-							combined = encounter.constructChestState()
-						}
-						// TODO set chest persistent data containers here
-						// Use let to be able to exit out of the statement
-						if (name.contains("Secondary: ", ignoreCase = true)) {
-							let secondaryChest@{
-								val chestType = name.substringAfter("Secondary: ").substringBefore("\"")
-
-								val secondaryChest = SecondaryChest[chestType] ?: return@secondaryChest
-
-								combined = secondaryChest.blockState to secondaryChest.NBT
-
-								val serialized = CompoundTag()
-
-								serialized.putInt("x", worldX)
-								serialized.putInt("y", worldY)
-								serialized.putInt("z", worldZ)
-
-								secondaryChest.money?.let { money -> serialized.putInt("Money", money) }
-
-								secondaryChests.add(serialized)
-							}
-						}
+					if (originalBlockState.`is`(Blocks.CHEST)) {
+						checkChestFlags(encounter, blockData)
 					}
 
 					// Format the block entity
-					(combined.second)?.putInt("x", worldX)
-					(combined.second)?.putInt("y", worldY)
-					(combined.second)?.putInt("z", worldZ)
+					(blockData.blockEntityTag)?.putInt("x", worldX)
+					(blockData.blockEntityTag)?.putInt("y", worldY)
+					(blockData.blockEntityTag)?.putInt("z", worldZ)
 
-					val blockIndex = if (!palette.contains(combined)) {
-						palette.add(combined)
+					val blockIndex = if (!palette.contains(blockData)) {
+						palette.add(blockData)
 						palette.lastIndex
-					} else palette.indexOf(combined)
+					} else palette.indexOf(blockData)
 
 					storedBlocks[index] = blockIndex
 				}
@@ -167,14 +136,45 @@ class GenerateWreckTask(
 
 		if (storedBlocks.all { it == 0 }) return null // don't write it if it's all empty
 
-		val blockData = palette.map { BlockData(it.first, it.second) }.toMutableList()
-
 		return CompletedSection(
 			sectionY,
-			blockData,
+			palette,
 			storedBlocks
 		)
 	}
+}
+
+private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
+	val (_, blockNBT) = blockData
+	val newPDC = CraftPersistentDataContainer(CraftPersistentDataTypeRegistry())
+
+	if (!blockNBT!!.contains("CustomName")) return
+	val name = blockNBT.getString("CustomName")
+
+	if (!name.contains("Secondary: ", true)) {
+		println(1)
+		val chestType = name.substringAfter("Secondary: ").substringBefore("\"")
+
+		SecondaryChest[chestType]?.let {
+			blockData.blockEntityTag = it.NBT
+			newPDC.set(SECONDARY_CHEST, STRING, it.name)
+		}
+	}
+
+	if (!name.contains("Encounter Chest", true)) {
+		println(2)
+		encounter?.let {
+			println(3)
+
+			blockData.blockEntityTag = it.constructChestNBT()
+			newPDC.set(ENCOUNTER, STRING, it.identifier)
+		}
+	}
+
+	println(NbtUtils.structureToSnbt(blockData.blockEntityTag))
+	blockData.blockEntityTag?.merge((newPDC).toTagCompound()) // TODO fix this
+
+	println(NbtUtils.structureToSnbt(blockData.blockEntityTag))
 }
 
 /**
@@ -196,8 +196,7 @@ data class WreckGenerationData(
 	 * @param identifier The identifier string for the encounter class
 	 **/
 	data class WreckEncounterData(
-		val identifier: String,
-		val additonalInfo: String?
+		val identifier: String
 	) {
 		fun getEncounter(): Encounter = Encounters[identifier]!!
 	}

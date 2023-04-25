@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.space.generation
 
+import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.math.BlockVector3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,12 +10,10 @@ import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
-import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerationTask
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
-import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SPACE_GEN_VERSION
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.server.level.ServerLevel
@@ -69,7 +69,7 @@ object SpaceGenerationManager : Listener {
 		val cornerZ = chunkPos.z.shl(4)
 
 		val acquiredAsteroids = search(generator, chunkPos) { chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z ->
-			val asteroid = generator.generateWorldAsteroid(chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z)
+			val asteroid = generator.generateRandomAsteroid(chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z)
 			val distance = distance(cornerX, cornerZ, asteroid.x, asteroid.z)
 			if (distance > (asteroid.size * 1.25)) null else asteroid
 		}
@@ -79,8 +79,8 @@ object SpaceGenerationManager : Listener {
 		}
 
 		// Wrecks
-		val acquiredWrecks = search(generator, chunkPos) { _, _, _, _, x, y, z ->
-			generator.generateRandomWreckData(x, y, z)
+		val acquiredWrecks = search(generator, chunkPos) { _, chunkRandom, _, _, x, y, z ->
+			generator.generateRandomWreckData(chunkRandom, x, y, z)
 		}
 
 		if (acquiredWrecks.isNotEmpty()) {
@@ -167,63 +167,60 @@ object SpaceGenerationManager : Listener {
 	suspend fun <T: SpaceGenerationTask> postGenerateFeature(task: T, scope: CoroutineScope) {
 		val generator = task.generator
 
-//		(task as? GenerateAsteroidTask)?.let {
-//			val asteroid = task.asteroids.first()
-//
-//			val xRange =
-//				IntRange(
-//					asteroid.x - (asteroid.size * generator.searchRadius).toInt(),
-//					asteroid.x + (asteroid.size * generator.searchRadius).toInt()
-//				)
-//			val zRange =
-//				IntRange(
-//					asteroid.z - (asteroid.size * generator.searchRadius).toInt(),
-//					asteroid.z + (asteroid.size * generator.searchRadius).toInt()
-//				)
-//
-//			val chunkXRange = IntRange(xRange.first.shr(4), xRange.last.shr(4))
-//			val chunkZRange = IntRange(zRange.first.shr(4), zRange.last.shr(4))
-//
-//			for (x in chunkXRange) {
-//				for (z in chunkZRange) {
-//					val chunkPos = ChunkPos(x, z)
-//
-//					generateFeature(
-//						GenerateAsteroidTask(
-//							generator,
-//							chunkPos,
-//							listOf(asteroid)
-//						),
-//						scope
-//					)
-//				}
-//			}
-//		}
-//
-//		(task as? GenerateWreckTask)?.let {
-//			val wreck = task.chunkCoveredWrecks.first()
-//			val clipboard: Clipboard = generator.schematicMap[wreck.wreckName]!!
-//
-//			val region = clipboard.region.clone()
-//			val targetBlockVector: BlockVector3 = BlockVector3.at(wreck.x, wreck.y, wreck.z)
-//			val offset: BlockVector3 = targetBlockVector.subtract(clipboard.origin)
-//
-//			region.shift(offset)
-//
-//			val chunks = region.chunks
-//
-//			for (chunk in chunks) {
-//				val chunkPos = ChunkPos(chunk.x, chunk.z)
-//
-//				generateFeature(
-//					GenerateWreckTask(
-//					generator,
-//					chunkPos,
-//					listOf(wreck)
-//					),
-//					scope
-//				)
-//			}
-//		}
+		(task as? GenerateAsteroidTask)?.let {
+			val asteroid = task.asteroids.first()
+
+			val xRange =
+				IntRange(
+					asteroid.x - (asteroid.size * generator.searchRadius).toInt(),
+					asteroid.x + (asteroid.size * generator.searchRadius).toInt()
+				)
+			val zRange =
+				IntRange(
+					asteroid.z - (asteroid.size * generator.searchRadius).toInt(),
+					asteroid.z + (asteroid.size * generator.searchRadius).toInt()
+				)
+
+			val chunkXRange = IntRange(xRange.first.shr(4), xRange.last.shr(4))
+			val chunkZRange = IntRange(zRange.first.shr(4), zRange.last.shr(4))
+
+			for (x in chunkXRange) {
+				for (z in chunkZRange) {
+
+					generateFeature(
+						GenerateAsteroidTask(
+							generator,
+							generator.serverLevel.world.getChunkAt(x, z).minecraft,
+							listOf(asteroid)
+						),
+						scope
+					)
+				}
+			}
+		}
+
+		(task as? GenerateWreckTask)?.let {
+			val wreck = task.chunkCoveredWrecks.first()
+			val clipboard: Clipboard = generator.schematicMap[wreck.wreckName]!!
+
+			val region = clipboard.region.clone()
+			val targetBlockVector: BlockVector3 = BlockVector3.at(wreck.x, wreck.y, wreck.z)
+			val offset: BlockVector3 = targetBlockVector.subtract(clipboard.origin)
+
+			region.shift(offset)
+
+			val chunks = region.chunks
+
+			for (iterated in chunks) {
+				generateFeature(
+					GenerateWreckTask(
+						generator,
+						generator.serverLevel.world.getChunkAt(iterated.x, iterated.z).minecraft,
+						listOf(wreck)
+					),
+					scope
+				)
+			}
+		}
 	}
 }

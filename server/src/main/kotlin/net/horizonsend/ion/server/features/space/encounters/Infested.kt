@@ -4,14 +4,10 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.runnable
-import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
 import org.bukkit.entity.Entity
@@ -61,11 +57,7 @@ object Infested : Encounter(identifier = "infested") {
 		}.runTaskTimer(IonServer, 0L, 1L)
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		val tileEntityData = CompoundTag()
-
-		tileEntityData.putString("id", "minecraft:chest")
-		tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-		return Blocks.CHEST.defaultBlockState() to tileEntityData
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("horizonsend:chests/guns")
 	}
 }

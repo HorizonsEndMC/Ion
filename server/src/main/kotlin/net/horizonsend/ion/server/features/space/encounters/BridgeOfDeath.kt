@@ -5,10 +5,7 @@ import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
 import net.kyori.adventure.text.format.NamedTextColor
-import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.util.Notify
@@ -159,11 +156,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 		)
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		val tileEntityData = CompoundTag()
-
-		tileEntityData.putString("id", "minecraft:chest")
-		tileEntityData.putString("LootTable", "minecraft:chests/abandoned_mineshaft")
-		return Blocks.CHEST.defaultBlockState() to tileEntityData
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("minecraft:chests/abandoned_mineshaft")
 	}
 }
