@@ -1,6 +1,7 @@
 package net.starlegacy
 
 import net.horizonsend.ion.server.legacy.NewPlayerProtection
+import net.horizonsend.ion.server.legacy.commands.AdminCommands
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.horizonsend.ion.server.legacy.commands.RainbowProjectileCommand
 import net.horizonsend.ion.server.legacy.commands.RandomTargetCommand
@@ -103,5 +104,6 @@ val commands = listOf(
 
 	Starships(),
 	GracePeriod,
-	NewPlayerProtection
+	NewPlayerProtection,
+	AdminCommands
 )
