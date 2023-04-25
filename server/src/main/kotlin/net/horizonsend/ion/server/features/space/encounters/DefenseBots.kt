@@ -13,8 +13,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.toBlockPos
 import net.starlegacy.util.updateMeta
 import org.bukkit.Location
@@ -98,12 +96,8 @@ object DefenseBots : Encounter(identifier = "defense_bots") {
 		}
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		val tileEntityData = CompoundTag()
-
-		tileEntityData.putString("id", "minecraft:chest")
-		tileEntityData.putString("LootTable", "horizonsend:chests/guns")
-		return Blocks.CHEST.defaultBlockState() to tileEntityData
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("horizonsend:chests/guns")
 	}
 }
 

@@ -13,11 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.Z
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.minecraft.core.BlockPos
-import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.IntTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.spherePoints
 import net.starlegacy.util.toBlockPos
 import org.bukkit.Material
@@ -158,7 +154,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 		}.runTaskTimer(IonServer, 0L, 2L)
 	}
 
-	override fun constructChestState(): Pair<BlockState, CompoundTag?> {
-		return Blocks.CHEST.defaultBlockState() to Encounters.createLootChest("horizonsend:chests/starship_resource")
+	override fun constructChestNBT(): CompoundTag {
+		return Encounters.createLootChest("horizonsend:chests/starship_resource")
 	}
 }
