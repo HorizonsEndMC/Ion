@@ -16,7 +16,7 @@ import org.bukkit.entity.ShulkerBullet
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
 
-object DefenseMatrix : Encounter(identifier = "DEFENSE_MATRIX") { // TODO
+object DefenseMatrix : Encounter(identifier = "defense_matrix") { // TODO
 	override fun onChestInteract(event: PlayerInteractEvent) {
 		val targetedBlock = event.clickedBlock!!
 
