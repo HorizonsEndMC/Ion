@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
@@ -73,9 +72,11 @@ object SpaceGenerationManager : Listener {
 			if (distance > (asteroid.size * 1.25)) null else asteroid
 		}
 
-		val acquiredWrecks = search(generator, chunkPos, 4207097) { _, chunkRandom, _, _, x, y, z ->
-			generator.generateRandomWreckData(chunkRandom, x, y, z)
-		}
+		val acquiredWrecks = if (generator.configuration.wreckClasses.isNotEmpty()) {
+			search(generator, chunkPos, 4207097) { _, chunkRandom, _, _, x, y, z ->
+				generator.generateRandomWreckData(chunkRandom, x, y, z)
+			}
+		} else listOf()
 
 		if (acquiredAsteroids.isEmpty() && acquiredWrecks.isEmpty()) return@launch//@runBlocking
 

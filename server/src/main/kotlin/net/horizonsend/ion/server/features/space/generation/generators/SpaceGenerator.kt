@@ -184,7 +184,7 @@ class SpaceGenerator(
 	fun generateRandomWreckData(chunkRandom: Random, x: Int, y: Int, z: Int): WreckGenerationData {
 		val wreckClass = configuration.weightedWreckList.random(chunkRandom)
 		val wreck = wreckClass.random(chunkRandom)
-		val encounter = Encounters[wreck.encounterWeightedRandomList.random(chunkRandom)]
+		val encounter = wreck.encounterWeightedRandomList.randomOrNull(chunkRandom)?.let { Encounters[it] }
 
 		return WreckGenerationData(
 			x,

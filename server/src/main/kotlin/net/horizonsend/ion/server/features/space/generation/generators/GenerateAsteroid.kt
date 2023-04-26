@@ -64,7 +64,7 @@ object GenerateAsteroid {
 					if ((
 								taskRandom.nextDouble(0.0, 1.0) <= asteroid.oreRatio) && !block.isAir
 					) {
-						val ore = generator.weightedOres[asteroid.paletteID]!!.random()
+						val ore = generator.weightedOres[asteroid.paletteID]!!.randomOrNull()
 						block = generator.oreMap[ore]!!
 					}
 

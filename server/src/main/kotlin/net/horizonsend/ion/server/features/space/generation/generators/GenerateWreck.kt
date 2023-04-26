@@ -77,7 +77,7 @@ private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
 	val name = blockNBT.getString("CustomName")
 
 	if (name.contains("Secondary: ", true)) {
-		val chestType = name.substringAfter("Secondary: ").substringBefore("\"")
+		val chestType = name.substringAfter("Secondary Chest: ").substringBefore("\"")
 
 		SecondaryChest[chestType]?.let {
 			blockData.blockEntityTag = (it.NBT ?: CompoundTag())
