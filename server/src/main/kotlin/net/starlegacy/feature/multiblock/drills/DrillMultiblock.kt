@@ -1,11 +1,13 @@
 package net.starlegacy.feature.multiblock.drills
 
+import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
+import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.getFacing
@@ -178,6 +180,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		event.isBurning = false
 		event.burnTime = 0
+
 		val fuel = furnace.inventory.fuel
 		val smelting = furnace.inventory.smelting
 		if (fuel == null || smelting == null) return
@@ -190,6 +193,13 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			setUser(sign, null)
 			return
 		}
+
+		if (SpaceWorlds.contains(furnace.world)) {
+			player.userError("Starship drills are not optimized for use in outer space! The starship drill was not enabled.")
+			setUser(sign, null)
+			return
+		}
+
 		drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
 		val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
 
