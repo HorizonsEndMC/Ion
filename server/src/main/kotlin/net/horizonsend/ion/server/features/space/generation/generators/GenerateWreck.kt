@@ -9,13 +9,13 @@ import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.StringTag
+import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.nms
 import net.starlegacy.util.toBukkitBlockData
-import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataContainer
-import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataTypeRegistry
-import org.bukkit.persistence.PersistentDataType.STRING
 
 object GenerateWreck {
 	fun generateWreckSection(
@@ -72,32 +72,41 @@ object GenerateWreck {
 
 private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
 	val (_, blockNBT) = blockData
-	val newPDC = CraftPersistentDataContainer(CraftPersistentDataTypeRegistry())
 
 	if (!blockNBT!!.contains("CustomName")) return
 	val name = blockNBT.getString("CustomName")
 
-	if (!name.contains("Secondary: ", true)) {
-		println(1)
+	if (name.contains("Secondary: ", true)) {
 		val chestType = name.substringAfter("Secondary: ").substringBefore("\"")
 
 		SecondaryChest[chestType]?.let {
-			blockData.blockEntityTag = it.NBT
-			newPDC.set(SECONDARY_CHEST, STRING, it.name)
+			blockData.blockEntityTag = (it.NBT ?: CompoundTag())
+				.manualPDC(SECONDARY_CHEST.key to StringTag.valueOf(it.name))
 		}
 	}
 
-	if (!name.contains("Encounter Chest", true)) {
-		println(2)
+	if (name.contains("Encounter Chest", true)) {
 		encounter?.let {
-			println(3)
-
 			blockData.blockEntityTag = it.constructChestNBT()
-			newPDC.set(ENCOUNTER, STRING, it.identifier)
+				.manualPDC(ENCOUNTER.key to StringTag.valueOf(it.identifier))
 		}
 	}
+}
 
-	blockData.blockEntityTag?.merge((newPDC).toTagCompound()) // TODO fix this
+private fun CompoundTag.manualPDC(vararg keys: Pair<String, Tag>): CompoundTag {
+	val compound = CompoundTag()
+
+	for ((key, tag) in keys) {
+		val name = "ion:$key"
+		compound.put(name, tag)
+	}
+
+	this.put(
+		"PublicBukkitValues",
+		compound
+	)
+
+	return this
 }
 
 /**

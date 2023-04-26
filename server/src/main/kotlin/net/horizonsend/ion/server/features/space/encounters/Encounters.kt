@@ -1,29 +1,15 @@
 package net.horizonsend.ion.server.features.space.encounters
 
-import java.util.UUID
 import kotlin.math.ceil
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER_DATA
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.PASSCODE_CODE
-import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.feature.nations.gui.skullItem
-import net.starlegacy.util.MenuHelper
-import net.starlegacy.util.randomInt
 import org.bukkit.NamespacedKey
-import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS
-import org.bukkit.Sound.BLOCK_NOTE_BLOCK_HARP
-import org.bukkit.Sound.BLOCK_NOTE_BLOCK_SNARE
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Chest
-import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType.STRING
 
 @Suppress("Unused")
@@ -38,8 +24,8 @@ object Encounters {
 	val DEFUSE_BOMB     = register(DefuseBomb)
 	val INFESTED        = register(Infested)
 	val ITS_A_TRAP      = register(ItsATrap)
-	val TIMED_BOMB      = register(TimedBomb)
 	val PASSCODE        = register(Passcode)
+	val TIMED_BOMB      = register(TimedBomb)
 
 	private fun <T : Encounter> register(encounter: T): T {
 		encounters[encounter.identifier] = encounter
@@ -53,9 +39,9 @@ object Encounters {
 	operator fun get(chest: Chest): Encounter? {
 		if (chest.persistentDataContainer.get(INACTIVE, STRING) == "true") return null
 
-		chest.persistentDataContainer.get(ENCOUNTER_DATA, STRING) ?: return null
+		chest.persistentDataContainer.get(ENCOUNTER, STRING) ?: return null
 
-		return get(chest.persistentDataContainer.get(ENCOUNTER_DATA, STRING) ?: return null)
+		return get(chest.persistentDataContainer.get(ENCOUNTER, STRING) ?: return null)
 	}
 
 	fun getChestFlag(chest: Chest, key: NamespacedKey) : String? =

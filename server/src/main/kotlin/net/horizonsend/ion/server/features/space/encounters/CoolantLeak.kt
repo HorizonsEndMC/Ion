@@ -25,8 +25,13 @@ import org.bukkit.block.Chest
 import org.bukkit.block.data.FaceAttachable
 import org.bukkit.block.data.type.Switch
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataType
 
 object CoolantLeak : Encounter(identifier = "coolant_leak") {
+	private const val BLOCKS_PER_ITERATION = 0.10
+	private const val MAX_RADIUS = 15.0
+	private const val MAX_ATTEMPTS = 500
+
 	private fun getLever(chest: Chest): BlockPos = BlockPos(
 		(Encounters.getChestFlag(chest, X))!!.toInt(),
 		(Encounters.getChestFlag(chest, Y))!!.toInt(),
@@ -77,10 +82,6 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 		Encounters.setChestFlag(chest, LOCKED, "true")
 
 		var iteration = 0
-		val BLOCKS_PER_ITERATION = 0.10
-		val MAX_RADIUS = 15.0
-		val MAX_ATTEMPTS = 500
-
 		val leverPos = getLever(chest)
 
 		highlightBlock(event.player, leverPos.below(), (MAX_ATTEMPTS * 2).toLong())
@@ -109,8 +110,12 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 
 			val leverState = chest.world.getBlockAt(leverPos.x, leverPos.y, leverPos.z).state
 			if ((leverState.blockData as Switch).isPowered) {
+				chest.persistentDataContainer.set(LOCKED, PersistentDataType.STRING, "false")
+				chest.persistentDataContainer.set(INACTIVE, PersistentDataType.STRING, "true")
+
 				Encounters.setChestFlag(chest, LOCKED, "false")
 				Encounters.setChestFlag(chest, INACTIVE, "true")
+				println("setting chest flag")
 				event.player.success("Coolant leak deactivated! The chest is now unlocked.")
 				cancel()
 			}
