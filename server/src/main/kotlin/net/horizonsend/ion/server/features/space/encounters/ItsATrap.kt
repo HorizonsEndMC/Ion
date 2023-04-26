@@ -18,6 +18,6 @@ object ItsATrap : Encounter(identifier = "its_a_trap") {
 	}
 
 	override fun constructChestNBT(): CompoundTag {
-		return Encounters.createLootChest("horizonsend:chests/guns")
+		return Encounters.createLootChest("horizonsend:chests/gun_parts")
 	}
 }

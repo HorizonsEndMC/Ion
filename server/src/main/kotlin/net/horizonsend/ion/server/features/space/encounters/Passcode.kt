@@ -130,6 +130,6 @@ object Passcode : Encounter(identifier = "passcode") {
 	}
 
 	override fun constructChestNBT(): CompoundTag {
-		return createLootChest("horizonsend:chests/guns")
+		return createLootChest("horizonsend:chests/gun_parts")
 	}
 }

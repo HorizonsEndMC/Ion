@@ -51,6 +51,7 @@ object DefenseBots : Encounter(identifier = "defense_bots") {
 
 			event.player.alert("The disturbance you caused has activated ancient security droids!")
 			event.player.hint("Maybe one of them still has a card to open this chest...")
+			event.isCancelled = true
 		}
 
 		val blocks = Encounters.getBlocks(
@@ -97,7 +98,7 @@ object DefenseBots : Encounter(identifier = "defense_bots") {
 	}
 
 	override fun constructChestNBT(): CompoundTag {
-		return Encounters.createLootChest("horizonsend:chests/guns")
+		return Encounters.createLootChest("horizonsend:chests/gun_parts")
 	}
 }
 

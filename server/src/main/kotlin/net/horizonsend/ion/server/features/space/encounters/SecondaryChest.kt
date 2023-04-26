@@ -2,44 +2,43 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST_MONEY
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.util.VAULT_ECO
 import org.bukkit.block.Chest
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.persistence.PersistentDataType.DOUBLE
+import java.util.Random
 
-enum class SecondaryChest(val blockState: BlockState, val NBT: CompoundTag?, val money: Int?) {
-	REPAIR_MATERIALS(
-		Blocks.CHEST.defaultBlockState(),
-		Encounters.createLootChest("horizonsend:chests/starship_resource"),
-		500
-	),
-	FOOD(Blocks.CHEST.defaultBlockState(), null, 500),
-	GUN_PARTS(Blocks.CHEST.defaultBlockState(), null, 500),
-	POWER_ARMOR_MODS(Blocks.CHEST.defaultBlockState(), null, 500),
-	ORES_LOW(Blocks.CHEST.defaultBlockState(), null, 500),
-	ORES_MEDIUM(Blocks.CHEST.defaultBlockState(), null, 500),
-	ORES_HIGH(Blocks.CHEST.defaultBlockState(), null, 500);
+enum class SecondaryChest(val NBT: CompoundTag, val money: (Double) -> Double) {
+	REPAIR_MATERIALS(Encounters.createLootChest("horizonsend:chests/starship_resource"), { input: Double -> input * 200 + 50 }),
+	FOOD(Encounters.createLootChest("horizonsend:chests/food"), { input: Double -> input * 200 + 50 }),
+	GUN_PARTS(Encounters.createLootChest("horizonsend:chests/gun_parts"), { input: Double -> input * 500 }),
+	POWER_ARMOR_MODS(Encounters.createLootChest("horizonsend:chests/power_armor_mods"), { input: Double -> input * 500 }),
+	ORES_LOW(Encounters.createLootChest("horizonsend:chests/low_tier_ores"), { input: Double -> input * 500 }),
+	ORES_MEDIUM(Encounters.createLootChest("horizonsend:chests/mid_tier_ores"), { input: Double -> input * 500 }),
+	ORES_HIGH(Encounters.createLootChest("horizonsend:chests/high_tier_ores"), { input: Double -> input * 500 });
 
 	companion object {
 		private val map = SecondaryChest.values().associateBy { it.name }
-
 		operator fun get(value: String): SecondaryChest? = map[value]
 		operator fun get(chest: Chest): SecondaryChest? = map[chest.persistentDataContainer.get(
             NamespacedKeys.SECONDARY_CHEST,
             PersistentDataType.STRING
         )]
 
-		fun SecondaryChest.giveReward(player: Player, chest: Chest) {
-			if (chest.persistentDataContainer.get(NamespacedKeys.INACTIVE, PersistentDataType.STRING) == "true") return
+		val random = Random()
 
-			money?.let {
-				chest.persistentDataContainer.set(NamespacedKeys.INACTIVE, PersistentDataType.STRING, "true")
-				VAULT_ECO.depositPlayer(player, money.toDouble())
-				player.success("You found $money credits stashed in the chest!")
-			}
+		fun giveReward(player: Player, chest: Chest) {
+			if (chest.persistentDataContainer.get(NamespacedKeys.INACTIVE, PersistentDataType.STRING) == "true") return
+			chest.persistentDataContainer.set(NamespacedKeys.INACTIVE, PersistentDataType.STRING, "true")
+
+			val calcMoney = chest.persistentDataContainer.get(SECONDARY_CHEST_MONEY, DOUBLE) ?: return
+
+			VAULT_ECO.depositPlayer(player, calcMoney)
+			player.success("You found $calcMoney credits stashed in the chest!")
+			chest.update()
 		}
 	}
 }
