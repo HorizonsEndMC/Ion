@@ -62,7 +62,7 @@ class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T,
 	/**
 	 * Gets a random weighted entry.
 	 **/
-	fun random(): T {
+	fun randomOrNull(): T {
 		val selection = Random().nextInt(0, rollingWeight)
 		for ((parent, weight) in weightedEntryList) {
 			if (weight >= selection) return parent
@@ -72,6 +72,16 @@ class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T,
 	}
 
 	fun random(random: Random): T {
+		val selection = random.nextInt(0, rollingWeight)
+		for ((parent, weight) in weightedEntryList) {
+			if (weight >= selection) return parent
+		}
+
+		throw NoSuchElementException("Weighted random list is empty!")
+	}
+
+	fun randomOrNull(random: Random): T? {
+		if (weightedEntryList.isEmpty()) return null
 		val selection = random.nextInt(0, rollingWeight)
 		for ((parent, weight) in weightedEntryList) {
 			if (weight >= selection) return parent
