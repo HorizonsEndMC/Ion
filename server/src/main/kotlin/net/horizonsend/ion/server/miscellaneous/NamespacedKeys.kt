@@ -14,9 +14,7 @@ object NamespacedKeys {
 	val BLOCK_ENTITY = key("block_entity")
 
 	// Encounters PDC
-	val ENCOUNTER_DATA = key("encounter_data")
 	val ENCOUNTER = key("encounter")
-	val ENCOUNTER_VALUES = key("encounter_values")
 
 	// Encounter Chests PDC
 	val SECONDARY_CHEST = key("secondary_chest")
