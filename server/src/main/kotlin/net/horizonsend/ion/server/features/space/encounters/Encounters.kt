@@ -47,8 +47,10 @@ object Encounters {
 	fun getChestFlag(chest: Chest, key: NamespacedKey) : String? =
 		chest.persistentDataContainer.get(key, STRING)
 
-	fun setChestFlag(chest: Chest, key: NamespacedKey, flag: String) =
+	fun setChestFlag(chest: Chest, key: NamespacedKey, flag: String) {
 		chest.persistentDataContainer.set(key, STRING, flag)
+		chest.update()
+	}
 
 	fun getBlocks(world: World, origin: BlockPos, radius: Double, filter: (Block) -> Boolean): List<Block> {
 		val radiusSquared = radius * radius

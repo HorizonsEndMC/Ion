@@ -49,7 +49,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 		}
 
 		val surroundingBlocks = Encounters.getBlocks(chest.world, chestPos, 8.0) {
-			checkAir(it) && it.isSolid && it.type != Material.CHEST
+			checkAir(it) && it.isSolid && it.type != Material.CHEST && it.type != Material.REINFORCED_DEEPSLATE
 		}
 
 		val leverOn = surroundingBlocks.random()
@@ -115,7 +115,6 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 
 				Encounters.setChestFlag(chest, LOCKED, "false")
 				Encounters.setChestFlag(chest, INACTIVE, "true")
-				println("setting chest flag")
 				event.player.success("Coolant leak deactivated! The chest is now unlocked.")
 				cancel()
 			}

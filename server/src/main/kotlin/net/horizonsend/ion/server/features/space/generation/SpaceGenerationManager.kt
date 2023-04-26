@@ -66,14 +66,24 @@ object SpaceGenerationManager : Listener {
 		val cornerX = chunkPos.x.shl(4)
 		val cornerZ = chunkPos.z.shl(4)
 
-		val acquiredAsteroids = search(generator, chunkPos) { chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z ->
+		val acquiredAsteroids = search(
+			generator,
+			chunkPos,
+			-4207097,
+			1.0
+		) { chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z ->
 			val asteroid = generator.generateRandomAsteroid(chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z)
 			val distance = distance(cornerX, cornerZ, asteroid.x, asteroid.z)
 			if (distance > (asteroid.size * 1.25)) null else asteroid
 		}
 
 		val acquiredWrecks = if (generator.configuration.wreckClasses.isNotEmpty()) {
-			search(generator, chunkPos, 4207097) { _, chunkRandom, _, _, x, y, z ->
+			search(
+				generator,
+				chunkPos,
+				4207097,
+				generator.configuration.wreckMultiplier
+			) { _, chunkRandom, _, _, x, y, z ->
 				generator.generateRandomWreckData(chunkRandom, x, y, z)
 			}
 		} else listOf()
@@ -95,6 +105,7 @@ object SpaceGenerationManager : Listener {
 		generator: SpaceGenerator,
 		chunkPos: ChunkPos,
 		initialSeedOffset: Int = 0,
+		densityMultiplier: Double,
 		callback: (chunkSeed: Long, chunkRandom: Random, maxHeight: Int, minHeight: Int, x: Int, y: Int, z: Int) -> T?
 	): List<T> {
 		val (centreChunkX, centreChunkZ) = chunkPos
@@ -126,7 +137,7 @@ object SpaceGenerationManager : Listener {
 
 				val chunkSeed = ChunkPos(chunkX, chunkZ).longKey
 
-				val chunkDensity = generator.parseDensity(startXDouble, middleHeight, startZDouble)
+				val chunkDensity = generator.parseDensity(startXDouble, middleHeight, startZDouble) * densityMultiplier
 
 				// random number out of 100, chance of asteroid's generation. For use in selection.
 				for (count in 0..ceil(chunkDensity).toInt()) {
