@@ -135,6 +135,11 @@ object NationSpaceStationCommand : SLCommand() {
 
 		failIf(!SpaceWorlds.contains(sender.world)) { "You can only create a space station in space" }
 
+		val disallowedWorlds = listOf("horizon", "trench", "au0821")
+		failIf(
+			disallowedWorlds.contains(sender.world.name.lowercase())
+		) { "Space stations cannot be created in systems with no security" }
+
 		val nation: Oid<Nation> = requireNationIn(sender)
 		requireNationPermission(sender, nation, NationRole.Permission.CREATE_STATION)
 
