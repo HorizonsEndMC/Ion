@@ -18,6 +18,7 @@ object NamespacedKeys {
 
 	// Encounter Chests PDC
 	val SECONDARY_CHEST = key("secondary_chest")
+	val SECONDARY_CHEST_MONEY = key("secondary_chest_money")
 
 	// Spacegen block storage
 	val STORED_CHUNK_BLOCKS = key("stored_chunk_blocks")

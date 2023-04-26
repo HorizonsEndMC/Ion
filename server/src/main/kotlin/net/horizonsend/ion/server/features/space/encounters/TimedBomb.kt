@@ -43,6 +43,6 @@ object TimedBomb : Encounter(identifier = "timed_bomb") {
 	}
 
 	override fun constructChestNBT(): CompoundTag {
-		return Encounters.createLootChest("horizonsend:chests/guns")
+		return Encounters.createLootChest("horizonsend:chests/gun_parts")
 	}
 }

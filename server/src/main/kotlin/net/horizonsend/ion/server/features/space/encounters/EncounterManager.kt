@@ -18,6 +18,6 @@ class EncounterManager : Listener {
 		if (!SpaceGenerationManager.worldGenerators.containsKey(serverLevel)) return
 
 		Encounters[clickedBlock]?.onChestInteract(event)
-		SecondaryChest[clickedBlock]?.giveReward(event.player, clickedBlock)
+		giveReward(event.player, clickedBlock)
 	}
 }

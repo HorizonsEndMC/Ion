@@ -9,7 +9,9 @@ import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST_MONEY
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.DoubleTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
@@ -80,8 +82,15 @@ private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
 		val chestType = name.substringAfter("Secondary Chest: ").substringBefore("\"")
 
 		SecondaryChest[chestType]?.let {
-			blockData.blockEntityTag = (it.NBT ?: CompoundTag())
-				.manualPDC(SECONDARY_CHEST.key to StringTag.valueOf(it.name))
+			val money = it.money(SecondaryChest.random.nextDouble())
+				.toBigDecimal().setScale(2, java.math.RoundingMode.HALF_EVEN)
+				.toDouble()
+
+			blockData.blockEntityTag = it.NBT
+				.manualPDC(
+					SECONDARY_CHEST.key to StringTag.valueOf(it.name),
+					SECONDARY_CHEST_MONEY.key to DoubleTag.valueOf(money)
+				)
 		}
 	}
 
