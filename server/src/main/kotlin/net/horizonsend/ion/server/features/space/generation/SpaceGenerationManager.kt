@@ -6,13 +6,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
-import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
-import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
-import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerationTask
+import net.horizonsend.ion.server.features.space.generation.generators.GenerateChunk
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SPACE_GEN_VERSION
 import net.horizonsend.ion.server.miscellaneous.minecraft
@@ -54,9 +53,9 @@ object SpaceGenerationManager : Listener {
 
 	@Deprecated("Event Listener")
 	@EventHandler
-	fun onChunkLoadEvent(event: ChunkLoadEvent) = runBlocking {
-		val generator = getGenerator(event.world.minecraft) ?: return@runBlocking
-		if (event.chunk.persistentDataContainer.has(SPACE_GEN_VERSION)) return@runBlocking
+	fun onChunkLoadEvent(event: ChunkLoadEvent) = coroutineScope.launch {
+		val generator = getGenerator(event.world.minecraft) ?: return@launch//@runBlocking
+		if (event.chunk.persistentDataContainer.has(SPACE_GEN_VERSION)) return@launch//@runBlocking
 
 		event.chunk.persistentDataContainer.set(SPACE_GEN_VERSION, BYTE, generator.spaceGenerationVersion)
 
@@ -74,23 +73,27 @@ object SpaceGenerationManager : Listener {
 			if (distance > (asteroid.size * 1.25)) null else asteroid
 		}
 
-		if (acquiredAsteroids.isNotEmpty()) {
-			generateFeature(GenerateAsteroidTask(generator, event.chunk.minecraft, acquiredAsteroids), this)
-		}
-
-		// Wrecks
-		val acquiredWrecks = search(generator, chunkPos) { _, chunkRandom, _, _, x, y, z ->
+		val acquiredWrecks = search(generator, chunkPos, 4207097) { _, chunkRandom, _, _, x, y, z ->
 			generator.generateRandomWreckData(chunkRandom, x, y, z)
 		}
 
-		if (acquiredWrecks.isNotEmpty()) {
-			generateFeature(GenerateWreckTask(generator, event.chunk.minecraft, acquiredWrecks), this)
-		}
+		if (acquiredAsteroids.isEmpty() && acquiredWrecks.isEmpty()) return@launch//@runBlocking
+
+		handleGeneration(
+			GenerateChunk(
+				generator,
+				event.chunk.minecraft,
+				acquiredWrecks,
+				acquiredAsteroids
+			),
+			this
+		)
 	}
 
 	private fun <T> search(
 		generator: SpaceGenerator,
 		chunkPos: ChunkPos,
+		initialSeedOffset: Int = 0,
 		callback: (chunkSeed: Long, chunkRandom: Random, maxHeight: Int, minHeight: Int, x: Int, y: Int, z: Int) -> T?
 	): List<T> {
 		val (centreChunkX, centreChunkZ) = chunkPos
@@ -116,15 +119,21 @@ object SpaceGenerationManager : Listener {
 				val startZ = chunkZ.shl(4)
 				val startZDouble = startZ.toDouble()
 
+				var seedAdjust = initialSeedOffset
+
 				if (chunkXOffsetSquared + chunkZOffsetSquared > radiusSquared) continue
 
 				val chunkSeed = ChunkPos(chunkX, chunkZ).longKey
-				val chunkRandom = Random(Random(chunkSeed).nextLong())
 
 				val chunkDensity = generator.parseDensity(startXDouble, middleHeight, startZDouble)
 
+				// random number out of 100, chance of asteroid's generation. For use in selection.
 				for (count in 0..ceil(chunkDensity).toInt()) {
-					// random number out of 100, chance of asteroid's generation. For use in selection.
+
+					// ensure placement of subsequent asteroids and wrecks aren't at the same coordinates
+					val chunkRandom = Random(Random(chunkSeed).nextLong() + seedAdjust)
+					seedAdjust += 33601
+
 					val chance = chunkRandom.nextDouble(100.0)
 
 					// Selects some asteroids that are generated. Allows for densities of 0<X<1 asteroids per chunk.
@@ -144,63 +153,48 @@ object SpaceGenerationManager : Listener {
 	}
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	suspend fun generateFeature(task: SpaceGenerationTask, scope: CoroutineScope) {
+	suspend fun handleGeneration(task: GenerateChunk, scope: CoroutineScope) {
 		task.generateChunk(scope)
 		val completableData = task.returnData
+
+		if (task.isCancelled) return
 
 		task.returnData.invokeOnCompletion {
 			val completed = completableData.getCompleted()
 
-			task.postProcessASync(completed)
-
 			Tasks.syncBlocking {
 				completed.place(task.chunk.bukkitChunk)
-
-				task.postProcessSync(completed)
-
 				completed.store(task.chunk.bukkitChunk)
 			}
 		}
 	}
 
-	// Not the best implementation of this possible, it'll work for testing. Also I wanted to test stuff with generics.
-	suspend fun <T: SpaceGenerationTask> postGenerateFeature(task: T, scope: CoroutineScope) {
+	// Not the best implementation of this possible, it'll work for testing.
+	suspend fun postGenerateFeature(task: GenerateChunk, scope: CoroutineScope) {
 		val generator = task.generator
 
-		(task as? GenerateAsteroidTask)?.let {
-			val asteroid = task.asteroids.first()
+		lateinit var chunkXRange: IntRange
+		lateinit var chunkZRange: IntRange
 
-			val xRange =
-				IntRange(
+		val asteroid = task.asteroids.firstOrNull()
+
+		asteroid?.let {
+			val xRange = IntRange(
 					asteroid.x - (asteroid.size * generator.searchRadius).toInt(),
 					asteroid.x + (asteroid.size * generator.searchRadius).toInt()
 				)
-			val zRange =
-				IntRange(
+			val zRange = IntRange(
 					asteroid.z - (asteroid.size * generator.searchRadius).toInt(),
 					asteroid.z + (asteroid.size * generator.searchRadius).toInt()
 				)
 
-			val chunkXRange = IntRange(xRange.first.shr(4), xRange.last.shr(4))
-			val chunkZRange = IntRange(zRange.first.shr(4), zRange.last.shr(4))
-
-			for (x in chunkXRange) {
-				for (z in chunkZRange) {
-
-					generateFeature(
-						GenerateAsteroidTask(
-							generator,
-							generator.serverLevel.world.getChunkAt(x, z).minecraft,
-							listOf(asteroid)
-						),
-						scope
-					)
-				}
-			}
+			chunkXRange = IntRange(xRange.first.shr(4), xRange.last.shr(4))
+			chunkZRange = IntRange(zRange.first.shr(4), zRange.last.shr(4))
 		}
 
-		(task as? GenerateWreckTask)?.let {
-			val wreck = task.chunkCoveredWrecks.first()
+		val wreck = task.wrecks.firstOrNull()
+
+		wreck?.let {
 			val clipboard: Clipboard = generator.schematicMap[wreck.wreckName]!!
 
 			val region = clipboard.region.clone()
@@ -211,12 +205,19 @@ object SpaceGenerationManager : Listener {
 
 			val chunks = region.chunks
 
-			for (iterated in chunks) {
-				generateFeature(
-					GenerateWreckTask(
+			chunkXRange = IntRange(chunks.minOf { it.x }, chunks.minOf { it.x })
+			chunkZRange = IntRange(chunks.minOf { it.z }, chunks.minOf { it.z })
+		}
+
+		for (x in chunkXRange) {
+			for (z in chunkZRange) {
+
+				handleGeneration(
+					GenerateChunk(
 						generator,
-						generator.serverLevel.world.getChunkAt(iterated.x, iterated.z).minecraft,
-						listOf(wreck)
+						generator.serverLevel.world.getChunkAt(x, z).minecraft,
+						listOfNotNull(wreck),
+						listOfNotNull(asteroid)
 					),
 					scope
 				)

@@ -47,9 +47,6 @@ object ListTagType : PersistentDataType<PersistentDataContainer, ListTag> {
 				is LongArrayTag -> primitive.set(key, PersistentDataType.LONG_ARRAY, entry.asLongArray)
 				is ListTag -> primitive.set(key, ListTagType, entry)
 				else -> {
-					println(entry.id)
-					println(entry.type)
-					println(complex.toString())
 					throw NotImplementedError("Impossible to get data from generic Tag.")
 				}
 			}
