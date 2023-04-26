@@ -58,6 +58,6 @@ object Infested : Encounter(identifier = "infested") {
 	}
 
 	override fun constructChestNBT(): CompoundTag {
-		return Encounters.createLootChest("horizonsend:chests/guns")
+		return Encounters.createLootChest("horizonsend:chests/gun_parts")
 	}
 }
