@@ -125,7 +125,7 @@ enum class StarshipType(
 		menuItemMaterial = Material.GOLD_BLOCK,
 		isWarship = true,
 		colour = "#800000",
-		overridePermission = "ion.ships.override.80"
+		overridePermission = "ion.ships.override.60"
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
@@ -267,7 +267,7 @@ enum class StarshipType(
 		menuItemMaterial = Material.PRISMARINE,
 		isWarship = false,
 		colour = "#0080ff",
-		overridePermission = "ion.ships.override.80",
+		overridePermission = "ion.ships.override.60",
 		poweroverrider = 0.7,
 		maxMiningLasers = 6,
 		miningLaserTier = 3
