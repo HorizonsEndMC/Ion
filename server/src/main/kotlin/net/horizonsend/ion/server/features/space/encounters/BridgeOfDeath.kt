@@ -4,12 +4,16 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.util.Notify
+import net.starlegacy.util.toBlockPos
 import org.bukkit.World
+import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
 import org.bukkit.conversations.Conversation
 import org.bukkit.conversations.ConversationContext
@@ -18,6 +22,7 @@ import org.bukkit.conversations.Prompt
 import org.bukkit.conversations.StringPrompt
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Fireball
+import org.bukkit.entity.ZombieVillager
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
 import java.util.Random
@@ -25,10 +30,28 @@ import java.util.Random
 object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 	override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
 
+	private fun checkAir(block: Block): Boolean {
+		val up1 = block.getRelative(BlockFace.UP)
+		val up2 = up1.getRelative(BlockFace.UP)
+
+		return up1.isEmpty && up2.isEmpty
+	}
+
 	override fun onChestInteract(event: PlayerInteractEvent) {
 		val targetedBlock = event.clickedBlock!!
 
 		val chest = (targetedBlock.state as? Chest) ?: return
+
+		val blocks = Encounters.getBlocks(chest.world, chest.location.toBlockPos(), 3.0) {
+			checkAir(it)
+		}
+
+		val block = blocks.shuffled().first().location
+		val bridgeKeeper = block.world.castSpawnEntity<ZombieVillager>(block.toCenterLocation(), EntityType.ZOMBIE_VILLAGER).apply {
+			this.customName(text("Old Man From Scene 24"))
+			this.location.direction = this.location.toVector().subtract(event.player.location.toVector())
+			this.setAI(false)
+		}
 
 		event.player.sendRichMessage("<bold><dark_red>Stop!")
 		event.player.sendRichMessage("<bold><red>Who would cross the Bridge of Death must answer me these questions three, <italic>ere the other side he see!")
@@ -45,6 +68,8 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			).apply {
 				this.direction = Vector(0.0, -2.0, 0.0)
 				this.yield = 25f
+				this.shooter = bridgeKeeper
+				bridgeKeeper.setAI(true)
 			}
 		}
 
