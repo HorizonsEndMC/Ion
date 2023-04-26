@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.space.data
 
-import net.horizonsend.ion.server.IonServer
 import net.minecraft.nbt.ByteArrayTag
 import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
@@ -11,53 +10,37 @@ import net.minecraft.nbt.IntTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.LongArrayTag
 import net.minecraft.nbt.LongTag
-import net.minecraft.nbt.NbtUtils
 import net.minecraft.nbt.ShortTag
 import net.minecraft.nbt.StringTag
-import org.bukkit.NamespacedKey
 import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataContainer
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.persistence.PersistentDataType.BYTE
-import org.bukkit.persistence.PersistentDataType.BYTE_ARRAY
-import org.bukkit.persistence.PersistentDataType.DOUBLE
-import org.bukkit.persistence.PersistentDataType.FLOAT
-import org.bukkit.persistence.PersistentDataType.INTEGER
-import org.bukkit.persistence.PersistentDataType.INTEGER_ARRAY
-import org.bukkit.persistence.PersistentDataType.LONG
-import org.bukkit.persistence.PersistentDataType.LONG_ARRAY
-import org.bukkit.persistence.PersistentDataType.SHORT
-import org.bukkit.persistence.PersistentDataType.STRING
 
 object CompoundTagType : PersistentDataType<PersistentDataContainer, CompoundTag> {
 	override fun getPrimitiveType(): Class<PersistentDataContainer> = PersistentDataContainer::class.java
 	override fun getComplexType(): Class<CompoundTag> = CompoundTag::class.java
 
 	override fun toPrimitive(complex: CompoundTag, context: PersistentDataAdapterContext): PersistentDataContainer {
-		val primitive = context.newPersistentDataContainer()
+		val primitive = context.newPersistentDataContainer() as CraftPersistentDataContainer
 
 		for ((name, tag) in complex.tags) {
-			val key = NamespacedKey(IonServer, name)
-
+			primitive.raw
 
 			when (tag) {
-				is ByteTag -> primitive.set(key, BYTE, tag.asByte)
-				is ShortTag -> primitive.set(key, SHORT, tag.asShort)
-				is IntTag -> primitive.set(key, INTEGER, tag.asInt)
-				is LongTag -> primitive.set(key, LONG, tag.asLong)
-				is FloatTag -> primitive.set(key, FLOAT, tag.asFloat)
-				is DoubleTag -> primitive.set(key, DOUBLE, tag.asDouble)
-				is ByteArrayTag -> primitive.set(key, BYTE_ARRAY, tag.asByteArray)
-				is StringTag -> primitive.set(key, STRING, tag.asString)
-				is CompoundTag -> primitive.set(key, CompoundTagType, tag)
-				is IntArrayTag -> primitive.set(key, INTEGER_ARRAY, tag.asIntArray)
-				is LongArrayTag -> primitive.set(key, LONG_ARRAY, tag.asLongArray)
-				is ListTag -> primitive.set(key, ListTagType, tag)
+				is ByteTag -> primitive.raw.set(name, tag)
+				is ShortTag -> primitive.raw.set(name, tag)
+				is IntTag -> primitive.raw.set(name, tag)
+				is LongTag -> primitive.raw.set(name, tag)
+				is FloatTag -> primitive.raw.set(name, tag)
+				is DoubleTag -> primitive.raw.set(name, tag)
+				is ByteArrayTag -> primitive.raw.set(name, tag)
+				is StringTag -> primitive.raw.set(name, tag)
+				is CompoundTag -> primitive.raw.set(name, tag)
+				is IntArrayTag -> primitive.raw.set(name, tag)
+				is LongArrayTag -> primitive.raw.set(name, tag)
+				is ListTag -> primitive.raw.set(name, tag)
 				else -> {
-					println(tag.id)
-					println(tag.type)
-					println(NbtUtils.structureToSnbt(complex))
 					throw NotImplementedError("Impossible to get data from generic Tag.")
 				}
 			}

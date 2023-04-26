@@ -3,18 +3,15 @@ package net.horizonsend.ion.server.features.space.generation.generators
 import com.sk89q.jnbt.NBTInputStream
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
-import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData.WreckEncounterData
+import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
 import java.io.File
 import java.io.FileInputStream
@@ -187,14 +184,14 @@ class SpaceGenerator(
 	fun generateRandomWreckData(chunkRandom: Random, x: Int, y: Int, z: Int): WreckGenerationData {
 		val wreckClass = configuration.weightedWreckList.random(chunkRandom)
 		val wreck = wreckClass.random(chunkRandom)
-		val encounter = wreck.encounterWeightedRandomList.random(chunkRandom)
+		val encounter = Encounters[wreck.encounterWeightedRandomList.random(chunkRandom)]
 
 		return WreckGenerationData(
 			x,
 			y,
 			z,
 			wreck.wreckSchematicName,
-			WreckEncounterData(encounter)
+			encounter
 		)
 	}
 
@@ -207,20 +204,6 @@ class SpaceGenerator(
 				)?.place(chunk)
 		}
 	}
-}
-
-abstract class SpaceGenerationTask {
-	abstract val generator: SpaceGenerator
-	abstract val returnData: Deferred<StoredChunkBlocks>
-	abstract val chunk: LevelChunk
-
-	abstract suspend fun generateChunk(scope: CoroutineScope)
-
-	// Work to be done after the task has completed, but before it is placed. EG caves
-	open fun postProcessSync(completedData: StoredChunkBlocks) {}
-
-	// Work to be done sync after the task has completed, but before it is placed. EG placing unsaved blocks
-	open fun postProcessASync(completedData: StoredChunkBlocks) {}
 }
 
 abstract class SpaceGenerationData {

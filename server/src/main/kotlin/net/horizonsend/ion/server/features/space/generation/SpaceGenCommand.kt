@@ -12,10 +12,12 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.space.generation.generators.GenerateAsteroidTask
-import net.horizonsend.ion.server.features.space.generation.generators.GenerateWreckTask
+import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
+import net.horizonsend.ion.server.features.space.encounters.Encounters
+import net.horizonsend.ion.server.features.space.generation.generators.GenerateChunk
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
 import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.STORED_CHUNK_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
@@ -32,6 +34,8 @@ class SpaceGenCommand : BaseCommand() {
 		for (x in sender.chunk.x - range..sender.chunk.x + range) {
 			for (z in sender.chunk.z - range..sender.chunk.z + range) {
 				val chunk2 = sender.world.getChunkAt(x, z)
+
+				println(chunk2.persistentDataContainer.get(STORED_CHUNK_BLOCKS, StoredChunkBlocks))
 
 				try {
 					SpaceGenerator.regenerateChunk(chunk2)
@@ -68,7 +72,7 @@ class SpaceGenCommand : BaseCommand() {
 
 		SpaceGenerationManager.coroutineScope.launch {
 			SpaceGenerationManager.postGenerateFeature(
-				GenerateAsteroidTask(generator, sender.chunk.minecraft, listOf(asteroid)),
+				GenerateChunk(generator, sender.chunk.minecraft, listOf(), listOf(asteroid)),
 				SpaceGenerationManager.coroutineScope
 			)
 		}
@@ -87,21 +91,25 @@ class SpaceGenCommand : BaseCommand() {
 			.userError("No generator found for ${sender.world.name}")
 
 		val data = wreck?.let { wreckName ->
-			val encounterData = encounter?.let { encounterName ->
-
-				WreckGenerationData.WreckEncounterData(
-					encounterName
-				)
-			}
+			val encounterData = encounter?.let { encounterName -> Encounters[wreckName] }
 
 			WreckGenerationData(
-				sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt(), wreckName, encounterData
+				sender.location.x.toInt(),
+				sender.location.y.toInt(),
+				sender.location.z.toInt(),
+				wreckName,
+				encounterData
 			)
-		} ?: generator.generateRandomWreckData(Random(sender.chunk.minecraft.pos.longKey), sender.location.x.toInt(), sender.location.y.toInt(), sender.location.z.toInt())
+		} ?: generator.generateRandomWreckData(
+			Random(sender.chunk.minecraft.pos.longKey),
+			sender.location.x.toInt(),
+			sender.location.y.toInt(),
+			sender.location.z.toInt()
+		)
 
 		SpaceGenerationManager.coroutineScope.launch {
 			SpaceGenerationManager.postGenerateFeature(
-				GenerateWreckTask(generator, sender.chunk.minecraft, listOf(data)),
+				GenerateChunk(generator, sender.chunk.minecraft, listOf(data), listOf()),
 				SpaceGenerationManager.coroutineScope
 			)
 		}

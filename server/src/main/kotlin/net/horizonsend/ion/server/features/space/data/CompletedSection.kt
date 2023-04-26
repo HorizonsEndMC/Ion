@@ -45,6 +45,8 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
 		fun posToIndex(x: Int, y: Int, z: Int): Int {
 			return x or (z shl 4) or (y shl 8)
 		}
+
+		fun empty(sectionY: Int) = CompletedSection(sectionY, mutableListOf(BlockData.AIR), IntArray(4096) { 0 })
     }
 
 	fun place(levelChunk: LevelChunk) {

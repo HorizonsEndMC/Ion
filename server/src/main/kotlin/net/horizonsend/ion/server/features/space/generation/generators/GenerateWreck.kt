@@ -2,95 +2,32 @@ package net.horizonsend.ion.server.features.space.generation.generators
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.sk89q.worldedit.regions.Region
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
-import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
 import net.horizonsend.ion.server.features.space.encounters.Encounter
-import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST
-import net.minecraft.nbt.NbtUtils
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.chunk.LevelChunk
 import net.starlegacy.util.nms
 import net.starlegacy.util.toBukkitBlockData
-import net.starlegacy.util.worldEditSession
 import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataContainer
 import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataTypeRegistry
 import org.bukkit.persistence.PersistentDataType.STRING
 
-class GenerateWreckTask(
-	override val generator: SpaceGenerator,
-	override val chunk: LevelChunk,
-	val chunkCoveredWrecks: List<WreckGenerationData>
-) : SpaceGenerationTask() {
-	val serverLevel = generator.serverLevel
-
-	override val returnData = CompletableDeferred<StoredChunkBlocks>()
-
-	override suspend fun generateChunk(scope: CoroutineScope) {
-		val chunkCompletedSections = mutableListOf<CompletedSection>()
-		scope.launch {
-			for (wreck in chunkCoveredWrecks) {
-				val clipboard: Clipboard = generator.schematicMap[wreck.wreckName]!!
-
-				val region = clipboard.region.clone()
-				val targetBlockVector: BlockVector3 = BlockVector3.at(wreck.x, wreck.y, wreck.z)
-				val offset: BlockVector3 = targetBlockVector.subtract(clipboard.origin)
-
-				val encounter = wreck.encounter?.getEncounter()
-
-				serverLevel.world.worldEditSession(true) {
-					region.shift(offset)
-
-					val sectionsSet = mutableSetOf<Int>()
-
-					for (
-					y in (region.boundingBox.minimumY - serverLevel.minBuildHeight)..(region.boundingBox.maximumY - serverLevel.minBuildHeight)
-					) {
-						sectionsSet.add(y.shr(4))
-					}
-
-					val chunkOriginX = chunk.pos.x * 16
-					val chunkOriginZ = chunk.pos.z * 16
-
-					for (sectionPos in sectionsSet) {
-						val newlyCompleted = generateSection(
-							clipboard,
-							offset,
-							sectionPos,
-							chunkOriginX,
-							chunkOriginZ,
-							encounter
-						) ?: continue
-
-						chunkCompletedSections.add(newlyCompleted)
-					}
-
-					returnData.complete(StoredChunkBlocks(chunkCompletedSections))
-				}
-			}
-		}
-	}
-
-	private fun generateSection(
+object GenerateWreck {
+	fun generateWreckSection(
+		section: CompletedSection,
 		clipboard: Clipboard,
 		offset: BlockVector3,
 		sectionY: Int,
 		chunkMinX: Int,
 		chunkMinZ: Int,
 		encounter: Encounter?
-	): CompletedSection? {
-		val palette = mutableListOf<BlockData>()
-		val storedBlocks = IntArray(4096)
+	) {
 		val sectionMinY = sectionY.shl(4)
-
-		palette += BlockData(Blocks.AIR.defaultBlockState(), null)
 
 		for (x in 0..15) {
 			val worldX = x + chunkMinX
@@ -106,12 +43,7 @@ class GenerateWreckTask(
 					val originalBlockState: BlockState = baseBlock.toImmutableState().toBukkitBlockData().nms
 					val blockNBT = if (originalBlockState.hasBlockEntity()) baseBlock.nbtData else null
 
-					val index = CompletedSection.posToIndex(x, y, z)
-
-					if (originalBlockState.isAir) {
-						storedBlocks[index] = 0
-						continue
-					}
+					if (originalBlockState.isAir) continue
 
 					val blockData = BlockData(originalBlockState, blockNBT?.nms())
 
@@ -124,24 +56,18 @@ class GenerateWreckTask(
 					(blockData.blockEntityTag)?.putInt("y", worldY)
 					(blockData.blockEntityTag)?.putInt("z", worldZ)
 
-					val blockIndex = if (!palette.contains(blockData)) {
-						palette.add(blockData)
-						palette.lastIndex
-					} else palette.indexOf(blockData)
-
-					storedBlocks[index] = blockIndex
+					section.setBlock(x, y, z, blockData)
 				}
 			}
 		}
 
-		if (storedBlocks.all { it == 0 }) return null // don't write it if it's all empty
-
-		return CompletedSection(
-			sectionY,
-			palette,
-			storedBlocks
-		)
+		if (section.blocks.all { it == 0 }) return // don't write it if it's all empty
 	}
+
+	fun Region.getCoveredSections(minHeight: Int, maxHeight: Int): IntRange = IntRange(
+		(this.boundingBox.minimumY - minHeight).shr(4).coerceIn(minHeight.shr(4), maxHeight.shr(4) - 1),
+		(this.boundingBox.maximumY - minHeight).shr(4).coerceIn(minHeight.shr(4), maxHeight.shr(4) - 1)
+	)
 }
 
 private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
@@ -171,33 +97,42 @@ private fun checkChestFlags(encounter: Encounter?, blockData: BlockData) {
 		}
 	}
 
-	println(NbtUtils.structureToSnbt(blockData.blockEntityTag))
 	blockData.blockEntityTag?.merge((newPDC).toTagCompound()) // TODO fix this
-
-	println(NbtUtils.structureToSnbt(blockData.blockEntityTag))
 }
 
 /**
  * This class contains information passed to the generation function.
  * @param [x, y ,z] Origin of the asteroid.
  * @param wreckName Name of the wreck schematic
- * @param encounter Wreck encounter identifier
+ * @param encounter Wreck encounter
  **/
 data class WreckGenerationData(
 	override val x: Int,
 	override val y: Int,
 	override val z: Int,
 	val wreckName: String,
-	val encounter: WreckEncounterData? = null
+	val encounter: Encounter? = null
 ) : SpaceGenerationData() {
-	/**
-	 * This is serialized and stored in the chunk alongside the wreck.
-	 *
-	 * @param identifier The identifier string for the encounter class
-	 **/
-	data class WreckEncounterData(
-		val identifier: String
-	) {
-		fun getEncounter(): Encounter = Encounters[identifier]!!
+	data class WreckGen(
+		val clipboard: Clipboard,
+		val region: Region,
+		val offset: BlockVector3,
+		val encounter: Encounter?
+	)
+
+	fun worldGenData(generator: SpaceGenerator): WreckGen {
+		val clipboard: Clipboard = generator.schematicMap[wreckName]!!
+
+		val region = clipboard.region.clone()
+		val targetBlockVector: BlockVector3 = BlockVector3.at(x, y, z)
+		val offset: BlockVector3 = targetBlockVector.subtract(clipboard.origin)
+		region.shift(offset)
+
+		return WreckGen(
+			clipboard,
+			region,
+			offset,
+			encounter
+		)
 	}
 }
