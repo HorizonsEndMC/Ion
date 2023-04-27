@@ -88,7 +88,7 @@ object Hyperspace : SLComponent() {
 		// create a new marker and add it to the collection
 		val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.serverLevel.world), starship, dest)
 		HyperspaceMap.addMarker(starship, marker)
-		(starship as? ActivePlayerStarship)?.pilot?.let { it.rewardAchievement(Achievement.USE_HYPERSPACE) }
+		(starship as? ActivePlayerStarship)?.pilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
