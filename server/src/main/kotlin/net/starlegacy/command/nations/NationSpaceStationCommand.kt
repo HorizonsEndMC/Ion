@@ -90,7 +90,7 @@ object NationSpaceStationCommand : SLCommand() {
 		// Check conflict with beacons
 		HyperspaceBeaconManager.beaconWorlds[world]?.let { beacons ->
 			for (beacon in beacons) {
-				val minDistance = 256
+				val minDistance = 1000
 				val distance = distance(x, y, z, beacon.spaceLocation.x, y, beacon.spaceLocation.z)
 
 				failIf(distance < minDistance) {
@@ -117,18 +117,12 @@ object NationSpaceStationCommand : SLCommand() {
 
 		// Check conflicts with capturable stations
 		for (station in Regions.getAllOf<RegionCapturableStation>().filter { it.bukkitWorld == world }) {
-			val minDistance = NATIONS_BALANCE.capturableStation.radius + radius
+			val minDistance = maxOf((NATIONS_BALANCE.capturableStation.radius + radius), 2500)
 			val distance = distance(x, y, z, station.x, y, station.z)
 
 			failIf(distance < minDistance) {
 				"This claim would be too close to the capturable station ${station.name}"
 			}
-		}
-
-		// asteroid field world
-		if (world.name == "Andromeda10d") {
-			val distance = distance(x, y, z, 5000, 128, 5000)
-			failIf(distance <= 5000) { "Cannot claim within 5000 blocks of the Blackular System" }
 		}
 	}
 
