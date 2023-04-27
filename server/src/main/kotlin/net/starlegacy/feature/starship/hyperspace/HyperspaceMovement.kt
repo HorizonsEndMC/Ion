@@ -43,18 +43,22 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 		z += direction.z * speed
 		travelled += speed
 
-		val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
-		if (shadow != null) {
-			ship.onlinePassengers.forEach { player ->
-				player.alertAction(
-					"Ship caught by a mass shadow! Mass Shadow: ${shadow.description} at ${shadow.x}, ${shadow.z} " +
-						"with radius ${shadow.radius} (${shadow.distance} blocks away)"
-				)
-			}
+		// Don't check for mass shadows if jumping to another world
+		if (world == dest.world) {
+			val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
+			if (shadow != null) {
+				ship.onlinePassengers.forEach { player ->
+					player.alertAction(
+						"Ship caught by a mass shadow! Mass Shadow: ${shadow.description} at ${shadow.x}, ${shadow.z} " +
+								"with radius ${shadow.radius} (${shadow.distance} blocks away)"
+					)
+				}
 
-			cancel()
-			return
+				cancel()
+				return
+			}
 		}
+
 		if (travelled < totalDistance) {
 			val percent = (travelled / totalDistance * 100).roundToInt()
 			ship.onlinePassengers.forEach { player ->

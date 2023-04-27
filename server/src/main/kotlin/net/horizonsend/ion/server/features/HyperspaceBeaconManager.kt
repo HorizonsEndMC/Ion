@@ -11,7 +11,8 @@ import org.bukkit.event.Listener
 import java.util.UUID
 
 object HyperspaceBeaconManager : Listener {
-	private val beaconWorlds get() = IonServer.configuration.beacons.associateBy { it.spaceLocation.bukkitWorld() } // Your problem if it throws null pointers
+	// Your problem if it throws null pointers
+	val beaconWorlds get() = IonServer.configuration.beacons.groupBy { it.spaceLocation.bukkitWorld() }
 
 	// Make it yell at you once every couple seconds not every time your ship moves
 	private val activeRequests: MutableMap<UUID, Long> = mutableMapOf()
@@ -36,23 +37,21 @@ object HyperspaceBeaconManager : Listener {
 		if (event.starship.hyperdrives.isEmpty()) return
 
 		val starship = event.starship
-		val worldBeacons = beaconWorlds.filter { it.key == starship.serverLevel.world }
-
-		if (!beaconWorlds.contains(event.starship.serverLevel.world)) return
+		val worldBeacons = beaconWorlds[event.starship.serverLevel.world] ?: return
 
 		if (
-			worldBeacons.any {
-				if (it.value.spaceLocation.toLocation().isInRange(
+			worldBeacons.any { beacon ->
+				if (beacon.spaceLocation.toLocation().isInRange(
 						Location(
 								event.starship.serverLevel.world,
 								(event.x + starship.centerOfMass.x).toDouble(),
 								(event.y + starship.centerOfMass.y).toDouble(),
 								(event.z + starship.centerOfMass.x).toDouble()
 							),
-						it.value.radius
+						beacon.radius
 					)
 				) {
-					event.starship.beacon = it.value
+					event.starship.beacon = beacon
 					true
 				} else {
 					event.starship.beacon = null
