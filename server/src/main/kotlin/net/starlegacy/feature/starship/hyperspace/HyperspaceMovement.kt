@@ -28,7 +28,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 
 	private fun remainingDistance(): Double {
 		return if (world == dest.world) { distance(x, 0.0, z, dest.x, 0.0, dest.z) } else {
-			100000 - travelled
+			60000 - travelled
 		}
 	}
 
