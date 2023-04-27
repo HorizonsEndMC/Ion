@@ -115,6 +115,8 @@ object MobDefender : Multiblock() {
 	}
 
 	fun cancelSpawn(location: Location): Boolean {
+		if (location.world.name.lowercase().contains("eden")) return false
+
 		return mobDefenders.asSequence()
 			.filter { it.world == location.world }
 			.filter { abs(location.x - it.x) < 50 }
