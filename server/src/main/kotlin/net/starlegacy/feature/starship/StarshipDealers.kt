@@ -3,10 +3,10 @@ package net.starlegacy.feature.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.citizensnpcs.api.event.NPCRightClickEvent
-import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
@@ -16,19 +16,19 @@ import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
 import net.starlegacy.util.placeSchematicEfficiently
-import net.starlegacy.util.readSchematic
+import net.starlegacy.util.updateMeta
 import net.starlegacy.util.withdrawMoney
 import org.bukkit.Location
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.inventory.ItemStack
-import java.io.File
 import java.lang.System.currentTimeMillis
-import java.nio.file.Paths
-import java.util.*
+import java.util.UUID
 
 object StarshipDealers : SLComponent() {
 	private val lastBuyTimes = mutableMapOf<UUID, Long>()
+	private val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
@@ -38,64 +38,63 @@ object StarshipDealers : SLComponent() {
 		if (!npc.name.endsWith("Ship Dealer")) {
 			return
 		}
-		val menu = MenuHelper.apply {
-			val ships: List<GuiItem> = IonServer.shipList.map { ship ->
-				val item: ItemStack = item(ship.material)
-				item.editMeta {
+		MenuHelper.apply {
+			val ships: List<GuiItem> = schematicMap.map { (ship, schematic) ->
+				val item: ItemStack = item(ship.guiMaterial)
+
+				item.updateMeta {
 					it.displayName(miniMessage().deserialize(ship.displayName))
+
 					it.lore(
-						listOf(
-							miniMessage().deserialize(ship.loreLine1),
-							miniMessage().deserialize(ship.loreLine2),
-							miniMessage().deserialize(ship.loreLine3),
-							miniMessage().deserialize(ship.loreLine4)
-						)
+						ship.lore.map {  loreLine ->
+							miniMessage().deserialize(loreLine)
+						}
 					)
 				}
 
-				return@map guiButton(item) {
-					val schematicFile: File? = getSchematicFile(ship.pathToSchem!!)
-					if (!player.hasProtection()) {
-						if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + ship.cost > currentTimeMillis()) {
-							player.sendMessage(miniMessage().deserialize("<yellow>Didn't I sell you a ship not too long ago? These things are expensive, and I am already selling them at a discount, leave some for other people."))
-							return@guiButton
-						}
-					}
+				val button = guiButton(item) {
+					loadShip(player, ship, schematic)
+				}
 
-					if (!player.hasEnoughMoney(ship.cost)) {
-						player.userError("This ship is too expensive for you\n It costs ${ship.cost}, you currently have ${player.getMoneyBalance()}")
-						return@guiButton
-					}
+				button.setName(miniMessage().deserialize(ship.displayName))
 
-					if (schematicFile == null) {
-						player.serverError("Schematic for ${ship.name} not found, please alert an Admin!")
-						return@guiButton
-					}
-
-					val schematic = readSchematic(schematicFile)
-
-					if (schematic == null) {
-						player.serverError("Failed to read schematic file. Contact an admin!")
-						return@guiButton
-					}
-
-					var target = player.location
-					target.y = 196.0
-					target = resolveTarget(schematic, target)
-
-					val world = player.world
-					val targetVec3i = Vec3i(target)
-					placeSchematicEfficiently(schematic, world, targetVec3i, true) {
-						player.teleport(target.add(ship.teleportOffsetX, ship.teleportOffsetY, ship.teleportOffsetZ))
-
-						player.withdrawMoney(ship.cost)
-						lastBuyTimes[player.uniqueId] = currentTimeMillis()
-
-						player.success("Successfully bought a ${ship.name} (Cost: ${ship.cost}\n Remaining Balance: ${player.getMoneyBalance()})")
-					}
-				}.setName(miniMessage().deserialize(ship.displayName))
+				return@map button
 			}
-			player.openPaginatedMenu("DealerShip", ships)
+
+			player.openPaginatedMenu("Ship Dealer", ships)
+		}
+	}
+
+	private fun loadShip(player: Player, ship: ServerConfiguration.Ship, schematic: Clipboard) {
+		if (!player.hasProtection()) {
+			if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + ship.price > currentTimeMillis()) {
+				player.userError(
+					"Didn't I sell you a ship not too long ago? These things are expensive, " +
+							"and I am already selling them at a discount, leave some for other people."
+				)
+				return
+			}
+		}
+
+		if (!player.hasEnoughMoney(ship.price)) {
+			player.userError("This ship is too expensive for you\n It costs ${ship.price}, you currently have ${player.getMoneyBalance()}")
+			return
+		}
+
+		var target = player.location
+		target.y = 196.0
+		target = resolveTarget(schematic, target)
+
+		val world = player.world
+		val targetVec3i = Vec3i(target)
+
+		placeSchematicEfficiently(schematic, world, targetVec3i, true) {
+			player.teleport(target.add(ship.teleportOffsetX, ship.teleportOffsetY, ship.teleportOffsetZ))
+
+			player.withdrawMoney(ship.price)
+			lastBuyTimes[player.uniqueId] = currentTimeMillis()
+
+			player.success("Successfully bought a ${ship.name} (Cost: ${ship.price}\n Remaining Balance: ${player.getMoneyBalance()})")
 		}
 	}
 
@@ -142,15 +141,5 @@ object StarshipDealers : SLComponent() {
 		}
 
 		return target
-	}
-
-	private fun getSchematicFile(filePath: String): File? {
-		val file = Paths.get(IonServer.dataFolder.path.plus("/$filePath")).toFile()
-
-		if (file.exists()) {
-			return file
-		}
-
-		return null
 	}
 }
