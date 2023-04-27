@@ -27,8 +27,6 @@ class SpaceGenCommand : BaseCommand() {
 			for (z in sender.chunk.z - range..sender.chunk.z + range) {
 				val chunk2 = sender.world.getChunkAt(x, z)
 
-				println(chunk2.persistentDataContainer.get(STORED_CHUNK_BLOCKS, StoredChunkBlocks))
-
 				try {
 					SpaceGenerator.regenerateChunk(chunk2)
 				} catch (error: java.lang.Error) {
