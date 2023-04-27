@@ -42,6 +42,11 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		val chest = (targetedBlock.state as? Chest) ?: return
 
+		if (Encounters.getChestFlag(chest, INACTIVE) == "true") {
+			event.isCancelled = true
+			return
+		}
+
 		val blocks = Encounters.getBlocks(chest.world, chest.location.toBlockPos(), 3.0) {
 			checkAir(it)
 		}
