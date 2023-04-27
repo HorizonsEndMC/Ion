@@ -90,7 +90,7 @@ object NationSpaceStationCommand : SLCommand() {
 		// Check conflict with beacons
 		HyperspaceBeaconManager.beaconWorlds[world]?.let { beacons ->
 			for (beacon in beacons) {
-				val minDistance = 1000
+				val minDistance = 3000
 				val distance = distance(x, y, z, beacon.spaceLocation.x, y, beacon.spaceLocation.z)
 
 				failIf(distance < minDistance) {
