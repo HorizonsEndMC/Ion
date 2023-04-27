@@ -6,6 +6,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -82,6 +84,18 @@ object NationSpaceStationCommand : SLCommand() {
 
 			failIf(distance < minDistance) {
 				"This claim would be too close to the star ${star.name}"
+			}
+		}
+
+		// Check conflict with beacons
+		HyperspaceBeaconManager.beaconWorlds[world]?.let { beacons ->
+			for (beacon in beacons) {
+				val minDistance = 256
+				val distance = distance(x, y, z, beacon.spaceLocation.x, y, beacon.spaceLocation.z)
+
+				failIf(distance < minDistance) {
+					"This claim would be too close to the hyperspace beacon ${beacon.name}"
+				}
 			}
 		}
 
