@@ -28,7 +28,7 @@ object TimedBomb : Encounter(identifier = "timed_bomb") {
 			}
 			if (timeLimit * 20 == iteration) {
 				val explosionRadius = 10.0 // For spawning actual explosions
-				val explosionDamage = 50.0
+				val explosionDamage = 100.0
 				val explosionDamageRadius = 20.0 // For entity damage calculation
 				targetedBlock.location.spherePoints(explosionRadius, 10).forEach {
 					it.createExplosion(10.0f)
