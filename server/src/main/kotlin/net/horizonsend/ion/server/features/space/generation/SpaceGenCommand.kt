@@ -7,21 +7,13 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
-import net.horizonsend.ion.server.features.space.encounters.Encounters
-import net.horizonsend.ion.server.features.space.generation.generators.GenerateChunk
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
-import net.horizonsend.ion.server.features.space.generation.generators.WreckGenerationData
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.STORED_CHUNK_BLOCKS
-import net.horizonsend.ion.server.miscellaneous.minecraft
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
 import org.bukkit.entity.Player
-import java.util.Random
 
 @CommandPermission("ion.spacegen")
 @CommandAlias("spacegen")
@@ -48,72 +40,5 @@ class SpaceGenCommand : BaseCommand() {
 		}
 
 		sender.success("Success! Regenerated all chunks in a $range chunk radius")
-	}
-
-	@Suppress("unused")
-	@Subcommand("create asteroid")
-	@CommandCompletion("size index octaves")
-	fun onCreateCustom(sender: Player, @Optional size: Double?, @Optional index: Int?, @Optional octaves: Int?) {
-		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
-			.userError("No generator found for ${sender.world.name}")
-
-		val asteroid = generator.generateWorldAsteroid(
-			sender.chunk.chunkKey,
-			Random(sender.chunk.chunkKey),
-			sender.world.minHeight,
-			sender.world.maxHeight,
-			sender.location.blockX,
-			sender.location.blockY,
-			sender.location.blockZ,
-			size,
-			index,
-			octaves
-		)
-
-		SpaceGenerationManager.coroutineScope.launch {
-			SpaceGenerationManager.postGenerateFeature(
-				GenerateChunk(generator, sender.chunk.minecraft, listOf(), listOf(asteroid)),
-				SpaceGenerationManager.coroutineScope
-			)
-		}
-
-		sender.success(
-			"Success! Generated an asteroid of size ${asteroid.size} with palette" +
-				" ${asteroid.palette.entries().map { it.bukkitMaterial }} and octaves ${asteroid.octaves}"
-		)
-	}
-
-	@Suppress("unused")
-	@Subcommand("create wreck")
-	@CommandCompletion("@wreckSchematics @wreckEncounters")
-	fun onGenerateWreck(sender: Player, @Optional wreck: String?, @Optional encounter: String?) {
-		val generator = SpaceGenerationManager.getGenerator((sender.world as CraftWorld).handle) ?: return sender
-			.userError("No generator found for ${sender.world.name}")
-
-		val data = wreck?.let { wreckName ->
-			val encounterData = encounter?.let { encounterName -> Encounters[wreckName] }
-
-			WreckGenerationData(
-				sender.location.x.toInt(),
-				sender.location.y.toInt(),
-				sender.location.z.toInt(),
-				wreckName,
-				encounterData
-			)
-		} ?: generator.generateRandomWreckData(
-			Random(sender.chunk.minecraft.pos.longKey),
-			sender.location.x.toInt(),
-			sender.location.y.toInt(),
-			sender.location.z.toInt()
-		)
-
-		SpaceGenerationManager.coroutineScope.launch {
-			SpaceGenerationManager.postGenerateFeature(
-				GenerateChunk(generator, sender.chunk.minecraft, listOf(data), listOf()),
-				SpaceGenerationManager.coroutineScope
-			)
-		}
-
-		sender.success("Success! Generated wreck ${data.wreckName} with encounter ${data.encounter}")
 	}
 }
