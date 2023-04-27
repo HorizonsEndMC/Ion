@@ -17,6 +17,7 @@ import kotlin.math.roundToInt
 class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Location) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
 	var z = ship.centerOfMass.z.toDouble()
+	private val world = ship.serverLevel.world
 	private val direction = dest.toVector().subtract(ship.centerOfMass.toVector()).normalize()
 	private val totalDistance = remainingDistance()
 	private var travelled = 0.0
@@ -25,7 +26,11 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 		runTaskTimer(IonServer, 2, 2)
 	}
 
-	private fun remainingDistance() = distance(x, 0.0, z, dest.x, 0.0, dest.z)
+	private fun remainingDistance(): Double {
+		return if (world == dest.world) { distance(x, 0.0, z, dest.x, 0.0, dest.z) } else {
+			100000 - travelled
+		}
+	}
 
 	override fun run() {
 		if (!ActiveStarships.isActive(ship)) {

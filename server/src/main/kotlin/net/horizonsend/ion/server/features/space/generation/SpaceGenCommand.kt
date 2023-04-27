@@ -10,9 +10,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.STORED_CHUNK_BLOCKS
 import org.bukkit.entity.Player
 
 @CommandPermission("ion.spacegen")

@@ -38,6 +38,8 @@ import kotlin.math.roundToInt
 
 @CommandAlias("nationspacestation|nspacestation|nstation")
 object NationSpaceStationCommand : SLCommand() {
+	val disallowedWorlds = listOf("horizon", "trench", "au0821")
+
 	private fun validateName(name: String, stationId: Oid<CapturableStation>?) {
 		if (!name.isAlphanumeric()) {
 			throw InvalidCommandArgument("Name must be alphanumeric")
@@ -134,8 +136,6 @@ object NationSpaceStationCommand : SLCommand() {
 		}
 
 		failIf(!SpaceWorlds.contains(sender.world)) { "You can only create a space station in space" }
-
-		val disallowedWorlds = listOf("horizon", "trench", "au0821")
 		failIf(
 			disallowedWorlds.contains(sender.world.name.lowercase())
 		) { "Space stations cannot be created in systems with no security" }
