@@ -70,7 +70,7 @@ object PlayerInfoCommand : SLCommand() {
 	}
 
 	private fun sendAdvanceInfo(sender: CommandSender, slPlayer: SLPlayer) {
-		sender.sendRichMessage("<dark_purple>SLXP: <light_purple>${slPlayer.xp}")
+		sender.sendRichMessage("<dark_purple>XP: <light_purple>${slPlayer.xp}")
 		sender.sendRichMessage("<red>Level: <yellow>${slPlayer.level}")
 	}
 
