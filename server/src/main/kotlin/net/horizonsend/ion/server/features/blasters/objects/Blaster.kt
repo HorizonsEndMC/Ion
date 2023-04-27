@@ -18,6 +18,7 @@ import net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE
 import net.minecraft.resources.ResourceLocation
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.randomDouble
 import org.bukkit.Color
@@ -189,7 +190,7 @@ abstract class Blaster<T : Balancing>(
 			var pitchFactor = 1.0
 
 			// No sounds in space (somewhat)
-			if (livingEntity.world.name.lowercase().contains("space")) {
+			if (SpaceWorlds.contains(livingEntity.world)) {
 				distanceFactor *= 0.5
 				volumeFactor *= 0.25
 				pitchFactor *= 0.5

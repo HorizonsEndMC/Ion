@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
+import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.alongVector
 import org.bukkit.FluidCollisionMode
@@ -154,7 +155,7 @@ class RayTracedParticleProjectile(
 		location.world.players.forEach {
 			if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
 				var pitchFactor = 1.0f
-				if (it.world.name.lowercase().contains("space")) pitchFactor = 0.5f
+				if (SpaceWorlds.contains(it.world)) pitchFactor = 0.5f
 				it.playSound(sound(key("minecraft:$soundWhizz"), Source.PLAYER, 1.0f, pitchFactor))
 				nearMissPlayers.add(it)
 			}
