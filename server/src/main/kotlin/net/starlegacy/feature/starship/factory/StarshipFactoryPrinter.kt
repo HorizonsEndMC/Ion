@@ -4,6 +4,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
+import net.starlegacy.feature.transport.Extractors
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
@@ -174,7 +176,13 @@ class StarshipFactoryPrinter(
 		for ((key, data) in queue) {
 			val price = ShipFactoryMaterialCosts.getPrice(data.createCraftBlockData())
 			tryCreditCost(price)
-			world.setNMSBlockData(blockKeyX(key), blockKeyY(key), blockKeyZ(key), data)
+
+			val blockX = blockKeyX(key)
+			val blockY = blockKeyY(key)
+			val blockZ = blockKeyZ(key)
+
+			world.setNMSBlockData(blockX, blockY, blockZ, data)
+			if (data.bukkitMaterial == Extractors.EXTRACTOR_BLOCK) Extractors.add(world, Vec3i(blockX, blockY, blockZ))
 		}
 	}
 
