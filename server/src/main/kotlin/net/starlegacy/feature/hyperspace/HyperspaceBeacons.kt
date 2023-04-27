@@ -26,7 +26,7 @@ object HyperspaceBeacons : SLComponent() {
 			val z = beacon.spaceLocation.z.toDouble()
 			set.createMarker(
 				beacon.name,
-				name,
+				beacon.name,
 				beacon.spaceLocation.world,
 				x,
 				128.0,
