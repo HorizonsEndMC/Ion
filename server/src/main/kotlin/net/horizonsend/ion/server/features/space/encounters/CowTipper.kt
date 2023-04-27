@@ -52,7 +52,7 @@ object CowTipper : Encounter(identifier = "cow_tipper") {
 			}
 			if (timeLimit * 20 == iteration) {
 				val explosionRadius = 7.5 // For spawning actual explosions
-				val explosionDamage = 40.0
+				val explosionDamage = 100.0
 				val explosionDamageRadius = 15.0 // For entity damage calculation
 				explosiveCow.location.spherePoints(explosionRadius, 10).forEach {
 					it.createExplosion(7.5f)
