@@ -155,7 +155,7 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 			}
 			y(-2) {
 				x(-1).anyGlassPane()
-				x(+0).lodestone()
+				x(+0).ironBlock()
 				x(+1).anyGlassPane()
 			}
 		}
