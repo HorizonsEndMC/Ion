@@ -10,6 +10,7 @@ import net.starlegacy.util.readSchematic
 import net.starlegacy.util.nms
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.World
 
 @Serializable
@@ -186,30 +187,6 @@ data class ServerConfiguration(
 
 		fun toLocation(): Location = Location(bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
 	}
-
-	/**Asteroid Feature
-	 * All asteroid features are stored as tauruses, but the values can be manipulated to make spheres or other shapes.
-	 * @param name Unused, for readability.
-	 * @param worldName World to place the feature
-	 * @param baseDensity Asteroid density inside the tube
-	 * @param tubeSize Distance from the center of the tube to the center of the taurus
-	 * @param tubeRadius Radius of the tube
-	 * @param x X Asis Location
-	 * @param y Y Asis Location
-	 * @param z Z Asis Location
-	 * @see baseAsteroidDensity
-	 */
-	@Serializable
-	data class AsteroidFeature(
-		val name: String = "",
-		val worldName: String = "",
-		val baseDensity: Double = 1.0,
-		val tubeSize: Double = 0.0,
-		val tubeRadius: Double = 0.0,
-		val x: Int,
-		val y: Int,
-		val z: Int
-	)
 
 	/**
 	 * @param cooldown ticks
