@@ -26,6 +26,8 @@ object SpaceMap : SLComponent() {
 		markerSet = markerAPI.createMarkerSet("space", "Space", null, false)
 
 		for (star in Space.getStars()) {
+			if (star.name == "EdenHack") continue
+
 			markerSet.createMarker(
 				star.id,
 				star.name,
@@ -40,7 +42,7 @@ object SpaceMap : SLComponent() {
 
 		for (planet in Space.getPlanets()) {
 			// planet icon
-			val planetIcon = markerSet.createMarker(
+			markerSet.createMarker(
 				planet.id,
 				planet.name,
 				planet.spaceWorldName,
@@ -50,8 +52,6 @@ object SpaceMap : SLComponent() {
 				markerAPI.getMarkerIcon(planet.name.lowercase()),
 				false // ??
 			)
-
-			planetIcon
 
 			// planet ring
 			markerSet.createCircleMarker(
