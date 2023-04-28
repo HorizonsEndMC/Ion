@@ -239,6 +239,22 @@ object PlanetCommand : SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("set orbitpos")
+	@CommandCompletion("@planets position")
+	fun onSetOrbitPos(sender: CommandSender, planet: CachedPlanet, newValue: Double) {
+		val oldValue = planet.orbitProgress
+		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
+
+		planet.setOrbitProgress(newValue)
+		sender.success(
+			"Updated ${planet.name} orbit progress from $oldValue to $newValue"
+		)
+		planet.orbit(true)
+		spaceWorld.save()
+		SpaceMap.refresh()
+	}
+
+	@Suppress("Unused")
 	@Subcommand("set location")
 	@CommandCompletion("@planets x z")
 	fun onSetLocation(sender: CommandSender, planet: CachedPlanet, x: Int, z: Int) {

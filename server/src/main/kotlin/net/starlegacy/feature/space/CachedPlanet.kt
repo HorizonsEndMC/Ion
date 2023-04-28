@@ -92,6 +92,14 @@ class CachedPlanet(
 
 	fun toggleRogue(rogue: Boolean): UpdateResult = Planet.setRogue(databaseId, rogue)
 
+	fun setOrbitProgress(progress: Double) {
+		val newLocation = calculateOrbitLocation(sun, orbitDistance, progress)
+		move(newLocation)
+
+		orbitProgress = progress
+		Planet.setOrbitProgress(databaseId, progress)
+	}
+
 	fun changeX(x: Int): UpdateResult = Planet.setX(databaseId, x)
 
 	fun changeZ(z: Int): UpdateResult = Planet.setZ(databaseId, z)
