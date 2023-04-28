@@ -4,8 +4,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotedEvent
-import net.starlegacy.util.isInRange
-import org.bukkit.Location
+import net.starlegacy.util.distance
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import java.util.UUID
@@ -41,16 +40,14 @@ object HyperspaceBeaconManager : Listener {
 
 		if (
 			worldBeacons.any { beacon ->
-				if (beacon.spaceLocation.toLocation().isInRange(
-						Location(
-								event.starship.serverLevel.world,
-								(event.x + starship.centerOfMass.x).toDouble(),
-								(event.y + starship.centerOfMass.y).toDouble(),
-								(event.z + starship.centerOfMass.x).toDouble()
-							),
-						beacon.radius
-					)
-				) {
+				val distance = distance(
+					beacon.spaceLocation.x,
+					beacon.spaceLocation.z,
+					(event.x + starship.centerOfMass.x),
+					(event.z + starship.centerOfMass.z)
+				)
+
+				if (distance <= beacon.radius) {
 					event.starship.beacon = beacon
 					true
 				} else {
