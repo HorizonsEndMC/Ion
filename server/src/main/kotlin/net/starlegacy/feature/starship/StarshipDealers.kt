@@ -26,8 +26,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.inventory.ItemStack
 import java.lang.System.currentTimeMillis
-import java.sql.Time
-import java.text.SimpleDateFormat
 import java.util.UUID
 
 object StarshipDealers : SLComponent() {
@@ -70,23 +68,19 @@ object StarshipDealers : SLComponent() {
 	}
 
 	private fun loadShip(player: Player, ship: ServerConfiguration.Ship, schematic: Clipboard) {
-		val cooldown = (lastBuyTimes[ship]!!.getOrDefault(player.uniqueId, 0) + (ship.cooldown)) - currentTimeMillis()
-		val date = Time(cooldown)
-		val time = SimpleDateFormat("DD 'day(s)' hh 'hour(s)' mm 'minute(s), and' ss 'seconds'").format(date)
+		val shipLastBuy = lastBuyTimes.getOrDefault(ship, mutableMapOf())
 
 		if (
-			lastBuyTimes[ship]!!.getOrDefault(player.uniqueId, 0) + (ship.cooldown) > currentTimeMillis()
+			shipLastBuy.getOrDefault(player.uniqueId, 0) + (ship.cooldown) > currentTimeMillis()
 		) {
 			if (player.hasProtection() && ship.protectionCanBypass) {
 				player.information(
-					"You seem new around these parts. I usually don't do this, but I'll let you take another\n" +
-							"Cooldown: $time"
+					"You seem new around these parts. I usually don't do this, but I'll let you take another"
 				)
 			} else {
 				player.userError(
 					"Didn't I sell you a ship not too long ago? These things are expensive, " +
-							"and I am already selling them at a discount, leave some for other people.\n" +
-							"Cooldown: $time"
+							"and I am already selling them at a discount, leave some for other people."
 				)
 				return
 			}
@@ -109,7 +103,8 @@ object StarshipDealers : SLComponent() {
 			player.teleport(target.add(0.0, 1.0, 0.0).toCenterLocation())
 
 			player.withdrawMoney(ship.price)
-			lastBuyTimes[ship]!![player.uniqueId] = currentTimeMillis()
+			shipLastBuy[player.uniqueId] = currentTimeMillis()
+			lastBuyTimes[ship] = shipLastBuy
 
 			BlueprintCommand.tryPilot(player, vec3i, ship.shipType, ship.displayName)
 
