@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
+import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.util.readSchematic
 import net.starlegacy.util.nms
 import org.bukkit.Bukkit
@@ -189,22 +190,24 @@ data class ServerConfiguration(
 	}
 
 	/**
-	 * @param cooldown ticks
+	 * @param cooldown in ms
 	 **/
 	@Serializable
 	data class Ship(
 		val price: Double,
 		val displayName: String,
-		val name: String,
+		val schematicName: String,
 		val guiMaterial: Material,
 		val cooldown: Long,
-		val teleportOffsetX: Double, // teleport offsets to teleport the player to after the ship is placed (away from schematic origin)
-		val teleportOffsetY: Double,
-		val teleportOffsetZ: Double,
+		val protectionCanBypass: Boolean,
+		private val shipClass: String,
 		val lore: List<String>
 	) {
 		@kotlinx.serialization.Transient
-		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$name.schem")
+		val shipType: StarshipType = StarshipType.valueOf(shipClass)
+
+		@kotlinx.serialization.Transient
+		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
 	}
