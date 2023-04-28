@@ -33,4 +33,22 @@ data class BlockData(val blockState: BlockState, var blockEntityTag: CompoundTag
 
 		val AIR = BlockData(Blocks.AIR.defaultBlockState(), null)
 	}
+
+	override fun hashCode(): Int {
+		var result = blockState.hashCode()
+		result = 31 * result + (blockEntityTag?.hashCode() ?: 0)
+		return result
+	}
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as BlockData
+
+		if (blockState != other.blockState) return false
+		if (blockEntityTag != other.blockEntityTag) return false
+
+		return true
+	}
 }
