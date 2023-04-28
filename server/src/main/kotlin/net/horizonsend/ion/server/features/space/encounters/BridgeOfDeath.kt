@@ -54,7 +54,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 		val block = blocks.shuffled().first().location
 		val bridgeKeeper = block.world.castSpawnEntity<ZombieVillager>(block.toCenterLocation(), EntityType.ZOMBIE_VILLAGER).apply {
 			this.customName(text("Old Man From Scene 24"))
-			this.location.direction = this.location.toVector().subtract(event.player.location.toVector())
+			this.lookAt(event.player)
 			this.setAI(false)
 		}
 
@@ -82,6 +82,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			override fun getPromptText(context: ConversationContext): String {
 				Encounters.setChestFlag(chest, LOCKED, "false")
 				Encounters.setChestFlag(chest, INACTIVE, "true")
+				bridgeKeeper.remove()
 				return "Alright, off you go."
 			}
 
