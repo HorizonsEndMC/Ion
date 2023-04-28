@@ -12,13 +12,13 @@ import org.bukkit.persistence.PersistentDataType.DOUBLE
 import java.util.Random
 
 enum class SecondaryChest(val NBT: CompoundTag, val money: (Double) -> Double) {
-	REPAIR_MATERIALS(Encounters.createLootChest("horizonsend:chests/starship_resource"), { input: Double -> input * 200 + 50 }),
-	FOOD(Encounters.createLootChest("horizonsend:chests/food"), { input: Double -> input * 200 + 50 }),
-	GUN_PARTS(Encounters.createLootChest("horizonsend:chests/gun_parts"), { input: Double -> input * 500 }),
-	POWER_ARMOR_MODS(Encounters.createLootChest("horizonsend:chests/power_armor_mods"), { input: Double -> input * 500 }),
-	ORES_LOW(Encounters.createLootChest("horizonsend:chests/low_tier_ores"), { input: Double -> input * 500 }),
-	ORES_MEDIUM(Encounters.createLootChest("horizonsend:chests/mid_tier_ores"), { input: Double -> input * 500 }),
-	ORES_HIGH(Encounters.createLootChest("horizonsend:chests/high_tier_ores"), { input: Double -> input * 500 });
+	REPAIR_MATERIALS(Encounters.createLootChest("horizonsend:chests/starship_resource"), { input: Double -> input * 2750 + 250 }),
+	FOOD(Encounters.createLootChest("horizonsend:chests/food"), { input: Double -> input * 2750 + 250 }),
+	GUN_PARTS(Encounters.createLootChest("horizonsend:chests/gun_parts"), { input: Double -> input * 2750 + 250 }),
+	POWER_ARMOR_MODS(Encounters.createLootChest("horizonsend:chests/power_armor_mods"), { input: Double -> input * 2750 + 250 }),
+	ORES_LOW(Encounters.createLootChest("horizonsend:chests/low_tier_ores"), { input: Double -> input * 2750 + 250 }),
+	ORES_MEDIUM(Encounters.createLootChest("horizonsend:chests/mid_tier_ores"), { input: Double -> input * 2750 + 250 }),
+	ORES_HIGH(Encounters.createLootChest("horizonsend:chests/high_tier_ores"), { input: Double -> input * 2750 + 250 });
 
 	companion object {
 		private val map = SecondaryChest.values().associateBy { it.name }

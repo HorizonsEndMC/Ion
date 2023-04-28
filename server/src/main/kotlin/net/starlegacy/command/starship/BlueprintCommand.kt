@@ -259,7 +259,7 @@ object BlueprintCommand : SLCommand() {
 			.subtract(BlockVector3.at(pilotLoc.x, pilotLoc.y, pilotLoc.z))
 	}
 
-	private fun tryPilot(
+	fun tryPilot(
 		sender: Player,
 		origin: Vec3i,
 		type: StarshipType,

@@ -3,6 +3,7 @@ package net.starlegacy.feature.starship
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
@@ -10,12 +11,14 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.SLComponent
+import net.starlegacy.command.starship.BlueprintCommand
 import net.starlegacy.feature.nations.gui.item
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
 import net.starlegacy.util.placeSchematicEfficiently
+import net.starlegacy.util.toBlockPos
 import net.starlegacy.util.updateMeta
 import net.starlegacy.util.withdrawMoney
 import org.bukkit.Location
@@ -66,8 +69,14 @@ object StarshipDealers : SLComponent() {
 	}
 
 	private fun loadShip(player: Player, ship: ServerConfiguration.Ship, schematic: Clipboard) {
-		if (!player.hasProtection()) {
-			if (lastBuyTimes.getOrDefault(player.uniqueId, 0) + ship.price > currentTimeMillis()) {
+		if (
+			lastBuyTimes.getOrDefault(player.uniqueId, 0) + (ship.cooldown) > currentTimeMillis()
+		) {
+			if (player.hasProtection() && ship.protectionCanBypass) {
+				player.information(
+					"You seem new around these parts. I usually don't do this, but I'll let you take another"
+				)
+			} else {
 				player.userError(
 					"Didn't I sell you a ship not too long ago? These things are expensive, " +
 							"and I am already selling them at a discount, leave some for other people."
@@ -82,19 +91,22 @@ object StarshipDealers : SLComponent() {
 		}
 
 		var target = player.location
-		target.y = 196.0
+		target.y = 216.0
 		target = resolveTarget(schematic, target)
 
 		val world = player.world
 		val targetVec3i = Vec3i(target)
 
 		placeSchematicEfficiently(schematic, world, targetVec3i, true) {
-			player.teleport(target.add(ship.teleportOffsetX, ship.teleportOffsetY, ship.teleportOffsetZ))
+			val vec3i = Vec3i(target.blockX, target.blockY, target.blockZ)
+			player.teleport(target.add(0.0, 1.0, 0.0).toCenterLocation())
 
 			player.withdrawMoney(ship.price)
 			lastBuyTimes[player.uniqueId] = currentTimeMillis()
 
-			player.success("Successfully bought a ${ship.name} (Cost: ${ship.price}\n Remaining Balance: ${player.getMoneyBalance()})")
+			BlueprintCommand.tryPilot(player, vec3i, ship.shipType, ship.displayName)
+
+			player.success("Successfully bought a ${ship.schematicName} (Cost: ${ship.price}\n Remaining Balance: ${player.getMoneyBalance()})")
 		}
 	}
 
