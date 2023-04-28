@@ -188,6 +188,6 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 	}
 
 	override fun constructChestNBT(): CompoundTag {
-		return Encounters.createLootChest("minecraft:chests/abandoned_mineshaft")
+		return Encounters.createLootChest("horizonsend:chests/power_armor_mods")
 	}
 }
