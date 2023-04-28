@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.UUID
 
 object StarshipDealers : SLComponent() {
-	private val lastBuyTimes = mutableMapOf<UUID, Long>()
+	private val lastBuyTimes = mutableMapOf<ServerConfiguration.Ship, MutableMap<UUID, Long>>()
 	private val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -70,12 +70,12 @@ object StarshipDealers : SLComponent() {
 	}
 
 	private fun loadShip(player: Player, ship: ServerConfiguration.Ship, schematic: Clipboard) {
-		val cooldown = (lastBuyTimes.getOrDefault(player.uniqueId, 0) + (ship.cooldown)) - currentTimeMillis()
+		val cooldown = (lastBuyTimes[ship]!!.getOrDefault(player.uniqueId, 0) + (ship.cooldown)) - currentTimeMillis()
 		val date = Time(cooldown)
 		val time = SimpleDateFormat("DD 'day(s)' hh 'hour(s)' mm 'minute(s), and' ss 'seconds'").format(date)
 
 		if (
-			lastBuyTimes.getOrDefault(player.uniqueId, 0) + (ship.cooldown) > currentTimeMillis()
+			lastBuyTimes[ship]!!.getOrDefault(player.uniqueId, 0) + (ship.cooldown) > currentTimeMillis()
 		) {
 			if (player.hasProtection() && ship.protectionCanBypass) {
 				player.information(
@@ -109,7 +109,7 @@ object StarshipDealers : SLComponent() {
 			player.teleport(target.add(0.0, 1.0, 0.0).toCenterLocation())
 
 			player.withdrawMoney(ship.price)
-			lastBuyTimes[player.uniqueId] = currentTimeMillis()
+			lastBuyTimes[ship]!![player.uniqueId] = currentTimeMillis()
 
 			BlueprintCommand.tryPilot(player, vec3i, ship.shipType, ship.displayName)
 
