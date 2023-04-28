@@ -72,6 +72,6 @@ object CowTipper : Encounter(identifier = "cow_tipper") {
 	}
 
 	override fun constructChestNBT(): CompoundTag {
-		return Encounters.createLootChest("minecraft:chests/abandoned_mineshaft")
+		return Encounters.createLootChest("horizonsend:chests/mid_tier_ores")
 	}
 }
