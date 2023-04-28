@@ -20,7 +20,7 @@ object Encounters {
 	val COOLANT_LEAK    = register(CoolantLeak)
 	val COW_TIPPER      = register(CowTipper)
 	val DEFENSE_BOTS    = register(DefenseBots)
-	val DEFENSE_MATRIX  = register(DefenseMatrix)
+//	val DEFENSE_MATRIX  = register(DefenseMatrix)
 	val DEFUSE_BOMB     = register(DefuseBomb)
 	val INFESTED        = register(Infested)
 	val ITS_A_TRAP      = register(ItsATrap)
