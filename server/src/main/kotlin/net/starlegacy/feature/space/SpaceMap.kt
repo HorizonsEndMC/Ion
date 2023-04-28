@@ -40,16 +40,18 @@ object SpaceMap : SLComponent() {
 
 		for (planet in Space.getPlanets()) {
 			// planet icon
-			markerSet.createMarker(
+			val planetIcon = markerSet.createMarker(
 				planet.id,
 				planet.name,
 				planet.spaceWorldName,
 				planet.location.x.toDouble(),
 				planet.location.y.toDouble(),
 				planet.location.z.toDouble(),
-				markerAPI.getMarkerIcon("world"),
+				markerAPI.getMarkerIcon(planet.name.lowercase()),
 				false // ??
 			)
+
+			planetIcon
 
 			// planet ring
 			markerSet.createCircleMarker(
