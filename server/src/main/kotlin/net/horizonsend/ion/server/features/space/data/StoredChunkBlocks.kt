@@ -29,17 +29,10 @@ data class StoredChunkBlocks(val sections: List<CompletedSection>) {
 				NamespacedKeys.SECTIONS, PersistentDataType.TAG_CONTAINER_ARRAY
 			)!!.map { CompletedSection.fromPrimitive(it, context) }
 
-//			println(primitive.get(
-//				NamespacedKeys.SECTIONS, PersistentDataType.TAG_CONTAINER_ARRAY
-//			))
-
-//			println(sections)
-
 			return StoredChunkBlocks(sections)
 		}
 
 		fun StoredChunkBlocks.store(chunk: Chunk) {
-//			println(this)
 			chunk.persistentDataContainer.set(NamespacedKeys.STORED_CHUNK_BLOCKS, StoredChunkBlocks, this)
 		}
 
