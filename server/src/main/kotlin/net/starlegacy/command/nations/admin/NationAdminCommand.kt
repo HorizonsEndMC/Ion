@@ -140,6 +140,7 @@ internal object NationAdminCommand : SLCommand() {
 		sender msg "Set balance of $nation to ${balance.toCreditsString()}"
 	}
 
+	@CommandPermission("nations.admin.movestation")
 	@Subcommand("nation station set location")
 	fun onStationSetLocaiton(sender: CommandSender, station: String, world: World, x: Int, z: Int) =
 		asyncCommand(sender) {

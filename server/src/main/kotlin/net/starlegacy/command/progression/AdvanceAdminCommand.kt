@@ -33,6 +33,7 @@ object AdvanceAdminCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("xp get")
 	@CommandCompletion("@players")
+	@CommandPermission("advance.admin.xp")
 	fun onXPGet(sender: CommandSender, player: String) = asyncCommand(sender) {
 		val playerId: UUID = resolveOfflinePlayer(player)
 
@@ -53,6 +54,7 @@ object AdvanceAdminCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("xp give")
 	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.xp")
 	fun onXPGive(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
 		val playerId: UUID = resolveOfflinePlayer(player)
 
@@ -71,6 +73,7 @@ object AdvanceAdminCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("xp set")
 	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.xp")
 	fun onXPSet(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
 		val playerId = resolveOfflinePlayer(player)
 		val oldXP = PlayerXPLevelCache.fetchSLXP(playerId)
@@ -89,6 +92,7 @@ object AdvanceAdminCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("level get")
 	@CommandCompletion("@players")
+	@CommandPermission("advance.admin.xp")
 	fun onLevelGet(sender: CommandSender, player: String) = asyncCommand(sender) {
 		val playerId = resolveOfflinePlayer(player)
 
@@ -105,6 +109,7 @@ object AdvanceAdminCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("level set")
 	@CommandCompletion("@players @levels")
+	@CommandPermission("advance.admin.xp")
 	fun onLevelSet(sender: CommandSender, player: String, level: Int) = asyncCommand(sender) {
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val oldLevel: Int = PlayerXPLevelCache.fetchLevel(playerId)
