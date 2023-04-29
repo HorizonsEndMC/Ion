@@ -83,11 +83,15 @@ object Hyperspace : SLComponent() {
 		val mass = starship.mass
 		val speed = calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
+
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
 		// create a new marker and add it to the collection
-		val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.serverLevel.world), starship, dest)
-		HyperspaceMap.addMarker(starship, marker)
+		if (starship.serverLevel.world == dest.world) {
+			val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.serverLevel.world), starship, dest)
+			HyperspaceMap.addMarker(starship, marker)
+		}
+
 		(starship as? ActivePlayerStarship)?.pilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
