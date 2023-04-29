@@ -11,10 +11,16 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.distance
 import net.starlegacy.util.toVector
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.roundToInt
 
-class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Location) : BukkitRunnable() {
+class HyperspaceMovement(
+	val ship: ActiveStarship,
+	val speed: Int,
+	private val originWorld: World,
+	val dest: Location
+	) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
 	var z = ship.centerOfMass.z.toDouble()
 	private val world = ship.serverLevel.world
@@ -27,7 +33,7 @@ class HyperspaceMovement(val ship: ActiveStarship, val speed: Int, val dest: Loc
 	}
 
 	private fun remainingDistance(): Double {
-		return if (world == dest.world) { distance(x, 0.0, z, dest.x, 0.0, dest.z) } else {
+		return if (originWorld == dest.world) { distance(x, 0.0, z, dest.x, 0.0, dest.z) } else {
 			60000 - travelled
 		}
 	}

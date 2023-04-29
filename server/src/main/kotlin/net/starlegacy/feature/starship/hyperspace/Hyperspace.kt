@@ -103,6 +103,8 @@ object Hyperspace : SLComponent() {
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
 		val starship = warmup.ship
+		val originWorld = starship.serverLevel.world
+
 		for (player in starship.serverLevel.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)) {
 			player.playSound(
 				Sound.sound(
@@ -141,7 +143,7 @@ object Hyperspace : SLComponent() {
 
 			val mass = starship.mass
 			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass) / 10
-			movementTasks[starship] = HyperspaceMovement(starship, speed, warmup.dest)
+			movementTasks[starship] = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
 
 			// Update the marker state (the ship went into hyperspace)
 			val marker = HyperspaceMap.getMarker(starship)
