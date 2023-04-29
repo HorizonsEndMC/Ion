@@ -23,6 +23,7 @@ import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.SLXP
+import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.util.MenuHelper
@@ -37,6 +38,7 @@ import net.starlegacy.util.colorize
 import net.starlegacy.util.getNBTInt
 import net.starlegacy.util.getNBTString
 import net.starlegacy.util.msg
+import net.starlegacy.util.orNull
 import net.starlegacy.util.randomDouble
 import net.starlegacy.util.red
 import net.starlegacy.util.setDisplayNameAndGet
@@ -539,8 +541,10 @@ object ShipmentManager : SLComponent() {
 		expires: Date
 	): ItemStack {
 		val destination: RegionTerritory = Regions[shipment.to.territoryId]
+		val systemName = Space.planetNameCache[destination.world].orNull()?.spaceWorldName
+
 		val lore = listOf(
-			"&3Shipping From: &b${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)})",
+			"&3Shipping From: &b${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $systemName)",
 			"&5Shipping To: &d${shipment.to.displayName}&7 ($destination)",
 			"&cExpires: &e$expires",
 			"&2Shipment ID: &a$shipmentId"/*,
