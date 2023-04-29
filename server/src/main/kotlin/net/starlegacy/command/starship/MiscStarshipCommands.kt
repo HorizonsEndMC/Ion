@@ -191,7 +191,7 @@ object MiscStarshipCommands : SLCommand() {
 		}
 
 		failIf(!destinationWorld.worldBorder.isInside(Location(destinationWorld, x.toDouble(), 128.0, z.toDouble()))) {
-			"Coords are out of world border."
+			"Destination coordinates are outside the world order"
 		}
 
 		val massShadowInfo = MassShadows.find(
@@ -253,7 +253,7 @@ object MiscStarshipCommands : SLCommand() {
 			)
 		}
 
-		sender.success("Initiating Hyperspace Jump to approximately ($x1, $z1)")
+		sender.success("Initiating hyperspace jump to $destinationWorld ($x1, $z1)")
 
 		val offset = ln(distance).toInt()
 
