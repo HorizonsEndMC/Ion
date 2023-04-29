@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.hyperspace
 
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.active.ActiveStarship
+import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.dynmap.bukkit.DynmapPlugin
@@ -9,7 +10,6 @@ import org.dynmap.markers.MarkerAPI
 import org.dynmap.markers.MarkerSet
 
 object HyperspaceMap : SLComponent() {
-
 	private lateinit var markerSet: MarkerSet
 	private var markers = mutableMapOf<ActiveStarship, HyperspaceMarker>()
 
@@ -38,6 +38,8 @@ object HyperspaceMap : SLComponent() {
 			marker.tick()
 			drawMarker(marker)
 		}
+
+		clearResidual()
 	}
 
 	/** Adds a new marker to the collection*/
@@ -59,14 +61,26 @@ object HyperspaceMap : SLComponent() {
 	/** Deletes the drawn components from the dynmap*/
 	private fun deleteDraw(marker: HyperspaceMarker, delArrow: Boolean = false, delTracker: Boolean = false) {
 		if (delArrow) {
-			var dynMarker = markerSet.findPolyLineMarker(marker.id.toString() + "arrowBody")
+			var dynMarker = markerSet.findPolyLineMarker(marker.id + "arrowBody")
 			dynMarker?.deleteMarker()
-			dynMarker = markerSet.findPolyLineMarker(marker.id.toString() + "arrowHead")
+			dynMarker = markerSet.findPolyLineMarker(marker.id + "arrowHead")
 			dynMarker?.deleteMarker()
 		}
 		if (delTracker) {
-			var dynMarker = markerSet.findMarker(marker.id.toString() + "tracker")
+			var dynMarker = markerSet.findMarker(marker.id + "tracker")
 			dynMarker?.deleteMarker()
+		}
+	}
+
+	fun clearResidual() {
+		val toRemove = markers.filter { (ship, _) ->
+			val isInactive = ActiveStarships.isActive(ship)
+			val isInHyperspace = ship.serverLevel.world.name.contains("hyperspace")
+			return@filter !isInHyperspace && isInactive
+		}.keys
+
+		for (activeStarship in toRemove) {
+			markers.remove(activeStarship)
 		}
 	}
 
@@ -85,10 +99,10 @@ object HyperspaceMap : SLComponent() {
 	/** uses the Dynmap API to draw a spline arrow */
 	private fun drawArrow(marker: HyperspaceMarker) {
 		// Check if arrow already exists
-		if (markerSet.findPolyLineMarker(marker.id.toString() + "arrowBody") != null) { return }
+		if (markerSet.findPolyLineMarker(marker.id + "arrowBody") != null) { return }
 		val vectors = marker.arrowVects
 		markerSet.createPolyLineMarker(
-			marker.id.toString() + "arrowBody",
+			marker.id + "arrowBody",
 			"arrowBody",
 			false,
 			marker.org.world.name,
@@ -99,7 +113,7 @@ object HyperspaceMap : SLComponent() {
 		)
 
 		markerSet.createPolyLineMarker(
-			marker.id.toString() + "arrowHead",
+			marker.id + "arrowHead",
 			"arrowHead",
 			false,
 			marker.org.world.name,
@@ -112,11 +126,11 @@ object HyperspaceMap : SLComponent() {
 
 	/** uses the Dynmap API to draw a marker for a ship in hyperspace*/
 	private fun drawShipTrack(marker: HyperspaceMarker) {
-		var dynMarker = markerSet.findMarker(marker.id.toString() + "tracker")
+		var dynMarker = markerSet.findMarker(marker.id + "tracker")
 		if (dynMarker == null) {
 			dynMarker = markerSet.createMarker(
-				marker.id.toString() + "tracker",
-				marker.id.toString(),
+				marker.id + "tracker",
+				marker.id,
 				marker.org.world.name,
 				0.0, 0.0, 0.0,
 				markerAPI.getMarkerIcon("walk"),

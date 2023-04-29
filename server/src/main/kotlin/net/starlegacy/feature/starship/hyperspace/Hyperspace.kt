@@ -83,11 +83,15 @@ object Hyperspace : SLComponent() {
 		val mass = starship.mass
 		val speed = calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
+
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
 		// create a new marker and add it to the collection
-		val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.serverLevel.world), starship, dest)
-		HyperspaceMap.addMarker(starship, marker)
+		if (starship.serverLevel.world == dest.world) {
+			val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.serverLevel.world), starship, dest)
+			HyperspaceMap.addMarker(starship, marker)
+		}
+
 		(starship as? ActivePlayerStarship)?.pilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
@@ -103,6 +107,8 @@ object Hyperspace : SLComponent() {
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
 		val starship = warmup.ship
+		val originWorld = starship.serverLevel.world
+
 		for (player in starship.serverLevel.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)) {
 			player.playSound(
 				Sound.sound(
@@ -141,7 +147,7 @@ object Hyperspace : SLComponent() {
 
 			val mass = starship.mass
 			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass) / 10
-			movementTasks[starship] = HyperspaceMovement(starship, speed, warmup.dest)
+			movementTasks[starship] = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
 
 			// Update the marker state (the ship went into hyperspace)
 			val marker = HyperspaceMap.getMarker(starship)

@@ -190,7 +190,7 @@ object MiscStarshipCommands : SLCommand() {
 			"Hyperspace is not charted in this sector"
 		}
 
-		failIf(!currentWorld.worldBorder.isInside(Location(currentWorld, x.toDouble(), 128.0, z.toDouble()))) {
+		failIf(!currentWorld.worldBorder.isInside(Location(destinationWorld, x.toDouble(), 128.0, z.toDouble()))) {
 			"Coords are out of world border."
 		}
 
