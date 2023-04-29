@@ -15,32 +15,32 @@ cd run
 
 case $1 in
 	setup)
-		safeSudo docker-compose up --no-start
+		safeSudo docker compose up --no-start
 		mkdir -p paper/plugins
 		cd ..
 		./gradlew --daemon --build-cache :downloadTestServerDependencies
 	;;
 	reset) safeSudo sh -c "
-		docker-compose rm -fs
+		docker compose rm -fs
 		rm -rf paper waterfall
 	" ;;
-	start) safeSudo docker-compose up -d ;;
-	stop) safeSudo docker-compose stop ;;
-	logs) safeSudo docker-compose logs --tail=0 --follow waterfall paper redis ;;
+	start) safeSudo docker compose up -d ;;
+	stop) safeSudo docker compose stop ;;
+	logs) safeSudo docker compose logs --tail=0 --follow waterfall paper redis ;;
 	run)
 		printf "\u1b[34mThe standard run will attach a console to the Paper server, however you will not be able to see what you are typing.\nThis version of the run command is known to be problematic on Windows. In such a case \`run-fallback\` can be used.\u1b[0m\n"
 		safeSudo sh -c "
-			docker-compose up -d
-			docker-compose logs --follow --tail=0 waterfall paper | sed \"s/^/\r/\" &
+			docker compose up -d
+			docker compose logs --follow --tail=0 waterfall paper | sed \"s/^/\r/\" &
 			docker attach paper &> /dev/null
-			docker-compose stop
+			docker compose stop
 		"
 	;;
 	run-fallback)
 		safeSudo sh -c "
-			docker-compose up -d
-			docker-compose logs --tail=0 --follow waterfall paper redis
-			docker-compose stop
+			docker compose up -d
+			docker compose logs --tail=0 --follow waterfall paper redis
+			docker compose stop
 		"
 	;;
 	*)
