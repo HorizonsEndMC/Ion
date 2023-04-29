@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.hyperspace
 
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.active.ActiveStarship
+import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.dynmap.bukkit.DynmapPlugin
@@ -37,6 +38,8 @@ object HyperspaceMap : SLComponent() {
 			marker.tick()
 			drawMarker(marker)
 		}
+
+		clearResidual()
 	}
 
 	/** Adds a new marker to the collection*/
@@ -66,6 +69,18 @@ object HyperspaceMap : SLComponent() {
 		if (delTracker) {
 			var dynMarker = markerSet.findMarker(marker.id + "tracker")
 			dynMarker?.deleteMarker()
+		}
+	}
+
+	fun clearResidual() {
+		val toRemove = markers.filter { (ship, _) ->
+			val isInactive = ActiveStarships.isActive(ship)
+			val isInHyperspace = ship.serverLevel.world.name.contains("hyperspace")
+			return@filter !isInHyperspace && isInactive
+		}.keys
+
+		for (activeStarship in toRemove) {
+			markers.remove(activeStarship)
 		}
 	}
 
