@@ -7,8 +7,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
 
 object ItsATrap : Encounter(identifier = "its_a_trap") {
-	override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 	override fun onChestInteract(event: PlayerInteractEvent) {
 		val targetedBlock = event.clickedBlock!!
 		event.player.alert("it worked")

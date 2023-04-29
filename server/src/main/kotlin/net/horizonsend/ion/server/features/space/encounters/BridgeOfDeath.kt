@@ -28,8 +28,6 @@ import org.bukkit.util.Vector
 import java.util.Random
 
 object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
-	override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {}
-
 	private fun checkAir(block: Block): Boolean {
 		val up1 = block.getRelative(BlockFace.UP)
 		val up2 = up1.getRelative(BlockFace.UP)

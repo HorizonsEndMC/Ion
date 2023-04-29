@@ -4,22 +4,19 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.space.encounters.Encounters.createLootChest
-import net.horizonsend.ion.server.features.space.encounters.Encounters.getChestFlag
 import net.horizonsend.ion.server.features.space.encounters.Encounters.setChestFlag
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.PASSCODE_CODE
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.feature.nations.gui.skullItem
 import net.starlegacy.util.MenuHelper
-import net.starlegacy.util.randomInt
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_HARP
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_SNARE
-import org.bukkit.World
 import org.bukkit.block.Chest
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import java.util.Random
 import java.util.UUID
 
 object Passcode : Encounter(identifier = "passcode") {
@@ -96,18 +93,12 @@ object Passcode : Encounter(identifier = "passcode") {
 		chest.location.world.playSound(chest.location, BLOCK_NOTE_BLOCK_SNARE, 5.0f, 1.0f)
 	}
 
-	override fun generate(world: World, chestX: Int, chestY: Int, chestZ: Int) {
-		// Generate a new passcode unique to each wreck
-		val passcode = randomInt(0, 999999).toString().padStart(6, '0')
-		setChestFlag(world.getBlockAt(chestX, chestY, chestZ).state as Chest, PASSCODE_CODE, passcode)
-	}
-
 	override fun onChestInteract(event: PlayerInteractEvent) {
 		val targetedBlock = event.clickedBlock!!
 
 		event.isCancelled = true
 		val chest = (targetedBlock.state as? Chest) ?: return
-		val passcode = getChestFlag(chest, PASSCODE_CODE)
+		val passcode = Random(targetedBlock.location.hashCode().toLong()).nextInt(0, 999999).toString().padStart(6, '0')
 		var currentCode = ""
 
 		event.player.information("Enter this passcode: $passcode")
@@ -119,7 +110,7 @@ object Passcode : Encounter(identifier = "passcode") {
 				pane.addItem(
 					guiButton(skullItem(i.toString(), headID[i]!!, skinID[i]!!)) {
 						currentCode += i.toString()
-						paneInteractCheck(event.player, chest, passcode!!, currentCode)
+						paneInteractCheck(event.player, chest, passcode, currentCode)
 					}.setName(miniMessage().deserialize(i.toString())),
 					coordinates[i]!!.first, coordinates[i]!!.second
 				)
