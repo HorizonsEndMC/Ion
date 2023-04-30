@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
@@ -56,7 +57,9 @@ object MiscStarshipCommands : SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("release")
 	fun onRelease(sender: Player) {
-		PilotedStarships.tryRelease(PilotedStarships[sender] ?: return  sender.userError("You are not piloting a starship"), sender)
+		PilotedStarships.tryRelease(
+			PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship"), sender
+		)
 	}
 
 	@Suppress("unused")
@@ -170,8 +173,8 @@ object MiscStarshipCommands : SLCommand() {
 	) {
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
-			"Intact hyperdrive not found"
-		}
+				"Intact hyperdrive not found"
+			}
 
 		failIf(!hyperdrive.hasFuel()) {
 			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
@@ -261,7 +264,7 @@ object MiscStarshipCommands : SLCommand() {
 		x1 += randomInt(-offset, offset)
 		z1 += randomInt(-offset, offset)
 
-		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, destinationWorld,  true)
+		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, destinationWorld, true)
 	}
 
 	@Suppress("unused")
@@ -446,7 +449,9 @@ object MiscStarshipCommands : SLCommand() {
 			val pilotRelationColor = pilotNationRelation?.actual?.textStyle
 
 			val formattedName =
-				pilotRelationColor?.let { "<$pilotRelationColor>$pilotName</$pilotRelationColor>" } ?: pilotName
+				pilotRelationColor?.let {
+					"<$pilotRelationColor>$pilotName</$pilotRelationColor> ${if (sender.hasProtection()) " <gold>★</gold>" else ""}"
+				} ?: pilotName
 
 			var worldName = starship.serverLevel.world.key.toString().substringAfterLast(":")
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
