@@ -88,6 +88,7 @@ object GameplayTweaks : SLComponent() {
 
 	private fun modifyBlastResistance() {
 		setBlastResistance(Material.OBSIDIAN, 8.0f)
+		setBlastResistance(Material.CRYING_OBSIDIAN, 8.0f)
 		setBlastResistance(Material.NETHERITE_BLOCK, 8.0f)
 		setBlastResistance(Material.FURNACE, 6.0f)
 		setBlastResistance(Material.DISPENSER, 6.0f)
