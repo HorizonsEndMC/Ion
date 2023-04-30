@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.customitems.commands.CustomItemComman
 import net.horizonsend.ion.server.miscellaneous.commands.CalcExpCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 import net.horizonsend.ion.server.miscellaneous.commands.CheckProtectionCommand
+import net.horizonsend.ion.server.miscellaneous.commands.FixExtractorsCommand
 
 val commands = arrayOf(
 	SpaceGenCommand(),
@@ -21,6 +22,7 @@ val commands = arrayOf(
 	SearchCommand(),
 	CalcExpCommand(),
 	CheckProtectionCommand(),
+	FixExtractorsCommand(),
 
 	AchievementsCommand()
 )
