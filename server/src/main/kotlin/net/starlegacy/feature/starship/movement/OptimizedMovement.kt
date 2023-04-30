@@ -239,7 +239,7 @@ object OptimizedMovement {
 	}
 
 	private fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
-		Heightmap.primeHeightmaps(nmsLevelChunk, Heightmap.Types.values().toSet())
+		Heightmap.primeHeightmaps(nmsLevelChunk, nmsLevelChunk.heightmaps.keys)
 	}
 
 	private fun processOldTile(
