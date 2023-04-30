@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
@@ -36,6 +35,7 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.eq
 import org.litote.kmongo.pull
+import org.litote.kmongo.setValue
 import kotlin.math.roundToInt
 
 @CommandAlias("nationspacestation|nspacestation|nstation")
@@ -138,6 +138,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("create")
 	@Description("Claim this area of space as a space station")
+	@Suppress("unused")
 	fun onCreate(sender: Player, name: String, radius: Int, @Optional cost: Int?) = asyncCommand(sender) {
 		failIf(!sender.hasPermission("nations.spacestation.create")) {
 			"You can't create space stations here!"
@@ -188,6 +189,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("abandon")
 	@Description("Delete a space station")
+	@Suppress("unused")
 	fun onAbandon(sender: Player, station: String) = asyncCommand(sender) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.DELETE_STATION)
@@ -197,6 +199,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("resize")
 	@Description("Resize the station")
+	@Suppress("unused")
 	fun onResize(sender: Player, station: String, newRadius: Int, @Optional cost: Int?) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
@@ -217,7 +220,7 @@ object NationSpaceStationCommand : SLCommand() {
 				"/nstation resize $name $newRadius $realCost"
 		}
 
-		SpaceStation.updateById(spaceStation._id, org.litote.kmongo.setValue(SpaceStation::radius, newRadius))
+		SpaceStation.updateById(spaceStation._id, setValue(SpaceStation::radius, newRadius))
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 		sender msg "&7Resized &b$stationName&7 to &b$newRadius"
 	}
@@ -225,15 +228,17 @@ object NationSpaceStationCommand : SLCommand() {
 	@Subcommand("set trustlevel")
 	@CommandCompletion("MANUAL|NATION|ALLY")
 	@Description("Change the setting for who automatically can build in the station")
+	@Suppress("unused")
 	fun onSetTrustLevel(sender: Player, station: String, trustLevel: SpaceStation.TrustLevel) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 		val stationName = spaceStation.name
 		failIf(spaceStation.trustLevel == trustLevel) { "$stationName's trust level is already $trustLevel" }
-		SpaceStation.updateById(spaceStation._id, org.litote.kmongo.setValue(SpaceStation::trustLevel, trustLevel))
+		SpaceStation.updateById(spaceStation._id, setValue(SpaceStation::trustLevel, trustLevel))
 		sender msg "&7Set trust level of &b$stationName&7 to &b$trustLevel"
 	}
 
 	@Subcommand("manager add")
+	@Suppress("unused")
 	fun onManagerAdd(sender: Player, station: String, player: String) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
@@ -251,6 +256,7 @@ object NationSpaceStationCommand : SLCommand() {
 	}
 
 	@Subcommand("manager list")
+	@Suppress("unused")
 	fun onManagerList(sender: Player, station: String) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
@@ -261,6 +267,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("manager remove")
 	@Description("Revoke a player's manager status at the station")
+	@Suppress("unused")
 	fun onManagerRemove(sender: Player, station: String, player: String) = asyncCommand(sender) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
@@ -278,6 +285,7 @@ object NationSpaceStationCommand : SLCommand() {
 	}
 
 	@Subcommand("trusted list")
+	@Suppress("unused")
 	fun onTrustedList(sender: Player, station: String) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 		val stationName: String = spaceStation.name
@@ -289,6 +297,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("trusted add player")
 	@Description("Give a player build access to the station")
+	@Suppress("unused")
 	fun onTrustedAddPlayer(sender: Player, station: String, player: String) = asyncCommand(sender) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 		val stationName = spaceStation.name
@@ -306,6 +315,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("trusted remove player")
 	@Description("Revoke a player's build access to the station")
+	@Suppress("unused")
 	fun onTrustedRemovePlayer(sender: Player, station: String, player: String) = asyncCommand(sender) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 		val stationName = spaceStation.name
@@ -323,6 +333,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("trusted add nation")
 	@Description("Give a nation build access to the station")
+	@Suppress("unused")
 	fun onTrustedAddNation(sender: Player, station: String, nation: String) = asyncCommand(sender) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 		val stationName = spaceStation.name
@@ -340,6 +351,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 	@Subcommand("trusted remove nation")
 	@Description("Revoke a nation's build access to the station")
+	@Suppress("unused")
 	fun onTrustedRemoveNation(sender: Player, station: String, nation: String) = asyncCommand(sender) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 		val stationName = spaceStation.name
@@ -353,5 +365,16 @@ object NationSpaceStationCommand : SLCommand() {
 		SpaceStation.updateById(spaceStation._id, pull(SpaceStation::trustedNations, nationId))
 		sender msg "&7Removed nation &b$nationName&7 from &b$stationName"
 		Notify.nation(nationId, "&7Your nation was removed from station &b$stationName&7 by &b${sender.name}")
+	}
+
+	@Subcommand("set name")
+	@Description("Rename the station")
+	@Suppress("unused")
+	fun onRename(sender: Player, station: String, newName: String) = asyncCommand(sender) {
+		val (_, spaceStation) = requireManagementContext(sender, station)
+
+		validateName(newName, null)
+
+		SpaceStation.updateById(spaceStation._id, setValue(SpaceStation::name, newName))
 	}
 }
