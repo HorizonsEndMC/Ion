@@ -26,6 +26,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.math.max
 
@@ -97,7 +98,9 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 				}
 
 				val customBlock = CustomBlocks[block]
-				var drops = if (customBlock == null) block.drops else listOf(*customBlock.getDrops())
+				var drops = if (customBlock == null) {
+					if (block.type == Material.SNOW_BLOCK) listOf<ItemStack>() else block.drops
+				} else listOf(*customBlock.getDrops())
 
 				if (block.type.isShulkerBox) drops = listOf()
 
