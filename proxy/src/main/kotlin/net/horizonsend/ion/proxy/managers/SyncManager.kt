@@ -47,24 +47,6 @@ open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) 
 			val playerData = PlayerData[member.idLong]
 			val luckPermsUser = playerData?.let { api.userManager.getUser(it.uuid.value) } ?: continue
 
-			// Sync Minecraft -> Discord
-			for (group in mappedRoles.keys) {
-				changeLog +=
-					if (luckPermsUser.nodes.contains(group)) {
-						if (member.roles.contains(mappedRoles[group])) continue
-
-						guild.addRoleToMember(member, mappedRoles[group] ?: continue).queue()
-
-						"- Granted ${mappedRoles[group]?.asMention} to ${member.asMention}"
-					} else {
-						if (!member.roles.contains(mappedRoles[group])) continue
-
-						guild.removeRoleFromMember(member, mappedRoles[group] ?: continue).queue()
-
-						"- Removed ${mappedRoles[group]?.asMention} from ${member.asMention}"
-					}
-			}
-
 			// Sync Discord -> Minecraft
 			for (role in mappedRoles.values) {
 				val group = mappedRoles.entries.first { it.value == role }.key
@@ -82,6 +64,24 @@ open class SyncManager(jda: JDA, private val configuration: ProxyConfiguration) 
 						luckPermsUser.data().remove(group)
 
 						"- Removed role $role from ${member.asMention}"
+					}
+			}
+
+			// Sync Minecraft -> Discord
+			for (group in mappedRoles.keys) {
+				changeLog +=
+					if (luckPermsUser.nodes.contains(group)) {
+						if (member.roles.contains(mappedRoles[group])) continue
+
+						guild.addRoleToMember(member, mappedRoles[group] ?: continue).queue()
+
+						"- Granted ${mappedRoles[group]?.asMention} to ${member.asMention}"
+					} else {
+						if (!member.roles.contains(mappedRoles[group])) continue
+
+						guild.removeRoleFromMember(member, mappedRoles[group] ?: continue).queue()
+
+						"- Removed ${mappedRoles[group]?.asMention} from ${member.asMention}"
 					}
 			}
 
