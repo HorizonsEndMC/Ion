@@ -303,7 +303,7 @@ object Extractors : SLComponent() {
 		val power: Int = sensor.power
 
 		if (!inverted && power > 6 && world.environment == World.Environment.NORMAL ||
-			inverted && power < 4 && world.environment != World.Environment.NORMAL) {
+			inverted && world.environment != World.Environment.NORMAL) {
 			Wires.startWireChain(world, x, y, z, wires.randomEntry(), null)
 		}
 	}
