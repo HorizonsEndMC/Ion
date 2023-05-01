@@ -20,7 +20,7 @@ import net.starlegacy.util.isWool
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*

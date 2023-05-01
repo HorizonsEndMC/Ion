@@ -13,9 +13,9 @@ import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
-import org.bukkit.craftbukkit.v1_19_R2.CraftChunk
-import org.bukkit.craftbukkit.v1_19_R2.block.data.CraftBlockData
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
+import org.bukkit.craftbukkit.v1_19_R3.block.data.CraftBlockData
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import net.minecraft.world.item.ItemStack as MinecraftItemStack
 import net.minecraft.world.level.block.Block as MinecraftBlock
 import org.bukkit.block.Block as BukkitBlock

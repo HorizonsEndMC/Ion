@@ -14,7 +14,7 @@ import net.minecraft.nbt.LongTag
 import net.minecraft.nbt.ShortTag
 import net.minecraft.nbt.StringTag
 import org.bukkit.NamespacedKey
-import org.bukkit.craftbukkit.v1_19_R2.persistence.CraftPersistentDataContainer
+import org.bukkit.craftbukkit.v1_19_R3.persistence.CraftPersistentDataContainer
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType

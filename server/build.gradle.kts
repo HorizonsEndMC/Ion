@@ -23,7 +23,7 @@ dependencies {
 	implementation(project(":common"))
 
 	// Platform
-	paperweight.paperDevBundle("1.19.3-R0.1-SNAPSHOT")
+	paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }
