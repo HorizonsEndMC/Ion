@@ -530,7 +530,7 @@ internal object NationCommand : SLCommand() {
 			val otherRelation = RelationCache.getWish(nationId, senderNationId)
 			val wish = RelationCache.getWish(senderNationId, nationId)
 
-			val relationHover = text("Your wish: ")
+			val relationHover = text("Your Wish: ")
 				.append(MiniMessage.miniMessage().deserialize(wish.coloredName))
 				.append(newline())
 				.append(text("Their Wish: "))
@@ -649,6 +649,7 @@ internal object NationCommand : SLCommand() {
 		} ?: text()
 		val leaderText = text("Leader: ")
 			.append(leaderRoleComp)
+			.append(text(" "))
 			.append(text(getPlayerName(cached.leader)).color(NamedTextColor.WHITE))
 
 		message.append(leaderText)
