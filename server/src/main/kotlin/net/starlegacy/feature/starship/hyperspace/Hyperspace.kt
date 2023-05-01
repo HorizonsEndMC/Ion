@@ -257,18 +257,18 @@ object Hyperspace : SLComponent() {
 		.sortedBy { it.multiblock.baseRange }
 		.lastOrNull()
 
-	fun isHyperspaceWorld(world: World): Boolean = world.name.endsWith("_Hyperspace")
+	fun isHyperspaceWorld(world: World): Boolean = world.name.endsWith("_hyperspace")
 
 	fun getHyperspaceWorld(world: World): World? =
 		if (!isHyperspaceWorld(world)) {
-			Bukkit.getWorld(world.name + "_Hyperspace")
+			Bukkit.getWorld(world.name + "_hyperspace")
 		} else {
 			null
 		}
 
 	fun getRealspaceWorld(world: World): World? =
 		if (isHyperspaceWorld(world)) {
-			Bukkit.getWorld(world.name.removeSuffix("_Hyperspace"))
+			Bukkit.getWorld(world.name.removeSuffix("_hyperspace"))
 		} else {
 			null
 		}
