@@ -487,7 +487,7 @@ internal object SettlementCommand : SLCommand() {
 				val otherRelation = RelationCache.getWish(nationId, senderNationId)
 				val wish = RelationCache.getWish(senderNationId, nationId)
 
-				val relationHover = text("Your wish: ")
+				val relationHover = text("Your Wish: ")
 					.append(MiniMessage.miniMessage().deserialize(wish.coloredName))
 					.append(newline())
 					.append(text("Their Wish: "))
