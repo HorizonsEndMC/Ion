@@ -4,22 +4,17 @@ import net.horizonsend.ion.common.database.enums.Achievement
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 
 class PlayerAchievement(id: EntityID<Int>) : Entity<Int>(id) {
 	var player by PlayerData referencedOn Table.player
 	var achievement by Table.achievement
 
-	companion object : IonEntityClass<Int, PlayerAchievement>(Table, PlayerAchievement::class.java, ::PlayerAchievement) {
-		fun remove(player: PlayerData, achievement: Achievement) = transaction { Table.deleteWhere { (Table.player eq player.uuid) and (Table.achievement eq achievement) } }
-	}
+	companion object : IonEntityClass<Int, PlayerAchievement>(Table, PlayerAchievement::class.java, ::PlayerAchievement)
 
 	object Table : IdTable<Int>("player_achievements") {
 		override val id = integer("id").autoIncrement().entityId()
-		val player = reference("player", PlayerData.Table).index()
+		val player = reference("player", PlayerData.Table, onDelete = CASCADE).index()
 		val achievement = enumerationByName<Achievement>("achievement", 18)
 
 		override val primaryKey = PrimaryKey(id)

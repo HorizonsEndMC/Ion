@@ -15,6 +15,9 @@ import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("achievements")
@@ -48,7 +51,7 @@ class AchievementsCommand : BaseCommand() {
 	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) = transaction {
 		val playerData = PlayerData[target] ?: return@transaction sender.userError("Player $target does not exist.")
 
-		PlayerAchievement.remove(playerData, achievement)
+		PlayerAchievement.Table.deleteWhere { (player eq playerData.uuid) and (PlayerAchievement.Table.achievement eq achievement) }
 
 		sender.success("Took achievement ${achievement.name} from $target.")
 	}
