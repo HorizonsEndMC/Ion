@@ -11,7 +11,6 @@ import net.starlegacy.util.isStainedTerracotta
 import net.starlegacy.util.isStairs
 import net.starlegacy.util.isWall
 import net.starlegacy.util.isWallSign
-import org.bukkit.Material
 import org.bukkit.Material.ACACIA_PLANKS
 import org.bukkit.Material.ANDESITE
 import org.bukkit.Material.BARREL
@@ -66,6 +65,7 @@ import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.JUKEBOX
 import org.bukkit.Material.JUNGLE_PLANKS
 import org.bukkit.Material.LEVER
+import org.bukkit.Material.LODESTONE
 import org.bukkit.Material.MAGMA_BLOCK
 import org.bukkit.Material.MANGROVE_PLANKS
 import org.bukkit.Material.MOSSY_COBBLESTONE
@@ -116,7 +116,7 @@ import org.bukkit.Material.WEATHERED_COPPER
 import org.bukkit.block.data.BlockData
 
 object ShipFactoryMaterialCosts {
-	var blockprice = mapOf<Material, Double>(
+	var blockprice = mapOf(
 		IRON_BLOCK to 50.0,
 		DIAMOND_BLOCK to 50.0,
 		COPPER_BLOCK to 175.0,
@@ -155,6 +155,7 @@ object ShipFactoryMaterialCosts {
 		OBSERVER to 5.0,
 		TRAPPED_CHEST to 5.0,
 		BARREL to 5.0,
+		LODESTONE to 50.0,
 
 		OAK_PLANKS to 0.1,
 		SPRUCE_PLANKS to 0.1,
