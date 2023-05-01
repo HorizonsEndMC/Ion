@@ -38,8 +38,6 @@ object HyperspaceMap : SLComponent() {
 			marker.tick()
 			drawMarker(marker)
 		}
-
-		clearResidual()
 	}
 
 	/** Adds a new marker to the collection*/
@@ -71,19 +69,6 @@ object HyperspaceMap : SLComponent() {
 			dynMarker?.deleteMarker()
 		}
 	}
-
-	fun clearResidual() {
-		val toRemove = markers.filter { (ship, _) ->
-			val isInactive = ActiveStarships.isActive(ship)
-			val isInHyperspace = ship.serverLevel.world.name.contains("hyperspace")
-			return@filter !isInHyperspace && isInactive
-		}.keys
-
-		for (activeStarship in toRemove) {
-			markers.remove(activeStarship)
-		}
-	}
-
 	/** Draws the marker on the Dynmap*/
 	private fun drawMarker(marker: HyperspaceMarker) {
 		/*if (marker.isArrow) {

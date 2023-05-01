@@ -23,7 +23,6 @@ class HyperspaceMovement(
 	) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
 	var z = ship.centerOfMass.z.toDouble()
-	private val world = ship.serverLevel.world
 	private val direction = dest.toVector().subtract(ship.centerOfMass.toVector()).normalize()
 	private val totalDistance = remainingDistance()
 	private var travelled = 0.0
@@ -50,7 +49,7 @@ class HyperspaceMovement(
 		travelled += speed
 
 		// Don't check for mass shadows if jumping to another world
-		if (world == dest.world) {
+		if (originWorld == dest.world) {
 			val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
 			if (shadow != null) {
 				ship.onlinePassengers.forEach { player ->
