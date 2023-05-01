@@ -16,10 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SPACE_GEN_VERSION
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
-import net.starlegacy.util.Tasks
-import net.starlegacy.util.component1
-import net.starlegacy.util.component2
-import net.starlegacy.util.distance
+import net.starlegacy.util.*
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -175,8 +172,8 @@ object SpaceGenerationManager : Listener {
 			val completed = completableData.getCompleted()
 
 			Tasks.syncBlocking {
-				completed.place(task.chunk.bukkitChunk)
-				completed.store(task.chunk.bukkitChunk)
+				completed.place(task.chunk.cbukkit)
+				completed.store(task.chunk.cbukkit)
 			}
 		}
 	}

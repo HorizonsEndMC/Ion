@@ -3,6 +3,7 @@ package net.starlegacy.util.blockplacement;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.horizonsend.ion.server.IonServer;
+import net.horizonsend.ion.server.miscellaneous.MiscellaneousKt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ChunkHolder;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_19_R3.CraftChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -144,7 +144,7 @@ class BlockPlacementRaw {
     private void actuallyPlaceChunk(World world, @Nullable Consumer<World> onComplete, long start,
                                     AtomicInteger placedChunks, AtomicInteger placed, int chunkCount,
                                     BlockState[][][] blocks, int cx, int cz, boolean wasLoaded, org.bukkit.Chunk chunk) {
-        LevelChunk nmsChunk = ((CraftChunk) chunk).getHandle();
+        LevelChunk nmsChunk = MiscellaneousKt.getMinecraft(chunk);
         Level nmsWorld = nmsChunk.level;
 
         LevelChunkSection[] sections = nmsChunk.getSections();

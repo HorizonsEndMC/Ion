@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 //region Access Extensions
 inline val BlockData.nms: BlockState get() = (this as CraftBlockData).state
-inline val LevelChunk.cbukkit: CraftChunk get() = this.bukkitChunk as CraftChunk
+inline val LevelChunk.cbukkit: CraftChunk get() = level.world.getChunkAt(locX, locZ) as CraftChunk
 //endregion
 
 //region misc
@@ -103,7 +103,7 @@ fun getNMSBlockDataSafe(world: ServerLevel, x: Int, y: Int, z: Int): BlockState?
 
 fun MinecraftBlock.isAir(): Boolean = this == Blocks.AIR || this == Blocks.CAVE_AIR || this == Blocks.VOID_AIR
 
-fun World.getChunkAtIfLoaded(chunkX: Int, chunkZ: Int): Chunk? = minecraft.getChunkIfLoaded(chunkX, chunkZ)?.bukkitChunk
+fun World.getChunkAtIfLoaded(chunkX: Int, chunkZ: Int): Chunk? = minecraft.getChunkIfLoaded(chunkX, chunkZ)?.cbukkit
 
 fun World.setNMSBlockData(x: Int, y: Int, z: Int, data: BlockState, applyPhysics: Boolean = false): Boolean {
 	getBlockAt(x, y, z).setBlockData(data.createCraftBlockData(), applyPhysics)

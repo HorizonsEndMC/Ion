@@ -10,6 +10,8 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Shulker
+import net.minecraft.world.level.chunk.ChunkAccess
+import net.minecraft.world.level.chunk.ChunkStatus
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -42,7 +44,7 @@ fun mainThreadCheck() {
 	}
 }
 
-val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).handle
+val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
 val World.minecraft: ServerLevel get() = (this as CraftWorld).handle
 
