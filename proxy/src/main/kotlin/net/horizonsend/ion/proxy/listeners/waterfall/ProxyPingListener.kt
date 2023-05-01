@@ -12,7 +12,9 @@ import java.net.URL
 import javax.imageio.ImageIO
 
 class ProxyPingListener : Listener {
-	private val protocol = ServerPing.Protocol("1.19.3", 761)
+	val primaryVersion = 762
+	val primaryVersionName = "1.19.4"
+	val allowedVersions = intArrayOf(759, 760, 761, 762)
 
 	private val messages =
 		URL("https://raw.githubusercontent.com/HorizonsEndMC/MOTDs/main/MOTD")
@@ -24,7 +26,8 @@ class ProxyPingListener : Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onProxyPingEvent(event: ProxyPingEvent) = event.response.run {
-		version = protocol
+		val clientVersion = event.connection.version
+		version = ServerPing.Protocol(primaryVersionName, if (allowedVersions.contains(clientVersion)) clientVersion else primaryVersion)
 		players = ServerPing.Players(
 			PLUGIN.proxy.onlineCount + 1,
 			PLUGIN.proxy.onlineCount,
