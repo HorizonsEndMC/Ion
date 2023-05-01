@@ -244,12 +244,12 @@ object CustomRecipes : SLComponent() {
 	}
 
 	private fun registerWireRecipe() {
-		registerShapelessRecipe(
-			"wire",
-			ItemStack(Material.END_ROD, 16),
-			materialChoice(Material.COPPER_INGOT),
-			materialChoice(Material.COPPER_INGOT),
-			materialChoice(Material.COPPER_INGOT)
+		registerShapedRecipe(
+			"end_rod",
+			ItemStack(Material.END_ROD, 16), "ccc",
+			ingredients = mapOf(
+				'c' to materialChoice(Material.COPPER_INGOT)
+			)
 		)
 	}
 
