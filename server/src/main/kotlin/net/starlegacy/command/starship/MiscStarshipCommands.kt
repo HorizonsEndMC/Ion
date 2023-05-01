@@ -256,7 +256,7 @@ object MiscStarshipCommands : SLCommand() {
 			)
 		}
 
-		sender.success("Initiating hyperspace jump to $destinationWorld ($x1, $z1)")
+		sender.success("Initiating hyperspace jump to ${destinationWorld.name} ($x1, $z1)")
 
 		val offset = ln(distance).toInt()
 
