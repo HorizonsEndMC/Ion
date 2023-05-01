@@ -3,15 +3,3 @@ main: net.horizonsend.ion.proxy.IonProxy
 version: unspecified
 
 name: Ion
-website: https://horizonsend.net
-author: Peter Crawley
-authors:
-  - MicleBrick
-  - Sciath
-  - Gutin1 (Gutin)
-  - quinnbuskus (liluzivirt)
-  - trainb0y
-  - ItsAlreadyGold
-  - PiggleMcDiggle (DoctorXeno)
-  - Vandrayk
-  - EmeraldBlade (EmeraldsGaming)
