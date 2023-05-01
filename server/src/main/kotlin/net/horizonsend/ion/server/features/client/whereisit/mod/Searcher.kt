@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.entity.LecternBlockEntity
 import net.starlegacy.listener.misc.ProtectionListener
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.toLocation
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 
 object Searcher {

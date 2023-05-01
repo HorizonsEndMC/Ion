@@ -20,7 +20,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.component1
 import net.starlegacy.util.component2
 import net.starlegacy.util.distance
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent

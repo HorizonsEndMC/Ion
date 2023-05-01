@@ -29,7 +29,7 @@ import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
 import org.bukkit.SoundCategory.PLAYERS
-import org.bukkit.craftbukkit.v1_19_R2.CraftParticle
+import org.bukkit.craftbukkit.v1_19_R3.CraftParticle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -38,7 +38,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Locale
 import java.util.function.Supplier
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.jetbrains.exposed.sql.transactions.transaction
 
 abstract class Blaster<T : Balancing>(
