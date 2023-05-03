@@ -3,6 +3,7 @@ package net.starlegacy.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.extensions.alert
@@ -12,6 +13,8 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.PlayerCache
@@ -106,13 +109,15 @@ object MiscStarshipCommands : SLCommand() {
 
 	@Suppress("Unused")
 	@CommandAlias("jump")
+	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player) {
-		sender.userError("/jump <planet> or /jump <x> <z>")
+		sender.userError("/jump <planet>, /jump <hyperspace gate> or /jump <x> <z>")
 	}
 
 	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("x|z")
+	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
@@ -136,28 +141,38 @@ object MiscStarshipCommands : SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("jump")
-	@CommandCompletion("@planets")
-	fun onJump(sender: Player, planet: String, @Optional hyperdriveTier: Int?) {
+	@CommandCompletion("@planets|@hyperspaceGates")
+	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
+	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
 			(navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
 
-		val cachedPlanet = Space.getPlanet(planet)
+		val destinationPos = Space.getPlanet(destination)?.let {
+			Pos(
+				it.spaceWorldName,
+				it.x,
+				192,
+				it.z
+			)
+		} ?: IonServer.configuration.beacons.firstOrNull {
+			it.name.replace(" ", "_") == destination
+		}?.spaceLocation
 
-		if (cachedPlanet == null) {
-			sender.userError("Unknown planet $planet.")
+		if (destinationPos == null) {
+			sender.userError("Unknown destination $destination.")
 			return
 		}
 
-		if (cachedPlanet.spaceWorld != sender.world) {
-			sender.userError("$planet is not in this space sector.")
+		if (destinationPos.bukkitWorld() != sender.world) {
+			sender.userError("$destination is not in this space sector.")
 			return
 		}
 
-		val x = cachedPlanet.location.x
-		val z = cachedPlanet.location.z
+		val x = destinationPos.x
+		val z = destinationPos.z
 
 		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
 	}

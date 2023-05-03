@@ -77,6 +77,9 @@ object IonServer : JavaPlugin() {
 					.filter { context.player.hasPermission("ion.settings.particle.$it") }
 					.map { "$it" }
 			}
+			commandManager.commandCompletions.registerCompletion("hyperspaceGates") {
+				configuration.beacons.map { it.name.replace(" ", "_") }
+			}
 
 			// The listeners are defined in a separate file for the sake of keeping the main class clean.
 			for (listener in listeners) pluginManager.registerEvents(listener, this)
