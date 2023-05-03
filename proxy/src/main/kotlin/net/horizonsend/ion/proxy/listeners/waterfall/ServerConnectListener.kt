@@ -1,7 +1,7 @@
 package net.horizonsend.ion.proxy.listeners.waterfall
 
 import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.extensions.Colors
+import net.horizonsend.ion.common.Colors
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.special
 import net.horizonsend.ion.proxy.PLUGIN

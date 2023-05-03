@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.extensions
+package net.horizonsend.ion.common
 
 object Colors {
 	const val SERVER_ERROR = 0xff3f3f
