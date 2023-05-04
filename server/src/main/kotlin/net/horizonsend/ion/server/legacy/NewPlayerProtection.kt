@@ -76,7 +76,7 @@ object NewPlayerProtection : BaseCommand() {
 		val playerLevel = PlayerXPLevelCache[this]
 
 		if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
-		if (player.nation?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns nation
+		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns nation
 		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
 	}
 }

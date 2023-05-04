@@ -95,7 +95,7 @@ class RegionTerritory(territory: Territory) :
 		when {
 			// if it's a nation outpost
 			nation != null -> {
-				val playerNation: Oid<Nation>? = playerData.nation
+				val playerNation: Oid<Nation>? = playerData.nationOid
 
 				/*                // if they're at least an ally they can build
 												if (playerNation != null && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
@@ -112,7 +112,7 @@ class RegionTerritory(territory: Territory) :
 
 			// if it's a settlement
 			settlement != null -> {
-				val playerSettlement: Oid<Settlement>? = playerData.settlement
+				val playerSettlement: Oid<Settlement>? = playerData.settlementOid
 
 				val minBuildAccess = SettlementCache[settlement].minBuildAccess
 					?: Settlement.ForeignRelation.SETTLEMENT_MEMBER
@@ -142,7 +142,7 @@ class RegionTerritory(territory: Territory) :
 						return "You don't have the BUILD permission and minbuildaccess is STRICT!"
 					}
 
-					val playerNation: Oid<Nation>? = playerData.nation
+					val playerNation: Oid<Nation>? = playerData.nationOid
 
 					// if they're in a nation, and min build access is nation member or ally there's a chance they can build
 					if (playerNation != null && minBuildAccess <= Settlement.ForeignRelation.NATION_MEMBER) {

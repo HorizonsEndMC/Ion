@@ -34,13 +34,13 @@ class BlasterListeners : Listener {
 		val blaster = customItem.displayName
 		val victimColor =
 			"<#" + Integer.toHexString((
-					PlayerCache[victim].nation?.let { Nation.findById(it) }?.color
+					PlayerCache[victim].nationOid?.let { Nation.findById(it) }?.color
 						?: 16777215
 					)) + ">"
 
 		val killerColor =
 			"<#" + Integer.toHexString((
-					PlayerCache[killer].nation?.let { Nation.findById(it) }?.color
+					PlayerCache[killer].nationOid?.let { Nation.findById(it) }?.color
 						?: 16777215
 					)) + ">"
 

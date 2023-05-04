@@ -200,7 +200,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	SETTLEMENT("<dark_aqua>Settlement", listOf("schat", "sc", "settlementchat"), SLTextStyle.AQUA) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
-			val settlement = playerData.settlement
+			val settlement = playerData.settlementOid
 				?: return player msg "&cYou're not in a settlement! &o(Hint: To get back to global, use /global)"
 
 			val roleString = playerData.settlementTag?.let { " $it" } ?: ""
@@ -214,9 +214,9 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	NATION("<green>Nation", listOf("nchat", "nc", "nationchat"), SLTextStyle.GREEN) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
-			val settlement = playerData.settlement
+			val settlement = playerData.settlementOid
 				?: return player msg "&cYou're not in a settlement! &o(Hint: To get back to global, use /global)"
-			val nation = playerData.nation
+			val nation = playerData.nationOid
 				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
 
 			val settlementName = SettlementCache[settlement].name
@@ -231,7 +231,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 	ALLY("<dark_purple>Ally", listOf("achat", "ac", "allychat"), SLTextStyle.LIGHT_PURPLE) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val playerData = PlayerCache[player]
-			val nation = playerData.nation
+			val nation = playerData.nationOid
 				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
 
 			val nationName = NationCache[nation].name
@@ -292,7 +292,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		private val settlementAction = { message: NationsChatMessage<Settlement> ->
 			val component = message.buildChatComponent()
 			for (player in Bukkit.getOnlinePlayers()) {
-				if (player.isOnline && PlayerCache.getIfOnline(player)?.settlement == message.id) {
+				if (player.isOnline && PlayerCache.getIfOnline(player)?.settlementOid == message.id) {
 					player.sendMessage(*component)
 				}
 			}
@@ -301,7 +301,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		private val nationAction = { message: NationsChatMessage<Nation> ->
 			val component = message.buildChatComponent()
 			for (player in Bukkit.getOnlinePlayers()) {
-				if (PlayerCache.getIfOnline(player)?.nation == message.id) {
+				if (PlayerCache.getIfOnline(player)?.nationOid == message.id) {
 					player.sendMessage(*component)
 				}
 			}
@@ -310,7 +310,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		private val allyAction = { message: NationsChatMessage<Nation> ->
 			val component = message.buildChatComponent()
 			for (player in Bukkit.getOnlinePlayers()) {
-				val playerNation = PlayerCache.getIfOnline(player)?.nation ?: continue
+				val playerNation = PlayerCache.getIfOnline(player)?.nationOid ?: continue
 				for (relation in NationRelation.find(NationRelation::nation eq message.id)) {
 					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY)) {
 						player.sendMessage(*component)
@@ -332,8 +332,8 @@ private fun playerInfo(player: Player): String =
 	"""
 	Level: ${Levels[player]}
 	XP: ${SLXP[player]}
-	Nation: ${PlayerCache[player].nation?.let(NationCache::get)?.name}
-	Settlement: ${PlayerCache[player].settlement?.let(SettlementCache::get)?.name}
+	Nation: ${PlayerCache[player].nationOid?.let(NationCache::get)?.name}
+	Settlement: ${PlayerCache[player].settlementOid?.let(SettlementCache::get)?.name}
 	Player: ${player.name}
 	""".trimIndent()
 

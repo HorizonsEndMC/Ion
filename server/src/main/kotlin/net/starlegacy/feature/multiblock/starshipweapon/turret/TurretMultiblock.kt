@@ -282,7 +282,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 		}
 
 		if (shooter != null) {
-			val nation: Oid<Nation>? = PlayerCache[shooter].nation
+			val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
 
 			if (nation != null) {
 				return Color.fromRGB(NationCache[nation].color)

@@ -120,7 +120,7 @@ abstract class SLCommand : BaseCommand() {
 	}
 
 	protected fun getRelation(sender: CommandSender, nation: Oid<Nation>): NationRelation.Level = when (sender) {
-		is Player -> PlayerCache[sender].nation?.let { RelationCache[it, nation] }
+		is Player -> PlayerCache[sender].nationOid?.let { RelationCache[it, nation] }
 		else -> null
 	} ?: NationRelation.Level.NONE
 
@@ -162,10 +162,10 @@ abstract class SLCommand : BaseCommand() {
 		territory.npcOwner?.fail { "${territory.name} is the NPC territory ${getNPCOwnerName(it)}" }
 	}
 
-	protected fun requireSettlementIn(sender: Player): Oid<Settlement> = PlayerCache[sender].settlement
+	protected fun requireSettlementIn(sender: Player): Oid<Settlement> = PlayerCache[sender].settlementOid
 		?: fail { "You need to be in a settlement to do that" }
 
-	protected fun requireNationIn(sender: Player): Oid<Nation> = PlayerCache[sender].nation
+	protected fun requireNationIn(sender: Player): Oid<Nation> = PlayerCache[sender].nationOid
 		?: fail { "You need to be in a nation to do that" }
 
 	protected fun isSettlementLeader(player: Player, settlementId: Oid<Settlement>): Boolean =
@@ -193,10 +193,10 @@ abstract class SLCommand : BaseCommand() {
 	}
 
 	protected fun requireNotInSettlement(sender: Player) =
-		failIf(PlayerCache[sender].settlement != null) { "You can't do that while in a settlement" }
+		failIf(PlayerCache[sender].settlementOid != null) { "You can't do that while in a settlement" }
 
 	protected fun requireNotInNation(sender: Player) =
-		failIf(PlayerCache[sender].nation != null) { "You can't do that while in a nation. Hint: To leave the nation, use /n leave" }
+		failIf(PlayerCache[sender].nationOid != null) { "You can't do that while in a nation. Hint: To leave the nation, use /n leave" }
 
 	protected fun requireNotCapital(settlementId: Oid<Settlement>, action: String = "do that") =
 		failIf(SettlementCache[settlementId].nation?.let(NationCache::get)?.capital == settlementId) { "The capital settlement can't $action!" }

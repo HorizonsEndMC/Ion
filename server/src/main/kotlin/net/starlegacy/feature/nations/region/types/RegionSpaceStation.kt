@@ -67,7 +67,7 @@ class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spac
 	override fun calculateInaccessMessage(player: Player): String? {
 		val playerData = PlayerCache[player]
 
-		val playerNation: Oid<Nation>? = playerData.nation
+		val playerNation: Oid<Nation>? = playerData.nationOid
 
 		// if they're in a nation, check for trust level auto perms, and trusted nations
 		if (playerNation != null) {

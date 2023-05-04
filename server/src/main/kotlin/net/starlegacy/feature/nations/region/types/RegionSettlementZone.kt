@@ -93,8 +93,8 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 
 		val playerData = PlayerCache[player]
 
-		val playerNation = playerData.nation
-		val playerSettlement = playerData.settlement
+		val playerNation = playerData.nationOid
+		val playerSettlement = playerData.settlementOid
 
 		if (minBuildAccess != null && minBuildAccess != Settlement.ForeignRelation.STRICT) {
 			when (minBuildAccess) {

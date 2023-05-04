@@ -35,8 +35,8 @@ object PlayerCache : ManualCache() {
 	/** Values should only be set here*/
 	data class PlayerData(
 		val id: SLPlayerId,
-		var settlement: Oid<Settlement>?,
-		var nation: Oid<Nation>?,
+		var settlementOid: Oid<Settlement>?,
+		var nationOid: Oid<Nation>?,
 		var settlementTag: String?,
 		var nationTag: String?
 	)
@@ -100,7 +100,7 @@ object PlayerCache : ManualCache() {
 
 					val newSettlement = it.nullable()?.oid<Settlement>()
 
-					data.settlement = newSettlement
+					data.settlementOid = newSettlement
 					data.settlementTag = null // when leaving/joining a settlement, you have no role either way
 				}
 			}
@@ -111,7 +111,7 @@ object PlayerCache : ManualCache() {
 
 					val newNation = it.nullable()?.oid<Nation>()
 
-					data.nation = newNation
+					data.nationOid = newNation
 					data.nationTag = null // when leaving/joining a nation, you have no role either way
 				}
 			}
@@ -130,8 +130,8 @@ object PlayerCache : ManualCache() {
 		fun recalculateTags(): Unit = synchronized(mutex) {
 			for ((id, data) in PLAYER_DATA) {
 				val slPlayerId = id.slPlayerId
-				data.settlement?.let { data.settlementTag = SettlementRole.getTag(slPlayerId) }
-				data.nation?.let { data.nationTag = NationRole.getTag(slPlayerId) }
+				data.settlementOid?.let { data.settlementTag = SettlementRole.getTag(slPlayerId) }
+				data.nationOid?.let { data.nationTag = NationRole.getTag(slPlayerId) }
 			}
 		}
 

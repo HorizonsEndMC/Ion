@@ -169,7 +169,7 @@ class ActivePlayerStarship(
 	var cruiseData = StarshipCruising.CruiseData(this)
 
 	override val weaponColor: Color
-		get() = pilot?.let { PlayerCache[it].nation }?.let { Color.fromRGB(NationCache[it].color) } ?: Color.RED
+		get() = pilot?.let { PlayerCache[it].nationOid }?.let { Color.fromRGB(NationCache[it].color) } ?: Color.RED
 
 	fun requirePilot(): Player = requireNotNull(pilot) { "Starship must be piloted!" }
 

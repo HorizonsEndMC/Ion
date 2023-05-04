@@ -63,7 +63,7 @@ class RegionCapturableStation(station: CapturableStation) :
 		val noAccessMessage = "$name is a station claimed by ${NationCache[nation].name}".intern()
 
 		// if they're not in a nation they can't access any nation outposts
-		val playerNation = PlayerCache[player].nation ?: return noAccessMessage
+		val playerNation = PlayerCache[player].nationOid ?: return noAccessMessage
 
 		// if they're at least an ally they can build]
 

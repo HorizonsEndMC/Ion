@@ -42,17 +42,17 @@ object FriendlyFireListener : SLEventListener() {
 		}
 
 		val damagedData = PlayerCache[damaged]
-		val damagedSettlement = damagedData.settlement ?: return false
+		val damagedSettlement = damagedData.settlementOid ?: return false
 
 		val damagerData = PlayerCache[damager]
-		val damagerSettlement = damagerData.settlement ?: return false
+		val damagerSettlement = damagerData.settlementOid ?: return false
 
 		if (damagedSettlement == damagerSettlement) {
 			return true
 		}
 
-		val damagedNation: Oid<Nation> = damagedData.nation ?: return false
-		val damagerNation: Oid<Nation> = damagerData.nation ?: return false
+		val damagedNation: Oid<Nation> = damagedData.nationOid ?: return false
+		val damagerNation: Oid<Nation> = damagerData.nationOid ?: return false
 
 		if (NationRelation.getRelationActual(damagedNation, damagerNation).ordinal >= 5) {
 			return true

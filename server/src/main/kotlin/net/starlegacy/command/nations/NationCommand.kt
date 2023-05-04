@@ -498,7 +498,7 @@ internal object NationCommand : SLCommand() {
 		val nationId: Oid<Nation> = when (sender) {
 			is Player -> {
 				when (nation) {
-					null -> PlayerCache[sender].nation ?: fail { "You need to specify a nation. /n info <nation>" }
+					null -> PlayerCache[sender].nationOid ?: fail { "You need to specify a nation. /n info <nation>" }
 					else -> resolveNation(nation)
 				}
 			}
@@ -507,7 +507,7 @@ internal object NationCommand : SLCommand() {
 		}
 
 		val senderNationId: Oid<Nation>? = when (sender) {
-			is Player -> PlayerCache[sender].nation
+			is Player -> PlayerCache[sender].nationOid
 			else -> null
 		}
 

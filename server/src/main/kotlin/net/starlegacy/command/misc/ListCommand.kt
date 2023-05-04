@@ -28,7 +28,7 @@ object ListCommand : SLCommand() {
 		val nationMap = multimapOf<Oid<Nation>?, Player>()
 
 		for (player in players) {
-			val playerNation: Oid<Nation>? = PlayerCache[player].nation
+			val playerNation: Oid<Nation>? = PlayerCache[player].nationOid
 			nationMap[playerNation].add(player)
 		}
 

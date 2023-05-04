@@ -437,7 +437,7 @@ internal object SettlementCommand : SLCommand() {
 		val settlementId: Oid<Settlement> = when (sender) {
 			is Player -> {
 				when (settlement) {
-					null -> PlayerCache[sender].settlement
+					null -> PlayerCache[sender].settlementOid
 						?: SettlementCommand.fail { "You need to specify a settlement. /s info <settlement>" }
 
 					else -> resolveSettlement(settlement)
@@ -448,7 +448,7 @@ internal object SettlementCommand : SLCommand() {
 		}
 
 		val senderNationId: Oid<Nation>? = when (sender) {
-			is Player -> PlayerCache[sender].nation
+			is Player -> PlayerCache[sender].nationOid
 			else -> null
 		}
 

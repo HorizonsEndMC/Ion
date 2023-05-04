@@ -137,14 +137,14 @@ fun registerCommands(manager: PaperCommandManager) {
 		"settlements" to { _ -> SettlementCache.all().map { it.name } },
 		"member_settlements" to { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
-			val nation = PlayerCache[player].nation
+			val nation = PlayerCache[player].nationOid
 
 			SettlementCache.all().filter { nation != null && it.nation == nation }.map { it.name }
 		},
 		"nations" to { _ -> NationCache.all().map { it.name } },
 		"zones" to { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
-			val settlement = PlayerCache[player].settlement
+			val settlement = PlayerCache[player].settlementOid
 
 			Regions.getAllOf<RegionSettlementZone>()
 				.filter { settlement != null && it.settlement == settlement }
@@ -160,7 +160,7 @@ fun registerCommands(manager: PaperCommandManager) {
 		},
 		"outposts" to { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
-			val nation = PlayerCache[player].nation
+			val nation = PlayerCache[player].nationOid
 			Regions.getAllOf<RegionTerritory>().filter { it.nation == nation }.map { it.name }
 		},
 		"stars" to { _ -> Space.getStars().map(CachedStar::name) },

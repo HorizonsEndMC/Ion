@@ -54,7 +54,7 @@ object PowerArmorListener : SLEventListener() {
 				return@sync
 			}
 
-			val nation = PlayerCache[player].nation?.let(NationCache::get) ?: return@sync
+			val nation = PlayerCache[player].nationOid?.let(NationCache::get) ?: return@sync
 			val nationColor = nation.color
 
 			if (meta.color.asRGB() == nationColor) {

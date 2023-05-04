@@ -377,7 +377,7 @@ object ShipmentManager : SLComponent() {
 					SLXP.addAsync(player, xp.roundToInt())
 				}
 
-				val playernationid = PlayerCache[player].nation
+				val playernationid = PlayerCache[player].nationOid
 
 				val capturedStationCount =
 					min(CapturableStation.count(CapturableStation::nation eq playernationid).toInt(), 6)

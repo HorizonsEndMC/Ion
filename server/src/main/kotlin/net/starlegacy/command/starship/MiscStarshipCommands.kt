@@ -450,9 +450,9 @@ object MiscStarshipCommands : SLCommand() {
 
 			val pilotName = pilot?.name ?: "none"
 
-			val pilotNationID = pilot?.let { PlayerCache[pilot].nation }
+			val pilotNationID = pilot?.let { PlayerCache[pilot].nationOid }
 
-			val senderNationID = PlayerCache[sender.player!!].nation
+			val senderNationID = PlayerCache[sender.player!!].nationOid
 
 			val pilotNationRelation = senderNationID?.let {
 				pilotNationID?.let {

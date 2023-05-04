@@ -130,7 +130,7 @@ object StationSieges : SLComponent() {
 	}
 
 	fun beginSiege(player: Player) = asyncLocked {
-		val nation = PlayerCache[player].nation
+		val nation = PlayerCache[player].nationOid
 			?: return@asyncLocked player.userError("You need to be in a nation to siege a station.")
 
 		val station = Regions.findFirstOf<RegionCapturableStation>(player.location)
@@ -176,7 +176,7 @@ object StationSieges : SLComponent() {
 		}
 
 		// only allow nations to siege multiple times within the time period if it's simultaneous
-		if (sieges.none { Bukkit.getPlayer(it.siegerId.uuid)?.let(PlayerCache::get)?.nation == nation }) {
+		if (sieges.none { Bukkit.getPlayer(it.siegerId.uuid)?.let(PlayerCache::get)?.nationOid == nation }) {
 			val daysPerSiege = NATIONS_BALANCE.capturableStation.daysPerSiege
 			val duration = (TimeUnit.DAYS.toMillis(1) * daysPerSiege).toLong()
 			val date = Date(currentTimeMillis() - duration)
@@ -235,7 +235,7 @@ object StationSieges : SLComponent() {
 		val world: World = Bukkit.getWorld(station.world) ?: return
 		val oldNation = station.nation
 
-		val playerNation = PlayerCache[player].nation
+		val playerNation = PlayerCache[player].nationOid
 		if (playerNation == null) {
 			player.userError("You need to be in a nation to siege a station.")
 			return
@@ -248,7 +248,7 @@ object StationSieges : SLComponent() {
 
 				if (!isInBigShip(otherPlayer)) continue
 
-				val otherNation = PlayerCache[otherPlayer].nation ?: continue
+				val otherNation = PlayerCache[otherPlayer].nationOid ?: continue
 
 				// includes NATION relation, so this includes same nation
 

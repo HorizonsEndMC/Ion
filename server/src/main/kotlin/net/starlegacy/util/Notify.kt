@@ -39,7 +39,7 @@ object Notify : SLComponent() {
 	private val notifySettlementAction = { (idString, message): Pair<String, String> ->
 		val id: Oid<Settlement> = WrappedObjectId(idString)
 		Bukkit.getOnlinePlayers()
-			.filter { PlayerCache[it].settlement == id }
+			.filter { PlayerCache[it].settlementOid == id }
 			.forEach { it.sendMessage(message) }
 	}.registerRedisAction("notify-settlement", runSync = false)
 
@@ -50,7 +50,7 @@ object Notify : SLComponent() {
 	private val notifyNationAction = { (idString, message): Pair<String, String> ->
 		val id: Oid<Nation> = WrappedObjectId(idString)
 		Bukkit.getOnlinePlayers()
-			.filter { PlayerCache[it].nation == id }
+			.filter { PlayerCache[it].nationOid == id }
 			.forEach { it.sendMessage(message) }
 	}.registerRedisAction("notify-nation", runSync = false)
 

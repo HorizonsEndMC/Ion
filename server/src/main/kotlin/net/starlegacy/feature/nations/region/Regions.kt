@@ -130,7 +130,7 @@ object Regions : SLComponent() {
 	fun refreshSettlementMembersLocally(settlementId: Oid<Settlement>) {
 		locked {
 			for (player in IonServer.server.onlinePlayers) {
-				if (PlayerCache[player].settlement == settlementId) {
+				if (PlayerCache[player].settlementOid == settlementId) {
 					cache.forEach(player.world.name) { region ->
 						region.cacheAccess(player)
 					}

@@ -69,6 +69,6 @@ data class Blueprint(
 
 	fun canAccess(player: Player): Boolean {
 		val slPlayerId = player.slPlayerId
-		return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nation)
+		return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
 	}
 }

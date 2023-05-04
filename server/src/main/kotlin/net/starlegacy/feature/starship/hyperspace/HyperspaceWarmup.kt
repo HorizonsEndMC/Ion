@@ -28,7 +28,7 @@ class HyperspaceWarmup(
 			warmup -= (
 				max(
 					min(
-						CapturableStation.count(CapturableStation::nation eq PlayerCache[ship.pilot!!].nation).toInt(),
+						CapturableStation.count(CapturableStation::nation eq PlayerCache[ship.pilot!!].nationOid).toInt(),
 						6
 					) - 2,
 					0
