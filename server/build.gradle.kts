@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
 	id("io.papermc.paperweight.userdev") version "1.5.5"
 	id("com.github.johnrengelman.shadow")
@@ -53,4 +55,21 @@ kotlin.jvmToolchain(17)
 tasks.withType<AbstractArchiveTask>().configureEach {
 	isPreserveFileTimestamps = false
 	isReproducibleFileOrder = true
+}
+
+val output = ByteArrayOutputStream()
+project.exec {
+	setCommandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+	standardOutput = output
+}
+val gitHash = String(output.toByteArray()).trim()
+
+val embedHash = tasks.create("embedHash") {
+	doLast {
+		File("$buildDir/resources/main/gitHash").writeText(gitHash)
+	}
+}
+
+tasks.processResources {
+	dependsOn(embedHash)
 }

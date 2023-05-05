@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
+import net.horizonsend.ion.common.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.client.Packets
@@ -31,6 +33,7 @@ import net.starlegacy.feature.space.SpaceMap
 import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
+import net.starlegacy.util.Notify
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.entity.Player
@@ -138,6 +141,10 @@ object IonServer : JavaPlugin() {
 				},
 				1
 			)
+
+			val message = getUpdateMessage(dataFolder) ?: return
+			slF4JLogger.info(message)
+			Notify.discord("${configuration.serverName} $message")
 		} catch (exception: Exception) {
 			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
 			Bukkit.shutdown()
