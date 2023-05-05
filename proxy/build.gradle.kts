@@ -45,20 +45,3 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 	isPreserveFileTimestamps = false
 	isReproducibleFileOrder = true
 }
-
-val output = ByteArrayOutputStream()
-project.exec {
-	setCommandLine("git", "rev-parse", "--verify", "--short", "HEAD")
-	standardOutput = output
-}
-val gitHash = String(output.toByteArray()).trim()
-
-val embedHash = tasks.create("embedHash") {
-	doLast {
-		File("$buildDir/resources/main/gitHash").writeText(gitHash)
-	}
-}
-
-tasks.classes {
-	dependsOn(embedHash)
-}
