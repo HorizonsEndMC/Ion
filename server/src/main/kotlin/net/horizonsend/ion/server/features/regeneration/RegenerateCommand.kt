@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
@@ -62,7 +63,10 @@ class RegenerateCommand : BaseCommand() {
 
 		for ((regionFile, chunks) in regionsToChunksMap) {
 			scope.launch {
-				val region = getRegion(sender.world, regionFile)
+				val region = getRegion(sender.world, regionFile) ?:
+				return@launch sender.serverError(
+					"Region file ${chunks.first().x.shr(5)}, ${chunks.first().z.shr(5)} doesn't exist!"
+				)
 
 				for (chunk in chunks) scope.launch chunk@{
 					val chunkPos = ChunkPos(chunk.x, chunk.z)
@@ -143,10 +147,12 @@ class RegenerateCommand : BaseCommand() {
 		deferred.complete(chunkPos to newSection)
 	}
 
-	private fun getRegion(world: World, regionFileName: String): RegionFile {
-		try {
-			val region = cleanWorldsFolder.resolve(world.name)
+	private fun getRegion(world: World, regionFileName: String): RegionFile? {
+		val region = cleanWorldsFolder.resolve(world.name)
 
+		if (!region.exists()) return null
+
+		try {
 			return RegionFile(region.resolve(regionFileName).toPath(), region.toPath(), false)
 		} catch (error: Error) {
 			throw error
