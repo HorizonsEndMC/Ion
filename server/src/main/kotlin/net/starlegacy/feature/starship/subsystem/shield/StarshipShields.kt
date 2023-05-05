@@ -148,12 +148,14 @@ object StarshipShields : SLComponent() {
 	fun updateShieldBars(ship: ActivePlayerStarship) {
 		for ((name, bossBar) in ship.shieldBars) {
 			var amount = 0
+			var isReinforced = false
 			var total = 0.0
 			val percents = ArrayList<Double>()
 
 			for (subsystem in ship.shields) {
 				if (subsystem.name != name) continue
 				amount++
+				isReinforced = subsystem.isReinforcementActive()
 				val subsystemPercent = subsystem.powerRatio
 				total += subsystemPercent
 				percents.add(subsystemPercent)
@@ -162,9 +164,10 @@ object StarshipShields : SLComponent() {
 			val percent = total / amount.toDouble()
 
 			bossBar.progress = min(percent, 1.0)
-			val titleColor = percentColor(percent)
+			val titleColor = percentColor(percent, isReinforced)
 
 			val barColor = when {
+				isReinforced -> BarColor.PURPLE
 				percent <= 0.05 -> BarColor.RED
 				percent <= 0.25 -> BarColor.YELLOW
 				percent <= 0.55 -> BarColor.GREEN
@@ -174,7 +177,7 @@ object StarshipShields : SLComponent() {
 			val extraPercents: String = if (percents.size > 1) {
 				" (${
 				percents.joinToString(separator = " + ") {
-					"${percentColor(it)}${formatPercent(it)}%$titleColor"
+					"${percentColor(it, isReinforced)}${formatPercent(it)}%$titleColor"
 				}
 				})"
 			} else {
@@ -190,7 +193,8 @@ object StarshipShields : SLComponent() {
 		}
 	}
 
-	private fun percentColor(percent: Double): SLTextStyle = when {
+	private fun percentColor(percent: Double, reinforced: Boolean): SLTextStyle = when {
+		reinforced -> SLTextStyle.LIGHT_PURPLE
 		percent <= 0.05 -> SLTextStyle.RED
 		percent <= 0.10 -> SLTextStyle.GOLD
 		percent <= 0.25 -> SLTextStyle.YELLOW
