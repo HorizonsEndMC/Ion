@@ -49,3 +49,8 @@ tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/buil
 tasks.build { dependsOn("reobfJar") }
 
 kotlin.jvmToolchain(17)
+
+tasks.withType<AbstractArchiveTask>().configureEach {
+	isPreserveFileTimestamps = false
+	isReproducibleFileOrder = true
+}
