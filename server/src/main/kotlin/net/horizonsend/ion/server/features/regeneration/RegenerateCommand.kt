@@ -6,11 +6,14 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import com.mojang.serialization.DataResult
 import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.regions.Region
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
@@ -83,13 +86,21 @@ class RegenerateCommand : BaseCommand() {
 							IonServer.logger.warning(it)
 						}
 
-						regenerateSection(sectionY, chunkPos, sectionBlocks, deferred)
+						regenerateSection(sectionY, chunkPos, sectionBlocks, deferred, selection)
 					}
 				}
 			}
 		}
 
-		scope.launch { complete(sender.world, sections.values) }
+		sender.information("Started regenerating ${sender.world.name} from ${selection.minimumPoint} to ${selection.maximumPoint}")
+
+		val time = System.currentTimeMillis()
+
+		scope.launch { complete(sender.world, sections.values) }.invokeOnCompletion {
+			val diff = System.currentTimeMillis() - time
+
+			sender.information("Took $diff ms")
+		}
 	}
 
 	private suspend fun complete(world: World, deferredSections: Collection<CompletableDeferred<Pair<ChunkPos, CompletedSection>>>) {
@@ -110,14 +121,23 @@ class RegenerateCommand : BaseCommand() {
 		sectionY: Int,
 		chunkPos: ChunkPos,
 		palettedContainer: PalettedContainer<BlockState?>,
-		deferred: CompletableDeferred<Pair<ChunkPos, CompletedSection>>
+		deferred: CompletableDeferred<Pair<ChunkPos, CompletedSection>>,
+		selection: Region
 	) {
 		val newSection = CompletedSection.empty(sectionY)
 
-		palettedContainer.forEachLocation { blockState: BlockState?, i: Int ->
-			if (blockState != null) {
-				newSection.setBlock(i, BlockData(blockState, null))
-			}
+		for (x in 0..15) for (y in 0..15) for (z in 0..15) {
+			val realX = x + (chunkPos.x.shl(4))
+			val realY = y + (sectionY.shl(4))
+			val realZ = z + (chunkPos.z.shl(4))
+
+			if (!selection.contains(BlockVector3.at(realX, realY, realZ))) continue
+
+			val index = PalettedContainer.Strategy.SECTION_STATES.getIndex(x, y, z)
+
+			val state = palettedContainer[index] ?: continue
+
+			newSection.setBlock(index, BlockData(state, null))
 		}
 
 		deferred.complete(chunkPos to newSection)
