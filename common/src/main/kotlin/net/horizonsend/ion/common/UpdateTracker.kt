@@ -13,11 +13,11 @@ fun getUpdateMessage(dataFolder: File): String? {
 	val message = when (version == null) {
 		true -> {
 			val commitUrl = "https://github.com/HorizonsEndMC/Ion/commit/$jarVersion"
-			"is running $jarVersion, see the commit here: $commitUrl. The last version could not be determined."
+			"is running `$jarVersion`, see the commit here: <$commitUrl>. The last version could not be determined."
 		}
 		false -> {
 			val compareUrl = "https://github.com/HorizonsEndMC/Ion/compare/$version...$jarVersion"
-			"was updated from $version to $jarVersion, see changes made here: $compareUrl"
+			"was updated from `$version` to `$jarVersion`, see changes made here: <$compareUrl>"
 		}
 	}
 
