@@ -6,7 +6,7 @@ fun getUpdateMessage(dataFolder: File): String? {
 	val versionFile = dataFolder.resolve("version")
 
 	val version = try { versionFile.readText().trim() } catch (_: Exception) { null }
-	val jarVersion = ::getUpdateMessage::class.java.getResourceAsStream("/version")?.readAllBytes().toString().trim()
+	val jarVersion = ::getUpdateMessage::class.java.getResourceAsStream("/gitHash")?.readAllBytes().toString().trim()
 
 	if (version == jarVersion) return null
 
