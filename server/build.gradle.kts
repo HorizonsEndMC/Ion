@@ -66,6 +66,7 @@ val gitHash = String(output.toByteArray()).trim()
 
 val embedHash = tasks.create("embedHash") {
 	doLast {
+		File("$buildDir/resources/main").mkdirs()
 		File("$buildDir/resources/main/gitHash").writeText(gitHash)
 	}
 }
