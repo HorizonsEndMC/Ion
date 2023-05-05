@@ -59,6 +59,6 @@ val embedHash = tasks.create("embedHash") {
 	}
 }
 
-tasks.processResources {
+tasks.classes {
 	dependsOn(embedHash)
 }
