@@ -6,8 +6,15 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import com.mojang.serialization.DataResult
 import com.sk89q.worldedit.WorldEdit
-import com.sk89q.worldedit.math.BlockVector3
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.space.data.BlockData
+import net.horizonsend.ion.server.features.space.data.CompletedSection
+import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtOps
@@ -16,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.PalettedContainer
 import net.minecraft.world.level.chunk.storage.ChunkSerializer
 import net.minecraft.world.level.chunk.storage.RegionFile
-import net.starlegacy.util.setNMSBlockData
+import net.starlegacy.util.Tasks
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.io.File
@@ -26,6 +33,8 @@ import java.io.File
 class RegenerateCommand : BaseCommand() {
 	// The worlds in this folder are stripped down versions of worlds. Basically just renamed region folders
 	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
+	private val scope = CoroutineScope(Dispatchers.Default)
+	private val blockStateCodec = ChunkSerializer.BLOCK_STATE_CODEC
 
 	@Default
 	@Suppress("unused")
@@ -33,6 +42,10 @@ class RegenerateCommand : BaseCommand() {
 		val session = WorldEdit.getInstance().sessionManager.findByName(sender.name) ?: return
 		val selection = session.getSelection(session.selectionWorld)
 
+		val sections = mutableMapOf<Triple<Int, Int, Int>, CompletableDeferred<Pair<ChunkPos, CompletedSection>>>()
+		val sectionsHeight = IntRange(selection.minimumPoint.y.shr(4), selection.maximumPoint.y.shr(4))
+
+		// Group by string first to avoid getting the region dozens of times
 		val regionsToChunksMap = selection.chunks.groupBy {
 			val regionX = it.x.shr(5)
 			val regionZ = it.z.shr(5)
@@ -40,57 +53,74 @@ class RegenerateCommand : BaseCommand() {
 			"r.$regionX.$regionZ.mca"
 		}
 
-		val regionFiles = regionsToChunksMap.keys.associateWith { getRegion(sender.world, it) }
+		for (chunk in selection.chunkCubes) {
+			sections[Triple(chunk.x, chunk.y, chunk.z)] = CompletableDeferred()
+		}
 
-		val sectionPositionsToData = mutableMapOf<BlockVector3, PalettedContainer<BlockState?>>()
+		for ((regionFile, chunks) in regionsToChunksMap) {
+			scope.launch {
+				val region = getRegion(sender.world, regionFile)
 
-		val sections = IntRange(selection.minimumPoint.y.shr(4), selection.maximumPoint.y.shr(4))
+				for (chunk in chunks) scope.launch chunk@{
+					val chunkPos = ChunkPos(chunk.x, chunk.z)
 
-		for ((regionFileName, chunks) in regionsToChunksMap) {
-			val regionFile = regionFiles[regionFileName]!!
+					if (!region.doesChunkExist(chunkPos)) return@chunk
 
-			for (chunk in chunks) {
-				val chunkPos = ChunkPos(chunk.x, chunk.z)
-				if (!regionFile.doesChunkExist(chunkPos)) continue
+					val chunkData = region.getChunkDataInputStream(chunkPos)?.let { NbtIo.read(it) } ?: return@chunk
 
-				val chunkData = regionFile.getChunkDataInputStream(chunkPos)?.let { NbtIo.read(it) } ?: continue
-				val sectionsList = chunkData.getList("sections", 10).toList()
+					@Suppress("UNCHECKED_CAST")
+					val sectionsList = (chunkData.getList("sections", 10).toList() as List<CompoundTag>)
+						.associateBy { it.getByte("Y") }
 
-				for (section in sections) {
-					val sectionData = sectionsList[section] as CompoundTag
-					val blockStateCodec = ChunkSerializer.BLOCK_STATE_CODEC
+					for (sectionY in sectionsHeight) {
+						val storedSection = sectionsList[sectionY.toByte()] ?: continue
 
-					val dataResult = blockStateCodec.parse(NbtOps.INSTANCE, sectionData.getCompound("block_states"))
-					val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).getOrThrow(false) {
-						IonServer.logger.warning(it)
+						val sectionPos = Triple(chunk.x, sectionY, chunk.z)
+						val deferred = sections[sectionPos]!!
+
+						val dataResult = blockStateCodec.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
+						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).getOrThrow(false) {
+							IonServer.logger.warning(it)
+						}
+
+						regenerateSection(sectionY, chunkPos, sectionBlocks, deferred)
 					}
-
-					val pos = BlockVector3.at(chunkPos.x, section, chunkPos.z)
-
-					sectionPositionsToData[pos] = sectionBlocks
 				}
 			}
 		}
 
-		for (blockVector3 in selection) {
-			val chunkX = blockVector3.x.shr(4)
-			val chunkY = (blockVector3.y - sender.world.minHeight).shr(4)
-			val chunkZ = blockVector3.z.shr(4)
+		scope.launch { complete(sender.world, sections.values) }
+	}
 
-			val x = blockVector3.x
-			val y = blockVector3.y
-			val z = blockVector3.z
+	private suspend fun complete(world: World, deferredSections: Collection<CompletableDeferred<Pair<ChunkPos, CompletedSection>>>) {
+		val sections = deferredSections.awaitAll()
 
-			val localX = x - chunkX.shl(4)
-			val localY = y - chunkY.shl(4)
-			val localZ = z - chunkZ.shl(4)
+		val chunkMap = sections.groupBy { it.first }.mapKeys { world.minecraft.getChunk(it.key.x, it.key.z) }
 
-			val data = sectionPositionsToData[BlockVector3.at(chunkX, chunkY, chunkZ)]!!
-
-			val blockState = data[localX, localY, localZ] ?: continue
-
-			sender.world.setNMSBlockData(blockVector3.x, blockVector3.y, blockVector3.z, blockState)
+		for ((levelChunk, groupedSections) in chunkMap) {
+			Tasks.sync {
+				for (section in groupedSections) {
+					section.second.place(levelChunk)
+				}
+			}
 		}
+	}
+
+	private fun regenerateSection(
+		sectionY: Int,
+		chunkPos: ChunkPos,
+		palettedContainer: PalettedContainer<BlockState?>,
+		deferred: CompletableDeferred<Pair<ChunkPos, CompletedSection>>
+	) {
+		val newSection = CompletedSection.empty(sectionY)
+
+		palettedContainer.forEachLocation { blockState: BlockState?, i: Int ->
+			if (blockState != null) {
+				newSection.setBlock(i, BlockData(blockState, null))
+			}
+		}
+
+		deferred.complete(chunkPos to newSection)
 	}
 
 	private fun getRegion(world: World, regionFileName: String): RegionFile {

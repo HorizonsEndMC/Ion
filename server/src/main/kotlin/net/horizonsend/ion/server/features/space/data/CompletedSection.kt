@@ -91,9 +91,9 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
 		}
 	}
 
-	fun setBlock(x: Int, y: Int, z: Int, block: BlockData) {
-		val index = posToIndex(x, y ,z)
+	fun setBlock(x: Int, y: Int, z: Int, block: BlockData) =setBlock(posToIndex(x, y ,z), block)
 
+	fun setBlock(index: Int, block: BlockData) {
 		if (palette.contains(block)) {
 			blocks[index] = palette.indexOf(block)
 		} else {
