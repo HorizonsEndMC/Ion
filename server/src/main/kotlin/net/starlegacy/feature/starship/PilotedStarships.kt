@@ -89,14 +89,17 @@ object PilotedStarships : SLComponent() {
 	}
 
 	private fun setupShieldDisplayIndicators(starship: ActivePlayerStarship) {
-		starship.shields.forEach { shield: ShieldSubsystem ->
-			// create the actual boss bar
-			var bar: BossBar = Bukkit.createBossBar(shield.name, BarColor.GREEN, BarStyle.SEGMENTED_10)
-			if (shield.isReinforcementActive()) bar.color = BarColor.PURPLE
-			// add all passengers
-			starship.onlinePassengers.forEach(bar::addPlayer)
-			starship.shieldBars[shield.name] = bar
-		}
+		starship.shields
+			.distinctBy(ShieldSubsystem::name)
+			.associateByTo(starship.shieldBars, ShieldSubsystem::name) { shield: ShieldSubsystem ->
+				// create the actual boss bar
+				val bar: BossBar = Bukkit.createBossBar(shield.name, BarColor.GREEN, BarStyle.SEGMENTED_10)
+				if (shield.isReinforcementActive()) bar.color = BarColor.PURPLE
+				// add all passengers
+				starship.onlinePassengers.forEach(bar::addPlayer)
+				starship.shieldBars[shield.name] = bar
+				bar
+			}
 	}
 
 	private fun saveLoadshipData(starship: ActivePlayerStarship, player: Player) {
