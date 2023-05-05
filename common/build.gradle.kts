@@ -1,6 +1,8 @@
 plugins {
 	kotlin("plugin.serialization")
 	kotlin("jvm")
+
+	`java-library`
 }
 
 repositories {
@@ -13,6 +15,8 @@ dependencies {
 	compileOnly("net.kyori:adventure-api:4.13.1")
 	compileOnly("net.kyori:adventure-text-logger-slf4j:4.13.1")
 	compileOnly("net.kyori:adventure-text-minimessage:4.13.1")
+
+	compileOnlyApi("com.mysql:mysql-connector-j:8.0.33")
 
 	api(kotlin("reflect"))
 	api(kotlin("stdlib"))
@@ -27,7 +31,6 @@ dependencies {
 
 	api("com.zaxxer:HikariCP:5.0.1")
 
-	api("org.mariadb.jdbc:mariadb-java-client:3.1.4")
 	api("com.h2database:h2:2.1.214")
 
 	api("redis.clients:jedis:4.3.2")

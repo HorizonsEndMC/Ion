@@ -22,7 +22,6 @@ object Connectivity {
 		val configuration: DatabaseConfiguration = Configuration.load(dataDirectory, "database.json")
 
 		// Manually loaded because classloaders are weird
-		Class.forName("org.mariadb.jdbc.Driver")
 		Class.forName("org.h2.Driver")
 
 		val hikariConfiguration = HikariConfig()
