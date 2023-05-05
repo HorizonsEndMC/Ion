@@ -153,9 +153,9 @@ object MiscStarshipCommands : SLCommand() {
 		val destinationPos = Space.getPlanet(destination)?.let {
 			Pos(
 				it.spaceWorldName,
-				it.x,
+				it.location.x,
 				192,
-				it.z
+				it.location.z
 			)
 		} ?: IonServer.configuration.beacons.firstOrNull {
 			it.name.replace(" ", "_") == destination
