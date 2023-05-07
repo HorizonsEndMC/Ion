@@ -28,8 +28,7 @@ class CancelListeners : Listener {
 		Material.BROWN_CONCRETE_POWDER,
 		Material.GREEN_CONCRETE_POWDER,
 		Material.RED_CONCRETE_POWDER,
-		Material.BLACK_CONCRETE_POWDER,
-		Material.ICE
+		Material.BLACK_CONCRETE_POWDER
 	)
 
 	@EventHandler
@@ -43,7 +42,7 @@ class CancelListeners : Listener {
 	@EventHandler
 	@Suppress("Unused")
 	fun onBlockFormEvent(event: BlockFormEvent) {
-		if (preventFormBlocks.contains(event.block.type)) {
+		if (preventFormBlocks.contains(event.block.type) || event.newState.type == Material.ICE) {
 			event.isCancelled = true
 		}
 	}
