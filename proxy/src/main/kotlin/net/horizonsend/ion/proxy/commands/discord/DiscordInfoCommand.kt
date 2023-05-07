@@ -21,7 +21,7 @@ class DiscordInfoCommand {
 					"[Discord Server](https://discord.gg/RPvgQsGzKM)\n" +
 					"[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack)\n" +
 					"[Wiki](https://wiki.horizonsend.net)\n" +
-					"[Server Rules](https://docs.google.com/document/d/14CspgBExAxQQIHEODjyAFVbuJdJcM9ryhtuQjeLvGtA)"
+					"[Server Rules](https://wiki.horizonsend.net/rules)"
 			)
 		).queue()
 	}

@@ -65,7 +65,7 @@ class BungeeInfoCommand : BaseCommand() {
 				)
 				.append(
 					ComponentBuilder("Server Rules")
-						.event(ClickEvent(Action.OPEN_URL, "https://docs.google.com/document/d/14CspgBExAxQQIHEODjyAFVbuJdJcM9ryhtuQjeLvGtA"))
+						.event(ClickEvent(Action.OPEN_URL, "https://wiki.horizonsend.net/rules"))
 						.color(ChatColor.WHITE)
 						.underlined(true)
 						.create()
