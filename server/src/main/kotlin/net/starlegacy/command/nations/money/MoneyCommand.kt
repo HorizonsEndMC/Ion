@@ -1,6 +1,7 @@
 package net.starlegacy.command.nations.money
 
 import co.aikar.commands.annotation.Optional
+import net.horizonsend.ion.server.IonServer
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.nations.MoneyHolder
@@ -39,6 +40,7 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : SLCommand() {
 	}
 
 	open fun onDeposit(sender: Player, amount: Int) = asyncCommand(sender) {
+		failIf(IonServer.configuration.serverName == "Creative") { "Cannot withdraw or deposit on creative" }
 		val parent: Oid<Parent> = requireDefaultParent(sender)
 		requireCanDeposit(sender, parent)
 
@@ -56,6 +58,7 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : SLCommand() {
 
 	open fun onWithdraw(sender: Player, amount: Int) = asyncCommand(sender) {
 		failIf(amount <= 0) { "Amount must be greater than 0" }
+		failIf(IonServer.configuration.serverName == "Creative") { "Cannot withdraw or deposit on creative" }
 
 		val parent: Oid<Parent> = requireDefaultParent(sender)
 		requireCanWithdraw(sender, parent)
