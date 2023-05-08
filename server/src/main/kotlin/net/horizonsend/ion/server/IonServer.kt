@@ -55,7 +55,7 @@ object IonServer : JavaPlugin() {
 
 		prefixProvider = {
 			when (it) {
-				is Player -> "to ${it.name}:"
+				is Player -> "to ${it.name}: "
 				else -> ""
 			}
 		}
