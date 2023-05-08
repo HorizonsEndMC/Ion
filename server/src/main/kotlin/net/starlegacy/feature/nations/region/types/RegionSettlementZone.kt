@@ -1,6 +1,7 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
@@ -13,7 +14,6 @@ import net.starlegacy.database.mappedSet
 import net.starlegacy.database.nullable
 import net.starlegacy.database.oid
 import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SettlementZone

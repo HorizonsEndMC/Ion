@@ -1,7 +1,8 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.starlegacy.cache.nations.NationCache
+import java.time.DayOfWeek
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.array
@@ -12,7 +13,6 @@ import net.starlegacy.database.mappedSet
 import net.starlegacy.database.nullable
 import net.starlegacy.database.oid
 import net.starlegacy.database.schema.nations.CapturableStation
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.string
 import net.starlegacy.feature.nations.NATIONS_BALANCE
@@ -21,7 +21,7 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.entity.Player
-import java.time.DayOfWeek
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class RegionCapturableStation(station: CapturableStation) :
 	Region<CapturableStation>(station),
@@ -60,7 +60,7 @@ class RegionCapturableStation(station: CapturableStation) :
 	override fun calculateInaccessMessage(player: Player): String? {
 		val nation = nation ?: return "$name is not claimed by any nation!".intern()
 
-		val noAccessMessage = "$name is a station claimed by ${NationCache[nation].name}".intern()
+		val noAccessMessage = "$name is a station claimed by ${ transaction { Nation[nation]!!.name } }".intern()
 
 		// if they're not in a nation they can't access any nation outposts
 		val playerNation = PlayerCache[player].nationOid ?: return noAccessMessage

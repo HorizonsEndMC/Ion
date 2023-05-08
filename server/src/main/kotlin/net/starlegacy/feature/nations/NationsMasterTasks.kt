@@ -1,16 +1,17 @@
 package net.starlegacy.feature.nations
 
 import com.mongodb.client.MongoIterable
-import net.starlegacy.cache.nations.NationCache
+import java.lang.Integer.min
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.ProjectedResults
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.nations.CapturableStation
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.Territory
+import net.starlegacy.database.schema.nations.deleteNation
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
@@ -21,11 +22,12 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
-import java.lang.Integer.min
 
 object NationsMasterTasks {
 	fun executeAll() {
@@ -70,9 +72,9 @@ object NationsMasterTasks {
 	}
 
 	fun purgeNation(nationId: Oid<Nation>, sendMessage: Boolean) {
-		val nation = Nation.findById(nationId) ?: return
+		val nation = transaction { Nation[nationId] } ?: return
 
-		Nation.delete(nationId)
+		transaction { nation.deleteNation() }
 
 		if (sendMessage) {
 			val message = "&cNation ${nation.name} had its capital settlement purge and was purged itself!"
@@ -89,15 +91,15 @@ object NationsMasterTasks {
 	}
 
 	private fun doActivityCredits() {
-		for (nationId: Oid<Nation> in Nation.allIds()) {
-			val nation: NationCache.NationData = NationCache[nationId]
+		for (nationId: Oid<Nation> in transaction { Nation.Table.slice(Nation.Table.objectId).selectAll().map { it[Nation.Table.objectId] } }) {
+			val nation = transaction { Nation[nationId] }
 
 			// Give the nation its station income if it has stations
 			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), 4)
 			val stationIncome = if (stationCount > 2) stationCount * 75 else stationCount * 50
 
 			if (stationIncome > 0) {
-				Nation.deposit(nationId, stationIncome)
+				transaction { Nation[nationId]!!._balance += stationIncome }
 				Notify.nation(
 					nationId,
 					"&6Your nation received &e${stationIncome.toCreditsString()}&6 credits " +
@@ -111,9 +113,9 @@ object NationsMasterTasks {
 			val activityCredits = activeCount * NATIONS_BALANCE.nation.hourlyActivityCredits
 
 			if (activityCredits > 0) {
-				Nation.deposit(nationId, activityCredits)
+				transaction { Nation[nationId]!!._balance += stationIncome }
 				Notify.player(
-					nation.leader.uuid,
+					Settlement.findById(nation!!.capital as Oid<Settlement>)!!.leader.uuid,
 					"&2Your nation received &6${activityCredits.toCreditsString()}&2 " +
 						"for activity credits from &a$activeCount&2 active members"
 				)

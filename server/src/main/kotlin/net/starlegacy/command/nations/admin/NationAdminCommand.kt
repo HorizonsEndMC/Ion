@@ -3,11 +3,14 @@ package net.starlegacy.command.nations.admin
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.database.schema.nations.CapturableStationSiege
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SpaceStation
 import net.starlegacy.database.slPlayerId
@@ -22,6 +25,7 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString
 import org.bukkit.World
 import org.bukkit.command.CommandSender
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
@@ -30,9 +34,6 @@ import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOne
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
 
 @CommandAlias("nadmin|nationsadmin")
 @CommandPermission("nations.admin")
@@ -136,7 +137,7 @@ internal object NationAdminCommand : SLCommand() {
 	@Subcommand("nation set balance")
 	fun onNationSetBalance(sender: CommandSender, nation: String, balance: Int) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
-		Nation.updateById(nationId, setValue(Nation::balance, balance))
+		transaction { Nation[nationId]!!.balance = balance }
 		sender msg "Set balance of $nation to ${balance.toCreditsString()}"
 	}
 

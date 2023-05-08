@@ -6,12 +6,13 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlin.math.roundToInt
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.nations.CapturableStation
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.SpaceStation
 import net.starlegacy.database.slPlayerId
@@ -36,7 +37,6 @@ import org.litote.kmongo.addToSet
 import org.litote.kmongo.eq
 import org.litote.kmongo.pull
 import org.litote.kmongo.setValue
-import kotlin.math.roundToInt
 
 @CommandAlias("nationspacestation|nspacestation|nstation")
 object NationSpaceStationCommand : SLCommand() {

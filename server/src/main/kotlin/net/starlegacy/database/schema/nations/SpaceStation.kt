@@ -1,12 +1,14 @@
 package net.starlegacy.database.schema.nations
 
 import com.mongodb.client.model.Filters
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.trx
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -43,7 +45,7 @@ data class SpaceStation(
 			z: Int,
 			radius: Int
 		): Oid<SpaceStation> = trx { sess ->
-			require(Nation.none(sess, nameQuery(name)))
+			require(transaction { Nation.getByName(name) } == null)
 			val id = objId<SpaceStation>()
 			val trustLevel = TrustLevel.MANUAL
 			val station = SpaceStation(id, nation, name, world, x, z, radius, setOf(), setOf(), setOf(), trustLevel)

@@ -1,16 +1,19 @@
 package net.starlegacy.listener.nations
 
+import java.lang.System.currentTimeMillis
+import java.time.Duration.ofMillis
+import java.util.Collections
+import java.util.UUID
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.extensions.information
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.title.Title
 import net.kyori.adventure.title.Title.Times.times
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.nations.NPCTerritoryOwner
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SettlementZone
 import net.starlegacy.database.schema.nations.Territory
@@ -24,9 +27,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.lang.System.currentTimeMillis
-import java.time.Duration.ofMillis
-import java.util.*
+import org.jetbrains.exposed.sql.transactions.transaction
 
 object MovementListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {
@@ -65,7 +66,7 @@ object MovementListener : SLEventListener() {
 					}
 
 					territory.nation?.let { id: Oid<Nation> ->
-						subtitle += " (${NationCache[id].name})"
+						subtitle += " (${transaction { Nation[id]!!.name }})"
 					}
 
 					territory.npcOwner?.let { id: Oid<NPCTerritoryOwner> ->

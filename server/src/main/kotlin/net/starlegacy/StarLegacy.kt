@@ -4,8 +4,10 @@ import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
+import java.io.File
+import java.util.Locale
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.cache.trade.CargoCrates
@@ -38,13 +40,13 @@ import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Protocol
-import java.io.File
-import java.util.Locale
 
 lateinit var SETTINGS: Config
 lateinit var redisPool: JedisPool
@@ -141,7 +143,7 @@ fun registerCommands(manager: PaperCommandManager) {
 
 			SettlementCache.all().filter { nation != null && it.nation == nation }.map { it.name }
 		},
-		"nations" to { _ -> NationCache.all().map { it.name } },
+		"nations" to { _ -> transaction { Nation.Table.slice(Nation.Table.name).selectAll().map { it[Nation.Table.name] } } },
 		"zones" to { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val settlement = PlayerCache[player].settlementOid

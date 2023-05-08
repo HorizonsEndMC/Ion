@@ -4,15 +4,17 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import net.starlegacy.cache.nations.NationCache
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRole
+import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.util.SLTextStyle
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.litote.kmongo.eq
 
 @CommandAlias("nationrole|nrole")
 internal object NationRoleCommand : RoleCommand<Nation, NationRole.Permission, NationRole>() {
@@ -31,15 +33,15 @@ internal object NationRoleCommand : RoleCommand<Nation, NationRole.Permission, N
 	}
 
 	override fun isLeader(slPlayerId: SLPlayerId, parent: Oid<Nation>): Boolean {
-		return SettlementCache[NationCache[parent].capital].leader == slPlayerId
+		return transaction { SettlementCache[Nation[parent]!!.capital as Oid<Settlement>].leader } == slPlayerId
 	}
 
 	override fun isMember(slPlayerId: SLPlayerId, parent: Oid<Nation>): Boolean {
 		return SLPlayer.isMemberOfNation(slPlayerId, parent)
 	}
 
-	override fun getMembers(parent: Oid<Nation>): List<SLPlayerId> {
-		return Nation.getMembers(parent).toList()
+	public override fun getMembers(parent: Oid<Nation>): List<SLPlayerId> {
+		return SLPlayer.findProp(SLPlayer::nation eq parent, SLPlayer::_id).toList()
 	}
 
 	@Subcommand("manage")

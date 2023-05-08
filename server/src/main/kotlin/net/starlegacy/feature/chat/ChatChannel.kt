@@ -1,6 +1,7 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
@@ -9,12 +10,9 @@ import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.SETTINGS
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.utils.hover
@@ -28,6 +26,7 @@ import net.starlegacy.util.redisaction.RedisAction
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {
@@ -234,7 +233,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val nation = playerData.nationOid
 				?: return player msg "&cYou're not in a nation! &o(Hint: To get back to global, use /global)"
 
-			val nationName = NationCache[nation].name
+			val nationName = transaction { Nation[nation]!!.name }
 			val roleString = playerData.nationTag?.let { " $it" } ?: ""
 
 			val format = "&5&lAlly &e$nationName$roleString &b${player.name} &8»".colorize()
@@ -332,7 +331,7 @@ private fun playerInfo(player: Player): String =
 	"""
 	Level: ${Levels[player]}
 	XP: ${SLXP[player]}
-	Nation: ${PlayerCache[player].nationOid?.let(NationCache::get)?.name}
+	Nation: ${transaction { PlayerCache[player].nationOid?.let(Nation::get)?.name }}
 	Settlement: ${PlayerCache[player].settlementOid?.let(SettlementCache::get)?.name}
 	Player: ${player.name}
 	""".trimIndent()
@@ -356,7 +355,7 @@ private data class NormalChatMessage(
 	override val playerInfo: String
 ) : ChatMessage()
 
-private data class NationsChatMessage<A : DbObject>(
+private data class NationsChatMessage<A>(
 	val id: Oid<A>,
 	override val prefix: String,
 	override val message: String,

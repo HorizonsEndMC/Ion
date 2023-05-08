@@ -5,12 +5,12 @@ import com.googlecode.cqengine.index.hash.HashIndex
 import com.googlecode.cqengine.query.QueryFactory.and
 import com.googlecode.cqengine.query.QueryFactory.equal
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.Cache
 import net.starlegacy.cache.DbObjectCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.enumValue
 import net.starlegacy.database.get
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 
 object RelationCache : DbObjectCache<NationRelation, Oid<NationRelation>>(NationRelation.Companion), Cache {

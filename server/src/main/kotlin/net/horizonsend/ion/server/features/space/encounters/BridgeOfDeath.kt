@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.space.encounters
 
+import java.util.Random
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
@@ -7,11 +9,11 @@ import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
+import net.starlegacy.database.Oid
+import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.util.Notify
 import net.starlegacy.util.toBlockPos
-import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
@@ -25,7 +27,8 @@ import org.bukkit.entity.Fireball
 import org.bukkit.entity.ZombieVillager
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
-import java.util.Random
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.Random as SqlRandom
 
 object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 	private fun checkAir(block: Block): Boolean {
@@ -98,7 +101,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 						return "What is your favorite color?"
 					}
 					1 -> {
-						val nation = NationCache.all().randomOrNull()
+						val nation = Nation.Table.selectAll().orderBy(SqlRandom()).limit(1).firstOrNull()?.let { Nation.inner.wrapRow(it) }
 
 						context.allSessionData["third"] = "nation"
 						context.allSessionData["nation"] = nation
@@ -126,8 +129,8 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 							}
 						}
 						"nation" -> {
-							val data = context.allSessionData["nation"] as? NationCache.NationData ?: return finalStatement
-							val settlementName = SettlementCache[data.capital].name
+							val data = context.allSessionData["nation"] as? Nation ?: return finalStatement
+							val settlementName = SettlementCache[data.capital as Oid<Settlement>].name
 
 							if (input.contains(settlementName, true)) {
 								return finalStatement

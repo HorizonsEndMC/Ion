@@ -1,5 +1,10 @@
 package net.starlegacy.feature.nations
 
+import java.lang.System.currentTimeMillis
+import java.time.ZonedDateTime
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -9,7 +14,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -36,13 +40,10 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
-import java.lang.System.currentTimeMillis
-import java.time.ZonedDateTime
-import java.util.Date
-import java.util.concurrent.TimeUnit
 
 object StationSieges : SLComponent() {
 	data class Siege(val siegerId: SLPlayerId, val stationId: Oid<CapturableStation>, val start: Long)
@@ -217,8 +218,8 @@ object StationSieges : SLComponent() {
 
 		sieges.add(Siege(playerId, stationId, currentTimeMillis()))
 
-		val nationName = NationCache[nation].name
-		val oldNationName = NationCache[oldNation].name
+		val nationName = transaction { Nation[nation]!!.name }
+		val oldNationName = transaction { Nation[oldNation]!!.name }
 
 		Notify.online("$GOLD${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)")
 		Notify.discord("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
@@ -284,8 +285,8 @@ object StationSieges : SLComponent() {
 			}
 			sieges.removeIf { it.siegerId == slPlayerId }
 			CapturableStation.setNation(stationId, playerNation)
-			val nationName = NationCache[playerNation].name
-			val oldNationName = oldNation?.let { NationCache[it].name } ?: "None"
+			val nationName = transaction { Nation[playerNation]!!.name }
+			val oldNationName = oldNation?.let { transaction { Nation[it]!!.name } } ?: "None"
 			val nowCaptured = CapturableStation.count(CapturableStation::nation eq playerNation)
 			val playerName = player.name
 			Notify online "${GOLD}Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +

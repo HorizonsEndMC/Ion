@@ -1,5 +1,6 @@
 package net.starlegacy.database.schema.nations
 
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -76,7 +77,7 @@ data class Territory(
 		fun setNation(id: Oid<Territory>, nation: Oid<Nation>?): Unit = trx { sess ->
 			if (nation != null) {
 				require(matches(sess, id, unclaimedQuery))
-				require(Nation.exists(sess, nation))
+				require(Nation[nation] != null)
 			}
 			updateById(sess, id, org.litote.kmongo.setValue(Territory::nation, nation))
 		}

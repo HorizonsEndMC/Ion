@@ -2,12 +2,17 @@ package net.starlegacy.feature.starship.active
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import java.lang.Math.cbrt
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.controllers.LegacyController
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -31,11 +36,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import java.lang.Math.cbrt
-import java.util.UUID
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class ActivePlayerStarship(
 	val data: PlayerStarshipData,
@@ -169,7 +170,7 @@ class ActivePlayerStarship(
 	var cruiseData = StarshipCruising.CruiseData(this)
 
 	override val weaponColor: Color
-		get() = pilot?.let { PlayerCache[it].nationOid }?.let { Color.fromRGB(NationCache[it].color) } ?: Color.RED
+		get() = pilot?.let { PlayerCache[it].nationOid }?.let { Color.fromRGB( transaction { Nation[it]!!.color } ) } ?: Color.RED
 
 	fun requirePilot(): Player = requireNotNull(pilot) { "Starship must be piloted!" }
 

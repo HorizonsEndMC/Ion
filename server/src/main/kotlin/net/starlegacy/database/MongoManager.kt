@@ -6,6 +6,8 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import java.util.concurrent.Executors
+import kotlin.reflect.KClass
 import net.starlegacy.SETTINGS
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.economy.BazaarItem
@@ -19,7 +21,6 @@ import net.starlegacy.database.schema.misc.Shuttle
 import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.database.schema.nations.CapturableStationSiege
 import net.starlegacy.database.schema.nations.NPCTerritoryOwner
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Settlement
@@ -42,8 +43,6 @@ import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdGenerator
 import org.litote.kmongo.util.KMongoUtil
-import java.util.concurrent.Executors
-import kotlin.reflect.KClass
 
 object MongoManager : SLComponent() {
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
@@ -82,7 +81,6 @@ object MongoManager : SLComponent() {
 		// nations
 		CapturableStation.init()
 		CapturableStationSiege.init()
-		Nation.init()
 		NationRelation.init()
 		NPCTerritoryOwner.init()
 		SettlementRole.init()
