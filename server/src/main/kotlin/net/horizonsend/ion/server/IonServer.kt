@@ -154,7 +154,9 @@ object IonServer : JavaPlugin() {
 			transaction {
 				if (Nation.Table.selectAll().count() != 0L) return@transaction
 
-				val nations = net.starlegacy.database.schema.nations.Nation.all()
+				val OldNation = net.starlegacy.database.schema.nations.Nation
+				OldNation.init()
+				val nations = OldNation.all()
 				for (nation in nations) {
 					println("Migrating ${nation.name}")
 					val newNation = Nation.new {
