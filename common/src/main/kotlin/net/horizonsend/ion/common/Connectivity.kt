@@ -2,7 +2,10 @@ package net.horizonsend.ion.common
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import java.io.File
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.database.Nation
+import net.horizonsend.ion.common.database.NationInvite
 import net.horizonsend.ion.common.database.PlayerAchievement
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.PlayerVoteTime
@@ -10,7 +13,6 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import redis.clients.jedis.JedisPooled
-import java.io.File
 
 object Connectivity {
 	private lateinit var database: Database
@@ -31,7 +33,13 @@ object Connectivity {
 		database = Database.connect(datasource)
 
 		transaction {
-			SchemaUtils.createMissingTablesAndColumns(PlayerData.Table, PlayerVoteTime.Table, PlayerAchievement.Table)
+			SchemaUtils.createMissingTablesAndColumns(
+				Nation.Table,
+				NationInvite.Table,
+				PlayerAchievement.Table,
+				PlayerData.Table,
+				PlayerVoteTime.Table,
+			)
 		}
 
 		jedisPool = JedisPooled(configuration.redisConnectionUri)
