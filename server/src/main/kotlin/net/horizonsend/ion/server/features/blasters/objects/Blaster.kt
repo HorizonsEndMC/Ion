@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.blasters.objects
 
+import java.util.Locale
+import java.util.function.Supplier
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
@@ -16,7 +19,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE
 import net.minecraft.resources.ResourceLocation
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
@@ -30,15 +32,13 @@ import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
 import org.bukkit.SoundCategory.PLAYERS
 import org.bukkit.craftbukkit.v1_19_R3.CraftParticle
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import java.util.Locale
-import java.util.function.Supplier
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.jetbrains.exposed.sql.transactions.transaction
 
 abstract class Blaster<T : Balancing>(
@@ -227,7 +227,7 @@ abstract class Blaster<T : Balancing>(
 
 	private fun getParticleColor(entity: LivingEntity): Color {
 		if (entity !is Player) return RED // Not Player
-		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
+		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(transaction { Nation[it]!!.color }) } // Nation
 		transaction { PlayerData[entity.uniqueId] }?.color?.let { return fromRGB(it) } // Player
 		return RED // Not Player
 	}

@@ -6,6 +6,12 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import java.util.Date
+import java.util.UUID
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.repeatString
@@ -18,7 +24,6 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -26,7 +31,6 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SettlementRole
 import net.starlegacy.database.schema.nations.Territory
@@ -54,14 +58,10 @@ import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.white
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
 import org.litote.kmongo.updateOneById
-import java.util.Date
-import java.util.UUID
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 @Suppress("unused")
 @CommandAlias("settlement|s")
@@ -472,7 +472,7 @@ internal object SettlementCommand : SLCommand() {
 		message.append(newline())
 
 		data.nation?.let { nationId ->
-			val settlementNationCached = NationCache[nationId]
+			val settlementNationCached = transaction { Nation[nationId] }!!
 
 			val nationsText = text().color(TextColor.fromHexString("#b8e0d4"))
 				.append(text("Nation: ").color(TextColor.fromHexString("#b8e0d4")))

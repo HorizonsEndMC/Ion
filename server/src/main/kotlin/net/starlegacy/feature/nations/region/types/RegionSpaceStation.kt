@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.starlegacy.cache.nations.NationCache
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.enumValue
@@ -10,7 +10,6 @@ import net.starlegacy.database.int
 import net.starlegacy.database.mappedSet
 import net.starlegacy.database.oid
 import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.SpaceStation
 import net.starlegacy.database.slPlayerId
@@ -20,6 +19,7 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 
 class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spaceStation), RegionTopLevel {
@@ -98,6 +98,6 @@ class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spac
 			return null
 		}
 
-		return "&cSpace station $name is claimed by ${NationCache[nation].name} @ $x,$z x $radius"
+		return "&cSpace station $name is claimed by ${ transaction { Nation[nation]!!.name } } @ $x,$z x $radius"
 	}
 }

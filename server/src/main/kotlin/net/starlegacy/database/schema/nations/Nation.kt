@@ -1,29 +1,22 @@
 package net.starlegacy.database.schema.nations
 
-import com.mongodb.client.MongoIterable
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.ensureUniqueIndexCaseInsensitive
-import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.trx
-import org.bukkit.Color
-import org.litote.kmongo.addToSet
-import org.litote.kmongo.and
+import org.bson.types.ObjectId
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.contains
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
-import org.litote.kmongo.inc
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.pull
-import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 
 /**
  * Referenced on:
@@ -45,150 +38,84 @@ import org.litote.kmongo.util.KMongoUtil.idFilterQuery
  * @property balance The amount of money the nation has
  * @property invites The settlements the nation has invited
  */
+
+@Deprecated("")
 data class Nation(
-	override val _id: Oid<Nation> = objId(),
+	@Deprecated("")
+	override val _id: Oid<net.horizonsend.ion.common.database.Nation> = Oid(ObjectId()),
+
+	@Deprecated("")
 	var name: String,
+
+	@Deprecated("")
 	var capital: Oid<Settlement>,
+
+	@Deprecated("")
 	var color: Int,
+
+	@Deprecated("")
 	override var balance: Int = 0,
+
+	@Deprecated("")
 	val invites: MutableSet<Oid<Settlement>> = mutableSetOf()
 ) : DbObject, MoneyHolder {
+	@Deprecated("")
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(Nation::name, indexOptions = IndexOptions().textVersion(3))
 		ensureUniqueIndex(Nation::capital)
 		ensureIndex(Nation::invites)
-	}) {
-		private fun nameQuery(name: String) = Filters.regex("name", "^$name$", "i")
+	})
+}
 
-		fun findByName(name: String): Oid<Nation>? = findOneProp(nameQuery(name), Nation::_id)
+fun net.horizonsend.ion.common.database.Nation.deleteNation(): Unit = transaction {
+	trx { sess ->
+		val id = this@deleteNation.objectId
 
-		fun create(name: String, capitalId: Oid<Settlement>, color: Int): Oid<Nation> = trx { sess ->
-			require(none(sess, nameQuery(name)))
+		// Update all the territories owned by the nation
+		Territory.col.updateMany(sess, Territory::nation eq id, org.litote.kmongo.setValue(Territory::nation, null))
 
-			// require the settlement isn't already in a nation. will also fail if there's no such settlement
-			require(Settlement.matches(sess, capitalId, Settlement::nation eq null))
+		// Update all the stations owned by the nation
+		CapturableStation.col.updateMany(
+			sess, CapturableStation::nation eq id, org.litote.kmongo.setValue(CapturableStation::nation, null)
+		)
 
-			val id: Oid<Nation> = objId()
+		CapturableStationSiege.col.deleteMany(sess, CapturableStationSiege::nation eq id)
 
-			// update the settlements members
-			SLPlayer.col.updateMany(
-				sess, SLPlayer::settlement eq capitalId,
-				org.litote.kmongo.setValue(
-					SLPlayer::nation, id
-				)
-			)
+		// remove from zones it's trusted to
+		SettlementZone.col.updateMany(
+			sess,
+			SettlementZone::trustedNations ne null,
+			pull(SettlementZone::trustedNations, id)
+		)
 
-			// update the settlement
-			Settlement.updateById(sess, capitalId, org.litote.kmongo.setValue(Settlement::nation, id))
+		// unset the nation of all member settlements
+		Settlement.col.updateMany(
+			sess, Settlement::nation eq id,
+			org.litote.kmongo.setValue(Settlement::nation, null)
+		)
 
-			// create the actual nation
-			col.insertOne(sess, Nation(id, name, capitalId, color))
+		// Delete all the nation roles associated with the nation
+		NationRole.col.deleteMany(sess, NationRole::parent eq id)
 
-			return@trx id
-		}
+		// Delete all the nation relations associated with the nation
+		NationRelation.col.deleteMany(
+			sess, or(NationRelation::nation eq id, NationRelation::other eq id)
+		)
 
-		fun delete(id: Oid<Nation>): Unit = trx { sess ->
-			require(exists(sess, id))
+		// unset nation for all members
+		SLPlayer.col.updateMany(
+			sess, SLPlayer::nation eq id, org.litote.kmongo.setValue(SLPlayer::nation, null)
+		)
 
-			// Update all the territories owned by the nation
-			Territory.col.updateMany(sess, Territory::nation eq id, org.litote.kmongo.setValue(Territory::nation, null))
+		SpaceStation.col.updateMany(
+			sess, SpaceStation::nation ne id, pull(SpaceStation::trustedNations, id)
+		)
 
-			// Update all the stations owned by the nation
-			CapturableStation.col.updateMany(
-				sess, CapturableStation::nation eq id, org.litote.kmongo.setValue(CapturableStation::nation, null)
-			)
+		SpaceStation.col.deleteMany(sess, SpaceStation::nation eq id)
 
-			CapturableStationSiege.col.deleteMany(sess, CapturableStationSiege::nation eq id)
+		Blueprint.col.updateMany(sess, Blueprint::trustedNations contains id, pull(Blueprint::trustedNations, id))
 
-			// remove from zones it's trusted to
-			SettlementZone.col.updateMany(
-				sess,
-				SettlementZone::trustedNations ne null,
-				pull(SettlementZone::trustedNations, id)
-			)
-
-			// unset the nation of all member settlements
-			Settlement.col.updateMany(
-				sess, Settlement::nation eq id,
-				org.litote.kmongo.setValue(Settlement::nation, null)
-			)
-
-			// Delete all the nation roles associated with the nation
-			NationRole.col.deleteMany(sess, NationRole::parent eq id)
-
-			// Delete all the nation relations associated with the nation
-			NationRelation.col.deleteMany(
-				sess, or(NationRelation::nation eq id, NationRelation::other eq id)
-			)
-
-			// unset nation for all members
-			SLPlayer.col.updateMany(
-				sess, SLPlayer::nation eq id, org.litote.kmongo.setValue(SLPlayer::nation, null)
-			)
-
-			SpaceStation.col.updateMany(
-				sess, SpaceStation::nation ne id, pull(SpaceStation::trustedNations, id)
-			)
-
-			SpaceStation.col.deleteMany(sess, SpaceStation::nation eq id)
-
-			Blueprint.col.updateMany(sess, Blueprint::trustedNations contains id, pull(Blueprint::trustedNations, id))
-
-			// Remove the nation itself
-			col.deleteOne(sess, idFilterQuery(id))
-		}
-
-		fun deposit(nationId: Oid<Nation>, amount: Int) {
-			updateById(nationId, inc(Nation::balance, amount))
-		}
-
-		fun withdraw(nationId: Oid<Nation>, amount: Int) {
-			updateById(nationId, inc(Nation::balance, -amount))
-		}
-
-		fun getSettlements(nationId: Oid<Nation>): MongoIterable<Oid<Settlement>> {
-			return Settlement.findProp(Settlement::nation eq nationId, Settlement::_id)
-		}
-
-		fun getPlayers(nationId: Oid<Nation>): MongoIterable<SLPlayerId> {
-			return SLPlayer.findProp(SLPlayer::nation eq nationId, SLPlayer::_id)
-		}
-
-		fun isInvited(nationId: Oid<Nation>, settlementId: Oid<Settlement>): Boolean {
-			return matches(nationId, Nation::invites contains settlementId)
-		}
-
-		fun addInvite(nationId: Oid<Nation>, settlementId: Oid<Settlement>) {
-			updateById(nationId, addToSet(Nation::invites, settlementId))
-		}
-
-		fun removeInvite(nationId: Oid<Nation>, settlementId: Oid<Settlement>) {
-			updateById(nationId, pull(Nation::invites, settlementId))
-		}
-
-		fun getMembers(nationId: Oid<Nation>): MongoIterable<SLPlayerId> = SLPlayer
-			.findProp(SLPlayer::nation eq nationId, SLPlayer::_id)
-
-		fun setName(nationId: Oid<Nation>, newName: String): Unit = trx { sess ->
-			require(none(sess, and(Nation::_id ne nationId, nameQuery(newName)))) { "A different nation with that name already exists" }
-
-			updateById(sess, nationId, org.litote.kmongo.setValue(Nation::name, newName))
-		}
-
-		fun setColor(nationId: Oid<Nation>, rgb: Int) {
-			Color.fromRGB(rgb) // this will throw an exception if it's invalid
-
-			updateById(nationId, org.litote.kmongo.setValue(Nation::color, rgb))
-		}
-
-		fun setCapital(nationId: Oid<Nation>, settlementId: Oid<Settlement>): Unit = trx { sess ->
-			require(Settlement.matches(sess, settlementId, Settlement::nation eq nationId)) { "Settlement not in nation" }
-
-			require(matches(sess, nationId, Nation::capital ne settlementId)) { "Settlement is already the capital" }
-
-			updateById(sess, nationId, org.litote.kmongo.setValue(Nation::capital, settlementId))
-		}
+		// Remove the nation itself
+		this@deleteNation.delete()
 	}
-
-	data class Relation(val wish: NationRelation, val actual: NationRelation)
 }

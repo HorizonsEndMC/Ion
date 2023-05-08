@@ -10,11 +10,13 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
+import java.util.*
+import kotlin.collections.set
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.BaseEntityBlock
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
@@ -39,12 +41,11 @@ import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.toBukkitBlockData
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
-import java.util.*
-import kotlin.collections.set
 
 @CommandAlias("blueprint")
 object BlueprintCommand : SLCommand() {
@@ -128,7 +129,7 @@ object BlueprintCommand : SLCommand() {
 		list.add("<gray>Class<dark_gray>: <light_purple>${blueprint.type}")
 		if (blueprint.trustedNations.isNotEmpty()) {
 			list.add("<gray>Trusted Players<dark_gray>: <aqua>${blueprint.trustedPlayers.joinToString { getPlayerName(it) }}}")
-			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { NationCache[it].name }}")
+			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { transaction { Nation[it]!!.name } }}")
 		}
 		return list
 	}

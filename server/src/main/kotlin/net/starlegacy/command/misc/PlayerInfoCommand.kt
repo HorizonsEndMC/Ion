@@ -5,11 +5,11 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.uuid
@@ -17,6 +17,7 @@ import net.starlegacy.util.getDurationBreakdown
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 
 object PlayerInfoCommand : SLCommand() {
 	@Suppress("Unused")
@@ -49,7 +50,7 @@ object PlayerInfoCommand : SLCommand() {
 			val nationId = slPlayer.nation
 
 			if (nationId != null) {
-				val nationName: String = Nation.findPropById(nationId, Nation::name)!!
+				val nationName: String = transaction { Nation[nationId]!!.name }
 				sender.sendRichMessage("<dark_green>Nation: <green>$nationName")
 
 				if (sender is Player) {

@@ -4,12 +4,15 @@ import com.mongodb.client.ClientSession
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.result.UpdateResult
+import java.time.Instant
+import java.util.Date
+import java.util.UUID
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.DbObjectCompanion
 import net.starlegacy.database.Oid
 import net.starlegacy.database.ProjectedResults
 import net.starlegacy.database.projected
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SettlementRole
@@ -30,9 +33,6 @@ import org.litote.kmongo.ne
 import org.litote.kmongo.projection
 import org.litote.kmongo.pull
 import org.litote.kmongo.withDocumentClass
-import java.time.Instant
-import java.util.Date
-import java.util.UUID
 
 typealias SLPlayerId = StringId<SLPlayer>
 

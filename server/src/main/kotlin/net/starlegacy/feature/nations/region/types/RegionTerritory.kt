@@ -1,8 +1,13 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import java.awt.Polygon
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.SETTINGS
-import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
@@ -12,7 +17,6 @@ import net.starlegacy.database.get
 import net.starlegacy.database.nullable
 import net.starlegacy.database.oid
 import net.starlegacy.database.schema.nations.NPCTerritoryOwner
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.SettlementRole
@@ -22,12 +26,8 @@ import net.starlegacy.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
-import java.awt.Polygon
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.abs
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 class RegionTerritory(territory: Territory) :
 	Region<Territory>(territory),
@@ -107,7 +107,7 @@ class RegionTerritory(territory: Territory) :
 					return null
 				}
 
-				return "$name is claimed by ${NationCache[nation].name}".intern()
+				return "$name is claimed by ${ transaction { Nation[nation]!!.name } }".intern()
 			}
 
 			// if it's a settlement

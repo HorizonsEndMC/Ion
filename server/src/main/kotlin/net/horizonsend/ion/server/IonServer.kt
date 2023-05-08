@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
-import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
+import net.horizonsend.ion.common.database.Nation
+import net.horizonsend.ion.common.database.NationInvite
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
@@ -25,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.listeners
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
+import net.starlegacy.database.Oid
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -40,6 +42,8 @@ import org.bukkit.entity.Player
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
@@ -145,6 +149,30 @@ object IonServer : JavaPlugin() {
 				},
 				1
 			)
+
+			// Temporary Migration Code
+			transaction {
+				if (Nation.Table.selectAll().count() != 0L) return@transaction
+
+				val nations = net.starlegacy.database.schema.nations.Nation.all()
+				for (nation in nations) {
+					println("Migrating ${nation.name}")
+					val newNation = Nation.new {
+						this.objectId = nation._id
+						this.name = nation.name
+						this.color = nation.color
+						this.capital = nation.capital as Oid<Any>
+						this._balance = nation.balance
+					}
+
+					for (invite in nation.invites) {
+						NationInvite.new {
+							this.nation = newNation
+							this.settlement = invite as Oid<Any>
+						}
+					}
+				}
+			}
 		} catch (exception: Exception) {
 			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
 			Bukkit.shutdown()

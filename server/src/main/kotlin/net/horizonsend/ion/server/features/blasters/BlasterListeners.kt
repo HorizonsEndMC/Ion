@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.blasters
 
+import kotlin.math.roundToInt
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.server.features.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.CustomItems
@@ -8,7 +10,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.database.schema.nations.Nation
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -19,7 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import kotlin.math.roundToInt
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class BlasterListeners : Listener {
 	@Suppress("Unused")
@@ -34,13 +35,13 @@ class BlasterListeners : Listener {
 		val blaster = customItem.displayName
 		val victimColor =
 			"<#" + Integer.toHexString((
-					PlayerCache[victim].nationOid?.let { Nation.findById(it) }?.color
+					PlayerCache[victim].nationOid?.let { transaction { Nation[it]?.color } }
 						?: 16777215
 					)) + ">"
 
 		val killerColor =
 			"<#" + Integer.toHexString((
-					PlayerCache[killer].nationOid?.let { Nation.findById(it) }?.color
+					PlayerCache[killer].nationOid?.let { transaction { Nation[it]?.color } }
 						?: 16777215
 					)) + ">"
 

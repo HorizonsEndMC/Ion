@@ -6,8 +6,16 @@ import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
-import net.horizonsend.ion.common.database.enums.Achievement
+import java.time.Instant
+import java.util.Locale
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.pow
+import kotlin.math.sqrt
 import net.horizonsend.ion.common.Colors
+import net.horizonsend.ion.common.database.Nation
+import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -15,7 +23,6 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.misc.CombatNPCKillEvent
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent
@@ -36,13 +43,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import java.time.Instant
-import java.util.Locale
-import java.util.UUID
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.pow
-import kotlin.math.sqrt
+import org.jetbrains.exposed.sql.transactions.transaction
 
 object ShipKillXP : SLComponent() {
 	data class Damager(val id: UUID, val size: Int)
@@ -177,7 +178,7 @@ object ShipKillXP : SLComponent() {
 		} ?: Component.text("A ").color(alertFeedbackColor).append(data.type.component)
 
 		val killedNationColor = SLPlayer.findIdByName(killedName)
-			?.let { SLPlayer[it]?.nation?.let { nationID -> Nation.findById(nationID)?.color } }
+			?.let { SLPlayer[it]?.nation?.let { nationID -> transaction { Nation[nationID]?.color } } }
 			?: 16777215 // white // So many null checks, meh, it's not called too often.
 
 		val killedShipHover = Component.text()
@@ -198,7 +199,7 @@ object ShipKillXP : SLComponent() {
 
 		val killerNationColor = SLPlayer[getPlayer(killer.id)!!].nation?.let {
 				nationID ->
-			Nation.findById(nationID)?.color
+			transaction { Nation[nationID]?.color }
 		} ?: 16777215 // white // So many null checks, meh, it's not called too often.
 
 		val killerShipHover = Component.text()
@@ -238,7 +239,7 @@ object ShipKillXP : SLComponent() {
 				val assistShip = ActiveStarships.findByPilot(assistPlayer) ?: continue
 				val assistNationColor = SLPlayer[assistPlayer].nation?.let {
 						nationID ->
-					Nation.findById(nationID)?.color
+					transaction { Nation[nationID]?.color }
 				} ?: 16777215 // white
 				val assistShipName = (assistShip as? ActivePlayerStarship)?.let { getDisplayNameComponent(it.data) }
 				val assistHoverEvent = Component.text()

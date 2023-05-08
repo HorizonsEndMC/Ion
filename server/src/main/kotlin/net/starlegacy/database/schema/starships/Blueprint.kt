@@ -1,13 +1,14 @@
 package net.starlegacy.database.schema.starships
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import java.util.Base64
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
 import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.trx
 import net.starlegacy.feature.starship.StarshipSchematic
@@ -20,7 +21,6 @@ import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
-import java.util.Base64
 
 data class Blueprint(
 	override val _id: Oid<Blueprint>,

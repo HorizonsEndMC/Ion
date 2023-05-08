@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.util.LinkedList
+import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.serverErrorActionMessage
@@ -10,17 +11,25 @@ import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.util.HSVLike
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.database.schema.nations.Settlement
+import net.starlegacy.database.schema.nations.Territory
 import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.starlegacy.database.slPlayerId
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
+import net.starlegacy.feature.nations.region.Regions
+import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
@@ -42,18 +51,9 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.TextDecoration.BOLD
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.schema.nations.Territory
-import net.starlegacy.database.slPlayerId
-import net.starlegacy.feature.nations.region.Regions
-import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.listener.misc.ProtectionListener.isRegionDenied
 import org.litote.kmongo.setValue
 
 object StarshipComputers : SLComponent() {
@@ -409,13 +409,13 @@ object StarshipComputers : SLComponent() {
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::pilots, mutableSetOf()))
 	}
 
-	fun Player.isTerritoryOwner(): Boolean {
-		val territoryId = Regions.find(this.location)
+	fun Player.isTerritoryOwner(): Boolean = transaction {
+		val territoryId = Regions.find(this@isTerritoryOwner.location)
 			.filterIsInstance<RegionTerritory>()
-			.firstOrNull() ?: return false
-		val territory = Territory.findById(territoryId.id) ?: return false
-		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
-		val settlement = Settlement.findById(settlementId) ?: return false
-		return settlement.leader.uuid == uniqueId
+			.firstOrNull() ?: return@transaction false
+		val territory = Territory.findById(territoryId.id) ?: return@transaction false
+		val settlementId = territory.settlement ?: Nation[territory.nation?: return@transaction false]?.capital ?: return@transaction false
+		val settlement = Settlement.findById(settlementId as Oid<Settlement>) ?: return@transaction false
+		return@transaction settlement.leader.uuid == uniqueId
 	}
 }

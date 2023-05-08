@@ -1,10 +1,11 @@
 package net.starlegacy.command.nations
 
 import co.aikar.commands.annotation.CommandAlias
-import net.starlegacy.cache.nations.NationCache
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.nations.StationSieges
 import org.bukkit.entity.Player
+import org.jetbrains.exposed.sql.transactions.transaction
 
 internal object SiegeCommand : SLCommand() {
 	@Suppress("unused")
@@ -17,7 +18,7 @@ internal object SiegeCommand : SLCommand() {
 
 	private fun tellPlayerCurrentlySiegableStations(sender: Player) {
 		val currentStationNames = StationSieges.getStationsNow().joinToString {
-			val nationName = it.nation?.let(NationCache::get)?.name
+			val nationName = transaction { it.nation?.let(Nation::get)?.name }
 			val stationName = it.name
 			val world = it.world
 			val x = it.x

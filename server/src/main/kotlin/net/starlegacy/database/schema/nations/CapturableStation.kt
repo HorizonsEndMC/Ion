@@ -1,6 +1,9 @@
 package net.starlegacy.database.schema.nations
 
 import com.mongodb.client.result.UpdateResult
+import java.time.DayOfWeek
+import java.util.Date
+import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -8,8 +11,6 @@ import net.starlegacy.database.objId
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.updateOneById
-import java.time.DayOfWeek
-import java.util.Date
 
 /** Referenced on:
  *  - Nation (for the stations they own) */
