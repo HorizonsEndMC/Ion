@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.migrator
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.migrator.migrators.InitialMigrator
 import net.horizonsend.ion.server.migrator.migrators.Migrator
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.DATA_VERSION
@@ -22,20 +21,17 @@ object DataMigrator : Listener {
 
 	@Deprecated("Event Listener")
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onPlayerLoginEvent(event: PlayerLoginEvent) =
-		event.player.migrate(event.player.name, Migrator::migratePlayer)
+	fun onPlayerLoginEvent(event: PlayerLoginEvent) = event.player.migrate(Migrator::migratePlayer)
 
 	@Deprecated("Event Listener")
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onChunkLoadEvent(event: ChunkLoadEvent) =
-		event.chunk.migrate("${event.chunk.x}, ${event.chunk.z} @ ${event.chunk.world.name}", Migrator::migrateChunk)
+	fun onChunkLoadEvent(event: ChunkLoadEvent) = event.chunk.migrate(Migrator::migrateChunk)
 
 	@Deprecated("Event Listener")
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onWorldInitEvent(event: WorldInitEvent) =
-		event.world.migrate(event.world.name, Migrator::migrateWorld)
+	fun onWorldInitEvent(event: WorldInitEvent) = event.world.migrate(Migrator::migrateWorld)
 
-	private fun <T : PersistentDataHolder> T.migrate(name: String, migrate: Migrator.(T) -> Unit) {
+	private fun <T : PersistentDataHolder> T.migrate(migrate: Migrator.(T) -> Unit) {
 		val initialVersion = persistentDataContainer.get(DATA_VERSION, INTEGER) ?: 0
 
 		for (currentVersion in initialVersion until LATEST_VERSION) {
@@ -44,7 +40,6 @@ object DataMigrator : Listener {
 			MIGRATORS[currentVersion].migrate(this)
 
 			persistentDataContainer.set(DATA_VERSION, INTEGER, newVersion)
-			IonServer.slF4JLogger.info("Migrated $name from $currentVersion to $newVersion")
 		}
 	}
 }
