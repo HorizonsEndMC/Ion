@@ -3,12 +3,13 @@ package net.horizonsend.ion.server.configuration
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.starship.StarshipType
-import net.starlegacy.util.readSchematic
 import net.starlegacy.util.nms
+import net.starlegacy.util.readSchematic
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -20,7 +21,7 @@ data class ServerConfiguration(
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
-	val soldShips: List<Ship>
+	val soldShips: List<Ship> = listOf()
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
