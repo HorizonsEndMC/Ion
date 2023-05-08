@@ -45,109 +45,110 @@ object IonServer : JavaPlugin() {
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
 
 	override fun onEnable() {
-		try {
-			Connectivity.open(dataFolder)
+		val exception = runCatching(::internalEnable).exceptionOrNull() ?: return
+		slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
+		Bukkit.shutdown()
+	}
 
-			prefixProvider = {
-				when (it) {
-					is Player -> "to ${it.name}:"
-					else -> ""
-				}
+	private fun internalEnable() {
+		Connectivity.open(dataFolder)
+
+		prefixProvider = {
+			when (it) {
+				is Player -> "to ${it.name}:"
+				else -> ""
 			}
-
-			val pluginManager = server.pluginManager
-
-			// Commands
-			val commandManager = PaperCommandManager(this)
-
-			@Suppress("Deprecation")
-			commandManager.enableUnstableAPI("help")
-
-			for (command in commands) commandManager.registerCommand(command)
-
-			commandManager.commandCompletions.registerStaticCompletion(
-				"achievements",
-				Achievement.values().map { it.name }
-			)
-
-			commandManager.commandCompletions.registerCompletion("customItem") { context ->
-				CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
-			}
-			commandManager.commandCompletions.registerCompletion("wreckEncounters") { Encounters.identifiers }
-			commandManager.commandCompletions.registerCompletion("particles") { context ->
-				BuiltInRegistries.PARTICLE_TYPE.keySet()
-					.filter { context.player.hasPermission("ion.settings.particle.$it") }
-					.map { "$it" }
-			}
-			commandManager.commandCompletions.registerCompletion("hyperspaceGates") {
-				configuration.beacons.map { it.name.replace(" ", "_") }
-			}
-
-			// The listeners are defined in a separate file for the sake of keeping the main class clean.
-			for (listener in listeners) pluginManager.registerEvents(listener, this)
-
-			// WIT networking
-			Bukkit.getMessenger().registerIncomingPluginChannel(this, SearchC2S.ID.toString(), Searcher::handle)
-			Bukkit.getMessenger().registerOutgoingPluginChannel(this, FoundS2C.ID.toString())
-
-			// Void networking
-			for (packet in Packets.values()) {
-				logger.info("Registering ${packet.id}")
-
-				if (packet.s2c != null) {
-					Bukkit.getMessenger().registerOutgoingPluginChannel(this, packet.id.toString())
-				}
-
-				if (packet.c2s != null) {
-					Bukkit.getMessenger().registerIncomingPluginChannel(
-						this,
-						packet.id.toString()
-					) { s: String, player: Player, bytes: ByteArray ->
-						logger.info("Received message on $s by ${player.name}")
-						val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))
-						val c2s = packet.c2s
-						c2s.invoke(buf, player)
-					}
-				}
-			}
-
-			// Same deal as listeners.
-			initializeCrafting()
-
-			// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
-			// such as reloading or other plugins doing things they probably shouldn't.
-			for (world in server.worlds) IonWorld.register(world.minecraft)
-
-			legacyEnable(commandManager)
-
-			Bukkit.getScheduler().runTaskLater(
-				this,
-				Runnable {
-					SpaceMap.onEnable()
-					NationsMap.onEnable()
-					HyperspaceMap.onEnable()
-					HyperspaceBeacons.reloadDynmap()
-					Collectors.onEnable()
-					CityNPCs.onEnable()
-
-					pluginManager.registerEvents(CityNPCs, this)
-
-					commandManager.commandCompletions.registerCompletion("wreckSchematics") { context ->
-						SpaceGenerationManager.getGenerator(
-							(context.player.world as CraftWorld).handle
-						)?.schematicMap?.keys
-					}
-
-					val message = getUpdateMessage(dataFolder) ?: return@Runnable
-					slF4JLogger.info(message)
-					Notify.discord("${configuration.serverName} $message")
-				},
-				1
-			)
-		} catch (exception: Exception) {
-			slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
-			Bukkit.shutdown()
 		}
+
+		val pluginManager = server.pluginManager
+
+		// Commands
+		val commandManager = PaperCommandManager(this)
+
+		@Suppress("Deprecation")
+		commandManager.enableUnstableAPI("help")
+
+		for (command in commands) commandManager.registerCommand(command)
+
+		commandManager.commandCompletions.registerStaticCompletion(
+			"achievements",
+			Achievement.values().map { it.name }
+		)
+
+		commandManager.commandCompletions.registerCompletion("customItem") { context ->
+			CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
+		}
+		commandManager.commandCompletions.registerCompletion("wreckEncounters") { Encounters.identifiers }
+		commandManager.commandCompletions.registerCompletion("particles") { context ->
+			BuiltInRegistries.PARTICLE_TYPE.keySet()
+				.filter { context.player.hasPermission("ion.settings.particle.$it") }
+				.map { "$it" }
+		}
+		commandManager.commandCompletions.registerCompletion("hyperspaceGates") {
+			configuration.beacons.map { it.name.replace(" ", "_") }
+		}
+
+		// The listeners are defined in a separate file for the sake of keeping the main class clean.
+		for (listener in listeners) pluginManager.registerEvents(listener, this)
+
+		// WIT networking
+		Bukkit.getMessenger().registerIncomingPluginChannel(this, SearchC2S.ID.toString(), Searcher::handle)
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this, FoundS2C.ID.toString())
+
+		// Void networking
+		for (packet in Packets.values()) {
+			logger.info("Registering ${packet.id}")
+
+			if (packet.s2c != null) {
+				Bukkit.getMessenger().registerOutgoingPluginChannel(this, packet.id.toString())
+			}
+
+			if (packet.c2s != null) {
+				Bukkit.getMessenger().registerIncomingPluginChannel(
+					this,
+					packet.id.toString()
+				) { s: String, player: Player, bytes: ByteArray ->
+					logger.info("Received message on $s by ${player.name}")
+					val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))
+					val c2s = packet.c2s
+					c2s.invoke(buf, player)
+				}
+			}
+		}
+
+		// Same deal as listeners.
+		initializeCrafting()
+
+		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
+		// such as reloading or other plugins doing things they probably shouldn't.
+		for (world in server.worlds) IonWorld.register(world.minecraft)
+
+		legacyEnable(commandManager)
+
+		Bukkit.getScheduler().runTaskLater(
+			this,
+			Runnable {
+				SpaceMap.onEnable()
+				NationsMap.onEnable()
+				HyperspaceMap.onEnable()
+				HyperspaceBeacons.reloadDynmap()
+				Collectors.onEnable()
+				CityNPCs.onEnable()
+
+				pluginManager.registerEvents(CityNPCs, this)
+
+				commandManager.commandCompletions.registerCompletion("wreckSchematics") { context ->
+					SpaceGenerationManager.getGenerator(
+						(context.player.world as CraftWorld).handle
+					)?.schematicMap?.keys
+				}
+
+				val message = getUpdateMessage(dataFolder) ?: return@Runnable
+				slF4JLogger.info(message)
+				Notify.discord("${configuration.serverName} $message")
+			},
+			1
+		)
 	}
 
 	override fun onDisable() {
