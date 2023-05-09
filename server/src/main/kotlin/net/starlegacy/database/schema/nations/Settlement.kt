@@ -94,7 +94,9 @@ data class Settlement(
 		fun getMembers(settlementId: Oid<Settlement>): MongoIterable<SLPlayerId> = SLPlayer
 			.findProp(SLPlayer::settlement eq settlementId, SLPlayer::_id)
 
-		fun isCapital(settlementId: Oid<Settlement>?): Boolean = !Nation.Table.select(Nation.Table.capital eq settlementId as Oid<Any>).empty()
+		fun isCapital(settlementId: Oid<Settlement>?): Boolean = trx { 
+      !Nation.Table.select(Nation.Table.capital eq settlementId as Oid<Any>).empty()
+    }
 
 		fun isInvitedTo(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Boolean =
 			matches(settlementId, Settlement::invites contains slPlayer)
