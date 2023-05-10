@@ -101,7 +101,7 @@ fun getNMSBlockDataSafe(world: ServerLevel, x: Int, y: Int, z: Int): BlockState?
 	}
 }
 
-fun MinecraftBlock.isAir(): Boolean = this == Blocks.AIR || this == Blocks.CAVE_AIR || this == Blocks.VOID_AIR
+fun MinecraftBlock.isAir(): Boolean = this == Blocks.AIR || this == Blocks.CAVE_AIR || this == Blocks.VOID_AIR || this == Blocks.LIGHT
 
 fun World.getChunkAtIfLoaded(chunkX: Int, chunkZ: Int): Chunk? = minecraft.getChunkIfLoaded(chunkX, chunkZ)?.cbukkit
 
