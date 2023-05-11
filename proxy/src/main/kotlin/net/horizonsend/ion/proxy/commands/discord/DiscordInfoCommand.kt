@@ -19,7 +19,7 @@ class DiscordInfoCommand {
 				"[Survival Web Map](https://survival.horizonsend.net)\n" +
 					"[Creative Web Map](https://creative.horizonsend.net)\n" +
 					"[Discord Server](https://discord.gg/RPvgQsGzKM)\n" +
-					"[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack)\n" +
+					"[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack/releases/latest)\n" +
 					"[Wiki](https://wiki.horizonsend.net)\n" +
 					"[Server Rules](https://wiki.horizonsend.net/rules)"
 			)

@@ -44,7 +44,7 @@ class BungeeInfoCommand : BaseCommand() {
 				)
 				.append(
 					ComponentBuilder("Resource Pack\n")
-						.event(ClickEvent(Action.OPEN_URL, "https://github.com/HorizonsEndMC/ResourcePack"))
+						.event(ClickEvent(Action.OPEN_URL, "https://github.com/HorizonsEndMC/ResourcePack/releases/latest"))
 						.color(ChatColor.WHITE)
 						.underlined(true)
 						.create()
