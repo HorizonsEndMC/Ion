@@ -465,8 +465,8 @@ object MiscStarshipCommands : SLCommand() {
 
 			val formattedName =
 				pilotRelationColor?.let {
-					"<$pilotRelationColor>$pilotName</$pilotRelationColor> ${if (sender.hasProtection()) " <gold>★</gold>" else ""}"
-				} ?: pilotName
+					"<$pilotRelationColor>$pilotName</$pilotRelationColor>${if (pilot?.hasProtection() == true) " <gold>★</gold>" else ""}"
+				} ?: (pilotName + if (pilot?.hasProtection() == true) " <gold>★</gold>" else "")
 
 			var worldName = starship.serverLevel.world.key.toString().substringAfterLast(":")
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
