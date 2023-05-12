@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.commands.CalcExpCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 import net.horizonsend.ion.server.miscellaneous.commands.CheckProtectionCommand
 import net.horizonsend.ion.server.miscellaneous.commands.FixExtractorsCommand
+import net.horizonsend.ion.server.miscellaneous.commands.RemoveGhostShipCommand
 
 val commands = arrayOf(
 	SpaceGenCommand(),
@@ -25,6 +26,7 @@ val commands = arrayOf(
 	CheckProtectionCommand(),
 	FixExtractorsCommand(),
 	RegenerateCommand(),
+	RemoveGhostShipCommand(),
 
 	AchievementsCommand()
 )
