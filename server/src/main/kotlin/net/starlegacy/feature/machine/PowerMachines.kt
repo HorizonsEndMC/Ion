@@ -1,6 +1,5 @@
 package net.starlegacy.feature.machine
 
-import co.aikar.timings.Timing
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.kyori.adventure.text.Component
@@ -9,7 +8,6 @@ import net.starlegacy.SLComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Sign
@@ -18,10 +16,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
 object PowerMachines : SLComponent() {
-	private lateinit var powerSettingTiming: Timing
-	private lateinit var powerGettingTiming: Timing
-	private val prefix = "${ChatColor.YELLOW}E: ${ChatColor.GREEN}"
-
 	override fun onEnable() {
 		// IIRC the below is a hacky fix for generators, it should be removed if possible, moved if not
 
@@ -66,7 +60,7 @@ object PowerMachines : SLComponent() {
 		}
 
 		return sign.persistentDataContainer.get(NamespacedKeys.POWER, PersistentDataType.INTEGER)
-			?: return setPower(sign, sign.getLine(2).removePrefix(prefix).toIntOrNull() ?: 0)
+			?: return setPower(sign, 0)
 	}
 
 	fun addPower(sign: Sign, amount: Int) {
