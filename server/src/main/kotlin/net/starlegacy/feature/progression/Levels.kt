@@ -93,7 +93,7 @@ object Levels : SLComponent() {
 				player msg lightPurple("Leveled up to level $newLevel for ${previousCost + cost} SLXP").italic()
 
 				broadcastGlobal("&6&l$name&a&l leveled up to &5&lLevel $newLevel&a&l!")
-				when (level) {
+				when (newLevel) {
 					10 -> Achievement.LEVEL_10
 					20 -> Achievement.LEVEL_20
 					40 -> Achievement.LEVEL_40
