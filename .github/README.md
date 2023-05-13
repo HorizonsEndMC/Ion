@@ -61,3 +61,5 @@ Contributions must follow the following rules:
 
 10) Within the server plugin coordinates should be handled internally as 3 separate numbers, or when returning from a
     function, a `Triple<T, T, T>` should be used.
+
+yes
