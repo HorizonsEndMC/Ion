@@ -10,9 +10,9 @@ import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.getPower
 import net.starlegacy.feature.misc.setPower
+import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.multiblock.dockingtube.DockingTubeMultiblock
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
@@ -246,14 +246,12 @@ object InteractListener : SLEventListener() {
 	}
 
 	@EventHandler
-	fun onPlayerInteractEventF(event: PlayerInteractEvent) {
+	fun handleMultiblockInteract(event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND) return
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
 		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
-		val multiblock = Multiblocks[sign, true, false] as? DockingTubeMultiblock ?: return
-
-		multiblock.toggle(sign, event.player)
+		(Multiblocks[sign, true, false] as? InteractableMultiblock)?.onSignInteract(sign, event.player)
 	}
 
 	// Disable beds
