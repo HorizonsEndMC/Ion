@@ -8,6 +8,7 @@ import net.starlegacy.database.ensureUniqueIndexCaseInsensitive
 import net.starlegacy.database.none
 import net.starlegacy.database.objId
 import net.starlegacy.database.trx
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -77,7 +78,7 @@ data class Territory(
 		fun setNation(id: Oid<Territory>, nation: Oid<Nation>?): Unit = trx { sess ->
 			if (nation != null) {
 				require(matches(sess, id, unclaimedQuery))
-				require(Nation[nation] != null)
+				require(transaction { Nation[nation] } != null)
 			}
 			updateById(sess, id, org.litote.kmongo.setValue(Territory::nation, nation))
 		}
