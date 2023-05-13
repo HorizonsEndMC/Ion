@@ -2,6 +2,7 @@ package net.starlegacy.feature.multiblock.dockingtube
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.rightFace
@@ -14,7 +15,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
-abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock() {
+abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), InteractableMultiblock {
 	override val name = "dockingtube"
 
 	override val signText = arrayOf(
@@ -49,6 +50,8 @@ abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock() {
 	}
 
 	abstract fun LegacyMultiblockShape.RequirementBuilder.tubeStateExtension()
+
+	override fun onSignInteract(sign: Sign, player: Player) = toggle(sign, player)
 
 	abstract fun toggle(sign: Sign, player: Player)
 
