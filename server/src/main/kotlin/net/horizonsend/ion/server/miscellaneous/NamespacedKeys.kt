@@ -47,5 +47,8 @@ object NamespacedKeys {
 
 	@Deprecated("") val POWER = key("power")
 
+	val TUBE_BUTTONS = key("tube_buttons")
+	val MATERIAL = key("material")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 }

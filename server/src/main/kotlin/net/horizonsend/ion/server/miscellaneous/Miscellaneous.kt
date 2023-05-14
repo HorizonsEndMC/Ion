@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server.miscellaneous
 
+import net.horizonsend.ion.common.DoubleLocation
+import net.horizonsend.ion.common.IntLocation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
+import net.horizonsend.ion.common.database.DBLocation
+import net.horizonsend.ion.common.database.PlayerData
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
 import net.milkbowl.vault.economy.Economy
@@ -53,6 +57,8 @@ fun mainThreadCheck() {
 		)
 	}
 }
+
+fun Location.triple() = DoubleLocation(x, y, z)
 
 fun <K>Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V>Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
