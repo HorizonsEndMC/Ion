@@ -1,5 +1,7 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
+import com.manya.pdc.DataTypes
+import net.horizonsend.ion.common.IntLocation
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
@@ -76,13 +78,21 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 					}
 				}
 
-				player.successActionMessage("Docking tube disconnected.")
+				player.successActionMessage("Docking tube connected.")
 
 				sign.persistentDataContainer.set(
 					NamespacedKeys.MULTIBLOCK,
 					PersistentDataType.STRING,
 					ConnectedDockingTubeMultiblock::class.simpleName!!
 				)
+
+				val otherButtons = getButtons(otherSignLocation, direction.oppositeFace)
+				sign.persistentDataContainer.set(
+					NamespacedKeys.TUBE_BUTTONS,
+					DataTypes.list(SignDataType.Companion),
+					(buttons + otherButtons).map { SignDataType(IntLocation(it.x, it.y, it.z), it.type) },
+				)
+
 				sign.line(3, ConnectedDockingTubeMultiblock.stateText)
 				sign.update(false, false)
 

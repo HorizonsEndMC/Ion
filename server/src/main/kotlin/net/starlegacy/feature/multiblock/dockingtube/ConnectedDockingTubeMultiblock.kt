@@ -1,8 +1,11 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
+import com.manya.pdc.DataTypes
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.int
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.triple
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
@@ -91,12 +94,21 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 				}
 			}
 
+			val buttonsPdc = sign.persistentDataContainer.get(
+				NamespacedKeys.TUBE_BUTTONS,
+				DataTypes.list(SignDataType.Companion)
+			)!!
+
 			fun setButtons(buttons: List<Block>, facing: BlockFace) {
-				val button = Material.STONE_BUTTON.createBlockData {
-					(it as Switch).facing = facing
-				}
-				buttons.forEach {
-					it.setBlockData(button, false)
+				buttons.forEach { block ->
+					val material =
+						buttonsPdc.find { it.loc == block.location.triple().int() }?.type ?: Material.STONE_BUTTON
+
+					val button = material.createBlockData {
+						(it as Switch).facing = facing
+					}
+
+					block.setBlockData(button, false)
 				}
 			}
 

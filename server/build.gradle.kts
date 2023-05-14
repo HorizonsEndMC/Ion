@@ -19,6 +19,7 @@ repositories {
 	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
+	maven("https://repo.decalium.ru/releases")
 	maven("https://repo.xenondevs.xyz/releases") // InvUI
 
 	maven("https://repo.horizonsend.net/mirror")
@@ -41,6 +42,7 @@ dependencies {
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies
+	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
