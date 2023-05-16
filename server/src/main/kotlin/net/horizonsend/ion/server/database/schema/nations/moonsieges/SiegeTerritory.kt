@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.database.schema.nations.moonsieges
 
+import com.mongodb.client.FindIterable
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.space.Planet
 import org.litote.kmongo.ensureIndex
 
 data class SiegeTerritory(
@@ -20,6 +22,7 @@ data class SiegeTerritory(
 			ensureIndex(SiegeTerritory::nation)
 		}
 	) {
-		fun create() = TODO()
+
+		fun create() = TODO("")
 	}
 }

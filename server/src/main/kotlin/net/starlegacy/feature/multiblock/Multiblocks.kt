@@ -39,6 +39,8 @@ import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass3
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.moonsiege.AAGunMultiblock
+import net.horizonsend.ion.server.features.multiblock.moonsiege.SiegeBeaconMultiblock
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.misc.MobDefender
@@ -198,7 +200,10 @@ object Multiblocks : SLComponent() {
 			MiningLaserMultiblockTier2Top,
 			MiningLaserMultiblockTier2Bottom,
 			MiningLaserMultiblockTier3Top,
-			MiningLaserMultiblockTier3Bottom
+			MiningLaserMultiblockTier3Bottom,
+
+			SiegeBeaconMultiblock,
+			AAGunMultiblock,
 		)
 	}
 
