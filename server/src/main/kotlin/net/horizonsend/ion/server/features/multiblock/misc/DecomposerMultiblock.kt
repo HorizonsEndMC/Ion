@@ -19,10 +19,6 @@ object DecomposerMultiblock : Multiblock(), PowerStoringMultiblock {
 		null
 	)
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
-
 	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).ironBlock()
 		at(0, -1, -1).anyPipedInventory()

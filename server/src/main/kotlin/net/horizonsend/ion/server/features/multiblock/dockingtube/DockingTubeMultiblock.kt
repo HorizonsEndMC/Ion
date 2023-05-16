@@ -14,6 +14,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 
 abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(),
 	InteractableMultiblock {
@@ -52,7 +53,7 @@ abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(),
 
 	abstract fun MultiblockShape.RequirementBuilder.tubeStateExtension()
 
-	override fun onSignInteract(sign: Sign, player: Player) = toggle(sign, player)
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) = toggle(sign, player)
 
 	abstract fun toggle(sign: Sign, player: Player)
 

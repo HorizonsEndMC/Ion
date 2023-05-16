@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.hyperdrive
 
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.add

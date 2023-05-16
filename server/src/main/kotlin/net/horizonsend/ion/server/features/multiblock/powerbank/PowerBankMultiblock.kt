@@ -18,10 +18,6 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), PowerStorin
 		line4 = tierText
 	)
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
-
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {

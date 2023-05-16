@@ -10,6 +10,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import java.util.concurrent.TimeUnit
 
 abstract class ShieldMultiblock : Multiblock(), InteractableMultiblock {
@@ -37,7 +38,7 @@ abstract class ShieldMultiblock : Multiblock(), InteractableMultiblock {
 
 	abstract fun getShieldBlocks(sign: Sign): List<Vec3i>
 
-	override fun onSignInteract(sign: Sign, player: Player) {
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val blocks: List<Vec3i> = getShieldBlocks(sign)
 
 		val world = sign.world

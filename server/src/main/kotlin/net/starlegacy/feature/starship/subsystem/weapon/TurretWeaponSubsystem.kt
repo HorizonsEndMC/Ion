@@ -46,10 +46,6 @@ abstract class TurretWeaponSubsystem(
 	}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		val blockLocation = multiblock.getPilotLoc(starship.serverLevel.world, pos.x, pos.y, pos.z, face).toBlockLocation()
-		if (pos.toLocation(starship.serverLevel.world).chunk.entities.any { it.location.toBlockLocation() == blockLocation }) {
-			return false
-		}
 		// return whether or not any of the fire points are not obstructed
 		// (plus the parent classes's conditions)
 		return getFirePoints().all { !starship.isInternallyObstructed(it, dir) }

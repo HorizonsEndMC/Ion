@@ -23,6 +23,7 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.litote.kmongo.eq
 
 object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
@@ -88,7 +89,7 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 
 	fun setActive(sign: Sign, active: Boolean) = sign.line(3, if (active) ACTIVE_STATE else INACTIVE_STATE)
 
-	override fun onSignInteract(sign: Sign, player: Player) {
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		tryBeginBeaconSiege(player, sign)
 	}
 
