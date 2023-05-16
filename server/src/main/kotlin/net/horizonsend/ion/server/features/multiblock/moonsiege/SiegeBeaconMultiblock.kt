@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.moonsiege
 
+import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
