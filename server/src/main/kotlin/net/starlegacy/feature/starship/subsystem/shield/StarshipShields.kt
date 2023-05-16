@@ -22,21 +22,16 @@ import net.starlegacy.feature.starship.event.StarshipDeactivatedEvent
 import net.starlegacy.util.*
 import org.bukkit.*
 import org.bukkit.block.Block
-import org.bukkit.block.Sign
 import org.bukkit.boss.BarColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.entity.EntityExplodeEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
-import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -255,7 +250,7 @@ object StarshipShields : SLComponent() {
 		nmsLevel: Level
 	) {
 		// ignore if it's over 500 blocks away
-		if (starship.centerOfMassVec3i.toLocation(world).distanceSquared(location) > 250_000) {
+		if (starship.centerOfMass.toLocation(world).distanceSquared(location) > 250_000) {
 			return
 		}
 
@@ -405,86 +400,6 @@ object StarshipShields : SLComponent() {
 				nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
 			}
 		}
-	}
-
-	@EventHandler
-	fun onClickShield(event: PlayerInteractEvent) {
-		if (event.action != Action.RIGHT_CLICK_BLOCK) {
-			return
-		}
-
-		val sign = event.clickedBlock?.state as? Sign ?: return
-		val multiblock = Multiblocks[sign] as? ShieldMultiblock ?: return
-
-		val blocks: List<Vec3i> = when (multiblock) {
-			is SphereShieldMultiblock -> getSphereBlocks(multiblock.maxRange)
-			is BoxShieldMultiblock -> getBoxShieldBlocks(sign)
-			else -> return
-		}
-
-		val world = sign.world
-		val (x0, y0, z0) = Vec3i(sign.location)
-
-		val start = System.nanoTime()
-		Tasks.bukkitRunnable {
-			for ((dx, dy, dz) in blocks) {
-				val x = x0 + dx + 0.5
-				val y = y0 + dy + 0.5
-				val z = z0 + dz + 0.5
-				world.spawnParticle(
-					Particle.BLOCK_MARKER,
-					x,
-					y,
-					z,
-					1,
-					0.0,
-					0.0,
-					0.0,
-					0.0,
-					Material.BARRIER.createBlockData()
-				)
-			}
-
-			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(10L)) {
-				cancel()
-			}
-		}.runTaskTimer(IonServer, 20, 20)
-	}
-
-	private fun getBoxShieldBlocks(sign: Sign): List<Vec3i> {
-		val dimensions = sign.getLine(3)
-			.replace(",", " ")
-			.split(" ")
-			.map { it.toInt() }
-		val width = dimensions[0]
-		val height = dimensions[1]
-		val length = dimensions[2]
-
-		val inward = sign.getFacing().oppositeFace
-		val right = inward.rightFace
-
-		val dw = width / 2
-		val dl = length / 2
-
-		val dx = abs(dw * right.modX + dl * inward.modX)
-		val dy = height / 2
-		val dz = abs(dw * right.modZ + dl * inward.modZ)
-
-		val blocks = mutableListOf<Vec3i>()
-
-		for (x in (-dx)..(dx)) {
-			for (y in (-dy)..(dy)) {
-				for (z in (-dz)..(dz)) {
-					if (abs(x) != dx && abs(y) != dy && abs(z) != dz) {
-						continue
-					}
-
-					blocks.add(Vec3i(x, y, z))
-				}
-			}
-		}
-
-		return blocks
 	}
 
 	fun cartesianProduct(a: Set<*>, b: Set<*>, vararg sets: Set<*>): Set<List<*>> =

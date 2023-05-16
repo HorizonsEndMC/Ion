@@ -1,9 +1,13 @@
 package net.starlegacy.feature.multiblock.particleshield
 
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.util.Vec3i
+import net.starlegacy.util.getFacing
 import net.starlegacy.util.msg
+import net.starlegacy.util.rightFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import kotlin.math.abs
 
 object BoxShieldMultiblock : ShieldMultiblock() {
 	private const val MIN_DIMENSION = 5
@@ -86,5 +90,41 @@ object BoxShieldMultiblock : ShieldMultiblock() {
 				x(+1).ironBlock()
 			}
 		}
+	}
+
+	override fun getShieldBlocks(sign: Sign): List<Vec3i> {
+		val dimensions = sign.getLine(3)
+			.replace(",", " ")
+			.split(" ")
+			.map { it.toInt() }
+		val width = dimensions[0]
+		val height = dimensions[1]
+		val length = dimensions[2]
+
+		val inward = sign.getFacing().oppositeFace
+		val right = inward.rightFace
+
+		val dw = width / 2
+		val dl = length / 2
+
+		val dx = abs(dw * right.modX + dl * inward.modX)
+		val dy = height / 2
+		val dz = abs(dw * right.modZ + dl * inward.modZ)
+
+		val blocks = mutableListOf<Vec3i>()
+
+		for (x in (-dx)..(dx)) {
+			for (y in (-dy)..(dy)) {
+				for (z in (-dz)..(dz)) {
+					if (abs(x) != dx && abs(y) != dy && abs(z) != dz) {
+						continue
+					}
+
+					blocks.add(Vec3i(x, y, z))
+				}
+			}
+		}
+
+		return blocks
 	}
 }
