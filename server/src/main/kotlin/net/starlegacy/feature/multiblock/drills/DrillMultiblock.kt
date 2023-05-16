@@ -1,11 +1,17 @@
 package net.starlegacy.feature.multiblock.drills
 
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
+import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
+import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.LegacyItemUtils
@@ -15,28 +21,31 @@ import net.starlegacy.util.isShulkerBox
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import java.util.*
+import java.util.EnumSet
+import java.util.UUID
 import kotlin.math.max
 
 abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	Multiblock(),
 	PowerStoringMultiblock,
-	FurnaceMultiblock {
+	FurnaceMultiblock,
+	InteractableMultiblock {
 
 	companion object {
-		private val DISABLED = ChatColor.RED.toString() + "[DISABLED]"
+		private val DISABLED = text("[DISABLED]", RED)
 		private val blacklist = EnumSet.of(
 			Material.BARRIER,
 			Material.BEDROCK
@@ -54,11 +63,11 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		}
 
 		fun isEnabled(sign: Sign): Boolean {
-			return sign.getLine(3) != DISABLED
+			return sign.line(3) != DISABLED
 		}
 
 		fun setUser(sign: Sign, player: String?) {
-			sign.setLine(3, player ?: DISABLED)
+			sign.line(3, player?.let { text(it) } ?: DISABLED)
 			sign.update(false, false)
 		}
 
@@ -106,8 +115,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 				for (item in drops) {
 					if (!LegacyItemUtils.canFit(output, item)) {
-						player.sendMessage(ChatColor.RED.toString() + "Not enough space.")
-						people.forEach { it.sendMessage(ChatColor.RED.toString() + "Not enough space.") }
+						player.userError("Not enough space.")
+						people.forEach { it.userError("Not enough space.") }
 
 						setUser(sign, null)
 
@@ -141,6 +150,31 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		line3 = null,
 		line4 = null
 	)
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		if (event.action != Action.RIGHT_CLICK_BLOCK) return
+
+		val furnace = event.clickedBlock!!.getRelative(sign.getFacing().oppositeFace).getState(false) as? Furnace
+			?: return
+
+		val multiblock = Multiblocks[sign]
+
+		if (multiblock is DrillMultiblock) {
+			if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
+				event.player.userError(
+					"You need Prismarine Crystals in both slots of the furnace!"
+				)
+				return
+			}
+
+			val user = when {
+				isEnabled(sign) -> null
+				else -> event.player.name
+			}
+
+			setUser(sign, user)
+		}
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
@@ -177,7 +211,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-		sign.setLine(3, DISABLED)
+		sign.line(3, DISABLED)
 	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
@@ -187,11 +221,11 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val fuel = furnace.inventory.fuel
 		val smelting = furnace.inventory.smelting
 		if (fuel == null || smelting == null) return
-		val thirdLine = sign.getLine(3)
+		val thirdLine = sign.line(3)
 		if (thirdLine == DISABLED) {
 			return
 		}
-		val player = Bukkit.getPlayer(thirdLine)
+		val player = Bukkit.getPlayer((thirdLine as TextComponent).content())
 		if (player == null) {
 			setUser(sign, null)
 			return
@@ -207,7 +241,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
 
 		if (drills > 16) {
-			player.sendMessage(ChatColor.RED.toString() + "You cannot use more than 16 drills at once!")
+			player.userError("You cannot use more than 16 drills at once!")
 			return
 		}
 
@@ -219,12 +253,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val power = PowerMachines.getPower(sign, true)
 		if (power == 0) {
 			setUser(sign, null)
-			player.sendMessage(
-				String.format(
-					"%sYour drill at %s ran out of power! It was disabled.",
-					ChatColor.RED, sign.location.toVector()
-				)
-			)
+			player.alert("Your drill at ${sign.location.toVector()} ran out of power! It was disabled.")
 			return
 		}
 
