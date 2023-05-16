@@ -35,6 +35,9 @@ object NamespacedKeys {
 	val INACTIVE = key("inactive")
 	val LOCKED = key("locked")
 
+	// Ship factories
+	val BLUEPRINT = key("blueprint")
+
 	val AMMO = key("Ammo")
 	val CUSTOM_ITEM = key("CustomItem")
 	val EDEN_FIX = key("EdenFix")

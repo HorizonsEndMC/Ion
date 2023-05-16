@@ -32,7 +32,7 @@ import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.feature.starship.PilotedStarships.getDisplayName
+import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.event.StarshipComputerOpenMenuEvent
@@ -202,7 +202,7 @@ object StarshipComputers : IonServerComponent() {
 				e.isCancelled = true
 			}
 
-			gui(1, getDisplayName(data).replace("<[^>]*>".toRegex(), "")).withPane(pane).show(player)
+			gui(1, getDisplayNameComponent(data)).withPane(pane).show(player)
 		}
 	}
 

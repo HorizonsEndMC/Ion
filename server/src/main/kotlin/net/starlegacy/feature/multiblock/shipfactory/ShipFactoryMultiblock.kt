@@ -1,4 +1,4 @@
-package net.starlegacy.feature.multiblock.misc
+package net.starlegacy.feature.multiblock.shipfactory
 
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock

@@ -1,6 +1,7 @@
 package net.starlegacy.util
 
 import co.aikar.commands.ACFBukkitUtil
+import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
@@ -19,6 +20,15 @@ import kotlin.math.min
 
 object MenuHelper {
 	fun gui(rows: Int, title: String) = ChestGui(rows, ACFBukkitUtil.color(title)).apply {
+		setOnGlobalClick { event: InventoryClickEvent ->
+			val item = event.currentItem
+			if (item?.type?.isAir != false) {
+				event.isCancelled = true
+			}
+		}
+	}
+
+	fun gui(rows: Int, title: Component) = ChestGui(rows, ComponentHolder.of(title)).apply {
 		setOnGlobalClick { event: InventoryClickEvent ->
 			val item = event.currentItem
 			if (item?.type?.isAir != false) {
