@@ -29,9 +29,6 @@ object DisposalMultiblock : Multiblock(), PowerStoringMultiblock,
 		null
 	)
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 
 	override val maxPower: Int = 150_000
 

@@ -58,7 +58,7 @@ object BeaconSiegeBattles : IonComponent() {
 			return player.userError("This station is owned by an ally of your nation.")
 		}
 
-		(Multiblocks[beacon] as? SiegeBeaconMultiblock)?.onSignInteract(beacon, player) ?: return
+		tryBeginBeaconSiege(player, beacon) ?: return
 
 		//TODO
 	}

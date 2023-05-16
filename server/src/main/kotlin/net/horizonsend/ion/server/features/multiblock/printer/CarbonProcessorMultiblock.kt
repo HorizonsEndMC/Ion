@@ -30,10 +30,6 @@ object CarbonProcessorMultiblock : Multiblock(), PowerStoringMultiblock,
 		line4 = "&7:[''']:"
 	)
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
-
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
