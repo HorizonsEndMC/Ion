@@ -172,8 +172,4 @@ abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, Furna
 		inventory.removeItemAnySlot(ItemStack(typeRefill))
 		PowerMachines.removePower(sign, 250)
 	}
-
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 }

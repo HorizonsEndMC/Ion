@@ -5,7 +5,6 @@ import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
@@ -18,10 +17,6 @@ object DecomposerMultiblock : Multiblock(), PowerStoringMultiblock {
 		null,
 		null
 	)
-
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		at(0, 0, 0).ironBlock()

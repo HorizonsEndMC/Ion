@@ -10,7 +10,6 @@ import net.starlegacy.util.getFacing
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -24,9 +23,6 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerMachineryBlock()
 	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerProductBlock()
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {

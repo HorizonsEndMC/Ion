@@ -4,8 +4,6 @@ import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
-import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 
 abstract class PowerBankMultiblock(tierText: String) : Multiblock(), PowerStoringMultiblock {
 	abstract val tierMaterial: Material
@@ -17,10 +15,6 @@ abstract class PowerBankMultiblock(tierText: String) : Multiblock(), PowerStorin
 		line3 = null,
 		line4 = tierText
 	)
-
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {

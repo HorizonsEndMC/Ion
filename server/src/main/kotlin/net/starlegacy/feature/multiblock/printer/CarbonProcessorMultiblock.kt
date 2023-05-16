@@ -29,10 +29,6 @@ object CarbonProcessorMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 		line4 = "&7:[''']:"
 	)
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
-
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {

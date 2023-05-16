@@ -24,10 +24,6 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), PowerSto
 		line4 = tierText
 	)
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
-
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {

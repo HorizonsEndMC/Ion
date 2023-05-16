@@ -210,7 +210,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
 		sign.line(3, DISABLED)
 	}
 

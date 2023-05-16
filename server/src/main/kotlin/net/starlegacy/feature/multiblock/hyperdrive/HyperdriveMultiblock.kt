@@ -1,10 +1,11 @@
 package net.starlegacy.feature.multiblock.hyperdrive
 
-import net.md_5.bungee.api.ChatColor
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.util.add
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
@@ -45,7 +46,7 @@ abstract class HyperdriveMultiblock : Multiblock() {
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super.onTransformSign(player, sign)
-		sign.setLine(3, ChatColor.RED.toString() + "/jump <planet>")
+		sign.line(3, text("/jump <planet>", NamedTextColor.RED))
 		sign.update()
 	}
 }

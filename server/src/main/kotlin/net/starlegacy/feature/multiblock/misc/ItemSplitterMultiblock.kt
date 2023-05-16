@@ -12,6 +12,7 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 
 object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMultiblock {
 	override val name: String = "splitter"
@@ -34,7 +35,7 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 
 	}
 
-	override fun onSignInteract(sign: Sign, player: Player) {
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		TODO("Not yet implemented")
 	}
 }

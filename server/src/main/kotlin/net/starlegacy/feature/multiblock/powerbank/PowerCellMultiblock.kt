@@ -3,8 +3,6 @@ package net.starlegacy.feature.multiblock.powerbank
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 
 object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock {
 	override val name = "powercell"
@@ -17,10 +15,6 @@ object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock {
 	)
 
 	override val maxPower = 50_000
-
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {

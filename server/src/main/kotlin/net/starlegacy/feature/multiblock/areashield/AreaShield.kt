@@ -11,7 +11,6 @@ abstract class AreaShield(val radius: Int) : Multiblock(), PowerStoringMultibloc
 	override fun onTransformSign(player: Player, sign: Sign) {
 		AreaShields.register(sign.location, radius)
 		player.sendMessage(ChatColor.GREEN.toString() + "Area Shield created.")
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
 	}
 
 	override val name get() = "areashield"
