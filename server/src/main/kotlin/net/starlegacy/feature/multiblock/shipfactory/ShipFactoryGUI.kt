@@ -5,7 +5,8 @@ import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SHIP_FACTORY_DATA
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -14,12 +15,14 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.core.BlockPos
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
-import net.starlegacy.feature.nations.gui.AnvilInput
-import net.starlegacy.feature.nations.gui.inputs
 import net.starlegacy.util.MenuHelper
+import net.starlegacy.util.Tasks
 import net.starlegacy.util.component1
 import net.starlegacy.util.component2
 import net.starlegacy.util.component3
+import net.wesjd.anvilgui.AnvilGUI
+import net.wesjd.anvilgui.AnvilGUI.Completion
+import net.wesjd.anvilgui.AnvilGUI.ResponseAction
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
@@ -34,7 +37,7 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign) {
 	val blueprint get(): Blueprint? = Blueprint.get(player.uniqueId.slPlayerId, data.blueprintName)
 	val clipboard get(): Clipboard? = (blueprint)?.blockData?.let { Blueprint.parseData(it) }
 
-	fun show(player: Player) = MenuHelper.apply {
+	fun show() = MenuHelper.apply {
 		val gui = gui(
 			6,
 			text("Ship Factory Configuration")
@@ -145,21 +148,32 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign) {
 	}
 
 	private fun onChangeBlueprint() {
-		player.inputs(
-			AnvilInput("New Blueprint") { _, answer ->
-				val blueprint = Blueprint.col.findOne(and(Blueprint::name eq answer, Blueprint::owner eq player.slPlayerId))
+		Tasks.sync {
+			AnvilGUI.Builder()
+				.plugin(IonServer)
+				.itemLeft(ItemStack(Material.NAME_TAG))
+				.text("New Blueprint")
+				.title("Change Blueprint")
+				.onComplete { completion: Completion ->
+					val answer = completion.text
 
-				if (blueprint == null) {
-					player.userError("Blueprint $answer not found!")
-					return@AnvilInput null
+					if (Blueprint.col.findOne(and(Blueprint::name eq answer, Blueprint::owner eq player.slPlayerId)) == null) {
+						return@onComplete listOf(ResponseAction.replaceInputText("Blueprint $answer not found!"))
+					}
+
+					this.data.blueprintName = answer
+					this.data.update(multiblock)
+
+					return@onComplete listOf(
+						ResponseAction.close(),
+						ResponseAction.run {
+							this.show()
+							player.success("Blueprint changed successfully.")
+						}
+					)
 				}
-
-				this.data.blueprintName = answer
-				this.data.update(multiblock)
-
-				return@AnvilInput answer
-			}
-		)
+				.open(player)
+		}
 	}
 
 //	fun calculateRemainingCost(): Double {}
