@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.client
 
+import net.horizonsend.ion.server.features.client.networking.Packets
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -14,7 +15,7 @@ class VoidNetwork : Listener {
 	fun quitModUser(event: PlayerQuitEvent) {
 		if (modUsers.contains(event.player.uniqueId)) {
 			modUsers.remove(event.player.uniqueId)
-			Packets.PLAYER_REMOVE.broadcast { writeUUID(event.player.uniqueId) }
+			Packets.PLAYER_REMOVE.broadcast(event.player)
 		}
 	}
 
