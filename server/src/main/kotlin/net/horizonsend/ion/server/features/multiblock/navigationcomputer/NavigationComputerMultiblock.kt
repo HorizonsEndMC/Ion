@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.navigationcomputer
 
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.feature.multiblock.Multiblock
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 

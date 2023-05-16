@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.Tasks
@@ -25,8 +27,10 @@ import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -206,7 +210,6 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
 		sign.line(3, DISABLED)
 	}
 

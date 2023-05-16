@@ -37,6 +37,7 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
 
@@ -155,8 +156,6 @@ object AAGunMultiblock : RotatingMultiblock(), PowerStoringMultiblock, FurnaceMu
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-
 		if (Space.moonWorldCache[sign.world].isEmpty) {
 			player.userError("You must be on a moon to setup an AA gun.")
 			sign.block.breakNaturally()
@@ -250,7 +249,7 @@ object AAGunMultiblock : RotatingMultiblock(), PowerStoringMultiblock, FurnaceMu
 		}
 	}
 
-	override fun onSignInteract(sign: Sign, player: Player) {
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (!StarshipControl.isHoldingController(player)) return
 
 		val sign = event.clickedBlock?.state as? Sign ?: return

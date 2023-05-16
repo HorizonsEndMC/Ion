@@ -41,40 +41,6 @@ import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object InteractListener : SLEventListener() {
-	// When someone clicks a drill sign, toggle it
-	// If they don't have any prismarine crystals, warn them
-	// (noobs used to ask why it wasn't working so much and this is usually why, lack of crystals)
-	@EventHandler
-	fun onPlayerInteractEventA(event: PlayerInteractEvent) {
-		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-		if (event.clickedBlock?.type?.isWallSign != true) return
-
-		val block = event.clickedBlock ?: return
-
-		val sign = block.getState(false) as Sign
-
-		val furnace = block.getRelative(sign.getFacing().oppositeFace).getState(false) as? Furnace
-			?: return
-
-		val multiblock = Multiblocks[sign]
-
-		if (multiblock is DrillMultiblock) {
-			if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
-				event.player.userError(
-					"You need Prismarine Crystals in both slots of the furnace!"
-				)
-				return
-			}
-
-			val player = when {
-				DrillMultiblock.isEnabled(sign) -> null
-				else -> event.player.name
-			}
-
-			DrillMultiblock.setUser(sign, player)
-		}
-	}
-
 	// Bring player down when they right click a tractor beam sign
 	@EventHandler
 	fun onPlayerInteractEventB(event: PlayerInteractEvent) {
@@ -143,49 +109,6 @@ object InteractListener : SLEventListener() {
 		}
 	}
 
-	// Toggle airlocks upon right clicking the sign
-	@EventHandler
-	fun onPlayerInteractEventD(event: PlayerInteractEvent) {
-		if (event.hand != EquipmentSlot.HAND) return
-		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-
-		val block = event.clickedBlock ?: return
-		val sign = block.getState(false) as? Sign ?: return
-		if (Multiblocks[sign] !is AirlockMultiblock) return
-
-		val direction = sign.getFacing().oppositeFace
-		val right = direction.rightFace
-		val topPortal = block.getRelative(direction).getRelative(right)
-		val bottomPortal = topPortal.getRelative(BlockFace.DOWN)
-
-		val enabled = topPortal.type == Material.IRON_BARS
-
-		val newData = if (enabled) {
-			Material.NETHER_PORTAL.createBlockData {
-				(it as org.bukkit.block.data.Orientable).axis = direction.rightFace.axis
-			}
-		} else {
-			Material.IRON_BARS.createBlockData {
-				(it as org.bukkit.block.data.MultipleFacing).setFace(direction.rightFace, true)
-				it.setFace(direction.leftFace, true)
-			}
-		}
-
-		topPortal.blockData = newData
-		bottomPortal.blockData = newData
-
-		val component =
-			if (enabled) {
-				MiniMessage.miniMessage().deserialize(AirlockMultiblock.ON)
-			} else {
-				MiniMessage.miniMessage()
-					.deserialize(AirlockMultiblock.OFF)
-			}
-
-		sign.line(1, component)
-		sign.update()
-	}
-
 	// Put power into the sign if right clicking with a battery
 	@EventHandler
 	fun onPlayerInteractEventE(event: PlayerInteractEvent) {
@@ -251,7 +174,7 @@ object InteractListener : SLEventListener() {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
 		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
-		(Multiblocks[sign, true, false] as? InteractableMultiblock)?.onSignInteract(sign, event.player)
+		(Multiblocks[sign, true, false] as? InteractableMultiblock)?.onSignInteract(sign, event.player, event)
 	}
 
 	// Disable beds

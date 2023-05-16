@@ -22,10 +22,6 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 	FurnaceMultiblock {
 	abstract val speed: Double
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
-
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		event.isBurning = false
 		event.burnTime = 0

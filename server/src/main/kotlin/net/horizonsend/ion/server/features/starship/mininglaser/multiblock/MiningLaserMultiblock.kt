@@ -46,9 +46,6 @@ abstract class MiningLaserMultiblock : Multiblock(), StarshipWeaponMultiblock<Mi
 		}
 	}
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 
 	abstract fun getFirePointOffset(): Vec3i
 }

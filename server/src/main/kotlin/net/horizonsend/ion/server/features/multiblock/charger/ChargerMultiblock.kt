@@ -21,10 +21,6 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStor
 
 	protected abstract val powerPerSecond: Int
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
-
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
