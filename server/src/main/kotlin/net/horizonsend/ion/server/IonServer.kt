@@ -10,7 +10,7 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.client.Packets
+import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
@@ -99,20 +99,14 @@ object IonServer : JavaPlugin() {
 		for (packet in Packets.values()) {
 			logger.info("Registering ${packet.id}")
 
-			if (packet.s2c != null) {
-				Bukkit.getMessenger().registerOutgoingPluginChannel(this, packet.id.toString())
-			}
-
-			if (packet.c2s != null) {
-				Bukkit.getMessenger().registerIncomingPluginChannel(
-					this,
-					packet.id.toString()
-				) { s: String, player: Player, bytes: ByteArray ->
-					logger.info("Received message on $s by ${player.name}")
-					val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))
-					val c2s = packet.c2s
-					c2s.invoke(buf, player)
-				}
+			Bukkit.getMessenger().registerOutgoingPluginChannel(this, packet.id.toString())
+			Bukkit.getMessenger().registerIncomingPluginChannel(
+				this,
+				packet.id.toString()
+			) { s: String, player: Player, bytes: ByteArray ->
+				logger.info("Received message on $s by ${player.name}")
+				val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))
+				packet.handler.c2s(buf, player)
 			}
 		}
 
@@ -127,7 +121,8 @@ object IonServer : JavaPlugin() {
 
 		Bukkit.getScheduler().runTaskLater(
 			this,
-			Runnable {
+			Runnable
+			{
 				SpaceMap.onEnable()
 				NationsMap.onEnable()
 				HyperspaceMap.onEnable()
