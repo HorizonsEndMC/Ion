@@ -1,6 +1,8 @@
 package net.starlegacy.feature.multiblock.misc
 
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
@@ -9,7 +11,6 @@ import net.starlegacy.util.axis
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -21,11 +22,8 @@ import org.bukkit.inventory.EquipmentSlot
 object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 	override val name: String = "airlock"
 
-	override val signText = createSignText(
-		line1 = "&7Airlock",
-		line2 = null,
-		line3 = "&bRayshielding",
-		line4 = "&bSolutions, Inc."
+	override val signText: Array<Component?> = arrayOf(
+		text("Airlock", NamedTextColor.AQUA)
 	)
 
 	override fun MultiblockShape.buildStructure() {
@@ -53,10 +51,10 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 		}
 	}
 
-	override fun onTransformSign(player: Player, sign: Sign) = sign.setLine(1, OFF)
+	override fun onTransformSign(player: Player, sign: Sign) = sign.line(1, OFF)
 
-	const val OFF = "<red>-[OFF]-"
-	const val ON = "<green>-[ON]-"
+	val OFF = text("-[OFF]-", NamedTextColor.RED)
+	val ON = text("-[ON]-", NamedTextColor.GREEN)
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND) return
@@ -86,13 +84,7 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 		topPortal.blockData = newData
 		bottomPortal.blockData = newData
 
-		val component =
-			if (enabled) {
-				MiniMessage.miniMessage().deserialize(ON)
-			} else {
-				MiniMessage.miniMessage()
-					.deserialize(OFF)
-			}
+		val component = if (enabled) ON else OFF
 
 		sign.line(1, component)
 		sign.update()
