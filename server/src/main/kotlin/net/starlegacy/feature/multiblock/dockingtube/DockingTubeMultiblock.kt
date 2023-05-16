@@ -1,19 +1,20 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
-import net.starlegacy.util.rightFace
-import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.axis
+import net.starlegacy.util.rightFace
 import org.bukkit.Axis
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 
 abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), InteractableMultiblock {
@@ -52,7 +53,9 @@ abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), I
 
 	abstract fun LegacyMultiblockShape.RequirementBuilder.tubeStateExtension()
 
-	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) = toggle(sign, player)
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		if (event.action == Action.RIGHT_CLICK_BLOCK) toggle(sign, player)
+	}
 
 	abstract fun toggle(sign: Sign, player: Player)
 

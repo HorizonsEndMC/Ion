@@ -178,25 +178,39 @@ object Multiblocks : IonServerComponent() {
 			LaserCannonStarshipWeaponMultiblock,
 			PlasmaCannonStarshipWeaponMultiblock,
 			PulseCannonStarshipWeaponMultiblock,
+
 			HeavyLaserStarshipWeaponMultiblock,
 			TorpedoStarshipWeaponMultiblock,
+
 			PointDefenseStarshipWeaponMultiblockTop,
 			PointDefenseStarshipWeaponMultiblockSide,
 			PointDefenseStarshipWeaponMultiblockBottom,
+
+			CthulhuBeamMultiblockBottom,
+			EnderCrystalStarshipWeaponMultiblockTop,
+			CthulhuBeamMultiblockSide,
+
 			TopLightTurretMultiblock,
 			BottomLightTurretMultiblock,
+
 			TopHeavyTurretMultiblock,
 			BottomHeavyTurretMultiblock,
+
 			TopTriTurretMultiblock,
 			BottomTriTurretMultiblock,
+
 			HorizontalRocketStarshipWeaponMultiblock,
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,
+
 			PhaserStarshipWeaponMultiblock,
 			MiniPhaserStarshipWeaponMultiblock,
 			SonicMissileWeaponMultiblock,
+
 			DecomposerMultiblock,
+
 			DisposalMultiblock,
+
 			MiningLaserMultiblockTier1Top,
 			MiningLaserMultiblockTier1Bottom,
 			MiningLaserMultiblockTier2Top,

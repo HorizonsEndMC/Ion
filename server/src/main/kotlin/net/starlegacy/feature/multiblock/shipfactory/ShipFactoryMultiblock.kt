@@ -1,5 +1,7 @@
 package net.starlegacy.feature.multiblock.shipfactory
 
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SHIP_FACTORY_DATA
+import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
@@ -7,10 +9,11 @@ import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock {
+object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock, InteractableMultiblock {
 	override val name = "shipfactory"
 
 	override val signText = createSignText(
@@ -44,5 +47,12 @@ object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock {
 	fun getStorage(sign: Sign): Inventory {
 		val direction = sign.getFacing().oppositeFace
 		return (sign.block.getRelative(direction).getRelative(direction.rightFace).state as InventoryHolder).inventory
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		val data = sign.persistentDataContainer.get(SHIP_FACTORY_DATA, ShipFactoryData)
+		if (data == null) sign.persistentDataContainer.set(SHIP_FACTORY_DATA, ShipFactoryData, ShipFactoryData())
+
+		ShipFactoryGUI(player, sign).show(player)
 	}
 }

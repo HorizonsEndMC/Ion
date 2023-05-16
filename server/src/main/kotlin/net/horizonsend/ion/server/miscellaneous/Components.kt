@@ -19,7 +19,6 @@ import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomRecipes
-import net.starlegacy.feature.misc.Decomposers
 import net.starlegacy.feature.misc.DutyModeMonitor
 import net.starlegacy.feature.misc.GameplayTweaks
 import net.starlegacy.feature.misc.Shuttles
@@ -128,7 +127,6 @@ val components: List<IonComponent> = listOf(
 	Interdiction,
 	StarshipDealers,
 	ShipKillXP,
-	Decomposers,
 
 	DutyModeMonitor,
 

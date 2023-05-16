@@ -36,6 +36,9 @@ object NamespacedKeys {
 	val LOCKED = key("locked")
 
 	// Ship factories
+	val SHIP_FACTORY_DATA = key("ship_factory_data")
+	val SHOW_BOUNDING_BOX = key("show_bounding_box")
+	val ROTATION = key("rotation")
 	val BLUEPRINT = key("blueprint")
 
 	val AMMO = key("Ammo")

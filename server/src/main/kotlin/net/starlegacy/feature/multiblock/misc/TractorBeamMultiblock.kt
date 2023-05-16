@@ -1,10 +1,10 @@
 package net.starlegacy.feature.multiblock.misc
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
-import net.starlegacy.feature.multiblock.Multiblock
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
 import net.starlegacy.feature.multiblock.InteractableMultiblock
+import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.LegacyBlockUtils

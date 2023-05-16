@@ -12,7 +12,6 @@ import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
 abstract class ChargerMultiblock(val tierText: String) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {

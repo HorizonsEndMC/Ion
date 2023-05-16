@@ -13,7 +13,6 @@ import org.bukkit.Effect
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
 abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: Material) :

@@ -87,7 +87,6 @@ object InteractListener : SLEventListener() {
 	@EventHandler
 	fun handleMultiblockInteract(event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND) return
-		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
 		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
 		(Multiblocks[sign, true, false] as? InteractableMultiblock)?.onSignInteract(sign, event.player, event)

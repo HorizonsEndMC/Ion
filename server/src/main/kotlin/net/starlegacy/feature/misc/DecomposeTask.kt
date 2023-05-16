@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.legacy.ores.Ore
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
+import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock.busySigns
 import net.starlegacy.feature.starship.isFlyable
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.nms
@@ -66,7 +67,7 @@ class DecomposeTask(
 	override fun cancel() {
 		super.cancel()
 
-		Decomposers.busySigns.remove(signLoc)
+		busySigns.remove(signLoc)
 		Bukkit.getPlayer(playerID)
 			?.information("Decomposer broke $blocksBroken blocks.")
 	}

@@ -13,7 +13,6 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
@@ -27,7 +26,6 @@ object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultibl
 		null,
 		null
 	)
-
 
 	override val maxPower: Int = 150_000
 

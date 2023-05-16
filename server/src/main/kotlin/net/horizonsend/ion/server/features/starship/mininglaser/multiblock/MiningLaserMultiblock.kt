@@ -10,7 +10,6 @@ import net.starlegacy.util.getFacing
 import net.starlegacy.util.leftFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 

@@ -12,7 +12,6 @@ import org.bukkit.Material
 import org.bukkit.Material.matchMaterial
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack

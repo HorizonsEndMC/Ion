@@ -6,6 +6,7 @@ import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
 
 abstract class PyrotechnicMachine : Multiblock(), PowerStoringMultiblock {
+
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
