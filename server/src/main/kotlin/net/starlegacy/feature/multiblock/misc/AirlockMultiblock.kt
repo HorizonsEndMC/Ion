@@ -53,8 +53,8 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 
 	override fun onTransformSign(player: Player, sign: Sign) = sign.line(1, OFF)
 
-	val OFF = text("-[OFF]-", NamedTextColor.RED)
-	val ON = text("-[ON]-", NamedTextColor.GREEN)
+	private val OFF = text("-[OFF]-", NamedTextColor.RED)
+	private val ON = text("-[ON]-", NamedTextColor.GREEN)
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND) return

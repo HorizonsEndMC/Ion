@@ -1,6 +1,9 @@
 package net.starlegacy.feature.multiblock.shipfactory
 
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SHIP_FACTORY_DATA
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
@@ -16,14 +19,14 @@ import org.bukkit.inventory.InventoryHolder
 object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock, InteractableMultiblock {
 	override val name = "shipfactory"
 
-	override val signText = createSignText(
-		line1 = "&1Ship Factory",
-		line2 = null,
-		line3 = null,
-		line4 = null
+	override val signText: Array<Component?> = arrayOf(
+		text("Ship Factory", NamedTextColor.GOLD),
+		null,
+		null,
+		null
 	)
 
-	override val maxPower: Int = 1_000_000
+	override val maxPower: Int = 100_000
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
