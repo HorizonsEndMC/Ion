@@ -1,13 +1,13 @@
 package net.starlegacy.feature.multiblock.cosmeticmultiblocks
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
 
 abstract class PyrotechnicMachine : Multiblock(), PowerStoringMultiblock {
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
 				x(-1).ironBlock()

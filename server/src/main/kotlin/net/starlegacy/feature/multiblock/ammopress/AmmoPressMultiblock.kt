@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.blasters.objects.AmmunitionHoldingIte
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.getFacing
@@ -19,7 +19,7 @@ import java.lang.Integer.min
 
 abstract class AmmoPressMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyStairs()

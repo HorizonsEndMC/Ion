@@ -1,9 +1,9 @@
 package net.starlegacy.feature.multiblock.areashield
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 
 object AreaShield20 : AreaShield(radius = 20) {
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-2).anyStairs()

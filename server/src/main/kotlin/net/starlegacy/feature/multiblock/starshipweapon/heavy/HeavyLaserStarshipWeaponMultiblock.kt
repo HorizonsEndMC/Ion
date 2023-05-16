@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.starshipweapon.heavy
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.HeavyLaserWeaponSubsystem
@@ -12,7 +12,7 @@ object HeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Hea
 		return HeavyLaserWeaponSubsystem(starship, pos, face)
 	}
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		repeat(+7) { z ->
 			z(z) {
 				y(-1) {

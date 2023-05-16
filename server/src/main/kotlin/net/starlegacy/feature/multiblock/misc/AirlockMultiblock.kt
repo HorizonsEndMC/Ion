@@ -2,7 +2,7 @@ package net.starlegacy.feature.multiblock.misc
 
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.InteractableMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.util.axis
@@ -28,7 +28,7 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 		line4 = "&bSolutions, Inc."
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		val xOffset = 1 // sign is a block to the left
 		z(+0) {
 			y(-2) {

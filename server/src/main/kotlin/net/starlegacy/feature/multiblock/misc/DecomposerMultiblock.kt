@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.starlegacy.feature.misc.DecomposeTask
 import net.starlegacy.feature.multiblock.InteractableMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
@@ -44,7 +44,7 @@ object DecomposerMultiblock : Multiblock(), PowerStoringMultiblock, Interactable
 	const val BLOCKS_PER_SECOND = 1000
 	private val FRAME_MATERIAL = CHISELED_TYPES
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).ironBlock()
 		at(0, -1, -1).anyPipedInventory()
 	}

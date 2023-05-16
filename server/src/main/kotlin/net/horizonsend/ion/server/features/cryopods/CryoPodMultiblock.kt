@@ -5,6 +5,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -19,7 +20,7 @@ object CryoPodMultiblock : Multiblock() {
 		line4 = null
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(-2) {
 			y(-1) {
 				x(0).anyDoor()

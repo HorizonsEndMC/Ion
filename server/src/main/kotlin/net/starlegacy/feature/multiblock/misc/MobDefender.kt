@@ -2,7 +2,7 @@ package net.starlegacy.feature.multiblock.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.getBlockIfLoaded
@@ -25,7 +25,7 @@ object MobDefender : Multiblock() {
 		line4 = "MobDefender Co"
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(-1) {
 			y(-1) {
 				x(-1).anyStairs()

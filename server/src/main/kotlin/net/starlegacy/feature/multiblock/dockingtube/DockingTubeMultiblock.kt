@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.InteractableMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.axis
 import net.starlegacy.util.rightFace
@@ -27,7 +27,7 @@ abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), I
 		stateText
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).anyDoor()
 
 		z(+1) {
@@ -51,7 +51,7 @@ abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), I
 		}
 	}
 
-	abstract fun LegacyMultiblockShape.RequirementBuilder.tubeStateExtension()
+	abstract fun MultiblockShape.RequirementBuilder.tubeStateExtension()
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		if (event.action == Action.RIGHT_CLICK_BLOCK) toggle(sign, player)

@@ -2,7 +2,7 @@ package net.starlegacy.feature.multiblock.powerfurnace
 
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import org.bukkit.Material
@@ -23,7 +23,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), PowerSto
 		line4 = tierText
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyGlassPane()

@@ -35,7 +35,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
-import java.util.*
+import java.util.EnumSet
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -43,7 +43,7 @@ import kotlin.collections.set
 /** Parameters: block, inward */
 private typealias BlockRequirement = (Block, BlockFace) -> Boolean
 
-class LegacyMultiblockShape {
+class MultiblockShape {
 	// Cache of direction to requirement, so it doesn't need to be calculated every time based on the direction
 	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, Pair<BlockData, BlockRequirement>>>()
 
@@ -98,7 +98,7 @@ class LegacyMultiblockShape {
 		}
 	}
 
-	class Z(private val shape: LegacyMultiblockShape, val z: Int) {
+	class Z(private val shape: MultiblockShape, val z: Int) {
 		fun y(y: Int, block: ZY.() -> Unit) = ZY(
 			shape,
 			z,
@@ -111,7 +111,7 @@ class LegacyMultiblockShape {
 			}
 		}
 
-		class ZY(private val shape: LegacyMultiblockShape, val z: Int, val y: Int) {
+		class ZY(private val shape: MultiblockShape, val z: Int, val y: Int) {
 			fun x(x: Int) = shape.at(x, y, z)
 
 			fun x(xValues: IntProgression, block: RequirementBuilder.() -> Unit) {
@@ -133,7 +133,7 @@ class LegacyMultiblockShape {
 		}
 	}
 
-	class Y(private val shape: LegacyMultiblockShape, val y: Int) {
+	class Y(private val shape: MultiblockShape, val y: Int) {
 		fun z(z: Int, block: YZ.() -> Unit) = YZ(
 			shape,
 			y,
@@ -146,7 +146,7 @@ class LegacyMultiblockShape {
 			}
 		}
 
-		class YZ(private val shape: LegacyMultiblockShape, val y: Int, val z: Int) {
+		class YZ(private val shape: MultiblockShape, val y: Int, val z: Int) {
 			fun x(x: Int) = shape.at(x, y, z)
 
 			fun x(xValues: IntProgression, block: RequirementBuilder.() -> Unit) {
@@ -221,7 +221,7 @@ class LegacyMultiblockShape {
 	}
 
 	@Suppress("unused")
-	class RequirementBuilder(val shape: LegacyMultiblockShape, val right: Int, val upward: Int, val inward: Int) {
+	class RequirementBuilder(val shape: MultiblockShape, val right: Int, val upward: Int, val inward: Int) {
 		private fun complete(type: BlockData, requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, type, requirement)
 
 		fun type(type: Material) {

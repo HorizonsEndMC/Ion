@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.printer
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -13,7 +13,7 @@ object GlassPrinterMultiblock : PrinterMultiblock() {
 	)
 	override fun getOutput(product: Material): ItemStack = ItemStack(product, 2)
 
-	override fun LegacyMultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
-	override fun LegacyMultiblockShape.RequirementBuilder.printerCoreBlock() = endRod()
-	override fun LegacyMultiblockShape.RequirementBuilder.printerProductBlock() = anyGlass()
+	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
+	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = endRod()
+	override fun MultiblockShape.RequirementBuilder.printerProductBlock() = anyGlass()
 }

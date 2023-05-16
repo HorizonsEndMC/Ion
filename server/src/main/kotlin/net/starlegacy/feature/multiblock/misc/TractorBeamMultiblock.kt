@@ -3,7 +3,7 @@ package net.starlegacy.feature.multiblock.misc
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
 import net.starlegacy.feature.multiblock.InteractableMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -32,7 +32,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		line4 = "[:->:]"
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).anySlab()
 		at(-1, +0, +1).anySlab()
 		at(+1, +0, +1).anySlab()

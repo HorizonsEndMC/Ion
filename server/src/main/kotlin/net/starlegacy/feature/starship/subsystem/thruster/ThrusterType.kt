@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.thruster
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.isGlass
 import net.starlegacy.util.isGlassPane
@@ -21,7 +21,7 @@ enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 		}
 	},
 	AFTERBURNER(3.0, 17.5, 5) {
-		override fun LegacyMultiblockShape.buildStructure() {
+		override fun MultiblockShape.buildStructure() {
 			at(0, 0, 0).thrusterBlock()
 			at(0, 0, 1).type(Material.GOLD_BLOCK)
 			at(0, 0, 2).type(Material.SPONGE)
@@ -63,6 +63,6 @@ enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 		return true
 	}
 
-	protected abstract fun LegacyMultiblockShape.buildStructure()
-	private val shape by lazy { LegacyMultiblockShape().apply { buildStructure() } }
+	protected abstract fun MultiblockShape.buildStructure()
+	private val shape by lazy { MultiblockShape().apply { buildStructure() } }
 }

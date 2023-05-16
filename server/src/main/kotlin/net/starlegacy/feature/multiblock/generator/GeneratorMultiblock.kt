@@ -4,7 +4,7 @@ import net.starlegacy.feature.machine.GeneratorFuel
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.getFacing
@@ -66,7 +66,7 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 		line4 = tierText
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(x = -1, y = -1, z = +0).extractor()
 		at(x = +0, y = -1, z = +0).wireInputComputer()
 		at(x = +1, y = -1, z = +0).extractor()

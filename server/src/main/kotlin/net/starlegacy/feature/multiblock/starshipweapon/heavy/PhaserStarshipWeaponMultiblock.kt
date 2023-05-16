@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.starshipweapon.heavy
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.PhaserWeaponSubsystem
@@ -9,7 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object PhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PhaserWeaponSubsystem>() {
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		y(+0) {
 			z(+0..+4 step 2) {
 				x(-1).anyWall()

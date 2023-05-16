@@ -26,9 +26,9 @@ abstract class Multiblock {
 		return true
 	}
 
-	protected abstract fun LegacyMultiblockShape.buildStructure()
+	protected abstract fun MultiblockShape.buildStructure()
 
-	val shape by lazy { LegacyMultiblockShape().apply { buildStructure() } }
+	val shape by lazy { MultiblockShape().apply { buildStructure() } }
 
 	fun signMatchesStructure(sign: Sign, loadChunks: Boolean = true, particles: Boolean = false): Boolean {
 		val inward = sign.getFacing().oppositeFace

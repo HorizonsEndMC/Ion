@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.printer
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.util.isStainedTerracotta
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -15,8 +15,8 @@ object ArmorPrinterMultiblock : PrinterMultiblock() {
 
 	override fun getOutput(product: Material): ItemStack = ItemStack(product, 1)
 
-	override fun LegacyMultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
-	override fun LegacyMultiblockShape.RequirementBuilder.printerCoreBlock() = type(Material.ANVIL)
-	override fun LegacyMultiblockShape.RequirementBuilder.printerProductBlock() =
+	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
+	override fun MultiblockShape.RequirementBuilder.printerCoreBlock() = type(Material.ANVIL)
+	override fun MultiblockShape.RequirementBuilder.printerProductBlock() =
 		filteredTypes { it == Material.TERRACOTTA || it.isStainedTerracotta }
 }

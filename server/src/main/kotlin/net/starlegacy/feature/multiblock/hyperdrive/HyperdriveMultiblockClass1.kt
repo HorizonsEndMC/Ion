@@ -15,7 +15,7 @@ object HyperdriveMultiblockClass1 : HyperdriveMultiblock() {
 
 	override val hyperdriveClass = 1
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		addHoppers(this)
 
 		z(+0) {

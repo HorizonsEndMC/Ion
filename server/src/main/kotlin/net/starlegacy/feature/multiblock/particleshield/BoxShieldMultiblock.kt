@@ -2,6 +2,8 @@ package net.starlegacy.feature.multiblock.particleshield
 
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.msg
 import net.starlegacy.util.rightFace
@@ -62,7 +64,7 @@ object BoxShieldMultiblock : ShieldMultiblock() {
 		line4 = null
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()

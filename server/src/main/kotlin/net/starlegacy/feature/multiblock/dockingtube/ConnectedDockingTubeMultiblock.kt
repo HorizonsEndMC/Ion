@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.getFacing
@@ -27,7 +27,7 @@ import org.bukkit.persistence.PersistentDataType
 object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 	MiniMessage.miniMessage().deserialize("[Connected]").color(TextColor.fromHexString("#55FF55"))
 ) {
-	override fun LegacyMultiblockShape.RequirementBuilder.tubeStateExtension() = anyGlass()
+	override fun MultiblockShape.RequirementBuilder.tubeStateExtension() = anyGlass()
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {

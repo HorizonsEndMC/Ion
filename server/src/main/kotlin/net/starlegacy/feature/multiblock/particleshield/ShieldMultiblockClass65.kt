@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.particleshield
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 
 object ShieldMultiblockClass65 : SphereShieldMultiblock() {
 	override val maxRange = 30
@@ -11,7 +11,7 @@ object ShieldMultiblockClass65 : SphereShieldMultiblock() {
 		line4 = "&8Class &b6.5"
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-2).anyStairs()

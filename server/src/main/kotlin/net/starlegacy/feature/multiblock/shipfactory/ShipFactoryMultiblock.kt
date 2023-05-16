@@ -2,7 +2,7 @@ package net.starlegacy.feature.multiblock.shipfactory
 
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SHIP_FACTORY_DATA
 import net.starlegacy.feature.multiblock.InteractableMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.getFacing
@@ -30,7 +30,7 @@ object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock, Interactabl
 		sign.setLine(1, player.uniqueId.toString())
 	}
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(+0).ironBlock()

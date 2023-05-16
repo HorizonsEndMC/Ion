@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.starshipweapon.cannon
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.primary.PulseCannonWeaponSubsystem
@@ -12,7 +12,7 @@ object PulseCannonStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Pu
 		return PulseCannonWeaponSubsystem(starship, pos, face)
 	}
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).sponge()
 		at(+0, +0, +1).stainedGlass()
 	}

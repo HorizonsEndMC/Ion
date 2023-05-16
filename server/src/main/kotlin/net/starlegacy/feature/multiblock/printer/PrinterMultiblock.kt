@@ -2,7 +2,7 @@ package net.starlegacy.feature.multiblock.printer
 
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.LegacyItemUtils
@@ -19,12 +19,12 @@ abstract class PrinterMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 	override val maxPower: Int = 50_000
 	abstract fun getOutput(product: Material): ItemStack
 
-	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerCoreBlock()
-	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerMachineryBlock()
-	protected abstract fun LegacyMultiblockShape.RequirementBuilder.printerProductBlock()
+	protected abstract fun MultiblockShape.RequirementBuilder.printerCoreBlock()
+	protected abstract fun MultiblockShape.RequirementBuilder.printerMachineryBlock()
+	protected abstract fun MultiblockShape.RequirementBuilder.printerProductBlock()
 
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).ironBlock()

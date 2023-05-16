@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.starshipweapon.misc
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.primary.PointDefenseSubsystem
@@ -19,7 +19,7 @@ sealed class PointDefenseStarshipWeaponMultiblock : SignlessStarshipWeaponMultib
 object PointDefenseStarshipWeaponMultiblockTop : PointDefenseStarshipWeaponMultiblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.UP
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).dispenser()
 		at(+0, +1, +0).ironBlock()
 		at(+0, +2, +0).redstoneLamp()
@@ -29,7 +29,7 @@ object PointDefenseStarshipWeaponMultiblockTop : PointDefenseStarshipWeaponMulti
 object PointDefenseStarshipWeaponMultiblockBottom : PointDefenseStarshipWeaponMultiblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.DOWN
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).dispenser()
 		at(+0, -1, +0).ironBlock()
 		at(+0, -2, +0).redstoneLamp()
@@ -39,7 +39,7 @@ object PointDefenseStarshipWeaponMultiblockBottom : PointDefenseStarshipWeaponMu
 object PointDefenseStarshipWeaponMultiblockSide : PointDefenseStarshipWeaponMultiblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = originalFace
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).dispenser()
 		at(+0, +0, +1).ironBlock()
 		at(+0, +0, +2).redstoneLamp()

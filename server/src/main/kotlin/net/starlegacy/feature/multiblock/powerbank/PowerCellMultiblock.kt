@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.powerbank
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 
@@ -16,7 +16,7 @@ object PowerCellMultiblock : Multiblock(), PowerStoringMultiblock {
 
 	override val maxPower = 50_000
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
 				x(-1).anyGlassPane()
