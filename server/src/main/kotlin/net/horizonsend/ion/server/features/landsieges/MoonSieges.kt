@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.features.landsieges
 
+import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.NationRelation
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.MoonSiege
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
 import net.horizonsend.ion.server.features.multiblock.moonsiege.SiegeBeaconMultiblock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -16,13 +19,12 @@ import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
-import net.starlegacy.util.getFacing
-import net.starlegacy.util.rightFace
+import org.bukkit.Location
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.litote.kmongo.eq
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
 
@@ -51,12 +53,37 @@ object MoonSieges : SLComponent() {
 
 	fun updateBeacons() {
 		for (beacon in SiegeBeacon.all()) {
+			// Siege beacon period logic
+
 			val loc = beacon.location()
 			val sign = beacon.bukkitWorld().getBlockAt(loc).state as Sign
 
 			val (x, y, z) = beacon.vec3i() + SiegeBeaconMultiblock.getCenter(sign)
+			val location = Location(beacon.bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
+
+			beacon.laser?.stop()
+			beacon.laser = CrystalLaser(
+				location.add(0.0, 1.0 ,0.0),
+				location.add(0.0, 400.0, 0.0),
+				2,
+				400
+			)
+
+			beacon.laser!!.start(IonServer)
 
 
+		}
+	}
+
+	fun checkWin() { //TODO
+		for (siegeTerritory in SiegeTerritory.all()) {
+			val siege = MoonSiege.findOne(MoonSiege::siegeTerritory eq siegeTerritory._id) ?: continue
+
+			val id = siegeTerritory._id
+
+			val beacons = SiegeBeacon.getBeacons(id)
+
+			if (beacons.all {  })
 		}
 	}
 
