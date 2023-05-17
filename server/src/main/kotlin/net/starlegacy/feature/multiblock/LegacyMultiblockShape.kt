@@ -304,6 +304,16 @@ class LegacyMultiblockShape {
 		fun lodestone() = type(Material.LODESTONE)
 		fun noteBlock() = type(Material.NOTE_BLOCK)
 
+		fun thrusterBlock() = anyType(
+			Material.OCHRE_FROGLIGHT,
+			Material.VERDANT_FROGLIGHT,
+			Material.PEARLESCENT_FROGLIGHT,
+			Material.GLOWSTONE,
+			Material.REDSTONE_LAMP,
+			Material.MAGMA_BLOCK,
+			Material.SEA_LANTERN
+		)
+
 		fun machineFurnace() = complete { block, inward ->
 			val blockData = block.getNMSBlockData()
 			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
