@@ -2,6 +2,7 @@ package net.starlegacy.feature.multiblock.shipfactory
 
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.BLUEPRINT
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ROTATION
+import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.RUNNING
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SHIP_FACTORY_DATA
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SHOW_BOUNDING_BOX
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.X
@@ -27,6 +28,7 @@ data class ShipFactoryData(
 	var rotation: Int = 0,
 	var blueprintName: String = "",
 	var showBoundingBox: Boolean = false,
+	var isRunning: Boolean = false,
 ) {
 	fun update(sign: Sign) {
 		sign.persistentDataContainer.set(SHIP_FACTORY_DATA, ShipFactoryData, this)
@@ -49,7 +51,8 @@ data class ShipFactoryData(
 				offsetZ = primitive.get(Z, INTEGER) ?: 0,
 				rotation = primitive.get(ROTATION, INTEGER) ?: 0,
 				blueprintName = primitive.get(BLUEPRINT, STRING) ?: "",
-				showBoundingBox = ((primitive.get(SHOW_BOUNDING_BOX, BYTE) ?: falseByte) != falseByte)
+				showBoundingBox = ((primitive.get(SHOW_BOUNDING_BOX, BYTE) ?: falseByte) != falseByte),
+				isRunning = ((primitive.get(RUNNING, BYTE) ?: falseByte) != falseByte)
 			)
 		}
 
@@ -65,6 +68,7 @@ data class ShipFactoryData(
 			new.set(ROTATION, INTEGER, complex.rotation)
 			new.set(BLUEPRINT, STRING, complex.blueprintName)
 			new.set(SHOW_BOUNDING_BOX, BYTE, (if (complex.showBoundingBox) 1 else 0).toByte())
+			new.set(RUNNING, BYTE, (if (complex.isRunning) 1 else 0).toByte())
 
 			return new
 		}

@@ -86,6 +86,12 @@ object MenuHelper {
 		}
 	}
 
+	fun GuiItem.setLoreComponent(lines: List<Component?>): GuiItem = apply {
+		item.itemMeta = item.itemMeta.apply {
+			lore(lines)
+		}
+	}
+
 	fun StaticPane.withItem(item: GuiItem, x: Int, z: Int): StaticPane {
 		addItem(item, x, z); return this
 	}
