@@ -13,7 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.updateMeta
+import net.horizonsend.ion.server.miscellaneous.updateMeta
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_HOE

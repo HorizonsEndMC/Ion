@@ -30,8 +30,8 @@ import net.starlegacy.feature.space.Space
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
-import net.starlegacy.util.displayNameComponent
-import net.starlegacy.util.displayNameString
+import net.horizonsend.ion.server.miscellaneous.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.starlegacy.util.roundToHundredth
 import net.starlegacy.util.toCreditsString
 import org.bukkit.DyeColor
