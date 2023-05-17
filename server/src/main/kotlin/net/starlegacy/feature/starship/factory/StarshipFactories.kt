@@ -46,20 +46,20 @@ object StarshipFactories : IonServerComponent() {
 	}
 
 	override fun onEnable() {
-		listen<PlayerInteractEvent> { event ->
-			val block = event.clickedBlock
-			val sign = block?.state as? Sign ?: return@listen
-			if (Multiblocks[sign] !is ShipFactoryMultiblock) {
-				return@listen
-			}
-
-			val leftClick = event.action == Action.LEFT_CLICK_BLOCK &&
-				event.player.hasPermission("starlegacy.factory.print.credit")
-
-			Tasks.async {
-				process(event.player, sign, leftClick)
-			}
-		}
+//		listen<PlayerInteractEvent> { event ->
+//			val block = event.clickedBlock
+//			val sign = block?.state as? Sign ?: return@listen
+//			if (Multiblocks[sign] !is ShipFactoryMultiblock) {
+//				return@listen
+//			}
+//
+//			val leftClick = event.action == Action.LEFT_CLICK_BLOCK &&
+//				event.player.hasPermission("starlegacy.factory.print.credit")
+//
+//			Tasks.async {
+//				process(event.player, sign, leftClick)
+//			}
+//		}
 	}
 
 	@Synchronized

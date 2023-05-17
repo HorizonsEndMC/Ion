@@ -90,6 +90,21 @@ object MenuHelper {
 		addItem(item, x, z); return this
 	}
 
+	fun StaticPane.fillWith(
+		itemStack: ItemStack,
+		startX: Int,
+		startY: Int,
+		width: Int,
+		height: Int,
+		action: (InventoryClickEvent.() -> Unit)? = null
+	) {
+		for (x in startX until startX + width) {
+			for (y in startY until startY + height) {
+				this.addItem(GuiItem(itemStack, action), x, y)
+			}
+		}
+	}
+
 	fun OutlinePane.withItem(item: GuiItem): OutlinePane {
 		addItem(item); return this
 	}

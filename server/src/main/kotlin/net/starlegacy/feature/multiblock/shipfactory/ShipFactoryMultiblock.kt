@@ -51,6 +51,6 @@ object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock, Interactabl
 		val data = sign.persistentDataContainer.get(SHIP_FACTORY_DATA, ShipFactoryData)
 		if (data == null) sign.persistentDataContainer.set(SHIP_FACTORY_DATA, ShipFactoryData, ShipFactoryData())
 
-		ShipFactoryGUI(player, sign).show()
+		ShipFactoryGUI(player, sign, data ?: ShipFactoryData()).show()
 	}
 }
