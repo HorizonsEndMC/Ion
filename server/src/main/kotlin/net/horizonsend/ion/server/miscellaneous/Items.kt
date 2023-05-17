@@ -1,4 +1,4 @@
-package net.starlegacy.util
+package net.horizonsend.ion.server.miscellaneous
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
@@ -29,3 +29,15 @@ val ItemStack.displayNameString
 	get() = PlainTextComponentSerializer.plainText().serialize(this.displayNameComponent)
 
 fun ItemStack.setLoreAndGet(lines: List<String>): ItemStack = apply { this.lore = lines }
+
+val leftArrow
+	get() = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+		it.displayName(Component.empty())
+		it.setCustomModelData(105)
+	}
+
+val rightArrow
+	get() = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
+		it.displayName(Component.empty())
+		it.setCustomModelData(103)
+	}

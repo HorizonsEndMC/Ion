@@ -17,6 +17,7 @@ repositories {
 	maven("https://nexus.scarsz.me/content/groups/public/") // DiscordSRV
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
+	maven("https://repo.xenondevs.xyz/releases") // InvUI
 
 	maven("https://repo.horizonsend.net/mirror")
 }
@@ -45,6 +46,7 @@ dependencies {
 	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
 	implementation("org.litote.kmongo:kmongo:4.9.0")
 	implementation("io.github.skytasul:guardianbeam:2.3.2")
+	implementation("xyz.xenondevs.invui:invui:1.7")
 }
 
 tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }

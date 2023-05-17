@@ -18,7 +18,7 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.action
 import net.starlegacy.util.colorize
 import net.starlegacy.util.msg
-import net.starlegacy.util.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
