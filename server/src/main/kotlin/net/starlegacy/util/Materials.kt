@@ -97,3 +97,6 @@ val WALL_TYPES = getMatchingMaterials { it.name.endsWith("_WALL") }
 val Material.isWall: Boolean get() = WALL_TYPES.contains(this)
 
 val CHISELED_TYPES = getMatchingMaterials { it.name.startsWith("CHISELED_") }
+
+val FROGLIGHT_TYPES = getMatchingMaterials { it.name.endsWith("_FROGLIGHT") }
+val Material.isFroglight: Boolean get() = FROGLIGHT_TYPES.contains(this)

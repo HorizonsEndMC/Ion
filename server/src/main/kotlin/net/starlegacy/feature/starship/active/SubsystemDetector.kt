@@ -26,6 +26,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
+import net.starlegacy.util.isFroglight
 import net.starlegacy.util.isWallSign
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -51,7 +52,12 @@ object SubsystemDetector {
 
 			potentialWeaponBlocks.add(block)
 
-			if (type == Material.GLOWSTONE || type == Material.REDSTONE_LAMP || type == Material.SEA_LANTERN || type == Material.MAGMA_BLOCK) {
+			if (
+				type == Material.GLOWSTONE ||
+				type == Material.REDSTONE_LAMP ||
+				type == Material.SEA_LANTERN ||
+				type.isFroglight
+			) {
 				potentialThrusterBlocks += block
 			}
 		}
