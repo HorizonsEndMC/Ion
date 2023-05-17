@@ -3,7 +3,7 @@ package net.starlegacy.feature.misc
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
 import net.starlegacy.util.set
-import net.starlegacy.util.updateMeta
+import net.horizonsend.ion.server.miscellaneous.updateMeta
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.AQUA
 import org.bukkit.ChatColor.BLUE

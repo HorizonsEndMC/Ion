@@ -32,7 +32,7 @@ import net.starlegacy.util.isAlphanumeric
 import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.toText
-import net.starlegacy.util.updateMeta
+import net.horizonsend.ion.server.miscellaneous.updateMeta
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle

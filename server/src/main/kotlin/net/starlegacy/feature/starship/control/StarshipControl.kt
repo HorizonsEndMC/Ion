@@ -23,7 +23,7 @@ import net.starlegacy.listen
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.d
-import net.starlegacy.util.displayNameString
+import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.starlegacy.util.isLava
 import net.starlegacy.util.isSign
 import net.starlegacy.util.isWater

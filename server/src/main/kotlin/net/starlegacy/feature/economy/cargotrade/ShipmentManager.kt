@@ -41,8 +41,8 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.orNull
 import net.starlegacy.util.randomDouble
 import net.starlegacy.util.red
-import net.starlegacy.util.setDisplayNameAndGet
-import net.starlegacy.util.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.setLoreAndGet
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.withNBTString
 import net.starlegacy.util.yellow
