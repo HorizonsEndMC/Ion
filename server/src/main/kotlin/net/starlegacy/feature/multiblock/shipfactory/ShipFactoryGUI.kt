@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.math.BlockVector3
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -13,6 +14,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.minecraft.core.BlockPos
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.nations.gui.guiButton
@@ -21,12 +23,16 @@ import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.MenuHelper.setLoreComponent
 import net.starlegacy.util.MenuHelper.setName
 import net.starlegacy.util.Tasks
+import net.starlegacy.util.component1
+import net.starlegacy.util.component2
+import net.starlegacy.util.component3
 import net.starlegacy.util.toBukkitBlockData
 import net.starlegacy.util.updateMeta
 import net.wesjd.anvilgui.AnvilGUI
 import net.wesjd.anvilgui.AnvilGUI.Completion
 import net.wesjd.anvilgui.AnvilGUI.ResponseAction
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -35,6 +41,9 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFactoryData) {
 	val blueprint get(): Blueprint? = Blueprint.get(player.uniqueId.slPlayerId, data.blueprintName)
@@ -449,26 +458,43 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 		multiblock.update()
 	}
 
-	fun getRemainingPrice(): Int = 1
+	fun getRemainingPrice(): Int = 1 //TODO
 
 //	fun checkObstructions(): Boolean {}
 
-//	fun iterateRegion(origin: BlockPos, action: (blueprintBlock: Block, worldBlock: Block) -> Unit) {
-//		val clipboard = clipboard ?: return
-//
-//		val (offsetX: Int , offsetY: Int , offsetZ: Int) = data
-//		val rotation = data.rotation
-//
-//		val (signX, signY, signZ) = origin
-//
-//		val originX = signX + offsetX
-//		val originY = signY + offsetY
-//		val originZ = signZ + offsetZ
-//
-//		val region = clipboard.region.clone()
-//		val targetBlockVector: BlockVector3 = BlockVector3.at(data.offsetX, data.offsetY, data.offsetZ)
-//		val offset: BlockVector3 = targetBlockVector.subtract(clipboard.origin)
-//
-//
-//	}
+	private fun applyTransform(vector: BlockVector3): BlockVector3 {
+		val x = vector.x
+		val y = vector.y
+		val z = vector.z
+		val rotation = data.rotation
+
+		val degrees: Double = (rotation.toDouble() * 90.0)
+
+		val newX = (cos(degrees) * (x)) - (sin(degrees) * x)
+		val newZ = (sin(degrees) * (z)) + (cos(degrees) * z)
+
+		return BlockVector3.at(
+			(newX + data.offsetX).toInt(),
+			y + data.offsetY,
+			(newZ + data.offsetZ).toInt()
+		)
+	}
+
+	fun iterateRegion(blueprint: Blueprint, origin: BlockPos, action: (blueprintBlock: Block, worldBlock: Block) -> Unit) {
+		val clipboard = getClipboard(blueprint)
+
+		val (offsetX: Int , offsetY: Int , offsetZ: Int) = data
+
+		val (signX, signY, signZ) = origin
+
+		val originX = signX + offsetX
+		val originY = signY + offsetY
+		val originZ = signZ + offsetZ
+
+		val region = clipboard.region.clone()
+		val targetBlockVector: BlockVector3 = BlockVector3.at(data.offsetX, data.offsetY, data.offsetZ)
+		val offset: BlockVector3 = targetBlockVector.subtract(clipboard.origin)
+
+
+	}
 }
