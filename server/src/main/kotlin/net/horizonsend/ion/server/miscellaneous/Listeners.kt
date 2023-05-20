@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.cryopods.CryoPods
 import net.horizonsend.ion.server.features.customitems.CustomItemListeners
 import net.horizonsend.ion.server.features.qol.RecipeListener
+import net.horizonsend.ion.server.features.sidebar.SidebarManager
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
@@ -46,6 +47,7 @@ val listeners = arrayOf(
 	ResourcePackListener(),
 	VoidNetwork(),
 	CryoPods,
+	SidebarManager(),
 
 	// Achievement Listeners
 	AchievementListeners()

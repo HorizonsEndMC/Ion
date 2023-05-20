@@ -23,6 +23,13 @@ import net.horizonsend.ion.server.features.space.generation.generators.SpaceChun
 import net.horizonsend.ion.server.miscellaneous.*
 import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
+import net.horizonsend.ion.server.miscellaneous.commands
+import net.horizonsend.ion.server.miscellaneous.initializeCrafting
+import net.horizonsend.ion.server.miscellaneous.listeners
+import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.megavex.scoreboardlibrary.api.ScoreboardLibrary
+import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException
+import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.feature.economy.city.CityNPCs
@@ -44,6 +51,7 @@ import org.bukkit.plugin.java.JavaPlugin
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
+	lateinit var scoreboardLibrary: ScoreboardLibrary
 
 	override fun onEnable() {
 		val exception = runCatching(::internalEnable).exceptionOrNull() ?: return
@@ -87,6 +95,12 @@ object IonServer : JavaPlugin() {
 		}
 		commandManager.commandCompletions.registerCompletion("hyperspaceGates") {
 			configuration.beacons.map { it.name.replace(" ", "_") }
+		}
+
+		scoreboardLibrary = try {
+			ScoreboardLibrary.loadScoreboardLibrary(IonServer)
+		} catch (e: NoPacketAdapterAvailableException) {
+			NoopScoreboardLibrary()
 		}
 
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.
@@ -159,6 +173,7 @@ object IonServer : JavaPlugin() {
 		legacyDisable()
 		CombatNPCs.npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
 		Connectivity.close()
+		scoreboardLibrary.close()
 	}
 
 	override fun getDefaultBiomeProvider(worldName: String, id: String?): BiomeProvider {

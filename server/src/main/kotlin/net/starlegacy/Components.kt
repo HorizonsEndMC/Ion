@@ -41,7 +41,7 @@ import net.starlegacy.feature.starship.StarshipDealers
 import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.active.ActiveStarshipMechanics
 import net.starlegacy.feature.starship.active.ActiveStarships
-import net.starlegacy.feature.starship.control.ContactsDisplay
+//import net.starlegacy.feature.starship.control.ContactsDisplay
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.factory.StarshipFactories
@@ -121,7 +121,7 @@ val components: List<SLComponent> = listOf(
 	StarshipControl,
 	StarshipShields,
 	StarshipCruising,
-	ContactsDisplay,
+//	ContactsDisplay,
 	Hangars,
 	StarshipFactories,
 	TutorialManager,
