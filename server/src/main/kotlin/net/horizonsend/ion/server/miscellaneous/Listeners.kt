@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.miscellaneous
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonWorld
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
-import net.horizonsend.ion.server.listeners.achievements.AchievementListeners
+import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.customitems.CustomItemListeners

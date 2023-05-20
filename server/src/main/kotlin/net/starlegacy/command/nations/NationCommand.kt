@@ -97,30 +97,35 @@ internal object NationCommand : SLCommand() {
 	}
 
 	private fun validateColor(red: Int, green: Int, blue: Int, nationId: Oid<Nation>?): Color {
-		failIf(sequenceOf(red, green, blue).any { it !in 0..255 }) { "Red, green, and blue must be integers within 0-255" }
+		failIf(
+			sequenceOf(
+				red,
+				green,
+				blue
+			).any { it !in 0..255 }) { "Red, green, and blue must be integers within 0-255" }
 
 		val color = Color.fromRGB(red, green, blue)
 
-/* Just disable this for now
-		val query = if (nationId == null) EMPTY_BSON else Nation::_id ne nationId
+		/* Just disable this for now
+				val query = if (nationId == null) EMPTY_BSON else Nation::_id ne nationId
 
-		for (results in Nation.findProps(query, Nation::name, Nation::color)) {
-			val nationName = results[Nation::name]
-			val nationColor = Color.fromRGB(results[Nation::color])
+				for (results in Nation.findProps(query, Nation::name, Nation::color)) {
+					val nationName = results[Nation::name]
+					val nationColor = Color.fromRGB(results[Nation::color])
 
-			val r1 = color.red.toDouble()
-			val g1 = color.green.toDouble()
-			val b1 = color.blue.toDouble()
-			val r2 = nationColor.red.toDouble()
-			val g2 = nationColor.green.toDouble()
-			val b2 = nationColor.blue.toDouble()
-			val distance = distance(r1, g1, b1, r2, g2, b2)
+					val r1 = color.red.toDouble()
+					val g1 = color.green.toDouble()
+					val b1 = color.blue.toDouble()
+					val r2 = nationColor.red.toDouble()
+					val g2 = nationColor.green.toDouble()
+					val b2 = nationColor.blue.toDouble()
+					val distance = distance(r1, g1, b1, r2, g2, b2)
 
-			failIf(distance < 10) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
+					failIf(distance < 10) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
 
-			log.info("Distance from $nationName: $distance")
-		}
-*/
+					log.info("Distance from $nationName: $distance")
+				}
+		*/
 
 		return color
 	}
@@ -136,6 +141,8 @@ internal object NationCommand : SLCommand() {
 		blue: Int,
 		@Optional cost: Int?
 	) = asyncCommand(sender) {
+		fail { "Nation creation is temporarily disabled due to server bugs. We are working on a solution." }
+
 		val settlement = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlement)
 		requireNotInNation(sender)
@@ -218,7 +225,10 @@ internal object NationCommand : SLCommand() {
 
 		val nation = transaction { Nation[nationId]!! }
 		val nationIntId = transaction { nation.id }
-		val nationInvite = transaction { NationInvite.find((NationInvite.Table.nation eq nationIntId) and (NationInvite.Table.settlement eq settlementId as Oid<Any>)).firstOrNull() }
+		val nationInvite = transaction {
+			NationInvite.find((NationInvite.Table.nation eq nationIntId) and (NationInvite.Table.settlement eq settlementId as Oid<Any>))
+				.firstOrNull()
+		}
 
 		if (nationInvite == null) {
 			transaction {
@@ -250,7 +260,10 @@ internal object NationCommand : SLCommand() {
 		requireNationPermission(sender, nationId, NationRole.Permission.SETTLEMENT_INVITE)
 
 		val nationIntId = transaction { Nation[nationId]!!.id }
-		val invitedSettlements = transaction { NationInvite.Table.slice(NationInvite.Table.settlement).select(NationInvite.Table.nation eq nationIntId).map { it[NationInvite.Table.settlement] } }
+		val invitedSettlements = transaction {
+			NationInvite.Table.slice(NationInvite.Table.settlement).select(NationInvite.Table.nation eq nationIntId)
+				.map { it[NationInvite.Table.settlement] }
+		}
 		sender msg "&7Invited Settlements:&b ${invitedSettlements?.joinToString { SettlementCache[it as Oid<Settlement>].name }}"
 	}
 
@@ -268,7 +281,10 @@ internal object NationCommand : SLCommand() {
 		val nationName = getNationName(nationId)
 
 		val nationIntId = transaction { Nation[nationId]!!.id }
-		val nationInvite = transaction { NationInvite.find((NationInvite.Table.nation eq nationIntId) and (NationInvite.Table.settlement eq settlementId as Oid<Any>)).firstOrNull() }
+		val nationInvite = transaction {
+			NationInvite.find((NationInvite.Table.nation eq nationIntId) and (NationInvite.Table.settlement eq settlementId as Oid<Any>))
+				.firstOrNull()
+		}
 
 		failIf(nationInvite == null) { "$settlementName isn't invited to $nationName" }
 
@@ -383,7 +399,9 @@ internal object NationCommand : SLCommand() {
 		val territory = requireTerritoryIn(sender)
 		requireTerritoryUnclaimed(territory)
 
-		failIf(Regions.getAllOf<RegionTerritory>().any { it.world == territory.world && it.nation == nationId }) { "Nations can only have one outpost per planet" }
+		failIf(
+			Regions.getAllOf<RegionTerritory>()
+				.any { it.world == territory.world && it.nation == nationId }) { "Nations can only have one outpost per planet" }
 
 		val realCost = territory.cost
 
@@ -433,7 +451,8 @@ internal object NationCommand : SLCommand() {
 		val lines = mutableListOf<TextComponent>()
 		lines += lineBreak().fromLegacy()
 
-		val nations = transaction { Nation.Table.slice(Nation.Table.objectId).selectAll().map { it[Nation.Table.objectId] } }
+		val nations =
+			transaction { Nation.Table.slice(Nation.Table.objectId).selectAll().map { it[Nation.Table.objectId] } }
 
 		val nationMembers: Map<Oid<Nation>, List<SLPlayerId>> =
 			nations.associateWith { NationRoleCommand.getMembers(it).toList() }
@@ -564,14 +583,18 @@ internal object NationCommand : SLCommand() {
 		val message = text().color(TextColor.fromHexString("#b8e0d4"))
 
 		val lineWidth = 45
-		val lineBreak = text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
+		val lineBreak =
+			text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
 
 		val data = transaction { Nation[nationId] } ?: fail { "Failed to load data" }
 
 		message.append(lineBreak)
 
 		val leftPad = (((lineWidth * (3.0 / 2.0)) - data.name.length) / 2) + 3 // = is 3/2 the size of a space
-		message.append(text(repeatString(" ", leftPad.roundToInt()) + data.name).color(color(data.color)).decorate(TextDecoration.BOLD))
+		message.append(
+			text(repeatString(" ", leftPad.roundToInt()) + data.name).color(color(data.color))
+				.decorate(TextDecoration.BOLD)
+		)
 		message.append(newline())
 
 		senderNationId?.let {
@@ -606,10 +629,11 @@ internal object NationCommand : SLCommand() {
 				.append(newline())
 				.append(text("Planet: ").append(text(outpost.world).color(NamedTextColor.WHITE)))
 				.append(newline())
-				.append(text("Centered at ")
-					.append(text(outpost.centerX).color(NamedTextColor.WHITE))
-					.append(text(", "))
-					.append(text(outpost.centerZ).color(NamedTextColor.WHITE))
+				.append(
+					text("Centered at ")
+						.append(text(outpost.centerX).color(NamedTextColor.WHITE))
+						.append(text(", "))
+						.append(text(outpost.centerZ).color(NamedTextColor.WHITE))
 				)
 				.build()
 				.asHoverEvent()
@@ -659,10 +683,11 @@ internal object NationCommand : SLCommand() {
 			hoverTextBuilder
 				.append(text("Planet: ").append(text(cachedTerritory.world).color(NamedTextColor.WHITE)))
 				.append(newline())
-				.append(text("Centered at ")
-					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
-					.append(text(", "))
-					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+				.append(
+					text("Centered at ")
+						.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+						.append(text(", "))
+						.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
 				)
 
 			val settlementBuilder = text()
@@ -670,7 +695,7 @@ internal object NationCommand : SLCommand() {
 					text(cachedSettlement.name)
 						.hoverEvent(hoverTextBuilder.build().asHoverEvent())
 						.clickEvent(ClickEvent.runCommand("/s info ${cachedSettlement.name}"))
-					.color(NamedTextColor.WHITE)
+						.color(NamedTextColor.WHITE)
 				)
 
 			val isLast: Boolean = settlements.indexOf(settlement) == (settlements.size - 1)
@@ -773,7 +798,8 @@ internal object NationCommand : SLCommand() {
 
 		if (names.size > limit) {
 			namesList.append(text("...").color(TextColor.fromHexString("#b8e0d4")))
-			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
+			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA))
+				.hoverEvent(fullNamesList.asComponent().asHoverEvent())
 		}
 
 		message.append(namesList)
