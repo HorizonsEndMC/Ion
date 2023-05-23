@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sidebar
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.miscellaneous.repeatString
+import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
@@ -20,6 +21,16 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
+import net.starlegacy.feature.starship.StarshipType.CORVETTE
+import net.starlegacy.feature.starship.StarshipType.DESTROYER
+import net.starlegacy.feature.starship.StarshipType.FRIGATE
+import net.starlegacy.feature.starship.StarshipType.GUNSHIP
+import net.starlegacy.feature.starship.StarshipType.HEAVY_FREIGHTER
+import net.starlegacy.feature.starship.StarshipType.LIGHT_FREIGHTER
+import net.starlegacy.feature.starship.StarshipType.MEDIUM_FREIGHTER
+import net.starlegacy.feature.starship.StarshipType.SHUTTLE
+import net.starlegacy.feature.starship.StarshipType.STARFIGHTER
+import net.starlegacy.feature.starship.StarshipType.TRANSPORT
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -30,7 +41,6 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.Locale
 import kotlin.math.abs
-import kotlin.math.max
 
 class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
     companion object {
@@ -138,91 +148,138 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
         for (starship in starships) {
             val vector = starship.centerOfMass.toVector()
             val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
             val color = distanceColor(distance)
 
             contactsList.add(ContactsData(
-                name = text((starship as ActivePlayerStarship).pilot?.name ?: "Unpiloted ${starship.type.displayName}").color(color),
-                prefix = when (starship.type.isWarship) {
-                    true -> text("△")
-                    else -> text("◇")
-                },
+                name = text((starship as ActivePlayerStarship).pilot?.name ?: "Unpiloted Starship").color(color),
+                prefix = when (starship.type) {
+                    STARFIGHTER -> text("\uE000").font(key("horizonsend:sidebar"))
+                    GUNSHIP -> text("\uE001").font(key("horizonsend:sidebar"))
+                    CORVETTE -> text("\uE002").font(key("horizonsend:sidebar"))
+                    FRIGATE -> text("\uE003").font(key("horizonsend:sidebar"))
+                    DESTROYER -> text("\uE004").font(key("horizonsend:sidebar"))
+                    SHUTTLE -> text("\uE010").font(key("horizonsend:sidebar"))
+                    TRANSPORT -> text("\uE011").font(key("horizonsend:sidebar"))
+                    LIGHT_FREIGHTER -> text("\uE012").font(key("horizonsend:sidebar"))
+                    MEDIUM_FREIGHTER -> text("\uE013").font(key("horizonsend:sidebar"))
+                    HEAVY_FREIGHTER -> text("\uE014").font(key("horizonsend:sidebar"))
+                    else -> text("\uE032").font(key("horizonsend:sidebar"))
+                } as TextComponent,
                 suffix = if (starship.isInterdicting && distance <= starship.type.interdictionRange) {
-                    text("∅").color(RED)
+                    text("\uE033").font(key("horizonsend:sidebar")).color(RED) as TextComponent
                 } else if (starship.isInterdicting) {
-                    text("∅").color(GOLD)
+                    text("\uE033").font(key("horizonsend:sidebar")).color(GOLD) as TextComponent
                 } else empty(),
-                heading = text(getDirectionToObject(vector.clone().subtract(playerVector).normalize())).color(color),
-                height = text("${starship.centerOfMass.y}y").color(color),
-                distance = text("${distance}m").color(color),
-                distanceInt = distance
+                heading = text(direction)
+                    .append(text(repeatString(" ", 2 - direction.length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                height = text("$height")
+                    .append(text(repeatString(" ", 3 - height.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distance = text("${distance}m")
+                    .append(text(repeatString(" ", 4 - distance.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distanceInt = distance,
+                padding = empty()
             ))
         }
 
         for (planet in planets) {
             val vector = planet.location.toVector()
             val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
             val color = distanceColor(distance)
 
             contactsList.add(ContactsData(
                 name = text(planet.name).color(color),
-                prefix = text("○").color(DARK_AQUA),
+                prefix = text("\uE020").font(key("horizonsend:sidebar")).color(DARK_AQUA) as TextComponent,
                 suffix = if (distance <= MassShadows.PLANET_RADIUS) {
-                    text("∅").color(RED)
+                    text("\uE033").font(key("horizonsend:sidebar")).color(RED) as TextComponent
                 } else empty(),
-                heading = text(getDirectionToObject(vector.clone().subtract(playerVector).normalize())).color(color),
-                height = text("${planet.location.y}y").color(color),
-                distance = text("${distance}m").color(color),
-                distanceInt = distance
+                heading = text(direction)
+                    .append(text(repeatString(" ", 2 - direction.length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                height = text("$height")
+                    .append(text(repeatString(" ", 3 - height.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distance = text("${distance}m")
+                    .append(text(repeatString(" ", 4 - distance.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distanceInt = distance,
+                padding = empty()
             ))
         }
 
         for (star in stars) {
             val vector = star.location.toVector()
             val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
             val color = distanceColor(distance)
 
             contactsList.add(ContactsData(
                 name = text(star.name).color(color),
-                prefix = text("☀").color(YELLOW),
+                prefix = text("\uE021").font(key("horizonsend:sidebar")).color(YELLOW) as TextComponent,
                 suffix = if (distance <= MassShadows.STAR_RADIUS) {
-                    text("∅").color(RED)
+                    text("\uE033").font(key("horizonsend:sidebar")).color(RED) as TextComponent
                 } else empty(),
-                heading = text(getDirectionToObject(vector.clone().subtract(playerVector).normalize())).color(color),
-                height = text("${star.location.y}y").color(color),
-                distance = text("${distance}m").color(color),
-                distanceInt = distance
+                heading = text(direction)
+                    .append(text(repeatString(" ", 2 - direction.length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                height = text("$height")
+                    .append(text(repeatString(" ", 3 - height.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distance = text("${distance}m")
+                    .append(text(repeatString(" ", 4 - distance.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distanceInt = distance,
+                padding = empty()
             ))
         }
 
         for (beacon in beacons) {
             val vector = beacon.spaceLocation.toBlockPos().toVector()
             val distance = vector.distance(playerVector).toInt()
+            val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+            val height = vector.y.toInt()
             val color = distanceColor(distance)
 
             contactsList.add(ContactsData(
                 name = text(beacon.name).color(color),
-                prefix = text("⏩").color(BLUE),
+                prefix = text("\uE022").font(key("horizonsend:sidebar")).color(BLUE) as TextComponent,
                 suffix = if (beacon.prompt?.contains("⚠") == true) text("⚠").color(RED) else empty(),
-                heading = text(getDirectionToObject(vector.clone().subtract(playerVector).normalize())).color(color),
-                height = text("${beacon.spaceLocation.y}y").color(color),
-                distance = text("${distance}m").color(color),
-                distanceInt = distance
+                heading = text(direction)
+                    .append(text(repeatString(" ", 2 - direction.length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                height = text("$height")
+                    .append(text(repeatString(" ", 3 - height.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distance = text("${distance}m")
+                    .append(text(repeatString(" ", 4 - distance.toString().length))
+                        .font(key("horizonsend:sidebar")))
+                    .color(color),
+                distanceInt = distance,
+                padding = empty()
             ))
         }
 
-        // get the longest contact name length
-        var maxNameLength = 0
+        // append spaces
         for (contact in contactsList) {
-            if (contact.name.content().length + (contact.suffix.content().length * 2) > maxNameLength) {
-                maxNameLength = contact.name.content().length
-            }
-        }
-
-        // append spaces (not perfect)
-        for (contact in contactsList) {
-            contact.suffix = contact.suffix.append(
-                text(repeatString(" ", max(0, maxNameLength - contact.name.content().length + 3)))
-            )
+            contact.padding = text(repeatString(" ", 1))
         }
 
         contactsList.sortBy { it.distanceInt }
@@ -233,9 +290,10 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
 data class ContactsData(
     val name: TextComponent,
     val prefix: TextComponent,
-    var suffix: TextComponent,
+    val suffix: TextComponent,
     val heading: TextComponent,
     val height: TextComponent,
     val distance: TextComponent,
-    val distanceInt: Int
+    val distanceInt: Int,
+    var padding: TextComponent
 )
