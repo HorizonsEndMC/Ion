@@ -1,6 +1,9 @@
 package net.starlegacy.feature.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.starlegacy.feature.starship.StarshipType
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PulseLaserProjectile
@@ -23,7 +26,8 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.pulseCannon.powerUsage
 	override val length: Int = IonServer.balancing.starshipWeapons.pulseCannon.length
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.pulseCannon.angleRadians) // unrestricted
+	override val angleRadians: Double =
+		Math.toRadians(IonServer.balancing.starshipWeapons.pulseCannon.angleRadians) // unrestricted
 	override val convergeDist: Double = IonServer.balancing.starshipWeapons.pulseCannon.convergeDistance
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.pulseCannon.extraDistance
 
@@ -43,6 +47,11 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 		shooter: Player,
 		target: Vector?
 	) {
+		if (starship.type != StarshipType.GUNSHIP) {
+			starship.controller?.userError("You can use Pulse Cannons only on Gunships!")
+			return
+		}
+
 		PulseLaserProjectile(starship, loc, dir, color, shooter).fire()
 	}
 }
