@@ -10,8 +10,8 @@ support will be provided for those wishing to use the plugin for their own serve
 In the future we may consider separating parts of Ion and developing them into standalone plugins / mods / libraries,
 however there are no plans for this in the near future.
 
-If you wish to help develop Ion, then it's best to coordinate with Horizon's End Staff in #development in the
-[Discord](https://discord.gg/RPvgQsGzKM).
+If you wish to help develop Ion, then it's best to coordinate with Horizon's End Staff in the
+[Development Discord](https://discord.gg/p6mghBKU).
 
 ### Building & Testing
 
@@ -20,7 +20,7 @@ and `build/IonServer.jar`.
 
 This repository includes a script that will set up a functioning system comprising of Ion, IonCore, and its required
 dependencies. To use it simply ensure that Docker and Docker Compose are installed and running, and then use
-`testServer`. This script is a bash script, using it on Windows will require Windows Subsystem for Linux or Git Bash.
+`testServer`. This script is a bash script, using it on Windows will require Git Bash (Script isn't guaranteed to run on WSL).
 
 To use the test server run `sh testServer setup` and then start it with `sh testServer run`, if there are any issues try
 `sh testServer run-fallback`.
@@ -36,28 +36,26 @@ Contributions must follow the following rules:
 
 1) Lines should be 120 characters long at most, this is not a strict requirement, lines *can* be longer.
 
-2) Never use wildcard imports.
-
-3) Sometimes there can be name conflicts when importing, import them with a custom name, prefixed by the source. For
+2) Sometimes there can be name conflicts when importing, import them with a custom name, prefixed by the source. For
    example "LibAListener" and "LibBListener".
 
-4) Avoid excessive use of `.apply {}` or similar.
+3) Avoid excessive use of `.apply {}` or similar.
 
-5) If there is a large block of mostly similar code, align it with spaces, as it makes things more readable.
+4) If there is a large block of mostly similar code, align it with spaces, as it makes things more readable.
 
-6) To prevent IntelliJ from complaining, please `@Suppress("Unused")`for any entry points. Don't just tell IntelliJ to
+5) To prevent IntelliJ from complaining, please `@Suppress("Unused")`for any entry points. Don't just tell IntelliJ to
    ignore them for that class as that only applies to you, not everyone else.
 
-7) Code standards are generally higher in `net.horizonsend.ion.server` and `net.horizonsend.ion.proxy`. Code in
+6) Code standards are generally higher in `net.horizonsend.ion.server` and `net.horizonsend.ion.proxy`. Code in
    `net.horizonsend.ion.server.legacy` and `net.starlegacy` is generally older code which we intend to replace anyway
    and as such code standards are lower.
 
-8) Don't go out of your way to resolve deprecations in older code, however if you are working with deprecated code, you
+7) Don't go out of your way to resolve deprecations in older code, however if you are working with deprecated code, you
    are expected to update it.
 
-9) Always prefer using Minecraft's internal code instead of the Bukkit API, this is for a few reasons:
+8) Always prefer using Minecraft's internal code instead of the Bukkit API, this is for a few reasons:
    - The Bukkit API is slow and full of old legacy code.
    - A distant plan is to convert Ion into a Fabric / Quilt Mod.
 
-10) Within the server plugin coordinates should be handled internally as 3 separate numbers, or when returning from a
+9) Within the server plugin coordinates should be handled internally as 3 separate numbers, or when returning from a
     function, a `Triple<T, T, T>` should be used.
