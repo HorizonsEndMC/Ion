@@ -31,7 +31,7 @@ class RayTracedParticleProjectile(
 	val shooter: Entity?,
 	val balancing: ProjectileBalancing,
 	val particle: Particle,
-	val explosiveShot: Boolean,
+	private val explosiveShot: Boolean,
 	private val dustOptions: DustOptions?,
 	private val soundWhizz: String
 ) {
@@ -89,7 +89,7 @@ class RayTracedParticleProjectile(
 			var hasHeadshot = false
 
 			if (explosiveShot) {
-				location.world.createExplosion(hitEntity.location, 4.0f)
+				location.world.createExplosion(hitEntity.location, balancing.explosionPower)
 			}
 
 			if (hitEntity is LivingEntity) {

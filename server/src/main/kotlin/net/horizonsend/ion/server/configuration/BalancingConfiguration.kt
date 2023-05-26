@@ -120,6 +120,7 @@ data class BalancingConfiguration(
 
 		val cannon: Singleshot = Singleshot(
 			damage = 0.5,
+			explosionPower = 4.0f,
 			damageFalloffMultiplier = 0.0,
 			magazineSize = 60,
 			ammoPerRefill = 20,
@@ -154,6 +155,7 @@ data class BalancingConfiguration(
 		@Serializable
 		data class Singleshot(
 			override val damage: Double,
+			override val explosionPower: Float = 0f,
 			override val damageFalloffMultiplier: Double,
 			override val magazineSize: Int,
 			override val ammoPerRefill: Int,
@@ -181,6 +183,7 @@ data class BalancingConfiguration(
 			val delay: Int,
 
 			override val damage: Double,
+			override val explosionPower: Float = 0f,
 			override val damageFalloffMultiplier: Double,
 			override val magazineSize: Int,
 			override val ammoPerRefill: Int,
@@ -224,6 +227,7 @@ data class BalancingConfiguration(
 		interface ProjectileBalancing {
 			val speed: Double
 			val damage: Double
+			val explosionPower: Float
 			val damageFalloffMultiplier: Double
 			val shouldPassThroughEntities: Boolean
 			val shotSize: Double
