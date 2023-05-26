@@ -18,6 +18,7 @@ import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
+import org.bukkit.Sound
 import org.bukkit.SoundCategory
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
@@ -31,6 +32,7 @@ class RayTracedParticleProjectile(
 	val shooter: Entity?,
 	val balancing: ProjectileBalancing,
 	val particle: Particle,
+	val explosiveShot: Boolean,
 	private val dustOptions: DustOptions?,
 	private val soundWhizz: String
 ) {
@@ -73,6 +75,10 @@ class RayTracedParticleProjectile(
 		if (hitBlock != null) {
 			location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
 			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
+			if (explosiveShot)	{
+				location.world.createExplosion(hitBlock.location, 4.0f)
+				location.world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, .5f, 1.4f)
+			}
 			return true
 		}
 
@@ -82,6 +88,10 @@ class RayTracedParticleProjectile(
 			val hitLocation = rayTraceResult.hitPosition.toLocation(hitEntity.world)
 			val hitPosition = rayTraceResult.hitPosition
 			var hasHeadshot = false
+
+			if (explosiveShot) {
+				location.world.createExplosion(hitEntity.location, 4.0f)
+			}
 
 			if (hitEntity is LivingEntity) {
 				if (balancing.shouldBypassHitTicks) hitEntity.noDamageTicks = 0

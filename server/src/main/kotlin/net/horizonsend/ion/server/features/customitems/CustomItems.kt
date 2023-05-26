@@ -66,6 +66,7 @@ object CustomItems {
 				soundShell = "blaster.pistol.shell",
 				soundReloadStart = "blaster.pistol.reload.start",
 				soundReloadFinish = "blaster.pistol.reload.finish",
+				explosiveShot = false,
 				balancingSupplier = IonServer.balancing.energyWeapons::pistol
 			) {}
 		)
@@ -85,6 +86,7 @@ object CustomItems {
 				soundShell = "blaster.rifle.shell",
 				soundReloadStart = "blaster.rifle.reload.start",
 				soundReloadFinish = "blaster.rifle.reload.finish",
+				explosiveShot = false,
 				balancingSupplier = IonServer.balancing.energyWeapons::rifle
 			) {}
 		)
@@ -104,6 +106,7 @@ object CustomItems {
 				soundShell = "blaster.submachine_blaster.shell",
 				soundReloadStart = "blaster.submachine_blaster.reload.start",
 				soundReloadFinish = "blaster.submachine_blaster.reload.finish",
+				explosiveShot = false,
 				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
@@ -144,6 +147,7 @@ object CustomItems {
 				soundShell = "blaster.shotgun.shell",
 				soundReloadStart = "blaster.shotgun.reload.start",
 				soundReloadFinish = "blaster.shotgun.reload.finish",
+				explosiveShot = false,
 				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
@@ -167,7 +171,28 @@ object CustomItems {
 				soundShell = "blaster.sniper.shell",
 				soundReloadStart = "blaster.sniper.reload.start",
 				soundReloadFinish = "blaster.sniper.reload.finish",
+				explosiveShot = false,
 				balancingSupplier = IonServer.balancing.energyWeapons::sniper
+			) {}
+		)
+
+	val CANNON =
+		register(
+			object : Blaster<Singleshot>(
+				identifier = "CANNON",
+				material = IRON_HOE,
+				customModelData = 3,
+				displayName = text("Blaster Cannon", RED, BOLD).decoration(ITALIC, false),
+				magazineType = STANDARD_MAGAZINE,
+				particleSize = 0.80f,
+				soundRange = 50.0,
+				soundFire = "blaster.cannon.shoot",
+				soundWhizz = "blaster.whizz.standard",
+				soundShell = "blaster.sniper.shell",
+				soundReloadStart = "blaster.cannon.reload.start",
+				soundReloadFinish = "blaster.cannon.reload.finish",
+				explosiveShot = true,
+				balancingSupplier = IonServer.balancing.energyWeapons::cannon
 			) {}
 		)
 
@@ -179,6 +204,7 @@ object CustomItems {
 	val SMB_RECEIVER = register("SMB_RECEIVER", 504, text("SMB Receiver"))
 	val SNIPER_RECEIVER = register("SNIPER_RECEIVER", 505, text("Sniper Receiver"))
 	val SHOTGUN_RECEIVER = register("SHOTGUN_RECEIVER", 506, text("Shotgun Receiver"))
+	val CANNON_RECEIVER = register("CANNON_RECEIVER", 507, text("Cannon_Reciever"))
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, component: Component): CustomItem {
