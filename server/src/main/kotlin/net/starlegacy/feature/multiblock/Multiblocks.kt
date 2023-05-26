@@ -42,7 +42,7 @@ import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass2
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass3
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
-import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.misc.MobDefender

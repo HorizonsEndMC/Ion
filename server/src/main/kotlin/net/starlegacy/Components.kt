@@ -16,7 +16,7 @@ import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CombatNPCs
-import net.starlegacy.feature.misc.CryoPods
+import net.horizonsend.ion.server.features.cryopods.CryoPods
 import net.starlegacy.feature.misc.CustomRecipes
 import net.starlegacy.feature.misc.Decomposers
 import net.starlegacy.feature.misc.GameplayTweaks
@@ -57,7 +57,7 @@ import net.starlegacy.feature.tutorial.TutorialManager
 import net.starlegacy.util.Notify
 import net.starlegacy.util.redisaction.RedisActions
 
-val components = listOf(
+val components: List<SLComponent> = listOf(
 	RedisActions,
 	Caches,
 	Notify,
@@ -72,7 +72,6 @@ val components = listOf(
 
 	CombatNPCs,
 
-	CryoPods,
 	CustomRecipes,
 	GameplayTweaks,
 

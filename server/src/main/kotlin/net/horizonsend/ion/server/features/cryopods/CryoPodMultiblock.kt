@@ -1,11 +1,14 @@
-package net.starlegacy.feature.multiblock.misc
+package net.horizonsend.ion.server.features.cryopods
 
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
-import org.bukkit.ChatColor
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import java.util.UUID
+import java.util.*
 
 object CryoPodMultiblock : Multiblock() {
 	override val name = "cryopod"
@@ -55,25 +58,12 @@ object CryoPodMultiblock : Multiblock() {
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.setLine(1, ChatColor.GREEN.toString() + "[PASSIVE]")
-		sign.setLine(2, ChatColor.MAGIC.toString() + player.uniqueId.toString())
-		sign.setLine(3, player.name)
+		sign.line(1, text("[PASSIVE]").color(NamedTextColor.RED))
+		sign.line(2, text(player.uniqueId.toString()).decorate(TextDecoration.OBFUSCATED))
+		sign.line(3, text(player.name))
 	}
 
 	fun isOwner(sign: Sign, player: Player): Boolean {
-		return ChatColor.stripColor(sign.getLine(2)) == player.uniqueId.toString() ||
-			ChatColor.stripColor(sign.getLine(2)) == player.uniqueId.hashCode().toString()
-	}
-
-	fun getOwner(sign: Sign): UUID? {
-		return getOwner(sign.lines)
-	}
-
-	fun getOwner(lines: Array<String>): UUID? {
-		return try {
-			UUID.fromString(ChatColor.stripColor(lines[2]))
-		} catch (exception: Exception) {
-			UUID.fromString(lines[3])
-		}
+		return (sign.line(2) as TextComponent).content() == player.uniqueId.toString()
 	}
 }

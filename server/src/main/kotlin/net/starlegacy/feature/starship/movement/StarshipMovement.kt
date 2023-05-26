@@ -2,12 +2,17 @@ package net.starlegacy.feature.starship.movement
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import net.horizonsend.ion.common.database.DBLocation
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
-import net.starlegacy.feature.misc.CryoPods
+import net.horizonsend.ion.server.features.cryopods.CryoPods
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -28,6 +33,8 @@ import org.bukkit.entity.EnderCrystal
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.transactionScope
 import kotlin.collections.set
 import kotlin.math.sqrt
 
@@ -227,16 +234,17 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun updateSubsystems(world2: World) {
-		for (subsystem in starship.subsystems) {
-			val newPos = displacedVec(subsystem.pos)
-			subsystem.pos = newPos
-			if (subsystem is CryoSubsystem) {
-				val pod = subsystem.pod
-				if (pod.world != world2.name || pod.pos != newPos) {
-					if (CryoPods.isSelected(pod)) {
-						CryoPods.setCryoPod(pod.player, world2.name, newPos)
+		CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
+			for (subsystem in starship.subsystems) {
+				launch {
+					val newPos = displacedVec(subsystem.pos)
+					subsystem.pos = newPos
+
+					if (subsystem is CryoSubsystem) {
+						transaction {
+							subsystem.pod.location = DBLocation(world2.name, newPos.triple())
+						}
 					}
-					subsystem.pod = CryoPods.CryoPod(pod.player, world2.name, newPos)
 				}
 			}
 		}

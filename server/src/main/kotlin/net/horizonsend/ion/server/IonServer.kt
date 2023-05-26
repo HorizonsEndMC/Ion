@@ -33,6 +33,7 @@ import net.starlegacy.feature.space.SpaceMap
 import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
+import net.starlegacy.util.Notify
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.entity.Player
@@ -141,8 +142,9 @@ object IonServer : JavaPlugin() {
 				val message = getUpdateMessage(dataFolder) ?: return@Runnable
 				slF4JLogger.info(message)
 
-				DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("changelog")
+				DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
 					?.sendMessage("${configuration.serverName} $message")
+				Notify.discord("${configuration.serverName} $message")
 			},
 			1
 		)

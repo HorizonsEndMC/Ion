@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.miscellaneous
 
+import net.horizonsend.ion.common.database.DBLocation
+import net.horizonsend.ion.common.database.DoubleLocation
+import net.horizonsend.ion.common.database.PlayerData
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
 import net.milkbowl.vault.economy.Economy
@@ -20,10 +23,12 @@ import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import net.minecraft.world.level.chunk.LevelChunk
+import net.starlegacy.util.Vec3i
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.entity.Entity
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -43,6 +48,12 @@ fun mainThreadCheck() {
 		)
 	}
 }
+
+operator fun PlayerData.Companion.get(player: Player) = PlayerData[player.uniqueId]!!
+fun DBLocation.bukkit() = Location(Bukkit.getWorld(world)!!, coords.first, coords.second, coords.third)
+fun DBLocation.vec3i() = Vec3i(coords.first.toInt(), coords.second.toInt(), coords.third.toInt())
+
+fun Location.db() = DBLocation(world.name, DoubleLocation(x, y, z))
 
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle

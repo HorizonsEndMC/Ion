@@ -4,21 +4,17 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.io.File
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.common.database.Nation
-import net.horizonsend.ion.common.database.NationInvite
-import net.horizonsend.ion.common.database.PlayerAchievement
-import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.database.PlayerVoteTime
+import net.horizonsend.ion.common.database.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import redis.clients.jedis.JedisPooled
 
 object Connectivity {
-	private lateinit var database: Database
-	private lateinit var datasource: HikariDataSource
+	lateinit var database: Database
+	lateinit var datasource: HikariDataSource
 
-	private lateinit var jedisPool: JedisPooled
+	lateinit var jedisPool: JedisPooled
 
 	fun open(dataDirectory: File) {
 		val configuration: DatabaseConfiguration = Configuration.load(dataDirectory, "database.json")
@@ -39,6 +35,7 @@ object Connectivity {
 				PlayerAchievement.Table,
 				PlayerData.Table,
 				PlayerVoteTime.Table,
+				Cryopod.Table
 			)
 		}
 

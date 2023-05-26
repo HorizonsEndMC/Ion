@@ -1,10 +1,12 @@
 package net.starlegacy.feature.starship.active
 
-import net.starlegacy.feature.misc.CryoPods
+import net.horizonsend.ion.common.database.Cryopod
+import net.horizonsend.ion.server.features.cryopods.CryoPods
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblock
-import net.starlegacy.feature.multiblock.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
+import net.horizonsend.ion.server.miscellaneous.db
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblock
 import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
@@ -32,6 +34,7 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.LinkedList
 import java.util.Locale
 
@@ -56,6 +59,7 @@ object SubsystemDetector {
 				type == Material.GLOWSTONE ||
 				type == Material.REDSTONE_LAMP ||
 				type == Material.SEA_LANTERN ||
+				type == Material.MAGMA_BLOCK ||
 				type.isFroglight
 			) {
 				potentialThrusterBlocks += block
@@ -129,10 +133,8 @@ object SubsystemDetector {
 			}
 
 			is CryoPodMultiblock -> {
-				val cryoPod = CryoPods[sign]
-				if (cryoPod != null) {
-					starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryoPod)
-				}
+				val cryo = transaction { Cryopod[sign.location.db()] } ?: return
+				starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryo)
 			}
 		}
 	}
