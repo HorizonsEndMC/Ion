@@ -30,7 +30,9 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
+import org.bukkit.SoundCategory
 import org.bukkit.SoundCategory.PLAYERS
+import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R3.CraftParticle
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
@@ -55,6 +57,7 @@ abstract class Blaster<T : Balancing>(
 	val soundShell: String,
 	val soundReloadStart: String,
 	val soundReloadFinish: String,
+	val explosiveShot: Boolean,
 
 	private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
@@ -252,6 +255,7 @@ abstract class Blaster<T : Balancing>(
 			livingEntity,
 			balancing,
 			getParticleType(livingEntity),
+			explosiveShot,
 			if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), particleSize) else null,
 			soundWhizz
 		)

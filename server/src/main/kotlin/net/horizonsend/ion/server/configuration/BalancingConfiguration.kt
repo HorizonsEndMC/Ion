@@ -117,6 +117,29 @@ data class BalancingConfiguration(
 			mobDamageMultiplier = 2.0,
 			consumesAmmo = true
 		),
+
+		val cannon: Singleshot = Singleshot(
+			damage = 0.5,
+			damageFalloffMultiplier = 0.0,
+			magazineSize = 60,
+			ammoPerRefill = 20,
+			packetsPerShot = 1,
+			pitch = 1f,
+			range = 30.0,
+			recoil = 1.0f,
+			reload = 30,
+			shotSize = 0.25,
+			shouldAkimbo = false,
+			shouldBypassHitTicks = true,
+			shouldHeadshot = false,
+			shouldPassThroughEntities = false,
+			speed = 4.0,
+			timeBetweenShots = 12,
+			shotDeviation = 0.07,
+			mobDamageMultiplier = 2.0,
+			consumesAmmo = true
+		),
+
 		val standardMagazine: AmmoStorage = AmmoStorage(
 			capacity = 60,
 			refillType = "minecraft:lapis_lazuli",
