@@ -172,6 +172,8 @@ object ShipKillXP : SLComponent() {
 		val descending = data.map.toList().sortedByDescending { it.second.get() }.toMutableList()
 		val alertFeedbackColor = TextColor.color(Colors.ALERT)
 
+		if (descending.isEmpty()) return
+
 		// Begin killed ship formatting
 		val killedShipName = data.name?.let {
 			MiniMessage.miniMessage().deserialize(it)
