@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.miscellaneous
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
@@ -203,6 +204,16 @@ fun initializeCrafting() {
 		setIngredient('x', AIR)
 	}
 
+	// Cannon Receiver Crafting
+	itemStackShapeRecipe("cannon_receiver", CANNON_RECEIVER.constructItemStack()) {
+		shape("xxx", "xba", "gxx")
+
+		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+		setIngredient('b', ExactChoice(MINERAL_ALUMINUM.fullBlock.singleItem()))
+		setIngredient('g', GOLD_INGOT)
+		setIngredient('x', AIR)
+	}
+
 	// Pistol Crafting
 	itemStackShapeRecipe("pistol", PISTOL.constructItemStack()) {
 		shape("xxx", "apb", "cxx")
@@ -259,6 +270,17 @@ fun initializeCrafting() {
 		setIngredient('x', AIR)
 	}
 
+	itemStackShapeRecipe("cannon", CustomItems.SNIPER.constructItemStack()) {
+		shape("xax", "xcb", "pxx")
+
+		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+		setIngredient('p', CANNON_RECEIVER.constructItemStack())
+		setIngredient('b', GUN_BARREL.constructItemStack())
+		setIngredient('c', CIRCUITRY.constructItemStack())
+		setIngredient('x', AIR)
+		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+	}
+	
 	// Circuitry Crafting 1
 	itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
 		shape("qdq", "arg", "ccc")
