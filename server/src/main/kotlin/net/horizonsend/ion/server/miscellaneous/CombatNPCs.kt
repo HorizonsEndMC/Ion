@@ -89,11 +89,11 @@ object CombatNPCs : SLComponent() {
 			Tasks.syncDelay(20L * 60L * remainTimeMinutes) {
 				if (!npc.isSpawned) return@syncDelay
 
-				npc.entity.chunk.removePluginChunkTicket(IonServer)
 				inventories.remove(npc.id)
 				npcToPlayer.remove(playerId)
 
 				destroyNPC(npc)
+				npc.entity.chunk.removePluginChunkTicket(IonServer)
 			}
 		}
 
@@ -149,8 +149,10 @@ object CombatNPCs : SLComponent() {
 			npcToPlayer[event.player.uniqueId]?.let {
 				println("destroying")
 
+				it.entity.chunk.removePluginChunkTicket(IonServer)
 				destroyNPC(it)
 			}
+
 
 			if (transaction { PlayerData[event.player].wasKilled }) {
 				event.player.inventory.clear()
@@ -174,6 +176,8 @@ object CombatNPCs : SLComponent() {
 
 	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
 		npc.entity.location.world.getChunkAtAsync(npc.entity.location).thenApply { _ ->
+			npc.entity.chunk.removePluginChunkTicket(IonServer)
+
 			npc.destroy()
 			CitizensAPI.getNPCRegistry().deregister(npc)
 		}
