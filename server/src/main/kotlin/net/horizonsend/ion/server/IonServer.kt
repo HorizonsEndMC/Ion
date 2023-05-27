@@ -151,7 +151,7 @@ object IonServer : JavaPlugin() {
 	override fun onDisable() {
 		IonWorld.unregisterAll()
 		legacyDisable()
-		CombatNPCs.npcToPlayer.values.forEach(CitizensAPI.getNPCRegistry()::deregister)
+		CombatNPCs.npcToPlayer.values.forEach(CombatNPCs::destroyNPC)
 		Connectivity.close()
 	}
 

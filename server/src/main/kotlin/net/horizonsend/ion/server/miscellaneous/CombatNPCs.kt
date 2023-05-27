@@ -13,6 +13,7 @@ import net.starlegacy.listen
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
+import org.bukkit.Chunk
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.event.Event
@@ -25,6 +26,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 object CombatNPCs : SLComponent() {
 	private const val remainTimeMinutes = 4L
@@ -78,8 +80,8 @@ object CombatNPCs : SLComponent() {
 
 				inventories.remove(npc.id)
 				npcToPlayer.remove(playerId)
-				npc.destroy()
-				CitizensAPI.getNPCRegistry().deregister(npc)
+
+				destroyNPC(npc)
 			}
 		}
 
@@ -102,7 +104,7 @@ object CombatNPCs : SLComponent() {
 			inventories.remove(npc.id)
 			npcToPlayer.remove(playerId)
 
-			CitizensAPI.getNPCRegistry().deregister(npc)
+			destroyNPC(npc)
 
 			transaction { PlayerData[playerId]?.wasKilled = true }
 			Tasks.async {
@@ -117,9 +119,8 @@ object CombatNPCs : SLComponent() {
 		listen<PlayerJoinEvent> { event ->
 			npcToPlayer[event.player.uniqueId]?.let {
 				println("destroying")
-				it.destroy()
 
-				CitizensAPI.getNPCRegistry().deregister(it)
+				destroyNPC(it)
 			}
 
 			if (transaction { PlayerData[event.player].wasKilled }) {
@@ -141,6 +142,12 @@ object CombatNPCs : SLComponent() {
 			}
 		}
 	}
+
+	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
+		npc.entity.location.world.getChunkAtAsync(npc.entity.location).thenApply { _ ->
+			npc.destroy()
+			CitizensAPI.getNPCRegistry().deregister(npc)
+		}
 }
 
 class CombatNPCKillEvent(val id: UUID, val name: String, val killer: Entity?) : Event() {
