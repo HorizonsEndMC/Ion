@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCDeathEvent
+import net.citizensnpcs.api.npc.NPC
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
@@ -54,7 +55,7 @@ object CombatNPCs : SLComponent() {
 
 	/** Map of NPC ID to its inventory */
 	private val inventories: MutableMap<Int, Array<ItemStack?>> = mutableMapOf()
-	private val npcToPlayer = mutableMapOf<Int, UUID>()
+	private val npcToPlayer = mutableMapOf<UUID, NPC>()
 
 	override fun onEnable() {
 		// weirdness happens when someone already logged in logs on. this is my hacky fix.
@@ -94,23 +95,23 @@ object CombatNPCs : SLComponent() {
 			npc.spawn(player.location)
 
 			inventories[npc.id] = inventoryCopy
-			npcToPlayer[npc.id] = playerId
+			npcToPlayer[playerId] = npc
 
 			Tasks.syncDelay(20L * 60L * remainTimeMinutes) {
 				if (!npc.isSpawned) return@syncDelay
 
 				inventories.remove(npc.id)
-				npcToPlayer.remove(npc.id)
+				npcToPlayer.remove(playerId)
 				npc.destroy()
+				CitizensAPI.getNPCRegistry().deregister(npc)
 			}
 		}
 
 		listen<NPCDeathEvent>(EventPriority.LOWEST) { event ->
 			val npc = event.npc
-			if (!npcToPlayer.containsKey(npc.id)) return@listen
+			val playerId = npcToPlayer.entries.find { it.value.id == npc.id }?.key ?: return@listen
 
 			val entity = npc.entity
-			val playerId = npcToPlayer[npc.id]!!
 			val drops: Array<ItemStack?> = inventories.remove(npc.id) ?: arrayOf()
 
 			val killer: Entity? = (entity.lastDamageCause as? EntityDamageByEntityEvent)?.damager
@@ -123,7 +124,9 @@ object CombatNPCs : SLComponent() {
 			event.drops.addAll(drops)
 
 			inventories.remove(npc.id)
-			npcToPlayer.remove(npc.id)
+			npcToPlayer.remove(playerId)
+
+			CitizensAPI.getNPCRegistry().deregister(npc)
 
 			transaction { PlayerData[playerId]?.wasKilled = true }
 			Tasks.async {
@@ -136,9 +139,11 @@ object CombatNPCs : SLComponent() {
 		}
 
 		listen<PlayerJoinEvent> { event ->
-			npcToPlayer.entries.find { it.value == event.player.uniqueId }?.let {
+			npcToPlayer[event.player.uniqueId]?.let {
 				println("destroying")
-				CitizensAPI.getNPCRegistry().getById(it.key).destroy()
+				it.destroy()
+
+				CitizensAPI.getNPCRegistry().deregister(it)
 			}
 
 			if (transaction { PlayerData[event.player].wasKilled }) {

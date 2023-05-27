@@ -22,7 +22,7 @@ object Notify : SLComponent() {
 	infix fun all(message: String) {
 		val colorized = message.colorize()
 		online(colorized)
-		discord(colorized.stripColor())
+		discord(MiniMessage.miniMessage().stripTags(message))
 	}
 
 	fun player(player: UUID, message: String) {
