@@ -10,6 +10,7 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 	val uuid by Table.uuid
 	var username by Table.username
 	var snowflake by Table.snowflake
+	var wasKilled by Table.wasKilled
 
 	val achievements by PlayerAchievement referrersOn PlayerAchievement.Table.player
 	val voteTimes by PlayerVoteTime referrersOn PlayerVoteTime.Table.player
@@ -17,7 +18,6 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 
 	var particle by Table.particle
 	var color by Table.color
-
 	val selectedCryopod get() = cryopods.find { it.active }
 
 	companion object : IonEntityClass<UUID, PlayerData>(Table, PlayerData::class.java, ::PlayerData) {
@@ -29,6 +29,7 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 		val uuid = uuid("uuid").entityId()
 		val username = varchar("username", 16).uniqueIndex()
 		val snowflake = long("snowflake").nullable().uniqueIndex()
+		val wasKilled = bool("wasKilled").default(false)
 
 		val particle = varchar("particle", 24).nullable()
 		val color = integer("color").nullable()
