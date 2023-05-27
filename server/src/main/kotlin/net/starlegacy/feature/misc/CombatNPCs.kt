@@ -122,6 +122,9 @@ object CombatNPCs : SLComponent() {
 
 			event.drops.addAll(drops)
 
+			inventories.remove(npc.id)
+			npcToPlayer.remove(npc.id)
+
 			transaction { PlayerData[playerId]?.wasKilled = true }
 			Tasks.async {
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
@@ -134,6 +137,7 @@ object CombatNPCs : SLComponent() {
 
 		listen<PlayerJoinEvent> { event ->
 			npcToPlayer.entries.find { it.value == event.player.uniqueId }?.let {
+				println("destroying")
 				CitizensAPI.getNPCRegistry().getById(it.key).destroy()
 			}
 
