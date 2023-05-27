@@ -159,7 +159,10 @@ class MiningLaserSubsystem(
 			}.runTaskTimer(IonServer, 0L, 5L)
 
 		starship.serverLevel.world.players.forEach {
-			if (it.location.distance(multiblock.getFirePointOffset().plus(pos).toLocation(starship.serverLevel.world)) < multiblock.range * 2) {
+			if (it.location.distance(
+					multiblock.getFirePointOffset().plus(pos).toLocation(starship.serverLevel.world)
+				) < multiblock.range * 2
+			) {
 				it.stopSound(multiblock.sound)
 
 				starship.serverLevel.world.playSound(
@@ -210,7 +213,7 @@ class MiningLaserSubsystem(
 			return
 		}
 
-		if (!SpaceWorlds.contains(starship.serverLevel.world)){
+		if (!SpaceWorlds.contains(starship.serverLevel.world)) {
 			starship.sendMessage(
 				Component.text("The Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} wasn't able to initialize its gravitational collection beam and was disabled! (Move to a space world)")
 			)
@@ -273,6 +276,8 @@ class MiningLaserSubsystem(
 					"Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} is trying to break air!"
 				).color(NamedTextColor.RED)
 			)
+
+			setFiring(false, sign)
 		}
 
 		// Sound is 5 seconds, ticks every quarter second
