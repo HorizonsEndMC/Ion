@@ -181,14 +181,6 @@ object ProtectionListener : SLEventListener() {
 			return
 		}
 
-		// if the damaged entity is not a player and they're not an armor stand combat npc, ignore it
-		if (event.entity !is Player) {
-			val armorStand = event.entity as? ArmorStand ?: return
-			if (!CombatNPCs.isNPC(armorStand)) {
-				return
-			}
-		}
-
 		if (isProtectedCity(event.entity.location) || isProtectedCity(event.damager.location)) {
 			event.isCancelled = true
 		}
