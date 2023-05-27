@@ -221,7 +221,7 @@ object StationSieges : SLComponent() {
 		val nationName = transaction { Nation[nation]!!.name }
 		val oldNationName = transaction { Nation[oldNation]!!.name }
 
-		Notify.online("$GOLD${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)")
+		Notify.online("<gold>${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)")
 		Notify.discord("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
 
 		player.rewardAchievement(Achievement.SIEGE_STATION)
@@ -289,7 +289,7 @@ object StationSieges : SLComponent() {
 			val oldNationName = oldNation?.let { transaction { Nation[it]!!.name } } ?: "None"
 			val nowCaptured = CapturableStation.count(CapturableStation::nation eq playerNation)
 			val playerName = player.name
-			Notify online "${GOLD}Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
+			Notify online "<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
 				" $nationName now has $nowCaptured stations!"
 			Notify discord "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"
 			SLXP.addAsync(player, NATIONS_BALANCE.capturableStation.siegerXP)

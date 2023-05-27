@@ -129,7 +129,7 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.delete(settlement)
 
-		Notify all "&e${sender.name} has disbanded their settlement $settlementName!"
+		Notify all "<yellow>${sender.name} has disbanded their settlement $settlementName!"
 
 		// No manual territory cache update is needed as settlement removal from territory should automatically trigger that
 		// Additionally, all members of the settlement should be updated as their player cache will be updated,
@@ -154,7 +154,7 @@ internal object SettlementCommand : SLCommand() {
 		if (Settlement.isInvitedTo(settlementId, slPlayerId)) {
 			Settlement.removeInvite(settlementId, slPlayerId)
 			sender msg "&bRemoved $player's invite to your settlement."
-			Notify.player(playerId, "&eYou were un-invited from $settlementName by ${sender.name}")
+			Notify.player(playerId, "<yellow>You were un-invited from $settlementName by ${sender.name}")
 		} else {
 			Settlement.addInvite(settlementId, slPlayerId)
 			sender msg "&bInvited $player to your settlement."
@@ -188,7 +188,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.joinSettlement(sender.slPlayerId, settlementId)
 
-		Notify.online("&a${sender.name} joined the settlement $settlementName!")
+		Notify.online("<green>${sender.name} joined the settlement $settlementName!")
 
 		// No manual territory cache updating is needed, as the player is added to the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -204,7 +204,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(sender.slPlayerId)
 
-		Notify.online("&e${sender.name} left the settlement $settlementName!")
+		Notify.online("<yellow>${sender.name} left the settlement $settlementName!")
 
 		// No manual territory cache updating is needed, as the player is removed from the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -232,7 +232,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(slPlayerId)
 
-		Notify.online("&e${sender.name} kicked $player from settlement $settlementName!")
+		Notify.online("<yellow>${sender.name} kicked $player from settlement $settlementName!")
 	}
 
 	@Subcommand("set name")
@@ -257,7 +257,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.setName(settlementId, newName)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online("&b${sender.name} renamed their settlement $oldName to $newName!")
+		Notify.online("<aqua>${sender.name} renamed their settlement $oldName to $newName!")
 	}
 
 	@Subcommand("set leader")

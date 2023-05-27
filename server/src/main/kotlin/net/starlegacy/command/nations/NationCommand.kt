@@ -328,7 +328,7 @@ internal object NationCommand : SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify all "&6${sender.name}&e kicked settlement $settlementName from the nation ${getNationName(nationId)}"
+		Notify all "<gold>${sender.name}&e kicked settlement $settlementName from the nation ${getNationName(nationId)}"
 	}
 
 	@Suppress("unused")
@@ -354,7 +354,7 @@ internal object NationCommand : SLCommand() {
 		transaction { Nation[nationId]?.name = newName }
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online("&6${sender.name}&d renamed their nation &c$oldName&d to &a$newName&d!")
+		Notify.online("<gold>${sender.name}&d renamed their nation &c$oldName&d to &a$newName&d!")
 	}
 
 	@Suppress("unused")
@@ -386,7 +386,7 @@ internal object NationCommand : SLCommand() {
 
 		transaction { Nation[nationId]?.capital = settlementId as Oid<Any> }
 
-		Notify all "&6${sender.name}&d changed the capital of their nation ${getNationName(nationId)} to $settlementName!"
+		Notify all "<gold>${sender.name}&d changed the capital of their nation ${getNationName(nationId)} to $settlementName!"
 	}
 
 	@Suppress("unused")
@@ -420,7 +420,7 @@ internal object NationCommand : SLCommand() {
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
-		Notify.online("&6${sender.name}&d claimed the territory &2${territory.name}&d for their nation &c$nationName&d!")
+		Notify.online("<gold>${sender.name}&d claimed the territory &2${territory.name}&d for their nation &c$nationName&d!")
 	}
 
 	@Suppress("unused")
@@ -441,7 +441,7 @@ internal object NationCommand : SLCommand() {
 		Territory.setNation(regionTerritory.id, null)
 
 		val nationName = getNationName(nationId)
-		Notify.online("&6${sender.name}&d unclaimed the territory &2$territoryName&d from their nation &c$nationName&d!")
+		Notify.online("<gold>${sender.name}&d unclaimed the territory &2$territoryName&d from their nation &c$nationName&d!")
 	}
 
 	@Suppress("unused")

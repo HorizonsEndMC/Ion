@@ -65,7 +65,7 @@ object NationsMasterTasks {
 		Settlement.delete(settlementId)
 
 		if (sendMessage) {
-			val message = "&cSettlement $name on ${territory.world} at ${territory.centerX}, ${territory.centerZ} " +
+			val message = "<red>Settlement $name on ${territory.world} at ${territory.centerX}, ${territory.centerZ} " +
 				"was purged for ${NATIONS_BALANCE.settlement.inactivityDays}+ days of complete inactivity."
 			Notify all message
 		}
@@ -77,7 +77,7 @@ object NationsMasterTasks {
 		transaction { nation.deleteNation() }
 
 		if (sendMessage) {
-			val message = "&cNation ${nation.name} had its capital settlement purge and was purged itself!"
+			val message = "<red>Nation ${nation.name} had its capital settlement purge and was purged itself!"
 			Notify all message
 		}
 	}
@@ -116,8 +116,8 @@ object NationsMasterTasks {
 				transaction { Nation[nationId]!!._balance += stationIncome }
 				Notify.player(
 					Settlement.findById(nation!!.capital as Oid<Settlement>)!!.leader.uuid,
-					"&2Your nation received &6${activityCredits.toCreditsString()}&2 " +
-						"for activity credits from &a$activeCount&2 active members"
+					"<dark_green>Your nation received &6${activityCredits.toCreditsString()}<dark_green> " +
+						"for activity credits from &a$activeCount<dark_green> active members"
 				)
 			}
 		}
@@ -164,10 +164,10 @@ object NationsMasterTasks {
 				Settlement.withdraw(settlementId, tax)
 
 				if (!isActive) {
-					Notify.online("&2Settlement City $name has paid its hourly tax of $taxCredits, so it's protected!")
+					Notify.online("<dark_green>Settlement City $name has paid its hourly tax of $taxCredits, so it's protected!")
 				}
 			} else {
-				val message = "&cSettlement City $name failed to pay its hourly tax of $taxCredits! " +
+				val message = "<red>Settlement City $name failed to pay its hourly tax of $taxCredits! " +
 					"Until it pays its tax, it does not have settlement city protection."
 				Notify.online(message)
 			}
@@ -178,7 +178,7 @@ object NationsMasterTasks {
 				)
 
 				if (activeMembers < NATIONS_BALANCE.settlement.cityMinActive) {
-					Notify.online("&cSettlement city $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection.")
+					Notify.online("<red>Settlement city $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection.")
 					willBeActive = false
 				}
 			}
@@ -200,7 +200,7 @@ object NationsMasterTasks {
 			val offlinePlayer = Bukkit.getOfflinePlayer(owner.uuid)
 
 			if (!VAULT_ECO.has(offlinePlayer, rent.toDouble())) {
-				Notify.settlement(zone.settlement, "&c${offlinePlayer.name} failed to pay rent for zone ${zone.name}")
+				Notify.settlement(zone.settlement, "<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}")
 				continue
 			}
 
