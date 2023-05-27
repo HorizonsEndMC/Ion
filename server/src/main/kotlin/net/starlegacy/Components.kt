@@ -15,8 +15,7 @@ import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.feature.misc.CombatNPCs
-import net.horizonsend.ion.server.features.cryopods.CryoPods
+import net.horizonsend.ion.server.miscellaneous.CombatNPCs
 import net.starlegacy.feature.misc.CustomRecipes
 import net.starlegacy.feature.misc.Decomposers
 import net.starlegacy.feature.misc.GameplayTweaks

@@ -24,7 +24,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.NationRelation
-import net.starlegacy.feature.misc.CombatNPCKillEvent
+import net.horizonsend.ion.server.miscellaneous.CombatNPCKillEvent
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent
 import net.starlegacy.feature.starship.PilotedStarships.getRawDisplayName
 import net.starlegacy.feature.starship.StarshipType

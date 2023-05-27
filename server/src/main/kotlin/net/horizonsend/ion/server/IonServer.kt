@@ -3,6 +3,7 @@ package net.horizonsend.ion.server
 import co.aikar.commands.PaperCommandManager
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
+import net.citizensnpcs.api.CitizensAPI
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
@@ -19,10 +20,7 @@ import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
-import net.horizonsend.ion.server.miscellaneous.commands
-import net.horizonsend.ion.server.miscellaneous.initializeCrafting
-import net.horizonsend.ion.server.miscellaneous.listeners
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.*
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.feature.economy.city.CityNPCs
@@ -153,6 +151,7 @@ object IonServer : JavaPlugin() {
 	override fun onDisable() {
 		IonWorld.unregisterAll()
 		legacyDisable()
+		CombatNPCs.npcToPlayer.values.forEach(CitizensAPI.getNPCRegistry()::deregister)
 		Connectivity.close()
 	}
 
