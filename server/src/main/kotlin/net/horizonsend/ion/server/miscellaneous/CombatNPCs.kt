@@ -5,6 +5,7 @@ import net.citizensnpcs.api.event.NPCDeathEvent
 import net.citizensnpcs.api.npc.NPC
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.text.Component.text
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -23,7 +24,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -75,9 +78,18 @@ object CombatNPCs : SLComponent() {
 			inventories[npc.id] = inventoryCopy
 			npcToPlayer[playerId] = npc
 
+			npc.entity.persistentDataContainer.set(
+				NamespacedKeys.COMBAT_NPC,
+				PersistentDataType.LONG,
+				System.currentTimeMillis()
+			)
+
+			npc.entity.chunk.addPluginChunkTicket(IonServer)
+
 			Tasks.syncDelay(20L * 60L * remainTimeMinutes) {
 				if (!npc.isSpawned) return@syncDelay
 
+				npc.entity.chunk.removePluginChunkTicket(IonServer)
 				inventories.remove(npc.id)
 				npcToPlayer.remove(playerId)
 
@@ -90,9 +102,26 @@ object CombatNPCs : SLComponent() {
 			val playerId = npcToPlayer.entries.find { it.value.id == npc.id }?.key ?: return@listen
 
 			val entity = npc.entity
-			val drops: Array<ItemStack?> = inventories.remove(npc.id) ?: arrayOf()
+			entity.chunk.removePluginChunkTicket(IonServer)
 
 			val killer: Entity? = (entity.lastDamageCause as? EntityDamageByEntityEvent)?.damager
+
+
+			if (entity.persistentDataContainer.has(NamespacedKeys.COMBAT_NPC)) {
+				val time = entity.persistentDataContainer.get(NamespacedKeys.COMBAT_NPC, PersistentDataType.LONG)!!
+
+				if ((System.currentTimeMillis() - time) >= 1000L * 60 * remainTimeMinutes) {
+					killer?.userError("Combat NPC expired!")
+
+					inventories.remove(npc.id)
+					npcToPlayer.remove(playerId)
+
+					destroyNPC(npc)
+					return@listen
+				}
+			}
+
+			val drops: Array<ItemStack?> = inventories.remove(npc.id) ?: arrayOf()
 
 			Bukkit.getPlayer(playerId)?.let { onlinePlayer ->
 				log.warn("NPC for ${onlinePlayer.name} was killed while they were online!")

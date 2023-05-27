@@ -38,6 +38,8 @@ object NamespacedKeys {
 	val CUSTOM_ITEM = key("CustomItem")
 	val EDEN_FIX = key("EdenFix")
 
+	val COMBAT_NPC = key("combatnpc")
+
 	@Deprecated("") val MULTIBLOCK = key("multiblock")
 
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
