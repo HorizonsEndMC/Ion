@@ -30,6 +30,7 @@ class ConvertCommand : BaseCommand() { // I imagine we'll need more than blaster
 			1 -> CustomItems.PISTOL
 			2 -> CustomItems.RIFLE
 			3 -> CustomItems.SNIPER
+			4 -> CustomItems.CANNON
 			else -> {
 				sender.information("Sorry, but there is no current equivalent for the cannon, one will come soon")
 				return
