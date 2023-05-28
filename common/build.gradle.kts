@@ -21,7 +21,7 @@ dependencies {
 	api(kotlin("reflect"))
 	api(kotlin("stdlib"))
 
-	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
 
 	api("org.jetbrains.exposed:exposed-core:0.41.1")
