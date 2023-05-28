@@ -153,7 +153,7 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
             val color = distanceColor(distance)
 
             contactsList.add(ContactsData(
-                name = text((starship as ActivePlayerStarship).pilot?.name ?: "Unpiloted Starship").color(color),
+                name = text((starship as ActivePlayerStarship).pilot?.name ?: "Unpiloted Ship").color(color),
                 prefix = when (starship.type) {
                     STARFIGHTER -> text("\uE000").font(key("horizonsend:sidebar"))
                     GUNSHIP -> text("\uE001").font(key("horizonsend:sidebar"))
