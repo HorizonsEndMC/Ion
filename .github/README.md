@@ -1,4 +1,7 @@
-## Ion
+<p align="center"><img width="100" height="100" src="https://github.com/HorizonsEndMC/Ion/assets/40183121/ac9eccba-055b-4210-bb01-bad09938d0a4"></p>
+
+# <p align="center"> Ion </p>
+
 Ion is the main plugin used on Horizon's End, it is split into 2 plugins, a Waterfall Proxy Plugin and a Paper Server
 Plugin. Ion uses the released Star Legacy Plugin as its foundations, the original source of which can be found at
 [MicleBrick/StarLegacy](https://github.com/MicleBrick/StarLegacy), although we are slowly looking to replace
@@ -12,6 +15,12 @@ however there are no plans for this in the near future.
 
 If you wish to help develop Ion, then it's best to coordinate with Horizon's End Staff in the
 [Development Discord](https://discord.gg/p6mghBKU).
+
+Thanks to all the people who already contributed!
+
+<a href="https://github.com/HorizonsEndMC/Ion/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=HorizonsEndMC/Ion" />
+</a>
 
 ### Building & Testing
 
