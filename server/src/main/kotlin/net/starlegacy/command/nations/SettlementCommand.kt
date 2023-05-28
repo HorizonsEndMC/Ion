@@ -533,7 +533,7 @@ internal object SettlementCommand : SLCommand() {
 		message.append(text("Balance: ").append(text(data.balance).color(NamedTextColor.WHITE)))
 		message.append(newline())
 		if (data.cityState != null && data.tradeTax != null) {
-			message.append(text("Trade Tax: ").append(text(data.tradeTax!!).color(NamedTextColor.WHITE)))
+			message.append(text("Trade Tax: ").append(text("${(data.tradeTax!! * 100).toInt()}%").color(NamedTextColor.WHITE)))
 			message.append(newline())
 		}
 
