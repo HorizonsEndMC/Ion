@@ -18,6 +18,8 @@ open class IonEntityClass<I : Comparable<I>, out E : Entity<I>>(val inner: Entit
 
 	fun find(op: Op<Boolean>): SizedIterable<E> = inner.find(op)
 
+	fun all(): SizedIterable<E> = inner.all()
+
 	fun new(id: I?, init: E.() -> Unit): E = inner.new(id, init)
 
 	fun new(init: E.() -> Unit): E = inner.new(init)

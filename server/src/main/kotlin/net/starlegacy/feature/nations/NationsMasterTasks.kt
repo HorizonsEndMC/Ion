@@ -90,9 +90,9 @@ object NationsMasterTasks {
 		doZoneRent()
 	}
 
-	private fun doActivityCredits() {
-		for (nationId: Oid<Nation> in transaction { Nation.Table.slice(Nation.Table.objectId).selectAll().map { it[Nation.Table.objectId] } }) {
-			val nation = transaction { Nation[nationId] }
+	private fun doActivityCredits() = transaction {
+		for (nation: Nation in Nation.all()) {
+			val nationId = nation.objectId
 
 			// Give the nation its station income if it has stations
 			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), 4)
