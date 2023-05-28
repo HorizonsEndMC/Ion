@@ -532,9 +532,10 @@ internal object SettlementCommand : SLCommand() {
 
 		message.append(text("Balance: ").append(text(data.balance).color(NamedTextColor.WHITE)))
 		message.append(newline())
-		if (data.cityState != null && data.tradeTax != null)
+		if (data.cityState != null && data.tradeTax != null) {
 			message.append(text("Trade Tax: ").append(text(data.tradeTax!!).color(NamedTextColor.WHITE)))
-		message.append(newline())
+			message.append(newline())
+		}
 
 		val leaderRole = SettlementRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let { leader ->
