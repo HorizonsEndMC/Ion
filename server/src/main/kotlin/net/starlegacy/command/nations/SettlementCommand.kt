@@ -13,6 +13,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.repeatString
 import net.kyori.adventure.text.Component
@@ -314,7 +315,7 @@ internal object SettlementCommand : SLCommand() {
 			settlement.id,
 			org.litote.kmongo.setValue(Settlement::tradeTax, newTax.toDouble() / 100.0)
 		)
-		sender msg "&aSet tax to $newTax%"
+		sender.success("Set tax to $newTax")
 	}
 
 	@Subcommand("top|list")
@@ -530,6 +531,8 @@ internal object SettlementCommand : SLCommand() {
 		message.append(newline())
 
 		message.append(text("Balance: ").append(text(data.balance).color(NamedTextColor.WHITE)))
+		message.append(newline())
+		if (data.tradeTax != null) message.append(text("Trade Tax: ").append(text(data.tradeTax!!).color(NamedTextColor.WHITE)))
 		message.append(newline())
 
 		val leaderRole = SettlementRole.getHighestRole(cached.leader)
