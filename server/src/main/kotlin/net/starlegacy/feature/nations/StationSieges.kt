@@ -126,7 +126,7 @@ object StationSieges : SLComponent() {
 		val playerName = SLPlayer.getName(siege.siegerId) ?: "UNKNOWN"
 		val stationName = CapturableStation.findPropById(siege.stationId, CapturableStation::name) ?: "??NULL??"
 
-		Notify.online("${GOLD}Siege of Space Station $stationName by $playerName has failed!")
+		Notify.online("<gold>Siege of Space Station $stationName by $playerName has failed!")
 		Notify.discord("Siege of Space Station **$stationName** by **$playerName** has failed!")
 	}
 

@@ -111,7 +111,7 @@ internal object SettlementCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_SETTLEMENT)
 
-		Notify all "&a${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!"
+		Notify all "<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!"
 
 		// No manual territory cache update is needed as settlement creation should automatically trigger that
 	}

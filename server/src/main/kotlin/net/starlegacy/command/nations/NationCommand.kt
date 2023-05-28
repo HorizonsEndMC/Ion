@@ -190,7 +190,7 @@ internal object NationCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
 
-		Notify all "&e${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!"
+		Notify all "<yellow>${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!"
 	}
 
 	@Suppress("unused")
@@ -205,7 +205,7 @@ internal object NationCommand : SLCommand() {
 
 		transaction { Nation[nation]!!.deleteNation() }
 
-		Notify all "&eThe nation $nationName has been disbanded by its leader ${sender.name}!"
+		Notify all "<yellow>The nation $nationName has been disbanded by its leader ${sender.name}!"
 	}
 
 	@Suppress("unused")
@@ -241,14 +241,14 @@ internal object NationCommand : SLCommand() {
 			Notify.player(
 				player = leaderId,
 				message = "&bYour settlement is invited to the nation $nationName by ${sender.name}! " +
-					"To accept, use &e&o/nation join $nationName"
+					"To accept, use <yellow>&o/nation join $nationName"
 			)
 		} else {
 			transaction { nationInvite.delete() }
 			sender.success("Cancelled invite for settlement $settlementId to your nation")
 			Notify.player(
 				player = leaderId,
-				message = "&eYour settlement's invite to the nation $nationName has been revoked by ${sender.name}"
+				message = "<yellow>Your settlement's invite to the nation $nationName has been revoked by ${sender.name}"
 			)
 		}
 	}
@@ -291,7 +291,7 @@ internal object NationCommand : SLCommand() {
 		transaction { nationInvite!!.delete() }
 		Settlement.joinNation(settlementId, nationId)
 
-		Notify all "&dSettlement &b$settlementName&d joined the nation &c$nationName&d!"
+		Notify all "<pink>Settlement &b$settlementName<pink> joined the nation &c$nationName<pink>!"
 	}
 
 	@Suppress("unused")
@@ -308,7 +308,7 @@ internal object NationCommand : SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify all "&eSettlement &b${getSettlementName(settlementId)}&e seceded from the nation &c$nationName&e!"
+		Notify all "<yellow>Settlement &b${getSettlementName(settlementId)}<yellow> seceded from the nation &c$nationName<yellow>!"
 	}
 
 	@Suppress("unused")
@@ -328,7 +328,7 @@ internal object NationCommand : SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify all "<gold>${sender.name}&e kicked settlement $settlementName from the nation ${getNationName(nationId)}"
+		Notify all "<gold>${sender.name}<yellow> kicked settlement $settlementName from the nation ${getNationName(nationId)}"
 	}
 
 	@Suppress("unused")
@@ -354,7 +354,7 @@ internal object NationCommand : SLCommand() {
 		transaction { Nation[nationId]?.name = newName }
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online("<gold>${sender.name}&d renamed their nation &c$oldName&d to &a$newName&d!")
+		Notify.online("<gold>${sender.name}<pink> renamed their nation &c$oldName<pink> to &a$newName<pink>!")
 	}
 
 	@Suppress("unused")
@@ -386,7 +386,7 @@ internal object NationCommand : SLCommand() {
 
 		transaction { Nation[nationId]?.capital = settlementId as Oid<Any> }
 
-		Notify all "<gold>${sender.name}&d changed the capital of their nation ${getNationName(nationId)} to $settlementName!"
+		Notify all "<gold>${sender.name}<pink> changed the capital of their nation ${getNationName(nationId)} to $settlementName!"
 	}
 
 	@Suppress("unused")
@@ -420,7 +420,7 @@ internal object NationCommand : SLCommand() {
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
-		Notify.online("<gold>${sender.name}&d claimed the territory &2${territory.name}&d for their nation &c$nationName&d!")
+		Notify.online("<gold>${sender.name}<pink> claimed the territory &2${territory.name}<pink> for their nation &c$nationName<pink>!")
 	}
 
 	@Suppress("unused")
@@ -441,7 +441,7 @@ internal object NationCommand : SLCommand() {
 		Territory.setNation(regionTerritory.id, null)
 
 		val nationName = getNationName(nationId)
-		Notify.online("<gold>${sender.name}&d unclaimed the territory &2$territoryName&d from their nation &c$nationName&d!")
+		Notify.online("<gold>${sender.name}<pink> unclaimed the territory &2$territoryName<pink> from their nation &c$nationName<pink>!")
 	}
 
 	@Suppress("unused")

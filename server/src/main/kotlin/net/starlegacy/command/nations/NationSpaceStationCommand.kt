@@ -171,7 +171,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 		SpaceStation.create(nation, name, world.name, x, z, radius)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		Notify.all("&d${getNationName(nation)} &7established space station &b$name")
+		Notify.all("<pink>${getNationName(nation)} <gray>established space station <aqua>$name")
 	}
 
 	private fun requireStation(nation: Oid<Nation>, name: String) = SpaceStation.find(SpaceStation::nation eq nation)
@@ -194,7 +194,7 @@ object NationSpaceStationCommand : SLCommand() {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.DELETE_STATION)
 		SpaceStation.delete(spaceStation._id)
-		Notify.all("&d${getNationName(nation)} &7abandoned space station &b$station")
+		Notify.all("<pink>${getNationName(nation)} &7abandoned space station &b$station")
 	}
 
 	@Subcommand("resize")
