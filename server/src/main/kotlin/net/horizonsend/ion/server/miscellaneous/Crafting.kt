@@ -270,7 +270,7 @@ fun initializeCrafting() {
 		setIngredient('x', AIR)
 	}
 
-	itemStackShapeRecipe("cannon", CustomItems.SNIPER.constructItemStack()) {
+	itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
 		shape("xax", "xcb", "pxx")
 
 		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
@@ -280,7 +280,7 @@ fun initializeCrafting() {
 		setIngredient('x', AIR)
 		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
 	}
-	
+
 	// Circuitry Crafting 1
 	itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
 		shape("qdq", "arg", "ccc")
