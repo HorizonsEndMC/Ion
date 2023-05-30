@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.client.networking.Packets
+import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
 import net.horizonsend.ion.server.features.client.whereisit.mod.SearchC2S
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
@@ -128,6 +129,7 @@ object IonServer : JavaPlugin() {
 				HyperspaceBeacons.reloadDynmap()
 				Collectors.onEnable()
 				CityNPCs.onEnable()
+				ShipData.enable()
 
 				pluginManager.registerEvents(CityNPCs, this)
 

@@ -2,9 +2,7 @@ package net.horizonsend.ion.server.features.client.networking
 
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.server.features.client.VoidNetwork
-import net.horizonsend.ion.server.features.client.networking.packets.HandshakePacket
-import net.horizonsend.ion.server.features.client.networking.packets.PlayerAdd
-import net.horizonsend.ion.server.features.client.networking.packets.PlayerRemove
+import net.horizonsend.ion.server.features.client.networking.packets.*
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
 import net.minecraft.resources.ResourceLocation
@@ -36,16 +34,17 @@ enum class Packets(
 	val handler: IonPacketHandler
 ) {
 	HANDSHAKE(HandshakePacket),
+	GETPOS(GetPosPacket),
+	SHIP_DATA(ShipData),
 	PLAYER_ADD(PlayerAdd),
 	PLAYER_REMOVE(PlayerRemove);
-
 	val id get() = handler.id
 
 	fun send(player: Player, vararg args: Any) {
 		(player as CraftPlayer).handle.connection.send(
 			ClientboundCustomPayloadPacket(
 				id,
-				FriendlyByteBuf(Unpooled.buffer()).apply { handler.s2c(this, player, args) })
+				FriendlyByteBuf(Unpooled.buffer()).apply { handler.s2c(this, player, *args) })
 		)
 	}
 
