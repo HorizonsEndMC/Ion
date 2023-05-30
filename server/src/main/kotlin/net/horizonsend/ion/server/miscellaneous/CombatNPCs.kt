@@ -53,6 +53,8 @@ object CombatNPCs : SLComponent() {
 		// TODO: Combat NPCs are broken anyway, and they are the only thing creating chunk tickets so they could be the cause of lag right now, look into this whenever we try and bring back Combat NPCs.
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
+			if (IonServer.configuration.serverName == "Creative") return@listen
+
 			val player = event.player
 			val playerId = player.uniqueId
 
