@@ -113,6 +113,22 @@ import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
 import org.bukkit.Material.WEATHERED_COPPER
+import org.bukkit.Material.WHITE_CONCRETE_POWDER
+import org.bukkit.Material.LIGHT_GRAY_CONCRETE_POWDER
+import org.bukkit.Material.GRAY_CONCRETE_POWDER
+import org.bukkit.Material.BLACK_CONCRETE_POWDER
+import org.bukkit.Material.RED_CONCRETE_POWDER 
+import org.bukkit.Material.ORANGE_CONCRETE_POWDER
+import org.bukkit.Material.YELLOW_CONCRETE_POWDER
+import org.bukkit.Material.GREEN_CONCRETE_POWDER
+import org.bukkit.Material.LIME_CONCRETE_POWDER
+import org.bukkit.Material.CYAN_CONCRETE_POWDER
+import org.bukkit.Material.LIGHT_BLUE_CONCRETE_POWDER
+import org.bukkit.Material.BLUE_CONCRETE_POWDER
+import org.bukkit.Material.PURPLE_CONCRETE_POWDER
+import org.bukkit.Material.MAGENTA_CONCRETE_POWDER
+import org.bukkit.Material.PINK_CONCRETE_POWDER
+import org.bukkit.Material.BROWN_CONCRETE_POWDER
 import org.bukkit.block.data.BlockData
 
 object ShipFactoryMaterialCosts {
@@ -222,7 +238,24 @@ object ShipFactoryMaterialCosts {
 		DIRT to 0.1,
 		GRASS_BLOCK to 0.1,
 		GRASS to 0.1,
-		CALCITE to 0.1
+		CALCITE to 0.1,
+		
+		WHITE_CONCRETE_POWDER to 0.1,
+		LIGHT_GRAY_CONCRETE_POWDER to 0.1,
+		GRAY_CONCRETE_POWDER to 0.1,
+		BLACK_CONCRETE_POWDER to 0.1,
+		RED_CONCRETE_POWDER to 0.1,
+		ORANGE_CONCRETE_POWDER to 0.1,
+		YELLOW_CONCRETE_POWDER to 0.1,
+		GREEN_CONCRETE_POWDER to 0.1,
+		LIME_CONCRETE_POWDER to 0.1,
+		CYAN_CONCRETE_POWDER to 0.1,
+		LIGHT_BLUE_CONCRETE_POWDER to 0.1,
+		BLUE_CONCRETE_POWDER to 0.1,
+		PURPLE_CONCRETE_POWDER to 0.1,
+		MAGENTA_CONCRETE_POWDER to 0.1,
+		PINK_CONCRETE_POWDER to 0.1,
+		BROWN_CONCRETE_POWDER to 0.1
 	)
 
 	fun getPrice(data: BlockData): Double {
