@@ -1,5 +1,9 @@
 package net.horizonsend.ion.server.features.client.networking.packets
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.horizonsend.ion.server.features.client.networking.Packets
 import net.kyori.adventure.text.Component
@@ -15,42 +19,49 @@ import kotlin.math.roundToInt
 object ShipData : IonPacketHandler() {
 	override val name = "ship_data"
 
-	fun enable() = Tasks.asyncRepeat(
-		delay = 10L,
-		interval = 10L
-	) {
-		for (player in Bukkit.getOnlinePlayers()) {
-			val ship = ActiveStarships.findByPilot(player) ?: run {
-				Packets.SHIP_DATA.send(player)
-				return@asyncRepeat
+	@OptIn(DelicateCoroutinesApi::class)
+	fun enable() = GlobalScope.launch {
+		while (true) {
+			try {
+				for (player in Bukkit.getOnlinePlayers()) {
+					val ship = ActiveStarships.findByPilot(player) ?: run {
+						Packets.SHIP_DATA.send(player)
+						return@launch
+					}
+
+					val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.formatted)
+					val type = MiniMessage.miniMessage().deserialize(ship.type.formatted)
+					val pm = ship.reactor.powerDistributor
+					val targets = ship.autoTurretTargets.mapValues { Bukkit.getOfflinePlayer(it.value).name ?: "None" }
+					val hull = ship.hullIntegrity().times(100).roundToInt()
+					val gravwell = ship.isInterdicting
+					val weaponset = ship.weaponSetSelections[player.uniqueId] ?: "None"
+					val regenEfficiency = ship.shieldEfficiency
+
+					val targetSpeed = ship.cruiseData.targetSpeed
+					val speed = ship.cruiseData.velocity.length().roundToHundredth()
+
+					Packets.SHIP_DATA.send(
+						player,
+
+						name,
+						type,
+						targets, // Targets
+						hull, // Hull integrity
+						gravwell, // is welling
+						weaponset, // Chosen weaponset
+						regenEfficiency, // Shield regen efficiency
+						targetSpeed,
+						speed,
+						pm.shieldPortion, pm.weaponPortion, pm.thrusterPortion // PowerModes
+					)
+				}
+			} catch (e: Exception) {
+				println("Caught exception while sending ShipData")
+				e.printStackTrace()
 			}
 
-			val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.formatted)
-			val type = MiniMessage.miniMessage().deserialize(ship.type.formatted)
-			val pm = ship.reactor.powerDistributor
-			val targets = ship.autoTurretTargets.mapValues { Bukkit.getOfflinePlayer(it.value).name ?: "None" }
-			val hull = ship.hullIntegrity().times(100).roundToInt()
-			val gravwell = ship.isInterdicting
-			val weaponset = ship.weaponSetSelections[player.uniqueId] ?: "None"
-			val regenEfficiency = ship.shieldEfficiency
-
-			val targetSpeed = ship.cruiseData.targetSpeed
-			val speed = ship.cruiseData.velocity.length().roundToHundredth()
-
-			Packets.SHIP_DATA.send(
-				player,
-
-				name,
-				type,
-				targets, // Targets
-				hull, // Hull integrity
-				gravwell, // is welling
-				weaponset, // Chosen weaponset
-				regenEfficiency, // Shield regen efficiency
-				targetSpeed,
-				speed,
-				pm.shieldPortion, pm.weaponPortion, pm.thrusterPortion // PowerModes
-			)
+			delay(500)
 		}
 	}
 
