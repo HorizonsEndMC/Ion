@@ -2,14 +2,12 @@ package net.horizonsend.ion.proxy.commands.waterfall
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.JDA
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.proxy.ProxyConfiguration
 import net.horizonsend.ion.proxy.managers.LinkManager
-import net.horizonsend.ion.proxy.managers.SyncManager
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.connection.ProxiedPlayer
@@ -124,12 +122,4 @@ class BungeeAccountCommand(private val jda: JDA, private val configuration: Prox
 			)
 			.create()
 	)
-
-	@Suppress("unused")
-	@CommandPermission("ion.resync")
-	@Subcommand("resync")
-	@Description("Sync discord roles")
-	fun onReSync() {
-		SyncManager(jda, configuration).sync()
-	}
 }

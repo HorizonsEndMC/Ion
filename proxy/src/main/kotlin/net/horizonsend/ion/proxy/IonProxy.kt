@@ -14,7 +14,6 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
-import net.horizonsend.ion.proxy.commands.discord.ResyncCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeAccountCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
@@ -25,7 +24,6 @@ import net.horizonsend.ion.proxy.listeners.waterfall.ProxyPingListener
 import net.horizonsend.ion.proxy.listeners.waterfall.ServerConnectListener
 import net.horizonsend.ion.proxy.listeners.waterfall.VotifierListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
-import net.horizonsend.ion.proxy.managers.SyncManager
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.horizonsend.ion.proxy.wrappers.WrappedProxy
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
@@ -97,7 +95,6 @@ class IonProxy : Plugin() {
 				registerGuildCommand(DiscordAccountCommand(configuration))
 				registerGuildCommand(DiscordInfoCommand())
 				registerGuildCommand(PlayerListCommand(getProxy()))
-				registerGuildCommand(ResyncCommand(discord, configuration))
 
 				build()
 			}
@@ -112,9 +109,7 @@ class IonProxy : Plugin() {
 
 	init { slF4JLogger.info("Loaded in %,3dms".format(endTime - startTime)) }
 
-	override fun onEnable() {
-		discord?.let { SyncManager(it, configuration).onEnable() }
-	}
+	override fun onEnable() {}
 
 	override fun onDisable() {
 		discord?.shutdown()
