@@ -3,6 +3,7 @@ package net.starlegacy.feature.transport
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.miscellaneous.metrics
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -31,6 +32,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
+import kotlin.system.measureNanoTime
 
 object Wires : SLComponent() {
 	val INPUT_COMPUTER_BLOCK = Material.NOTE_BLOCK
@@ -82,6 +84,7 @@ object Wires : SLComponent() {
 	)
 
 	override fun onEnable() {
+		metrics.metricsManager.registerCollection(WireMetricsCollection)
 		thread = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-transport-wires"))
 
 		scheduleUpdates()
@@ -96,6 +99,7 @@ object Wires : SLComponent() {
 	 * Higher values mean more updates being batched together and potentially better usage of caching.
 	 * However, it also means larger delay, and could affect user usage.
 	 */
+
 	private fun scheduleUpdates() {
 		val interval = transportConfig.wires.powerUpdateRate
 		Tasks.syncRepeat(delay = interval, interval = interval) {
@@ -104,7 +108,9 @@ object Wires : SLComponent() {
 			val maxTime = TimeUnit.MILLISECONDS.toNanos(transportConfig.wires.powerUpdateMaxTime)
 
 			while (!computerCheckQueue.isEmpty() && System.nanoTime() - start < maxTime) {
-				computerCheckQueue.poll().invoke()
+				val time = measureNanoTime { computerCheckQueue.poll().invoke() }
+
+				WireMetricsCollection.timeSpent += time
 			}
 
 			if (System.nanoTime() - start > maxTime) {

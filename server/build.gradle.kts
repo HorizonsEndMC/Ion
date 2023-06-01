@@ -11,6 +11,7 @@ plugins {
 repositories {
 	mavenCentral()
 
+	maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") // UnifiedMetrics
 	maven("https://jitpack.io/") // Dynmap, Vault
 	maven("https://m2.dv8tion.net/releases/") // JDA
 	maven("https://maven.citizensnpcs.co/repo") // Citizens
@@ -47,6 +48,8 @@ dependencies {
 	implementation("org.litote.kmongo:kmongo:4.9.0")
 	implementation("io.github.skytasul:guardianbeam:2.3.2")
 	implementation("xyz.xenondevs.invui:invui:1.8")
+
+	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.6")
 }
 
 tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }

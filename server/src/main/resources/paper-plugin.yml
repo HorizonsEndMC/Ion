@@ -10,6 +10,9 @@ dependencies:
   - name: WorldEdit
     required: true
 
+  - name: UnifiedMetrics
+    required: true
+
   - name: Citizens
     required: false
 

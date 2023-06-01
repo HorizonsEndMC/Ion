@@ -19,49 +19,42 @@ import kotlin.math.roundToInt
 object ShipData : IonPacketHandler() {
 	override val name = "ship_data"
 
-	@OptIn(DelicateCoroutinesApi::class)
-	fun enable() = GlobalScope.launch {
-		while (true) {
-			try {
-				for (player in Bukkit.getOnlinePlayers()) {
-					val ship = ActiveStarships.findByPilot(player) ?: run {
-						Packets.SHIP_DATA.send(player)
-						return@launch
-					}
-
-					val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.formatted)
-					val type = MiniMessage.miniMessage().deserialize(ship.type.formatted)
-					val pm = ship.reactor.powerDistributor
-					val targets = ship.autoTurretTargets.mapValues { Bukkit.getOfflinePlayer(it.value).name ?: "None" }
-					val hull = ship.hullIntegrity().times(100).roundToInt()
-					val gravwell = ship.isInterdicting
-					val weaponset = ship.weaponSetSelections[player.uniqueId] ?: "None"
-					val regenEfficiency = ship.shieldEfficiency
-
-					val targetSpeed = ship.cruiseData.targetSpeed
-					val speed = ship.cruiseData.velocity.length().roundToHundredth()
-
-					Packets.SHIP_DATA.send(
-						player,
-
-						name,
-						type,
-						targets, // Targets
-						hull, // Hull integrity
-						gravwell, // is welling
-						weaponset, // Chosen weaponset
-						regenEfficiency, // Shield regen efficiency
-						targetSpeed,
-						speed,
-						pm.shieldPortion, pm.weaponPortion, pm.thrusterPortion // PowerModes
-					)
-				}
-			} catch (e: Exception) {
-				println("Caught exception while sending ShipData")
-				e.printStackTrace()
+	fun enable() = Tasks.asyncRepeat(
+		delay = 10L,
+		interval = 10L
+	) {
+		Bukkit.getOnlinePlayers().forEach { player ->
+			val ship = ActiveStarships.findByPilot(player) ?: run {
+				Packets.SHIP_DATA.send(player)
+				return@forEach
 			}
 
-			delay(500)
+			val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.formatted)
+			val type = MiniMessage.miniMessage().deserialize(ship.type.formatted)
+			val pm = ship.reactor.powerDistributor
+			val targets = ship.autoTurretTargets.mapValues { Bukkit.getOfflinePlayer(it.value).name ?: "None" }
+			val hull = ship.hullIntegrity().times(100).roundToInt()
+			val gravwell = ship.isInterdicting
+			val weaponset = ship.weaponSetSelections[player.uniqueId] ?: "None"
+			val regenEfficiency = ship.shieldEfficiency
+
+			val targetSpeed = ship.cruiseData.targetSpeed
+			val speed = ship.cruiseData.velocity.length().roundToHundredth()
+
+			Packets.SHIP_DATA.send(
+				player,
+
+				name,
+				type,
+				targets, // Targets
+				hull, // Hull integrity
+				gravwell, // is welling
+				weaponset, // Chosen weaponset
+				regenEfficiency, // Shield regen efficiency
+				targetSpeed,
+				speed,
+				pm.shieldPortion, pm.weaponPortion, pm.thrusterPortion // PowerModes
+			)
 		}
 	}
 

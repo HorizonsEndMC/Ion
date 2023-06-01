@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
+import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import net.horizonsend.ion.common.database.DBLocation
 import net.horizonsend.ion.common.database.DoubleLocation
 import net.horizonsend.ion.common.database.PlayerData
@@ -35,6 +36,8 @@ val vaultEconomy = try {
 } catch (exception: NoClassDefFoundError) {
 	null
 }
+
+val metrics get() = UnifiedMetricsProvider.get()
 
 inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
 	EnumSet.noneOf(T::class.java).apply { addAll(elems) }
