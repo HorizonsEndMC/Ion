@@ -49,7 +49,7 @@ dependencies {
 	implementation("io.github.skytasul:guardianbeam:2.3.2")
 	implementation("xyz.xenondevs.invui:invui:1.9")
 
-	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.6")
+	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
 
 tasks.reobfJar { outputJar.set(file(rootProject.projectDir.absolutePath + "/build/IonServer.jar")) }
