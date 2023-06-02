@@ -47,7 +47,7 @@ dependencies {
 	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
 	implementation("org.litote.kmongo:kmongo:4.9.0")
 	implementation("io.github.skytasul:guardianbeam:2.3.2")
-	implementation("xyz.xenondevs.invui:invui:1.8")
+	implementation("xyz.xenondevs.invui:invui:1.9")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.6")
 }
