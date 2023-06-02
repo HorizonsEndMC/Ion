@@ -66,6 +66,7 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
         val locationComponent: SidebarComponent = LocationSidebarComponent(player)
 
         // Contacts
+        val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
         val contacts = getPlayerContacts(player)
         val contactsComponents: MutableList<SidebarComponent> = mutableListOf()
         for (contact in contacts) {
@@ -75,6 +76,7 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
         // Build components
         val lines = SidebarComponent.builder()
         lines.addComponent(locationComponent)
+        lines.addComponent(contactsHeaderComponent)
         for (component in contactsComponents) lines.addComponent(component)
 
         val componentSidebar = ComponentSidebarLayout(title, lines.build())
@@ -180,9 +182,10 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
                     .append(text(repeatString(" ", 3 - height.toString().length))
                         .font(key("horizonsend:sidebar")))
                     .color(color),
-                distance = text("${distance}m")
+                distance = text("${distance}")
                     .append(text(repeatString(" ", 4 - distance.toString().length))
                         .font(key("horizonsend:sidebar")))
+                    .append(text("m"))
                     .color(color),
                 distanceInt = distance,
                 padding = empty()
@@ -210,9 +213,10 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
                     .append(text(repeatString(" ", 3 - height.toString().length))
                         .font(key("horizonsend:sidebar")))
                     .color(color),
-                distance = text("${distance}m")
+                distance = text("${distance}")
                     .append(text(repeatString(" ", 4 - distance.toString().length))
                         .font(key("horizonsend:sidebar")))
+                    .append(text("m"))
                     .color(color),
                 distanceInt = distance,
                 padding = empty()
@@ -240,9 +244,10 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
                     .append(text(repeatString(" ", 3 - height.toString().length))
                         .font(key("horizonsend:sidebar")))
                     .color(color),
-                distance = text("${distance}m")
+                distance = text("${distance}")
                     .append(text(repeatString(" ", 4 - distance.toString().length))
                         .font(key("horizonsend:sidebar")))
+                    .append(text("m"))
                     .color(color),
                 distanceInt = distance,
                 padding = empty()
@@ -268,9 +273,10 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
                     .append(text(repeatString(" ", 3 - height.toString().length))
                         .font(key("horizonsend:sidebar")))
                     .color(color),
-                distance = text("${distance}m")
+                distance = text("${distance}")
                     .append(text(repeatString(" ", 4 - distance.toString().length))
                         .font(key("horizonsend:sidebar")))
+                    .append(text("m"))
                     .color(color),
                 distanceInt = distance,
                 padding = empty()

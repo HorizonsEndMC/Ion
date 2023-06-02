@@ -15,7 +15,6 @@ class ContactsSidebarComponent(private val valueSupplier: Supplier<ContactsData>
         val line = text()
         line.append(value.prefix)
         line.appendSpace()
-        //line.append(text(" | ").color(DARK_GRAY))
         line.append(value.heading)
         line.appendSpace()
         line.append(value.height)
