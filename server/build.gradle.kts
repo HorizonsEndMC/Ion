@@ -40,7 +40,7 @@ dependencies {
 	// Included Dependencies
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("com.fasterxml.jackson.core:jackson-databind:2.15.1")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.9")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("io.github.config4k:config4k:0.6.0")
