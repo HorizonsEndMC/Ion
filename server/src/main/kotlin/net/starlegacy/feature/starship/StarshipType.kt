@@ -36,6 +36,7 @@ enum class StarshipType(
 		maxSize = 100,
 		minLevel = 1,
 		containerPercent = 0.025,
+		concretePercent = 0.0,
 		crateLimitMultiplier = 0.25,
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
