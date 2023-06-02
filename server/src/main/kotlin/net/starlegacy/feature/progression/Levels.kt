@@ -2,12 +2,15 @@ package net.starlegacy.feature.progression
 
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.sharedDataFolder
+import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.bold
-import net.starlegacy.util.broadcastGlobal
 import net.starlegacy.util.darkPurple
 import net.starlegacy.util.gold
 import net.starlegacy.util.italic
@@ -92,7 +95,13 @@ object Levels : SLComponent() {
 
 				player msg lightPurple("Leveled up to level $newLevel for ${previousCost + cost} SLXP").italic()
 
-				broadcastGlobal("&6&l$name&a&l leveled up to &5&lLevel $newLevel&a&l!")
+				Notify all Component.text().color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+					.append(Component.text(name).color(NamedTextColor.GOLD))
+					.append(Component.text(" leveled up to "))
+					.append(Component.text("Level $newLevel").color(NamedTextColor.DARK_PURPLE))
+					.append(Component.text("!"))
+					.build()
+
 				when (newLevel) {
 					10 -> Achievement.LEVEL_10
 					20 -> Achievement.LEVEL_20

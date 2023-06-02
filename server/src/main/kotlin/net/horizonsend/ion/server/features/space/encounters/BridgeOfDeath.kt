@@ -66,7 +66,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 		event.isCancelled = true
 
 		fun fail() {
-			Notify.online("${event.player.name}: \"Aaaaaaaaaaaahhhhhh!\"")
+			Notify.online(text("${event.player.name}: \"Aaaaaaaaaaaahhhhhh!\""))
 
 			event.player.world.castSpawnEntity<Fireball>(
 				event.player.location.clone().add(0.0, 30.0, 0.0),

@@ -3,6 +3,7 @@ package net.starlegacy.feature.nations
 import com.mongodb.client.MongoIterable
 import java.lang.Integer.min
 import net.horizonsend.ion.common.database.Nation
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.ProjectedResults
@@ -22,7 +23,6 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -67,7 +67,7 @@ object NationsMasterTasks {
 		if (sendMessage) {
 			val message = "<red>Settlement $name on ${territory.world} at ${territory.centerX}, ${territory.centerZ} " +
 				"was purged for ${NATIONS_BALANCE.settlement.inactivityDays}+ days of complete inactivity."
-			Notify all message
+			Notify all MiniMessage.miniMessage().deserialize(message)
 		}
 	}
 
@@ -78,7 +78,7 @@ object NationsMasterTasks {
 
 		if (sendMessage) {
 			val message = "<red>Nation ${nation.name} had its capital settlement purge and was purged itself!"
-			Notify all message
+			Notify all MiniMessage.miniMessage().deserialize(message)
 		}
 	}
 
@@ -164,12 +164,12 @@ object NationsMasterTasks {
 				Settlement.withdraw(settlementId, tax)
 
 				if (!isActive) {
-					Notify.online("<dark_green>Settlement City $name has paid its hourly tax of $taxCredits, so it's protected!")
+					Notify.online(MiniMessage.miniMessage().deserialize("<dark_green>Settlement City $name has paid its hourly tax of $taxCredits, so it's protected!"))
 				}
 			} else {
 				val message = "<red>Settlement City $name failed to pay its hourly tax of $taxCredits! " +
 					"Until it pays its tax, it does not have settlement city protection."
-				Notify.online(message)
+				Notify.online(MiniMessage.miniMessage().deserialize(message))
 			}
 
 			if (willBeActive) {
@@ -178,7 +178,7 @@ object NationsMasterTasks {
 				)
 
 				if (activeMembers < NATIONS_BALANCE.settlement.cityMinActive) {
-					Notify.online("<red>Settlement city $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection.")
+					Notify.online(MiniMessage.miniMessage().deserialize("<red>Settlement city $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection."))
 					willBeActive = false
 				}
 			}

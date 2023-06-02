@@ -4,7 +4,8 @@ import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import java.util.UUID
 import net.horizonsend.ion.common.database.Nation
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
@@ -14,15 +15,14 @@ import org.bukkit.Bukkit.getPluginManager
 import org.litote.kmongo.id.WrappedObjectId
 
 object Notify : SLComponent() {
-	infix fun online(message: String) = notifyOnlineAction(message.colorize())
-	private val notifyOnlineAction = { message: String ->
-		Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message))
+	infix fun online(message: Component) = notifyOnlineAction(message)
+	private val notifyOnlineAction = { message: Component ->
+		Bukkit.broadcast(message)
 	}.registerRedisAction("notify-online", runSync = false)
 
-	infix fun all(message: String) {
-		val colorized = message.colorize()
-		online(colorized)
-		discord(MiniMessage.miniMessage().stripTags(message))
+	infix fun all(message: Component) {
+		online(message)
+		discord(PlainTextComponentSerializer.plainText().serialize(message))
 	}
 
 	fun player(player: UUID, message: String) {

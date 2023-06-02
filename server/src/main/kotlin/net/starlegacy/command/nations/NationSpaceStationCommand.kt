@@ -9,6 +9,7 @@ import co.aikar.commands.annotation.Subcommand
 import kotlin.math.roundToInt
 import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -171,7 +172,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 		SpaceStation.create(nation, name, world.name, x, z, radius)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		Notify.all("<pink>${getNationName(nation)} <gray>established space station <aqua>$name")
+		Notify.all(MiniMessage.miniMessage().deserialize("<light_purple>${getNationName(nation)} <gray>established space station <aqua>$name"))
 	}
 
 	private fun requireStation(nation: Oid<Nation>, name: String) = SpaceStation.find(SpaceStation::nation eq nation)
@@ -194,7 +195,7 @@ object NationSpaceStationCommand : SLCommand() {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.DELETE_STATION)
 		SpaceStation.delete(spaceStation._id)
-		Notify.all("<pink>${getNationName(nation)} &7abandoned space station &b$station")
+		Notify.all(MiniMessage.miniMessage().deserialize("<pink>${getNationName(nation)} <gray>abandoned space station <aqua>$station"))
 	}
 
 	@Subcommand("resize")

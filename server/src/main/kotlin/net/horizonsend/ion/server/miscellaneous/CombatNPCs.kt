@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.slPlayerId
@@ -140,7 +141,7 @@ object CombatNPCs : SLComponent() {
 			transaction { PlayerData[playerId]?.wasKilled = true }
 			Tasks.async {
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
-				Notify.all("<red>Combat NPC of $name was slain by ${killer?.name}")
+				Notify.all(MiniMessage.miniMessage().deserialize("<red>Combat NPC of $name was slain by ${killer?.name}"))
 				Tasks.sync {
 					CombatNPCKillEvent(playerId, name, killer).callEvent()
 				}

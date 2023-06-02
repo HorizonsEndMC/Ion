@@ -112,7 +112,7 @@ internal object SettlementCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_SETTLEMENT)
 
-		Notify all "<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!"
+		Notify all MiniMessage.miniMessage().deserialize("<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!")
 
 		// No manual territory cache update is needed as settlement creation should automatically trigger that
 	}
@@ -130,7 +130,7 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.delete(settlement)
 
-		Notify all "<yellow>${sender.name} has disbanded their settlement $settlementName!"
+		Notify all MiniMessage.miniMessage().deserialize("<yellow>${sender.name} has disbanded their settlement $settlementName!")
 
 		// No manual territory cache update is needed as settlement removal from territory should automatically trigger that
 		// Additionally, all members of the settlement should be updated as their player cache will be updated,
@@ -189,7 +189,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.joinSettlement(sender.slPlayerId, settlementId)
 
-		Notify.online("<green>${sender.name} joined the settlement $settlementName!")
+		Notify.online(MiniMessage.miniMessage().deserialize("<green>${sender.name} joined the settlement $settlementName!"))
 
 		// No manual territory cache updating is needed, as the player is added to the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -205,7 +205,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(sender.slPlayerId)
 
-		Notify.online("<yellow>${sender.name} left the settlement $settlementName!")
+		Notify.online(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} left the settlement $settlementName!"))
 
 		// No manual territory cache updating is needed, as the player is removed from the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -233,7 +233,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(slPlayerId)
 
-		Notify.online("<yellow>${sender.name} kicked $player from settlement $settlementName!")
+		Notify.online(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} kicked $player from settlement $settlementName!"))
 	}
 
 	@Subcommand("set name")
@@ -258,7 +258,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.setName(settlementId, newName)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online("<aqua>${sender.name} renamed their settlement $oldName to $newName!")
+		Notify.online(MiniMessage.miniMessage().deserialize("<aqua>${sender.name} renamed their settlement $oldName to $newName!"))
 	}
 
 	@Subcommand("set leader")

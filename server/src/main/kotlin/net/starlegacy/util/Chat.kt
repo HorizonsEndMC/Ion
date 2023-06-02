@@ -54,9 +54,6 @@ fun Player.title(
 	sendTitle(title.toLegacyText(), subtitle.toLegacyText(), fadeIn, stay, fadeOut)
 }
 
-@Deprecated("Use Ion MiniMessage Extension Functions")
-fun broadcastGlobal(message: String) = Notify.online(message)
-
 @Deprecated("Plugins should not be running commands.")
 fun execConsoleCmd(cmd: String): Boolean = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd)
 
