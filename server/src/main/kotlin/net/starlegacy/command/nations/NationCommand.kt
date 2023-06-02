@@ -190,7 +190,7 @@ internal object NationCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
 
-		Notify all "<yellow>${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!"
+		Notify all MiniMessage.miniMessage().deserialize("<yellow>${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!")
 	}
 
 	@Suppress("unused")
@@ -205,7 +205,7 @@ internal object NationCommand : SLCommand() {
 
 		transaction { Nation[nation]!!.deleteNation() }
 
-		Notify all "<yellow>The nation $nationName has been disbanded by its leader ${sender.name}!"
+		Notify all MiniMessage.miniMessage().deserialize("<yellow>The nation $nationName has been disbanded by its leader ${sender.name}!")
 	}
 
 	@Suppress("unused")
@@ -291,7 +291,7 @@ internal object NationCommand : SLCommand() {
 		transaction { nationInvite!!.delete() }
 		Settlement.joinNation(settlementId, nationId)
 
-		Notify all "<pink>Settlement &b$settlementName<pink> joined the nation &c$nationName<pink>!"
+		Notify all MiniMessage.miniMessage().deserialize("<light_purple>Settlement <aqua>$settlementName<light_purple> joined the nation <red>$nationName<light_purple>!")
 	}
 
 	@Suppress("unused")
@@ -308,7 +308,7 @@ internal object NationCommand : SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify all "<yellow>Settlement &b${getSettlementName(settlementId)}<yellow> seceded from the nation &c$nationName<yellow>!"
+		Notify all MiniMessage.miniMessage().deserialize("<yellow>Settlement <dark_green>${getSettlementName(settlementId)}<yellow> seceded from the nation <red>$nationName<yellow>!")
 	}
 
 	@Suppress("unused")
@@ -328,7 +328,7 @@ internal object NationCommand : SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify all "<gold>${sender.name}<yellow> kicked settlement $settlementName from the nation ${getNationName(nationId)}"
+		Notify all MiniMessage.miniMessage().deserialize("<gold>${sender.name}<yellow> kicked settlement $settlementName from the nation ${getNationName(nationId)}")
 	}
 
 	@Suppress("unused")
@@ -354,7 +354,7 @@ internal object NationCommand : SLCommand() {
 		transaction { Nation[nationId]?.name = newName }
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online("<gold>${sender.name}<pink> renamed their nation &c$oldName<pink> to &a$newName<pink>!")
+		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> renamed their nation <red>$oldName<light_purple> to <>$newName<light_purple>!"))
 	}
 
 	@Suppress("unused")
@@ -386,7 +386,7 @@ internal object NationCommand : SLCommand() {
 
 		transaction { Nation[nationId]?.capital = settlementId as Oid<Any> }
 
-		Notify all "<gold>${sender.name}<pink> changed the capital of their nation ${getNationName(nationId)} to $settlementName!"
+		Notify all MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> changed the capital of their nation ${getNationName(nationId)} to $settlementName!")
 	}
 
 	@Suppress("unused")
@@ -420,7 +420,7 @@ internal object NationCommand : SLCommand() {
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
-		Notify.online("<gold>${sender.name}<pink> claimed the territory &2${territory.name}<pink> for their nation &c$nationName<pink>!")
+		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> claimed the territory <dark_green>${territory.name}<light_purple> for their nation <red>$nationName<light_purple>!"))
 	}
 
 	@Suppress("unused")
@@ -441,7 +441,7 @@ internal object NationCommand : SLCommand() {
 		Territory.setNation(regionTerritory.id, null)
 
 		val nationName = getNationName(nationId)
-		Notify.online("<gold>${sender.name}<pink> unclaimed the territory &2$territoryName<pink> from their nation &c$nationName<pink>!")
+		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> unclaimed the territory <dark_green>$territoryName<light_purple> from their nation <red>$nationName<light_purple>!"))
 	}
 
 	@Suppress("unused")
