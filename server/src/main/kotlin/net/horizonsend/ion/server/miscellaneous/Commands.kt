@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand
 import net.horizonsend.ion.server.features.regeneration.RegenerateCommand
+import net.horizonsend.ion.server.features.sidebar.commands.ContactsCommand
 import net.horizonsend.ion.server.miscellaneous.commands.CalcExpCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 import net.horizonsend.ion.server.miscellaneous.commands.CheckProtectionCommand
@@ -17,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.commands.RemoveGhostShipCommand
 val commands = arrayOf(
 	SpaceGenCommand(),
 	ConfigurationCommands(),
+	ContactsCommand(),
 	ConvertCommand(),
 	CustomItemCommand(),
 	SettingsCommand(),

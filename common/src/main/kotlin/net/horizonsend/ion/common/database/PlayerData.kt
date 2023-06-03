@@ -1,5 +1,6 @@
 package net.horizonsend.ion.common.database
 
+import net.horizonsend.ion.common.database.tables.sidebar.SidebarSettings
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.util.UUID
@@ -15,6 +16,7 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 	val achievements by PlayerAchievement referrersOn PlayerAchievement.Table.player
 	val voteTimes by PlayerVoteTime referrersOn PlayerVoteTime.Table.player
 	val cryopods by Cryopod referrersOn Cryopod.Table.owner
+	val sidebarSettings by SidebarSettings referrersOn SidebarSettings.Table.player
 
 	var particle by Table.particle
 	var color by Table.color
