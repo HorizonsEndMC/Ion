@@ -37,7 +37,8 @@ val vaultEconomy = try {
 	null
 }
 
-val metrics get() = UnifiedMetricsProvider.get()
+val metrics =
+	if (Bukkit.getPluginManager().isPluginEnabled("UnifiedMetrics")) UnifiedMetricsProvider.get() else null
 
 inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
 	EnumSet.noneOf(T::class.java).apply { addAll(elems) }

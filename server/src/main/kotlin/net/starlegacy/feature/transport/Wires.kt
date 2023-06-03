@@ -84,7 +84,7 @@ object Wires : SLComponent() {
 	)
 
 	override fun onEnable() {
-		metrics.metricsManager.registerCollection(WireMetricsCollection)
+		metrics?.metricsManager?.registerCollection(WireMetricsCollection)
 		thread = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-transport-wires"))
 
 		scheduleUpdates()

@@ -49,6 +49,7 @@ class RayTracedParticleProjectile(
 
 		for (loc in location.alongVector(directionVector, balancing.speed.roundToInt())) {
 			location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+
 		}
 
 		// 2 ray traces are used, one for flying, one for ground
