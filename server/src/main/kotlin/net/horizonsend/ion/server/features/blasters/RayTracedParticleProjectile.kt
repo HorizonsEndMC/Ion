@@ -3,18 +3,16 @@ package net.horizonsend.ion.server.features.blasters
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
+import net.horizonsend.ion.server.features.blasters.boundingbox.BoundingBoxManager
+import net.horizonsend.ion.server.features.blasters.boundingbox.utils.BlockCollisionUtil
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.alongVector
-import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
@@ -25,7 +23,6 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class RayTracedParticleProjectile(
 	val location: Location,
@@ -38,117 +35,88 @@ class RayTracedParticleProjectile(
 ) {
 	var damage = balancing.damage
 
-	private var directionVector = location.direction.clone().multiply(balancing.speed)
+	private var directionVector = location.direction.clone().multiply(0.10)
 	var ticks: Int = 0
 	private val hitEntities: MutableList<Entity> = mutableListOf()
 	private val nearMissPlayers: MutableList<Player?> = mutableListOf(shooter as? Player)
 
 	fun tick(): Boolean {
-		if (ticks * balancing.speed > balancing.range) return true // Out of range
+		if (ticks * (0.10 * balancing.speed.toInt() * 5) > balancing.range) return true // Out of range
 		if (!location.isChunkLoaded) return true // Unloaded chunks
 
-		for (loc in location.alongVector(directionVector, balancing.speed.roundToInt())) {
-			location.world.spawnParticle(particle, loc, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+		// Credits: QualityArmory
+		val maxDistance = location.world.viewDistance
+		val entities = location.world.getNearbyEntities(
+			location.clone().add(directionVector.clone().multiply(maxDistance / 2)),
+			(maxDistance / 2).toDouble(), (maxDistance / 2).toDouble(), (maxDistance / 2).toDouble()
+		).filterNot { it == shooter || it == shooter?.vehicle || shooter?.passengers?.contains(it) ?: false }
 
-		}
+		repeat(balancing.speed.toInt() * 5) {
+			location.add(directionVector)
+			location.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 
-		// 2 ray traces are used, one for flying, one for ground
-		val rayTraceResult = location.world.rayTrace(
-			location,
-			location.direction.clone().multiply(balancing.speed).normalize(),
-			location.world.viewDistance.toDouble(),
-			FluidCollisionMode.NEVER,
-			true,
-			balancing.shotSize
-		) { it != shooter && (it as? Player)?.isGliding != true }
-
-		val flyingRayTraceResult = location.world.rayTrace(
-			location,
-			location.direction.clone().multiply(balancing.speed),
-			location.world.viewDistance.toDouble(),
-			FluidCollisionMode.NEVER,
-			true,
-			balancing.shotSize * 2
-		) { it != shooter && (it as? Player)?.isGliding == true }
-
-		// Block Check
-		val hitBlock = rayTraceResult?.hitBlock
-		if (hitBlock != null) {
-			location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
-			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
-			if (explosiveShot)	{
-				location.world.createExplosion(hitBlock.location, 4.0f)
-				location.world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, .5f, 1.4f)
-			}
-			return true
-		}
-
-		// Entity Check
-		val hitEntity = rayTraceResult?.hitEntity
-		if (hitEntity != null && hitEntity is Damageable && hitEntity !in hitEntities) {
-			val hitLocation = rayTraceResult.hitPosition.toLocation(hitEntity.world)
-			val hitPosition = rayTraceResult.hitPosition
-			var hasHeadshot = false
-
-			if (explosiveShot) {
-				location.world.createExplosion(hitEntity.location, balancing.explosionPower)
+			val hitBlock = BlockCollisionUtil.isSolidAt(location.block, location)
+			val hitEntity = entities.find {
+				val bb = BoundingBoxManager.getBoundingBox(it) ?: return@find false
+				bb.intersects(shooter!!, location, it)
 			}
 
-			if (hitEntity is LivingEntity) {
-				if (balancing.shouldBypassHitTicks) hitEntity.noDamageTicks = 0
-				if (hitEntity !is Player) damage *= balancing.mobDamageMultiplier
+			val entityBB = hitEntity?.let { BoundingBoxManager.getBoundingBox(it) }
 
-				// Headshots
-				if (balancing.shouldHeadshot && (hitEntity.eyeLocation.y - hitPosition.y) < (.3 * balancing.shotSize)) {
-					hasHeadshot = true
-					hitEntity.damage(damage * 1.5, shooter)
+			if (hitBlock) {
+				location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
+				location.world.playSound(location, location.block.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
 
-					hitLocation.world.spawnParticle(Particle.CRIT, hitLocation, 10)
-					shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
-					shooter?.sendActionBar(text("Headshot!", NamedTextColor.RED))
+				if (explosiveShot) {
+					location.world.createExplosion(location.block.location, 4.0f)
+					location.world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, .5f, 1.4f)
+				}
+
+				return true
+			}
+
+			if (hitEntity != null && hitEntity is Damageable && hitEntity !in hitEntities) {
+				var hasHeadshot = false
+
+				if (explosiveShot) {
+					location.world.createExplosion(hitEntity.location, balancing.explosionPower)
+				}
+
+				if (hitEntity is LivingEntity) {
+					if (balancing.shouldBypassHitTicks) hitEntity.noDamageTicks = 0
+					if (hitEntity !is Player) damage *= balancing.mobDamageMultiplier
+
+					// Headshots
+					if (balancing.shouldHeadshot && entityBB?.intersectsHead(location, hitEntity) == true) {
+						hasHeadshot = true
+						hitEntity.damage(damage * 1.5, shooter)
+
+						location.world.spawnParticle(Particle.CRIT, location, 10)
+						shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+						shooter?.sendActionBar(text("Headshot!", NamedTextColor.RED))
+						if (!balancing.shouldPassThroughEntities) return true
+					}
+
+					if (hitEntity.isGliding) {
+						if (!PowerArmorManager.glideDisabledPlayers.containsKey(hitEntity.uniqueId)) {
+							Tasks.syncDelay(60) { // after 3 seconds
+								hitEntity.information("Your rocket boots have rebooted.")
+							}
+						}
+
+						PowerArmorManager.glideDisabledPlayers[hitEntity.uniqueId] = System.currentTimeMillis() + 3000
+						hitEntity.alert("Taking fire! Rocket boots powering down!")
+					}
+				}
+
+				if (!hasHeadshot) {
+					hitEntity.damage(damage, shooter)
+					shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
 					if (!balancing.shouldPassThroughEntities) return true
 				}
+
+				hitEntities.add(hitEntity)
 			}
-
-			if (!hasHeadshot) {
-				hitEntity.damage(damage, shooter)
-				shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
-				if (!balancing.shouldPassThroughEntities) return true
-			}
-
-			hitEntities.add(hitEntity)
-		}
-
-		// Flying Entity Check
-		val flyingHitEntity = flyingRayTraceResult?.hitEntity
-		if (flyingHitEntity != null && flyingHitEntity is Damageable) {
-			flyingHitEntity.damage(damage, shooter)
-
-			if (flyingHitEntity is Player) {
-				if (!PowerArmorManager.glideDisabledPlayers.containsKey(flyingHitEntity.uniqueId)) {
-					Tasks.syncDelay(60) { // after 3 seconds
-						flyingHitEntity.information("Your rocket boots have rebooted.")
-					}
-				} // Send this first to prevent duplicate messages when shot multiple times
-				val hitNation = SLPlayer[flyingHitEntity.uniqueId]?.nation
-				val shooterNation = SLPlayer[shooter as Player].nation
-				val isSameNation = shooterNation?.let { shoot_nation ->
-					hitNation?.let { hit_nation ->
-						NationRelation.getRelationActual(
-							hit_nation, shoot_nation
-						).ordinal < 5
-					}
-				} ?: false
-				// Ignore nation if in arena
-				if (!isSameNation || flyingHitEntity.world.name.lowercase().contains("arena")) {
-					PowerArmorManager.glideDisabledPlayers[flyingHitEntity.uniqueId] =
-						System.currentTimeMillis() + 3000 // 3 second glide disable
-					flyingHitEntity.alert("Taking fire! Rocket boots powering down!")
-				}
-			}
-
-			shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 10f, 1f))
-			if (!balancing.shouldPassThroughEntities) return true
 		}
 
 		val distance = ticks * balancing.speed
@@ -174,7 +142,6 @@ class RayTracedParticleProjectile(
 		}
 
 		ticks += 1
-		location.add(directionVector)
 
 		return false
 	}
