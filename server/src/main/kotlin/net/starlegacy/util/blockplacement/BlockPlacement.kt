@@ -2,6 +2,7 @@ package net.starlegacy.util.blockplacement
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.world.level.block.state.BlockState
+import net.starlegacy.javautil.blockplacement.BlockPlacementRaw
 import net.starlegacy.util.Tasks
 import org.bukkit.World
 
