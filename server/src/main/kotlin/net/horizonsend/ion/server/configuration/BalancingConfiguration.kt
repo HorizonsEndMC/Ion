@@ -220,7 +220,6 @@ data class BalancingConfiguration(
 			abstract val reload: Int
 			abstract val shouldAkimbo: Boolean
 			abstract val timeBetweenShots: Int
-			abstract val shotDeviation: Double
 			abstract val consumesAmmo: Boolean
 		}
 
@@ -235,6 +234,7 @@ data class BalancingConfiguration(
 			val range: Double
 			val shouldHeadshot: Boolean
 			val mobDamageMultiplier: Double
+			val shotDeviation: Double
 		}
 
 		interface AmmoStorageBalancing {
