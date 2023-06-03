@@ -22,6 +22,8 @@ import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManag
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.miscellaneous.*
+import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
+import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.feature.economy.city.CityNPCs
@@ -91,6 +93,8 @@ object IonServer : JavaPlugin() {
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.
 		for (listener in listeners) pluginManager.registerEvents(listener, this)
 
+		Bukkit.getPluginManager().callEvent(IonEnableEvent())
+
 		// WIT networking
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, SearchC2S.ID.toString(), Searcher::handle)
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, FoundS2C.ID.toString())
@@ -151,6 +155,7 @@ object IonServer : JavaPlugin() {
 	}
 
 	override fun onDisable() {
+		Bukkit.getPluginManager().callEvent(IonDisableEvent())
 		IonWorld.unregisterAll()
 		legacyDisable()
 		CombatNPCs.npcToPlayer.values.forEach(CombatNPCs::destroyNPC)

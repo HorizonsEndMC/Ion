@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.features.starship.tank.TankManager
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
@@ -24,6 +25,8 @@ import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.d
 import net.horizonsend.ion.server.miscellaneous.displayNameString
+import net.starlegacy.feature.starship.movement.OptimizedMovement
+import net.starlegacy.feature.starship.movement.StarshipMovement
 import net.starlegacy.util.isLava
 import net.starlegacy.util.isSign
 import net.starlegacy.util.isWater
@@ -346,9 +349,9 @@ object StarshipControl : SLComponent() {
 		return true
 	}
 
-	private fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
+	fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
 
-	private fun calculateSpeed(slot: Int) = if (slot == 0) -1 else (slot / DIRECT_CONTROL_DIVISOR).toInt()
+	fun calculateSpeed(slot: Int) = if (slot == 0) -1 else (slot / DIRECT_CONTROL_DIVISOR).toInt()
 
 	private fun accel(old: Double, new: Double, maxChange: Double): Double {
 		val diff = new - old
