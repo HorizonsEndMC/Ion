@@ -346,9 +346,9 @@ object StarshipControl : SLComponent() {
 		return true
 	}
 
-	private fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
+	fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
 
-	private fun calculateSpeed(slot: Int) = if (slot == 0) -1 else (slot / DIRECT_CONTROL_DIVISOR).toInt()
+	fun calculateSpeed(slot: Int) = if (slot == 0) -1 else (slot / DIRECT_CONTROL_DIVISOR).toInt()
 
 	private fun accel(old: Double, new: Double, maxChange: Double): Double {
 		val diff = new - old
