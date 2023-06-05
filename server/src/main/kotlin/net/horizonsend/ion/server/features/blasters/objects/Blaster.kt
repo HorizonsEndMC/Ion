@@ -5,10 +5,8 @@ import java.util.function.Supplier
 import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.alert
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
-import net.horizonsend.ion.server.features.blasters.ProjectileManager
-import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
+import net.horizonsend.ion.server.features.blasters.BlasterProjectile
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.audience.Audience
@@ -23,7 +21,6 @@ import net.minecraft.resources.ResourceLocation
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.randomDouble
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
@@ -31,17 +28,13 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
-import org.bukkit.SoundCategory
 import org.bukkit.SoundCategory.PLAYERS
-import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R3.CraftParticle
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -257,7 +250,7 @@ abstract class Blaster<T : Balancing>(
 		val dir = location.direction.normalize().add(Vector((Math.random() * 2 * sway) - sway, (Math.random() * 2 * sway) - sway,
 			(Math.random() * 2 * sway) - sway)).normalize()
 
-		RayTracedParticleProjectile(
+		BlasterProjectile(
 			location,
 			livingEntity,
 			balancing,
@@ -269,7 +262,7 @@ abstract class Blaster<T : Balancing>(
 				particleSize
 			) else null,
 			soundWhizz,
-		).tick()
+		).shootProjectile()
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {

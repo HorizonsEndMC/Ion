@@ -12,20 +12,17 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.alongVector
 import org.bukkit.*
 import org.bukkit.Particle.DustOptions
 import org.bukkit.block.Block
-import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.checkerframework.checker.units.qual.g
 import kotlin.math.pow
 
 
-class RayTracedParticleProjectile(
+class BlasterProjectile(
 	val test: Location,
 	val shooter: Entity?,
 	val balancing: ProjectileBalancing,
@@ -38,23 +35,23 @@ class RayTracedParticleProjectile(
 	var damage = balancing.damage
 	private var ticks: Int = 0
 
-	fun tick(): Boolean {
+	fun shootProjectile() {
 		val location = test
-		if (ticks * (0.10 * balancing.speed.toInt() * 5) > balancing.range) return true // Out of range
-		if (!location.isChunkLoaded) return true // Unloaded chunks
+		if (ticks * (0.10 * balancing.speed.toInt() * 5) > balancing.range) return // Out of range
+		if (!location.isChunkLoaded) return // Unloaded chunks
 
-		val (hitBlock, hitEntity, hasHeadshot) = fire() ?: return false
+		val (hitBlock, hitEntity, hasHeadshot) = fire() ?: return
 
 		if (hitBlock != null) {
 			location.world.playSound(location, "blaster.impact.standard", 1f, 1f)
 			location.world.playSound(location, hitBlock.blockSoundGroup.breakSound, SoundCategory.BLOCKS, .5f, 1f)
 
-			if (explosiveShot)	{
+			if (explosiveShot) {
 				location.world.createExplosion(hitBlock.location, 4.0f)
 				location.world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, .5f, 1.4f)
 			}
 
-			return true
+			return
 		}
 
 		if (hitEntity is LivingEntity) {
@@ -68,7 +65,7 @@ class RayTracedParticleProjectile(
 				location.world.spawnParticle(Particle.CRIT, location, 10)
 				shooter?.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
 				shooter?.sendActionBar(text("Headshot!", NamedTextColor.RED))
-				if (!balancing.shouldPassThroughEntities) return true
+				if (!balancing.shouldPassThroughEntities) return
 			}
 
 			if (hitEntity.isGliding) {
@@ -94,10 +91,10 @@ class RayTracedParticleProjectile(
 			damage = newDamage
 			hitEntity.damage(damage)
 
-			return true
+			return
 		}
 
-		return false
+		return
 	}
 
 	private fun getTargetedSolidMaxDistance(v: Vector, start: Location, maxDistance: Double): Double {
@@ -140,7 +137,9 @@ class RayTracedParticleProjectile(
 				val box = getBoundingBox(e)
 				if (box!!.intersects(shooter!!, test, e)) {
 					return HitResult(
-						null, e, if (box.allowsHeadshots()) box.intersectsHead(test, e) else false
+						null,
+						e,
+						if (box.allowsHeadshots() && balancing.shouldHeadshot) box.intersectsHead(test, e) else false
 					)
 				}
 			}
