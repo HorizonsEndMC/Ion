@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.legacy.listeners
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
+import io.papermc.paper.entity.TeleportFlag
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.listener.SLEventListener
@@ -12,6 +13,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerTeleportEvent
 
 object PlayerJumpListener : SLEventListener() {
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -29,7 +31,11 @@ object PlayerJumpListener : SLEventListener() {
 					if (!sign.type.isWallSign) continue
 
 					if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
-					event.player.teleport(block.location.add(0.5, 1.5, 0.5))
+					event.player.teleport(
+						block.location.add(0.5, 1.5, 0.5),
+						PlayerTeleportEvent.TeleportCause.PLUGIN,
+						*TeleportFlag.Relative.values()
+					)
 				}
 				continue
 			}
