@@ -3,7 +3,6 @@ package net.horizonsend.ion.server
 import co.aikar.commands.PaperCommandManager
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
-import net.citizensnpcs.api.CitizensAPI
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
@@ -158,7 +157,7 @@ object IonServer : JavaPlugin() {
 		Bukkit.getPluginManager().callEvent(IonDisableEvent())
 		IonWorld.unregisterAll()
 		legacyDisable()
-		CombatNPCs.npcToPlayer.values.forEach(CombatNPCs::destroyNPC)
+		CombatNPCs.npcToPlayer.values.map { it.first }.forEach(CombatNPCs::destroyNPC)
 		Connectivity.close()
 	}
 
