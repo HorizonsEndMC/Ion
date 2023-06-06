@@ -157,7 +157,7 @@ object IonServer : JavaPlugin() {
 		Bukkit.getPluginManager().callEvent(IonDisableEvent())
 		IonWorld.unregisterAll()
 		legacyDisable()
-		CombatNPCs.npcToPlayer.values.map { it.first }.forEach(CombatNPCs::destroyNPC)
+		CombatNPCs.npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
 		Connectivity.close()
 	}
 
