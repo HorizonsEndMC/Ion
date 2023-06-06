@@ -8,7 +8,6 @@ import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import java.util.*
 
 object CryoPodMultiblock : Multiblock() {
 	override val name = "cryopod"
@@ -58,7 +57,7 @@ object CryoPodMultiblock : Multiblock() {
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.line(1, text("[PASSIVE]").color(NamedTextColor.RED))
+		sign.line(1, text("[PASSIVE]").color(NamedTextColor.GREEN))
 		sign.line(2, text(player.uniqueId.toString()).decorate(TextDecoration.OBFUSCATED))
 		sign.line(3, text(player.name))
 	}
