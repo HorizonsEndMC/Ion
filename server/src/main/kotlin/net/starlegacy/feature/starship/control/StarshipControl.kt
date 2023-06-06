@@ -208,7 +208,8 @@ object StarshipControl : SLComponent() {
 			pilot.teleport(
 				newLoc,
 				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.values()
+				*TeleportFlag.Relative.values(),
+				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
 			)
 		}
 
