@@ -34,6 +34,7 @@ class BlasterProjectile(
 ) {
 	var damage = balancing.damage
 	private var ticks: Int = 0
+	private val nearMissPlayers: MutableList<Player?> = mutableListOf(shooter as? Player)
 
 	fun shootProjectile() {
 		val location = test
@@ -88,6 +89,16 @@ class BlasterProjectile(
 					((damage + balancing.damageFalloffMultiplier) * a.pow(distance)) - balancing.damageFalloffMultiplier
 				}
 
+			// Whizz sound
+			val whizzDistance = 5
+			location.world.players.forEach {
+				if ((it !in nearMissPlayers) && (location.distance(it.location) < whizzDistance)) {
+					it.playSound(sound(key("minecraft:$soundWhizz"), Source.PLAYER, 1.0f, 1.0f))
+					nearMissPlayers.add(it)
+				}
+			}
+
+			shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 1.0f))
 			damage = newDamage
 			hitEntity.damage(damage)
 
