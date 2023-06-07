@@ -2,11 +2,13 @@ package net.horizonsend.ion.common.database
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
+import org.jetbrains.exposed.dao.InnerTableLink
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SizedIterable
+import org.jetbrains.exposed.sql.Table
 
 // Challenge: Count how many times we use generics here
 
@@ -28,4 +30,12 @@ open class IonEntityClass<I : Comparable<I>, out E : Entity<I>>(val inner: Entit
 
 	infix fun <TI : Comparable<TI>, TE : Entity<TI>, R : Comparable<R>> IonEntityClass<TI, TE>.referrersOn(column: Column<R>)
 		= this@IonEntityClass.inner.run { this@referrersOn.inner.referrersOn(column) }
+
+	infix fun <TID : Comparable<TID>, Target : Entity<TID>> EntityClass<TID, Target>.via(table: Table): InnerTableLink<ID, Entity<ID>, TID, Target> =
+		InnerTableLink(table, this@IonEntityClass.id.table, this@via)
+
+	fun <TID : Comparable<TID>, Target : Entity<TID>> EntityClass<TID, Target>.via(
+		sourceColumn: Column<EntityID<ID>>,
+		targetColumn: Column<EntityID<TID>>
+	) = InnerTableLink(sourceColumn.table, this@IonEntityClass.id.table, this@via, sourceColumn, targetColumn)
 }
