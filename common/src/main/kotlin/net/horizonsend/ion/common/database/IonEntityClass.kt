@@ -31,11 +31,11 @@ open class IonEntityClass<I : Comparable<I>, out E : Entity<I>>(val inner: Entit
 	infix fun <TI : Comparable<TI>, TE : Entity<TI>, R : Comparable<R>> IonEntityClass<TI, TE>.referrersOn(column: Column<R>)
 		= this@IonEntityClass.inner.run { this@referrersOn.inner.referrersOn(column) }
 
-	infix fun <TID : Comparable<TID>, Target : Entity<TID>> EntityClass<TID, Target>.via(table: Table): InnerTableLink<ID, Entity<ID>, TID, Target> =
-		InnerTableLink(table, this@IonEntityClass.id.table, this@via)
+	infix fun <TI : Comparable<TI>, TE : Entity<TI>> EntityClass<TI, TE>.via(table: Table): InnerTableLink<I, Entity<I>, TI, TE>
+		= InnerTableLink(table, this@IonEntityClass.inner.table, this@via)
 
-	fun <TID : Comparable<TID>, Target : Entity<TID>> EntityClass<TID, Target>.via(
-		sourceColumn: Column<EntityID<ID>>,
-		targetColumn: Column<EntityID<TID>>
-	) = InnerTableLink(sourceColumn.table, this@IonEntityClass.id.table, this@via, sourceColumn, targetColumn)
+	fun <TI : Comparable<TI>, TE : Entity<TI>> EntityClass<TI, TE>.via(
+		sourceColumn: Column<EntityID<I>>,
+		targetColumn: Column<EntityID<TI>>
+	) = InnerTableLink(sourceColumn.table, this@IonEntityClass.inner.table, this@via, sourceColumn, targetColumn)
 }

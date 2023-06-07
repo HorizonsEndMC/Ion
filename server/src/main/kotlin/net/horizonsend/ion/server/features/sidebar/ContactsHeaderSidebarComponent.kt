@@ -16,11 +16,11 @@ import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
-    private val sidebarSettings = transaction { PlayerData[player.name]!!.sidebarSettings }
-    private val starshipsEnabled = transaction { sidebarSettings.contactsStarships }
-    private val planetsEnabled = transaction { sidebarSettings.contactsPlanets }
-    private val starsEnabled = transaction { sidebarSettings.contactsStars }
-    private val beaconsEnabled = transaction { sidebarSettings.contactsBeacons }
+    private val sidebarSettings = transaction { PlayerData[player.name]!!.sidebarSettings.find { it.playerData.uuid == player } }
+    private val starshipsEnabled = transaction { sidebarSettings?.contactsStarships ?: true }
+    private val planetsEnabled = transaction { sidebarSettings?.contactsPlanets ?: true }
+    private val starsEnabled = transaction { sidebarSettings?.contactsStars ?: true }
+    private val beaconsEnabled = transaction { sidebarSettings?.contactsBeacons ?: true }
 
     private fun getColor(enabled: Boolean) : NamedTextColor {
         return if (enabled) AQUA else GRAY

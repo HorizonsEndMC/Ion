@@ -130,11 +130,11 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
         val contactsList: MutableList<ContactsData> = mutableListOf()
         val playerVector = player.location.toVector()
 
-        val sidebarSettings = PlayerData[player.name]!!.sidebarSettings
-        val starshipsEnabled = sidebarSettings.contactsStarships
-        val planetsEnabled = sidebarSettings.contactsPlanets
-        val starsEnabled = sidebarSettings.contactsStars
-        val beaconsEnabled = sidebarSettings.contactsBeacons
+        val sidebarSettings = transaction { PlayerData[player.name]!!.sidebarSettings.find { it.playerData.uuid == player } }
+        val starshipsEnabled = transaction { sidebarSettings?.contactsStarships ?: true }
+        val planetsEnabled = transaction { sidebarSettings?.contactsPlanets ?: true }
+        val starsEnabled = transaction { sidebarSettings?.contactsStars ?: true }
+        val beaconsEnabled = transaction { sidebarSettings?.contactsBeacons ?: true }
 
         // identify valid contacts
         val starships: List<ActiveStarship> = if (starshipsEnabled) {

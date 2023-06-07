@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.extensions.success
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -17,8 +18,9 @@ class ContactsCommand : BaseCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) = transaction {
-        val sidebarSettings = PlayerData[sender.name]!!.sidebarSettings
-        sidebarSettings.contactsStarships = toggle ?: !sidebarSettings.contactsStarships
+        val sidebarSettings = transaction { PlayerData[sender.name]!!.sidebarSettings.find { it.playerData.uuid == sender } }
+        if (sidebarSettings != null) sidebarSettings.contactsStarships = toggle ?: !sidebarSettings.contactsStarships
+        sender.success("Changed Starship visibility to ${sidebarSettings?.contactsStarships}")
     }
 
     @Suppress("unused")
@@ -27,8 +29,9 @@ class ContactsCommand : BaseCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) = transaction {
-        val sidebarSettings = PlayerData[sender.name]!!.sidebarSettings
-        sidebarSettings.contactsPlanets = toggle ?: !sidebarSettings.contactsPlanets
+        val sidebarSettings = transaction { PlayerData[sender.name]!!.sidebarSettings.find { it.playerData.uuid == sender } }
+        if (sidebarSettings != null) sidebarSettings.contactsPlanets = toggle ?: !sidebarSettings.contactsPlanets
+        sender.success("Changed Starship visibility to ${sidebarSettings?.contactsPlanets}")
     }
 
     @Suppress("unused")
@@ -37,8 +40,9 @@ class ContactsCommand : BaseCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) = transaction {
-        val sidebarSettings = PlayerData[sender.name]!!.sidebarSettings
-        sidebarSettings.contactsStars = toggle ?: !sidebarSettings.contactsStars
+        val sidebarSettings = transaction { PlayerData[sender.name]!!.sidebarSettings.find { it.playerData.uuid == sender } }
+        if (sidebarSettings != null) sidebarSettings.contactsStars = toggle ?: !sidebarSettings.contactsStars
+        sender.success("Changed Starship visibility to ${sidebarSettings?.contactsStars}")
     }
 
     @Suppress("unused")
@@ -47,7 +51,8 @@ class ContactsCommand : BaseCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) = transaction {
-        val sidebarSettings = PlayerData[sender.name]!!.sidebarSettings
-        sidebarSettings.contactsBeacons = toggle ?: !sidebarSettings.contactsBeacons
+        val sidebarSettings = transaction { PlayerData[sender.name]!!.sidebarSettings.find { it.playerData.uuid == sender } }
+        if (sidebarSettings != null) sidebarSettings.contactsBeacons = toggle ?: !sidebarSettings.contactsBeacons
+        sender.success("Changed Starship visibility to ${sidebarSettings?.contactsBeacons}")
     }
 }

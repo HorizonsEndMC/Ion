@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import java.io.File
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.*
+import net.horizonsend.ion.common.database.tables.sidebar.SidebarSettings
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -35,7 +36,8 @@ object Connectivity {
 				PlayerAchievement.Table,
 				PlayerData.Table,
 				PlayerVoteTime.Table,
-				Cryopod.Table
+				Cryopod.Table,
+				SidebarSettings.Table
 			)
 		}
 

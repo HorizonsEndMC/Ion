@@ -16,7 +16,7 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 	val achievements by PlayerAchievement referrersOn PlayerAchievement.Table.player
 	val voteTimes by PlayerVoteTime referrersOn PlayerVoteTime.Table.player
 	val cryopods by Cryopod referrersOn Cryopod.Table.owner
-	val sidebarSettings by SidebarSettings referrersOn SidebarSettings.Table.player
+	val sidebarSettings by SidebarSettings referrersOn SidebarSettings.Table.playerData
 
 	var particle by Table.particle
 	var color by Table.color

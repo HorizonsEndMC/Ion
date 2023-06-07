@@ -5,27 +5,22 @@ import net.horizonsend.ion.common.database.PlayerData
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 
 class SidebarSettings(id: EntityID<Int>) : IntEntity(id) {
-    var contactsStarships by DataTable.contactsStarships
-    var contactsPlanets by DataTable.contactsPlanets
-    var contactsStars by DataTable.contactsStars
-    var contactsBeacons by DataTable.contactsBeacons
+    var playerData by PlayerData referencedOn Table.playerData
+    var contactsStarships by Table.contactsStarships
+    var contactsPlanets by Table.contactsPlanets
+    var contactsStars by Table.contactsStars
+    var contactsBeacons by Table.contactsBeacons
 
-	var sidebarSettings by SidebarSettings.via(PlayerDataToSidebarSettingsTable.playerData, PlayerDataToSidebarSettingsTable.sidebarSettings)
+    companion object : IonEntityClass<Int, SidebarSettings>(Table, SidebarSettings::class.java, ::SidebarSettings)
 
-    companion object : IonEntityClass<Int, SidebarSettings>(DataTable, SidebarSettings::class.java, ::SidebarSettings)
-
-    object DataTable : IntIdTable("sidebarSettings") {
+    object Table : IntIdTable("sidebarSettings") {
+        val playerData = reference("player", PlayerData.Table, onDelete = CASCADE).index()
         val contactsStarships = bool("contactsStarships").default(true)
         val contactsPlanets = bool("contactsPlanets").default(true)
         val contactsStars = bool("contactsStars").default(true)
         val contactsBeacons = bool("contactsBeacons").default(true)
     }
-
-	object PlayerDataToSidebarSettingsTable : Table() {
-		val playerData = reference("playerData", DataTable)
-		val sidebarSettings = reference("sidebarSettings", DataTable)
-	}
 }
