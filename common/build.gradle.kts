@@ -14,7 +14,7 @@ repositories {
 dependencies {
 	compileOnly("net.kyori:adventure-api:4.13.1")
 	compileOnly("net.kyori:adventure-text-logger-slf4j:4.13.1")
-	compileOnly("net.kyori:adventure-text-minimessage:4.13.1")
+	compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
 
 	compileOnlyApi("com.mysql:mysql-connector-j:8.0.33")
 
