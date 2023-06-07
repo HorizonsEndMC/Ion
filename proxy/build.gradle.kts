@@ -33,7 +33,7 @@ dependencies {
 	implementation("net.dv8tion:JDA:5.0.0-beta.9")
 	implementation("net.kyori:adventure-platform-bungeecord:4.3.0")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.13.1")
-	implementation("net.kyori:adventure-text-minimessage:4.13.1")
+	implementation("net.kyori:adventure-text-minimessage:4.14.0")
 }
 
 tasks.build { dependsOn("shadowJar") }
