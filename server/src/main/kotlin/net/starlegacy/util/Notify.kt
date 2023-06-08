@@ -29,11 +29,11 @@ object Notify : SLComponent() {
 		eventsChannel(PlainTextComponentSerializer.plainText().serialize(message))
 	}
 
-	fun player(player: UUID, message: String) {
-		notifyPlayerAction(player to message.colorize())
+	fun player(player: UUID, message: Component) {
+		notifyPlayerAction(player to message)
 	}
 
-	private val notifyPlayerAction = { (uuid, message): Pair<UUID, String> ->
+	private val notifyPlayerAction = { (uuid, message): Pair<UUID, Component> ->
 		Bukkit.getPlayer(uuid)?.sendMessage(message)
 	}.registerRedisAction("notify-player", runSync = false)
 

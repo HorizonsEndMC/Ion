@@ -115,9 +115,11 @@ object NationsMasterTasks {
 			if (activityCredits > 0) {
 				transaction { Nation[nationId]!!._balance += stationIncome }
 				Notify.player(
-					Settlement.findById(nation!!.capital as Oid<Settlement>)!!.leader.uuid,
-					"<dark_green>Your nation received &6${activityCredits.toCreditsString()}<dark_green> " +
-						"for activity credits from &a$activeCount<dark_green> active members"
+					Settlement.findById(nation.capital as Oid<Settlement>)!!.leader.uuid,
+					MiniMessage.miniMessage().deserialize(
+						"<dark_green>Your nation received <gold>${activityCredits.toCreditsString()}<dark_green> " +
+							"for activity credits from <yellow>$activeCount<dark_green> active members"
+					)
 				)
 			}
 		}
@@ -134,8 +136,10 @@ object NationsMasterTasks {
 				Settlement.deposit(settlementId, activityCredits)
 				Notify.player(
 					settlement.leader.uuid,
-					"&3Your settlement received &6${activityCredits.toCreditsString()}&3 " +
-						"for activity credits from &a$activeCount&3 active members"
+					MiniMessage.miniMessage().deserialize(
+						"<dark_aqua>Your settlement received <gold>${activityCredits.toCreditsString()}<dark_aqua> " +
+								"for activity credits from <yellow>$activeCount<dark_aqua> active members"
+					)
 				)
 			}
 		}
@@ -207,7 +211,10 @@ object NationsMasterTasks {
 			VAULT_ECO.withdrawPlayer(offlinePlayer, rent.toDouble())
 			Settlement.deposit(zone.settlement, rent)
 
-			Notify.player(owner.uuid, "Paid ${rent.toCreditsString()} rent for zone ${zone.id}")
+			Notify.player(owner.uuid, MiniMessage.miniMessage().deserialize(
+				"Paid ${rent.toCreditsString()} rent for zone ${zone.id}"
+				)
+			)
 		}
 	}
 }
