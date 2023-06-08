@@ -37,7 +37,7 @@ dependencies {
 
 	api("com.h2database:h2:2.1.214")
 
-	api("redis.clients:jedis:4.4.1")
+	api("redis.clients:jedis:4.4.2")
 }
 
 kotlin.jvmToolchain(17)
