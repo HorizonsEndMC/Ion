@@ -95,7 +95,7 @@ object Levels : SLComponent() {
 
 				player msg lightPurple("Leveled up to level $newLevel for ${previousCost + cost} SLXP").italic()
 
-				Notify all Component.text().color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+				Notify online Component.text().color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
 					.append(Component.text(name).color(NamedTextColor.GOLD))
 					.append(Component.text(" leveled up to "))
 					.append(Component.text("Level $newLevel").color(NamedTextColor.DARK_PURPLE))

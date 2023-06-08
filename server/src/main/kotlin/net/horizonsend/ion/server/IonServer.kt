@@ -147,7 +147,7 @@ object IonServer : JavaPlugin() {
 
 				DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
 					?.sendMessage("${configuration.serverName} $message")
-				Notify.discord("${configuration.serverName} $message")
+				Notify.eventsChannel("${configuration.serverName} $message")
 			},
 			1
 		)

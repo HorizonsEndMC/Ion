@@ -15,14 +15,18 @@ import org.bukkit.Bukkit.getPluginManager
 import org.litote.kmongo.id.WrappedObjectId
 
 object Notify : SLComponent() {
-	infix fun online(message: Component) = notifyOnlineAction(message)
+	infix fun online(message: Component) {
+		notifyOnlineAction(message)
+		globalChannel(PlainTextComponentSerializer.plainText().serialize(message))
+	}
+
 	private val notifyOnlineAction = { message: Component ->
 		Bukkit.broadcast(message)
 	}.registerRedisAction("notify-online", runSync = false)
 
 	infix fun all(message: Component) {
 		online(message)
-		discord(PlainTextComponentSerializer.plainText().serialize(message))
+		eventsChannel(PlainTextComponentSerializer.plainText().serialize(message))
 	}
 
 	fun player(player: UUID, message: String) {
@@ -55,10 +59,25 @@ object Notify : SLComponent() {
 			.forEach { it.sendMessage(message) }
 	}.registerRedisAction("notify-nation", runSync = false)
 
-	infix fun discord(message: String) {
+	infix fun eventsChannel(message: String) {
 		if (getPluginManager().isPluginEnabled("DiscordSRV")) {
 			Tasks.async {
 				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("events")
+
+				if (channel == null) {
+					System.err.println("ERROR: No events channel found!")
+					return@async
+				}
+
+				channel.sendMessage(message).queue()
+			}
+		}
+	}
+
+	infix fun globalChannel(message: String) {
+		if (getPluginManager().isPluginEnabled("DiscordSRV")) {
+			Tasks.async {
+				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("global")
 
 				if (channel == null) {
 					System.err.println("ERROR: No events channel found!")
