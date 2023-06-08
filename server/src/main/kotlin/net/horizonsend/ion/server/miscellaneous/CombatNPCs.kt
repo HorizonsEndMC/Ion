@@ -182,8 +182,8 @@ object CombatNPCs : SLComponent() {
 	}
 
 	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
-		npc.entity.location.world.getChunkAtAsync(npc.entity.location).thenApply { _ ->
-			npc.entity.chunk.removePluginChunkTicket(IonServer)
+		npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
+			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
 
 			npc.destroy()
 			CitizensAPI.getNPCRegistry().deregister(npc)

@@ -145,9 +145,9 @@ object IonServer : JavaPlugin() {
 				val message = getUpdateMessage(dataFolder) ?: return@Runnable
 				slF4JLogger.info(message)
 
+				Notify.eventsChannel("${configuration.serverName} $message")
 				DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
 					?.sendMessage("${configuration.serverName} $message")
-				Notify.eventsChannel("${configuration.serverName} $message")
 			},
 			1
 		)

@@ -115,7 +115,7 @@ object ProtectionListener : SLEventListener() {
 	}
 
 	private fun isLockedShipDenied(player: Player, location: Location): Boolean {
-		if (NationSpaceStationCommand.disallowedWorlds.contains(location.world.name.lowercase())) return  false
+		if (NationSpaceStationCommand.disallowedWorlds.contains(location.world.name.lowercase())) return false
 		val world = location.world
 		val x = location.blockX
 		val y = location.blockY
@@ -179,7 +179,7 @@ object ProtectionListener : SLEventListener() {
 			return
 		}
 
-		if (isProtectedCity(event.entity.location) || isProtectedCity(event.damager.location)) {
+		if (event.entity is Player && (isProtectedCity(event.entity.location) || isProtectedCity(event.damager.location))) {
 			event.isCancelled = true
 		}
 	}

@@ -18,6 +18,8 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.util.Vector
 import kotlin.math.pow
 
@@ -100,7 +102,12 @@ class BlasterProjectile(
 
 			shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 1.0f))
 			damage = newDamage
-			hitEntity.damage(damage)
+
+			val e = EntityDamageByEntityEvent(shooter, hitEntity, EntityDamageEvent.DamageCause.PROJECTILE, damage)
+			Bukkit.getPluginManager().callEvent(e)
+
+			if (!e.isCancelled)
+				hitEntity.damage(damage)
 
 			return
 		}
