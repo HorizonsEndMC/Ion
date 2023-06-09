@@ -7,6 +7,9 @@ main: net.horizonsend.ion.server.IonServer
 load: STARTUP
 
 dependencies:
+  - name: ProtocolLib
+    required: true
+
   - name: WorldEdit
     required: true
 
@@ -32,6 +35,7 @@ dependencies:
     required: false
 
 load-after:
+  - name: ProtocolLib
   - name: WorldEdit
   - name: Citizens
   - name: DiscordSRV

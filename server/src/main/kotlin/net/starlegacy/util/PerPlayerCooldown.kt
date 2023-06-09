@@ -1,5 +1,6 @@
 package net.starlegacy.util
 
+import net.horizonsend.ion.server.debug
 import org.bukkit.entity.Player
 import java.lang.System.nanoTime
 import java.util.UUID
@@ -13,7 +14,9 @@ class PerPlayerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECON
 	fun tryExec(player: Player, block: () -> Unit) = tryExec(player, this.cooldownNanos, TimeUnit.NANOSECONDS, block)
 
 	fun tryExec(player: Player, cooldown: Long, timeUnit: TimeUnit, block: () -> Unit) {
+		player.debug("cooldown check")
 		if (nanoTime() - map.getOrElse(player.uniqueId) { 0 } >= timeUnit.toNanos(cooldown)) {
+			player.debug("not cooled down, going on")
 			map[player.uniqueId] = nanoTime()
 			block()
 		}

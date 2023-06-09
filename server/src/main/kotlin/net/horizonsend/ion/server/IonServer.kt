@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLib
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.ProtocolManager
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
@@ -52,6 +56,7 @@ object IonServer : JavaPlugin() {
 	}
 
 	private fun internalEnable() {
+		PacketType.values().forEach { ProtocolLibrary.getProtocolManager().addPacketListener(IonPacketListener(it)) }
 		Connectivity.open(dataFolder)
 
 		prefixProvider = {
