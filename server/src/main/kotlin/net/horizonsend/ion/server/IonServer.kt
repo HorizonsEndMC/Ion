@@ -97,7 +97,7 @@ object IonServer : JavaPlugin() {
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.
 		for (listener in listeners) pluginManager.registerEvents(listener, this)
 
-		Bukkit.getPluginManager().callEvent(IonEnableEvent())
+		Bukkit.getPluginManager().callEvent(IonEnableEvent(commandManager))
 
 		// WIT networking
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, SearchC2S.ID.toString(), Searcher::handle)
