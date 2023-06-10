@@ -449,7 +449,7 @@ data class BalancingConfiguration(
 			inaccuracyRadians = 2.0
 		),
 		val heavyTurret: StarshipWeapon = StarshipWeapon(
-			range = 300.0,
+			range = 500.0,
 			speed = 200.0,
 			shieldDamageMultiplier = 2,
 			thickness = 0.0,
