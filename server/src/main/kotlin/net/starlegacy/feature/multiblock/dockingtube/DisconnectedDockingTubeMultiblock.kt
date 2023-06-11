@@ -13,6 +13,8 @@ import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isDoor
+import net.starlegacy.util.minus
+import net.starlegacy.util.toBlockPos
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Sign
@@ -72,6 +74,9 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 					return
 				}
 
+				val buttonStates = buttons.map { it.state }
+				val otherButtons = getButtons(otherSignLocation, direction.oppositeFace).map { it.state }
+
 				for (i in 0..distance) {
 					buttons.forEach { button ->
 						button.getRelative(direction, i).setType(Material.GLASS, false)
@@ -85,12 +90,21 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 					PersistentDataType.STRING,
 					ConnectedDockingTubeMultiblock::class.simpleName!!
 				)
-
-				val otherButtons = getButtons(otherSignLocation, direction.oppositeFace)
 				sign.persistentDataContainer.set(
 					NamespacedKeys.TUBE_BUTTONS,
 					DataTypes.list(SignDataType.Companion),
-					(buttons + otherButtons).map { SignDataType(IntLocation(it.x, it.y, it.z), it.type) },
+					(buttonStates + otherButtons).map {
+						val loc = it.location.toBlockPos() - sign.location.toBlockPos()
+
+						SignDataType(
+							IntLocation(
+								loc.x,
+								loc.y,
+								loc.z
+							),
+							it.type
+						)
+					}
 				)
 
 				sign.line(3, ConnectedDockingTubeMultiblock.stateText)

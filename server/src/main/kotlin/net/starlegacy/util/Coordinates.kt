@@ -259,6 +259,10 @@ operator fun BlockPos.component2(): Int = this.y
 
 operator fun BlockPos.component3(): Int = this.z
 
+operator fun BlockPos.minus(other: BlockPos) = BlockPos(this.x - other.x, this.y - other.y, this.z - other.z)
+
+operator fun Triple<Int, Int, Int>.minus(other: Triple<Int, Int, Int>) = Triple(this.first - other.first, this.second - other.second, this.third - other.third)
+
 operator fun ChunkPos.component1(): Int = this.x
 
 operator fun ChunkPos.component2(): Int = this.z
