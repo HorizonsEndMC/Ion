@@ -18,13 +18,11 @@ abstract class TurretWeaponSubsystem(
 	ship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace
-) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem, AutoWeaponSubsystem {
+) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
 	private fun getSign() = starship.serverLevel.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign
 
 	protected abstract val multiblock: TurretMultiblock
 	protected abstract val inaccuracyRadians: Double
-
-	override val range: Double get() = multiblock.range
 
 	override fun isIntact(): Boolean {
 		val sign = getSign() ?: return false
@@ -75,11 +73,6 @@ abstract class TurretWeaponSubsystem(
 		dir: Vector,
 		target: Vector
 	) {
-		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter)
-	}
-
-	override fun autoFire(target: Player, dir: Vector) {
-		val shooter = (starship as? ActivePlayerStarship)?.pilot
 		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter)
 	}
 }
