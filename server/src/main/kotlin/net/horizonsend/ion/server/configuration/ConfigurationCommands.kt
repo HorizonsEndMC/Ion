@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
 import org.bukkit.command.CommandSender
+import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createType
@@ -23,6 +24,7 @@ class ConfigurationCommands : BaseCommand(), Listener {
 	private val turretTypes = BalancingConfiguration.StarshipWeapons::class.memberProperties
 	private val changeableFields = BalancingConfiguration.StarshipWeapons.StarshipWeapon::class.memberProperties
 
+	@EventHandler
 	fun enable(e: IonEnableEvent) {
 		e.manager.commandCompletions.registerCompletion("balancingFields") {
 			turretTypes.map { it.name }

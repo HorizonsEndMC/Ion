@@ -5,11 +5,19 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 data class IonEnableEvent(val manager: PaperCommandManager) : Event() {
-	private val handlers = HandlerList()
-	override fun getHandlers(): HandlerList = handlers
+	companion object {
+		@JvmStatic
+		val handlerList = HandlerList()
+	}
+
+	override fun getHandlers(): HandlerList = handlerList
 }
 
 class IonDisableEvent : Event() {
-	private val handlers = HandlerList()
-	override fun getHandlers(): HandlerList = handlers
+	companion object {
+		@JvmStatic
+		val handlerList = HandlerList()
+	}
+
+	override fun getHandlers(): HandlerList = handlerList
 }
