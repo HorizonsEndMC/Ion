@@ -18,8 +18,4 @@ class HeavyTurretWeaponSubsystem(
 ) : TurretWeaponSubsystem(ship, pos, face) {
 	override val inaccuracyRadians: Double get()  = Math.toRadians(IonServer.balancing.starshipWeapons.heavyTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.heavyTurret.powerUsage / 3
-
-	override fun autoFire(target: Player, dir: Vector) {
-		return
-	}
 }
