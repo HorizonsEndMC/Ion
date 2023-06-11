@@ -1,6 +1,5 @@
 package net.starlegacy.feature.multiblock
 
-import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.userError
@@ -12,9 +11,6 @@ import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.Minin
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier2Top
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier3Bottom
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier3Top
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockBottom
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamMultiblockSide
-import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.EnderCrystalStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
@@ -183,9 +179,6 @@ object Multiblocks : SLComponent() {
 			PointDefenseStarshipWeaponMultiblockTop,
 			PointDefenseStarshipWeaponMultiblockSide,
 			PointDefenseStarshipWeaponMultiblockBottom,
-			CthulhuBeamMultiblockBottom,
-			EnderCrystalStarshipWeaponMultiblockTop,
-			CthulhuBeamMultiblockSide,
 			TopLightTurretMultiblock,
 			BottomLightTurretMultiblock,
 			TopHeavyTurretMultiblock,
@@ -210,9 +203,6 @@ object Multiblocks : SLComponent() {
 	}
 
 	private val multiblockCache: MutableMap<Location, Multiblock> = Object2ObjectOpenHashMap()
-
-	private lateinit var gettingTiming: Timing
-	private lateinit var detectionTiming: Timing
 
 	override fun onEnable() {
 		initMultiblocks()
