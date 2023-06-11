@@ -15,6 +15,8 @@ import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isDoor
 import net.starlegacy.util.isGlass
+import net.starlegacy.util.minus
+import net.starlegacy.util.toBlockPos
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
@@ -101,8 +103,9 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 			fun setButtons(buttons: List<Block>, facing: BlockFace) {
 				buttons.forEach { block ->
-					val material =
-						buttonsPdc.find { it.loc == block.location.triple().int() }?.type ?: Material.STONE_BUTTON
+					val material = buttonsPdc.find {
+						it.loc == block.location.triple().int() - sign.location.triple().int()
+					}?.type ?: Material.STONE_BUTTON
 
 					val button = material.createBlockData {
 						(it as Switch).facing = facing
