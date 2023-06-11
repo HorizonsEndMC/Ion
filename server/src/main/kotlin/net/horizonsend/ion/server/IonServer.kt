@@ -2,9 +2,7 @@ package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
 import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLib
 import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.ProtocolManager
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
@@ -41,6 +39,7 @@ import net.starlegacy.util.Notify
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
@@ -74,7 +73,13 @@ object IonServer : JavaPlugin() {
 		@Suppress("Deprecation")
 		commandManager.enableUnstableAPI("help")
 
-		for (command in commands) commandManager.registerCommand(command)
+		for (command in commands) {
+			commandManager.registerCommand(command)
+
+			if (command is Listener) {
+				Bukkit.getPluginManager().registerEvents(command, this)
+			}
+		}
 
 		commandManager.commandCompletions.registerStaticCompletion(
 			"achievements",
