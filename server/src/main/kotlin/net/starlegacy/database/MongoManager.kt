@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import net.horizonsend.ion.server.database.schema.Cryopod
 import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 import net.starlegacy.SETTINGS
@@ -105,6 +106,8 @@ object MongoManager : SLComponent() {
 		// starships
 		PlayerStarshipData.init()
 		Blueprint.init()
+
+		Cryopod.init()
 	}
 
 	override fun onDisable() {
