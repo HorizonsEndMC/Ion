@@ -54,8 +54,8 @@ class ServerConnectListener : Listener {
 					).queue()
 				}
 
-				val promptToVote = playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
-				if (promptToVote) player.special("Hey ${player.name}! Remember to vote for the server to help us grow the Horizon's End community!")
+//				val promptToVote = playerData.voteTimes.find { it.dateTime.isBefore(LocalDateTime.now().minusDays(1)) } != null
+				/*if (promptToVote)*/ player.special("Hey ${player.name}! Remember to vote for the server to help us grow the Horizon's End community!")
 			}
 		} else {
 			PLUGIN.proxy.information("<dark_gray>[<blue>> <gray>${event.target.name}<dark_gray>] <white>${player.name}")

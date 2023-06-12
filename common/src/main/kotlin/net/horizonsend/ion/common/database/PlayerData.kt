@@ -13,7 +13,6 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 	var wasKilled by Table.wasKilled
 
 	val achievements by PlayerAchievement referrersOn PlayerAchievement.Table.player
-	val voteTimes by PlayerVoteTime referrersOn PlayerVoteTime.Table.player
 	val cryopods by Cryopod referrersOn Cryopod.Table.owner
 
 	var particle by Table.particle
