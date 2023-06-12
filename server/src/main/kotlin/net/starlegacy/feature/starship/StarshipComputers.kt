@@ -2,7 +2,6 @@ package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.util.LinkedList
-import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.serverErrorActionMessage
@@ -21,6 +20,7 @@ import net.kyori.adventure.util.HSVLike
 import net.starlegacy.SLComponent
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.Territory
 import net.starlegacy.database.schema.starships.PlayerStarshipData
@@ -409,13 +409,13 @@ object StarshipComputers : SLComponent() {
 		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::pilots, mutableSetOf()))
 	}
 
-	fun Player.isTerritoryOwner(): Boolean = transaction {
-		val territoryId = Regions.find(this@isTerritoryOwner.location)
+	fun Player.isTerritoryOwner(): Boolean {
+		val territoryId = Regions.find(this.location)
 			.filterIsInstance<RegionTerritory>()
-			.firstOrNull() ?: return@transaction false
-		val territory = Territory.findById(territoryId.id) ?: return@transaction false
-		val settlementId = territory.settlement ?: Nation[territory.nation?: return@transaction false]?.capital ?: return@transaction false
-		val settlement = Settlement.findById(settlementId as Oid<Settlement>) ?: return@transaction false
-		return@transaction settlement.leader.uuid == uniqueId
+			.firstOrNull() ?: return false
+		val territory = Territory.findById(territoryId.id) ?: return false
+		val settlementId = territory.settlement ?: Nation.findById(territory.nation?: return false)?.capital ?: return false
+		val settlement = Settlement.findById(settlementId) ?: return false
+		return settlement.leader.uuid == uniqueId
 	}
 }

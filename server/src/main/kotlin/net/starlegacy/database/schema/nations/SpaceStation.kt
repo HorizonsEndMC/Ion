@@ -1,7 +1,7 @@
 package net.starlegacy.database.schema.nations
 
 import com.mongodb.client.model.Filters
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -45,7 +45,7 @@ data class SpaceStation(
 			z: Int,
 			radius: Int
 		): Oid<SpaceStation> = trx { sess ->
-			require(transaction { Nation.getByName(name) } == null)
+			require(Nation.none(sess, nameQuery(name)))
 			val id = objId<SpaceStation>()
 			val trustLevel = TrustLevel.MANUAL
 			val station = SpaceStation(id, nation, name, world, x, z, radius, setOf(), setOf(), setOf(), trustLevel)

@@ -5,11 +5,11 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.nations.NationRole
+import net.starlegacy.command.nations.money.MoneyCommand
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("nation|n")
 internal object NationMoneyCommand : MoneyCommand<Nation>() {
@@ -28,15 +28,15 @@ internal object NationMoneyCommand : MoneyCommand<Nation>() {
 	override fun resolveParent(name: String): Oid<Nation> = resolveNation(name)
 
 	override fun getBalance(parent: Oid<Nation>): Int {
-		return transaction { Nation[parent]?._balance } ?: fail { "Failed to retrieve nation balance" }
+		return Nation.findPropById(parent, Nation::balance) ?: fail { "Failed to retrieve nation balance" }
 	}
 
 	override fun deposit(parent: Oid<Nation>, amount: Int) {
-		transaction { Nation[parent]!!._balance += amount }
+		Nation.deposit(parent, amount)
 	}
 
 	override fun withdraw(parent: Oid<Nation>, amount: Int) {
-		transaction { Nation[parent]!!._balance -= amount }
+		Nation.withdraw(parent, amount)
 	}
 
 	@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")

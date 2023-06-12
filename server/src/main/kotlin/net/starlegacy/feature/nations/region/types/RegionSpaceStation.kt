@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.enumValue
@@ -10,6 +10,7 @@ import net.starlegacy.database.int
 import net.starlegacy.database.mappedSet
 import net.starlegacy.database.oid
 import net.starlegacy.database.schema.misc.SLPlayerId
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.SpaceStation
 import net.starlegacy.database.slPlayerId
@@ -98,6 +99,6 @@ class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spac
 			return null
 		}
 
-		return "&cSpace station $name is claimed by ${ transaction { Nation[nation]!!.name } } @ $x,$z x $radius"
+		return "&cSpace station $name is claimed by ${ transaction { NationCache[nation].name } } @ $x,$z x $radius"
 	}
 }

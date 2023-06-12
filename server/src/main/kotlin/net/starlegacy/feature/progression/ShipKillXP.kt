@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 import kotlin.math.sqrt
 import net.horizonsend.ion.common.Colors
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.Component
@@ -25,6 +25,7 @@ import net.starlegacy.SLComponent
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.miscellaneous.CombatNPCKillEvent
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent
 import net.starlegacy.feature.starship.PilotedStarships.getRawDisplayName
 import net.starlegacy.feature.starship.StarshipType
@@ -180,7 +181,7 @@ object ShipKillXP : SLComponent() {
 		} ?: Component.text("A ").color(alertFeedbackColor).append(data.type.component)
 
 		val killedNationColor = SLPlayer.findIdByName(killedName)
-			?.let { SLPlayer[it]?.nation?.let { nationID -> transaction { Nation[nationID]?.color } } }
+			?.let { SLPlayer[it]?.nation?.let { nationID -> transaction { NationCache[nationID]?.color } } }
 			?: 16777215 // white // So many null checks, meh, it's not called too often.
 
 		val killedShipHover = Component.text()
@@ -201,7 +202,7 @@ object ShipKillXP : SLComponent() {
 
 		val killerNationColor = SLPlayer[getPlayer(killer.id)!!].nation?.let {
 				nationID ->
-			transaction { Nation[nationID]?.color }
+			transaction { NationCache[nationID]?.color }
 		} ?: 16777215 // white // So many null checks, meh, it's not called too often.
 
 		val killerShipHover = Component.text()
@@ -241,7 +242,7 @@ object ShipKillXP : SLComponent() {
 				val assistShip = ActiveStarships.findByPilot(assistPlayer) ?: continue
 				val assistNationColor = SLPlayer[assistPlayer].nation?.let {
 						nationID ->
-					transaction { Nation[nationID]?.color }
+					transaction { NationCache[nationID]?.color }
 				} ?: 16777215 // white
 				val assistShipName = (assistShip as? ActivePlayerStarship)?.let { getDisplayNameComponent(it.data) }
 				val assistHoverEvent = Component.text()

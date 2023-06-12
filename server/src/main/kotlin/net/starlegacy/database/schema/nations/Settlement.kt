@@ -4,8 +4,6 @@ import com.mongodb.client.ClientSession
 import com.mongodb.client.MongoIterable
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
-import net.horizonsend.ion.common.database.Nation
-import net.horizonsend.ion.common.database.NationInvite
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -16,10 +14,6 @@ import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.trx
 import net.starlegacy.database.updateAll
 import org.bson.conversions.Bson
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
@@ -94,7 +88,7 @@ data class Settlement(
 		fun getMembers(settlementId: Oid<Settlement>): MongoIterable<SLPlayerId> = SLPlayer
 			.findProp(SLPlayer::settlement eq settlementId, SLPlayer::_id)
 
-		fun isCapital(settlementId: Oid<Settlement>?): Boolean = transaction { !Nation.Table.select(Nation.Table.capital eq settlementId as Oid<Any>).empty() }
+		fun isCapital(settlementId: Oid<Settlement>?): Boolean = !Nation.none(Nation::capital eq settlementId)
 
 		fun isInvitedTo(settlementId: Oid<Settlement>, slPlayer: SLPlayerId): Boolean =
 			matches(settlementId, Settlement::invites contains slPlayer)
@@ -161,7 +155,7 @@ data class Settlement(
 				)
 
 				// remove invite from nations
-				transaction { NationInvite.Table.deleteWhere { NationInvite.Table.settlement.eq(settlementId as Oid<Any>) } }
+				Nation.col.updateAll(sess, pull(Nation::invites, settlementId))
 
 				// remove the actual settlement
 				col.deleteOne(sess, idFilterQuery(settlementId))
@@ -170,7 +164,7 @@ data class Settlement(
 
 		fun leaveNation(settlementId: Oid<Settlement>): Boolean = trx { sess ->
 			require(exists(sess, settlementId))
-			require(!isCapital(settlementId))
+			require(Nation.none(sess, Nation::capital eq settlementId))
 
 			val members: List<SLPlayerId> = getMembers(settlementId).toList()
 

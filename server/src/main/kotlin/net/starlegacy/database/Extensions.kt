@@ -221,7 +221,7 @@ fun <T> BsonValue.mappedList(function: (BsonValue) -> T): List<T> = array().map(
 fun <T> BsonValue.mappedSet(function: (BsonValue) -> T): Set<T> = array().asSequence().map(function).toSet()
 inline fun <reified T : Enum<T>> BsonValue.enumValue(): T = enumValueOf(string())
 inline fun <reified T> BsonValue.document(): T = MongoManager.decode(asDocument())
-fun <T> BsonValue.oid(): Oid<T> = when {
+fun <T : DbObject> BsonValue.oid(): Oid<T> = when {
 	isObjectId -> WrappedObjectId(asObjectId().value)
 	else -> error("Unrecognized object id type $json")
 }

@@ -11,7 +11,7 @@ import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -25,6 +25,7 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -473,7 +474,7 @@ internal object SettlementCommand : SLCommand() {
 		message.append(newline())
 
 		data.nation?.let { nationId ->
-			val settlementNationCached = transaction { Nation[nationId] }!!
+			val settlementNationCached = NationCache[nationId]
 
 			val nationsText = text().color(TextColor.fromHexString("#b8e0d4"))
 				.append(text("Nation: ").color(TextColor.fromHexString("#b8e0d4")))
