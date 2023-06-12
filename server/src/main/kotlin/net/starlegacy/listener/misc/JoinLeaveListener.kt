@@ -1,9 +1,12 @@
 package net.starlegacy.listener.misc
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.slPlayerId
 import net.starlegacy.listener.SLEventListener
+import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -13,6 +16,7 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.updateOneById
 import java.util.Date
 import java.util.UUID
+import javax.inject.Named
 
 object JoinLeaveListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {
@@ -46,6 +50,14 @@ object JoinLeaveListener : SLEventListener() {
 					)
 				)
 				log.info("Registered $name in the database for the first time, join time $now")
+
+				val welcomeMessage = Component.text().color(NamedTextColor.GOLD)
+					.append(Component.text("Welcome "))
+					.append(Component.text(name, NamedTextColor.WHITE))
+					.append(Component.text(" to the server!"))
+					.build()
+
+				Notify online welcomeMessage
 				return
 			}
 

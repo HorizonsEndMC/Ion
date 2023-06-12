@@ -13,11 +13,9 @@ class PlayerData(uuid: EntityID<UUID>) : Entity<UUID>(uuid) {
 	var wasKilled by Table.wasKilled
 
 	val achievements by PlayerAchievement referrersOn PlayerAchievement.Table.player
-	val cryopods by Cryopod referrersOn Cryopod.Table.owner
 
 	var particle by Table.particle
 	var color by Table.color
-	val selectedCryopod get() = cryopods.find { it.active }
 
 	companion object : IonEntityClass<UUID, PlayerData>(Table, PlayerData::class.java, ::PlayerData) {
 		operator fun get(snowflake: Long): PlayerData? = find(Table.snowflake eq snowflake).firstOrNull()

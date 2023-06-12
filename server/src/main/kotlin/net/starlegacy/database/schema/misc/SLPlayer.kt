@@ -56,7 +56,7 @@ data class SLPlayer(
 	var nation: Oid<Nation>? = null,
 	var snowflake: Long? = null,
 	var wasKilled: Boolean = false,
-	var cryopod: Set<Cryopod> = setOf(),
+	var cryopod: Set<Oid<Cryopod>> = setOf(),
 	var selectedCryopod: Oid<Cryopod>? = null,
 	var achievements: Set<Achievement> = setOf()
 ) : DbObject {
