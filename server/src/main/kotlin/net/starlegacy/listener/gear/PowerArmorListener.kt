@@ -2,10 +2,10 @@ package net.starlegacy.listener.gear
 
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
+import net.starlegacy.cache.nations.NationCache
 import java.time.Instant
 import java.util.Locale
 import java.util.UUID
-import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.feature.gear.powerarmor.PowerArmorModule
@@ -25,7 +25,6 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
-import org.jetbrains.exposed.sql.transactions.transaction
 
 private val lastMoved = HashMap<UUID, Long>()
 
@@ -55,7 +54,7 @@ object PowerArmorListener : SLEventListener() {
 				return@sync
 			}
 
-			val nation = transaction { PlayerCache[player].nationOid?.let(Nation::get) } ?: return@sync
+			val nation = PlayerCache[player].nationOid?.let(NationCache::get) ?: return@sync
 			val nationColor = nation.color
 
 			if (meta.color.asRGB() == nationColor) {

@@ -1,8 +1,9 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import net.starlegacy.cache.nations.NationCache
 import java.time.DayOfWeek
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.array
@@ -60,7 +61,7 @@ class RegionCapturableStation(station: CapturableStation) :
 	override fun calculateInaccessMessage(player: Player): String? {
 		val nation = nation ?: return "$name is not claimed by any nation!".intern()
 
-		val noAccessMessage = "$name is a station claimed by ${ transaction { Nation[nation]!!.name } }".intern()
+		val noAccessMessage = "$name is a station claimed by ${ transaction { NationCache[nation].name } }".intern()
 
 		// if they're not in a nation they can't access any nation outposts
 		val playerNation = PlayerCache[player].nationOid ?: return noAccessMessage

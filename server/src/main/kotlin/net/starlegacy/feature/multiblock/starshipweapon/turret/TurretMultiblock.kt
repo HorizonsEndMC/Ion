@@ -8,8 +8,9 @@ import kotlin.collections.set
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.minecraft.world.level.block.Rotation
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -285,7 +286,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 			val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
 
 			if (nation != null) {
-				return Color.fromRGB( transaction { Nation[nation]!!.color } )
+				return Color.fromRGB(NationCache[nation].color)
 			}
 		}
 

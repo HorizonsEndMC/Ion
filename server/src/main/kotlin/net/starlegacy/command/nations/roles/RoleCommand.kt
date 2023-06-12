@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import java.sql.Timestamp
 import java.util.UUID
 import net.starlegacy.command.SLCommand
+import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
@@ -33,7 +34,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.pull
 
 /** Abstract role command logic class, has the logic but not the command description/tab completions due to ACF's restrictions */
-internal abstract class RoleCommand<Parent, Permission : Enum<Permission>, T : Role<Parent, Permission>> :
+internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>> :
 	SLCommand() {
 	protected abstract val roleCompanion: RoleCompanion<Parent, Permission, T>
 

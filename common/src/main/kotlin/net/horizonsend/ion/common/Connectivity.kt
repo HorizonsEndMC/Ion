@@ -30,8 +30,6 @@ object Connectivity {
 
 		transaction {
 			SchemaUtils.createMissingTablesAndColumns(
-				Nation.Table,
-				NationInvite.Table,
 				PlayerAchievement.Table,
 				PlayerData.Table,
 				PlayerVoteTime.Table,

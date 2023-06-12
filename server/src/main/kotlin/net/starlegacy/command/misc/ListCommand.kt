@@ -1,18 +1,18 @@
 package net.starlegacy.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
-import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.extensions.userError
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.util.multimapOf
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object ListCommand : SLCommand() {
 	@Suppress("Unused")
@@ -33,21 +33,21 @@ object ListCommand : SLCommand() {
 		}
 
 		val nationIdsSortedByName: List<Oid<Nation>?> = nationMap.keySet()
-			.sortedBy { id -> id?.let { transaction { Nation[it]!!.name } } ?: "_" }
+			.sortedBy { id -> id?.let { NationCache[it].name } ?: "_" }
 
 		for (nationId: Oid<Nation>? in nationIdsSortedByName) {
 			val members: Collection<Player> = nationMap[nationId].sortedBy { SLXP[it] }
 
-			val nationText = nationId?.let { "<dark_purple>${ transaction { Nation[it]!!.name } }" } ?: "<yellow><italic>Nationless"
+			val nationText = nationId?.let { "<dark_purple>${NationCache[it].name}" } ?: "<yellow><italic>Nationless"
 
 			sender.sendRichMessage(
 				"$nationText <dark_purple>(<light_purple>${members.count()}<dark_purple>)<dark_gray>:<gray> ${
-				members.joinToString { player ->
+					members.joinToString { player ->
 // 					val nationPrefix = PlayerCache[player].nationTag?.let { "<reset>$it " } ?: ""
-					return@joinToString "<gray>[<aqua>${Levels[player]}<gray>] " +
+						return@joinToString "<gray>[<aqua>${Levels[player]}<gray>] " +
 // 							"$nationPrefix" +
-						"<gray>${player.name}"
-				}
+							"<gray>${player.name}"
+					}
 				}"
 			)
 		}

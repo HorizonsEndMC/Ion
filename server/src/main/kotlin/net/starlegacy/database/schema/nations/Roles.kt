@@ -5,7 +5,7 @@ import com.mongodb.client.model.Filters
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion
@@ -38,7 +38,7 @@ import org.litote.kmongo.withDocumentClass
  * @property permissions The permissions the role gives
  * @property members Players who have this role
  */
-sealed class Role<Parent, Permission : Enum<Permission>> : DbObject {
+sealed class Role<Parent : DbObject, Permission : Enum<Permission>> : DbObject {
 	abstract override val _id: Oid<*>
 	abstract val parent: Oid<Parent>
 	abstract var name: String
@@ -50,7 +50,7 @@ sealed class Role<Parent, Permission : Enum<Permission>> : DbObject {
 	val coloredName get() = "$color$name"
 }
 
-abstract class RoleCompanion<Parent, Permission : Enum<Permission>, T : Role<Parent, Permission>>(
+abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>>(
 	clazz: KClass<T>,
 	val parentProperty: KProperty<Oid<Parent>>,
 	val nameProperty: KProperty<String>,

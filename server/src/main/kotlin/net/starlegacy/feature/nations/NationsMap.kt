@@ -1,7 +1,8 @@
 package net.starlegacy.feature.nations
 
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.SLComponent
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.database.schema.nations.NPCTerritoryOwner
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.region.Regions
@@ -151,7 +152,7 @@ object NationsMap : SLComponent() {
 			lineRGB = rgb
 		}
 
-		val nation: Nation? = transaction { settlement?.nation?.let(Nation.Companion::get) ?: territory.nation?.let(Nation.Companion::get) }
+		val nation: Nation? = settlement?.nation?.let(Nation.Companion::findById) ?: territory.nation?.let(Nation.Companion::findById)
 
 		if (nation != null) {
 			val rgb = nation.color
@@ -222,7 +223,7 @@ object NationsMap : SLComponent() {
 		val marker: CircleMarker = markerSet.findCircleMarker(station.name)
 			?: return@syncOnly addCapturableStation(station)
 
-		val nation = transaction { station.nation?.let(Nation::get) }
+		val nation = station.nation?.let(NationCache::get)
 
 		val rgb = nation?.color ?: Color.WHITE.asRGB()
 		marker.setFillStyle(0.0, Color.WHITE.asRGB())
@@ -264,7 +265,7 @@ object NationsMap : SLComponent() {
 		markerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
 		val marker: CircleMarker = markerSet.findCircleMarker(id)
 
-		val nation = transaction { Nation[station.nation] }!!
+		val nation = NationCache[station.nation]
 
 		val rgb = nation.color
 		marker.setFillStyle(0.2, rgb)
