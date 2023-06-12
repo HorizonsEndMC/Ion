@@ -4,7 +4,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -33,7 +34,7 @@ internal object NationRoleCommand : RoleCommand<Nation, NationRole.Permission, N
 	}
 
 	override fun isLeader(slPlayerId: SLPlayerId, parent: Oid<Nation>): Boolean {
-		return transaction { SettlementCache[Nation[parent]!!.capital as Oid<Settlement>].leader } == slPlayerId
+		return SettlementCache[NationCache[parent].capital].leader == slPlayerId
 	}
 
 	override fun isMember(slPlayerId: SLPlayerId, parent: Oid<Nation>): Boolean {
@@ -41,7 +42,7 @@ internal object NationRoleCommand : RoleCommand<Nation, NationRole.Permission, N
 	}
 
 	public override fun getMembers(parent: Oid<Nation>): List<SLPlayerId> {
-		return SLPlayer.findProp(SLPlayer::nation eq parent, SLPlayer::_id).toList()
+		return Nation.getMembers(parent).toList()
 	}
 
 	@Subcommand("manage")

@@ -5,9 +5,8 @@ import co.aikar.commands.CommandHelp
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.HelpCommand
 import java.util.UUID
-import java.util.concurrent.Executors
-import net.horizonsend.ion.common.database.Nation
 import net.md_5.bungee.api.ChatColor
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -15,6 +14,7 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
 import net.starlegacy.database.schema.nations.NPCTerritoryOwner
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Settlement
@@ -40,6 +40,7 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.Executors
 
 abstract class SLCommand : BaseCommand() {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
@@ -102,7 +103,7 @@ abstract class SLCommand : BaseCommand() {
 	}
 
 	protected fun getNationName(id: Oid<Nation>): String {
-		return transaction { Nation[id]!!.name }
+		return NationCache[id].name
 	}
 
 	protected fun getNPCOwnerName(id: Oid<NPCTerritoryOwner>): String? {
@@ -146,7 +147,7 @@ abstract class SLCommand : BaseCommand() {
 	protected fun resolveSettlement(name: String): Oid<Settlement> = SettlementCache.getByName(name)
 		?: fail { "Settlement $name not found" }
 
-	protected fun resolveNation(name: String): Oid<Nation> = transaction { Nation.getByName(name)?.objectId }
+	protected fun resolveNation(name: String): Oid<Nation> = NationCache.getByName(name)
 		?: fail { "Nation $name not found" }
 
 	protected fun requireMinLevel(sender: Player, level: Int) = failIf(Levels[sender] < level) { "You need to be at least level $level to do that" }
@@ -172,7 +173,7 @@ abstract class SLCommand : BaseCommand() {
 		SettlementCache[settlementId].leader == player.slPlayerId
 
 	protected fun isNationLeader(player: Player, nationId: Oid<Nation>): Boolean =
-		SettlementCache[transaction { Nation[nationId]!!.capital } as Oid<Settlement>].leader == player.slPlayerId
+		SettlementCache[NationCache[nationId].capital].leader == player.slPlayerId
 
 	protected fun requireSettlementLeader(sender: Player, settlementId: Oid<Settlement>) =
 		failIf(!isSettlementLeader(sender, settlementId)) { "Only the settlement leader can do that" }
@@ -199,7 +200,7 @@ abstract class SLCommand : BaseCommand() {
 		failIf(PlayerCache[sender].nationOid != null) { "You can't do that while in a nation. Hint: To leave the nation, use /n leave" }
 
 	protected fun requireNotCapital(settlementId: Oid<Settlement>, action: String = "do that") =
-		failIf(transaction { SettlementCache[settlementId].nation?.let(Nation::get)?.capital == settlementId }) { "The capital settlement can't $action!" }
+		failIf(SettlementCache[settlementId].nation?.let(NationCache::get)?.capital == settlementId) { "The capital settlement can't $action!" }
 
 	protected fun requireMoney(sender: Player, amount: Number, text: String = "do that") {
 		failIf(!VAULT_ECO.has(sender, amount.toDouble())) {

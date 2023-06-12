@@ -4,7 +4,7 @@ import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.concurrent.TimeUnit
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
@@ -218,8 +219,8 @@ object StationSieges : SLComponent() {
 
 		sieges.add(Siege(playerId, stationId, currentTimeMillis()))
 
-		val nationName = transaction { Nation[nation]!!.name }
-		val oldNationName = transaction { Nation[oldNation]!!.name }
+		val nationName = NationCache[nation].name
+		val oldNationName = NationCache[oldNation].name
 
 		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)"))
 		Notify.eventsChannel("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
@@ -285,8 +286,8 @@ object StationSieges : SLComponent() {
 			}
 			sieges.removeIf { it.siegerId == slPlayerId }
 			CapturableStation.setNation(stationId, playerNation)
-			val nationName = transaction { Nation[playerNation]!!.name }
-			val oldNationName = oldNation?.let { transaction { Nation[it]!!.name } } ?: "None"
+			val nationName = NationCache[playerNation].name
+			val oldNationName = oldNation?.let { NationCache[it].name } ?: "None"
 			val nowCaptured = CapturableStation.count(CapturableStation::nation eq playerNation)
 			val playerName = player.name
 			Notify online MiniMessage.miniMessage().deserialize("<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +

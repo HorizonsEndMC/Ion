@@ -2,7 +2,7 @@ package net.starlegacy.database.schema.starships
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import java.util.Base64
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid

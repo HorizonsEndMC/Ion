@@ -2,9 +2,9 @@ package net.starlegacy.cache.nations
 
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import net.horizonsend.ion.common.database.Nation
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.cache.ManualCache
+import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.containsUpdated
 import net.starlegacy.database.get
@@ -12,6 +12,7 @@ import net.starlegacy.database.nullable
 import net.starlegacy.database.oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Role
 import net.starlegacy.database.schema.nations.RoleCompanion
@@ -134,7 +135,7 @@ object PlayerCache : ManualCache() {
 			}
 		}
 
-		fun <Parent, T : Role<Parent, *>> watchRoles(companion: RoleCompanion<Parent, *, T>) {
+		fun <Parent : DbObject, T : Role<Parent, *>> watchRoles(companion: RoleCompanion<Parent, *, T>) {
 			companion.watchUpdates {
 				if (it.containsUpdated(companion.membersProperty)) {
 					recalculateTags()

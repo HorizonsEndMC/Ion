@@ -1,6 +1,5 @@
 package net.starlegacy.database.schema.nations
 
-import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion

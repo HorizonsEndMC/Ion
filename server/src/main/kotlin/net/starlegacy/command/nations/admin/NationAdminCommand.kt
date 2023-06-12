@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.Subcommand
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.CapturableStation
@@ -137,7 +137,7 @@ internal object NationAdminCommand : SLCommand() {
 	@Subcommand("nation set balance")
 	fun onNationSetBalance(sender: CommandSender, nation: String, balance: Int) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
-		transaction { Nation[nationId]!!.balance = balance }
+		Nation.updateById(nationId, setValue(Nation::balance, balance))
 		sender msg "Set balance of $nation to ${balance.toCreditsString()}"
 	}
 

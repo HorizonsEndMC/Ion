@@ -7,7 +7,7 @@ import com.mongodb.client.result.UpdateResult
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.DbObjectCompanion
 import net.starlegacy.database.Oid

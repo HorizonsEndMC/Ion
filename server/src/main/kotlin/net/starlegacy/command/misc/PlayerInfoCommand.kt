@@ -5,7 +5,7 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.Oid
@@ -50,7 +50,7 @@ object PlayerInfoCommand : SLCommand() {
 			val nationId = slPlayer.nation
 
 			if (nationId != null) {
-				val nationName: String = transaction { Nation[nationId]!!.name }
+				val nationName: String = Nation.findPropById(nationId, Nation::name)!!
 				sender.sendRichMessage("<dark_green>Nation: <green>$nationName")
 
 				if (sender is Player) {

@@ -40,7 +40,7 @@ interface DbObject {
 
 typealias Oid<T> = WrappedObjectId<T>
 
-fun <T> objId(): Oid<T> = WrappedObjectId(ObjectId())
+fun <T : DbObject> objId(): Oid<T> = WrappedObjectId(ObjectId())
 
 abstract class OidDbObjectCompanion<T : DbObject>(clazz: KClass<T>, setup: MongoCollection<T>.() -> Unit = {}) :
 	DbObjectCompanion<T, Oid<T>>(clazz, setup)

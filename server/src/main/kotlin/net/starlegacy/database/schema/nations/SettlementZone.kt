@@ -3,7 +3,6 @@ package net.starlegacy.database.schema.nations
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KMutableProperty1
-import net.horizonsend.ion.common.database.Nation
 import net.starlegacy.database.DbObject
 import net.starlegacy.database.Oid
 import net.starlegacy.database.OidDbObjectCompanion

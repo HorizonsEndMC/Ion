@@ -6,8 +6,9 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import java.io.File
 import java.util.Locale
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.horizonsend.ion.server.IonServer
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.cache.trade.CargoCrates
@@ -143,7 +144,7 @@ fun registerCommands(manager: PaperCommandManager) {
 
 			SettlementCache.all().filter { nation != null && it.nation == nation }.map { it.name }
 		},
-		"nations" to { _ -> transaction { Nation.Table.slice(Nation.Table.name).selectAll().map { it[Nation.Table.name] } } },
+		"nations" to { _ -> NationCache.all().map { it.name } },
 		"zones" to { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val settlement = PlayerCache[player].settlementOid

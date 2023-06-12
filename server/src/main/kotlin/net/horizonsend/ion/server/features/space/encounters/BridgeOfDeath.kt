@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import java.util.Random
-import net.horizonsend.ion.common.database.Nation
+import net.starlegacy.database.schema.nations.Nation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.Random as SqlRandom
+import net.starlegacy.cache.nations.NationCache
 
 object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 	private fun checkAir(block: Block): Boolean {
@@ -101,7 +102,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 						return "What is your favorite color?"
 					}
 					1 -> {
-						val nation = Nation.Table.selectAll().orderBy(SqlRandom()).limit(1).firstOrNull()?.let { Nation.inner.wrapRow(it) }
+						val nation = NationCache.all().randomOrNull()
 
 						context.allSessionData["third"] = "nation"
 						context.allSessionData["nation"] = nation

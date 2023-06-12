@@ -12,12 +12,12 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
 import java.util.*
 import kotlin.collections.set
-import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.database.slPlayerId
@@ -130,7 +130,7 @@ object BlueprintCommand : SLCommand() {
 		list.add("<gray>Class<dark_gray>: <light_purple>${blueprint.type}")
 		if (blueprint.trustedNations.isNotEmpty()) {
 			list.add("<gray>Trusted Players<dark_gray>: <aqua>${blueprint.trustedPlayers.joinToString { getPlayerName(it) }}}")
-			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { transaction { Nation[it]!!.name } }}")
+			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { NationCache[it].name }}")
 		}
 		return list
 	}

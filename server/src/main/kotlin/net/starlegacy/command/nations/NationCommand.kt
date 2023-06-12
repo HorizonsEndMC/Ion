@@ -6,14 +6,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
-import net.horizonsend.ion.common.database.Nation
-import net.horizonsend.ion.common.database.NationInvite
 import net.horizonsend.ion.common.database.enums.Achievement
-import net.horizonsend.ion.common.database.leq
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -28,20 +21,18 @@ import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
-import net.starlegacy.command.nations.roles.NationRoleCommand
 import net.starlegacy.database.Oid
-import net.starlegacy.database.objId
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.misc.SLPlayerId
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.schema.nations.Territory
-import net.starlegacy.database.schema.nations.deleteNation
-import net.starlegacy.database.trx
 import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.region.Regions
@@ -57,6 +48,7 @@ import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.darkAqua
 import net.starlegacy.util.darkGray
 import net.starlegacy.util.darkGreen
+import net.starlegacy.util.distance
 import net.starlegacy.util.fromLegacy
 import net.starlegacy.util.gray
 import net.starlegacy.util.msg
@@ -66,14 +58,13 @@ import net.starlegacy.util.white
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.litote.kmongo.EMPTY_BSON
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
-import org.litote.kmongo.setValue
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
 internal object NationCommand : SLCommand() {
@@ -90,42 +81,35 @@ internal object NationCommand : SLCommand() {
 			throw InvalidCommandArgument("Name cannot be more than 40 characters")
 		}
 
-		val existingNation: Oid<Nation>? = transaction { Nation.getByName(name)?.objectId }
+		val existingNation: Oid<Nation>? = NationCache.getByName(name)
 		if (existingNation != null && (nationId == null || nationId != existingNation)) {
 			throw InvalidCommandArgument("A nation named $name already exists.")
 		}
 	}
 
 	private fun validateColor(red: Int, green: Int, blue: Int, nationId: Oid<Nation>?): Color {
-		failIf(
-			sequenceOf(
-				red,
-				green,
-				blue
-			).any { it !in 0..255 }) { "Red, green, and blue must be integers within 0-255" }
+		failIf(sequenceOf(red, green, blue).any { it !in 0..255 }) { "Red, green, and blue must be integers within 0-255" }
 
 		val color = Color.fromRGB(red, green, blue)
 
-		/* Just disable this for now
-				val query = if (nationId == null) EMPTY_BSON else Nation::_id ne nationId
+		val query = if (nationId == null) EMPTY_BSON else Nation::_id ne nationId
 
-				for (results in Nation.findProps(query, Nation::name, Nation::color)) {
-					val nationName = results[Nation::name]
-					val nationColor = Color.fromRGB(results[Nation::color])
+		for (results in Nation.findProps(query, Nation::name, Nation::color)) {
+			val nationName = results[Nation::name]
+			val nationColor = Color.fromRGB(results[Nation::color])
 
-					val r1 = color.red.toDouble()
-					val g1 = color.green.toDouble()
-					val b1 = color.blue.toDouble()
-					val r2 = nationColor.red.toDouble()
-					val g2 = nationColor.green.toDouble()
-					val b2 = nationColor.blue.toDouble()
-					val distance = distance(r1, g1, b1, r2, g2, b2)
+			val r1 = color.red.toDouble()
+			val g1 = color.green.toDouble()
+			val b1 = color.blue.toDouble()
+			val r2 = nationColor.red.toDouble()
+			val g2 = nationColor.green.toDouble()
+			val b2 = nationColor.blue.toDouble()
+			val distance = distance(r1, g1, b1, r2, g2, b2)
 
-					failIf(distance < 10) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
+			failIf(distance < 10) { "That color is too similar to the color of the nation $nationName! Distance: $distance" }
 
-					log.info("Distance from $nationName: $distance")
-				}
-		*/
+			log.info("Distance from $nationName: $distance")
+		}
 
 		return color
 	}
@@ -141,8 +125,6 @@ internal object NationCommand : SLCommand() {
 		blue: Int,
 		@Optional cost: Int?
 	) = asyncCommand(sender) {
-		fail { "Nation creation is temporarily disabled due to server bugs. We are working on a solution." }
-
 		val settlement = requireSettlementIn(sender)
 		requireSettlementLeader(sender, settlement)
 		requireNotInNation(sender)
@@ -159,33 +141,7 @@ internal object NationCommand : SLCommand() {
 				"/nation create $name $red $green $blue $realCost"
 		}
 
-		transaction {
-			trx { sess ->
-				require(Nation.find(Nation.Table.name leq name).empty())
-
-				// require the settlement isn't already in a nation. will also fail if there's no such settlement
-				require(Settlement.matches(sess, settlement, Settlement::nation eq null))
-
-				val id: Oid<Nation> = objId()
-
-				// update the settlements members
-				SLPlayer.col.updateMany(sess, SLPlayer::settlement eq settlement, setValue(SLPlayer::nation, id))
-
-				// update the settlement
-				Settlement.updateById(sess, settlement, setValue(Settlement::nation, id))
-
-				// create the actual nation
-				Nation.new {
-					this.name = name
-					this.capital = settlement as Oid<Any>
-					this.color = color.asRGB()
-					this.objectId = id
-				}
-
-				return@trx id
-			}
-		}
-
+		Nation.create(name, settlement, color.asRGB())
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
@@ -203,7 +159,7 @@ internal object NationCommand : SLCommand() {
 		val nationName = getNationName(nation)
 		failIf(name != nationName) { "To disband your nation, you must confirm by specifying the name. Run the command: /n disband $nationName" }
 
-		transaction { Nation[nation]!!.deleteNation() }
+		Nation.delete(nation)
 
 		Notify all MiniMessage.miniMessage().deserialize("<yellow>The nation $nationName has been disbanded by its leader ${sender.name}!")
 	}
@@ -223,20 +179,8 @@ internal object NationCommand : SLCommand() {
 
 		val nationName = getNationName(nationId)
 
-		val nation = transaction { Nation[nationId]!! }
-		val nationIntId = transaction { nation.id }
-		val nationInvite = transaction {
-			NationInvite.find((NationInvite.Table.nation eq nationIntId) and (NationInvite.Table.settlement eq settlementId as Oid<Any>))
-				.firstOrNull()
-		}
-
-		if (nationInvite == null) {
-			transaction {
-				NationInvite.new {
-					this.nation = nation
-					this.settlement = settlementId as Oid<Any>
-				}
-			}
+		if (!Nation.isInvited(nationId, settlementId)) {
+			Nation.addInvite(nationId, settlementId)
 			sender.success("Invited settlement ${getSettlementName(settlementId)} to your nation")
 			Notify.player(
 				player = leaderId,
@@ -244,7 +188,7 @@ internal object NationCommand : SLCommand() {
 						"To accept, use <yellow><italic>/nation join $nationName")
 			)
 		} else {
-			transaction { nationInvite.delete() }
+			Nation.removeInvite(nationId, settlementId)
 			sender.success("Cancelled invite for settlement $settlementId to your nation")
 			Notify.player(
 				player = leaderId,
@@ -259,12 +203,8 @@ internal object NationCommand : SLCommand() {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.SETTLEMENT_INVITE)
 
-		val nationIntId = transaction { Nation[nationId]!!.id }
-		val invitedSettlements = transaction {
-			NationInvite.Table.slice(NationInvite.Table.settlement).select(NationInvite.Table.nation eq nationIntId)
-				.map { it[NationInvite.Table.settlement] }
-		}
-		sender msg "&7Invited Settlements:&b ${invitedSettlements?.joinToString { SettlementCache[it as Oid<Settlement>].name }}"
+		val invitedSettlements = Nation.findPropById(nationId, Nation::invites)
+		sender msg "&7Invited Settlements:&b ${invitedSettlements?.joinToString { SettlementCache[it].name }}"
 	}
 
 	@Suppress("unused")
@@ -280,15 +220,9 @@ internal object NationCommand : SLCommand() {
 		val settlementName = getSettlementName(settlementId)
 		val nationName = getNationName(nationId)
 
-		val nationIntId = transaction { Nation[nationId]!!.id }
-		val nationInvite = transaction {
-			NationInvite.find((NationInvite.Table.nation eq nationIntId) and (NationInvite.Table.settlement eq settlementId as Oid<Any>))
-				.firstOrNull()
-		}
+		failIf(!Nation.isInvited(nationId, settlementId)) { "$settlementName isn't invited to $nationName" }
 
-		failIf(nationInvite == null) { "$settlementName isn't invited to $nationName" }
-
-		transaction { nationInvite!!.delete() }
+		Nation.removeInvite(nationId, settlementId)
 		Settlement.joinNation(settlementId, nationId)
 
 		Notify all MiniMessage.miniMessage().deserialize("<light_purple>Settlement <aqua>$settlementName<light_purple> joined the nation <red>$nationName<light_purple>!")
@@ -351,7 +285,7 @@ internal object NationCommand : SLCommand() {
 				"/nation set name $newName $realCost"
 		}
 
-		transaction { Nation[nationId]?.name = newName }
+		Nation.setName(nationId, newName)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
 		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> renamed their nation <red>$oldName<light_purple> to <>$newName<light_purple>!"))
@@ -365,7 +299,7 @@ internal object NationCommand : SLCommand() {
 		requireNationLeader(sender, nationId)
 		val color: Color = validateColor(red, green, blue, nationId)
 
-		transaction { Nation[nationId]?.color = color.asRGB() }
+		Nation.setColor(nationId, color.asRGB())
 
 		sender.information("Updated nation color.")
 	}
@@ -384,7 +318,7 @@ internal object NationCommand : SLCommand() {
 
 		failIf(SettlementCache[settlementId].nation != nationId) { "Settlement $settlementName is not in your nation" }
 
-		transaction { Nation[nationId]?.capital = settlementId as Oid<Any> }
+		Nation.setCapital(nationId, settlementId)
 
 		Notify all MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> changed the capital of their nation ${getNationName(nationId)} to $settlementName!")
 	}
@@ -399,9 +333,7 @@ internal object NationCommand : SLCommand() {
 		val territory = requireTerritoryIn(sender)
 		requireTerritoryUnclaimed(territory)
 
-		failIf(
-			Regions.getAllOf<RegionTerritory>()
-				.any { it.world == territory.world && it.nation == nationId }) { "Nations can only have one outpost per planet" }
+		failIf(Regions.getAllOf<RegionTerritory>().any { it.world == territory.world && it.nation == nationId }) { "Nations can only have one outpost per planet" }
 
 		val realCost = territory.cost
 
@@ -451,11 +383,10 @@ internal object NationCommand : SLCommand() {
 		val lines = mutableListOf<TextComponent>()
 		lines += lineBreak().fromLegacy()
 
-		val nations =
-			transaction { Nation.Table.slice(Nation.Table.objectId).selectAll().map { it[Nation.Table.objectId] } }
+		val nations = Nation.allIds()
 
 		val nationMembers: Map<Oid<Nation>, List<SLPlayerId>> =
-			nations.associateWith { NationRoleCommand.getMembers(it).toList() }
+			nations.associateWith { Nation.getMembers(it).toList() }
 
 		val lastSeenMap: Map<SLPlayerId, Date> = SLPlayer
 			.findProps(SLPlayer::nation ne null, SLPlayer::_id, SLPlayer::lastSeen)
@@ -500,7 +431,7 @@ internal object NationCommand : SLCommand() {
 			).fromLegacy()
 
 		for (nation in nationsOnPage) {
-			val data = transaction { Nation[nation] }!!
+			val data: NationCache.NationData = NationCache[nation]
 
 			val members = nationMembers[nation]!!
 
@@ -520,7 +451,7 @@ internal object NationCommand : SLCommand() {
 			val line = TextComponent()
 
 			val name = data.name
-			val leaderName = SLPlayer.getName(Settlement.findById(data.capital as Oid<Settlement>)!!.leader)!!
+			val leaderName = SLPlayer.getName(data.leader)!!
 
 			line.addExtra("    $name ".style(nameColor).cmd("/n info $name").hover("Click for more info"))
 			line.addExtra(leaderName.style(leaderColor))
@@ -583,18 +514,15 @@ internal object NationCommand : SLCommand() {
 		val message = text().color(TextColor.fromHexString("#b8e0d4"))
 
 		val lineWidth = 45
-		val lineBreak =
-			text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
+		val lineBreak = text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
 
-		val data = transaction { Nation[nationId] } ?: fail { "Failed to load data" }
+		val data = Nation.findById(nationId) ?: fail { "Failed to load data" }
+		val cached = NationCache[nationId]
 
 		message.append(lineBreak)
 
-		val leftPad = (((lineWidth * (3.0 / 2.0)) - data.name.length) / 2) + 3 // = is 3/2 the size of a space
-		message.append(
-			text(repeatString(" ", leftPad.roundToInt()) + data.name).color(color(data.color))
-				.decorate(TextDecoration.BOLD)
-		)
+		val leftPad = (((lineWidth * (3.0 / 2.0)) - cached.name.length) / 2) + 3 // = is 3/2 the size of a space
+		message.append(text(repeatString(" ", leftPad.roundToInt()) + cached.name).color(color(cached.color)).decorate(TextDecoration.BOLD))
 		message.append(newline())
 
 		senderNationId?.let {
@@ -629,11 +557,10 @@ internal object NationCommand : SLCommand() {
 				.append(newline())
 				.append(text("Planet: ").append(text(outpost.world).color(NamedTextColor.WHITE)))
 				.append(newline())
-				.append(
-					text("Centered at ")
-						.append(text(outpost.centerX).color(NamedTextColor.WHITE))
-						.append(text(", "))
-						.append(text(outpost.centerZ).color(NamedTextColor.WHITE))
+				.append(text("Centered at ")
+					.append(text(outpost.centerX).color(NamedTextColor.WHITE))
+					.append(text(", "))
+					.append(text(outpost.centerZ).color(NamedTextColor.WHITE))
 				)
 				.build()
 				.asHoverEvent()
@@ -654,7 +581,7 @@ internal object NationCommand : SLCommand() {
 		message.append(outpostsText)
 		message.append(newline())
 
-		val settlements: List<Oid<Settlement>> = Settlement.findProp(Settlement::nation eq nationId, Settlement::_id)
+		val settlements: List<Oid<Settlement>> = Nation.getSettlements(nationId)
 			.sortedByDescending { SLPlayer.count(SLPlayer::settlement eq it) }
 			.toList()
 
@@ -683,11 +610,10 @@ internal object NationCommand : SLCommand() {
 			hoverTextBuilder
 				.append(text("Planet: ").append(text(cachedTerritory.world).color(NamedTextColor.WHITE)))
 				.append(newline())
-				.append(
-					text("Centered at ")
-						.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
-						.append(text(", "))
-						.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+				.append(text("Centered at ")
+					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+					.append(text(", "))
+					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
 				)
 
 			val settlementBuilder = text()
@@ -711,9 +637,7 @@ internal object NationCommand : SLCommand() {
 		message.append(text("Balance: ").append(text(data.balance).color(NamedTextColor.WHITE)))
 		message.append(newline())
 
-		val capital = Settlement.findById(data.capital as Oid<Settlement>)!!
-
-		val leaderRole = NationRole.getHighestRole(capital.leader)
+		val leaderRole = NationRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let { leader ->
 			text(leader.name).color(
 				color(
@@ -726,7 +650,7 @@ internal object NationCommand : SLCommand() {
 		val leaderText = text("Leader: ")
 			.append(leaderRoleComp)
 			.append(text(" "))
-			.append(text(getPlayerName(capital.leader)).color(NamedTextColor.WHITE))
+			.append(text(getPlayerName(cached.leader)).color(NamedTextColor.WHITE))
 
 		message.append(leaderText)
 		message.append(newline())
@@ -798,8 +722,7 @@ internal object NationCommand : SLCommand() {
 
 		if (names.size > limit) {
 			namesList.append(text("...").color(TextColor.fromHexString("#b8e0d4")))
-			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA))
-				.hoverEvent(fullNamesList.asComponent().asHoverEvent())
+			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
 		}
 
 		message.append(namesList)
