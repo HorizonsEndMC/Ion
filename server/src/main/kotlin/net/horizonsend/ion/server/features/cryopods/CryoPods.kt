@@ -1,17 +1,12 @@
 package net.horizonsend.ion.server.features.cryopods
 
-import com.google.gson.Gson
-import net.horizonsend.ion.common.database.Cryopod
-import net.horizonsend.ion.common.database.DBLocation
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.bukkit
-import net.horizonsend.ion.server.miscellaneous.db
-import net.horizonsend.ion.server.miscellaneous.get
-import net.horizonsend.ion.server.miscellaneous.vec3i
+import net.horizonsend.ion.server.database.schema.Cryopod
+import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.database.trx
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.util.Vec3i
 import org.bukkit.Bukkit
@@ -23,28 +18,25 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerRespawnEvent
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.FileReader
-import java.io.FileWriter
-import java.util.Optional
+import org.litote.kmongo.addToSet
+import org.litote.kmongo.setValue
 import java.util.UUID
 
 object CryoPods: Listener {
-	fun setCryoPod(playerID: UUID, worldName: String, pos: Vec3i) =
-		transaction {
-			val cryo = Cryopod[playerID].firstOrNull() ?: Cryopod.new {
-				location = DBLocation(worldName, pos.triple())
-				owner = PlayerData[playerID]!!
-			}
+	fun setCryoPod(playerID: UUID, worldName: String, pos: Vec3i) = trx { session ->
+		val slPlayer = SLPlayer[playerID] ?: return@trx
 
-			cryo.location = DBLocation(worldName, pos.triple())
-			cryo.active = true
-		}
+		val newCryoPod = Cryopod.create(slPlayer, pos, worldName)
 
-	private fun removeCryoPod(playerID: UUID) = transaction {
-		PlayerData[playerID]?.selectedCryopod?.delete()
+		SLPlayer.updateById(
+			session,
+			slPlayer._id,
+			addToSet(SLPlayer::cryopod, newCryoPod),
+			setValue(SLPlayer::selectedCryopod, newCryoPod)
+		)
 	}
+
+	private fun removeCryoPod(playerID: UUID) = SLPlayer[playerID]?.selectedCryopod?.let { Cryopod.delete(it) }
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onPlayerInteractSelectOrDeselectCryoPod(event: PlayerInteractEvent) {
@@ -57,10 +49,10 @@ object CryoPods: Listener {
 			return
 		}
 
-		val selectedCryo = transaction { PlayerData[player].selectedCryopod }
+		val selectedCryo = SLPlayer[player].selectedCryopod?.let { Cryopod.findById(it) }
 
 		if (event.action == Action.LEFT_CLICK_BLOCK) {
-			if (selectedCryo?.location?.vec3i() != pos) {
+			if (selectedCryo?.vec3i() != pos) {
 				player.userError("This is not your selected cryo pod!")
 				return
 			}
@@ -68,7 +60,7 @@ object CryoPods: Listener {
 			removeCryoPod(player.uniqueId)
 			player.information("Deselected cryo pod!")
 		} else if (event.action == Action.RIGHT_CLICK_BLOCK) {
-			if (selectedCryo?.location?.vec3i() == pos) {
+			if (selectedCryo?.vec3i() == pos) {
 				player.userError("This is already your selected cryo pod!")
 				return
 			}
@@ -81,12 +73,12 @@ object CryoPods: Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	fun onPlayerRespawnSetLocationToCryoPod(event: PlayerRespawnEvent) {
 		val player = event.player
-		val cryoPod = transaction { PlayerData[player].selectedCryopod } ?: return
+		val cryoPod = SLPlayer[event.player].selectedCryopod?.let { Cryopod.findById(it) } ?: return
 
-		Bukkit.getWorld(cryoPod.location.world)
-			?: return player.serverError("World ${cryoPod.location.world} is missing")
+		Bukkit.getWorld(cryoPod.worldName)
+			?: return player.serverError("World ${cryoPod.worldName} is missing")
 
-		val pos = cryoPod.location.bukkit()
+		val pos = cryoPod.bukkitLocation()
 		val sign = pos.block.state as? Sign
 			?: return player.alert("Cryo pod sign at $pos is missing")
 
@@ -101,8 +93,6 @@ object CryoPods: Listener {
 	fun onBlockBreak(event: BlockBreakEvent) {
 		val sign = event.block.state as? Sign ?: return
 
-		transaction {
-			Cryopod[sign.location.db()]?.delete()
-		}
+		Cryopod[Vec3i(sign.location), sign.world.name]?.let { Cryopod.delete(it._id) }
 	}
 }

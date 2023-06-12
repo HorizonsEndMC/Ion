@@ -1,32 +1,26 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.common.database.PlayerAchievement
-import net.horizonsend.ion.common.database.PlayerAchievement.Companion.new
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import net.starlegacy.SETTINGS
+import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.litote.kmongo.addToSet
 
 fun Player.rewardAchievement(achievement: Achievement) = transaction {
 	if (!SETTINGS.master) return@transaction
 
-	val playerData = PlayerData[uniqueId]!!
-	if (transaction { playerData.achievements.find { it.achievement == achievement } } != null) return@transaction
+	val playerData = SLPlayer[this@rewardAchievement]
+	if (playerData.achievements.find { it == achievement } != null) return@transaction
 
-	transaction {
-		new(fun PlayerAchievement.() {
-			player = playerData
-			this.achievement = achievement
-		})
-	}
+	SLPlayer.updateById(playerData._id, addToSet(SLPlayer::achievements, achievement))
 
 	vaultEconomy?.depositPlayer(this@rewardAchievement, achievement.creditReward.toDouble())
 

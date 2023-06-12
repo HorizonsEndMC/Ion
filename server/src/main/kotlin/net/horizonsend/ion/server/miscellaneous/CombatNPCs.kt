@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.miscellaneous
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCDeathEvent
 import net.citizensnpcs.api.npc.NPC
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.text.Component.text
@@ -15,7 +14,6 @@ import net.starlegacy.listen
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
-import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -26,10 +24,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.litote.kmongo.setValue
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -142,7 +140,7 @@ object CombatNPCs : SLComponent() {
 
 			destroyNPC(npc)
 
-			transaction { PlayerData[playerId]?.wasKilled = true }
+			SLPlayer.updateById(playerId.slPlayerId, setValue(SLPlayer::wasKilled, true))
 			Tasks.async {
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
 				Notify.all(MiniMessage.miniMessage().deserialize("<red>Combat NPC of $name was slain by ${killer?.name}"))
@@ -161,7 +159,7 @@ object CombatNPCs : SLComponent() {
 			}
 
 
-			if (transaction { PlayerData[event.player].wasKilled }) {
+			if (SLPlayer[event.player].wasKilled) {
 				event.player.inventory.clear()
 				event.player.health = 0.0
 				event.player.userError("Your NPC was killed while you were offline.")
@@ -170,8 +168,8 @@ object CombatNPCs : SLComponent() {
 
 		listen<PlayerDeathEvent>(priority = EventPriority.LOWEST) { event ->
 			transaction {
-				val data = PlayerData[event.player.uniqueId]
-				if (data?.wasKilled == true) {
+				val data = SLPlayer[event.player]
+				if (data.wasKilled) {
 					event.drops.clear()
 					event.deathMessage(null)
 
