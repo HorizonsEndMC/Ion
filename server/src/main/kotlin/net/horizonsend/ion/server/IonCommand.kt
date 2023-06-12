@@ -4,25 +4,13 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import com.google.gson.Gson
-import com.mysql.cj.jdbc.Blob
-import net.horizonsend.ion.common.Connectivity
-import net.horizonsend.ion.common.database.Cryopod
-import net.horizonsend.ion.common.database.DBLocation
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.starlegacy.util.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.File
-import java.io.FileReader
-import java.nio.ByteBuffer
-import java.sql.DriverManager
 import java.util.*
 
 @CommandAlias("ion")
@@ -91,39 +79,6 @@ object IonCommand : BaseCommand() {
 		} else {
 			debugEnabledPlayers.add(sender.uniqueId)
 			sender.success("Enabled debug mode")
-		}
-	}
-
-	private data class CryoPod(val player: UUID, val world: String, val pos: Vec3i)
-
-	@Suppress("Unused")
-	@Subcommand("migratecryos")
-	fun migrateCryos(sender: CommandSender) {
-		sender.sendRichMessage("loading cryos")
-		val folder = File(IonServer.dataFolder, "cryopods")
-		val list = mutableListOf<CryoPod>()
-
-		for (file in folder.listFiles()!!) {
-			FileReader(file).use { reader ->
-				list.add(Gson().fromJson(reader, CryoPod::class.java))
-			}
-		}
-
-		sender.sendRichMessage("loaded cryos")
-
-		transaction {
-			list.forEach {
-				val data = PlayerData[it.player] ?: run {
-					sender.sendRichMessage("<red>NOT FOUND ${it.player}")
-					return@forEach
-				}
-
-				Cryopod.new {
-					location = DBLocation(it.world, it.pos.triple())
-					owner = data
-					active = false
-				}
-			}
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package net.starlegacy.feature.starship.active
 
-import net.horizonsend.ion.common.database.Cryopod
-import net.horizonsend.ion.server.features.cryopods.CryoPods
+import net.horizonsend.ion.server.database.schema.Cryopod
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblock
@@ -133,7 +132,7 @@ object SubsystemDetector {
 			}
 
 			is CryoPodMultiblock -> {
-				val cryo = transaction { Cryopod[sign.location.db()] } ?: return
+				val cryo = transaction { Cryopod[Vec3i(sign.location), sign.world.name] } ?: return
 				starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryo)
 			}
 		}

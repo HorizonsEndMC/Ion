@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.blasters.objects
 
 import java.util.Locale
 import java.util.function.Supplier
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
 import net.horizonsend.ion.server.features.blasters.BlasterProjectile
@@ -226,18 +225,11 @@ abstract class Blaster<T : Balancing>(
 		fireProjectiles(livingEntity)
 	}
 
-	private fun getParticleType(entity: LivingEntity): Particle = transaction {
-		if (entity !is Player) return@transaction REDSTONE // Not Player
-		PlayerData[entity.uniqueId]?.particle?.let {
-			return@transaction CraftParticle.toBukkit(PARTICLE_TYPE.get(ResourceLocation(it)))
-		} // Player
-		return@transaction REDSTONE // Default
-	}
+	private fun getParticleType(entity: LivingEntity): Particle = REDSTONE // Default
 
 	private fun getParticleColor(entity: LivingEntity): Color {
 		if (entity !is Player) return RED // Not Player
 		SLPlayer[entity.uniqueId]?.nation?.let { return fromRGB(NationCache[it].color) } // Nation
-		transaction { PlayerData[entity.uniqueId] }?.color?.let { return fromRGB(it) } // Player
 		return RED // Not Player
 	}
 
@@ -254,13 +246,13 @@ abstract class Blaster<T : Balancing>(
 			location,
 			livingEntity,
 			balancing,
-			getParticleType(livingEntity),
+			REDSTONE,
 			dir,
 			explosiveShot,
-			if (getParticleType(livingEntity) == REDSTONE) DustOptions(
+			DustOptions(
 				getParticleColor(livingEntity),
 				particleSize
-			) else null,
+			),
 			soundWhizz,
 		).shootProjectile()
 	}

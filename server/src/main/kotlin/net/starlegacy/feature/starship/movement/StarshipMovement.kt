@@ -6,13 +6,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import net.horizonsend.ion.common.database.DBLocation
+import net.horizonsend.ion.server.database.schema.Cryopod
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.features.cryopods.CryoPods
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -33,8 +32,7 @@ import org.bukkit.entity.EnderCrystal
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.transactions.transactionScope
+import org.litote.kmongo.setValue
 import kotlin.collections.set
 import kotlin.math.sqrt
 
@@ -241,9 +239,13 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 					subsystem.pos = newPos
 
 					if (subsystem is CryoSubsystem) {
-						transaction {
-							subsystem.pod.location = DBLocation(world2.name, newPos.triple())
-						}
+						Cryopod.updateById(
+							subsystem.pod._id,
+							setValue(Cryopod::x, newPos.x),
+							setValue(Cryopod::y, newPos.y),
+							setValue(Cryopod::z, newPos.z),
+							setValue(Cryopod::worldName, world2.name)
+						)
 					}
 				}
 			}

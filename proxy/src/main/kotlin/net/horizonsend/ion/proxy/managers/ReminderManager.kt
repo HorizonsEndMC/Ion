@@ -1,10 +1,6 @@
 package net.horizonsend.ion.proxy.managers
 
-import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.extensions.special
 import net.horizonsend.ion.proxy.PLUGIN
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 object ReminderManager {

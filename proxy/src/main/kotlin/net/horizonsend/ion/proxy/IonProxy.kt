@@ -11,10 +11,8 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.extensions.prefixProvider
-import net.horizonsend.ion.proxy.commands.discord.DiscordAccountCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
-import net.horizonsend.ion.proxy.commands.waterfall.BungeeAccountCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
 import net.horizonsend.ion.proxy.commands.waterfall.ReplyCommand
@@ -85,10 +83,7 @@ class IonProxy : Plugin() {
 		}
 
 		discord?.let {
-			commandManager.registerCommand(BungeeAccountCommand(discord, configuration))
-
 			JDACommandManager(discord, configuration).apply {
-				registerGuildCommand(DiscordAccountCommand(configuration))
 				registerGuildCommand(DiscordInfoCommand())
 				registerGuildCommand(PlayerListCommand(getProxy()))
 
