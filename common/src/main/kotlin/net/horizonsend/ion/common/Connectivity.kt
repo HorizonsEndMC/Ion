@@ -32,7 +32,6 @@ object Connectivity {
 			SchemaUtils.createMissingTablesAndColumns(
 				PlayerAchievement.Table,
 				PlayerData.Table,
-				PlayerVoteTime.Table,
 				Cryopod.Table
 			)
 		}
