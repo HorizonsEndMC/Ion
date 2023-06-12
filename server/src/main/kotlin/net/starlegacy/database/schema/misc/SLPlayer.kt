@@ -4,6 +4,8 @@ import com.mongodb.client.ClientSession
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.result.UpdateResult
+import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.database.schema.Cryopod
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
@@ -26,6 +28,7 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.id.StringId
 import org.litote.kmongo.inc
@@ -35,31 +38,42 @@ import org.litote.kmongo.pull
 import org.litote.kmongo.withDocumentClass
 
 typealias SLPlayerId = StringId<SLPlayer>
-
+/**
+ * @param _id The player's Minecraft UUID
+ * @param lastKnownName The last username they logged on to the server with
+ * @param lastSeen The last time they were seen online
+ * @param settlement The settlement they're current a member of
+ * @param nation The nation their settlement is currently in. Needs to be updated whenever the settlement nation updates
+ * @param snowflake Their discord unique id
+ **/
 data class SLPlayer(
-	/** The player's Minecraft UUID */
 	override val _id: SLPlayerId,
-	/** The last username they logged on to the server with */
 	var lastKnownName: String,
-	/** The last time they were seen online */
 	var lastSeen: Date = Date.from(Instant.now()),
 	var xp: Int = 0,
 	val level: Int = 1,
-	/** The settlement they're current a member of */
 	var settlement: Oid<Settlement>? = null,
-	/** The nation their settlement is currently in. Needs to be updated whenever the settlement nation updates. */
-	var nation: Oid<Nation>? = null
+	var nation: Oid<Nation>? = null,
+	var snowflake: Long? = null,
+	var wasKilled: Boolean = false,
+	var cryopod: Set<Cryopod> = setOf(),
+	var selectedCryopod: Oid<Cryopod>? = null,
+	var achievements: Set<Achievement> = setOf()
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {
 			ensureIndex(SLPlayer::lastKnownName, indexOptions = IndexOptions().textVersion(3))
 			ensureIndex(SLPlayer::settlement)
 			ensureIndex(SLPlayer::nation)
+			ensureIndex(SLPlayer::snowflake)
+			ensureIndex(SLPlayer::cryopod)
 		}
 	) {
 		operator fun get(uuid: UUID): SLPlayer? = col.findOneById(uuid.slPlayerId.toString())
 
 		operator fun get(id: SLPlayerId): SLPlayer? = col.findOneById(id.toString())
+
+		operator fun get(snowflake: Long): SLPlayer? = col.findOne(SLPlayer::snowflake eq snowflake)
 
 		operator fun get(player: Player): SLPlayer = get(
 			player.uniqueId
