@@ -35,6 +35,7 @@ import net.starlegacy.database.Oid
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.database.schema.nations.Settlement
 import net.starlegacy.database.slPlayerId
+import net.starlegacy.database.trx
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -178,43 +179,50 @@ object IonServer : JavaPlugin() {
 
 		// Temporary Migration Code
 		transaction {
-			if (net.starlegacy.database.schema.nations.Nation.all().isNotEmpty()) return@transaction
-			if (net.horizonsend.ion.server.database.schema.Cryopod.all().isNotEmpty()) return@transaction
+			trx { session ->
+				if (net.starlegacy.database.schema.nations.Nation.all().isNotEmpty()) return@trx
+				if (net.horizonsend.ion.server.database.schema.Cryopod.all().isNotEmpty()) return@trx
 
-			val sqlNations = Nation
-			val mongoNation = net.starlegacy.database.schema.nations.Nation
+				val sqlNations = Nation
+				val mongoNation = net.starlegacy.database.schema.nations.Nation
 
-			for (sqlNation in sqlNations.all()) {
-				mongoNation.create(
-					sqlNation.name,
-					sqlNation.capital as Oid<Settlement>,
-					sqlNation.color
-				)
-			}
+				for (sqlNation in sqlNations.all()) {
+					mongoNation.create(
+						sqlNation.name,
+						sqlNation.capital as Oid<Settlement>,
+						sqlNation.color
+					)
+				}
 
-			for (cryopod in Cryopod.all()) {
-				val owner = SLPlayer[cryopod.owner.id.value] ?: continue
+				for (cryopod in Cryopod.all()) {
+					val owner = SLPlayer[cryopod.owner.id.value] ?: continue
 
-				val newpod = net.horizonsend.ion.server.database.schema.Cryopod.create(
-					SLPlayer.findById(cryopod.owner.id.value.slPlayerId)!!,
-					cryopod.location.vec3i(),
-					cryopod.location.world
-				)
+					val newpod = net.horizonsend.ion.server.database.schema.Cryopod.create(
+						SLPlayer.findById(session, cryopod.owner.id.value.slPlayerId)!!,
+						cryopod.location.vec3i(),
+						cryopod.location.world
+					)
 
-				SLPlayer.updateById(owner._id, addToSet(SLPlayer::cryopods, newpod))
-			}
+					SLPlayer.updateById(session, owner._id, addToSet(SLPlayer::cryopods, newpod))
+				}
 
-			for (playerAchievement in PlayerAchievement.all()) {
-				val owner = SLPlayer[playerAchievement.player.id.value] ?: continue
+				for (playerAchievement in PlayerAchievement.all()) {
+					val owner = SLPlayer[playerAchievement.player.id.value] ?: continue
 
-				SLPlayer.updateById(owner._id, addToSet(SLPlayer::achievements, playerAchievement.achievement))
-			}
+					SLPlayer.updateById(session, owner._id, addToSet(SLPlayer::achievements, playerAchievement.achievement))
+				}
 
-			for (sqlPlayer in PlayerData.all()) {
-				val mongoPlayer = SLPlayer[sqlPlayer.id.value] ?: continue
-				val selectedCryo = net.horizonsend.ion.server.database.schema.Cryopod.findOne(and(net.horizonsend.ion.server.database.schema.Cryopod::owner eq mongoPlayer._id, net.horizonsend.ion.server.database.schema.Cryopod::active eq true))
+				for (sqlPlayer in PlayerData.all()) {
+					val mongoPlayer = SLPlayer[sqlPlayer.id.value] ?: continue
+					val selectedCryo = net.horizonsend.ion.server.database.schema.Cryopod.findOne(
+						and(
+							net.horizonsend.ion.server.database.schema.Cryopod::owner eq mongoPlayer._id,
+							net.horizonsend.ion.server.database.schema.Cryopod::active eq true
+						)
+					)
 
-				SLPlayer.updateById(mongoPlayer._id, setValue(SLPlayer::selectedCryopod, selectedCryo?._id))
+					SLPlayer.updateById(session, mongoPlayer._id, setValue(SLPlayer::selectedCryopod, selectedCryo?._id))
+				}
 			}
 		}
 	}
