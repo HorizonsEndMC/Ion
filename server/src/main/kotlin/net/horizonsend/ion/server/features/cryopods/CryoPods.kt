@@ -31,7 +31,7 @@ object CryoPods: Listener {
 		SLPlayer.updateById(
 			session,
 			slPlayer._id,
-			addToSet(SLPlayer::cryopod, newCryoPod),
+			addToSet(SLPlayer::cryopods, newCryoPod),
 			setValue(SLPlayer::selectedCryopod, newCryoPod)
 		)
 	}
