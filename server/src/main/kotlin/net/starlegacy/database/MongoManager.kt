@@ -22,6 +22,7 @@ import net.starlegacy.database.schema.misc.Shuttle
 import net.starlegacy.database.schema.nations.CapturableStation
 import net.starlegacy.database.schema.nations.CapturableStationSiege
 import net.starlegacy.database.schema.nations.NPCTerritoryOwner
+import net.starlegacy.database.schema.nations.Nation
 import net.starlegacy.database.schema.nations.NationRelation
 import net.starlegacy.database.schema.nations.NationRole
 import net.starlegacy.database.schema.nations.Settlement
@@ -82,6 +83,7 @@ object MongoManager : SLComponent() {
 		// nations
 		CapturableStation.init()
 		CapturableStationSiege.init()
+		Nation.init()
 		NationRelation.init()
 		NPCTerritoryOwner.init()
 		SettlementRole.init()

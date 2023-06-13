@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
+import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
 import org.bukkit.event.EventHandler
@@ -42,7 +42,7 @@ class AchievementListeners : Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onEnterPlanetEvent(event: EnterPlanetEvent) = transaction {
-		val playerData = PlayerData[event.player.uniqueId]!!
+		val playerData = SLPlayer[event.player.uniqueId]!!
 
 		event.player.rewardAchievement(
 			when (event.newworld.name.lowercase()) {
@@ -67,7 +67,7 @@ class AchievementListeners : Listener {
 			}
 		)
 
-		val achievements = playerData.achievements.map { it.achievement }
+		val achievements = playerData.achievements
 		if (achievements.containsAll(
 				listOf(
 					Achievement.PLANET_CHANDRA,

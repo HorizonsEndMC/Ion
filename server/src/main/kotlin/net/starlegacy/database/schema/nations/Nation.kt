@@ -72,8 +72,7 @@ data class Nation(
 
 			// update the settlements members
 			SLPlayer.col.updateMany(
-				sess, SLPlayer::settlement eq capitalId,
-				org.litote.kmongo.setValue(
+				sess, SLPlayer::settlement eq capitalId, org.litote.kmongo.setValue(
 					SLPlayer::nation, id
 				)
 			)

@@ -6,19 +6,15 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.PlayerAchievement
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
+import net.starlegacy.database.schema.misc.SLPlayer
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.litote.kmongo.pull
 
 @CommandAlias("achievements")
 @Suppress("Unused")
@@ -36,9 +32,8 @@ class AchievementsCommand : BaseCommand() {
 	@Subcommand("grant")
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.grant")
-	fun onAchievementGrant(sender: CommandSender, achievement: Achievement, target: String) = transaction {
-		val playerData = PlayerData[target] ?: return@transaction sender.userError("Player $target does not exist.")
-		val player = Bukkit.getPlayer(playerData.uuid.value) ?: return@transaction sender.userError("Player $target must be online.")
+	fun onAchievementGrant(sender: CommandSender, achievement: Achievement, target: String) {
+		val player = Bukkit.getPlayer(target) ?: return sender.userError("Player $target must be online.")
 
 		player.rewardAchievement(achievement)
 
@@ -48,10 +43,10 @@ class AchievementsCommand : BaseCommand() {
 	@Subcommand("revoke")
 	@CommandCompletion("@achievements @players")
 	@CommandPermission("ion.achievements.revoke")
-	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) = transaction {
-		val playerData = PlayerData[target] ?: return@transaction sender.userError("Player $target does not exist.")
+	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
+		val playerData = SLPlayer[target] ?: return sender.userError("Player $target does not exist.")
 
-		PlayerAchievement.Table.deleteWhere { (player eq playerData.uuid) and (PlayerAchievement.Table.achievement eq achievement) }
+		SLPlayer.updateById(playerData._id, pull(SLPlayer::achievements, achievement))
 
 		sender.success("Took achievement ${achievement.name} from $target.")
 	}
