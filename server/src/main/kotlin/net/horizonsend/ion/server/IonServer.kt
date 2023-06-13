@@ -7,6 +7,9 @@ import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
+import net.horizonsend.ion.common.database.Cryopod
+import net.horizonsend.ion.common.database.Nation
+import net.horizonsend.ion.common.database.PlayerAchievement
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
@@ -27,6 +30,10 @@ import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
+import net.starlegacy.database.Oid
+import net.starlegacy.database.schema.misc.SLPlayer
+import net.starlegacy.database.schema.nations.Settlement
+import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -43,6 +50,9 @@ import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.litote.kmongo.addToSet
 
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
@@ -161,6 +171,41 @@ object IonServer : JavaPlugin() {
 			},
 			1
 		)
+
+		// Temporary Migration Code
+		transaction {
+			if (net.starlegacy.database.schema.nations.Nation.all().isNotEmpty()) return@transaction
+			if (net.horizonsend.ion.server.database.schema.Cryopod.all().isNotEmpty()) return@transaction
+
+			val sqlNations = Nation
+			val mongoNation = net.starlegacy.database.schema.nations.Nation
+
+			for (sqlNation in sqlNations.all()) {
+				mongoNation.create(
+					sqlNation.name,
+					sqlNation.capital as Oid<Settlement>,
+					sqlNation.color
+				)
+			}
+
+			for (cryopod in Cryopod.all()) {
+				val owner = SLPlayer[cryopod.owner.id.value] ?: continue
+
+				val newpod = net.horizonsend.ion.server.database.schema.Cryopod.create(
+					SLPlayer.findById(cryopod.owner.id.value.slPlayerId)!!,
+					cryopod.location.vec3i(),
+					cryopod.location.world
+				)
+
+				SLPlayer.updateById(owner._id, addToSet(SLPlayer::cryopods, newpod))
+			}
+
+			for (playerAchievement in PlayerAchievement.all()) {
+				val owner = SLPlayer[playerAchievement.player.id.value] ?: continue
+
+				SLPlayer.updateById(owner._id, addToSet(SLPlayer::achievements, playerAchievement.achievement))
+			}
+		}
 	}
 
 	override fun onDisable() {

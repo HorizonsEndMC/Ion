@@ -56,7 +56,7 @@ data class SLPlayer(
 	var nation: Oid<Nation>? = null,
 	var snowflake: Long? = null,
 	var wasKilled: Boolean = false,
-	var cryopod: Set<Oid<Cryopod>> = setOf(),
+	var cryopods: Set<Oid<Cryopod>> = setOf(),
 	var selectedCryopod: Oid<Cryopod>? = null,
 	var achievements: Set<Achievement> = setOf()
 ) : DbObject {
@@ -66,7 +66,7 @@ data class SLPlayer(
 			ensureIndex(SLPlayer::settlement)
 			ensureIndex(SLPlayer::nation)
 			ensureIndex(SLPlayer::snowflake)
-			ensureIndex(SLPlayer::cryopod)
+			ensureIndex(SLPlayer::cryopods)
 		}
 	) {
 		operator fun get(uuid: UUID): SLPlayer? = col.findOneById(uuid.slPlayerId.toString())
