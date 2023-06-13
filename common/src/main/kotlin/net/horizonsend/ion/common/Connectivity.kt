@@ -30,8 +30,10 @@ object Connectivity {
 
 		transaction {
 			SchemaUtils.createMissingTablesAndColumns(
+				Nation.Table,
 				PlayerAchievement.Table,
-				PlayerData.Table
+				PlayerData.Table,
+				Cryopod.Table
 			)
 		}
 
