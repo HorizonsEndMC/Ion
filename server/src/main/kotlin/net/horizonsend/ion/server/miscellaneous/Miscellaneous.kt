@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.miscellaneous
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import net.horizonsend.ion.common.database.DBLocation
 import net.horizonsend.ion.common.database.DoubleLocation
-import net.horizonsend.ion.common.database.PlayerData
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
 import net.milkbowl.vault.economy.Economy
@@ -14,7 +13,6 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Shulker
-import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.chunk.ChunkStatus
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
@@ -29,7 +27,6 @@ import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.entity.Entity
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -55,8 +52,6 @@ fun mainThreadCheck() {
 
 fun <K>Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V>Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
-
-operator fun PlayerData.Companion.get(player: Player) = PlayerData[player.uniqueId]!!
 fun DBLocation.bukkit() = Location(Bukkit.getWorld(world)!!, coords.first, coords.second, coords.third)
 fun DBLocation.vec3i() = Vec3i(coords.first.toInt(), coords.second.toInt(), coords.third.toInt())
 

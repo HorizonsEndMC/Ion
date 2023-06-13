@@ -1,20 +1,19 @@
 package net.horizonsend.ion.server.features.achievements
 
 import io.papermc.paper.adventure.PaperAdventure
-import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.features.screens.TextScreen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
+import net.starlegacy.database.schema.misc.SLPlayer
 import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.math.ceil
 import kotlin.math.min
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class AchievementsScreen private constructor(
 	private val targetName: String,
@@ -22,7 +21,7 @@ class AchievementsScreen private constructor(
 ) : TextScreen(buildPageText(targetName, 0, targetAchievements)) {
 	private var pageNumber: Int = 0
 
-	constructor(targetName: String) : this(targetName, transaction { PlayerData[targetName]?.achievements?.map { it.achievement } ?: listOf() })
+	constructor(targetName: String) : this(targetName, SLPlayer[targetName]?.achievements?.toList() ?: listOf())
 
 	init {
 		placeAchievementIcons()

@@ -60,7 +60,6 @@ import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.white
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
 import org.litote.kmongo.updateOneById
