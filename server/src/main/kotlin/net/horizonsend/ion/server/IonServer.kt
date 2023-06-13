@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.Cryopod
 import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.PlayerAchievement
+import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
@@ -53,6 +54,9 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.addToSet
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
+import org.litote.kmongo.setValue
 
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
@@ -204,6 +208,13 @@ object IonServer : JavaPlugin() {
 				val owner = SLPlayer[playerAchievement.player.id.value] ?: continue
 
 				SLPlayer.updateById(owner._id, addToSet(SLPlayer::achievements, playerAchievement.achievement))
+			}
+
+			for (sqlPlayer in PlayerData.all()) {
+				val mongoPlayer = SLPlayer[sqlPlayer.id.value] ?: continue
+				val selectedCryo = net.horizonsend.ion.server.database.schema.Cryopod.findOne(and(net.horizonsend.ion.server.database.schema.Cryopod::owner eq mongoPlayer._id, net.horizonsend.ion.server.database.schema.Cryopod::active eq true))
+
+				SLPlayer.updateById(mongoPlayer._id, setValue(SLPlayer::selectedCryopod, selectedCryo?._id))
 			}
 		}
 	}
