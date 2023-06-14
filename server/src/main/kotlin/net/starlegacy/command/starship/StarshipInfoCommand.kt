@@ -4,7 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
-import net.starlegacy.feature.starship.factory.StarshipFactories
+import net.horizonsend.ion.server.features.multiblock.shipfactory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.feature.starship.StarshipType

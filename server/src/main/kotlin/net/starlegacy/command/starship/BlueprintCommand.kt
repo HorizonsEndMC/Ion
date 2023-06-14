@@ -31,8 +31,8 @@ import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.StarshipSchematic
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
-import net.starlegacy.feature.starship.factory.PrintItem
-import net.starlegacy.feature.starship.factory.StarshipFactories
+import net.horizonsend.ion.server.features.multiblock.shipfactory.PrintItem
+import net.horizonsend.ion.server.features.multiblock.shipfactory.StarshipFactories
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks

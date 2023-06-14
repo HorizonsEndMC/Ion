@@ -46,7 +46,7 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.ContactsDisplay
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
-import net.starlegacy.feature.starship.factory.StarshipFactories
+import net.horizonsend.ion.server.features.multiblock.shipfactory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 import net.starlegacy.feature.transport.Extractors

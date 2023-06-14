@@ -1,7 +1,6 @@
-package net.starlegacy.feature.starship.factory
+package net.horizonsend.ion.server.features.multiblock.shipfactory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.multiblock.shipfactory.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.transport.Extractors

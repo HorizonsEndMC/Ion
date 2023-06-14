@@ -1,4 +1,4 @@
-package net.starlegacy.feature.starship.factory
+package net.horizonsend.ion.server.features.multiblock.shipfactory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.common.extensions.information
@@ -10,7 +10,6 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.canAccess
 import net.horizonsend.ion.server.miscellaneous.loadClipboard
 import net.starlegacy.feature.economy.bazaar.Merchants
-import net.horizonsend.ion.server.features.multiblock.shipfactory.ShipFactoryMultiblock
 import net.starlegacy.javautil.SignUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKey

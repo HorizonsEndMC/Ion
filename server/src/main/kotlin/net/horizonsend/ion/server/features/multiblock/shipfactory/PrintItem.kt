@@ -1,4 +1,4 @@
-package net.starlegacy.feature.starship.factory
+package net.horizonsend.ion.server.features.multiblock.shipfactory
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
