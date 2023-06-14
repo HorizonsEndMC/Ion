@@ -57,7 +57,7 @@ object NationsMap : SLComponent() {
 
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
-			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
+			Regions.getAllOf<RegionTerritory>().filterNot { it.isMoon }.forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 		}
