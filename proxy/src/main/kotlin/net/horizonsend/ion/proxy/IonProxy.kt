@@ -18,11 +18,9 @@ import net.horizonsend.ion.proxy.commands.waterfall.BungeeAccountCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
 import net.horizonsend.ion.proxy.commands.waterfall.ReplyCommand
-import net.horizonsend.ion.proxy.commands.waterfall.VoteCommand
 import net.horizonsend.ion.proxy.listeners.waterfall.PlayerDisconnectListener
 import net.horizonsend.ion.proxy.listeners.waterfall.ProxyPingListener
 import net.horizonsend.ion.proxy.listeners.waterfall.ServerConnectListener
-import net.horizonsend.ion.proxy.listeners.waterfall.VotifierListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.horizonsend.ion.proxy.wrappers.WrappedProxy
@@ -78,11 +76,9 @@ class IonProxy : Plugin() {
 			registerListener(this@IonProxy, PlayerDisconnectListener())
 			registerListener(this@IonProxy, ProxyPingListener())
 			registerListener(this@IonProxy, ServerConnectListener())
-			try { registerListener(this@IonProxy, VotifierListener()) } catch (_: NoClassDefFoundError) {}
 		}
 
 		val commandManager = BungeeCommandManager(this).apply {
-			registerCommand(VoteCommand(configuration))
 			registerCommand(BungeeInfoCommand())
 			registerCommand(MessageCommand())
 			registerCommand(ReplyCommand())

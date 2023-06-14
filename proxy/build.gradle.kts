@@ -10,7 +10,6 @@ plugins {
 repositories {
 	mavenCentral()
 
-	maven("https://jitpack.io") // NuVotifier
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.papermc.io/repository/maven-public/") // Waterfall
 
@@ -24,8 +23,6 @@ dependencies {
 	compileOnly("io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT")
 
 	// Other Plugins
-	compileOnly("com.github.NuVotifier.NuVotifier:nuvotifier-api:2.7.2")
-	compileOnly("com.github.NuVotifier.NuVotifier:nuvotifier-bungeecord:2.7.2")
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies
