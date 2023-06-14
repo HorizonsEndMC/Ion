@@ -1,12 +1,13 @@
-package net.horizonsend.ion.server.legacy.starshipweapon.primary
+package net.horizonsend.ion.server.features.starship.starshipweapon.secondary
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.legacy.starshipweapon.projectile.MiniPhaserProjectile
+import net.horizonsend.ion.server.features.starship.starshipweapon.projectile.SonicMissileProjectile
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
+import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
@@ -15,18 +16,20 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
-class MiniPhaserWeaponSubsystem(
+class SonicMissileWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face),
+	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = IonServer.balancing.starshipWeapons.miniPhaser.length
-	override val convergeDist: Double = IonServer.balancing.starshipWeapons.miniPhaser.convergeDistance
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.miniPhaser.extraDistance
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.miniPhaser.angleRadians)
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.miniPhaser.powerUsage
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.miniPhaser.fireCooldownNanos)
+	override val length: Int = IonServer.balancing.starshipWeapons.sonicMissile.length
+	override val convergeDist: Double = IonServer.balancing.starshipWeapons.sonicMissile.convergeDistance
+	override val extraDistance: Int = IonServer.balancing.starshipWeapons.sonicMissile.extraDistance
+	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.sonicMissile.angleRadians)
+	override val powerUsage: Int = IonServer.balancing.starshipWeapons.sonicMissile.powerUsage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.boostChargeNanos)
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.fireCooldownNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
@@ -38,10 +41,10 @@ class MiniPhaserWeaponSubsystem(
 	}
 
 	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
-		MiniPhaserProjectile(starship, loc, dir, shooter).fire()
+		SonicMissileProjectile(starship, loc, dir, shooter).fire()
 	}
 
 	override fun getRequiredAmmo(): ItemStack {
-		return ItemStack(Material.EMERALD, 1)
+		return ItemStack(Material.ECHO_SHARD, 2)
 	}
 }

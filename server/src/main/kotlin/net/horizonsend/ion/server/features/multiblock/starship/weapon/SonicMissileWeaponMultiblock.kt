@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.legacy.starshipweapon.multiblock
+package net.horizonsend.ion.server.features.multiblock.starship.weapon
 
-import net.horizonsend.ion.server.legacy.starshipweapon.secondary.SonicMissileWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.starshipweapon.secondary.SonicMissileWeaponSubsystem
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship

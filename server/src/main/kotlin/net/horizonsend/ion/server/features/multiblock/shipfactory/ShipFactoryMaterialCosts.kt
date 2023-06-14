@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.legacy
+package net.horizonsend.ion.server.features.multiblock.shipfactory
 
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.util.isConcrete
@@ -117,7 +117,7 @@ import org.bukkit.Material.WHITE_CONCRETE_POWDER
 import org.bukkit.Material.LIGHT_GRAY_CONCRETE_POWDER
 import org.bukkit.Material.GRAY_CONCRETE_POWDER
 import org.bukkit.Material.BLACK_CONCRETE_POWDER
-import org.bukkit.Material.RED_CONCRETE_POWDER 
+import org.bukkit.Material.RED_CONCRETE_POWDER
 import org.bukkit.Material.ORANGE_CONCRETE_POWDER
 import org.bukkit.Material.YELLOW_CONCRETE_POWDER
 import org.bukkit.Material.GREEN_CONCRETE_POWDER
@@ -239,7 +239,7 @@ object ShipFactoryMaterialCosts {
 		GRASS_BLOCK to 0.1,
 		GRASS to 0.1,
 		CALCITE to 0.1,
-		
+
 		WHITE_CONCRETE_POWDER to 0.1,
 		LIGHT_GRAY_CONCRETE_POWDER to 0.1,
 		GRAY_CONCRETE_POWDER to 0.1,

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.cryopods
+package net.horizonsend.ion.server.features.multiblock.cryopods
 
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -46,7 +46,7 @@ object CryoPods: Listener {
 		val multiblock = Multiblocks[sign] as? CryoPodMultiblock ?: return
 		val player = event.player
 		val pos = Vec3i(sign.location)
-		if (!multiblock.isOwner(sign, player)) {
+		if (!CryoPodMultiblock.isOwner(sign, player)) {
 			player.userError("You aren't the owner of this cryo pod!")
 			return
 		}

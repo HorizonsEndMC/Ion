@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.cryopods
+package net.horizonsend.ion.server.features.multiblock.cryopods
 
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent

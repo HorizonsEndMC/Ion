@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.legacy.starshipweapon.projectile
+package net.horizonsend.ion.server.features.starship.starshipweapon.projectile
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller

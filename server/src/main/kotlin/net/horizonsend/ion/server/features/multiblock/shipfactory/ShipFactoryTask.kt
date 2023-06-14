@@ -1,4 +1,4 @@
-package net.starlegacy.feature.multiblock.shipfactory
+package net.horizonsend.ion.server.features.multiblock.shipfactory
 
 import org.bukkit.block.Sign
 import org.bukkit.scheduler.BukkitRunnable

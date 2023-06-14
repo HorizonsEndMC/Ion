@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
+package net.horizonsend.ion.server.features.multiblock.starship.mininglaser
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

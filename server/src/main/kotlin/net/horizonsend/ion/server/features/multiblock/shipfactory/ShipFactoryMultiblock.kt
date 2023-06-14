@@ -1,4 +1,4 @@
-package net.starlegacy.feature.multiblock.shipfactory
+package net.horizonsend.ion.server.features.multiblock.shipfactory
 
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SHIP_FACTORY_DATA
 import net.kyori.adventure.text.Component

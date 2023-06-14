@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.legacy.multiblocks
+package net.horizonsend.ion.server.features.multiblock
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

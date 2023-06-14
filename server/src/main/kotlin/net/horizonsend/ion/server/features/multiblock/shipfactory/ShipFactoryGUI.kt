@@ -1,4 +1,4 @@
-package net.starlegacy.feature.multiblock.shipfactory
+package net.horizonsend.ion.server.features.multiblock.shipfactory
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane

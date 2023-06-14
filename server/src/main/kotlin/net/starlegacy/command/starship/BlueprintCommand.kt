@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.collections.set
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
+import net.horizonsend.ion.server.features.multiblock.shipfactory.ShipFactoryMaterialCosts
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.horizonsend.ion.common.database.cache.nations.NationCache
