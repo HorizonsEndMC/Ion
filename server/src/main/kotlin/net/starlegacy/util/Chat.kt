@@ -81,7 +81,6 @@ fun <T> Iterable<T>.joinToText(
 	return component
 }
 
-@Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.isAlphanumeric() = matches("^[a-zA-Z0-9]*$".toRegex())
 
 @Deprecated("Use Ion MiniMessage Extension Functions")

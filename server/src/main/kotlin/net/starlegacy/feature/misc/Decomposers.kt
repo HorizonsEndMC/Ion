@@ -57,6 +57,8 @@ object Decomposers : SLComponent() {
 
 			val offset = calculateOffset(origin, width, height, length, right, up, forward)
 
+			if (length == 0 || width == 0 || height == 0) return event.player.userError("Decomposer has zero volume! Make sure the chiseled blocks extend to the right of the multiblock.")
+
 			if (offset > width) return event.player.userError("Decomposer empty!")
 
 			val task = DecomposeTask(

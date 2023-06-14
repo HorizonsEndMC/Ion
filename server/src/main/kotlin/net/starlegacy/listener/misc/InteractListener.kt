@@ -1,5 +1,6 @@
 package net.starlegacy.listener.misc
 
+import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -36,6 +37,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object InteractListener : SLEventListener() {
@@ -103,7 +105,10 @@ object InteractListener : SLEventListener() {
 
 		val relative = below.getRelative(BlockFace.DOWN, distance)
 		if (relative.type != Material.AIR) {
-			event.player.teleport(relative.location.add(0.5, 1.5, 0.5))
+			event.player.teleport(relative.location.add(0.5, 1.5, 0.5),
+				PlayerTeleportEvent.TeleportCause.PLUGIN,
+				*TeleportFlag.Relative.values()
+			)
 		}
 	}
 
@@ -126,7 +131,11 @@ object InteractListener : SLEventListener() {
 					if (!sign.type.isWallSign) continue
 
 					if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
-					event.player.teleport(block.location.add(0.5, 1.5, 0.5))
+					event.player.teleport(
+						block.location.add(0.5, 1.5, 0.5),
+						PlayerTeleportEvent.TeleportCause.PLUGIN,
+						*TeleportFlag.Relative.values()
+					)
 				}
 				continue
 			}

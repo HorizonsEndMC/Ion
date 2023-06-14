@@ -1,14 +1,23 @@
 package net.horizonsend.ion.server.miscellaneous.events
 
+import co.aikar.commands.PaperCommandManager
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class IonEnableEvent : Event() {
-	private val handlers = HandlerList()
-	override fun getHandlers(): HandlerList = handlers
+data class IonEnableEvent(val manager: PaperCommandManager) : Event() {
+	companion object {
+		@JvmStatic
+		val handlerList = HandlerList()
+	}
+
+	override fun getHandlers(): HandlerList = handlerList
 }
 
 class IonDisableEvent : Event() {
-	private val handlers = HandlerList()
-	override fun getHandlers(): HandlerList = handlers
+	companion object {
+		@JvmStatic
+		val handlerList = HandlerList()
+	}
+
+	override fun getHandlers(): HandlerList = handlerList
 }

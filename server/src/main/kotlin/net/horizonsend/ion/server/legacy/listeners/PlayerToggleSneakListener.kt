@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.legacy.listeners
 
+import io.papermc.paper.entity.TeleportFlag
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -12,6 +13,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
 object PlayerToggleSneakListener : SLEventListener() {
@@ -44,7 +46,11 @@ object PlayerToggleSneakListener : SLEventListener() {
 
 				val relative = below.getRelative(BlockFace.DOWN, distance)
 				if (relative.type != Material.AIR) {
-					event.player.teleport(relative.location.add(0.5, 1.5, 0.5))
+					event.player.teleport(
+						relative.location.add(0.5, 1.5, 0.5),
+						PlayerTeleportEvent.TeleportCause.PLUGIN,
+						*TeleportFlag.Relative.values()
+					)
 				}
 			}
 		}

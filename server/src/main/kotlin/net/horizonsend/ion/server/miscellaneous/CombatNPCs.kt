@@ -16,6 +16,7 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
+import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.event.Event
@@ -37,7 +38,7 @@ object CombatNPCs : SLComponent() {
 
 	/** Map of NPC ID to its inventory */
 	private val inventories: MutableMap<Int, Array<ItemStack?>> = mutableMapOf()
-	val npcToPlayer = mutableMapOf<UUID, NPC>()
+	val npcToPlayer = mutableMapOf<UUID, Pair<NPC, Location>>()
 
 	override fun onEnable() {
 		// weirdness happens when someone already logged in logs on. this is my hacky fix.
@@ -64,7 +65,7 @@ object CombatNPCs : SLComponent() {
 				return@listen
 			}
 
-			// if they joined less than a second ago, don't do it
+			// if they joined less than 10 seconds ago, don't do it
 			if (System.currentTimeMillis() - (lastJoinMap[playerId] ?: 0) < 10000) {
 				return@listen
 			}
@@ -73,13 +74,14 @@ object CombatNPCs : SLComponent() {
 				.map { item: ItemStack? -> item?.clone() }
 				.toTypedArray()
 
+			val location = player.location
 			val npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, player.name, player.location)
 			npc.entity.customName(text("${player.name} [NPC]"))
 			npc.isProtected = false
 			npc.spawn(player.location)
 
 			inventories[npc.id] = inventoryCopy
-			npcToPlayer[playerId] = npc
+			npcToPlayer[playerId] = npc to location
 
 			npc.entity.persistentDataContainer.set(
 				NamespacedKeys.COMBAT_NPC,
@@ -90,25 +92,27 @@ object CombatNPCs : SLComponent() {
 			npc.entity.chunk.addPluginChunkTicket(IonServer)
 
 			Tasks.syncDelay(20L * 60L * remainTimeMinutes) {
-				if (!npc.isSpawned) return@syncDelay
+				if (!npc.isSpawned) {
+					location.chunk.removePluginChunkTicket(IonServer)
+					return@syncDelay
+				}
 
 				inventories.remove(npc.id)
 				npcToPlayer.remove(playerId)
 
+				location.chunk.removePluginChunkTicket(IonServer)
 				destroyNPC(npc)
-				npc.entity.chunk.removePluginChunkTicket(IonServer)
 			}
 		}
 
 		listen<NPCDeathEvent>(EventPriority.LOWEST) { event ->
 			val npc = event.npc
-			val playerId = npcToPlayer.entries.find { it.value.id == npc.id }?.key ?: return@listen
+			val playerId = npcToPlayer.entries.find { it.value.first.id == npc.id }?.key ?: return@listen
 
 			val entity = npc.entity
 			entity.chunk.removePluginChunkTicket(IonServer)
 
 			val killer: Entity? = (entity.lastDamageCause as? EntityDamageByEntityEvent)?.damager
-
 
 			if (entity.persistentDataContainer.has(NamespacedKeys.COMBAT_NPC)) {
 				val time = entity.persistentDataContainer.get(NamespacedKeys.COMBAT_NPC, PersistentDataType.LONG)!!
@@ -152,8 +156,8 @@ object CombatNPCs : SLComponent() {
 			npcToPlayer[event.player.uniqueId]?.let {
 				println("destroying")
 
-				it.entity.chunk.removePluginChunkTicket(IonServer)
-				destroyNPC(it)
+				it.second.chunk.removePluginChunkTicket(IonServer)
+				destroyNPC(it.first)
 			}
 
 
@@ -178,8 +182,8 @@ object CombatNPCs : SLComponent() {
 	}
 
 	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =
-		npc.entity.location.world.getChunkAtAsync(npc.entity.location).thenApply { _ ->
-			npc.entity.chunk.removePluginChunkTicket(IonServer)
+		npc.storedLocation.world.getChunkAtAsync(npc.storedLocation).thenApply { _ ->
+			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
 
 			npc.destroy()
 			CitizensAPI.getNPCRegistry().deregister(npc)

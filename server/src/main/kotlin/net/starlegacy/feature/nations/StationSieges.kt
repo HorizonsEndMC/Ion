@@ -13,7 +13,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.md_5.bungee.api.ChatColor.GOLD
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.database.Oid
@@ -128,7 +127,7 @@ object StationSieges : SLComponent() {
 		val stationName = CapturableStation.findPropById(siege.stationId, CapturableStation::name) ?: "??NULL??"
 
 		Notify.online(MiniMessage.miniMessage().deserialize("<gold>Siege of Space Station $stationName by $playerName has failed!"))
-		Notify.discord("Siege of Space Station **$stationName** by **$playerName** has failed!")
+		Notify.eventsChannel("Siege of Space Station **$stationName** by **$playerName** has failed!")
 	}
 
 	fun beginSiege(player: Player) = asyncLocked {
@@ -223,7 +222,7 @@ object StationSieges : SLComponent() {
 		val oldNationName = transaction { Nation[oldNation]!!.name }
 
 		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)"))
-		Notify.discord("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
+		Notify.eventsChannel("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
 
 		player.rewardAchievement(Achievement.SIEGE_STATION)
 	}
@@ -292,7 +291,7 @@ object StationSieges : SLComponent() {
 			val playerName = player.name
 			Notify online MiniMessage.miniMessage().deserialize("<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
 				" $nationName now has $nowCaptured stations!")
-			Notify discord "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"
+			Notify eventsChannel "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"
 			SLXP.addAsync(player, NATIONS_BALANCE.capturableStation.siegerXP)
 			Tasks.sync {
 				for (otherPlayer in world.players) {

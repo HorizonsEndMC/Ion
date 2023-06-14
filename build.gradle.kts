@@ -3,8 +3,8 @@ import java.net.URL
 plugins {
 	id("com.github.johnrengelman.shadow") version "8.1.1" apply false
 
-	kotlin("plugin.serialization") version "1.8.21" apply false
-	kotlin("jvm") version "1.8.20" apply false
+	kotlin("plugin.serialization") version "1.8.22" apply false
+	kotlin("jvm") version "1.8.22" apply false
 }
 
 // TODO: Use Json

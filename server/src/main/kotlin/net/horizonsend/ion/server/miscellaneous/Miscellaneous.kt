@@ -53,6 +53,9 @@ fun mainThreadCheck() {
 	}
 }
 
+fun <K>Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
+fun <V>Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
+
 operator fun PlayerData.Companion.get(player: Player) = PlayerData[player.uniqueId]!!
 fun DBLocation.bukkit() = Location(Bukkit.getWorld(world)!!, coords.first, coords.second, coords.third)
 fun DBLocation.vec3i() = Vec3i(coords.first.toInt(), coords.second.toInt(), coords.third.toInt())

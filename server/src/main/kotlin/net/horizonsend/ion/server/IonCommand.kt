@@ -10,10 +10,14 @@ import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.Cryopod
 import net.horizonsend.ion.common.database.DBLocation
 import net.horizonsend.ion.common.database.PlayerData
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.util.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.io.FileReader
@@ -23,7 +27,9 @@ import java.util.*
 
 @CommandAlias("ion")
 @CommandPermission("ion.utilities")
-class IonCommand : BaseCommand() {
+object IonCommand : BaseCommand() {
+	val debugEnabledPlayers = mutableListOf<UUID>()
+
 	@Suppress("Unused")
 	@Subcommand("view set")
 	fun setServerViewDistance(sender: CommandSender, renderDistance: Int) {
@@ -76,6 +82,18 @@ class IonCommand : BaseCommand() {
 		sender.sendMessage("Simulation distance is currently set to ${Bukkit.getWorlds()[0].simulationDistance}.")
 	}
 
+	@Suppress("Unused")
+	@Subcommand("debug")
+	fun debugToggle(sender: Player) {
+		if (debugEnabledPlayers.contains(sender.uniqueId)) {
+			debugEnabledPlayers.remove(sender.uniqueId)
+			sender.success("Disabled debug mode")
+		} else {
+			debugEnabledPlayers.add(sender.uniqueId)
+			sender.success("Enabled debug mode")
+		}
+	}
+
 	private data class CryoPod(val player: UUID, val world: String, val pos: Vec3i)
 
 	@Suppress("Unused")
@@ -109,3 +127,13 @@ class IonCommand : BaseCommand() {
 		}
 	}
 }
+
+fun Player.debugBanner(message: String) = debug("------------------- $message -------------------")
+fun Player.debug(message: String) =
+	if (IonCommand.debugEnabledPlayers.contains(uniqueId)) {
+		information(message)
+	} else null
+fun Player.debugRed(message: String) =
+	if (IonCommand.debugEnabledPlayers.contains(uniqueId)) {
+		serverError(message)
+	} else null

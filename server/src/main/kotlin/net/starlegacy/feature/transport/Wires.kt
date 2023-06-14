@@ -84,7 +84,7 @@ object Wires : SLComponent() {
 	)
 
 	override fun onEnable() {
-		metrics?.metricsManager?.registerCollection(WireMetricsCollection)
+		metrics?.metricsManager?.registerCollection(IonMetricsCollection)
 		thread = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-transport-wires"))
 
 		scheduleUpdates()
@@ -110,7 +110,7 @@ object Wires : SLComponent() {
 			while (!computerCheckQueue.isEmpty() && System.nanoTime() - start < maxTime) {
 				val time = measureNanoTime { computerCheckQueue.poll().invoke() }
 
-				WireMetricsCollection.timeSpent += time
+				IonMetricsCollection.timeSpent += time
 			}
 
 			if (System.nanoTime() - start > maxTime) {

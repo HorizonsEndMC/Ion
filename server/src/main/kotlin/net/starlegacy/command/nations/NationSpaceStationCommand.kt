@@ -253,7 +253,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 		SpaceStation.updateById(spaceStation._id, addToSet(SpaceStation::managers, playerId))
 		sender msg "&7Made &b$playerName&7 a manager of &b$stationName"
-		Notify.player(playerId.uuid, "&7You were made a manager of station &b$stationName&7 by &b${sender.name}")
+		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were made a manager of station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("manager list")
@@ -282,7 +282,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 		SpaceStation.updateById(spaceStation._id, pull(SpaceStation::managers, playerId))
 		sender msg "&7Removed &b$playerName&7 as a manager of &b$stationName"
-		Notify.player(playerId.uuid, "&7You were removed as a manager of &b$stationName&7 by &b${sender.name}")
+		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed as a manager of <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted list")
@@ -311,7 +311,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 		SpaceStation.updateById(spaceStation._id, addToSet(SpaceStation::trustedPlayers, playerId))
 		sender msg "&7Added &b$playerName&7 to &b$stationName"
-		Notify.player(playerId.uuid, "&7You were added to station &b$stationName&7 by &b${sender.name}")
+		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted remove player")
@@ -329,7 +329,7 @@ object NationSpaceStationCommand : SLCommand() {
 
 		SpaceStation.updateById(spaceStation._id, pull(SpaceStation::trustedPlayers, playerId))
 		sender msg "&7Removed &b$playerName&7 from &b$stationName"
-		Notify.player(playerId.uuid, "&7You were removed from station &b$stationName&7 by &b${sender.name}")
+		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted add nation")

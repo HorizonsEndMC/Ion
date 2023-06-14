@@ -155,14 +155,14 @@ internal object SettlementCommand : SLCommand() {
 		if (Settlement.isInvitedTo(settlementId, slPlayerId)) {
 			Settlement.removeInvite(settlementId, slPlayerId)
 			sender msg "&bRemoved $player's invite to your settlement."
-			Notify.player(playerId, "<yellow>You were un-invited from $settlementName by ${sender.name}")
+			Notify.player(playerId, MiniMessage.miniMessage().deserialize("<yellow>You were un-invited from $settlementName by ${sender.name}"))
 		} else {
 			Settlement.addInvite(settlementId, slPlayerId)
 			sender msg "&bInvited $player to your settlement."
 			Notify.player(
 				playerId,
-				"&bYou were invited to $settlementName by ${sender.name}. " +
-					"To join, use &o/s join $settlementName"
+				MiniMessage.miniMessage().deserialize("<aqua>You were invited to $settlementName by ${sender.name}. " +
+						"To join, use <italic>/s join $settlementName")
 			)
 		}
 	}

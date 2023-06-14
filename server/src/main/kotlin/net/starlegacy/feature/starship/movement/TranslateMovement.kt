@@ -88,8 +88,8 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 		passenger.teleport(
 			location,
 			PlayerTeleportEvent.TeleportCause.PLUGIN,
-			TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
-			*TeleportFlag.Relative.values()
+			*TeleportFlag.Relative.values(),
+			TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
 		)
 	}
 

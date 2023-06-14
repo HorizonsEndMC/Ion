@@ -33,6 +33,7 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.toText
 import net.horizonsend.ion.server.miscellaneous.updateMeta
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -376,7 +377,7 @@ internal object SettlementZoneCommand : SLCommand() {
 		sender msg "&aDeleted settlement zone ${zone.name}"
 
 		if (owner != null) {
-			Notify.player(owner.uuid, "Your settlement zone ${zone.name} was deleted by ${sender.name}")
+			Notify.player(owner.uuid, MiniMessage.miniMessage().deserialize("Your settlement zone ${zone.name} was deleted by ${sender.name}"))
 		}
 	}
 
@@ -442,7 +443,7 @@ internal object SettlementZoneCommand : SLCommand() {
 
 		sender msg "&aReclaimed region ${zone.name} from ${getPlayerName(owner)}"
 
-		val message = "&7${sender.name} reclaimed your plot ${zone.name} in ${getSettlementName(settlement)}"
+		val message = MiniMessage.miniMessage().deserialize("<gray>${sender.name} reclaimed your plot ${zone.name} in ${getSettlementName(settlement)}")
 		Notify.player(owner.uuid, message)
 	}
 }

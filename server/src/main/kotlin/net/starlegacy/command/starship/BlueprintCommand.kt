@@ -16,6 +16,7 @@ import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.command.SLCommand
 import net.starlegacy.database.schema.starships.Blueprint
@@ -328,7 +329,7 @@ object BlueprintCommand : SLCommand() {
 		}
 		blueprint.trustedPlayers.add(slPlayerId)
 		saveBlueprint(blueprint)
-		Notify.player(playerId, "&b${sender.name} &7trusted you to their blueprint &b$name")
+		Notify.player(playerId, MiniMessage.miniMessage().deserialize("<aqua>${sender.name} <gray>trusted you to their blueprint <aqua>$name"))
 		sender.success("Trusted $player to blueprint $name")
 	}
 
@@ -344,7 +345,7 @@ object BlueprintCommand : SLCommand() {
 		}
 		blueprint.trustedPlayers.remove(slPlayerId)
 		saveBlueprint(blueprint)
-		Notify.player(playerId, "&b${sender.name} &7un-trusted you from their blueprint &b$name")
+		Notify.player(playerId, MiniMessage.miniMessage().deserialize("<aqua>${sender.name} <gray>un-trusted you from their blueprint <aqua>$name"))
 		sender.success("Un-trusted $player from blueprint $name")
 	}
 

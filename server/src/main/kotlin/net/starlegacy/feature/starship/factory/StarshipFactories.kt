@@ -11,7 +11,7 @@ import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.ShipFactoryMultiblock
 import net.starlegacy.listen
-import net.starlegacy.util.SignUtils
+import net.starlegacy.javautil.SignUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.getFacing

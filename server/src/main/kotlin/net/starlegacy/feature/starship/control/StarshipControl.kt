@@ -2,6 +2,9 @@ package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.debug
+import net.horizonsend.ion.server.debugBanner
+import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
@@ -20,13 +23,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.listen
-import net.starlegacy.util.PerPlayerCooldown
-import net.starlegacy.util.Tasks
-import net.starlegacy.util.d
-import net.horizonsend.ion.server.miscellaneous.displayNameString
-import net.starlegacy.util.isLava
-import net.starlegacy.util.isSign
-import net.starlegacy.util.isWater
+import net.starlegacy.util.*
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
@@ -37,31 +34,22 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerItemHeldEvent
-import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.event.player.PlayerSwapHandItemsEvent
-import org.bukkit.event.player.PlayerTeleportEvent
-import org.bukkit.event.player.PlayerToggleSneakEvent
+import org.bukkit.event.player.*
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import java.util.Collections
-import java.util.LinkedList
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.round
-import kotlin.math.roundToInt
-import kotlin.math.sign
-import kotlin.math.sin
+import kotlin.collections.List
+import kotlin.collections.any
+import kotlin.collections.asSequence
+import kotlin.collections.mutableMapOf
+import kotlin.collections.none
+import kotlin.collections.set
+import kotlin.collections.shuffled
+import kotlin.collections.withIndex
+import kotlin.math.*
 
 object StarshipControl : SLComponent() {
 	val CONTROLLER_TYPE = Material.CLOCK
@@ -208,7 +196,8 @@ object StarshipControl : SLComponent() {
 			pilot.teleport(
 				newLoc,
 				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.values()
+				*TeleportFlag.Relative.values(),
+				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
 			)
 		}
 
@@ -452,25 +441,33 @@ object StarshipControl : SLComponent() {
 	fun onClick(event: PlayerInteractEvent) {
 		val player = event.player
 
+		player.debugBanner("INTERACT EVENT MANUAL FIRE START")
 		if (!isHoldingController(player)) {
 			return
 		}
 
+		player.debug("player has controller")
+
 		val starship = ActiveStarships.findByPassenger(player) ?: return
 
-		val leftClick = event.action == Action.LEFT_CLICK_BLOCK || event.action == Action.LEFT_CLICK_AIR
+		player.debug("player is piloting")
 
-		if (leftClick) {
+		if (event.action.isLeftClick) {
 			event.isCancelled = true
 		}
 
-		if (!leftClick) {
+		player.debug("player is rclicking")
+
+		if (event.action.isRightClick) {
 			val uuid = player.uniqueId
 			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(uuid, 0)
+			player.debug("elapsedSinceRCLICK = $elapsedSinceRightClick")
 			if (elapsedSinceRightClick > TimeUnit.MILLISECONDS.toNanos(250)) {
+				player.debug("click isn't doubleclick, adding...")
 				rightClickTimes[uuid] = System.nanoTime()
 				return
 			}
+			player.debug("it's a doubleclick, going on")
 			rightClickTimes.remove(uuid)
 		}
 
@@ -478,9 +475,13 @@ object StarshipControl : SLComponent() {
 			return
 		}
 
+		player.debug("didnt click sign, trying to fire")
+
 		cooldown.tryExec(player) {
-			manualFire(player, starship, leftClick, player.inventory.itemInMainHand)
+			manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
 		}
+
+		player.debugBanner("END")
 	}
 
 	@EventHandler

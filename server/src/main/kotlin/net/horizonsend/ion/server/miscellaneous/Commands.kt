@@ -20,7 +20,7 @@ val commands = arrayOf(
 	ConvertCommand(),
 	CustomItemCommand(),
 	SettingsCommand(),
-	IonCommand(),
+	IonCommand,
 	SearchCommand(),
 	CalcExpCommand(),
 	CheckProtectionCommand(),

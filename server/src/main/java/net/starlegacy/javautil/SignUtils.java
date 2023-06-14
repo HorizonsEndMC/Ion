@@ -1,4 +1,4 @@
-package net.starlegacy.util;
+package net.starlegacy.javautil;
 
 import com.google.gson.Gson;
 import com.sk89q.jnbt.CompoundTag;

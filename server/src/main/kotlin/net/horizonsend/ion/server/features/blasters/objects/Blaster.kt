@@ -6,8 +6,7 @@ import net.horizonsend.ion.common.database.Nation
 import net.horizonsend.ion.common.database.PlayerData
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
-import net.horizonsend.ion.server.features.blasters.ProjectileManager
-import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
+import net.horizonsend.ion.server.features.blasters.BlasterProjectile
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.audience.Audience
@@ -22,7 +21,6 @@ import net.minecraft.resources.ResourceLocation
 import net.starlegacy.database.schema.misc.SLPlayer
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.randomDouble
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
@@ -30,11 +28,8 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.Particle.REDSTONE
-import org.bukkit.SoundCategory
 import org.bukkit.SoundCategory.PLAYERS
-import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R3.CraftParticle
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -71,7 +66,7 @@ abstract class Blaster<T : Balancing>(
 		if (livingEntity !is Player) return // Player Only
 		if (livingEntity.hasCooldown(itemStack.type)) return // Cooldown
 
-		val originalAmmo =	getAmmunition(itemStack)
+		val originalAmmo = getAmmunition(itemStack)
 
 		var ammo = originalAmmo
 
@@ -92,7 +87,8 @@ abstract class Blaster<T : Balancing>(
 			}
 		}
 
-		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena") || !balancing.consumesAmmo) ammo = balancing.magazineSize
+		if (livingEntity.world.name.lowercase(Locale.getDefault()).contains("arena") || !balancing.consumesAmmo) ammo =
+			balancing.magazineSize
 
 		if (ammo - originalAmmo == 0) {
 			livingEntity.playSound(
@@ -153,7 +149,16 @@ abstract class Blaster<T : Balancing>(
 			)
 		}
 
-		(inventory.holder as? Audience)?.sendActionBar(text("Ammo: ${ammunition.coerceIn(0, balancing.magazineSize)} / ${balancing.magazineSize}", NamedTextColor.RED))
+		(inventory.holder as? Audience)?.sendActionBar(
+			text(
+				"Ammo: ${
+					ammunition.coerceIn(
+						0,
+						balancing.magazineSize
+					)
+				} / ${balancing.magazineSize}", NamedTextColor.RED
+			)
+		)
 	}
 
 	private fun fireWeapon(livingEntity: LivingEntity, itemStack: ItemStack) {
@@ -202,7 +207,8 @@ abstract class Blaster<T : Balancing>(
 			// Sound is unmodified if players within 0.5*range distance of shooter
 			// Modify sound until fully inaudible at 2.0*range distance of shooter
 			if (it.location.distance(soundOrigin) >= distanceFactor * 0.5 &&
-				it.location.distance(soundOrigin) < distanceFactor * 2) {
+				it.location.distance(soundOrigin) < distanceFactor * 2
+			) {
 				volumeFactor *= (-1.0 / (2.0 * distanceFactor)) * it.location.distance(soundOrigin) + 1.25
 				pitchFactor *= (-1.0 / (3.0 * distanceFactor)) * it.location.distance(soundOrigin) + 1.165
 			}
@@ -237,36 +243,26 @@ abstract class Blaster<T : Balancing>(
 
 	protected open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
-
 		location.y = location.y - 0.125
-
-		if (balancing.shotDeviation > 0) {
-			val offsetX = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
-			val offsetY = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
-			val offsetZ = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
-
-			location.direction = location.direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
-		}
-
 		location.add(location.direction.clone().multiply(0.125))
 
-		val projectile = RayTracedParticleProjectile(
+		val sway = balancing.shotDeviation
+		val dir = location.direction.normalize().add(Vector((Math.random() * 2 * sway) - sway, (Math.random() * 2 * sway) - sway,
+			(Math.random() * 2 * sway) - sway)).normalize()
+
+		BlasterProjectile(
 			location,
 			livingEntity,
 			balancing,
 			getParticleType(livingEntity),
+			dir,
 			explosiveShot,
-			if (getParticleType(livingEntity) == REDSTONE) DustOptions(getParticleColor(livingEntity), particleSize) else null,
-			soundWhizz
-		)
-
-		if (livingEntity is CraftPlayer) {
-			// Projectile.tick() will return true if it needs to be removed
-			// If it needs to be removed, stop the lag compensation ticks, and never add it to the manager
-			for (i in 0..livingEntity.handle.latency.floorDiv(50)) if (projectile.tick()) return
-		}
-
-		ProjectileManager.addProjectile(projectile)
+			if (getParticleType(livingEntity) == REDSTONE) DustOptions(
+				getParticleColor(livingEntity),
+				particleSize
+			) else null,
+			soundWhizz,
+		).shootProjectile()
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {

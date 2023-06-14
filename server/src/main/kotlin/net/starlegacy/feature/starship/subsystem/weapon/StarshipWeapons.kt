@@ -4,6 +4,9 @@ import com.google.common.collect.HashMultimap
 import com.google.common.util.concurrent.AtomicDouble
 import net.horizonsend.ion.common.extensions.alertActionMessage
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
+import net.horizonsend.ion.server.debug
+import net.horizonsend.ion.server.debugRed
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -46,10 +49,17 @@ object StarshipWeapons {
 
 	fun fireQueuedShots(queuedShots: List<QueuedShot>, ship: ActiveStarship) {
 		val boostPower = AtomicDouble(0.0)
+		val pilot =
+			if (ship.controller is PlayerController) (ship.controller as PlayerController).serverPlayer.bukkitEntity.player else null
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
+			pilot?.debug("we have heavy weapons")
+
 			val heavyWeaponTypes =
 				queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
+
+			pilot?.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
+
 			if (heavyWeaponTypes.count() > 1) {
 				ship.onlinePassengers.forEach { player ->
 					player.userErrorActionMessage(
@@ -61,10 +71,14 @@ object StarshipWeapons {
 			}
 
 			val heavyWeaponType = heavyWeaponTypes.single()
+			pilot?.debug("heavyWeaponType = $heavyWeaponType")
+
 			val newWarmup = queuedShots
 				.filter { it.weapon is HeavyWeaponSubsystem }
 				.maxOf { (it.weapon as HeavyWeaponSubsystem).boostChargeNanos }
+			pilot?.debug("newWarmup = $newWarmup")
 			val output = ship.reactor.heavyWeaponBooster.boost(heavyWeaponType, newWarmup)
+			pilot?.debug("output = $output")
 			boostPower.set(output)
 		}
 
@@ -73,20 +87,28 @@ object StarshipWeapons {
 			val weapon = shot.weapon
 
 			val maxPerShot = weapon.getMaxPerShot()
+			pilot?.debug("iterating shots, $weapon, $maxPerShot")
 
 			val firedSet = firedCounts[weapon.name]
+			pilot?.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
+				pilot?.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
 				continue
 			}
 
+			pilot?.debug("is resource available?")
 			if (resourcesUnavailable(weapon, ship, boostPower)) {
+				pilot?.debug("its not, goodbye")
 				continue
 			}
 
+			pilot?.debugRed("shootings!!")
 			shot.shoot()
 
+			pilot?.debug("taking resources")
 			consumeResources(weapon, boostPower, ship)
 
+			pilot?.debug("adding to fired")
 			firedSet.add(weapon)
 		}
 
@@ -111,6 +133,8 @@ object StarshipWeapons {
 		}
 
 		if (!isPowerAvailable(weapon, boostPower)) {
+			(if (ship.controller is PlayerController) (ship.controller as PlayerController).serverPlayer.bukkitEntity.player else null)
+				?.debug("out of power")
 			return true
 		}
 

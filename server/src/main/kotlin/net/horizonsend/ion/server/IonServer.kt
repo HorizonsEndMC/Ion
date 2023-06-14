@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLibrary
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
-import net.citizensnpcs.api.CitizensAPI
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.database.enums.Achievement
@@ -38,6 +39,7 @@ import net.starlegacy.util.Notify
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
@@ -53,6 +55,7 @@ object IonServer : JavaPlugin() {
 	}
 
 	private fun internalEnable() {
+		PacketType.values().forEach { ProtocolLibrary.getProtocolManager().addPacketListener(IonPacketListener(it)) }
 		Connectivity.open(dataFolder)
 
 		prefixProvider = {
@@ -70,7 +73,13 @@ object IonServer : JavaPlugin() {
 		@Suppress("Deprecation")
 		commandManager.enableUnstableAPI("help")
 
-		for (command in commands) commandManager.registerCommand(command)
+		for (command in commands) {
+			commandManager.registerCommand(command)
+
+			if (command is Listener) {
+				Bukkit.getPluginManager().registerEvents(command, this)
+			}
+		}
 
 		commandManager.commandCompletions.registerStaticCompletion(
 			"achievements",
@@ -93,7 +102,7 @@ object IonServer : JavaPlugin() {
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.
 		for (listener in listeners) pluginManager.registerEvents(listener, this)
 
-		Bukkit.getPluginManager().callEvent(IonEnableEvent())
+		Bukkit.getPluginManager().callEvent(IonEnableEvent(commandManager))
 
 		// WIT networking
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, SearchC2S.ID.toString(), Searcher::handle)
@@ -146,9 +155,9 @@ object IonServer : JavaPlugin() {
 				val message = getUpdateMessage(dataFolder) ?: return@Runnable
 				slF4JLogger.info(message)
 
+				Notify.eventsChannel("${configuration.serverName} $message")
 				DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
 					?.sendMessage("${configuration.serverName} $message")
-				Notify.discord("${configuration.serverName} $message")
 			},
 			1
 		)
@@ -158,7 +167,7 @@ object IonServer : JavaPlugin() {
 		Bukkit.getPluginManager().callEvent(IonDisableEvent())
 		IonWorld.unregisterAll()
 		legacyDisable()
-		CombatNPCs.npcToPlayer.values.forEach(CombatNPCs::destroyNPC)
+		CombatNPCs.npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
 		Connectivity.close()
 	}
 

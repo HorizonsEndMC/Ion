@@ -240,15 +240,15 @@ internal object NationCommand : SLCommand() {
 			sender.success("Invited settlement ${getSettlementName(settlementId)} to your nation")
 			Notify.player(
 				player = leaderId,
-				message = "&bYour settlement is invited to the nation $nationName by ${sender.name}! " +
-					"To accept, use <yellow>&o/nation join $nationName"
+				message = MiniMessage.miniMessage().deserialize("<aqua>Your settlement is invited to the nation $nationName by ${sender.name}! " +
+						"To accept, use <yellow><italic>/nation join $nationName")
 			)
 		} else {
 			transaction { nationInvite.delete() }
 			sender.success("Cancelled invite for settlement $settlementId to your nation")
 			Notify.player(
 				player = leaderId,
-				message = "<yellow>Your settlement's invite to the nation $nationName has been revoked by ${sender.name}"
+				message = MiniMessage.miniMessage().deserialize("<yellow>Your settlement's invite to the nation $nationName has been revoked by ${sender.name}")
 			)
 		}
 	}

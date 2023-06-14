@@ -12,9 +12,9 @@ repositories {
 }
 
 dependencies {
-	compileOnly("net.kyori:adventure-api:4.13.1")
-	compileOnly("net.kyori:adventure-text-logger-slf4j:4.13.1")
-	compileOnly("net.kyori:adventure-text-minimessage:4.13.1")
+	compileOnly("net.kyori:adventure-api:4.14.0")
+	compileOnly("net.kyori:adventure-text-logger-slf4j:4.14.0")
+	compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
 
 	compileOnlyApi("com.mysql:mysql-connector-j:8.0.33")
 
@@ -37,7 +37,7 @@ dependencies {
 
 	api("com.h2database:h2:2.1.214")
 
-	api("redis.clients:jedis:4.4.1")
+	api("redis.clients:jedis:4.4.2")
 }
 
 kotlin.jvmToolchain(17)
