@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.miscellaneous.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -27,7 +28,6 @@ import net.starlegacy.util.component1
 import net.starlegacy.util.component2
 import net.starlegacy.util.component3
 import net.starlegacy.util.toBukkitBlockData
-import net.starlegacy.util.updateMeta
 import net.wesjd.anvilgui.AnvilGUI
 import net.wesjd.anvilgui.AnvilGUI.Completion
 import net.wesjd.anvilgui.AnvilGUI.ResponseAction
@@ -41,7 +41,6 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 

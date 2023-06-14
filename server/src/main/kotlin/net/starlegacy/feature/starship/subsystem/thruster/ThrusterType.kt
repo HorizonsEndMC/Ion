@@ -9,13 +9,13 @@ import org.bukkit.block.BlockFace
 
 enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
 	PLASMA(0.75, 2.5, 1) {
-		override fun LegacyMultiblockShape.buildStructure() {
+		override fun MultiblockShape.buildStructure() {
 			at(0, 0, 0).thrusterBlock()
 			at(0, 0, 1).type(Material.REDSTONE_BLOCK)
 		}
 	},
 	ION(0.05, 4.00, 1) {
-		override fun LegacyMultiblockShape.buildStructure() {
+		override fun MultiblockShape.buildStructure() {
 			at(0, 0, 0).thrusterBlock()
 			at(0, 0, 1).type(Material.SPONGE)
 		}
