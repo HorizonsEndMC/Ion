@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.listeners.GameplayTweaksListener
 import net.horizonsend.ion.server.miscellaneous.listeners.HeadListener
 import net.horizonsend.ion.server.miscellaneous.listeners.MiscListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.ResourcePackListener
+import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 
 val listeners = arrayOf(
 	BlasterListeners(),
@@ -47,6 +48,7 @@ val listeners = arrayOf(
 	VoidNetwork(),
 	CryoPods,
 	BiomeFixer9001(),
+	TractorBeamMultiblock,
 
 	// Achievement Listeners
 	AchievementListeners()
