@@ -7,22 +7,22 @@ import net.starlegacy.util.isGlassPane
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
-enum class ThrusterType(val accel: Double, val speed: Double, val weight: Int) {
-	PLASMA(0.75, 2.5, 1) {
+enum class ThrusterType(val accel: Double, val speed: Double) {
+	PLASMA(0.5, 0.1) {
 		override fun LegacyMultiblockShape.buildStructure() {
-			at(0, 0, 0).thrusterBlock()
+			at(0, 0, 0).type(Material.REDSTONE_LAMP)
 			at(0, 0, 1).type(Material.REDSTONE_BLOCK)
 		}
 	},
-	ION(0.05, 4.00, 1) {
+	ION(0.1, .5) {
 		override fun LegacyMultiblockShape.buildStructure() {
-			at(0, 0, 0).thrusterBlock()
+			at(0, 0, 0).type(Material.SEA_LANTERN)
 			at(0, 0, 1).type(Material.SPONGE)
 		}
 	},
-	AFTERBURNER(3.0, 17.5, 5) {
+	AFTERBURNER(1.0, 1.0) {
 		override fun LegacyMultiblockShape.buildStructure() {
-			at(0, 0, 0).thrusterBlock()
+			at(0, 0, 0).type(Material.MAGMA_BLOCK)
 			at(0, 0, 1).type(Material.GOLD_BLOCK)
 			at(0, 0, 2).type(Material.SPONGE)
 			at(0, 0, 3).type(Material.IRON_BLOCK)

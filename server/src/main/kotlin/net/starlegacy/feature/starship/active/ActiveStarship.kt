@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -38,6 +37,7 @@ import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.d
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.msg
+import net.starlegacy.util.nms
 import net.starlegacy.util.squared
 import net.starlegacy.util.title
 import org.bukkit.Bukkit
@@ -101,8 +101,6 @@ abstract class ActiveStarship(
 	val initialBlockCount: Int = blocks.size
 
 	val subsystems = LinkedList<StarshipSubsystem>()
-	var drillCount = 0
-
 	lateinit var reactor: ReactorSubsystem
 	val shields = LinkedList<ShieldSubsystem>()
 	val weapons = LinkedList<WeaponSubsystem>()
@@ -187,25 +185,14 @@ abstract class ActiveStarship(
 			return ThrustData(0.0, 0)
 		}
 
-		val baseSpeedFactor = 50.0
-		val speedExponent = 0.5
-		val massExponent = 0.2
-		val reductionBase = 0.85
-		val finalSpeedFactor = 1.0
-
 		val mass = this.mass
-		val totalAccel = 1.0 + faceThrusters.sumOf { it.type.accel }
-		val totalWeight = faceThrusters.sumOf { it.type.weight }.toDouble()
-		val reduction = reductionBase.pow(sqrt(totalWeight))
-		val totalSpeed = faceThrusters.sumOf { it.type.speed } * reduction
+		val totalAccel = faceThrusters.sumOf { it.type.accel }
+		val totalSpeed = faceThrusters.sumOf { it.type.speed }
 
-		val calculatedSpeed = totalSpeed.pow(speedExponent) / mass.pow(massExponent) * baseSpeedFactor
+		val amtScaler = ln((-((221*(mass.pow(-0.206))).roundToInt()-0.5))/(221*(mass.pow(-0.206))) + 1)
 
-		val maxSpeed = reactor.output * .4 / totalSpeed
-
-		val speed = (min(maxSpeed, calculatedSpeed) * finalSpeedFactor).roundToInt()
-
-		val acceleration = ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0
+		val speed = (221*(mass.pow(-0.206))*(1-2.72.pow(amtScaler*totalSpeed/(1.9*mass.pow(0.23))))).roundToInt()
+		val acceleration = 9.47*(mass.pow(-0.137))*(1-2.72.pow(amtScaler*totalAccel/(1.9*mass.pow(0.23))))
 		return ThrustData(acceleration, speed)
 	}
 
@@ -226,7 +213,7 @@ abstract class ActiveStarship(
 	}
 
 	fun isWithinHitbox(loc: Location, tolerance: Int = 2): Boolean {
-		return serverLevel == loc.world.minecraft && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
+		return serverLevel == loc.world.nms && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
 	}
 
 	fun isWithinHitbox(entity: Entity, tolerance: Int = 2): Boolean {
