@@ -10,7 +10,7 @@ object NavigationComputerMultiblockBasic : NavigationComputerMultiblock() {
 		line4 = null
 	)
 
-	override val baseRange: Int = 12000
+	override val baseRange: Int = 15000
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
