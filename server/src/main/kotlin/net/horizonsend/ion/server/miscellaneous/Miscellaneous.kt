@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.DoubleLocation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
+import net.kyori.adventure.text.Component
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
@@ -22,6 +23,10 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.*
+import net.starlegacy.util.Vec3i
+import org.bukkit.Chunk
+import org.bukkit.Location
+import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.entity.Entity
 
@@ -70,6 +75,13 @@ fun Player.worldBorderEffect(duration: Long) {
 }
 
 fun Location.triple() = DoubleLocation(x, y, z)
+fun Sign.lines(lines: Array<Component>) {
+	for (line in 0..3) {
+		this.line(line, lines[line])
+	}
+}
+
+fun <K>MutableMap<K, Int>.putOrIterate(new: K): Unit = if (this.containsKey(new)) this[new] = this[new]!! + 1 else this[new] = 1
 
 fun <K>Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V>Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }

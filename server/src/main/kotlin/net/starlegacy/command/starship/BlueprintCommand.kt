@@ -14,6 +14,7 @@ import java.util.*
 import kotlin.collections.set
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.multiblock.shipfactory.BuildStarshipTask
 import net.horizonsend.ion.server.features.multiblock.shipfactory.ShipFactoryMaterialCosts
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
@@ -41,6 +42,7 @@ import net.starlegacy.util.nms
 import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.toBukkitBlockData
 import org.bukkit.Material
+import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
@@ -103,6 +105,21 @@ object BlueprintCommand : SLCommand() {
 		}
 	}
 
+	@Subcommand("print")
+	@CommandCompletion("@blueprints")
+	fun print(sender: Player, name: String) {
+		val blueprint = getBlueprint(sender, name)
+
+		BuildStarshipTask(
+			sender.world.getBlockAt(sender.location).state as Sign,
+			sender,
+			Vec3i(0, 0, 0),
+			sender.inventory,
+			blueprint,
+			false
+		).start(2L)
+	}
+
 	private fun getBlueprint(sender: Player, name: String): Blueprint {
 		return Blueprint.find(and(Blueprint::owner eq sender.slPlayerId, Blueprint::name eq name)).first()
 			?: fail { "You don't have a blueprint named $name." }
@@ -123,7 +140,7 @@ object BlueprintCommand : SLCommand() {
 
 	private fun blueprintInfo(blueprint: Blueprint): List<String> {
 		val list = LinkedList<String>()
-		val cost = calculateBlueprintCost(blueprint)
+		val cost = Blueprint.calculateBlueprintCost(blueprint)
 		list.add("<gray>Size<dark_gray>: <gold>${blueprint.size}")
 		list.add("<gray>Cost<dark_gray>: <gold>$$cost")
 		list.add("<gray>Class<dark_gray>: <light_purple>${blueprint.type}")
@@ -132,16 +149,6 @@ object BlueprintCommand : SLCommand() {
 			list.add("<gray>Trusted Nations<dark_gray>: <aqua>${blueprint.trustedNations.joinToString { NationCache[it].name }}")
 		}
 		return list
-	}
-
-	private fun calculateBlueprintCost(blueprint: Blueprint): Int {
-		val clipboard = blueprint.loadClipboard()
-
-		return clipboard.region
-			.map { clipboard.getBlock(it).toBukkitBlockData() }
-			.filter { !it.material.isAir }
-			.sumOf { ShipFactoryMaterialCosts.getPrice(it) }
-			.toInt()
 	}
 
 	@Suppress("Unused")

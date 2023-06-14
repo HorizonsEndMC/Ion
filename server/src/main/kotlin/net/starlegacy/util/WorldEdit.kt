@@ -1,5 +1,8 @@
 package net.starlegacy.util
 
+import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
+import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
+import com.google.common.collect.Lists
 import com.sk89q.jnbt.CompoundTag
 import com.sk89q.jnbt.NBTUtils
 import com.sk89q.jnbt.Tag
@@ -13,7 +16,10 @@ import com.sk89q.worldedit.function.operation.Operation
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
+import io.papermc.paper.adventure.PaperAdventure
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.kyori.adventure.text.Component
+import net.minecraft.core.BlockPos
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.minecraft.nbt.ByteArrayTag
 import net.minecraft.nbt.ByteTag
@@ -27,6 +33,7 @@ import net.minecraft.nbt.LongArrayTag
 import net.minecraft.nbt.LongTag
 import net.minecraft.nbt.ShortTag
 import net.minecraft.nbt.StringTag
+import net.minecraft.world.level.block.entity.SignBlockEntity
 import net.starlegacy.util.blockplacement.BlockPlacement
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -34,8 +41,6 @@ import org.bukkit.block.data.BlockData
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
-import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 
 fun readSchematic(file: File): Clipboard? {
 	val format = ClipboardFormats.findByFile(file) ?: return null
@@ -74,7 +79,7 @@ fun placeSchematicEfficiently(
 	world: World,
 	target: Vec3i,
 	ignoreAir: Boolean,
-	callback: () -> Unit = {}
+	callback: () -> Unit = {},
 ) {
 	Tasks.async {
 		val queue = Long2ObjectOpenHashMap<MinecraftBlockState>()
@@ -108,6 +113,14 @@ fun WorldEditBlockState.toBukkitBlockData(): BlockData {
 	return blockDataCache.getOrPut(string) {
 		Bukkit.createBlockData(string)
 	}
+}
+
+fun readSignText(pos: BlockPos, block: MinecraftBlockState, tag: CompoundTag): Array<Component>? {
+	val nmsCompound = tag.nms()
+
+	val nmsSignBlockEntity = (SignBlockEntity.loadStatic(pos, block, nmsCompound) as? SignBlockEntity) ?: return null
+
+	return PaperAdventure.asAdventure(Lists.newArrayList(*nmsSignBlockEntity.messages)).toTypedArray()
 }
 
 fun CompoundTag.nms(): net.minecraft.nbt.CompoundTag {
