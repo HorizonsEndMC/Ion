@@ -1,6 +1,5 @@
 package net.starlegacy.listener.misc
 
-import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -17,19 +16,12 @@ import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.listener.SLEventListener
-import net.starlegacy.util.LegacyBlockUtils
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.axis
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isBed
-import net.starlegacy.util.isStainedGlass
-import net.starlegacy.util.isWallSign
-import net.starlegacy.util.leftFace
-import net.starlegacy.util.rightFace
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.block.BlockFace
-import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -37,7 +29,6 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object InteractListener : SLEventListener() {
