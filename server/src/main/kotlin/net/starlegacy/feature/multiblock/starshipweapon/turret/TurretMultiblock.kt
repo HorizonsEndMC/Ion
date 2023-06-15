@@ -247,8 +247,8 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
 		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 
-	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Controller?) {
-		val color: Color = getColor(starship, shooter)
+	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Controller?, isAuto: Boolean = true) {
+		val color: Color = getColor(starship, shooter, isAuto)
 		val speed = projectileSpeed.toDouble()
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
@@ -274,8 +274,8 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 		}
 	}
 
-	private fun getColor(starship: ActiveStarship, shooter: Controller?): Color {
-		if (starship.rainbowToggle && this !is AutoWeaponSubsystem)
+	private fun getColor(starship: ActiveStarship, shooter: Controller?, isAuto: Boolean): Color {
+		if (starship.rainbowToggle && !isAuto)
 			return gayColors.random()
 
 		if (shooter != null && shooter is PlayerController) {
