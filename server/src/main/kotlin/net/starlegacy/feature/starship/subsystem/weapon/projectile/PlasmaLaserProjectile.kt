@@ -23,12 +23,11 @@ class PlasmaLaserProjectile(
 	dir: Vector,
 	shooter: Player?
 ) : LaserProjectile(starship, loc, dir, shooter) {
-	var counter = 0
 	override val range: Double = IonServer.balancing.starshipWeapons.plasmaCannon.range
 	override val speed: Double = IonServer.balancing.starshipWeapons.plasmaCannon.speed
 	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.plasmaCannon.shieldDamageMultiplier
 	override val color: Color
-		get() = if (starship!!.rainbowtoggle) flagcolors.random() else starship.weaponColor
+		get() = if (starship!!.rainbowToggle) flagcolors.random() else starship.weaponColor
 	override val thickness: Double = IonServer.balancing.starshipWeapons.plasmaCannon.thickness
 	override val particleThickness: Double = IonServer.balancing.starshipWeapons.plasmaCannon.particleThickness
 	override val explosionPower: Float = IonServer.balancing.starshipWeapons.plasmaCannon.explosionPower

@@ -131,7 +131,7 @@ abstract class ActiveStarship(
 	var isInterdicting = false
 		private set
 
-	var rainbowtoggle = false
+	var rainbowToggle = false
 
 	var randomTarget = false
 

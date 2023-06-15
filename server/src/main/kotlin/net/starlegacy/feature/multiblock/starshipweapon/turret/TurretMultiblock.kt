@@ -35,7 +35,6 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.jetbrains.exposed.sql.transactions.transaction
 
 abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem>() {
 	init {
@@ -275,7 +274,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	private fun getColor(starship: ActiveStarship?, shooter: Player?): Color {
 		var counter = 0
 		if (starship != null) {
-			if (starship.rainbowtoggle) {
+			if (starship.rainbowToggle) {
 				flagcolors.random()
 			} else {
 				return starship.weaponColor

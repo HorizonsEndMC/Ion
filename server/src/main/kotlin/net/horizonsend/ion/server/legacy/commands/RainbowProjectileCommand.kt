@@ -12,11 +12,11 @@ object RainbowProjectileCommand : SLCommand() {
 	@CommandPermission("ioncore.rainbow")
 	fun onExecute(sender: CommandSender, p: Player) = asyncCommand(sender) {
 		val ship = getStarshipPiloting(p)
-		if (!ship.rainbowtoggle) {
-			ship.rainbowtoggle = true
+		if (!ship.rainbowToggle) {
+			ship.rainbowToggle = true
 			sender.successActionMessage("Rainbow Weapon Colors activated!")
 		} else {
-			ship.rainbowtoggle = !ship.rainbowtoggle
+			ship.rainbowToggle = !ship.rainbowToggle
 			sender.successActionMessage("Rainbow Weapon Colours De-Activating")
 		}
 	}
