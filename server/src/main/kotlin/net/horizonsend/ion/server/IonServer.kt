@@ -7,11 +7,7 @@ import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
-import net.horizonsend.ion.common.database.Cryopod
-import net.horizonsend.ion.common.database.Nation
-import net.horizonsend.ion.common.database.PlayerAchievement
-import net.horizonsend.ion.common.database.PlayerData
-import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
@@ -31,11 +27,6 @@ import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.slPlayerId
-import net.starlegacy.database.trx
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -52,12 +43,6 @@ import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.litote.kmongo.addToSet
-import org.litote.kmongo.and
-import org.litote.kmongo.eq
-import org.litote.kmongo.setValue
 
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")

@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
-import net.horizonsend.ion.common.database.DBLocation
-import net.horizonsend.ion.common.database.DoubleLocation
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
 import net.milkbowl.vault.economy.Economy
@@ -52,10 +50,6 @@ fun mainThreadCheck() {
 
 fun <K>Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V>Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
-fun DBLocation.bukkit() = Location(Bukkit.getWorld(world)!!, coords.first, coords.second, coords.third)
-fun DBLocation.vec3i() = Vec3i(coords.first.toInt(), coords.second.toInt(), coords.third.toInt())
-
-fun Location.db() = DBLocation(world.name, DoubleLocation(x, y, z))
 
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
