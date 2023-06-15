@@ -8,8 +8,8 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.CargoCrates
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.misc.Shuttle
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.misc.Shuttle
 import net.starlegacy.feature.nations.gui.openConfirmMenu
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.sharedDataFolder

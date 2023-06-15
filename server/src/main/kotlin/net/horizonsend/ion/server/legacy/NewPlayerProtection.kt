@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import kotlin.math.pow
-import net.starlegacy.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.luckperms.api.LuckPermsProvider
@@ -16,9 +16,9 @@ import net.starlegacy.SETTINGS
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.slPlayerId
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player

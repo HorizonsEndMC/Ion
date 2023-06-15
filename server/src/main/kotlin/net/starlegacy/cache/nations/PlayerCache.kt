@@ -1,25 +1,11 @@
 package net.starlegacy.cache.nations
 
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
+import net.horizonsend.ion.server.database.*
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.*
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.cache.ManualCache
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.containsUpdated
-import net.starlegacy.database.get
-import net.starlegacy.database.nullable
-import net.starlegacy.database.oid
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.schema.nations.NationRole
-import net.starlegacy.database.schema.nations.Role
-import net.starlegacy.database.schema.nations.RoleCompanion
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.schema.nations.SettlementRole
-import net.starlegacy.database.slPlayerId
-import net.starlegacy.database.uuid
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.listen
 import net.starlegacy.util.Tasks
@@ -30,15 +16,17 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.litote.kmongo.`in`
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 object PlayerCache : ManualCache() {
 	/** Values should only be set here*/
 	data class PlayerData(
-		val id: SLPlayerId,
-		var settlementOid: Oid<Settlement>?,
-		var nationOid: Oid<Nation>?,
-		var settlementTag: String?,
-		var nationTag: String?
+        val id: SLPlayerId,
+        var settlementOid: Oid<Settlement>?,
+        var nationOid: Oid<Nation>?,
+        var settlementTag: String?,
+        var nationTag: String?
 	)
 
 	private val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()

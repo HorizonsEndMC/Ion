@@ -4,9 +4,9 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.starships.PlayerStarshipData
-import net.starlegacy.database.slPlayerId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ

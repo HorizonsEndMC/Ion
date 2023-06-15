@@ -2,12 +2,12 @@ package net.starlegacy.feature.progression
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.starlegacy.SLComponent
-import net.starlegacy.database.get
-import net.starlegacy.database.int
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.slPlayerId
-import net.starlegacy.database.uuid
+import net.horizonsend.ion.server.database.get
+import net.horizonsend.ion.server.database.int
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.database.uuid
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler

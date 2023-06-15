@@ -1,13 +1,13 @@
-package net.starlegacy.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations
 
 import com.mongodb.client.model.Filters
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.objId
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.trx
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex

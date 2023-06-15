@@ -1,13 +1,13 @@
 package net.starlegacy.cache.nations
 
 import net.starlegacy.cache.ManualCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.get
-import net.starlegacy.database.int
-import net.starlegacy.database.oid
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.string
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.get
+import net.horizonsend.ion.server.database.int
+import net.horizonsend.ion.server.database.oid
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.util.Tasks
 import java.util.concurrent.ConcurrentHashMap
@@ -16,10 +16,10 @@ object NationCache : ManualCache() {
 	private fun synced(block: () -> Unit): Unit = Tasks.sync(block)
 
 	data class NationData(
-		val id: Oid<Nation>,
-		var name: String,
-		var capital: Oid<Settlement>,
-		var color: Int
+        val id: Oid<Nation>,
+        var name: String,
+        var capital: Oid<Settlement>,
+        var color: Int
 	) {
 		val leader get() = SettlementCache[capital].leader
 	}

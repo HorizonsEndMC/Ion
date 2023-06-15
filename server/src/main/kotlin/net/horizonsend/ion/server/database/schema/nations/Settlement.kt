@@ -1,18 +1,18 @@
-package net.starlegacy.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations
 
 import com.mongodb.client.ClientSession
 import com.mongodb.client.MongoIterable
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.ensureUniqueIndexCaseInsensitive
-import net.starlegacy.database.objId
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.trx
-import net.starlegacy.database.updateAll
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.trx
+import net.horizonsend.ion.server.database.updateAll
 import org.bson.conversions.Bson
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
@@ -114,13 +114,14 @@ data class Settlement(
 			require(Territory.matches(sess, territory, Territory.unclaimedQuery))
 			require(SLPlayer.matches(sess, leader, SLPlayer::settlement eq null))
 
-			val id: Oid<Settlement> = objId()
+			val id: Oid<Settlement> =
+				objId()
 			val settlement = Settlement(id, territory, name, leader, needsRefund = false)
 
-			SLPlayer.col.updateOne(sess, idFilterQuery(leader), org.litote.kmongo.setValue(SLPlayer::settlement, id))
+			SLPlayer.col.updateOne(sess, idFilterQuery(leader), setValue(SLPlayer::settlement, id))
 			Territory.col.updateOne(
 				sess, idFilterQuery(territory),
-				org.litote.kmongo.setValue(Territory::settlement, id)
+				setValue(Territory::settlement, id)
 			)
 			col.insertOne(sess, settlement)
 
@@ -172,12 +173,12 @@ data class Settlement(
 			NationRole.col.updateAll(sess, pullAll(NationRole::members, members))
 
 			// unset nation for members
-			updateMembers(sess, settlementId, org.litote.kmongo.setValue(SLPlayer::nation, null))
+			updateMembers(sess, settlementId, setValue(SLPlayer::nation, null))
 
 			// unset actual settlement nation
 			return@trx col.updateOne(
 				sess, idFilterQuery(settlementId),
-				org.litote.kmongo.setValue(Settlement::nation, null)
+				setValue(Settlement::nation, null)
 			).modifiedCount > 0
 		}
 
@@ -188,10 +189,10 @@ data class Settlement(
 			require(matches(sess, settlementId, Settlement::nation eq null))
 
 			// update the nation of all members
-			updateMembers(sess, settlementId, org.litote.kmongo.setValue(SLPlayer::nation, nationId))
+			updateMembers(sess, settlementId, setValue(SLPlayer::nation, nationId))
 
 			// set the nation to the new nation
-			col.updateOne(sess, idFilterQuery(settlementId), org.litote.kmongo.setValue(Settlement::nation, nationId))
+			col.updateOne(sess, idFilterQuery(settlementId), setValue(Settlement::nation, nationId))
 		}
 
 		fun deposit(settlementId: Oid<Settlement>, amount: Int) {
@@ -207,25 +208,25 @@ data class Settlement(
 
 			val protected = cityState == CityState.ACTIVE
 
-			col.updateOneById(sess, settlementId, org.litote.kmongo.setValue(Settlement::cityState, cityState))
+			col.updateOneById(sess, settlementId, setValue(Settlement::cityState, cityState))
 			Territory.col.updateOne(
 				sess, Territory::settlement eq settlementId,
-				org.litote.kmongo.setValue(Territory::isProtected, protected)
+				setValue(Territory::isProtected, protected)
 			)
 		}
 
 		fun setName(settlementId: Oid<Settlement>, name: String): Unit = trx { sess ->
 			require(none(sess, and(Settlement::_id ne settlementId, nameQuery(name))))
-			updateById(sess, settlementId, org.litote.kmongo.setValue(Settlement::name, name))
+			updateById(sess, settlementId, setValue(Settlement::name, name))
 		}
 
 		fun setLeader(settlementId: Oid<Settlement>, slPlayerId: SLPlayerId): Unit = trx { sess ->
 			require(SLPlayer.matches(sess, slPlayerId, SLPlayer::settlement eq settlementId))
-			updateById(sess, settlementId, org.litote.kmongo.setValue(Settlement::leader, slPlayerId))
+			updateById(sess, settlementId, setValue(Settlement::leader, slPlayerId))
 		}
 
 		fun setMinBuildAccess(settlementId: Oid<Settlement>, level: ForeignRelation) {
-			updateById(settlementId, org.litote.kmongo.setValue(Settlement::minimumBuildAccess, level))
+			updateById(settlementId, setValue(Settlement::minimumBuildAccess, level))
 		}
 
 		fun setNeedsRefund(settlementId: Oid<Settlement>) {

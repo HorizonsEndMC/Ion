@@ -3,10 +3,10 @@ package net.starlegacy.feature.space
 import com.mongodb.client.result.UpdateResult
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.space.Planet
-import net.starlegacy.database.schema.space.Planet.Companion.setX
-import net.starlegacy.database.schema.space.Planet.Companion.setZ
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.space.Planet
+import net.horizonsend.ion.server.database.schema.space.Planet.Companion.setX
+import net.horizonsend.ion.server.database.schema.space.Planet.Companion.setZ
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.Vec3i
@@ -21,25 +21,25 @@ import org.bukkit.util.noise.SimplexNoiseGenerator
 import java.util.*
 
 class CachedPlanet(
-	val databaseId: Oid<Planet>,
-	override val name: String,
-	sun: CachedStar,
-	val planetWorldName: String,
-	val rogue: Boolean,
-	val x: Int,
-	val z: Int,
-	val size: Double,
-	orbitDistance: Int,
-	private val orbitSpeed: Double,
-	orbitProgress: Double,
-	val seed: Long,
-	val crustMaterials: List<BlockData>,
-	val crustNoise: Double,
-	val cloudDensity: Double,
-	val cloudMaterials: List<BlockData>,
-	val cloudDensityNoise: Double,
-	val cloudThreshold: Double,
-	val cloudNoise: Double
+    val databaseId: Oid<Planet>,
+    override val name: String,
+    sun: CachedStar,
+    val planetWorldName: String,
+    val rogue: Boolean,
+    val x: Int,
+    val z: Int,
+    val size: Double,
+    orbitDistance: Int,
+    private val orbitSpeed: Double,
+    orbitProgress: Double,
+    val seed: Long,
+    val crustMaterials: List<BlockData>,
+    val crustNoise: Double,
+    val cloudDensity: Double,
+    val cloudMaterials: List<BlockData>,
+    val cloudDensityNoise: Double,
+    val cloudThreshold: Double,
+    val cloudNoise: Double
 ) : CelestialBody(sun.spaceWorldName, calculateOrbitLocation(sun, orbitDistance, orbitProgress)), NamedCelestialBody {
 	companion object {
 		private const val CRUST_RADIUS_MAX = 115

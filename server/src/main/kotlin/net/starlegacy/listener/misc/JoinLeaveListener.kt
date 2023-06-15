@@ -2,9 +2,9 @@ package net.starlegacy.listener.misc
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.slPlayerId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks

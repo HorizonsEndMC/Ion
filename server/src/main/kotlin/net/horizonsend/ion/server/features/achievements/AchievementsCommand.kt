@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
-import net.starlegacy.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player

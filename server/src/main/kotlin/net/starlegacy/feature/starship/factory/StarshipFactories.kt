@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.SLComponent
-import net.starlegacy.database.schema.starships.Blueprint
-import net.starlegacy.database.slPlayerId
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.ShipFactoryMultiblock

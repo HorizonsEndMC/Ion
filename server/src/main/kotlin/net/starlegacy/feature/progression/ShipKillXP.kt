@@ -21,8 +21,8 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.nations.NationRelation
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.miscellaneous.CombatNPCKillEvent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent

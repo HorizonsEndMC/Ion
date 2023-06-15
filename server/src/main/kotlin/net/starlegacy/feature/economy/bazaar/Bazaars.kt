@@ -8,11 +8,11 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.SLComponent
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.economy.BazaarItem
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.economy.BazaarItem
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.feature.economy.city.TradeCityType

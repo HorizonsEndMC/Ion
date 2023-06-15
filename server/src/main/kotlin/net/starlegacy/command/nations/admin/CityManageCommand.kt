@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.starlegacy.util.msg
 import org.bukkit.command.CommandSender
 

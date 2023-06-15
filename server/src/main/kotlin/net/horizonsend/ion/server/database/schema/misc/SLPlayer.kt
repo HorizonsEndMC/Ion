@@ -1,4 +1,4 @@
-package net.starlegacy.database.schema.misc
+package net.horizonsend.ion.server.database.schema.misc
 
 import com.mongodb.client.ClientSession
 import com.mongodb.client.model.Filters
@@ -9,18 +9,18 @@ import net.horizonsend.ion.server.database.schema.Cryopod
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.DbObjectCompanion
-import net.starlegacy.database.Oid
-import net.starlegacy.database.ProjectedResults
-import net.starlegacy.database.projected
-import net.starlegacy.database.schema.nations.NationRole
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.schema.nations.SettlementRole
-import net.starlegacy.database.slPlayerId
-import net.starlegacy.database.trx
-import net.starlegacy.database.updateAll
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.DbObjectCompanion
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.ProjectedResults
+import net.horizonsend.ion.server.database.projected
+import net.horizonsend.ion.server.database.schema.nations.NationRole
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.SettlementRole
+import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.database.trx
+import net.horizonsend.ion.server.database.updateAll
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bukkit.entity.Player

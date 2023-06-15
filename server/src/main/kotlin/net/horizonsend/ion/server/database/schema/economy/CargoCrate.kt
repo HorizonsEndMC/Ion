@@ -1,10 +1,10 @@
-package net.starlegacy.database.schema.economy
+package net.horizonsend.ion.server.database.schema.economy
 
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.objId
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.trx
 import net.starlegacy.util.SLTextStyle
 import org.bukkit.Material
 import org.litote.kmongo.deleteOneById

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.achievements
 
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
-import net.starlegacy.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
 import org.bukkit.event.EventHandler

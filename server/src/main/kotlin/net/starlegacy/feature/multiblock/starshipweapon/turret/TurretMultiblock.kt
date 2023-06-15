@@ -8,11 +8,11 @@ import kotlin.collections.set
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
-import net.starlegacy.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.minecraft.world.level.block.Rotation
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.database.Oid
+import net.horizonsend.ion.server.database.Oid
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship

@@ -4,7 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.schema.nations.NPCTerritoryOwner
+import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
 import net.starlegacy.util.isAlphanumeric
 import net.starlegacy.util.msg
 import org.bukkit.Color

@@ -1,12 +1,12 @@
-package net.starlegacy.database.schema.economy
+package net.horizonsend.ion.server.database.schema.economy
 
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.objId
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Territory
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.trx
 import org.bson.conversions.Bson
 import org.litote.kmongo.and
 import org.litote.kmongo.combine

@@ -8,8 +8,8 @@ import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.slPlayerId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.listen
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks

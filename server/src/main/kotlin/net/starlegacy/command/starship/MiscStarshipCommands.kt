@@ -19,8 +19,8 @@ import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.schema.nations.NationRelation
-import net.starlegacy.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.PilotedStarships

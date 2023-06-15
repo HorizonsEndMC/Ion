@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import java.util.Random
-import net.starlegacy.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
@@ -10,8 +10,8 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.starlegacy.util.Notify
 import net.starlegacy.util.toBlockPos
 import org.bukkit.block.Block

@@ -4,9 +4,9 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.starlegacy.SLComponent
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.space.Planet
-import net.starlegacy.database.schema.space.Star
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.space.Planet
+import net.horizonsend.ion.server.database.schema.space.Star
 import net.starlegacy.listen
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.optional

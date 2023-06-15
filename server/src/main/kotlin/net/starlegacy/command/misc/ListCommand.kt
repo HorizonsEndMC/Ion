@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.util.multimapOf

@@ -1,19 +1,19 @@
-package net.starlegacy.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations
 
 import com.mongodb.client.MongoIterable
 import com.mongodb.client.model.Filters
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.objId
-import net.starlegacy.database.projected
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.projected
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.trx
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.isAlphanumeric
 import org.bson.Document
@@ -38,7 +38,8 @@ import org.litote.kmongo.withDocumentClass
  * @property permissions The permissions the role gives
  * @property members Players who have this role
  */
-sealed class Role<Parent : DbObject, Permission : Enum<Permission>> : DbObject {
+sealed class Role<Parent : DbObject, Permission : Enum<Permission>> :
+    DbObject {
 	abstract override val _id: Oid<*>
 	abstract val parent: Oid<Parent>
 	abstract var name: String
@@ -51,14 +52,14 @@ sealed class Role<Parent : DbObject, Permission : Enum<Permission>> : DbObject {
 }
 
 abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>>(
-	clazz: KClass<T>,
-	val parentProperty: KProperty<Oid<Parent>>,
-	val nameProperty: KProperty<String>,
-	val colorProperty: KProperty<SLTextStyle>,
-	val permissionsProperty: KProperty<Set<Permission>>,
-	val membersProperty: KProperty<MutableSet<SLPlayerId>>,
-	val weightProperty: KProperty<Int>,
-	private val memberParentProperty: KProperty1<SLPlayer, Oid<Parent>?>
+    clazz: KClass<T>,
+    val parentProperty: KProperty<Oid<Parent>>,
+    val nameProperty: KProperty<String>,
+    val colorProperty: KProperty<SLTextStyle>,
+    val permissionsProperty: KProperty<Set<Permission>>,
+    val membersProperty: KProperty<MutableSet<SLPlayerId>>,
+    val weightProperty: KProperty<Int>,
+    private val memberParentProperty: KProperty1<SLPlayer, Oid<Parent>?>
 ) : OidDbObjectCompanion<T>(clazz, setup = {
 	ensureIndex(parentProperty)
 	ensureIndex(nameProperty)
@@ -131,15 +132,15 @@ abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T 
  * - NationPlayer (for roles they have)
  */
 data class SettlementRole(
-	override val _id: Oid<SettlementRole>,
-	override val parent: Oid<Settlement>,
-	override var name: String,
-	override var color: SLTextStyle,
-	override var weight: Int,
-	override var permissions: MutableSet<Permission> = mutableSetOf(),
-	override var members: MutableSet<SLPlayerId> = mutableSetOf()
+    override val _id: Oid<SettlementRole>,
+    override val parent: Oid<Settlement>,
+    override var name: String,
+    override var color: SLTextStyle,
+    override var weight: Int,
+    override var permissions: MutableSet<Permission> = mutableSetOf(),
+    override var members: MutableSet<SLPlayerId> = mutableSetOf()
 ) : Role<Settlement, SettlementRole.Permission>() {
-	companion object : RoleCompanion<Settlement, SettlementRole.Permission, SettlementRole>(
+	companion object : RoleCompanion<Settlement, Permission, SettlementRole>(
 		SettlementRole::class,
 		SettlementRole::parent,
 		SettlementRole::name,
@@ -171,15 +172,15 @@ data class SettlementRole(
  * - NationPlayer (for roles they have)
  */
 data class NationRole(
-	override val _id: Oid<NationRole>,
-	override val parent: Oid<Nation>,
-	override var name: String,
-	override var color: SLTextStyle,
-	override var weight: Int,
-	override var permissions: MutableSet<Permission> = mutableSetOf(),
-	override var members: MutableSet<SLPlayerId> = mutableSetOf()
+    override val _id: Oid<NationRole>,
+    override val parent: Oid<Nation>,
+    override var name: String,
+    override var color: SLTextStyle,
+    override var weight: Int,
+    override var permissions: MutableSet<Permission> = mutableSetOf(),
+    override var members: MutableSet<SLPlayerId> = mutableSetOf()
 ) : Role<Nation, NationRole.Permission>() {
-	companion object : RoleCompanion<Nation, NationRole.Permission, NationRole>(
+	companion object : RoleCompanion<Nation, Permission, NationRole>(
 		NationRole::class,
 		NationRole::parent,
 		NationRole::name,

@@ -17,7 +17,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE
 import net.minecraft.resources.ResourceLocation
 import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
 import org.bukkit.Color

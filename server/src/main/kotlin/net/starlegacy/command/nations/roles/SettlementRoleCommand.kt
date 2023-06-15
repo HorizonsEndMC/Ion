@@ -5,11 +5,11 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.schema.nations.SettlementRole
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.starlegacy.util.SLTextStyle
 import org.bukkit.entity.Player
 

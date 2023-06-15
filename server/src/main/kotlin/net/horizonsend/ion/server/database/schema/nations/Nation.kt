@@ -1,17 +1,17 @@
-package net.starlegacy.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations
 
 import com.mongodb.client.MongoIterable
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.ensureUniqueIndexCaseInsensitive
-import net.starlegacy.database.objId
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.starships.Blueprint
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.database.trx
 import org.bukkit.Color
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
@@ -68,7 +68,8 @@ data class Nation(
 			// require the settlement isn't already in a nation. will also fail if there's no such settlement
 			require(Settlement.matches(sess, capitalId, Settlement::nation eq null))
 
-			val id: Oid<Nation> = objId()
+			val id: Oid<Nation> =
+				objId()
 
 			// update the settlements members
 			SLPlayer.col.updateMany(
