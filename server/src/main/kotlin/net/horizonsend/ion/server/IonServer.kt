@@ -147,58 +147,6 @@ object IonServer : JavaPlugin() {
 
 		legacyEnable(commandManager)
 
-		// Temporary Migration Code
-		transaction {
-			trx { session ->
-				if (net.starlegacy.database.schema.nations.Nation.all().isNotEmpty()) return@trx
-				if (net.horizonsend.ion.server.database.schema.Cryopod.all().isNotEmpty()) return@trx
-
-				val sqlNations = Nation
-				val mongoNation = net.starlegacy.database.schema.nations.Nation
-
-				for (sqlNation in sqlNations.all()) {
-					mongoNation.col.insertOne(
-						net.starlegacy.database.schema.nations.Nation(
-							sqlNation.objectId as Oid<net.starlegacy.database.schema.nations.Nation>,
-							sqlNation.name,
-							sqlNation.capital as Oid<Settlement>,
-							sqlNation.color
-						)
-					)
-				}
-
-				for (cryopod in Cryopod.all()) {
-					val owner = SLPlayer[cryopod.owner.id.value] ?: continue
-
-					val newpod = net.horizonsend.ion.server.database.schema.Cryopod.create(
-						SLPlayer.findById(session, cryopod.owner.id.value.slPlayerId)!!,
-						cryopod.location.vec3i(),
-						cryopod.location.world
-					)
-
-					SLPlayer.updateById(session, owner._id, addToSet(SLPlayer::cryopods, newpod))
-				}
-
-				for (playerAchievement in PlayerAchievement.all()) {
-					val owner = SLPlayer[playerAchievement.player.id.value] ?: continue
-
-					SLPlayer.updateById(session, owner._id, addToSet(SLPlayer::achievements, playerAchievement.achievement))
-				}
-
-				for (sqlPlayer in PlayerData.all()) {
-					val mongoPlayer = SLPlayer[sqlPlayer.id.value] ?: continue
-					val selectedCryo = net.horizonsend.ion.server.database.schema.Cryopod.findOne(
-						and(
-							net.horizonsend.ion.server.database.schema.Cryopod::owner eq mongoPlayer._id,
-							net.horizonsend.ion.server.database.schema.Cryopod::active eq true
-						)
-					)
-
-					SLPlayer.updateById(session, mongoPlayer._id, setValue(SLPlayer::selectedCryopod, selectedCryo?._id))
-				}
-			}
-		}
-
 		Bukkit.getScheduler().runTaskLater(
 			this,
 			Runnable
