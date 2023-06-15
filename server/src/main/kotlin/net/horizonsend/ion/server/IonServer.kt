@@ -30,6 +30,7 @@ import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
+import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.space.SpaceMap
 import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
@@ -143,6 +144,7 @@ object IonServer : JavaPlugin() {
 				Collectors.onEnable()
 				CityNPCs.onEnable()
 				ShipData.enable()
+				AreaShields.loadData()
 
 				pluginManager.registerEvents(CityNPCs, this)
 
