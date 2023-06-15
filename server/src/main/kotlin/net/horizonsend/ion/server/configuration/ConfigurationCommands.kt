@@ -23,6 +23,7 @@ import kotlin.reflect.full.memberProperties
 class ConfigurationCommands : BaseCommand(), Listener {
 	private val turretTypes = BalancingConfiguration.StarshipWeapons::class.memberProperties
 	private val changeableFields = BalancingConfiguration.StarshipWeapons.StarshipWeapon::class.memberProperties
+		.filterIsInstance<KMutableProperty<*>>()
 
 	@EventHandler
 	fun enable(e: IonEnableEvent) {
@@ -43,7 +44,7 @@ class ConfigurationCommands : BaseCommand(), Listener {
 			return
 		}
 
-		val field = changeableFields.find { it.name == fieldName } as KMutableProperty<*>? ?: run {
+		val field = changeableFields.find { it.name == fieldName } ?: run {
 			sender.userError("Field not found")
 			return
 		}
@@ -101,7 +102,8 @@ class ConfigurationCommands : BaseCommand(), Listener {
 			return
 		}
 
-		val obj = field.get(type.get(IonServer.balancing.starshipWeapons) as BalancingConfiguration.StarshipWeapons.StarshipWeapon)
+		val obj =
+			field.getter.call(type.get(IonServer.balancing.starshipWeapons) as BalancingConfiguration.StarshipWeapons.StarshipWeapon)
 		sender.success("Value $fieldName of $typeName: $obj")
 	}
 
