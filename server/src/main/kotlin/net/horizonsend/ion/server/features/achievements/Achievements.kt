@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.common.database.enums.Achievement
 import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

@@ -4,7 +4,7 @@ import com.mongodb.client.ClientSession
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.result.UpdateResult
-import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.database.schema.Cryopod
 import java.time.Instant
 import java.util.Date

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.database.enums
+package net.horizonsend.ion.server.features.achievements
 
 enum class Achievement(
 	val title: String,

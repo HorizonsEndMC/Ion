@@ -1,6 +1,6 @@
 package net.starlegacy.feature.progression
 
-import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

@@ -2,7 +2,7 @@ package net.starlegacy.feature.multiblock
 
 import co.aikar.timings.Timing
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.legacy.multiblocks.DisposalMultiblock
