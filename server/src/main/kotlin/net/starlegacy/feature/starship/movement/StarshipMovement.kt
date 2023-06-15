@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.active.ActivePlayerStarship

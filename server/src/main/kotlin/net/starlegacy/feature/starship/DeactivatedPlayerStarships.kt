@@ -4,10 +4,10 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
-import net.starlegacy.database.objId
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.starships.PlayerStarshipData
-import net.starlegacy.database.slPlayerId
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarshipFactory
 import net.starlegacy.feature.starship.active.ActiveStarships

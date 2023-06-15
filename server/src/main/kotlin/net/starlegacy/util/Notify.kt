@@ -9,9 +9,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.nations.Nation
-import net.starlegacy.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
 import org.litote.kmongo.id.WrappedObjectId

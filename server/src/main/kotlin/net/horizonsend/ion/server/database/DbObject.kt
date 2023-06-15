@@ -1,4 +1,4 @@
-package net.starlegacy.database
+package net.horizonsend.ion.server.database
 
 import com.mongodb.MongoException
 import com.mongodb.client.ChangeStreamIterable
@@ -16,7 +16,7 @@ import java.io.Closeable
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import net.starlegacy.INITIALIZATION_COMPLETE
-import net.starlegacy.database.MongoManager.getCollection
+import net.horizonsend.ion.server.database.MongoManager.getCollection
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.litote.kmongo.EMPTY_BSON
@@ -135,7 +135,7 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 
 		val cursor: MongoCursor<ChangeStreamDocument<T>> = changeStreamIterable.iterator()
 		@Suppress("UNCHECKED_CAST")
-		MongoManager.registerWatching(cursor as MongoCursor<ChangeStreamDocument<*>>)
+        (MongoManager.registerWatching(cursor as MongoCursor<ChangeStreamDocument<*>>))
 
 		MongoManager.threadPool.submit {
 			while (true) {
@@ -173,7 +173,7 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 		return Closeable {
 			cursor.close()
 			@Suppress("UNCHECKED_CAST")
-			MongoManager.closeWatch(cursor as MongoCursor<ChangeStreamDocument<*>>)
+            (MongoManager.closeWatch(cursor as MongoCursor<ChangeStreamDocument<*>>))
 		}
 	}
 

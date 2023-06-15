@@ -1,7 +1,7 @@
 package net.starlegacy.feature.space
 
 import net.starlegacy.SLComponent
-import net.starlegacy.database.schema.space.Planet
+import net.horizonsend.ion.server.database.schema.space.Planet
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockplacement.BlockPlacement
 import java.util.concurrent.TimeUnit

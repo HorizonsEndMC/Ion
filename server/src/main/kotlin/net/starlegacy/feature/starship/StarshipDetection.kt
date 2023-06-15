@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.starlegacy.SLComponent
-import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.listen
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey

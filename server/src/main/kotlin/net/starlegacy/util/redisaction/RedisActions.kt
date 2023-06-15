@@ -13,7 +13,7 @@ import com.google.gson.reflect.TypeToken
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SETTINGS
 import net.starlegacy.SLComponent
-import net.starlegacy.database.Oid
+import net.horizonsend.ion.server.database.Oid
 import net.starlegacy.redisPool
 import net.starlegacy.util.Tasks
 import org.bson.types.ObjectId

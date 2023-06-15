@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations.utils
 
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.uuid
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.uuid
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GRAY

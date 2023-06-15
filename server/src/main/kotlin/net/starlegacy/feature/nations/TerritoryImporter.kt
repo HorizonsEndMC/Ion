@@ -1,8 +1,8 @@
 package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.starlegacy.feature.nations.region.packTerritoryPolygon
 import net.starlegacy.util.msg
 import org.bukkit.command.CommandSender

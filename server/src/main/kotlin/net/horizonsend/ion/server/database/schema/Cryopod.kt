@@ -1,12 +1,8 @@
 package net.horizonsend.ion.server.database.schema
 
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.objId
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.*
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.starlegacy.util.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.Location

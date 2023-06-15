@@ -19,8 +19,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.schema.starships.Blueprint
-import net.starlegacy.database.slPlayerId
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships

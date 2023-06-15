@@ -7,9 +7,9 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.schema.economy.CityNPC
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.uuid
+import net.horizonsend.ion.server.database.schema.economy.CityNPC
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.uuid
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData

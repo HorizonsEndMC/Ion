@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.schema.space.Planet
+import net.horizonsend.ion.server.database.schema.space.Planet
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Orbits

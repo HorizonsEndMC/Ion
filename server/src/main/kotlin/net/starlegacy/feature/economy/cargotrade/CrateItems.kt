@@ -2,8 +2,8 @@ package net.starlegacy.feature.economy.cargotrade
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.economy.CargoCrate
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.economy.CargoCrate
 import net.horizonsend.ion.server.miscellaneous.updateMeta
 import org.bukkit.ChatColor
 import org.bukkit.inventory.ItemStack

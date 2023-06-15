@@ -2,18 +2,18 @@ package net.starlegacy.feature.nations
 
 import com.mongodb.client.MongoIterable
 import java.lang.Integer.min
-import net.starlegacy.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.ProjectedResults
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.schema.nations.CapturableStation
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.schema.nations.Territory
-import net.starlegacy.database.uuid
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.ProjectedResults
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.CapturableStation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.uuid
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory

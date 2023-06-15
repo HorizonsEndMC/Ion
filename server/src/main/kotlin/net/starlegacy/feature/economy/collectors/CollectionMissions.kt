@@ -15,9 +15,9 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.trade.EcoStations
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.economy.CollectedItem
-import net.starlegacy.database.schema.economy.EcoStation
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.economy.CollectedItem
+import net.horizonsend.ion.server.database.schema.economy.EcoStation
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.nations.gui.playerClicker

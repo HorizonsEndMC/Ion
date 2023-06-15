@@ -3,8 +3,8 @@ package net.starlegacy.cache.trade
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.cache.ManualCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.economy.CargoCrate
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.economy.CargoCrate
 import net.starlegacy.feature.economy.cargotrade.CrateItems
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager
 import net.starlegacy.util.redisaction.RedisAction

@@ -1,15 +1,15 @@
-package net.starlegacy.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations
 
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KMutableProperty1
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.ensureUniqueIndexCaseInsensitive
-import net.starlegacy.database.objId
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.trx
 import net.starlegacy.util.Vec3i
 import org.litote.kmongo.Id
 import org.litote.kmongo.addToSet
@@ -71,7 +71,8 @@ class SettlementZone(
 			val minPoint = Vec3i(min(p1.x, p2.x), min(p1.y, p2.y), min(p1.z, p2.z))
 			val maxPoint = Vec3i(max(p1.x, p2.x), max(p1.y, p2.y), max(p1.z, p2.z))
 
-			val id: Oid<SettlementZone> = objId()
+			val id: Oid<SettlementZone> =
+				objId()
 
 			col.insertOne(SettlementZone(id, settlement, territory, name, minPoint, maxPoint))
 

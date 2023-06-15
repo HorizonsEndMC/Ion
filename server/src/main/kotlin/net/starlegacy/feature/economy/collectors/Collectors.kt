@@ -7,8 +7,8 @@ import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.economy.EcoStation
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.economy.EcoStation
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.colorize
 import net.starlegacy.util.loadChunkAsync

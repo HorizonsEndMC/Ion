@@ -10,11 +10,11 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.command.SLCommand
-import net.starlegacy.database.schema.economy.CargoCrateShipment
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.misc.SLPlayerId
-import net.starlegacy.database.slPlayerId
-import net.starlegacy.database.uuid
+import net.horizonsend.ion.server.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.database.uuid
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import net.starlegacy.feature.progression.SLXP

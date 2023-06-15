@@ -1,4 +1,4 @@
-package net.starlegacy.database
+package net.horizonsend.ion.server.database
 
 import com.google.gson.Gson
 import com.mongodb.MongoException
@@ -15,7 +15,7 @@ import java.util.UUID
 import kotlin.collections.set
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.isSubclassOf
-import net.starlegacy.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import org.bson.BsonArray
 import org.bson.BsonDocument
 import org.bson.BsonValue

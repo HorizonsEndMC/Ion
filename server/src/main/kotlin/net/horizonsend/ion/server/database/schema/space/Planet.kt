@@ -1,12 +1,12 @@
-package net.starlegacy.database.schema.space
+package net.horizonsend.ion.server.database.schema.space
 
 import com.mongodb.client.FindIterable
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.objId
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.objId
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -34,25 +34,25 @@ import org.litote.kmongo.updateOneById
  * @property cloudMaterials The material palette to use for the clouds
  */
 data class Planet(
-	override val _id: Oid<Planet> = objId(),
-	val name: String,
-	val rogue: Boolean,
-	val x: Int,
-	val z: Int,
-	val sun: Oid<Star>,
-	val planetWorld: String,
-	val size: Double,
-	val orbitDistance: Int,
-	val orbitSpeed: Double,
-	val orbitProgress: Double,
-	val seed: Long,
-	val crustNoise: Double = 0.05,
-	val crustMaterials: List<String> = listOf(),
-	val cloudDensity: Double = 0.1,
-	val cloudDensityNoise: Double = 0.1,
-	val cloudThreshold: Double = 0.1,
-	val cloudNoise: Double = 0.1,
-	val cloudMaterials: List<String> = listOf()
+    override val _id: Oid<Planet> = objId(),
+    val name: String,
+    val rogue: Boolean,
+    val x: Int,
+    val z: Int,
+    val sun: Oid<Star>,
+    val planetWorld: String,
+    val size: Double,
+    val orbitDistance: Int,
+    val orbitSpeed: Double,
+    val orbitProgress: Double,
+    val seed: Long,
+    val crustNoise: Double = 0.05,
+    val crustMaterials: List<String> = listOf(),
+    val cloudDensity: Double = 0.1,
+    val cloudDensityNoise: Double = 0.1,
+    val cloudThreshold: Double = 0.1,
+    val cloudNoise: Double = 0.1,
+    val cloudMaterials: List<String> = listOf()
 ) : DbObject {
 	companion object : OidDbObjectCompanion<Planet>(Planet::class, setup = {
 		ensureUniqueIndex(Planet::name)
@@ -63,17 +63,17 @@ data class Planet(
 		)
 
 		fun create(
-			name: String,
-			rogue: Boolean,
-			x: Int,
-			z: Int,
-			sun: Oid<Star>,
-			planetWorld: String,
-			size: Double,
-			orbitDistance: Int,
-			orbitSpeed: Double,
-			orbitProgress: Double,
-			seed: Long
+            name: String,
+            rogue: Boolean,
+            x: Int,
+            z: Int,
+            sun: Oid<Star>,
+            planetWorld: String,
+            size: Double,
+            orbitDistance: Int,
+            orbitSpeed: Double,
+            orbitProgress: Double,
+            seed: Long
 		) {
 			col.insertOne(
 				Planet(objId(), name, rogue, x, z, sun, planetWorld, size, orbitDistance, orbitSpeed, orbitProgress, seed)

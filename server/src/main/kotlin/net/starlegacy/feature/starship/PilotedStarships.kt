@@ -12,9 +12,9 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
-import net.starlegacy.database.schema.misc.SLPlayer
-import net.starlegacy.database.schema.starships.Blueprint
-import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipPilotEvent

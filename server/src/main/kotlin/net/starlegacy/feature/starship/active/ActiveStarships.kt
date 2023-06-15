@@ -7,8 +7,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.starlegacy.SLComponent
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipDestruction
 import net.starlegacy.feature.starship.StarshipType.SPEEDER

@@ -1,10 +1,10 @@
 package net.starlegacy.feature.nations
 
-import net.starlegacy.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.database.schema.nations.NPCTerritoryOwner
-import net.starlegacy.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation

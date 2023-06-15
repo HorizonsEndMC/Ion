@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship.active
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.minecraft.core.BlockPos
-import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.Mass
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.util.Tasks

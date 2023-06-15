@@ -1,12 +1,12 @@
-package net.starlegacy.database.schema.economy
+package net.horizonsend.ion.server.database.schema.economy
 
 import com.mongodb.client.model.IndexOptions
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.ensureUniqueIndexCaseInsensitive
-import net.starlegacy.database.objId
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.trx
 import net.starlegacy.util.d
 import net.starlegacy.util.distance
 import org.litote.kmongo.deleteOneById

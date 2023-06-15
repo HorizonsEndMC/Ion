@@ -1,11 +1,11 @@
-package net.starlegacy.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations
 
 import com.mongodb.client.model.Filters
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.objId
-import net.starlegacy.database.trx
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.trx
 import org.bson.conversions.Bson
 import org.litote.kmongo.combine
 import org.litote.kmongo.deleteOneById
@@ -33,7 +33,8 @@ data class NPCTerritoryOwner(
 		fun create(territory: Oid<Territory>, name: String, color: Int): Oid<NPCTerritoryOwner> = trx { sess ->
 			require(Territory.matches(sess, territory, Territory.unclaimedQuery))
 
-			val id: Oid<NPCTerritoryOwner> = objId()
+			val id: Oid<NPCTerritoryOwner> =
+				objId()
 
 			Territory.updateById(
 				sess, territory,

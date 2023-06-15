@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import net.starlegacy.SETTINGS
-import net.starlegacy.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
 import org.bukkit.Sound

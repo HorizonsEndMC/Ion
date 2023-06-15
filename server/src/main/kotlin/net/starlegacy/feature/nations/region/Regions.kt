@@ -6,17 +6,17 @@ import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.database.DbObject
-import net.starlegacy.database.Oid
-import net.starlegacy.database.OidDbObjectCompanion
-import net.starlegacy.database.containsUpdated
-import net.starlegacy.database.oid
-import net.starlegacy.database.schema.nations.CapturableStation
-import net.starlegacy.database.schema.nations.Settlement
-import net.starlegacy.database.schema.nations.SettlementRole
-import net.starlegacy.database.schema.nations.SettlementZone
-import net.starlegacy.database.schema.nations.SpaceStation
-import net.starlegacy.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.containsUpdated
+import net.horizonsend.ion.server.database.oid
+import net.horizonsend.ion.server.database.schema.nations.CapturableStation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.SettlementRole
+import net.horizonsend.ion.server.database.schema.nations.SettlementZone
+import net.horizonsend.ion.server.database.schema.nations.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionParent
@@ -166,8 +166,8 @@ object Regions : SLComponent() {
 	inline fun <reified T : Region<*>> getAllOf(): Iterable<T> = getAllOf(T::class)
 
 	private inline fun <reified A : DbObject, reified B : Region<A>> registerRegionType(
-		objectCompanion: OidDbObjectCompanion<A>,
-		crossinline createNew: (A) -> B
+        objectCompanion: OidDbObjectCompanion<A>,
+        crossinline createNew: (A) -> B
 	) {
 		// cache all existing ones
 		objectCompanion.all().map(createNew).forEach(cache::add)

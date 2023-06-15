@@ -2,7 +2,7 @@ package net.starlegacy.feature.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.starlegacy.SLComponent
-import net.starlegacy.database.schema.economy.BazaarItem
+import net.horizonsend.ion.server.database.schema.economy.BazaarItem
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.MenuHelper

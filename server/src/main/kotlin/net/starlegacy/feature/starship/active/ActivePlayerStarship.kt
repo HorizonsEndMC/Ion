@@ -14,8 +14,8 @@ import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.database.Oid
-import net.starlegacy.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
