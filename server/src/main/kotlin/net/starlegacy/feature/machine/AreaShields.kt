@@ -32,8 +32,6 @@ object AreaShields : SLComponent() {
 	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()
 
 	override fun onEnable() {
-		loadData()
-
 		Tasks.asyncRepeat(0L, 20L * 60L) {
 			saveData()
 		}
