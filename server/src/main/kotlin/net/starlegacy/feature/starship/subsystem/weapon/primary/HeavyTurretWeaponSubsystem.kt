@@ -4,11 +4,8 @@ import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.multiblock.starshipweapon.turret.HeavyTurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
-import org.bukkit.util.Vector
 
 class HeavyTurretWeaponSubsystem(
 	ship: ActiveStarship,
