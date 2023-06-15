@@ -4,6 +4,8 @@ import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import java.util.UUID
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
@@ -16,12 +18,12 @@ import org.litote.kmongo.id.WrappedObjectId
 
 object Notify : SLComponent() {
 	infix fun online(message: Component) {
-		notifyOnlineAction(message)
+		notifyOnlineAction(MiniMessage.miniMessage().serialize(message))
 		globalChannel(PlainTextComponentSerializer.plainText().serialize(message))
 	}
 
-	private val notifyOnlineAction = { message: Component ->
-		Bukkit.broadcast(message)
+	private val notifyOnlineAction = { message: String ->
+		Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message))
 	}.registerRedisAction("notify-online", runSync = false)
 
 	infix fun all(message: Component) {
@@ -30,11 +32,11 @@ object Notify : SLComponent() {
 	}
 
 	fun player(player: UUID, message: Component) {
-		notifyPlayerAction(player to message)
+		notifyPlayerAction(player to MiniMessage.miniMessage().serialize(message))
 	}
 
-	private val notifyPlayerAction = { (uuid, message): Pair<UUID, Component> ->
-		Bukkit.getPlayer(uuid)?.sendMessage(message)
+	private val notifyPlayerAction = { (uuid, message): Pair<UUID, String> ->
+		Bukkit.getPlayer(uuid)?.sendMessage(MiniMessage.miniMessage().deserialize(message))
 	}.registerRedisAction("notify-player", runSync = false)
 
 	fun settlement(settlementId: Oid<Settlement>, message: String) {
