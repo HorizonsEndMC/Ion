@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import net.horizonsend.ion.common.database.enums.Achievement
+import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.server.IonServer

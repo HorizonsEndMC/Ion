@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.io.File
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.common.database.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -28,14 +27,7 @@ object Connectivity {
 		datasource = HikariDataSource(hikariConfiguration)
 		database = Database.connect(datasource)
 
-		transaction {
-			SchemaUtils.createMissingTablesAndColumns(
-				Nation.Table,
-				PlayerAchievement.Table,
-				PlayerData.Table,
-				Cryopod.Table
-			)
-		}
+		transaction { SchemaUtils.createMissingTablesAndColumns() }
 
 		jedisPool = JedisPooled(configuration.redisConnectionUri)
 	}
