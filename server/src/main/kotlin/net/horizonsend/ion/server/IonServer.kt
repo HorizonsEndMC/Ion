@@ -147,36 +147,6 @@ object IonServer : JavaPlugin() {
 
 		legacyEnable(commandManager)
 
-		Bukkit.getScheduler().runTaskLater(
-			this,
-			Runnable
-			{
-				SpaceMap.onEnable()
-				NationsMap.onEnable()
-				HyperspaceMap.onEnable()
-				HyperspaceBeacons.reloadDynmap()
-				Collectors.onEnable()
-				CityNPCs.onEnable()
-				ShipData.enable()
-
-				pluginManager.registerEvents(CityNPCs, this)
-
-				commandManager.commandCompletions.registerCompletion("wreckSchematics") { context ->
-					SpaceGenerationManager.getGenerator(
-						(context.player.world as CraftWorld).handle
-					)?.schematicMap?.keys
-				}
-
-				val message = getUpdateMessage(dataFolder) ?: return@Runnable
-				slF4JLogger.info(message)
-
-				Notify.eventsChannel("${configuration.serverName} $message")
-				DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
-					?.sendMessage("${configuration.serverName} $message")
-			},
-			1
-		)
-
 		// Temporary Migration Code
 		transaction {
 			trx { session ->
@@ -187,10 +157,13 @@ object IonServer : JavaPlugin() {
 				val mongoNation = net.starlegacy.database.schema.nations.Nation
 
 				for (sqlNation in sqlNations.all()) {
-					mongoNation.create(
-						sqlNation.name,
-						sqlNation.capital as Oid<Settlement>,
-						sqlNation.color
+					mongoNation.col.insertOne(
+						net.starlegacy.database.schema.nations.Nation(
+							sqlNation.objectId as Oid<net.starlegacy.database.schema.nations.Nation>,
+							sqlNation.name,
+							sqlNation.capital as Oid<Settlement>,
+							sqlNation.color
+						)
 					)
 				}
 
@@ -225,6 +198,36 @@ object IonServer : JavaPlugin() {
 				}
 			}
 		}
+
+		Bukkit.getScheduler().runTaskLater(
+			this,
+			Runnable
+			{
+				SpaceMap.onEnable()
+				NationsMap.onEnable()
+				HyperspaceMap.onEnable()
+				HyperspaceBeacons.reloadDynmap()
+				Collectors.onEnable()
+				CityNPCs.onEnable()
+				ShipData.enable()
+
+				pluginManager.registerEvents(CityNPCs, this)
+
+				commandManager.commandCompletions.registerCompletion("wreckSchematics") { context ->
+					SpaceGenerationManager.getGenerator(
+						(context.player.world as CraftWorld).handle
+					)?.schematicMap?.keys
+				}
+
+				val message = getUpdateMessage(dataFolder) ?: return@Runnable
+				slF4JLogger.info(message)
+
+				Notify.eventsChannel("${configuration.serverName} $message")
+				DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
+					?.sendMessage("${configuration.serverName} $message")
+			},
+			1
+		)
 	}
 
 	override fun onDisable() {
