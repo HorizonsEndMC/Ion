@@ -4,6 +4,7 @@ import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.debug
 import net.horizonsend.ion.server.debugBanner
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -520,7 +521,7 @@ object StarshipControl : SLComponent() {
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet])
 			.shuffled(ThreadLocalRandom.current())
 
-		val queuedShots = queueShots(player, weapons, leftClick, playerFacing, dir, target)
+		val queuedShots = queueShots(starship.controller!!, weapons, leftClick, playerFacing, dir, target)
 		StarshipWeapons.fireQueuedShots(queuedShots, starship)
 	}
 
@@ -553,7 +554,7 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun queueShots(
-		player: Player,
+		player: Controller,
 		weapons: List<WeaponSubsystem>,
 		leftClick: Boolean,
 		playerFacing: BlockFace,

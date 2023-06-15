@@ -1,9 +1,9 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class TurretLaserProjectile(
@@ -17,7 +17,7 @@ class TurretLaserProjectile(
 	override val explosionPower: Float,
 	override val shieldDamageMultiplier: Int,
 	override val soundName: String,
-	shooter: Player?
+	shooter: Controller?
 ) : LaserProjectile(ship, loc, dir, shooter) {
 	override val thickness: Double = 0.3
 	override val volume: Int = (range / 16).toInt()

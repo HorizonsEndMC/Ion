@@ -13,16 +13,13 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Shulker
 import net.minecraft.world.level.chunk.ChunkStatus
 import net.starlegacy.util.Tasks
-import org.bukkit.Bukkit
-import org.bukkit.World
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import net.minecraft.world.level.chunk.LevelChunk
 import net.starlegacy.util.Vec3i
-import org.bukkit.Chunk
-import org.bukkit.Location
+import org.bukkit.*
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.entity.Entity
 
@@ -34,6 +31,15 @@ val vaultEconomy = try {
 
 val metrics =
 	if (Bukkit.getPluginManager().isPluginEnabled("UnifiedMetrics")) UnifiedMetricsProvider.get() else null
+
+val gayColors = arrayOf(
+	Color.fromRGB(255, 0, 24),
+	Color.fromRGB(255, 165, 44),
+	Color.fromRGB(255, 255, 65),
+	Color.fromRGB(0, 128, 24),
+	Color.fromRGB(0, 0, 249),
+	Color.fromRGB(134, 0, 125)
+)
 
 inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
 	EnumSet.noneOf(T::class.java).apply { addAll(elems) }

@@ -1,16 +1,14 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TurretMultiblock
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
-import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.vectorToBlockFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
 
@@ -69,7 +67,7 @@ abstract class TurretWeaponSubsystem(
 	}
 
 	override fun manualFire(
-		shooter: Player,
+		shooter: Controller,
 		dir: Vector,
 		target: Vector
 	) {

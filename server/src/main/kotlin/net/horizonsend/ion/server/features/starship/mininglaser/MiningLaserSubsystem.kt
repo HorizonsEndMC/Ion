@@ -4,6 +4,7 @@ import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
@@ -106,7 +107,7 @@ class MiningLaserSubsystem(
 // 		return points
 // 	}
 
-	override fun manualFire(shooter: Player, dir: Vector, target: Vector) {
+	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
 		val sign = getSign() ?: return
 
 		// Calculate a vector in the direction from the fire point to the targeted block
@@ -120,7 +121,7 @@ class MiningLaserSubsystem(
 		// If it is within range, the raycast will move it forward.
 	}
 
-	private fun setFiring(firing: Boolean, sign: Sign, user: Player? = null) {
+	private fun setFiring(firing: Boolean, sign: Sign, user: Controller? = null) {
 		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
 
 		when (firing) {

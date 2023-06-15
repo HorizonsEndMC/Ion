@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -9,7 +10,7 @@ abstract class ParticleProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
-	shooter: Player?
+	shooter: Controller?
 ) : SimpleProjectile(starship, loc, dir, shooter) {
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		for (i in 0 until travel.toInt()) {

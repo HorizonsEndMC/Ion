@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.alertActionMessage
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.debug
 import net.horizonsend.ion.server.debugRed
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
@@ -24,7 +25,7 @@ object StarshipWeapons {
 
 	data class ManualQueuedShot(
 		override val weapon: WeaponSubsystem,
-		val shooter: Player,
+		val shooter: Controller,
 		val direction: Vector,
 		val target: Vector
 	) : QueuedShot {

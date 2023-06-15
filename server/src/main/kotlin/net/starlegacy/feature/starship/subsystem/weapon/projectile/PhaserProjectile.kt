@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -12,7 +13,7 @@ class PhaserProjectile(
 	starship: ActiveStarship,
 	loc: Location,
 	dir: Vector,
-	shooter: Player?
+	shooter: Controller?
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.phaser.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.phaser.speed

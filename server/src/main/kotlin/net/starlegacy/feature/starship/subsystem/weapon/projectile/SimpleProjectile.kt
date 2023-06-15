@@ -1,5 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -26,7 +28,7 @@ abstract class SimpleProjectile(
 	starship: ActiveStarship?,
 	var loc: Location,
 	var dir: Vector,
-	shooter: Player?
+	shooter: Controller?
 ) : Projectile(starship, shooter) {
 	abstract val range: Double
 	abstract val speed: Double
@@ -101,7 +103,9 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		if (starship?.let { it.serverLevel.world }?.name?.lowercase(Locale.getDefault())?.contains("hyperspace")!!) return false
+		if (starship?.let { it.serverLevel.world }?.name?.lowercase(Locale.getDefault())
+				?.contains("hyperspace")!!
+		) return false
 		if (GracePeriod.isGracePeriod) return false
 
 		val block: Block? = result.hitBlock
@@ -157,17 +161,18 @@ abstract class SimpleProjectile(
 			}
 		}
 
-		if (block != null && shooter != null) {
-			addToDamagers(world, block)
-		}
+		if (block != null && shooter is PlayerController)
+			addToDamagers(world, block, shooter)
 
-		if (entity != null && entity is LivingEntity) {
-			entity.damage(10.0, shooter)
-		}
+		if (entity != null && entity is LivingEntity)
+			if (shooter is PlayerController)
+				entity.damage(10.0, shooter.player)
+			else
+				entity.damage(10.0)
 	}
 
-	private fun addToDamagers(world: World, block: Block) {
-		val damagerId: UUID = requireNotNull(shooter).uniqueId
+	private fun addToDamagers(world: World, block: Block, shooter: PlayerController) {
+		val damagerId: UUID = shooter.player.uniqueId
 		val damagerSize: Int = starship?.initialBlockCount ?: 0
 		val damager = ShipKillXP.Damager(damagerId, damagerSize)
 		val x = block.x
@@ -175,7 +180,7 @@ abstract class SimpleProjectile(
 		val z = block.z
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship != starship && otherStarship.contains(x, y, z)) {
-				otherStarship.damagers.getOrPut(damager, { AtomicInteger() }).incrementAndGet()
+				otherStarship.damagers.getOrPut(damager) { AtomicInteger() }.incrementAndGet()
 			}
 		}
 	}

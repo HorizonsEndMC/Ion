@@ -59,9 +59,8 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 	override fun autoFire(target: Player, dir: Vector) {
 		lastFire = System.nanoTime()
 
-		val shooter = (starship as? ActivePlayerStarship)?.pilot
 		val loc = getFirePos().toCenterVector().toLocation(target.world)
-		PointDefenseLaserProjectile(starship, loc, dir, range, shooter).fire()
+		PointDefenseLaserProjectile(starship, loc, dir, range, starship.controller).fire()
 	}
 
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
