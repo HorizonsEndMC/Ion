@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
@@ -15,14 +16,13 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 abstract class BlockProjectile(
-	starship: ActiveStarship?,
-	loc: Location,
-	dir: Vector,
-	shooter: Player?
+    starship: ActiveStarship?,
+    loc: Location,
+    dir: Vector,
+    shooter: Controller?
 ) : SimpleProjectile(starship, loc, dir, shooter) {
 	abstract val blockMap: Map<Vec3i, BlockData>
 	private val refreshedBlocks = LongOpenHashSet()

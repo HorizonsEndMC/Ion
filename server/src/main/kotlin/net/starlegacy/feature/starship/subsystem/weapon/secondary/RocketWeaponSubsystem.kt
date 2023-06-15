@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.multiblock.starshipweapon.heavy.RocketStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -15,7 +16,6 @@ import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.vectorToBlockFace
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -78,7 +78,7 @@ class RocketWeaponSubsystem(
 		return multiblock.blockMatchesStructure(block, inward)
 	}
 
-	override fun manualFire(shooter: Player, dir: Vector, target: Vector) {
+	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.serverLevel.world)
 		val projectile = RocketProjectile(starship, origin, this.face, shooter)
 		projectile.fire()

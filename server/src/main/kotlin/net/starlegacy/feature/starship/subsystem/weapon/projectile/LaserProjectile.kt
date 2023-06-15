@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Color
 import org.bukkit.Location
@@ -11,7 +12,7 @@ abstract class LaserProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
-	shooter: Player?
+	shooter: Controller?
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	abstract val color: Color
 	abstract val particleThickness: Double

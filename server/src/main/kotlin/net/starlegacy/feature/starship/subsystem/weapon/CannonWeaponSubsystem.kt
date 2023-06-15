@@ -1,12 +1,12 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.abs
 import kotlin.math.atan
@@ -61,7 +61,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return Vector(x, y, z)
 	}
 
-	override fun manualFire(shooter: Player, dir: Vector, target: Vector) {
+	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
 		fire(getFireVec().toLocation(starship.serverLevel.world), dir, shooter, target)
 	}
 
@@ -77,5 +77,5 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return true
 	}
 
-	protected abstract fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?)
+	protected abstract fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?)
 }

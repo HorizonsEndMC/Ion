@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
@@ -13,7 +14,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.FaceAttachable
 import org.bukkit.block.data.type.Grindstone
 import org.bukkit.block.data.type.Hopper
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -34,7 +34,7 @@ class PhaserWeaponSubsystem(
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
-	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
 		fixDirections(loc)
 		PhaserProjectile(starship, loc, dir, shooter).fire()
 	}

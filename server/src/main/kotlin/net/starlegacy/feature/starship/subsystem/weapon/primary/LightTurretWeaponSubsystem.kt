@@ -23,7 +23,6 @@ class LightTurretWeaponSubsystem(
 	override val range: Double get() = multiblock.range
 
 	override fun autoFire(target: Player, dir: Vector) {
-		val shooter = (starship as? ActivePlayerStarship)?.pilot
-		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter)
+		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, starship.controller)
 	}
 }

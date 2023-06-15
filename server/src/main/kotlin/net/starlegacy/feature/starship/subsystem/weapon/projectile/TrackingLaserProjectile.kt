@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.squared
@@ -14,7 +15,7 @@ abstract class TrackingLaserProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
-	shooter: Player?,
+	shooter: Controller?,
 	private val originalTarget: Vector,
 	private val aimDistance: Int
 ) : LaserProjectile(starship, loc, dir, shooter) {

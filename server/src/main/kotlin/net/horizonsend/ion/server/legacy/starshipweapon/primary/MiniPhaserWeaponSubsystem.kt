@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.primary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.legacy.starshipweapon.projectile.MiniPhaserProjectile
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -10,7 +11,6 @@ import net.starlegacy.util.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -37,7 +37,7 @@ class MiniPhaserWeaponSubsystem(
 		)
 	}
 
-	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
 		MiniPhaserProjectile(starship, loc, dir, shooter).fire()
 	}
 

@@ -2,8 +2,8 @@ package net.starlegacy.feature.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.StarshipType
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PulseLaserProjectile
@@ -14,7 +14,6 @@ import org.bukkit.DyeColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
@@ -42,10 +41,10 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	}
 
 	override fun fire(
-		loc: Location,
-		dir: Vector,
-		shooter: Player,
-		target: Vector?
+        loc: Location,
+        dir: Vector,
+        shooter: Controller,
+        target: Vector?
 	) {
 		if (starship.type != StarshipType.GUNSHIP) {
 			starship.controller?.userError("You can use Pulse Cannons only on Gunships!")

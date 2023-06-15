@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Color
 import org.bukkit.Location
@@ -11,7 +12,7 @@ class TorpedoProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
-	shooter: Player?,
+	shooter: Controller?,
 	originalTarget: Vector,
 	baseAimDistance: Int
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {

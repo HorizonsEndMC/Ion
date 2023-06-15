@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
@@ -10,7 +11,6 @@ import net.starlegacy.util.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -31,7 +31,7 @@ class HeavyLaserWeaponSubsystem(
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.extraDistance
 	override val aimDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.aimDistance
 
-	override fun fire(loc: Location, dir: Vector, shooter: Player, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
 		checkNotNull(target)
 		HeavyLaserProjectile(starship, loc, dir, shooter, target, aimDistance, sound).fire()
 	}
