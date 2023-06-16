@@ -155,11 +155,10 @@ class RegionTerritory(territory: Territory) :
 						}
 
 						// if the min build access is ally and they're at least an ally, they can build
-						for (relation in NationRelation.find(NationRelation::nation eq settlementNation)) {
-							if (minBuildAccess == Settlement.ForeignRelation.ALLY && settlementNation != null && relation.other == playerNation && relation.actual == NationRelation.Level.ALLY) {
-								return null
-							}
-						}
+						if (settlementNation?.let {
+							NationRelation.getRelationActual(it, playerNation).ordinal >= NationRelation.Level.ALLY.ordinal
+						} == true) return null
+
 					}
 				}
 
