@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
@@ -221,7 +222,6 @@ class MiningLaserSubsystem(
 			return setFiring(false, sign, null)
 		}
 
-		val user = getPlayer((sign.line(3) as TextComponent).content()) ?: return setFiring(false, sign)
 		val power = PowerMachines.getPower(sign, true)
 
 		if (power == 0) {
@@ -264,7 +264,7 @@ class MiningLaserSubsystem(
 			toDestroy = blocks,
 			output = multiblock.getOutput(sign),
 			people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
-			player = user
+			player = (starship.controller as PlayerController).player
 		)
 
 		if (blocksBroken > 0) {
