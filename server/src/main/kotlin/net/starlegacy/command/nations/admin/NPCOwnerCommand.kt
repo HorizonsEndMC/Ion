@@ -26,12 +26,23 @@ internal object NPCOwnerCommand : SLCommand() {
 		return Color.fromRGB(red, green, blue).asRGB()
 	}
 
-	@Subcommand("create")
-	fun onCreate(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
+	@Subcommand("create tradecity")
+	@Suppress("unused")
+	fun onCreateTC(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		validateName(name)
 		val color = validateColor(red, green, blue)
-		NPCTerritoryOwner.create(territory.id, name, color)
+		NPCTerritoryOwner.create(territory.id, name, color, true)
+		sender msg "&aCreated npc territory"
+	}
+
+	@Subcommand("create territory")
+	@Suppress("unused")
+	fun onCreateTerritory(sender: Player, name: String, red: Int, green: Int, blue: Int) = asyncCommand(sender) {
+		val territory = requireTerritoryIn(sender)
+		validateName(name)
+		val color = validateColor(red, green, blue)
+		NPCTerritoryOwner.create(territory.id, name, color, false)
 		sender msg "&aCreated npc territory"
 	}
 

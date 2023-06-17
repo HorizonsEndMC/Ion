@@ -50,7 +50,7 @@ object TradeCities : SLComponent() {
 		}
 
 		val npcType = TradeCityType.NPC
-		val npcCities = NPCTerritoryOwner.all().associate {
+		val npcCities = NPCTerritoryOwner.all().filter { it.tradeCity }.associate {
 			it.territory to TradeCityData(
 				it._id,
 				npcType,
@@ -61,6 +61,7 @@ object TradeCities : SLComponent() {
 		cities.putAll(npcCities)
 		NPCTerritoryOwner.watchInserts { change ->
 			val fullDocument = change.fullDocument ?: return@watchInserts
+			if (!fullDocument.tradeCity) return@watchInserts
 			cities[fullDocument.territory] =
 				TradeCityData(
 					change.oid, npcType, fullDocument.territory, fullDocument.name

@@ -16,7 +16,8 @@ data class NPCTerritoryOwner(
 	override val _id: Oid<NPCTerritoryOwner> = objId(),
 	val territory: Oid<Territory>,
 	val name: String,
-	val color: Int
+	val color: Int,
+	val tradeCity: Boolean = true,
 ) : DbObject {
 	companion object : OidDbObjectCompanion<NPCTerritoryOwner>(NPCTerritoryOwner::class, setup = {
 		ensureUniqueIndex(NPCTerritoryOwner::territory)
@@ -30,7 +31,7 @@ data class NPCTerritoryOwner(
 
 		fun getName(id: Oid<NPCTerritoryOwner>): String? = findPropById(id, NPCTerritoryOwner::name)
 
-		fun create(territory: Oid<Territory>, name: String, color: Int): Oid<NPCTerritoryOwner> = trx { sess ->
+		fun create(territory: Oid<Territory>, name: String, color: Int, tradeCity: Boolean): Oid<NPCTerritoryOwner> = trx { sess ->
 			require(Territory.matches(sess, territory, Territory.unclaimedQuery))
 
 			val id: Oid<NPCTerritoryOwner> =
@@ -42,7 +43,7 @@ data class NPCTerritoryOwner(
 				org.litote.kmongo.setValue(Territory::isProtected, true)
 			)
 
-			col.insertOne(sess, NPCTerritoryOwner(id, territory, name, color))
+			col.insertOne(sess, NPCTerritoryOwner(id, territory, name, color, tradeCity))
 
 			return@trx id
 		}

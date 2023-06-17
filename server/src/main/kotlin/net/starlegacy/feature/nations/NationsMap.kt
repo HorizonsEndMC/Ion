@@ -148,8 +148,9 @@ object NationsMap : SLComponent() {
 			val rgb = npcOwner.color
 			fillOpacity = 0.3
 			fillRGB = rgb
-			lineOpacity = 0.5
+			lineOpacity = 0.75
 			lineRGB = rgb
+			lineThickness = 5
 		}
 
 		val nation: Nation? = settlement?.nation?.let(Nation.Companion::findById) ?: territory.nation?.let(Nation.Companion::findById)
