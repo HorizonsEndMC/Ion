@@ -13,13 +13,16 @@ import net.minecraft.world.level.block.Rotation
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.miscellaneous.gayColors
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
-import net.starlegacy.feature.starship.subsystem.weapon.projectile.flagcolors
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
@@ -244,12 +247,12 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
 		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 
-	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship?, shooter: Player?) {
-		val color: Color = getColor(starship, shooter)
+	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Controller?, isAuto: Boolean = true) {
+		val color: Color = getColor(starship, shooter, isAuto)
 		val speed = projectileSpeed.toDouble()
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
-			if (starship?.isInternallyObstructed(point, dir) == true) {
+			if (starship.isInternallyObstructed(point, dir)) {
 				continue
 			}
 
@@ -271,18 +274,12 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 		}
 	}
 
-	private fun getColor(starship: ActiveStarship?, shooter: Player?): Color {
-		var counter = 0
-		if (starship != null) {
-			if (starship.rainbowToggle) {
-				flagcolors.random()
-			} else {
-				return starship.weaponColor
-			}
-		}
+	private fun getColor(starship: ActiveStarship, shooter: Controller?, isAuto: Boolean): Color {
+		if (starship.rainbowToggle && !isAuto)
+			return gayColors.random()
 
-		if (shooter != null) {
-			val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
+		if (shooter != null && shooter is PlayerController) {
+			val nation: Oid<Nation>? = PlayerCache[shooter.player].nationOid
 
 			if (nation != null) {
 				return Color.fromRGB(NationCache[nation].color)

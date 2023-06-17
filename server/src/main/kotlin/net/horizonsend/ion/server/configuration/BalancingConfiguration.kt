@@ -449,7 +449,7 @@ data class BalancingConfiguration(
 			inaccuracyRadians = 2.0
 		),
 		val heavyTurret: StarshipWeapon = StarshipWeapon(
-			range = 300.0,
+			range = 500.0,
 			speed = 200.0,
 			shieldDamageMultiplier = 2,
 			thickness = 0.0,
@@ -528,40 +528,40 @@ data class BalancingConfiguration(
 	) {
 		@Serializable
 		data class StarshipWeapon(
-			override val range: Double,
-			override val speed: Double,
-			override val shieldDamageMultiplier: Int,
-			override val thickness: Double,
-			override val particleThickness: Double,
-			override val explosionPower: Float,
-			override val volume: Int,
-			override val pitch: Float,
-			override val soundName: String,
-			override val powerUsage: Int,
-			override val length: Int,
-			override val angleRadians: Double,
-			override val convergeDistance: Double,
-			override val extraDistance: Int,
-			override val fireCooldownNanos: Long,
-			override val maxPerShot: Int = 0,
-			override val fowardOnly: Boolean = false,
-			val boostChargeNanos: Long, // Seconds, should only be put for heavyWeapons
-			val aimDistance: Int, // should only be put if the weapon in question is target tracking
-			val maxDegrees: Double = 0.0,
-			override val inaccuracyRadians: Double = 2.0
+			override var range: Double,
+			override var speed: Double,
+			override var shieldDamageMultiplier: Int,
+			override var thickness: Double,
+			override var particleThickness: Double,
+			override var explosionPower: Float,
+			override var volume: Int,
+			override var pitch: Float,
+			override var soundName: String,
+			override var powerUsage: Int,
+			override var length: Int,
+			override var angleRadians: Double,
+			override var convergeDistance: Double,
+			override var extraDistance: Int,
+			override var fireCooldownNanos: Long,
+			override var maxPerShot: Int = 0,
+			override var fowardOnly: Boolean = false,
+			var boostChargeNanos: Long, // Seconds, should only be put for heavyWeapons
+			var aimDistance: Int, // should only be put if the weapon in question is target tracking
+			var maxDegrees: Double = 0.0,
+			override var inaccuracyRadians: Double = 2.0
 		) : ProjectileBalancing()
 
 		@Serializable
 		abstract class ProjectileBalancing : SubSystem() {
-			abstract val range: Double
-			abstract val speed: Double
-			abstract val shieldDamageMultiplier: Int
-			abstract val thickness: Double
-			abstract val particleThickness: Double
-			abstract val explosionPower: Float
-			abstract val volume: Int
-			abstract val pitch: Float
-			abstract val soundName: String
+			abstract var range: Double
+			abstract var speed: Double
+			abstract var shieldDamageMultiplier: Int
+			abstract var thickness: Double
+			abstract var particleThickness: Double
+			abstract var explosionPower: Float
+			abstract var volume: Int
+			abstract var pitch: Float
+			abstract var soundName: String
 		}
 
 		@Serializable

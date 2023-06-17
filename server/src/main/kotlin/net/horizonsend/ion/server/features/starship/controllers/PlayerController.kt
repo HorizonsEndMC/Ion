@@ -5,5 +5,6 @@ import net.kyori.adventure.audience.Audience
 import net.minecraft.server.level.ServerPlayer
 
 abstract class PlayerController(val serverPlayer: ServerPlayer, starship: Starship, name: String) : Controller(starship, name) {
+	val player = serverPlayer.bukkitEntity.player!!
 	override fun audience(): Audience = serverPlayer.bukkitEntity
 }

@@ -1,16 +1,14 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TurretMultiblock
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
-import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.vectorToBlockFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
 
@@ -18,13 +16,11 @@ abstract class TurretWeaponSubsystem(
 	ship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace
-) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem, AutoWeaponSubsystem {
+) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
 	private fun getSign() = starship.serverLevel.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign
 
 	protected abstract val multiblock: TurretMultiblock
 	protected abstract val inaccuracyRadians: Double
-
-	override val range: Double get() = multiblock.range
 
 	override fun isIntact(): Boolean {
 		val sign = getSign() ?: return false
@@ -71,15 +67,10 @@ abstract class TurretWeaponSubsystem(
 	}
 
 	override fun manualFire(
-		shooter: Player,
+		shooter: Controller,
 		dir: Vector,
 		target: Vector
 	) {
-		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter)
-	}
-
-	override fun autoFire(target: Player, dir: Vector) {
-		val shooter = (starship as? ActivePlayerStarship)?.pilot
-		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter)
+		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, shooter, false)
 	}
 }

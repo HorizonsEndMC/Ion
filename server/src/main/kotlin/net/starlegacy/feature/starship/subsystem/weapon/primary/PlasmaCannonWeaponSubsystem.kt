@@ -1,13 +1,13 @@
 package net.starlegacy.feature.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
 import net.starlegacy.util.Vec3i
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
@@ -29,10 +29,10 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	}
 
 	override fun fire(
-		loc: Location,
-		dir: Vector,
-		shooter: Player,
-		target: Vector?
+        loc: Location,
+        dir: Vector,
+        shooter: Controller,
+        target: Vector?
 	) {
 		PlasmaLaserProjectile(starship, loc, dir, shooter).fire()
 	}
