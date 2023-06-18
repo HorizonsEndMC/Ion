@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.debug
 import net.horizonsend.ion.server.debugBanner
 import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -107,7 +108,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processManualFlight(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot?.userErrorAction("This ship type is not capable of moving.")
+			starship.controller?.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -126,7 +127,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processDirectControl(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot!!.userErrorAction("This ship type is not capable of moving.")
+			starship.controller!!.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -135,7 +136,7 @@ object StarshipControl : SLComponent() {
 			return
 		}
 
-		val pilot = starship.pilot ?: return
+		val pilot = (starship.controller as? PlayerController)?.player ?: return
 		val ping = getPing(pilot)
 		val movementCooldown = starship.directControlCooldown
 		val speedFac = if (ping > movementCooldown) 2 else 1
@@ -237,6 +238,8 @@ object StarshipControl : SLComponent() {
 		dy *= speedFac
 		dz *= speedFac
 
+		if (starship.type.groundVehicle) dy = getGroundClearance(starship)
+
 		when {
 			dy < 0 && starship.min.y + dy < 0 -> {
 				dy = -starship.min.y
@@ -266,7 +269,7 @@ object StarshipControl : SLComponent() {
 		}
 
 		if (Hyperspace.isWarmingUp(starship)) {
-			starship.pilot?.userErrorAction("Cannot move while in hyperspace warmup.")
+			starship.controller?.userErrorAction("Cannot move while in hyperspace warmup.")
 			return
 		}
 
@@ -293,7 +296,11 @@ object StarshipControl : SLComponent() {
 		val vertical = abs(pitchRadians) >= PI * 5 / 12 // 75 degrees
 
 		val dx = if (vertical) 0 else sin(-yawRadians).roundToInt() * distance
-		val dy = sin(-pitchRadians).roundToInt() * distance
+
+		val dy = if (starship.type.groundVehicle) {
+			getGroundClearance(starship)
+		} else { sin(-pitchRadians).roundToInt() * distance }
+
 		val dz = if (vertical) 0 else cos(yawRadians).roundToInt() * distance
 
 		if (locationCheck(starship, dx, dy, dz)) {
@@ -303,9 +310,10 @@ object StarshipControl : SLComponent() {
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
+	/** Checks for planet entrance or world border **/
 	fun locationCheck(starship: ActivePlayerStarship, dx: Int, dy: Int, dz: Int): Boolean {
 		val world = starship.serverLevel.world
-		val newCenter = starship.centerOfMassVec3i.toLocation(world).add(dx.d(), dy.d(), dz.d())
+		val newCenter = starship.centerOfMass.toLocation(world).add(dx.d(), dy.d(), dz.d())
 
 		val allPlanetsMoons: List<EnterableCelestialBody> = (Space.getPlanets() as List<EnterableCelestialBody>).toMutableList()
 			.apply { this.addAll(Space.getMoons() as List<EnterableCelestialBody>) }
@@ -338,6 +346,23 @@ object StarshipControl : SLComponent() {
 
 		StarshipTeleportation.teleportStarship(starship, target)
 		return true
+	}
+
+	fun getGroundClearance(starship: ActiveStarship): Int {
+		val startY = starship.hitbox.min.y
+		val (x, _, z) = starship.centerOfMass
+
+		for (y in startY downTo 0) {
+			val isInBounds = starship.isInBounds(x, y, z)
+			if (isInBounds) continue
+
+			if (!starship.serverLevel.world.getBlockAt(x, y, z).type.isAir) {
+
+				return min(-3, y - startY + 3)
+			}
+		}
+
+		return 0
 	}
 
 	fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8

@@ -67,7 +67,7 @@ abstract class ActiveStarship(
 	var blocks: LongOpenHashSet,
 	val mass: Double,
 	centerOfMass: BlockPos,
-	private val hitbox: ActiveStarshipHitbox
+	val hitbox: ActiveStarshipHitbox
 ) : Starship(serverLevel, centerOfMass), ForwardingAudience {
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 

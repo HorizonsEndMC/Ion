@@ -107,7 +107,7 @@ object StarshipCruising : SLComponent() {
 		}
 
 		val dx = (velocity.x * SECONDS_PER_CRUISE).toInt()
-		val dy = (velocity.y * SECONDS_PER_CRUISE).toInt()
+		val dy = if (starship.type.groundVehicle) { StarshipControl.getGroundClearance(starship) } else { (velocity.y * SECONDS_PER_CRUISE).toInt() }
 		val dz = (velocity.z * SECONDS_PER_CRUISE).toInt()
 
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) {
