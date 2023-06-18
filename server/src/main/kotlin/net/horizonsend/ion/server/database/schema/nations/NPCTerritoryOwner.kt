@@ -17,7 +17,7 @@ data class NPCTerritoryOwner(
 	val territory: Oid<Territory>,
 	val name: String,
 	val color: Int,
-	val tradeCity: Boolean = true,
+	val tradeCity: Boolean,
 ) : DbObject {
 	companion object : OidDbObjectCompanion<NPCTerritoryOwner>(NPCTerritoryOwner::class, setup = {
 		ensureUniqueIndex(NPCTerritoryOwner::territory)
