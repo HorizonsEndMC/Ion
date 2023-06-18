@@ -192,7 +192,6 @@ object StarshipComputers : SLComponent() {
 			if (player.isTerritoryOwner()) {
 				pane.addItem(
 					guiButton(Material.RECOVERY_COMPASS) {
-						startRename(playerClicker, data)
 						takeOwnership(player, data)
 					}.setName(text("Take ownership", RED, BOLD)),
 					5, 0
