@@ -29,11 +29,12 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPilotedPlayerStarship(player) ?: return
 		
-			failIf(!starship.isDirectControlEnabled && !StarshipControl.isHoldingController(player)) {
-			"You need to hold a starship controller to enable direct control"
+			if(!starship.isDirectControlEnabled && !StarshipControl.isHoldingController(player)) {
+			player.serverError("You need to hold a starship controller to enable direct control")
+			return
 		}
 		if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) {
-			sender.serverError(
+			player.serverError(
 				"Only ships of size ${StarshipType.DESTROYER.maxSize} or less can use direct control, " +
 					"this is mostly a performance thing, and will probably change in the future."
 			)
