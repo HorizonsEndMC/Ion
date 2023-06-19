@@ -129,6 +129,9 @@ import org.bukkit.Material.PURPLE_CONCRETE_POWDER
 import org.bukkit.Material.MAGENTA_CONCRETE_POWDER
 import org.bukkit.Material.PINK_CONCRETE_POWDER
 import org.bukkit.Material.BROWN_CONCRETE_POWDER
+import org.bukkit.Material.OCHRE_FROGLIGHT
+import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.block.data.BlockData
 
 object ShipFactoryMaterialCosts {
@@ -154,7 +157,6 @@ object ShipFactoryMaterialCosts {
 		PISTON to 20.0,
 		STICKY_PISTON to 50.0,
 		REDSTONE to 1.0,
-		REDSTONE_LAMP to 25.0,
 		JUKEBOX to 50.0,
 		CRAFTING_TABLE to 30.0,
 		DROPPER to 15.0,
@@ -163,8 +165,6 @@ object ShipFactoryMaterialCosts {
 		CHEST to 5.0,
 		FURNACE to 15.0,
 		DISPENSER to 25.0,
-		MAGMA_BLOCK to 35.0,
-		SEA_LANTERN to 25.0,
 		IRON_TRAPDOOR to 50.0,
 		NOTE_BLOCK to 20.0,
 		IRON_BARS to 10.0,
@@ -172,6 +172,13 @@ object ShipFactoryMaterialCosts {
 		TRAPPED_CHEST to 5.0,
 		BARREL to 5.0,
 		LODESTONE to 50.0,
+
+		MAGMA_BLOCK to 25.0,
+		REDSTONE_LAMP to 25.0,
+		SEA_LANTERN to 25.0,
+		VERDANT_FROGLIGHT to 25.0,
+		OCHRE_FROGLIGHT to 25.0,
+		PEARLESCENT_FROGLIGHT to 25.0,
 
 		OAK_PLANKS to 0.1,
 		SPRUCE_PLANKS to 0.1,
