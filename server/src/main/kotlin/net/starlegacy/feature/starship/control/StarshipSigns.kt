@@ -3,6 +3,8 @@ package net.starlegacy.feature.starship.control
 import net.starlegacy.feature.starship.BoardingRamps
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
+import net.starlegacy.feature.starship.StarshipType
+import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.util.colorize
 import net.starlegacy.util.msg
 import org.bukkit.Bukkit
@@ -21,6 +23,23 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 			} else {
 				StarshipCruising.stopCruising(player, starship)
 			}
+		}
+	},
+	DC("[dc]", arrayOf("&3Direct".colorize(), "&8Control".colorize(), "&cHotbar=Throttle".colorize(), "&cWASD=Strafe".colorize())) {
+		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
+			val starship = findPilotedPlayerStarship(player) ?: return
+		
+			failIf(!starship.isDirectControlEnabled && !StarshipControl.isHoldingController(player)) {
+			"You need to hold a starship controller to enable direct control"
+		}
+		if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) {
+			sender.serverError(
+				"Only ships of size ${StarshipType.DESTROYER.maxSize} or less can use direct control, " +
+					"this is mostly a performance thing, and will probably change in the future."
+			)
+			return
+		}
+		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 		}
 	},
 	HELM("[helm]", arrayOf("\\  ||  /", "==      ==", "/  ||  \\", "&cPress Q or F".colorize())) {
