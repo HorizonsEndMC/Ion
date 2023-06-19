@@ -13,6 +13,7 @@ import net.starlegacy.feature.multiblock.particleshield.EventShieldMultiblock
 import net.starlegacy.feature.multiblock.particleshield.SphereShieldMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
+import net.starlegacy.feature.starship.subsystem.RestrictedWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.CryoSubsystem
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
@@ -158,6 +159,10 @@ object SubsystemDetector {
 			val pos = Vec3i(block.location)
 
 			val subsystem = multiblock.createSubsystem(starship, pos, face)
+
+			if (subsystem is RestrictedWeaponSubsystem) {
+				if (subsystem.isRestricted(starship)) continue
+			}
 
 			if (isDuplicate(starship, subsystem)) {
 				continue
