@@ -186,26 +186,19 @@ abstract class ActiveStarship(
 		if (faceThrusters.none()) {
 			return ThrustData(0.0, 0)
 		}
-
-		val baseSpeedFactor = 50.0
-		val speedExponent = 0.5
-		val massExponent = 0.2
-		val reductionBase = 0.85
-		val finalSpeedFactor = 1.0
-
 		val mass = this.mass
-		val totalAccel = 1.0 + faceThrusters.sumOf { it.type.accel }
-		val totalWeight = faceThrusters.sumOf { it.type.weight }.toDouble()
-		val reduction = reductionBase.pow(sqrt(totalWeight))
-		val totalSpeed = faceThrusters.sumOf { it.type.speed } * reduction
+		val totalAccel = faceThrusters.sumOf { it.type.accel }
+		val totalSpeed = faceThrusters.sumOf { it.type.speed }
 
-		val calculatedSpeed = totalSpeed.pow(speedExponent) / mass.pow(massExponent) * baseSpeedFactor
+		val maxSpeed = 221.32*mass.pow(-0.206)
+		val maxAccel = 8.5782935*mass.pow(-0.1264505)
 
-		val maxSpeed = reactor.output * .4 / totalSpeed
-
-		val speed = (min(maxSpeed, calculatedSpeed) * finalSpeedFactor).roundToInt()
-
-		val acceleration = ln(2.0 + totalAccel) * ln(2.0 + totalWeight) / ln(mass.squared()) * reduction * 30.0
+		val helper1 = ln((-(maxSpeed).roundToInt()-0.5)/(maxSpeed) + 1)
+		val helper2 = 13.52142986 - 0.0000152709548*mass + 0.000000000153266078*(mass.pow(2.0))
+		
+		val speed = ((maxSpeed) * (1-2.71828.pow(helper1*totalSpeed/helper2))).roundToInt()
+		val acceleration = (maxAccel) * (1-2.71828.pow(helper1*totalAccel/helper2))
+		
 		return ThrustData(acceleration, speed)
 	}
 
