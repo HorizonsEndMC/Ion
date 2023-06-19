@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProxyConfiguration(
+	val discordEnabled: Boolean = false,
 	val discordBotToken: String = "",
 	val motdFirstLine: String = "",
 	val linkBypassRole: Long = 0,

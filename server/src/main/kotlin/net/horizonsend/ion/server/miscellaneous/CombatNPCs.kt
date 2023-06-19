@@ -173,7 +173,7 @@ object CombatNPCs : SLComponent() {
 					event.drops.clear()
 					event.deathMessage(null)
 
-					data.wasKilled = false
+					SLPlayer.updateById(data._id, setValue(SLPlayer::wasKilled, false))
 				}
 			}
 		}

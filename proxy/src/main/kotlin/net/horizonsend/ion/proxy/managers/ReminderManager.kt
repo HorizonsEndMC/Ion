@@ -1,8 +1,5 @@
 package net.horizonsend.ion.proxy.managers
 
-import net.horizonsend.ion.proxy.PLUGIN
-import java.util.concurrent.TimeUnit
-
 object ReminderManager {
 	private val scheduledMessages = listOf<Runnable>(
 //		Runnable { voteReminder() }
@@ -11,15 +8,15 @@ object ReminderManager {
 	private const val delay: Long = 900 // Might need to be increased if more messages are added (Currently 15 minutes)
 
 	fun scheduleReminders() {
-		for (message in scheduledMessages) {
-			PLUGIN.proxy.scheduler.schedule(
-				PLUGIN,
-				message,
-				(delay / scheduledMessages.size.toLong()) * scheduledMessages.indexOf(message),
-				delay,
-				TimeUnit.SECONDS
-			)
-		}
+		// for (message in scheduledMessages) {
+		// 	PLUGIN.proxy.scheduler.schedule(
+		// 		PLUGIN,
+		// 		message,
+		// 		(delay / scheduledMessages.size.toLong()) * scheduledMessages.indexOf(message),
+		// 		delay,
+		// 		TimeUnit.SECONDS
+		// 	)
+		// }
 	}
 // Might bring this back eventually
 //	private fun voteReminder() = transaction {
