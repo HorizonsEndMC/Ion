@@ -67,6 +67,7 @@ class CancelListeners : Listener {
 	fun onPlayerTeleportEvent(event: PlayerTeleportEvent) {
 		event.isCancelled = when (event.cause) {
 			PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT, PlayerTeleportEvent.TeleportCause.ENDER_PEARL -> true
+			PlayerTeleportEvent.TeleportCause.SPECTATE -> !event.player.hasPermission("group.dutymode")
 			else -> false
 		}
 	}
