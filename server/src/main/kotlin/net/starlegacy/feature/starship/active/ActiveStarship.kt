@@ -190,7 +190,7 @@ abstract class ActiveStarship(
 		val totalAccel = faceThrusters.sumOf { it.type.accel }
 		val totalSpeed = faceThrusters.sumOf { it.type.speed }
 
-		val maxSpeed = 221.32*mass.pow(-0.206)
+		val maxSpeed = 162.45031*mass.pow(-0.17838248)
 		val maxAccel = 8.5782935*mass.pow(-0.1264505)
 
 		val helper1 = ln((-(maxSpeed).roundToInt()-0.5)/(maxSpeed) + 1)
