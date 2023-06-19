@@ -13,7 +13,7 @@ object DiscordCommands {
 		discord?.updateCommands {
 			slash("info", "Information on the server")
 			slash("playerlist", "List the players")
-		}
+		}?.queue()
 
 		discord?.onCommand("info") {
 			it.replyEmbeds(
@@ -29,7 +29,7 @@ object DiscordCommands {
 							[Server Rules](https://wiki.horizonsend.net/rules)
 							""".trimIndent()
 				}
-			)
+			).queue()
 		}
 
 		discord?.onCommand("playerlist") {
@@ -44,7 +44,7 @@ object DiscordCommands {
 						}
 					}
 				}
-			)
+			).queue()
 		}
 	}
 }
