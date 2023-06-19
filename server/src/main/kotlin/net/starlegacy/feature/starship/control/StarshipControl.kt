@@ -56,6 +56,7 @@ import kotlin.math.*
 
 object StarshipControl : SLComponent() {
 	val CONTROLLER_TYPE = Material.CLOCK
+	private const val GROUND_VEHICLE_CLEARANCE = 2
 
 	fun isHoldingController(player: Player): Boolean {
 		val inventory = player.inventory
@@ -349,6 +350,7 @@ object StarshipControl : SLComponent() {
 	}
 
 	fun getGroundClearance(starship: ActiveStarship): Int {
+
 		val hitboxMin = starship.hitbox.min
 		val hitboxMax = starship.hitbox.max
 
@@ -359,11 +361,10 @@ object StarshipControl : SLComponent() {
 
 		fun getClearance(startX: Int, startZ: Int): Int {
 			for (y in startY downTo 0) {
-				if (starship.isInBounds(startX, y, startZ)) continue
+				if (starship.blocks.contains(blockKey(startX, y, startZ))) continue
 
 				if (!starship.serverLevel.world.getBlockAt(startX, y, startZ).type.isAir) {
-
-					return min(-3, y - startY + 3)
+					return max(-3, y - startY + GROUND_VEHICLE_CLEARANCE)
 				}
 			}
 
