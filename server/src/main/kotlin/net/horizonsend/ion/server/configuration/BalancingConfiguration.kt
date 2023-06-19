@@ -453,7 +453,7 @@ data class BalancingConfiguration(
 			speed = 200.0,
 			shieldDamageMultiplier = 2,
 			thickness = 0.0,
-			particleThickness = 0.5,
+			particleThickness = 0.3,
 			explosionPower = 4.0f,
 			volume = 0,
 			pitch = 2.0f,
