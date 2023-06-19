@@ -275,13 +275,6 @@ object PilotedStarships : SLComponent() {
 				return@activateAsync
 			}
 
-			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
-			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
-				player.userError("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
-				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-				return@activateAsync
-			}
-
 			pilot(activePlayerStarship, player)
 
 			player.sendMessage(

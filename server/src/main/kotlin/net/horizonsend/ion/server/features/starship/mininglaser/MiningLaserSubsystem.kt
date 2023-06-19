@@ -3,19 +3,23 @@ package net.horizonsend.ion.server.features.starship.mininglaser
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
+import net.horizonsend.ion.server.miscellaneous.countType
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.space.SpaceWorlds
+import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
+import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
+import net.starlegacy.feature.starship.subsystem.RestrictedWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.util.Vec3i
@@ -39,7 +43,7 @@ class MiningLaserSubsystem(
 	pos: Vec3i,
 	private val face: BlockFace,
 	val multiblock: MiningLaserMultiblock
-) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
+) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem, RestrictedWeaponSubsystem {
 	private val firingTasks = mutableListOf<BukkitTask>()
 	var isFiring = false
 	lateinit var targetedBlock: Vector
@@ -57,6 +61,27 @@ class MiningLaserSubsystem(
 	private val radiusSquared = multiblock.mineRadius * multiblock.mineRadius
 
 	var tick = 0
+
+	override fun isRestricted(starship: ActiveStarship): Boolean {
+		val type: StarshipType = starship.type
+		if (type.isWarship) return false
+
+		val maxTier = when (type) {
+			StarshipType.SHUTTLE -> 1
+			StarshipType.TRANSPORT -> 2
+			StarshipType.LIGHT_FREIGHTER -> 2
+			StarshipType.MEDIUM_FREIGHTER -> 3
+			StarshipType.HEAVY_FREIGHTER -> 3
+			else -> 0
+		}
+
+		if (this.multiblock.tier > maxTier) {
+			starship.userError("Cannot detect tier ${this.multiblock.tier} mining laser!")
+			return false
+		}
+
+		return true
+	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		val firePos = getFirePos()
@@ -94,20 +119,6 @@ class MiningLaserSubsystem(
 		return multiblock.signMatchesStructure(sign, loadChunks = true, particles = false)
 	}
 
-// 	// TODO use this for the multiple guardian beams
-// 	private fun getPoints(axis: Vector): List<Location> {
-// 		val spread: Double = 360.0 / multiblock.beamCount
-// 		val points = mutableListOf<Location>()
-// 		val start = axis.clone().normalize().rotateAroundZ(90.0).multiply(multiblock.mineRadius).add(axis.clone())
-//
-// 		for (count in multiblock.beamCount.downTo(1)) {
-// 			val newLoc = start.rotateAroundNonUnitAxis(axis.clone(), spread * count)
-// 			points.add(newLoc.toLocation(starship.serverLevel.world))
-// 		}
-//
-// 		return points
-// 	}
-
 	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
 		val sign = getSign() ?: return
 
@@ -123,18 +134,19 @@ class MiningLaserSubsystem(
 	}
 
 	private fun setFiring(firing: Boolean, sign: Sign, user: Controller? = null) {
-		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
+		val alreadyFiring = starship.subsystems.countType<MiningLaserSubsystem>()
+		val maxCount = getMaxMiningLasers(starship)
 
 		when (firing) {
 			true -> {
 				// Less than but not equal to because it will increase by 1
-				if (alreadyFiring < starship.type.maxMiningLasers) {
+				if (alreadyFiring < maxCount) {
 					isFiring = true
 					setUser(sign, user!!.name)
 					starship.information("Enabled mining laser at $pos")
 					startFiringSequence()
 				} else {
-					starship.information("Your ship can only fire ${starship.type.maxMiningLasers} mining lasers at once!")
+					starship.information("Your ship can only fire ${maxCount} mining lasers at once!")
 					isFiring = false
 				}
 			}
@@ -335,5 +347,16 @@ class MiningLaserSubsystem(
 		}
 
 		return toDestroy.apply { sortBy { it.location.distanceSquared(pos.toLocation(center.world)) } }
+	}
+
+	companion object {
+		fun getMaxMiningLasers(starship: ActiveStarship): Int = when (starship.type) {
+			StarshipType.SHUTTLE -> 1
+			StarshipType.TRANSPORT -> 2
+			StarshipType.LIGHT_FREIGHTER -> 3
+			StarshipType.MEDIUM_FREIGHTER -> 4
+			StarshipType.HEAVY_FREIGHTER -> 6
+			else -> 0
+		}
 	}
 }

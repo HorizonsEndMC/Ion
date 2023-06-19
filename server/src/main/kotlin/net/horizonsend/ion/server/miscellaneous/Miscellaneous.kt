@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous
 
-import net.horizonsend.ion.common.DoubleLocation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
@@ -54,7 +53,7 @@ fun mainThreadCheck() {
 	}
 }
 
-fun Location.triple() = DoubleLocation(x, y, z)
+inline fun <reified T>Collection<*>.countType(): Int = this.count { it is T }
 
 fun <K>Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V>Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
