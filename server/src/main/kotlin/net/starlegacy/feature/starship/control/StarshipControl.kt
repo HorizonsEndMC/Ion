@@ -349,20 +349,37 @@ object StarshipControl : SLComponent() {
 	}
 
 	fun getGroundClearance(starship: ActiveStarship): Int {
+		val hitboxMin = starship.hitbox.min
+		val hitboxMax = starship.hitbox.max
+
 		val startY = starship.hitbox.min.y
-		val (x, _, z) = starship.centerOfMass
+		val (centerX, _, centerZ) = starship.centerOfMass
 
-		for (y in startY downTo 0) {
-			val isInBounds = starship.isInBounds(x, y, z)
-			if (isInBounds) continue
+		val sampledPoints = mutableListOf<Int>()
 
-			if (!starship.serverLevel.world.getBlockAt(x, y, z).type.isAir) {
+		fun getClearance(startX: Int, startZ: Int): Int {
+			for (y in startY downTo 0) {
+				if (starship.isInBounds(startX, y, startZ)) continue
 
-				return min(-3, y - startY + 3)
+				if (!starship.serverLevel.world.getBlockAt(startX, y, startZ).type.isAir) {
+
+					return min(-3, y - startY + 3)
+				}
 			}
+
+			return 0
 		}
 
-		return 0
+		// Center
+		sampledPoints.add(getClearance(centerX, centerZ))
+
+		// Corners
+		sampledPoints.add(getClearance(hitboxMin.x, hitboxMin.z))
+		sampledPoints.add(getClearance(hitboxMax.x, hitboxMin.z))
+		sampledPoints.add(getClearance(hitboxMin.x, hitboxMax.z))
+		sampledPoints.add(getClearance(hitboxMax.x, hitboxMax.z))
+
+		return sampledPoints.max()
 	}
 
 	fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
