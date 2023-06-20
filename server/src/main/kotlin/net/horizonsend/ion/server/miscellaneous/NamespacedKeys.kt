@@ -9,6 +9,10 @@ object NamespacedKeys {
 	val Y = key("y")
 	val Z = key("z")
 
+	val UP_DOWN = key("up_down")
+	val LEFT_RIGHT = key("left_right")
+	val FORWARD_BACKWARD = key("left_right")
+
 	// Block Data PDC
 	val BLOCK_STATE = key("block_state")
 	val BLOCK_ENTITY = key("block_entity")
@@ -41,7 +45,7 @@ object NamespacedKeys {
 
 	val COMBAT_NPC = key("combatnpc")
 
-	@Deprecated("") val MULTIBLOCK = key("multiblock")
+	val MULTIBLOCK = key("multiblock")
 
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
 

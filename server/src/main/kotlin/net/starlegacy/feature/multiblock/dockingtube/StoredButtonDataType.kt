@@ -1,28 +1,24 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
-import com.manya.pdc.minecraft.LocationDataType
-import net.horizonsend.ion.common.IntLocation
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-data class SignDataType(val loc: IntLocation, val type: Material) {
-	companion object : PersistentDataType<PersistentDataContainer, SignDataType> {
+data class StoredButtonDataType(val leftRight: Int, val upDown: Int, val type: Material) {
+	companion object : PersistentDataType<PersistentDataContainer, StoredButtonDataType> {
 		override fun getPrimitiveType() = PersistentDataContainer::class.java
-		override fun getComplexType() = SignDataType::class.java
+		override fun getComplexType() = StoredButtonDataType::class.java
 
 		override fun toPrimitive(
-			complex: SignDataType,
+			complex: StoredButtonDataType,
 			context: PersistentDataAdapterContext
 		): PersistentDataContainer {
 			val primitive = context.newPersistentDataContainer()
-			val (x, y, z) = complex.loc
 
-			primitive.set(NamespacedKeys.X, PersistentDataType.INTEGER, x)
-			primitive.set(NamespacedKeys.Y, PersistentDataType.INTEGER, y)
-			primitive.set(NamespacedKeys.Z, PersistentDataType.INTEGER, z)
+			primitive.set(NamespacedKeys.LEFT_RIGHT, PersistentDataType.INTEGER, complex.leftRight)
+			primitive.set(NamespacedKeys.UP_DOWN, PersistentDataType.INTEGER, complex.upDown)
 
 			primitive.set(NamespacedKeys.MATERIAL, PersistentDataType.STRING, complex.type.name)
 
@@ -32,14 +28,13 @@ data class SignDataType(val loc: IntLocation, val type: Material) {
 		override fun fromPrimitive(
 			primitive: PersistentDataContainer,
 			context: PersistentDataAdapterContext
-		): SignDataType {
-			val x = primitive.get(NamespacedKeys.X, PersistentDataType.INTEGER)!!
-			val y = primitive.get(NamespacedKeys.Y, PersistentDataType.INTEGER)!!
-			val z = primitive.get(NamespacedKeys.Z, PersistentDataType.INTEGER)!!
+		): StoredButtonDataType {
+			val leftRight = primitive.get(NamespacedKeys.LEFT_RIGHT, PersistentDataType.INTEGER)!!
+			val upDown = primitive.get(NamespacedKeys.UP_DOWN, PersistentDataType.INTEGER)!!
 
 			val material = Material.getMaterial(primitive.get(NamespacedKeys.MATERIAL, PersistentDataType.STRING)!!)!!
 
-			return SignDataType(IntLocation(x, y, z), material)
+			return StoredButtonDataType(leftRight, upDown, material)
 		}
 	}
 }
