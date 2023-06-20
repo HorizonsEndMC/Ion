@@ -27,7 +27,7 @@ dependencies {
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies
-	implementation("net.dv8tion:JDA:5.0.0-beta.10")
+	implementation("net.dv8tion:JDA:5.0.0-beta.11")
 	implementation("com.github.minndevelopment:jda-ktx:-SNAPSHOT")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.14.0")
 	implementation("net.kyori:adventure-text-minimessage:4.14.0")
