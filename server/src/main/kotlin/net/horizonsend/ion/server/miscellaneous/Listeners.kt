@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListen
 import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
+import net.horizonsend.ion.server.legacy.listeners.BiomeFixer9001
 import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
 import net.horizonsend.ion.server.migrator.DataMigrator
@@ -46,6 +47,7 @@ val listeners = arrayOf(
 	ResourcePackListener(),
 	VoidNetwork(),
 	CryoPods,
+	BiomeFixer9001(),
 
 	// Achievement Listeners
 	AchievementListeners()
