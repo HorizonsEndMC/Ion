@@ -31,6 +31,10 @@ class ProxyPingListener {
 					)
 				)
 
+				onlinePlayers(
+					IonProxy.proxy.playerCount
+				)
+
 				maximumPlayers(
 					IonProxy.proxy.playerCount + 1
 				)

@@ -11,6 +11,7 @@ plugins {
 repositories {
 	mavenCentral()
 
+	maven("https://mvn.exceptionflug.de/repository/exceptionflug-public/") // Protocolize
 	maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 	maven("https://repo.papermc.io/repository/maven-public/") // Waterfall
 	maven("https://jitpack.io/")
@@ -25,6 +26,7 @@ dependencies {
 
 	// Other Plugins
 	compileOnly("net.luckperms:api:5.4")
+	compileOnly("dev.simplix:protocolize-api:2.3.0")
 
 	// Included Dependencies
 	implementation("net.dv8tion:JDA:5.0.0-beta.11")
