@@ -5,6 +5,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.rightFace
+import net.starlegacy.util.Vec3i
+import net.starlegacy.util.axis
+import org.bukkit.Axis
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -62,5 +65,31 @@ abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock() {
 		buttons.add(doorBottomFront.getRelative(left))
 		buttons.add(doorBottomFront.getRelative(BlockFace.DOWN))
 		return buttons
+	}
+
+	fun relativeOffsetToCoordinate(facing: BlockFace, leftRight: Int, upDown: Int): Vec3i {
+		val y = upDown
+		var x = 0
+		var z = 0
+
+		when (facing.axis) {
+			Axis.X -> { z = leftRight }
+			Axis.Z -> { x = leftRight }
+			else -> { throw NotImplementedError() }
+		}
+
+		return Vec3i(x, y, z)
+	}
+
+	fun relativeCoordinateToOffset(facing: BlockFace, offset: Vec3i): Pair<Int, Int> {
+		val (x, y, z) = offset
+
+		val leftRight: Int = when (facing.axis) {
+			Axis.X -> z
+			Axis.Z -> x
+			else -> { throw NotImplementedError() }
+		}
+
+		return leftRight to y
 	}
 }

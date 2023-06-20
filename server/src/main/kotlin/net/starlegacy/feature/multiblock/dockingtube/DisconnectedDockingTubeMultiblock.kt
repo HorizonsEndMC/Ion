@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
 import com.manya.pdc.DataTypes
-import net.horizonsend.ion.common.IntLocation
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
@@ -13,8 +13,6 @@ import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isDoor
-import net.starlegacy.util.minus
-import net.starlegacy.util.toBlockPos
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Sign
@@ -61,10 +59,18 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 				// get the location the other side would have a sign at
 				// doesn't actually have to be a sign block
 				// if it's unloaded then tell them too move closer
-				val otherSignLocation = block.getRelativeIfLoaded(direction)?.location ?: run {
+				val otherSignBlock = block.getRelativeIfLoaded(direction) ?: run {
 					player.userError("Door on other end is too far.")
 					return
 				}
+
+				val otherSign: Sign? = otherSignBlock.state as? Sign
+
+				if (otherSign == null) {
+					player.information("Warning: the other end of the docking tube does not have a valid sign")
+				}
+
+				val otherSignLocation = otherSignBlock.location
 
 				// if the other side's sign is not a valid closed docking tube it can't connect
 				if (!signMatchesStructure(otherSignLocation, direction.oppositeFace)) {
@@ -90,22 +96,49 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 					PersistentDataType.STRING,
 					ConnectedDockingTubeMultiblock::class.simpleName!!
 				)
+
 				sign.persistentDataContainer.set(
 					NamespacedKeys.TUBE_BUTTONS,
-					DataTypes.list(SignDataType.Companion),
-					(buttonStates + otherButtons).map {
-						val loc = it.location.toBlockPos() - sign.location.toBlockPos()
+					DataTypes.list(StoredButtonDataType.Companion),
+					(buttonStates).map {
+						val loc = Vec3i(it.location) - Vec3i(sign.location)
 
-						SignDataType(
-							IntLocation(
-								loc.x,
-								loc.y,
-								loc.z
-							),
+						val (leftRight, upDown) = relativeCoordinateToOffset(direction, loc)
+
+						StoredButtonDataType(
+							leftRight,
+							upDown,
 							it.type
 						)
 					}
 				)
+
+				otherSign?.let {
+					otherSign.persistentDataContainer.set(
+						NamespacedKeys.TUBE_BUTTONS,
+						DataTypes.list(StoredButtonDataType.Companion),
+						otherButtons.map {
+							val loc = Vec3i(it.location) - Vec3i(sign.location)
+
+							val (leftRight, upDown) = relativeCoordinateToOffset(direction.oppositeFace, loc)
+
+							StoredButtonDataType(
+								leftRight,
+								upDown,
+								it.type
+							)
+						}
+					)
+
+					otherSign.persistentDataContainer.set(
+						NamespacedKeys.MULTIBLOCK,
+						PersistentDataType.STRING,
+						ConnectedDockingTubeMultiblock::class.simpleName!!
+					)
+
+					otherSign.line(3, ConnectedDockingTubeMultiblock.stateText)
+					otherSign.update(false, false)
+				}
 
 				sign.line(3, ConnectedDockingTubeMultiblock.stateText)
 				sign.update(false, false)
@@ -117,9 +150,7 @@ object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 			val buttonRelatives = buttons.map { it.getRelative(direction, distance) }
 
 			for (buttonRelative in buttonRelatives) {
-				if (buttonRelative.type == Material.AIR) {
-					continue
-				}
+				if (buttonRelative.type == Material.AIR) continue
 
 				player.userError("Blocked at ${Vec3i(buttonRelative.location)}")
 				return

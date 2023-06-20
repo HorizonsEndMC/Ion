@@ -1,6 +1,7 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
 import com.manya.pdc.DataTypes
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.int
@@ -16,7 +17,6 @@ import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isDoor
 import net.starlegacy.util.isGlass
 import net.starlegacy.util.minus
-import net.starlegacy.util.toBlockPos
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
@@ -76,10 +76,18 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 			// get the location the other side would have a sign at
 			// doesn't actually have to be a sign block
 			// if it's unloaded then tell them too move closer
-			val otherSignLocation = block.getRelativeIfLoaded(direction)?.location ?: run {
+			val otherSignBlock = block.getRelativeIfLoaded(direction) ?: run {
 				player.userError("Door on other end is too far.")
 				return
 			}
+
+			val otherSign: Sign? = otherSignBlock.state as? Sign
+
+			if (otherSign == null) {
+				player.information("Warning: the other end of the docking tube does not have a valid sign")
+			}
+
+			val otherSignLocation = otherSignBlock.location
 
 			// if the other side's sign is not a valid docking tube then we can't dock
 			if (!signMatchesStructure(otherSignLocation, direction.oppositeFace)) {
@@ -96,15 +104,17 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 				}
 			}
 
-			val buttonsPdc = sign.persistentDataContainer.get(
-				NamespacedKeys.TUBE_BUTTONS,
-				DataTypes.list(SignDataType.Companion)
-			)!!
+			fun setButtons(sign: Sign, buttons: List<Block>, facing: BlockFace) {
+				val pdc = sign.persistentDataContainer.get(
+					NamespacedKeys.TUBE_BUTTONS,
+					DataTypes.list(StoredButtonDataType.Companion)
+				)!!
 
-			fun setButtons(buttons: List<Block>, facing: BlockFace) {
 				buttons.forEach { block ->
-					val material = buttonsPdc.find {
-						it.loc == block.location.triple().int() - sign.location.triple().int()
+					val (newLeftRight, newUpDown) = relativeCoordinateToOffset(direction, Vec3i(block.location) - Vec3i(sign.location))
+
+					val material = pdc.find {
+						it.leftRight == newLeftRight && it.upDown == newUpDown
 					}?.type ?: Material.STONE_BUTTON
 
 					val button = material.createBlockData {
@@ -117,8 +127,8 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 			val otherButtons = getButtons(otherSignLocation, direction.oppositeFace)
 
-			setButtons(buttons, direction)
-			setButtons(otherButtons, direction.oppositeFace)
+			setButtons(sign, buttons, direction)
+			setButtons(otherSign ?: sign, otherButtons, direction.oppositeFace)
 
 			player.successActionMessage("Docking tube disconnected.")
 
@@ -130,6 +140,18 @@ object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 
 			sign.line(3, DisconnectedDockingTubeMultiblock.stateText)
 			sign.update(false, false)
+
+			otherSign?.let {
+				otherSign.line(3, DisconnectedDockingTubeMultiblock.stateText)
+
+				otherSign.persistentDataContainer.set(
+					NamespacedKeys.MULTIBLOCK,
+					PersistentDataType.STRING,
+					DisconnectedDockingTubeMultiblock::class.simpleName!!
+				)
+
+				otherSign.update(false, false)
+			}
 
 			sign.world.playSound(sign.location, Sound.BLOCK_PISTON_CONTRACT, 1.0f, 1.5f)
 			return
