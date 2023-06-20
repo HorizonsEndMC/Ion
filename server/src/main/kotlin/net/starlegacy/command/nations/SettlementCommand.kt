@@ -33,6 +33,7 @@ import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.Territory
@@ -482,15 +483,15 @@ internal object SettlementCommand : SLCommand() {
 				.clickEvent(ClickEvent.runCommand("/n info ${settlementNationCached.name}"))
 
 			senderNationId?.let {
-				val relation = RelationCache[nationId, senderNationId]
-				val otherRelation = RelationCache.getWish(nationId, senderNationId)
-				val wish = RelationCache.getWish(senderNationId, nationId)
+				val relation = NationRelation.getRelationActual(nationId, senderNationId)
+				val otherRelation = NationRelation.getRelationWish(nationId, senderNationId)
+				val wish = NationRelation.getRelationWish(senderNationId, nationId)
 
 				val relationHover = text("Your Wish: ")
-					.append(MiniMessage.miniMessage().deserialize(wish.coloredName))
+					.append(wish.component)
 					.append(newline())
 					.append(text("Their Wish: "))
-					.append(MiniMessage.miniMessage().deserialize(otherRelation.coloredName))
+					.append(otherRelation.component)
 					.asHoverEvent()
 
 				val relationText = text()
@@ -498,7 +499,7 @@ internal object SettlementCommand : SLCommand() {
 					.hoverEvent(relationHover)
 					.append(text(" ("))
 					.append(text("Relation: ").color(TextColor.fromHexString("#b8e0d4")))
-					.append(MiniMessage.miniMessage().deserialize(relation.coloredName))
+					.append(relation.component)
 					.append(text(")"))
 
 				nationsText.append(relationText)

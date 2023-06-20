@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.trx
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
 import org.litote.kmongo.ensureIndex
@@ -67,14 +69,14 @@ data class NationRelation(
 	}
 
 	/** Relation wishes nations can set to other nations */
-	enum class Level(val textStyle: String) {
-		ENEMY("red"),
-		UNFRIENDLY("gold"),
-		NONE("gray"),
-		NEUTRAL("light_purple"),
-		FRIENDLY("aqua"),
-		ALLY("dark_purple"),
-		NATION("green");
+	enum class Level(val textStyle: String, val color: NamedTextColor) {
+		ENEMY("red", NamedTextColor.RED),
+		UNFRIENDLY("gold", NamedTextColor.GOLD),
+		NONE("gray", NamedTextColor.GRAY),
+		NEUTRAL("light_purple", NamedTextColor.LIGHT_PURPLE),
+		FRIENDLY("aqua", NamedTextColor.AQUA),
+		ALLY("dark_purple", NamedTextColor.DARK_PURPLE),
+		NATION("green", NamedTextColor.GREEN);
 
 		fun lowest(other: Level): Level = when {
 			other.ordinal > this.ordinal -> this
@@ -82,5 +84,6 @@ data class NationRelation(
 		}
 
 		val coloredName = "<$textStyle>$name</$textStyle>"
+		val component = Component.text(name, color)
 	}
 }

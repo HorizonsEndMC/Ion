@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.NationRole
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.Territory
@@ -526,20 +527,20 @@ internal object NationCommand : SLCommand() {
 		message.append(newline())
 
 		senderNationId?.let {
-			val relation = RelationCache[nationId, senderNationId]
-			val otherRelation = RelationCache.getWish(nationId, senderNationId)
-			val wish = RelationCache.getWish(senderNationId, nationId)
+			val relation = NationRelation.getRelationActual(nationId, senderNationId)
+			val otherRelation = NationRelation.getRelationWish(nationId, senderNationId)
+			val wish = NationRelation.getRelationWish(senderNationId, nationId)
 
 			val relationHover = text("Your Wish: ")
-				.append(MiniMessage.miniMessage().deserialize(wish.coloredName))
+				.append(wish.component)
 				.append(newline())
 				.append(text("Their Wish: "))
-				.append(MiniMessage.miniMessage().deserialize(otherRelation.coloredName))
+				.append(otherRelation.component)
 				.asHoverEvent()
 
 			message.append(
 				text("Relation: ").hoverEvent(relationHover)
-					.append(MiniMessage.miniMessage().deserialize(relation.coloredName))
+					.append(relation.component)
 			)
 			message.append(newline())
 		}
