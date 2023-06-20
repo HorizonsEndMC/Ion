@@ -1,10 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous
 
 import net.horizonsend.ion.common.DoubleLocation
-import net.horizonsend.ion.common.IntLocation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
-import net.horizonsend.ion.common.database.DBLocation
-import net.horizonsend.ion.common.database.PlayerData
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
 import net.milkbowl.vault.economy.Economy
@@ -22,7 +19,6 @@ import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import net.minecraft.world.level.chunk.LevelChunk
-import net.starlegacy.util.Vec3i
 import org.bukkit.*
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.entity.Entity
