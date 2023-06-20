@@ -277,35 +277,41 @@ object StationSieges : SLComponent() {
 
 		asyncLocked {
 			val slPlayerId = player.slPlayerId
+
 			sieges.removeIf { it.siegerId == slPlayerId }
+
 			if (station.nation == playerNation) {
 				player.userError("This station is already captured by your nation, capture failed.")
 				return@asyncLocked
 			}
+
 			sieges.removeIf { it.siegerId == slPlayerId }
+
 			CapturableStation.setNation(stationId, playerNation)
+
 			val nationName = NationCache[playerNation].name
 			val oldNationName = oldNation?.let { NationCache[it].name } ?: "None"
 			val nowCaptured = CapturableStation.count(CapturableStation::nation eq playerNation)
 			val playerName = player.name
+
 			Notify online MiniMessage.miniMessage().deserialize("<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
 				" $nationName now has $nowCaptured stations!")
 			Notify eventsChannel "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"
+
 			SLXP.addAsync(player, NATIONS_BALANCE.capturableStation.siegerXP)
+
 			Tasks.sync {
 				for (otherPlayer in world.players) {
-					if (otherPlayer.slPlayerId == slPlayerId) {
-						continue
-					}
+					if (otherPlayer.slPlayerId == slPlayerId) continue
+					if (oldNation == null) continue
+					if (!station.contains(otherPlayer.location)) continue
 
-					if (oldNation != null) {
-						if (NationRelation.getRelationActual(playerNation, oldNation).ordinal >= 5) {
-							if (!station.contains(otherPlayer.location)) {
-								continue
-							}
+					val otherPlayerNation = PlayerCache[otherPlayer].nationOid ?: continue
 
-							SLXP.addAsync(otherPlayer, NATIONS_BALANCE.capturableStation.siegerAllyXP)
-						}
+					if (NationRelation.getRelationActual(playerNation, otherPlayerNation).ordinal >= NationRelation.Level.ALLY.ordinal) {
+
+						SLXP.addAsync(otherPlayer, NATIONS_BALANCE.capturableStation.siegerAllyXP)
+						player.rewardAchievement(Achievement.CAPTURE_STATION)
 					}
 				}
 			}
