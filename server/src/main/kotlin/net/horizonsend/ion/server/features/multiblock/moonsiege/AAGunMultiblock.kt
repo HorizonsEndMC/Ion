@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.moons.aaguns
+package net.horizonsend.ion.server.features.multiblock.moonsiege
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text

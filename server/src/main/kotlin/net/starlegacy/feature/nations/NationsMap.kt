@@ -75,6 +75,7 @@ object NationsMap : SLComponent() {
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
 	}
 
+	// Start territories
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
@@ -194,7 +195,9 @@ object NationsMap : SLComponent() {
 		marker.setFillStyle(fillOpacity, fillRGB)
 		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
 	}
+	// End territories
 
+	// Start capturable station
 	fun addCapturableStation(station: RegionCapturableStation): Unit = syncOnly {
 		removeCapturableStation(station)
 
@@ -247,7 +250,9 @@ object NationsMap : SLComponent() {
 		</p>
 		""".trimIndent()
 	}
+	// End capturable space stations
 
+	// Start nation space stations
 	fun addSpaceStation(station: RegionSpaceStation): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
@@ -298,6 +303,9 @@ object NationsMap : SLComponent() {
 		addSpaceStation(station)
 	}
 
+	// End nation space stations
+
+	// Start siege territories
 	fun updateSiegeTerritory(territory: RegionSiegeTerritory): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
@@ -381,6 +389,92 @@ object NationsMap : SLComponent() {
 			e.printStackTrace()
 		}
 	}
+	// End siege territories
+
+	// Start FOB
+	fun updateForwardOperatingBase(territory: RegionForwardOperatingBase): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+
+		if (marker == null) {
+			log.warn("No area marker for territory with ID ${territory.id}")
+			addForwardOperatingBase(territory)
+			return@syncOnly
+		}
+
+		var fillOpacity = 0.3
+		var fillRGB = Integer.parseInt("333333", 16)
+		var lineThickness = 10
+		var lineOpacity = 0.75
+		var lineRGB = Integer.parseInt("333333", 16)
+
+		marker.label = territory.name
+
+		val nation: Nation? = territory.nation?.let(Nation.Companion::findById)
+
+		if (nation != null) {
+			val rgb = nation.color
+			fillOpacity = 0.2
+			fillRGB = rgb
+			lineOpacity = 0.5
+			lineRGB = rgb
+			marker.label += " (${nation.name})"
+		}
+
+		marker.description = """
+		<p><h2>${territory.name}</h2></p><p>
+		${if (nation == null) {
+			"""
+			""".trimIndent()
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			""".trimIndent()
+		}}
+		</p>
+		""".trimIndent()
+
+		marker.setFillStyle(fillOpacity, fillRGB)
+		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
+	}
+
+	private fun removeForwardOperatingBase(territory: RegionForwardOperatingBase): Unit = syncOnly {
+		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+	}
+
+	fun addForwardOperatingBase(territory: RegionForwardOperatingBase): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		try {
+			removeForwardOperatingBase(territory)
+
+			val world = territory.bukkitWorld ?: return@syncOnly
+			val polygon = territory.polygon
+
+			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
+			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
+
+			markerSet.createAreaMarker(
+				territory.id.toString(),
+				territory.name,
+				false,
+				world.name,
+				xPoints.map { it.toDouble() }.toDoubleArray(),
+				yPoints.map { it.toDouble() }.toDoubleArray(),
+				false
+			)
+
+			updateForwardOperatingBase(territory)
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
+	}
+	// End FOB
 
 	private fun getMarkerID(station: RegionSpaceStation) =
 		"nation-station-" + station.id.toString()
