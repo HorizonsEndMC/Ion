@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
+import net.starlegacy.feature.space.EnterableCelestialBody
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
@@ -306,7 +307,10 @@ object StarshipControl : SLComponent() {
 		val world = starship.serverLevel.world
 		val newCenter = starship.centerOfMassVec3i.toLocation(world).add(dx.d(), dy.d(), dz.d())
 
-		val planet = Space.getPlanets().asSequence()
+		val allPlanetsMoons: List<EnterableCelestialBody> = (Space.getPlanets() as List<EnterableCelestialBody>).toMutableList()
+			.apply { this.addAll(Space.getMoons() as List<EnterableCelestialBody>) }
+
+		val celestialBody: EnterableCelestialBody = allPlanetsMoons.asSequence()
 			.filter { it.spaceWorld == world }
 			.filter {
 				it.location.toLocation(world).distanceSquared(newCenter) < starship.getEntryRange(it).toDouble().pow(2)
@@ -314,7 +318,7 @@ object StarshipControl : SLComponent() {
 			.firstOrNull()
 			?: return false
 
-		val border = planet.planetWorld?.worldBorder
+		val border = celestialBody.planetWorld?.worldBorder
 			?.takeIf { it.size < 60_000_000 } // don't use if it's the default, giant border
 		val halfLength = if (border == null) 2500.0 else border.size / 2.0
 		val centerX = border?.center?.x ?: halfLength
@@ -322,15 +326,15 @@ object StarshipControl : SLComponent() {
 
 		val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.serverLevel.world.maxHeight)
 		val offset = newCenter.toVector()
-			.subtract(planet.location.toVector())
+			.subtract(celestialBody.location.toVector())
 			.normalize().multiply(distance)
 
 		val x = centerX + offset.x
 		val y = 250.0 - (starship.max.y - starship.min.y)
 		val z = centerZ + offset.z
-		val target = Location(planet.planetWorld, x, y, z).toBlockLocation()
+		val target = Location(celestialBody.planetWorld, x, y, z).toBlockLocation()
 
-		starship.sendMessage("&7&oEntering &2&o${planet.name}&7&o...")
+		starship.sendMessage("&7&oEntering &2&o${celestialBody.name}&7&o...")
 
 		StarshipTeleportation.teleportStarship(starship, target)
 		return true

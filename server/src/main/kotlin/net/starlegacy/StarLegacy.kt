@@ -33,6 +33,7 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.MAX_LEVEL
+import net.starlegacy.feature.space.CachedMoon
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
@@ -115,6 +116,11 @@ fun registerCommands(manager: PaperCommandManager) {
 				?: throw InvalidCommandArgument("No such planet")
 		}
 
+		registerContext(CachedMoon::class.java) { c: BukkitCommandExecutionContext ->
+			Space.moonNameCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
+				?: throw InvalidCommandArgument("No such moon")
+		}
+
 		registerContext(CargoCrate::class.java) { c: BukkitCommandExecutionContext ->
 			CargoCrates[c.popFirstArg().uppercase(Locale.getDefault())]
 				?: throw InvalidCommandArgument("No such crate")
@@ -174,6 +180,7 @@ fun registerCommands(manager: PaperCommandManager) {
 		},
 		"stars" to { _ -> Space.getStars().map(CachedStar::name) },
 		"planets" to { _ -> Space.getPlanets().map(CachedPlanet::name) },
+		"moons" to { _ -> Space.getMoons().map(CachedMoon::name) },
 		"crates" to { _ -> CargoCrates.crates.map { it.name } },
 		"collecteditems" to { _ -> CollectedItem.all().map { "${EcoStations[it.station].name}.${it.itemString}" } },
 		"ecostations" to { _ -> EcoStations.getAll().map { it.name } },

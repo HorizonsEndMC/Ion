@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.starlegacy.SLComponent
 import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.space.Moon
 import net.horizonsend.ion.server.database.schema.space.Planet
 import net.horizonsend.ion.server.database.schema.space.Star
 import net.starlegacy.listen
@@ -20,6 +21,7 @@ import java.util.Optional
 object Space : SLComponent() {
 	private val stars = mutableListOf<CachedStar>()
 	private val planets = mutableListOf<CachedPlanet>()
+	private val moons = mutableListOf<CachedMoon>()
 
 	val planetWorldCache: LoadingCache<World, Optional<CachedPlanet>> =
 		CacheBuilder.newBuilder().weakKeys().build(
@@ -50,6 +52,24 @@ object Space : SLComponent() {
 			}
 		)
 
+	val moonNameCache: LoadingCache<String, Optional<CachedMoon>> =
+		CacheBuilder.newBuilder().build(
+			CacheLoader.from { name ->
+				return@from optional(
+					moons.firstOrNull {
+						it.id.equals(name, ignoreCase = true) || it.name.equals(name, ignoreCase = true)
+					}
+				)
+			}
+		)
+
+	val moonWorldCache: LoadingCache<World, Optional<CachedMoon>> =
+		CacheBuilder.newBuilder().weakKeys().build(
+			CacheLoader.from { world ->
+				return@from optional(moons.firstOrNull { it.planetWorld == world })
+			}
+		)
+
 	override fun onEnable() {
 		reload()
 
@@ -59,6 +79,7 @@ object Space : SLComponent() {
 	fun reload() {
 		stars.clear()
 		planets.clear()
+		moons.clear()
 
 		for (mongoStar: Star in Star.all()) {
 			val starId: Oid<Star> = mongoStar._id
@@ -114,11 +135,11 @@ object Space : SLComponent() {
 				val cloudThreshold = mongoPlanet.cloudThreshold
 				val cloudNoise = mongoPlanet.cloudNoise
 
-				planets += CachedPlanet(
+				val planet = CachedPlanet(
 					databaseId = planetId,
 					name = planetName,
 					sun = star,
-					planetWorldName = planetWorldName,
+					worldName = planetWorldName,
 					rogue = rogue,
 					x = x,
 					z = z,
@@ -135,6 +156,42 @@ object Space : SLComponent() {
 					cloudThreshold = cloudThreshold,
 					cloudNoise = cloudNoise
 				)
+
+				planets += planet
+
+				for (mongoMoon in Moon.getOrbiting(planetId)) {
+					val moonId: Oid<Moon> = mongoMoon._id
+
+					val moonName = mongoMoon.name
+					val moonWorldName = mongoMoon.planetWorld
+
+					val moonSize = mongoMoon.size
+					val moonOrbitDistance = mongoMoon.orbitDistance
+					val moonOrbitSpeed = mongoMoon.orbitSpeed
+					val moonOrbitProgress = mongoMoon.orbitProgress
+
+					val moonSeed = mongoMoon.seed
+
+					val moonCrustMaterials: List<BlockData> = mongoMoon.crustMaterials
+						.map { Material.getMaterial(it) ?: error("No material $it!") }
+						.map(Material::createBlockData)
+
+					println(moonSize)
+
+					moons += CachedMoon(
+						parent = planet,
+						worldName = moonWorldName,
+						databaseId = moonId,
+						name = moonName,
+						size = moonSize,
+						orbitDistance = moonOrbitDistance,
+						orbitSpeed = moonOrbitSpeed,
+						orbitProgress = moonOrbitProgress,
+						seed = moonSeed,
+						crustMaterials = moonCrustMaterials,
+						crustNoise = crustNoise
+					)
+				}
 			}
 		}
 
@@ -148,11 +205,15 @@ object Space : SLComponent() {
 
 	fun getPlanets(): List<CachedPlanet> = planets
 
+	fun getMoons(): List<CachedMoon> = moons
+
 	fun getPlanet(planetWorld: World): CachedPlanet? = planetWorldCache[planetWorld].orElse(null)
 
 	fun getPlanet(planetName: String): CachedPlanet? = planetNameCache[planetName].orElse(null)
 
 	fun getStar(starName: String): CachedStar? = starNameCache[starName].orElse(null)
+
+	fun getMoon(moonName: String): CachedMoon? = moonNameCache[moonName].orElse(null)
 
 	override fun supportsVanilla(): Boolean {
 		return true
