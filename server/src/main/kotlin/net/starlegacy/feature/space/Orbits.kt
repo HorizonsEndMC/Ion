@@ -36,6 +36,10 @@ object Orbits : SLComponent() {
 				.filter { !it.rogue }
 				.forEach { it.orbit(urgent = urgent, updateDb = false) }
 
+			Space.getMoons().parallelStream()
+				.filter { it.spaceWorld != null }
+				.forEach { it.orbit(urgent = urgent, updateDb = false) }
+
 			Space.getPlanets().parallelStream()
 				.filter { it.spaceWorld != null }
 				.filter { it.rogue }

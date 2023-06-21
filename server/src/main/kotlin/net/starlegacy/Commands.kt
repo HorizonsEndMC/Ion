@@ -38,6 +38,7 @@ import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
 import net.starlegacy.command.progression.AdvanceAdminCommand
 import net.starlegacy.command.progression.BuyXPCommand
 import net.starlegacy.command.progression.XPCommand
+import net.starlegacy.command.space.MoonCommand
 import net.starlegacy.command.space.PlanetCommand
 import net.starlegacy.command.space.SpaceWorldCommand
 import net.starlegacy.command.space.StarCommand
@@ -85,6 +86,7 @@ val commands = listOf(
 	AdvanceAdminCommand,
 	XPCommand,
 
+	MoonCommand,
 	PlanetCommand,
 	SpaceWorldCommand,
 	StarCommand,
