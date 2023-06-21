@@ -1,19 +1,26 @@
 package net.horizonsend.ion.server.features.multiblock.moonsiege
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.database.schema.nations.landsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
+import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
+import net.starlegacy.util.Vec3i
+import net.starlegacy.util.getFacing
+import net.starlegacy.util.rightFace
+import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
-object SiegeBeaconMultiblock : Multiblock() {
+object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 	override val name: String = "siegebeacon"
 
 	private val ACTIVE_STATE = text("Active", NamedTextColor.GREEN).apply { this.decoration(TextDecoration.BOLD) }
@@ -31,17 +38,131 @@ object SiegeBeaconMultiblock : Multiblock() {
 		val territory = SiegeTerritory.findOne(SiegeTerritory::name eq territoryName) ?:
 			return player.userError("Siege territory $territoryName")
 
-		sign.line(2, text(territory.name, NamedTextColor.RED).apply { this.decoration(TextDecoration.ITALIC) })
+		sign.line(1, text(territory.name, NamedTextColor.RED).apply { this.decoration(TextDecoration.ITALIC) })
+
+		val beaconName = (sign.line(3) as TextComponent).content()
+
+		SiegeBeacon.create(
+			beaconName,
+			territory._id,
+			sign.world.name,
+			Vec3i(sign.location)
+		)
 	}
 
-	fun isActive(sign: Sign): Boolean = sign.line(2) == ACTIVE_STATE
+	private val centerOffset = Vec3i(0, 3, -2)
 
-	fun setActive(sign: Sign, active: Boolean) = sign.line(2, if (active) ACTIVE_STATE else INACTIVE_STATE)
+	fun getCenter(sign: Sign): Vec3i {
+		val (x, y, z) = centerOffset
+		val facing = sign.getFacing()
+		val right = facing.rightFace
+
+		return Vec3i(
+			x = (right.modX * x) + (facing.modX * z),
+			y = y,
+			z = (right.modZ * x) + (facing.modZ * z)
+		)
+	}
+
+	fun isActive(sign: Sign): Boolean = sign.line(3) == ACTIVE_STATE
+
+	fun setActive(sign: Sign, active: Boolean) = sign.line(3, if (active) ACTIVE_STATE else INACTIVE_STATE)
+
+	override fun onSignInteract(sign: Sign, player: Player) {
+		MoonSieges.tryBeginSiege(player, sign)
+	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).stainedTerracotta()
+				x(+0).diamondBlock()
+				x(+1).stainedTerracotta()
+			}
+
+			y(+0) {
+				x(-1).anyStairs()
+				x(+0).diamondBlock()
+				x(+1).anyStairs()
+			}
+		}
+
+		z(-1) {
+			y(-1) {
+				x(-2).anyWall()
+				x(-1).stainedTerracotta()
+				x(+0).concrete()
+				x(+1).stainedTerracotta()
+				x(+2).anyWall()
+			}
+
+			y(+0) {
+				x(-2).anyWall()
+				x(-1).ironBlock()
+				x(+0).ironBlock()
+				x(+1).ironBlock()
+				x(+2).anyWall()
+			}
+		}
+
+		z(-2) {
+			y(-1) {
+				x(-2).stainedTerracotta()
+				x(-1).concrete()
+				x(+0).concrete()
+				x(+1).concrete()
+				x(+2).stainedTerracotta()
+			}
+
+			y(+0) {
+				x(-2).stainedTerracotta()
+				x(-1).ironBlock()
+				x(+0).ironBlock()
+				x(+1).ironBlock()
+				x(+2).stainedTerracotta()
+			}
+
+			y(+1) {
+				x(-1).anyWall()
+				x(+0).type(Material.BEACON)
+				x(+1).anyWall()
+			}
+
+			y(+2) {
+				x(-1).anyWall()
+				x(+1).anyWall()
+			}
+		}
+
+		z(-3) {
+			y(-1) {
+				x(-2).anyWall()
+				x(-1).stainedTerracotta()
+				x(+0).concrete()
+				x(+1).stainedTerracotta()
+				x(+2).anyWall()
+			}
+
+			y(+0) {
+				x(-2).anyWall()
+				x(-1).ironBlock()
+				x(+0).ironBlock()
+				x(+1).ironBlock()
+				x(+2).anyWall()
+			}
+		}
+
+		z(-4) {
+			y(-1) {
+				x(-1).anyStairs()
+				x(+0).ironBlock()
+				x(+1).anyStairs()
+			}
+
+			y(+0) {
+				x(-1).anyStairs()
+				x(+0).ironBlock()
+				x(+1).anyStairs()
 			}
 		}
 	}
