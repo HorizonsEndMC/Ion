@@ -98,10 +98,6 @@ internal object SettlementCommand : SLCommand() {
 
 		val territory = requireTerritoryIn(sender)
 
-		failIf(territory.isMoon) {
-			"You can't claim a Territory on Moons!"
-		}
-
 		requireTerritoryUnclaimed(territory)
 
 		val realCost = territory.cost

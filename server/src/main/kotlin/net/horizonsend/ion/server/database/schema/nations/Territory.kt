@@ -42,8 +42,6 @@ data class Territory(
 	/** If the territory should be a safe-zone from PVP and explosions */
 	var isProtected: Boolean = false,
 ) : DbObject {
-	val isMoon get() = world.lowercase().contains("_moon")
-
 	// region dumb stuff
 	// Use all properties for equals, only id for hashcode
 	override fun equals(other: Any?): Boolean {

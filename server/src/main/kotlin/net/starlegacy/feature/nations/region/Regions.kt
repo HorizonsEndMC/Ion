@@ -15,14 +15,18 @@ import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
-import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.landsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.landsieges.SiegeTerritory
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
+import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
 import net.starlegacy.feature.nations.region.types.RegionParent
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
+import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.nations.region.types.RegionTopLevel
@@ -62,6 +66,10 @@ object Regions : SLComponent() {
 		registerRegionType(SettlementSpaceStation.Companion) { RegionSpaceStation(it) }
 
 		registerRegionType(PlayerSpaceStation.Companion) { RegionSpaceStation(it) }
+
+		registerRegionType(SiegeTerritory.Companion) { RegionSiegeTerritory(it) }
+
+		registerRegionType(ForwardOperatingBase.Companion) { RegionForwardOperatingBase(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

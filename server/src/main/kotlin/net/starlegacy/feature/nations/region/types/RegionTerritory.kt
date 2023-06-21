@@ -43,7 +43,6 @@ class RegionTerritory(territory: Territory) :
 	override val children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 	var isProtected: Boolean = territory.isProtected; private set
 	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
-	var isMoon = territory.isMoon; private set
 
 	val oldCost
 		get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(SETTINGS.territoryCost).toInt()

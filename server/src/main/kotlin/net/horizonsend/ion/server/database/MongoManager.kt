@@ -6,7 +6,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.database.schema.Cryopod
+import net.horizonsend.ion.server.database.schema.misc.Cryopod
 import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 import net.starlegacy.SETTINGS
@@ -29,6 +29,9 @@ import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
 import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.landsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.landsieges.MoonSiege
+import net.horizonsend.ion.server.database.schema.nations.landsieges.SiegeTerritory
 import net.horizonsend.ion.server.database.schema.space.Moon
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
@@ -117,6 +120,10 @@ object MongoManager : SLComponent() {
 		Blueprint.init()
 
 		Cryopod.init()
+
+		SiegeTerritory.init()
+		ForwardOperatingBase.init()
+		MoonSiege.init()
 	}
 
 	override fun onDisable() {

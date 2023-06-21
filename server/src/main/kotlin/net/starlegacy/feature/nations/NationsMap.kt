@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
+import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
+import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.util.Tasks
@@ -57,8 +59,10 @@ object NationsMap : SLComponent() {
 
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
-			Regions.getAllOf<RegionTerritory>().filterNot { it.isMoon }.forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
+			Regions.getAllOf<RegionSpaceStation>().forEach(::addSpaceStation)
+			Regions.getAllOf<RegionSiegeTerritory>().forEach(::addSiegeTerritory)
+			Regions.getAllOf<RegionForwardOperatingBase>().forEach(::addForwardOperatingBase)//TODO
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 		}
 	}
@@ -297,6 +301,90 @@ object NationsMap : SLComponent() {
 
 	private fun getMarkerID(station: RegionSpaceStation<*, *>) =
 		"nation-station-" + station.id.toString()
+
+	fun updateSiegeTerritory(territory: RegionSiegeTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+
+		if (marker == null) {
+			log.warn("No area marker for territory with ID ${territory.id}")
+			addSiegeTerritory(territory)
+			return@syncOnly
+		}
+
+		var fillOpacity = 0.3
+		var fillRGB = Integer.parseInt("333333", 16)
+		var lineThickness = 10
+		var lineOpacity = 0.75
+		var lineRGB = Integer.parseInt("333333", 16)
+
+		marker.label = territory.name
+
+		val nation: Nation? = territory.nation?.let(Nation.Companion::findById)
+
+		if (nation != null) {
+			val rgb = nation.color
+			fillOpacity = 0.2
+			fillRGB = rgb
+			lineOpacity = 0.5
+			lineRGB = rgb
+			marker.label += " (${nation.name})"
+		}
+
+		marker.description = """
+		<p><h2>${territory.name}</h2></p><p>
+		${if (nation == null) {
+			"""
+			""".trimIndent()
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			""".trimIndent()
+		}}
+			<p>Siegeable every saturday and sunday
+		</p>
+		""".trimIndent()
+
+		marker.setFillStyle(fillOpacity, fillRGB)
+		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
+	}
+
+	private fun removeSiegeTerritory(territory: RegionSiegeTerritory): Unit = syncOnly {
+		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+	}
+
+	fun addSiegeTerritory(territory: RegionSiegeTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		try {
+			removeSiegeTerritory(territory)
+
+			val world = territory.bukkitWorld ?: return@syncOnly
+			val polygon = territory.polygon
+
+			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
+			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
+
+			markerSet.createAreaMarker(
+				territory.id.toString(),
+				territory.name,
+				false,
+				world.name,
+				xPoints.map { it.toDouble() }.toDoubleArray(),
+				yPoints.map { it.toDouble() }.toDoubleArray(),
+				false
+			)
+
+			updateSiegeTerritory(territory)
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
+	}
 
 	override fun supportsVanilla(): Boolean {
 		return true
