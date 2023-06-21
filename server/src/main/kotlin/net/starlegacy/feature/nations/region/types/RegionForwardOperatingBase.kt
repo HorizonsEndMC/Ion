@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.database.binary
 import net.horizonsend.ion.server.database.get
 import net.horizonsend.ion.server.database.nullable
 import net.horizonsend.ion.server.database.oid
-import net.horizonsend.ion.server.database.schema.nations.landsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
 import net.horizonsend.ion.server.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon

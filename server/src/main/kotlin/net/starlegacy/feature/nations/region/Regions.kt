@@ -17,8 +17,8 @@ import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
 import net.horizonsend.ion.server.database.schema.nations.SpaceStation
 import net.horizonsend.ion.server.database.schema.nations.Territory
-import net.horizonsend.ion.server.database.schema.nations.landsieges.ForwardOperatingBase
-import net.horizonsend.ion.server.database.schema.nations.landsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
