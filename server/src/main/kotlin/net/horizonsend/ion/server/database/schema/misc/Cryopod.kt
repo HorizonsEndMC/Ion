@@ -1,8 +1,6 @@
-package net.horizonsend.ion.server.database.schema
+package net.horizonsend.ion.server.database.schema.misc
 
 import net.horizonsend.ion.server.database.*
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.starlegacy.util.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.Location
