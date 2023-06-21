@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.database.schema.nations.landsieges
+package net.horizonsend.ion.server.database.schema.nations.moonsieges
 
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid

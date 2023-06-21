@@ -29,9 +29,10 @@ import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
 import net.horizonsend.ion.server.database.schema.nations.Territory
-import net.horizonsend.ion.server.database.schema.nations.landsieges.ForwardOperatingBase
-import net.horizonsend.ion.server.database.schema.nations.landsieges.MoonSiege
-import net.horizonsend.ion.server.database.schema.nations.landsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.MoonSiege
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
 import net.horizonsend.ion.server.database.schema.space.Moon
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
@@ -124,6 +125,7 @@ object MongoManager : SLComponent() {
 		SiegeTerritory.init()
 		ForwardOperatingBase.init()
 		MoonSiege.init()
+		SiegeBeacon.init()
 	}
 
 	override fun onDisable() {
