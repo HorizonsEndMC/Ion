@@ -76,6 +76,42 @@ object SpaceMap : SLComponent() {
 				setLineStyle(lineWeight, lineOpacity, color.asRGB())
 			}
 		}
+
+		for (moon in Space.getMoons()) {
+			markerSet.createMarker(
+				moon.id,
+				moon.name,
+				moon.spaceWorldName,
+				moon.location.x.toDouble(),
+				moon.location.y.toDouble(),
+				moon.location.z.toDouble(),
+				markerAPI.getMarkerIcon(moon.name.lowercase()),
+				false // ??
+			)
+
+			// planet ring
+			markerSet.createCircleMarker(
+				"${moon.id}_orbit",
+				moon.name,
+				false, // ??
+				moon.spaceWorldName,
+				moon.parent.location.x.toDouble(),
+				moon.parent.location.y.toDouble(),
+				moon.parent.location.z.toDouble(),
+				moon.orbitDistance.toDouble(),
+				moon.orbitDistance.toDouble(),
+				false // ??
+			)?.run {
+				setFillStyle(0.0, 0) // make the inside empty
+
+				val random = Random(moon.name.hashCode())
+				val r = random.nextInt(128, 255)
+				val g = random.nextInt(1, 20)
+				val b = random.nextInt(128, 255)
+				val color = Color.fromRGB(r, g, b)
+				setLineStyle(lineWeight, lineOpacity, color.asRGB())
+			}
+		}
 	}
 
 	override fun supportsVanilla(): Boolean {

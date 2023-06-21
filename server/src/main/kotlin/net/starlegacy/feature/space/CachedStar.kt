@@ -18,7 +18,7 @@ class CachedStar(
 ) : CelestialBody(spaceWorldName, location),
 	NamedCelestialBody {
 	companion object {
-		private const val MAX_SIZE = 100
+		private const val MAX_SIZE = 191
 	}
 
 	init {

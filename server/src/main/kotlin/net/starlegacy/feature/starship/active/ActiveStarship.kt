@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.CachedPlanet
+import net.starlegacy.feature.space.EnterableCelestialBody
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.movement.StarshipMovement
 import net.starlegacy.feature.starship.subsystem.GravityWellSubsystem
@@ -338,7 +339,7 @@ abstract class ActiveStarship(
 		return nonAirBlocks.toDouble() / initialBlockCount.toDouble()
 	}
 
-	fun getEntryRange(planet: CachedPlanet): Int {
-		return planet.atmosphereRadius + max(max.x - min.x, max.z - min.z) / 2 + 10
+	fun getEntryRange(planet: EnterableCelestialBody): Int {
+		return planet.outerRadius + max(max.x - min.x, max.z - min.z) / 2 + 10
 	}
 }
