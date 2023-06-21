@@ -21,7 +21,6 @@ import java.time.ZonedDateTime
 
 object MoonSieges : SLComponent() {
 	var siegeActive: Boolean = false
-
 	val siegeDays = arrayOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
 
 	data class Siege(val siegerId: SLPlayerId, val territoryId: Oid<SiegeTerritory>, val start: Long)
