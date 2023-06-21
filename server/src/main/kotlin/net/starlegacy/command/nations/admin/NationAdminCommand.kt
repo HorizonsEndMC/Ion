@@ -23,6 +23,7 @@ import net.starlegacy.feature.nations.NationsMasterTasks
 import net.starlegacy.feature.nations.TerritoryImporter
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
+import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.utils.isActive
 import net.starlegacy.feature.nations.utils.isInactive
 import net.starlegacy.util.msg
@@ -42,30 +43,35 @@ import org.litote.kmongo.updateOne
 @CommandPermission("nations.admin")
 internal object NationAdminCommand : SLCommand() {
 	@Subcommand("rebalance")
+	@Suppress("unused")
 	fun onRebalance(sender: CommandSender) {
 		NationsBalancing.reload()
 		sender msg "&aRebalanced"
 	}
 
 	@Subcommand("refresh map")
+	@Suppress("unused")
 	fun onRefreshMap(sender: CommandSender) {
 		NationsMap.reloadDynmap()
 		sender msg "Refreshed map"
 	}
 
 	@Subcommand("runtask money")
+	@Suppress("unused")
 	fun onRunTaskIncome(sender: CommandSender) {
 		NationsMasterTasks.executeMoneyTasks()
 		sender msg "Executed income task"
 	}
 
 	@Subcommand("runtask purge")
+	@Suppress("unused")
 	fun onRunTaskPurge(sender: CommandSender) = asyncCommand(sender) {
 		NationsMasterTasks.checkPurges()
 		sender msg "Executed purge task"
 	}
 
 	@Subcommand("player set settlement")
+	@Suppress("unused")
 	fun onPlayerSetSettlement(sender: CommandSender, player: String, settlement: String) = asyncCommand(sender) {
 		val playerId = resolveOfflinePlayer(player).slPlayerId
 		val settlementId = resolveSettlement(settlement)
@@ -85,6 +91,7 @@ internal object NationAdminCommand : SLCommand() {
 		"${(dividend / divisor * 100).roundToInt()}% ($dividend)"
 
 	@Subcommand("player stats")
+	@Suppress("unused")
 	fun onPlayerStats(sender: CommandSender) = asyncCommand(sender) {
 		sender msg "Pulling from db..."
 		val allPlayers = SLPlayer.all()
@@ -115,6 +122,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@Subcommand("settlement set leader")
+	@Suppress("unused")
 	fun onSettlementSetLeader(sender: CommandSender, settlement: String, player: String) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		val playerId = resolveOfflinePlayer(player).slPlayerId
@@ -124,6 +132,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@Subcommand("settlement purge")
+	@Suppress("unused")
 	fun onSettlementPurge(sender: CommandSender, settlement: String, sendMessage: Boolean) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		NationsMasterTasks.purgeSettlement(settlementId, sendMessage)
@@ -131,6 +140,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@Subcommand("settlement set balance")
+	@Suppress("unused")
 	fun onSettlementSetBalance(sender: CommandSender, settlement: String, balance: Int) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		Settlement.updateById(settlementId, setValue(Settlement::balance, balance))
@@ -138,6 +148,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@Subcommand("nation set balance")
+	@Suppress("unused")
 	fun onNationSetBalance(sender: CommandSender, nation: String, balance: Int) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
 		Nation.updateById(nationId, setValue(Nation::balance, balance))
@@ -146,6 +157,7 @@ internal object NationAdminCommand : SLCommand() {
 
 	@CommandPermission("nations.admin.movestation")
 	@Subcommand("spacestation set location")
+	@Suppress("unused")
 	fun onStationSetLocaiton(sender: CommandSender, station: String, world: World, x: Int, z: Int) =
 		asyncCommand(sender) {
 			val nationSpaceStation = NationSpaceStation.findOne(NationSpaceStation::name eq station)
@@ -154,6 +166,8 @@ internal object NationAdminCommand : SLCommand() {
 				nationSpaceStation._id,
 				set(NationSpaceStation::world setTo world.name, NationSpaceStation::x setTo x, NationSpaceStation::z setTo z)
 			)
+
+			NationsMap.updateSpaceStation(Regions[spaceStation._id])
 			sender msg "Set position of $station to $x, $z"
 		}
 
@@ -166,6 +180,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@Subcommand("station set quarter")
+	@Suppress("unused")
 	fun onStationSetQuarter(sender: CommandSender, station: String, quarter: Int) = asyncCommand(sender) {
 		failIf(quarter !in 1..4) { "Quarter must be within [1, 4]" }
 		val station = CapturableStation.findOne(CapturableStation::name eq station)
@@ -176,6 +191,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@Subcommand("station clearsieges")
+	@Suppress("unused")
 	fun onStationClearSieges(sender: CommandSender, nation: String) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
 		val daysPerSiege = NATIONS_BALANCE.capturableStation.daysPerSiege
@@ -188,6 +204,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@Subcommand("territoryimport")
+	@Suppress("unused")
 	fun onTerritoryImport(sender: CommandSender) {
 		TerritoryImporter.importOldTerritories(sender)
 	}
