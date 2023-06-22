@@ -12,6 +12,7 @@ import com.velocitypowered.api.proxy.ProxyServer
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.extensions.prefixProvider
+import net.horizonsend.ion.proxy.commands.proxy.VelocityInfoCommand
 import net.horizonsend.ion.proxy.listeners.PlayerListeners
 import net.horizonsend.ion.proxy.listeners.ProxyPingListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
@@ -46,6 +47,15 @@ class IonProxyPlugin @Inject constructor(
 				else -> "to [Unknown]: "
 			}
 		}
+
+		val commandManager = proxy.commandManager
+
+		val infoCommand = commandManager.metaBuilder("info")
+			.aliases("map", "wiki", "patreon", "rules")
+			.plugin(this)
+			.build()
+
+		commandManager.register(infoCommand, VelocityInfoCommand())
 
 		ReminderManager.scheduleReminders()
 
