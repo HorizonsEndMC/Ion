@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.moonsiege
 
-import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
@@ -70,7 +69,7 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 	fun setActive(sign: Sign, active: Boolean) = sign.line(3, if (active) ACTIVE_STATE else INACTIVE_STATE)
 
 	override fun onSignInteract(sign: Sign, player: Player) {
-		MoonSieges.tryBeginSiege(player, sign)
+		MoonSieges.tryBeginBeaconSiege(player, sign)
 	}
 
 	override fun LegacyMultiblockShape.buildStructure() {

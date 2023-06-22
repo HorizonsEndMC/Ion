@@ -1,5 +1,6 @@
 package net.starlegacy
 
+import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.cache.Caches
 import net.starlegacy.feature.chat.ChannelSelections
@@ -134,5 +135,6 @@ val components: List<SLComponent> = listOf(
 
 	DutyModeMonitor,
 
-	SpaceStations
+	SpaceStations,
+	MoonSieges
 )

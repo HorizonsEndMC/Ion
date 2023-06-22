@@ -5,6 +5,9 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.trx
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.ForwardingAudience
+import org.bukkit.entity.Player
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -17,7 +20,7 @@ data class MoonSiege(
 
 	val startTime: Date,
 	val points: Int,
-): DbObject{
+): DbObject, ForwardingAudience {
 
 	companion object : OidDbObjectCompanion<MoonSiege>(MoonSiege::class,
 		{
@@ -33,4 +36,7 @@ data class MoonSiege(
 			col.deleteOneById(session, siegeId)
 		}
 	}
+
+	override fun audiences(): Iterable<Audience> = SiegeTerritory.findById(siegeTerritory)?.bukkitWorld()?.players ?: listOf<Player>()
+
 }
