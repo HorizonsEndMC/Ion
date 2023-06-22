@@ -5,6 +5,7 @@ import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.moonsiege.AAGunMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblock
 import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
@@ -130,8 +131,12 @@ object SubsystemDetector {
 				starship.drillCount++
 			}
 
+			is AAGunMultiblock -> {
+
+			}
+
 			is CryoPodMultiblock -> {
-				val cryo = transaction { Cryopod[Vec3i(sign.location), sign.world.name] } ?: return
+				val cryo = Cryopod[Vec3i(sign.location), sign.world.name] ?: return
 				starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryo)
 			}
 		}

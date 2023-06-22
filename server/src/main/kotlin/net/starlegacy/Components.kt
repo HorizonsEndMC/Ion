@@ -1,5 +1,6 @@
 package net.starlegacy
 
+import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.starlegacy.cache.Caches
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.chat.ChatChannel
@@ -131,5 +132,6 @@ val components: List<SLComponent> = listOf(
 	ShipKillXP,
 	Decomposers,
 
-	DutyModeMonitor
+	DutyModeMonitor,
+	MoonSieges
 )

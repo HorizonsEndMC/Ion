@@ -143,4 +143,7 @@ object PlayerCache : ManualCache() {
 
 	operator fun get(player: Player): PlayerData = PLAYER_DATA[player.uniqueId]
 		?: error("Data wasn't cached for ${player.name}")
+
+	operator fun get(uuid: UUID): PlayerData = PLAYER_DATA[uuid]
+		?: error("Data wasn't cached for $uuid")
 }
