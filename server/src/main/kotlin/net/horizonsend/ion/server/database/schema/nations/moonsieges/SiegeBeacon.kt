@@ -10,9 +10,11 @@ import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.trx
 import net.starlegacy.util.Vec3i
+import net.starlegacy.util.isInRange
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.Sign
 import org.litote.kmongo.Id
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
@@ -21,7 +23,7 @@ data class SiegeBeacon(
 	override val _id: Id<SiegeBeacon>,
 	val name: String,
 	val siegeTerritory: Oid<SiegeTerritory>,
-	val owner: Oid<Nation>?
+	val owner: Oid<Nation>?,
 	val world: String,
 	val x: Int,
 	val y: Int,
@@ -57,6 +59,7 @@ data class SiegeBeacon(
 					y = y,
 					z = z,
 					status = false,
+					owner = null,
 				)
 			)
 
@@ -69,4 +72,8 @@ data class SiegeBeacon(
 	fun vec3i(): Vec3i = Vec3i(x, y, z)
 
 	fun location(): Location = Location(bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
+
+	fun isInRadius(location: Location, radius: Double): Boolean = location().isInRange(location, radius)
+
+	fun getSign(): Sign? = location().world.getBlockAt(location()).state as? Sign
 }
