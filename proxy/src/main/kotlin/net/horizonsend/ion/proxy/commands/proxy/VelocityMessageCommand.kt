@@ -22,6 +22,8 @@ class VelocityMessageCommand : SimpleCommand {
 			val senderName = (sender as? Player)?.username ?: "CONSOLE"
 			val targetName = (target as? Player)?.username ?: "CONSOLE"
 
+			if (message.isEmpty() || message.all { it == ' ' }) return sender.userError("You can't send empty messages!")
+
 			sender.sendRichMessage(format.invoke("me", targetName, message))
 			target.sendRichMessage(format.invoke(senderName, "me", message))
 
