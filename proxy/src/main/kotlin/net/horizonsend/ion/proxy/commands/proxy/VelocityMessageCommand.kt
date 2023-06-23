@@ -36,7 +36,7 @@ class VelocityMessageCommand : SimpleCommand {
 		val target = invocation.arguments()[0] ?: return sender.userError("Specify a player!")
 		val targetPlayer = IonProxy.proxy.getPlayer(target).getOrNull() ?: return sender.userError("Specify a player!")
 
-		val message = invocation.arguments().toList().subList(1, invocation.arguments().size - 2).joinToString(separator = " ")
+		val message = invocation.arguments().toList().subList(1, invocation.arguments().size - 1).joinToString(separator = " ")
 
 		sendMessage(sender, targetPlayer, message)
 	}
