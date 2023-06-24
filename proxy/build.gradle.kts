@@ -30,7 +30,7 @@ dependencies {
 
 	// Included Dependencies
 	implementation("net.dv8tion:JDA:5.0.0-beta.11")
-	implementation("com.github.minndevelopment:jda-ktx:-SNAPSHOT")
+	implementation("com.github.minndevelopment:jda-ktx:0.10.0-beta.1")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.14.0")
 	implementation("net.kyori:adventure-text-minimessage:4.14.0")
 }
