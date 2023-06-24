@@ -53,6 +53,7 @@ dependencies {
 	implementation("org.litote.kmongo:kmongo:4.9.0")
 	implementation("io.github.skytasul:guardianbeam:2.3.3")
 	implementation("xyz.xenondevs.invui:invui:1.11")
+	implementation("club.minnced:discord-webhooks:0.5.6")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }

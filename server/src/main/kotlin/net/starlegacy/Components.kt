@@ -18,6 +18,7 @@ import net.starlegacy.feature.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.CombatNPCs
 import net.starlegacy.feature.misc.CustomRecipes
 import net.starlegacy.feature.misc.Decomposers
+import net.starlegacy.feature.misc.DutyModeMonitor
 import net.starlegacy.feature.misc.GameplayTweaks
 import net.starlegacy.feature.misc.Shuttles
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -128,5 +129,7 @@ val components: List<SLComponent> = listOf(
 	Interdiction,
 	StarshipDealers,
 	ShipKillXP,
-	Decomposers
+	Decomposers,
+
+	DutyModeMonitor
 )
