@@ -236,7 +236,7 @@ object Hyperspace : SLComponent() {
 	}
 
 	private fun calculateSpeed(hyperdriveClass: Int, mass: Double) =
-		(1500.0 / (log10(mass) / minOf(1, hyperdriveClass)) + 100).toInt()
+		(1500.0 / (log10(mass) / maxOf(1, hyperdriveClass)) + 100).toInt()
 
 	/** returns the highest tier hyperdrive, with fuel if possible, or null */
 	fun findHyperdrive(starship: ActiveStarship): HyperdriveSubsystem? = starship.hyperdrives.asSequence()
