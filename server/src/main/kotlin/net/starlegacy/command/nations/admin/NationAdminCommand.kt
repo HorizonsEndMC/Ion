@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.NationsBalancing
@@ -144,11 +144,11 @@ internal object NationAdminCommand : SLCommand() {
 	@Subcommand("nation station set location")
 	fun onStationSetLocaiton(sender: CommandSender, station: String, world: World, x: Int, z: Int) =
 		asyncCommand(sender) {
-			val spaceStation = SpaceStation.findOne(SpaceStation::name eq station)
+			val nationSpaceStation = NationSpaceStation.findOne(NationSpaceStation::name eq station)
 				?: fail { "Station $station not found" }
-			SpaceStation.updateById(
-				spaceStation._id,
-				set(SpaceStation::world setTo world.name, SpaceStation::x setTo x, SpaceStation::z setTo z)
+			NationSpaceStation.updateById(
+				nationSpaceStation._id,
+				set(NationSpaceStation::world setTo world.name, NationSpaceStation::x setTo x, NationSpaceStation::z setTo z)
 			)
 			sender msg "Set position of $station to $x, $z"
 		}

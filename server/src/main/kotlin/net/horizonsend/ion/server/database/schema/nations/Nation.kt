@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.trx
 import org.bukkit.Color
@@ -126,11 +127,11 @@ data class Nation(
 				sess, SLPlayer::nation eq id, org.litote.kmongo.setValue(SLPlayer::nation, null)
 			)
 
-			SpaceStation.col.updateMany(
-				sess, SpaceStation::nation ne id, pull(SpaceStation::trustedNations, id)
+			NationSpaceStation.col.updateMany(
+				sess, NationSpaceStation::owner ne id, pull(NationSpaceStation::trustedNations, id)
 			)
 
-			SpaceStation.col.deleteMany(sess, SpaceStation::nation eq id)
+			NationSpaceStation.col.deleteMany(sess, NationSpaceStation::owner eq id)
 
 			Blueprint.col.updateMany(sess, Blueprint::trustedNations contains id, pull(Blueprint::trustedNations, id))
 

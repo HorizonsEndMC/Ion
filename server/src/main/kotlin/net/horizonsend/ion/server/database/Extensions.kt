@@ -226,6 +226,11 @@ fun <T : DbObject> BsonValue.oid(): Oid<T> = when {
 	else -> error("Unrecognized object id type $json")
 }
 
+fun <T : DbObject> BsonValue.id(): Id<T> = when {
+	isObjectId -> WrappedObjectId(asObjectId().value)
+	else -> error("Unrecognized object id type $json")
+}
+
 fun BsonValue.slPlayerId(): SLPlayerId = when {
 	isString -> SLPlayerId(asString().value)
 	else -> error("Unrecognized object id type $json")

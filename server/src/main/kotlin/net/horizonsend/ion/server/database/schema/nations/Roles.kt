@@ -5,7 +5,6 @@ import com.mongodb.client.model.Filters
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
-import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
@@ -162,7 +161,10 @@ data class SettlementRole(
 		MANAGE_ROLES,
 		INVITE,
 		KICK,
-		MANAGE_ZONES
+		MANAGE_ZONES,
+		CREATE_STATION,
+		MANAGE_STATION,
+		DELETE_STATION
 	}
 }
 
