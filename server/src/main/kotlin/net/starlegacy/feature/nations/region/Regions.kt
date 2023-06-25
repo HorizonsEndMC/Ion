@@ -15,8 +15,10 @@ import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
-import net.horizonsend.ion.server.database.schema.nations.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionParent
@@ -55,7 +57,11 @@ object Regions : SLComponent() {
 
 		registerRegionType(CapturableStation.Companion) { RegionCapturableStation(it) }
 
-		registerRegionType(SpaceStation.Companion) { RegionSpaceStation(it) }
+		registerRegionType(NationSpaceStation.Companion) { RegionSpaceStation(it) }
+
+		registerRegionType(SettlementSpaceStation.Companion) { RegionSpaceStation(it) }
+
+		registerRegionType(PlayerSpaceStation.Companion) { RegionSpaceStation(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

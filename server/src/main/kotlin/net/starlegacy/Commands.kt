@@ -23,7 +23,7 @@ import net.starlegacy.command.misc.ShuttleCommand
 import net.starlegacy.command.misc.TransportDebugCommand
 import net.starlegacy.command.nations.NationCommand
 import net.starlegacy.command.nations.NationRelationCommand
-import net.starlegacy.command.nations.NationSpaceStationCommand
+import net.starlegacy.command.nations.SpaceStationCommand
 import net.starlegacy.command.nations.SettlementCommand
 import net.starlegacy.command.nations.SiegeCommand
 import net.starlegacy.command.nations.admin.CityManageCommand
@@ -64,7 +64,7 @@ val commands = listOf(
 
 	SettlementCommand,
 	NationCommand,
-	NationSpaceStationCommand,
+	SpaceStationCommand,
 	NationRelationCommand,
 
 	CityManageCommand,

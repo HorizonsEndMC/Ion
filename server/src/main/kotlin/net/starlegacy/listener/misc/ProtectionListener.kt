@@ -1,7 +1,7 @@
 package net.starlegacy.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
-import net.starlegacy.command.nations.NationSpaceStationCommand
+import net.starlegacy.command.nations.SpaceStationCommand
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
@@ -115,7 +115,7 @@ object ProtectionListener : SLEventListener() {
 	}
 
 	private fun isLockedShipDenied(player: Player, location: Location): Boolean {
-		if (NationSpaceStationCommand.disallowedWorlds.contains(location.world.name.lowercase())) return false
+		if (SpaceStationCommand.disallowedWorlds.contains(location.world.name.lowercase())) return false
 		val world = location.world
 		val x = location.blockX
 		val y = location.blockY

@@ -6,18 +6,17 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import kotlin.math.roundToInt
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.NationRole
-import net.horizonsend.ion.server.database.schema.nations.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.database.uuid
+import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
@@ -30,7 +29,6 @@ import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.distance
 import net.starlegacy.util.isAlphanumeric
 import net.starlegacy.util.msg
-import net.starlegacy.util.squared
 import net.starlegacy.util.toCreditsString
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -39,11 +37,11 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.pull
 import org.litote.kmongo.setValue
 
-@CommandAlias("nationspacestation|nspacestation|nstation")
-object NationSpaceStationCommand : SLCommand() {
+@CommandAlias("nationspacestation|nspacestation|nstation|sstation|station|spacestation")
+object SpaceStationCommand : SLCommand() {
 	val disallowedWorlds = listOf("horizon", "trench", "au0821")
 
-	private fun validateName(name: String, stationId: Oid<CapturableStation>?) {
+	private fun validateName(name: String) {
 		if (!name.isAlphanumeric()) {
 			throw InvalidCommandArgument("Name must be alphanumeric")
 		}
@@ -56,12 +54,12 @@ object NationSpaceStationCommand : SLCommand() {
 			throw InvalidCommandArgument("Name cannot be more than 40 characters")
 		}
 
-		if (SpaceStation.all().any { it.name.equals(name, ignoreCase = true) && it._id != stationId }) {
+		if (NationSpaceStation.all().any { it.name.equals(name, ignoreCase = true) }) {
 			throw InvalidCommandArgument("A space station named $name already exists")
 		}
 	}
 
-	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, id: Oid<SpaceStation>?) {
+	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, id: Oid<NationSpaceStation>?) {
 		failIf(radius !in 15..10_000) { "Radius must be at least 15 and at most 10,000 blocks" }
 
 		val y = 128 // we don't care about comparing height here
@@ -103,7 +101,7 @@ object NationSpaceStationCommand : SLCommand() {
 		// Check conflicts with other stations
 		// (use the database directly, in order to avoid people making
 		// another one in the same location before the cache updates)
-		for (other in SpaceStation.all()) {
+		for (other in NationSpaceStation.all()) {
 			if (other._id == id) {
 				continue
 			}
@@ -127,15 +125,7 @@ object NationSpaceStationCommand : SLCommand() {
 		}
 	}
 
-	private fun calculateCost(oldRadius: Int, newRadius: Int): Int {
-		/*  A_1 = pi * r^2
-				A_2 = pi * r_f^2
-				dA = A_2-A_1
-				dA = pi * r_f^2 - pi * r^2
-				dA = pi * (r_f^2 - r^2) */
-		val deltaArea = Math.PI * (newRadius.squared() - oldRadius.squared())
-		return (deltaArea * NATIONS_BALANCE.nation.costPerSpaceStationBlock).roundToInt()
-	}
+
 
 	@Subcommand("create")
 	@Description("Claim this area of space as a space station")
@@ -153,7 +143,7 @@ object NationSpaceStationCommand : SLCommand() {
 		val nation: Oid<Nation> = requireNationIn(sender)
 		requireNationPermission(sender, nation, NationRole.Permission.CREATE_STATION)
 
-		validateName(name, stationId = null)
+		validateName(name)
 
 		val location = sender.location
 		val world = location.world
@@ -170,22 +160,22 @@ object NationSpaceStationCommand : SLCommand() {
 				"/nstation $name $radius $realCost"
 		}
 
-		SpaceStation.create(nation, name, world.name, x, z, radius)
+		NationSpaceStation.create(nation, name, world.name, x, z, radius)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 		Notify.all(MiniMessage.miniMessage().deserialize("<light_purple>${getNationName(nation)} <gray>established space station <aqua>$name"))
 	}
 
-	private fun requireStation(nation: Oid<Nation>, name: String) = SpaceStation.find(SpaceStation::nation eq nation)
+	private fun requireStation(nation: Oid<Nation>, name: String) = NationSpaceStation.find(NationSpaceStation::owner eq nation)
 		.firstOrNull { it.name.equals(name, true) }
 		?: fail { "Your nation doesn't own a station named $name" }
 
-	private fun requireManagementContext(sender: Player, name: String): Pair<Oid<Nation>, SpaceStation> {
+	private fun requireManagementContext(sender: Player, name: String): Pair<Oid<Nation>, NationSpaceStation> {
 		val nation: Oid<Nation> = requireNationIn(sender)
-		val spaceStation: SpaceStation = requireStation(nation, name)
-		if (!spaceStation.managers.contains(sender.slPlayerId)) {
+		val nationSpaceStation: NationSpaceStation = requireStation(nation, name)
+		if (!nationSpaceStation.managers.contains(sender.slPlayerId)) {
 			requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
 		}
-		return nation to spaceStation
+		return nation to nationSpaceStation
 	}
 
 	@Subcommand("abandon")
@@ -194,7 +184,7 @@ object NationSpaceStationCommand : SLCommand() {
 	fun onAbandon(sender: Player, station: String) = asyncCommand(sender) {
 		val (nation, spaceStation) = requireManagementContext(sender, station)
 		requireNationPermission(sender, nation, NationRole.Permission.DELETE_STATION)
-		SpaceStation.delete(spaceStation._id)
+		NationSpaceStation.delete(spaceStation._id)
 		Notify.all(MiniMessage.miniMessage().deserialize("<pink>${getNationName(nation)} <gray>abandoned space station <aqua>$station"))
 	}
 
@@ -221,7 +211,7 @@ object NationSpaceStationCommand : SLCommand() {
 				"/nstation resize $name $newRadius $realCost"
 		}
 
-		SpaceStation.updateById(spaceStation._id, setValue(SpaceStation::radius, newRadius))
+		NationSpaceStation.updateById(spaceStation._id, setValue(NationSpaceStation::radius, newRadius))
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 		sender msg "&7Resized &b$stationName&7 to &b$newRadius"
 	}
@@ -230,59 +220,12 @@ object NationSpaceStationCommand : SLCommand() {
 	@CommandCompletion("MANUAL|NATION|ALLY")
 	@Description("Change the setting for who automatically can build in the station")
 	@Suppress("unused")
-	fun onSetTrustLevel(sender: Player, station: String, trustLevel: SpaceStation.TrustLevel) {
+	fun onSetTrustLevel(sender: Player, station: String, trustLevel: SpaceStations.TrustLevel) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 		val stationName = spaceStation.name
 		failIf(spaceStation.trustLevel == trustLevel) { "$stationName's trust level is already $trustLevel" }
-		SpaceStation.updateById(spaceStation._id, setValue(SpaceStation::trustLevel, trustLevel))
+		NationSpaceStation.updateById(spaceStation._id, setValue(NationSpaceStation::trustLevel, trustLevel))
 		sender msg "&7Set trust level of &b$stationName&7 to &b$trustLevel"
-	}
-
-	@Subcommand("manager add")
-	@Suppress("unused")
-	fun onManagerAdd(sender: Player, station: String, player: String) {
-		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
-		val stationName = spaceStation.name
-		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
-		val playerName: String = getPlayerName(playerId)
-
-		failIf(spaceStation.managers.contains(playerId)) {
-			"$playerName is already a manager of $stationName"
-		}
-
-		SpaceStation.updateById(spaceStation._id, addToSet(SpaceStation::managers, playerId))
-		sender msg "&7Made &b$playerName&7 a manager of &b$stationName"
-		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were made a manager of station <aqua>$stationName<gray> by <aqua>${sender.name}"))
-	}
-
-	@Subcommand("manager list")
-	@Suppress("unused")
-	fun onManagerList(sender: Player, station: String) {
-		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
-		val stationName: String = spaceStation.name
-		val managers: String = spaceStation.managers.map(::getPlayerName).sorted().joinToString()
-		sender msg "&7Managers in $stationName:&c $managers"
-	}
-
-	@Subcommand("manager remove")
-	@Description("Revoke a player's manager status at the station")
-	@Suppress("unused")
-	fun onManagerRemove(sender: Player, station: String, player: String) = asyncCommand(sender) {
-		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
-		val stationName = spaceStation.name
-		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
-		val playerName: String = getPlayerName(playerId)
-
-		failIf(!spaceStation.managers.contains(playerId)) {
-			"$playerName is not a manager of $stationName"
-		}
-
-		SpaceStation.updateById(spaceStation._id, pull(SpaceStation::managers, playerId))
-		sender msg "&7Removed &b$playerName&7 as a manager of &b$stationName"
-		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed as a manager of <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted list")
@@ -309,7 +252,7 @@ object NationSpaceStationCommand : SLCommand() {
 			"$playerName is already trusted in $stationName"
 		}
 
-		SpaceStation.updateById(spaceStation._id, addToSet(SpaceStation::trustedPlayers, playerId))
+		NationSpaceStation.updateById(spaceStation._id, addToSet(NationSpaceStation::trustedPlayers, playerId))
 		sender msg "&7Added &b$playerName&7 to &b$stationName"
 		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
@@ -327,7 +270,7 @@ object NationSpaceStationCommand : SLCommand() {
 			"$playerName is not trusted in $stationName"
 		}
 
-		SpaceStation.updateById(spaceStation._id, pull(SpaceStation::trustedPlayers, playerId))
+		NationSpaceStation.updateById(spaceStation._id, pull(NationSpaceStation::trustedPlayers, playerId))
 		sender msg "&7Removed &b$playerName&7 from &b$stationName"
 		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
@@ -345,7 +288,7 @@ object NationSpaceStationCommand : SLCommand() {
 			"$nationName is already a trusted nation in $stationName"
 		}
 
-		SpaceStation.updateById(spaceStation._id, addToSet(SpaceStation::trustedNations, nationId))
+		NationSpaceStation.updateById(spaceStation._id, addToSet(NationSpaceStation::trustedNations, nationId))
 		sender msg "&7Added nation &b$nationName&7 to &b$stationName"
 		Notify.nation(nationId, "&7Your nation was added to station &b$stationName&7 by &b${sender.name}")
 	}
@@ -363,7 +306,7 @@ object NationSpaceStationCommand : SLCommand() {
 			"$nationName is not a trusted nation in $stationName"
 		}
 
-		SpaceStation.updateById(spaceStation._id, pull(SpaceStation::trustedNations, nationId))
+		NationSpaceStation.updateById(spaceStation._id, pull(NationSpaceStation::trustedNations, nationId))
 		sender msg "&7Removed nation &b$nationName&7 from &b$stationName"
 		Notify.nation(nationId, "&7Your nation was removed from station &b$stationName&7 by &b${sender.name}")
 	}
@@ -374,9 +317,9 @@ object NationSpaceStationCommand : SLCommand() {
 	fun onRename(sender: Player, station: String, newName: String) = asyncCommand(sender) {
 		val (_, spaceStation) = requireManagementContext(sender, station)
 
-		validateName(newName, null)
+		validateName(newName)
 
-		SpaceStation.updateById(spaceStation._id, setValue(SpaceStation::name, newName))
+		NationSpaceStation.updateById(spaceStation._id, setValue(NationSpaceStation::name, newName))
 	}
 }
 
