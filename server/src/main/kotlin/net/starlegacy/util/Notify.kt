@@ -86,7 +86,7 @@ object Notify : SLComponent() {
 					return@async
 				}
 
-				channel.sendMessage(message).queue()
+				channel.sendMessage("**$message**").queue()
 			}
 		}
 	}

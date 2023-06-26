@@ -5,9 +5,11 @@ import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.NationCache
 import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
+import net.starlegacy.feature.nations.region.types.RegionSiegeBeacon
 import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -62,7 +64,8 @@ object NationsMap : SLComponent() {
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
 			Regions.getAllOf<RegionSpaceStation>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionSiegeTerritory>().forEach(::addSiegeTerritory)
-			Regions.getAllOf<RegionForwardOperatingBase>().forEach(::addForwardOperatingBase)//TODO
+			Regions.getAllOf<RegionForwardOperatingBase>().forEach(::addForwardOperatingBase)
+			Regions.getAllOf<RegionSiegeBeacon>().forEach(::addSiegeBeacon)
 		}
 	}
 
@@ -475,6 +478,87 @@ object NationsMap : SLComponent() {
 		}
 	}
 	// End FOB
+
+	// Start Siege Beacons
+	fun removeSiegeBeacon(beacon: RegionSiegeBeacon): Unit = syncOnly {
+		markerSet.findAreaMarker(beacon.id.toString())?.deleteMarker()
+	}
+
+	fun addSiegeBeacon(beacon: RegionSiegeBeacon): Unit = syncOnly {
+		removeSiegeBeacon(beacon)
+
+		val name = beacon.name
+		val world = beacon.world
+		val x = beacon.x.toDouble()
+		val y = beacon.y.toDouble()
+		val z = beacon.z.toDouble()
+		val radius = SiegeBeacon.BEACON_CAPTURE_RADIUS
+
+		val beaconMarker = markerSet.createMarker(
+			beacon.id.toString(),
+			beacon.name,
+			beacon.world,
+			beacon.x.toDouble(),
+			beacon.y.toDouble(),
+			beacon.z.toDouble(),
+			markerAPI.getMarkerIcon("sun"),
+			false // ??
+		)
+
+		markerSet.createCircleMarker(
+			name,
+			name,
+			false,
+			world,
+			x,
+			y,
+			z,
+			radius.toDouble(),
+			radius.toDouble(),
+			false
+		)
+
+		updateSiegeBeacon(beacon)
+	}
+
+	fun updateSiegeBeacon(beacon: RegionSiegeBeacon): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val beaconMarker = markerSet.createMarker(
+			beacon.id.toString(),
+			beacon.name,
+			beacon.world,
+			beacon.x.toDouble(),
+			beacon.y.toDouble(),
+			beacon.z.toDouble(),
+			markerAPI.getMarkerIcon("sun"),
+			false // ??
+		)
+
+		val marker: CircleMarker = markerSet.findCircleMarker(beacon.name)
+			?: return@syncOnly addSiegeBeacon(beacon)
+
+		val nation = beacon.owner?.let(NationCache::get)
+
+		val rgb = nation?.color ?: Color.WHITE.asRGB()
+		marker.setFillStyle(0.0, Color.WHITE.asRGB())
+		marker.setLineStyle(5, 0.8, rgb)
+
+		marker.description = """
+		<p><h2>${beacon.name}</h2></p><p>
+		${if (nation == null) {
+			""
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			<h4>${beacon.points} points</h4>
+			""".trimIndent()
+		}}
+		</p>
+		""".trimIndent()
+	}
 
 	private fun getMarkerID(station: RegionSpaceStation) =
 		"nation-station-" + station.id.toString()

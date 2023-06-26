@@ -31,7 +31,6 @@ import net.horizonsend.ion.server.database.schema.nations.SettlementZone
 import net.horizonsend.ion.server.database.schema.nations.SpaceStation
 import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.MoonSiege
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
 import net.horizonsend.ion.server.database.schema.space.Moon
@@ -119,7 +118,6 @@ object MongoManager : SLComponent() {
 
 		SiegeTerritory.init()
 		ForwardOperatingBase.init()
-		MoonSiege.init()
 		SiegeBeacon.init()
 	}
 
