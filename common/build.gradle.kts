@@ -15,7 +15,7 @@ dependencies {
 	compileOnly("net.kyori:adventure-api:4.14.0")
 	compileOnly("net.kyori:adventure-text-logger-slf4j:4.14.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
-	compileOnly("com.mojang:brigadier:1.0.18")
+	compileOnly("com.mojang:brigadier:1.0.500")
 
 	compileOnlyApi("com.mysql:mysql-connector-j:8.0.33")
 
