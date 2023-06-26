@@ -62,7 +62,7 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 			(it + Vec3i(sign.location)).toBlockPos().asLong()
 		}.toLongArray()
 
-		val id = SiegeBeacon.create(
+		SiegeBeacon.create(
 			beaconName,
 			territory._id,
 			attacker,
@@ -70,9 +70,6 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 			Vec3i(sign.location),
 			blocks
 		)
-
-		val b: RegionSiegeBeacon = Regions[id]
-		NationsMap.addSiegeBeacon(b)
 
 		super.onTransformSign(player, sign)
 	}
