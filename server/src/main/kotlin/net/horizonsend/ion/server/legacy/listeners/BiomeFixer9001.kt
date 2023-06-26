@@ -20,7 +20,7 @@ class BiomeFixer9001 : Listener {
 		val chunkOreVersion = event.chunk.persistentDataContainer.get(NamespacedKeys.BIOME_FIX, PersistentDataType.BYTE)
 		if (chunkOreVersion == 1.toByte()) return
 
-		val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
+		val chunkSnapshot = event.chunk.getChunkSnapshot(true, true, false)
 		Bukkit.getScheduler().runTaskAsynchronously(
 			IonServer,
 			Runnable {

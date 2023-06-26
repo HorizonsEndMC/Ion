@@ -1,17 +1,16 @@
  package net.horizonsend.ion.proxy.commands.proxy
 
- import com.velocitypowered.api.command.SimpleCommand
+ import com.velocitypowered.api.command.CommandSource
+ import net.horizonsend.ion.common.commands.dsl.command
  import net.kyori.adventure.text.Component.text
  import net.kyori.adventure.text.event.ClickEvent
  import net.kyori.adventure.text.format.NamedTextColor
  import net.kyori.adventure.text.format.TextColor
  import net.kyori.adventure.text.format.TextDecoration
 
- class VelocityInfoCommand : SimpleCommand {
-
- 	@Suppress("Unused")
-	override fun execute(invocation: SimpleCommand.Invocation) {
-		invocation.source().sendMessage(
+fun infoCommand() = command<CommandSource>("info", "map", "wiki", "patreon", "rules") {
+	runs {
+		source.sendMessage(
  			text()
  				.append(
  					text("Here are a few links of potential use:\n")
@@ -62,4 +61,4 @@
  				.build()
  		)
  	}
- }
+ }.buildLiterals()

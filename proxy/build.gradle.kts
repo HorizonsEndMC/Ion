@@ -1,5 +1,3 @@
-import java.io.ByteArrayOutputStream
-
 plugins {
 	id("com.github.johnrengelman.shadow")
 

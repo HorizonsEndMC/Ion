@@ -12,9 +12,9 @@ import com.velocitypowered.api.proxy.ProxyServer
 import net.horizonsend.ion.common.Configuration
 import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.extensions.prefixProvider
-import net.horizonsend.ion.proxy.commands.proxy.VelocityInfoCommand
-import net.horizonsend.ion.proxy.commands.proxy.VelocityMessageCommand
-import net.horizonsend.ion.proxy.commands.proxy.VelocityReplyCommand
+import net.horizonsend.ion.proxy.commands.proxy.infoCommand
+import net.horizonsend.ion.proxy.commands.proxy.messageCommand
+import net.horizonsend.ion.proxy.commands.proxy.replyCommand
 import net.horizonsend.ion.proxy.listeners.PlayerListeners
 import net.horizonsend.ion.proxy.listeners.ProxyPingListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
@@ -50,29 +50,11 @@ class IonProxyPlugin @Inject constructor(
 			}
 		}
 
-		val commandManager = proxy.commandManager
-
-		val infoCommand = commandManager.metaBuilder("info")
-			.aliases("map", "wiki", "patreon", "rules")
-			.plugin(this)
-			.build()
-
-		commandManager.register(infoCommand, VelocityInfoCommand())
-
-		val messageCommand = commandManager.metaBuilder("message")
-			.aliases("msg", "tell", "whisper", "w")
-			.plugin(this)
-			.build()
-
-
-		commandManager.register(messageCommand, VelocityMessageCommand())
-
-		val replyCommand = commandManager.metaBuilder("reply")
-			.aliases("r")
-			.plugin(this)
-			.build()
-
-		commandManager.register(replyCommand, VelocityReplyCommand())
+		proxy.commandManager.register(
+			messageCommand(),
+			replyCommand(),
+			infoCommand()
+		)
 
 		ReminderManager.scheduleReminders()
 
