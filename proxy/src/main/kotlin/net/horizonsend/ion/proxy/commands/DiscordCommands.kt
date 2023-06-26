@@ -27,6 +27,7 @@ object DiscordCommands {
 							[Resource Pack](https://github.com/HorizonsEndMC/ResourcePack/releases/latest)
 							[Wiki](https://wiki.horizonsend.net)
 							[Server Rules](https://wiki.horizonsend.net/rules)
+							[Voting Sites](https://wiki.horizonsend.net/en/vote)
 							""".trimIndent()
 				}
 			).queue()
