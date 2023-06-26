@@ -20,12 +20,14 @@ import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpa
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
 import net.starlegacy.feature.nations.region.types.RegionParent
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
+import net.starlegacy.feature.nations.region.types.RegionSiegeBeacon
 import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -70,6 +72,8 @@ object Regions : SLComponent() {
 		registerRegionType(SiegeTerritory.Companion) { RegionSiegeTerritory(it) }
 
 		registerRegionType(ForwardOperatingBase.Companion) { RegionForwardOperatingBase(it) }
+
+		registerRegionType(SiegeBeacon.Companion) { RegionSiegeBeacon(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

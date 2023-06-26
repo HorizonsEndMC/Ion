@@ -2,16 +2,12 @@ package net.horizonsend.ion.server.database.schema.nations
 
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.OidDbObjectCompanion
-import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.server.database.none
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.trx
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
@@ -30,9 +26,9 @@ data class Territory(
 	/** The display name of the territory */
 	var name: String,
 	/** The world the territory is in */
-	var world: String,
+	override var world: String,
 	/** The data of the points of the territory */
-	var polygonData: ByteArray,
+	override var polygonData: ByteArray,
 	/** The settlement residing here. */
 	var settlement: Oid<Settlement>? = null,
 	/** The nation with an outpost here. For outposts only, not member settlements! */
@@ -41,7 +37,7 @@ data class Territory(
 	var npcOwner: Oid<NPCTerritoryOwner>? = null,
 	/** If the territory should be a safe-zone from PVP and explosions */
 	var isProtected: Boolean = false,
-) : DbObject {
+) : TerritoryInterface {
 	// region dumb stuff
 	// Use all properties for equals, only id for hashcode
 	override fun equals(other: Any?): Boolean {
@@ -67,12 +63,16 @@ data class Territory(
 	}
 	//endregion
 
-	companion object : OidDbObjectCompanion<Territory>(Territory::class, setup = {
-		ensureUniqueIndexCaseInsensitive(Territory::name)
-		ensureUniqueIndex(Territory::world, Territory::polygonData)
-		ensureIndex(Territory::settlement)
-		ensureIndex(Territory::nation)
-	}) {
+	companion object : AbstractTerritoryCompanion<Territory>(
+		Territory::class,
+		Territory::name,
+		Territory::world,
+		Territory::polygonData,
+		setup = {
+			ensureIndex(Territory::settlement)
+			ensureIndex(Territory::nation)
+		}
+	) {
 		fun setNation(id: Oid<Territory>, nation: Oid<Nation>?): Unit = trx { sess ->
 			if (nation != null) {
 				require(matches(sess, id, unclaimedQuery))
@@ -81,19 +81,9 @@ data class Territory(
 			updateById(sess, id, org.litote.kmongo.setValue(Territory::nation, nation))
 		}
 
-		fun create(name: String, world: String, polygonData: ByteArray): Oid<Territory> = trx { sess ->
-			val id = objId<Territory>()
-			col.insertOne(sess, Territory(id, name, world, polygonData))
-			return@trx id
-		}
+		override fun new(id: Oid<Territory>, name: String, world: String, polygonData: ByteArray): Territory =
+			Territory(id, name, world, polygonData)
 
-		fun findByName(name: String): Territory? = trx { sess ->
-			col.findOne(sess, Territory::name eq name)
-		}
-
-		fun setPolygonData(id: Oid<Territory>, polygonData: ByteArray) = trx { sess ->
-			updateById(sess, id, org.litote.kmongo.setValue(Territory::polygonData, polygonData))
-		}
 
 		val unclaimedQuery = and(Territory::settlement eq null, Territory::nation eq null, Territory::npcOwner eq null)
 

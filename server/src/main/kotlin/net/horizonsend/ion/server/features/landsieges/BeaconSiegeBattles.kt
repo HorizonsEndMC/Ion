@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.landsieges
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon.Companion.BEACON_DETECTION_RADIUS
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon.Companion.BEACON_SIEGE_MAX_TIME_MS
 import net.horizonsend.ion.server.features.multiblock.moonsiege.SiegeBeaconMultiblock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -11,6 +13,7 @@ import net.starlegacy.SLComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.nations.region.Regions
+import net.starlegacy.feature.nations.region.types.RegionSiegeBeacon
 import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.starship.event.StarshipExplodeEvent
 import net.starlegacy.util.Notify
@@ -24,10 +27,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 
-object BeaconSiege : SLComponent() {
-	private const val BEACON_DETECTION_RADIUS = 100
-	private const val BEACON_SIEGE_MAX_TIME_MS: Long = 1000 * 60 * 60 * 2
-
+object BeaconSiegeBattles : SLComponent() {
 	fun updateBeaconSieges() {
 		val finishedBeaconSieges = mutableListOf<MoonSieges.BeaconSiege>()
 
@@ -49,7 +49,7 @@ object BeaconSiege : SLComponent() {
 
 	fun tryBeginBeaconSiege(player: Player, beacon: Sign) {
 		val nation = PlayerCache[player].nationOid
-			?: return player.userError("You need to be in a nation to siege a station.")
+			?: return player.userError("You need to be in a nation to siege a se.")
 
 		val siegeTerritory = Regions.findFirstOf<RegionSiegeTerritory>(player.location)
 			?: return player.userError("You must be within a station's area to siege it.")
@@ -69,16 +69,18 @@ object BeaconSiege : SLComponent() {
 
 		return SiegeBeacon.all().asSequence()
 			.filter { it.world == location.world.name }
-			.filter { distance(it.x, it.y, it.z, x, y, z) <= MoonSieges.BEACON_DETECTION_RADIUS }
+			.filter { distance(it.x, it.y, it.z, x, y, z) <= BEACON_DETECTION_RADIUS }
 			.firstOrNull()
 	}
 
 	@EventHandler
 	fun onPlayerKill(event: PlayerDeathEvent) {
-		val beacon = getBeacon(event.player.location) ?: return
 		event.player.killer ?: return
 
-		// Determine the siege and the siege nations, do an ally check, determine points
+		val location = event.player.location
+		val beacon = Regions.find(location).firstOrNull { it is RegionSiegeBeacon } ?: return
+
+
 	}
 
 	@EventHandler
@@ -90,8 +92,8 @@ object BeaconSiege : SLComponent() {
 			val slPlayer = PlayerCache[it.key.id]
 
 			// Only check relation if the beacon has an owner
-			val owner = beacon.owner?.let {
-				val relation = NationRelation.getRelationActual(beacon.owner, slPlayer.nationOid ?: return@filter false)
+			val owner = beacon.owner?.let { owner ->
+				val relation = NationRelation.getRelationActual(owner, slPlayer.nationOid ?: return@filter false)
 
 				if (relation.ordinal >= NationRelation.Level.ALLY.ordinal) return@filter false
 			}

@@ -2,7 +2,8 @@ package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.AbstractTerritoryCompanion
+import net.horizonsend.ion.server.database.schema.nations.TerritoryInterface
 import net.starlegacy.feature.nations.region.packTerritoryPolygon
 import net.starlegacy.util.msg
 import org.bukkit.command.CommandSender
@@ -12,17 +13,17 @@ import java.awt.Polygon
 import java.io.File
 
 object TerritoryImporter {
-	private data class UpdateData(val id: Oid<Territory>, val polygonData: ByteArray)
+	private data class UpdateData<T: TerritoryInterface>(val id: Oid<T>, val polygonData: ByteArray)
 	private data class ImportData(val label: String, val worldName: String, val polygonData: ByteArray)
 
-	fun importOldTerritories(sender: CommandSender) {
+	fun <T: TerritoryInterface>importOldTerritories(sender: CommandSender, companion: AbstractTerritoryCompanion<T>) {
 		val territoryFolder = File(IonServer.dataFolder, "territories")
 		if (!territoryFolder.exists()) {
 			sender msg "${territoryFolder.absolutePath} doesn't exist"
 			return
 		}
 
-		val update = mutableListOf<UpdateData>()
+		val update = mutableListOf<UpdateData<T>>()
 		val import = mutableListOf<ImportData>()
 
 		for (file in territoryFolder.listFiles()) {
@@ -41,10 +42,11 @@ object TerritoryImporter {
 
 				val polygonData = buildPolygonData(points)
 
-				val existing = Territory.findByName(label)
+				val existing = companion.findByName(label)
 				if (existing != null) {
 					check(existing.world == worldName) { "Duplicate territory $label" }
-					update.add(UpdateData(existing._id, polygonData))
+					@Suppress("UNCHECKED_CAST")
+					update.add(UpdateData<T>(existing._id as Oid<T>, polygonData))
 				} else {
 					import.add(ImportData(label, worldName, polygonData))
 				}
@@ -52,11 +54,11 @@ object TerritoryImporter {
 		}
 
 		for ((existingId, polygonData) in update) {
-			Territory.setPolygonData(existingId, polygonData)
+			companion.setPolygonData(existingId, polygonData)
 		}
 
 		for ((label, worldName, polygonData) in import) {
-			Territory.create(label, worldName, polygonData)
+			companion.create(label, worldName, polygonData)
 		}
 
 		sender msg "Imported ${import.size} and updated ${update.size} territories"
