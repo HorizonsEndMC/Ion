@@ -13,8 +13,13 @@ import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.NationsBalancing
@@ -206,6 +211,24 @@ internal object NationAdminCommand : SLCommand() {
 	@Subcommand("territoryimport")
 	@Suppress("unused")
 	fun onTerritoryImport(sender: CommandSender) {
-		TerritoryImporter.importOldTerritories(sender)
+		TerritoryImporter.importOldTerritories(sender, Territory.Companion)
+	}
+
+	@Subcommand("fobimport")
+	@Suppress("unused")
+	fun onForwardOperatingBaseImport(sender: CommandSender) {
+		TerritoryImporter.importOldTerritories(sender, ForwardOperatingBase.Companion)
+	}
+
+	@Subcommand("siegeterritoryimport")
+	@Suppress("unused")
+	fun onSiegeTerritoryImport(sender: CommandSender) {
+		TerritoryImporter.importOldTerritories(sender, SiegeTerritory.Companion)
+	}
+
+	@Subcommand("clearbeacons")
+	fun clearBeacons() {
+		MoonSieges.clearBeacons()
+		Regions
 	}
 }

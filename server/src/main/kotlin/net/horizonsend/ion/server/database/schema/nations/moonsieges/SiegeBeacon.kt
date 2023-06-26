@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.database.schema.nations.moonsieges
 
 import com.mongodb.client.FindIterable
-import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
@@ -15,23 +14,30 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Sign
-import org.litote.kmongo.Id
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 
 data class SiegeBeacon(
-	override val _id: Id<SiegeBeacon>,
-	val name: String,
-	val siegeTerritory: Oid<SiegeTerritory>,
-	val owner: Oid<Nation>?,
-	val world: String,
-	val x: Int,
-	val y: Int,
-	val z: Int,
-	val status: Boolean,
+	override val _id: Oid<SiegeBeacon>,
+
+	var name: String,
+
+	var siegeTerritory: Oid<SiegeTerritory>,
+
+	var owner: Oid<Nation>?,
+	var attacker: Oid<Nation>,
+
+	var points: Int,
+
+	var world: String,
+	var x: Int,
+	var y: Int,
+	var z: Int,
+
+	var blocks: LongArray,
 ) : DbObject {
-	@Transient
-	var laser: Laser.CrystalLaser? = null
+//	@Transient
+//	var laser: Laser.CrystalLaser? = null
 
 	companion object : OidDbObjectCompanion<SiegeBeacon>(
 		SiegeBeacon::class,
@@ -41,39 +47,36 @@ data class SiegeBeacon(
 			ensureIndex(SiegeBeacon::siegeTerritory)
 		}
 	) {
+		const val BEACON_DETECTION_RADIUS = 500
+		const val BEACON_CAPTURE_RADIUS = 25
+		const val BEACON_SIEGE_MAX_TIME_MS: Long = 1000 * 60 * 60 * 2
+
 		fun getBeacons(siegeTerritory: Oid<SiegeTerritory>): FindIterable<SiegeBeacon> =
 			col.find(SiegeBeacon::siegeTerritory eq siegeTerritory)
 
-		fun create(name: String, siegeTerritory: Oid<SiegeTerritory>, world: String, signLoc: Vec3i): Oid<SiegeBeacon> = trx {
+		fun create(name: String, siegeTerritory: Oid<SiegeTerritory>, attacker: Oid<Nation>, world: String, signLoc: Vec3i, blocks: LongArray): Oid<SiegeBeacon> = trx { session ->
 			val id = objId<SiegeBeacon>()
 
 			val (x, y, z) = signLoc
 
 			col.insertOne(
+				session,
 				SiegeBeacon(
 					_id = id,
 					name = name,
 					siegeTerritory = siegeTerritory,
+					attacker = attacker,
 					world = world,
 					x = x,
 					y = y,
 					z = z,
-					status = false,
+					blocks = blocks,
 					owner = null,
+					points = 0
 				)
 			)
 
 			return@trx id
 		}
 	}
-
-	fun bukkitWorld(): World = Bukkit.getWorld(world) ?: error("World $world not loaded!")
-
-	fun vec3i(): Vec3i = Vec3i(x, y, z)
-
-	fun location(): Location = Location(bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
-
-	fun isInRadius(location: Location, radius: Double): Boolean = location().isInRange(location, radius)
-
-	fun getSign(): Sign? = location().world.getBlockAt(location()).state as? Sign
 }

@@ -1,21 +1,30 @@
 package net.horizonsend.ion.server.features.multiblock.moonsiege
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
+import net.horizonsend.ion.server.features.landsieges.BeaconSiegeBattles.tryBeginBeaconSiege
 import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
+import net.starlegacy.feature.nations.NationsMap
+import net.starlegacy.feature.nations.region.Regions
+import net.starlegacy.feature.nations.region.types.RegionSiegeBeacon
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
+import net.starlegacy.util.isWallSign
 import net.starlegacy.util.rightFace
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -30,24 +39,42 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 		text("", NamedTextColor.DARK_GREEN),
 		text(""),
 		INACTIVE_STATE,
+		null
 	)
 
 	override fun onTransformSign(player: Player, sign: Sign) {
+		val attacker = PlayerCache[player].nationOid ?: return
+
 		val territoryName = (sign.line(1) as TextComponent).content()
 
 		val territory = SiegeTerritory.findOne(SiegeTerritory::name eq territoryName) ?:
-			return player.userError("Siege territory $territoryName")
+			return player.userError("Siege territory $territoryName not found")
+
+		if (territory.nation != null && RelationCache[attacker, territory.nation].ordinal >= NationRelation.Level.ALLY.ordinal) {
+			return player.userError("You cannot siege your allies!")
+		}
 
 		sign.line(1, text(territory.name, NamedTextColor.RED).apply { this.decoration(TextDecoration.ITALIC) })
 
 		val beaconName = (sign.line(3) as TextComponent).content()
 
-		SiegeBeacon.create(
+		val blocks = shape.getLocations(sign.getFacing().oppositeFace).map {
+			(it + Vec3i(sign.location)).toBlockPos().asLong()
+		}.toLongArray()
+
+		val id = SiegeBeacon.create(
 			beaconName,
 			territory._id,
+			attacker,
 			sign.world.name,
-			Vec3i(sign.location)
+			Vec3i(sign.location),
+			blocks
 		)
+
+		val b: RegionSiegeBeacon = Regions[id]
+		NationsMap.addSiegeBeacon(b)
+
+		super.onTransformSign(player, sign)
 	}
 
 	private val centerOffset = Vec3i(0, 3, -2)
@@ -69,7 +96,17 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 	fun setActive(sign: Sign, active: Boolean) = sign.line(3, if (active) ACTIVE_STATE else INACTIVE_STATE)
 
 	override fun onSignInteract(sign: Sign, player: Player) {
-		MoonSieges.tryBeginBeaconSiege(player, sign)
+		tryBeginBeaconSiege(player, sign)
+	}
+
+	fun isIntact(signBlock: Block): Boolean {
+		if (!signBlock.type.isWallSign) {
+			return false
+		}
+
+		val sign = signBlock.getState(false) as Sign
+
+		return this.signMatchesStructure(sign)
 	}
 
 	override fun LegacyMultiblockShape.buildStructure() {
@@ -87,7 +124,7 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 			}
 		}
 
-		z(-1) {
+		z(+1) {
 			y(-1) {
 				x(-2).anyWall()
 				x(-1).stainedTerracotta()
@@ -105,7 +142,7 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 			}
 		}
 
-		z(-2) {
+		z(+2) {
 			y(-1) {
 				x(-2).stainedTerracotta()
 				x(-1).concrete()
@@ -134,7 +171,7 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 			}
 		}
 
-		z(-3) {
+		z(+3) {
 			y(-1) {
 				x(-2).anyWall()
 				x(-1).stainedTerracotta()
@@ -152,7 +189,7 @@ object SiegeBeaconMultiblock : Multiblock(), InteractableMultiblock {
 			}
 		}
 
-		z(-4) {
+		z(+4) {
 			y(-1) {
 				x(-1).anyStairs()
 				x(+0).ironBlock()

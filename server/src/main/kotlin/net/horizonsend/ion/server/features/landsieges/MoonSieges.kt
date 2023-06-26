@@ -1,24 +1,22 @@
 package net.horizonsend.ion.server.features.landsieges
 
-import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.MoonSiege
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
-import net.horizonsend.ion.server.features.landsieges.BeaconSiege.updateBeaconSieges
-import net.horizonsend.ion.server.features.multiblock.moonsiege.SiegeBeaconMultiblock
+import net.horizonsend.ion.server.database.trx
+import net.horizonsend.ion.server.features.landsieges.BeaconSiegeBattles.updateBeaconSieges
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.SLComponent
+import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
-import org.bukkit.Location
 import org.bukkit.block.Sign
-import org.litote.kmongo.eq
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.setValue
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
@@ -27,12 +25,9 @@ object MoonSieges : SLComponent() {
 	var siegeActive: Boolean = false
 	val siegeDays = arrayOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
 
-	/**  **/
-	val activeSieges = mutableMapOf<Oid<SiegeTerritory>, Oid<MoonSiege>>()
-
 	val activeBeaconBattles = mutableListOf<BeaconSiege>()
 
-		/** Stores information for an individual battle for a beacon **/
+	/** Stores information for an individual battle for a beacon **/
 	data class BeaconSiege(
 		val initiate: SLPlayerId,
 		val initiateNation: Oid<Nation>,
@@ -48,7 +43,6 @@ object MoonSieges : SLComponent() {
 
 		Tasks.syncRepeat(20, 20) {
 			updateMoonSieges()
-			checkMoonSiegeWin()
 			updateBeaconSieges()
 		}
 
@@ -61,8 +55,9 @@ object MoonSieges : SLComponent() {
 		val dayOfTheWeek = ZonedDateTime.now().dayOfWeek
 
 		if (!siegeDays.contains(dayOfTheWeek)) {
+			if (siegeActive) endSiegePeriod()
+
 			siegeActive = false
-			checkMoonSiegeWin()
 			return
 		}
 
@@ -97,58 +92,64 @@ object MoonSieges : SLComponent() {
 	fun endSiegePeriod() {
 		setAllSiegeStates(false)
 
-		// List of changed hands
 		val notification = text().color(NamedTextColor.DARK_RED)
 			.append(text("The siege period has ended."))
 			.build()
 
 		Notify.all(notification)
+
+		clearBeacons()
 	}
 
 	fun updateBeacons() {
-		for (beacon in SiegeBeacon.all()) {
-			// Siege beacon period logic
-
-			val loc = beacon.location()
-			val sign = beacon.bukkitWorld().getBlockAt(loc).state as Sign
-
-			val (x, y, z) = beacon.vec3i() + SiegeBeaconMultiblock.getCenter(sign)
-			val location = Location(beacon.bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
-
-			beacon.laser?.stop()
-			beacon.laser = CrystalLaser(
-				location.add(0.0, 1.0 ,0.0),
-				location.add(0.0, 400.0, 0.0),
-				2,
-				400
-			)
-
-			beacon.laser!!.start(IonServer)
-
-
-		}
+//		for (beacon in SiegeBeacon.all()) {
+//			// Siege beacon period logic
+//
+//			val loc = beacon.location()
+//			val sign = beacon.bukkitWorld().getBlockAt(loc).state as Sign
+//
+//			val (x, y, z) = beacon.vec3i() + SiegeBeaconMultiblock.getCenter(sign)
+//			val location = Location(beacon.bukkitWorld(), x.toDouble(), y.toDouble(), z.toDouble())
+//
+//			beacon.laser?.stop()
+//			beacon.laser = CrystalLaser(
+//				location.add(0.0, 1.0 ,0.0),
+//				location.add(0.0, 400.0, 0.0),
+//				2,
+//				400
+//			)
+//
+//			beacon.laser!!.start(IonServer)
+//
+//			for (player in loc.getNearbyPlayers(25.0, 100.0, 25.0)) {
+//
+//			}
+//		}
 	}
 
-	fun checkMoonSiegeWin() { //TODO
-		for (siegeTerritory in SiegeTerritory.all()) {
-			val siege = MoonSiege.findOne(MoonSiege::siegeTerritory eq siegeTerritory._id) ?: continue
+	fun clearBeacons() {
+		for (siegeBeacon in SiegeBeacon.all()) {
+			trx { session ->
+				SiegeBeacon.col.deleteOneById(session, siegeBeacon._id)
+			}
 
-			val id = siegeTerritory._id
+			val win = siegeBeacon.points > 0
 
-			val beacons = SiegeBeacon.getBeacons(id)
+			val siegeTerritory = SiegeTerritory.findById(siegeBeacon.siegeTerritory) ?: continue
+			val nation = NationCache[siegeBeacon.attacker]
 
-			if (beacons.all {  })
+			val message = text().color(NamedTextColor.RED).decoration(TextDecoration.BOLD, true)
+				.append(text("The siege of "))
+				.append(text(siegeTerritory.name, NamedTextColor.GOLD))
+				.append(text(" by "))
+				.append(text(nation.name, NamedTextColor.GOLD))
+
+			if (win) message
+				.append(text(" has failed."))
+			else message
+				.append(text(" has succeeded."))
+
+			Notify.all(message.build())
 		}
 	}
-
-	fun endMoonSiege(siegeId: Oid<MoonSiege>) {
-		val siege = MoonSiege.findById(siegeId) ?: return
-		val territory = SiegeTerritory.findById(siege.siegeTerritory) ?: error("Siege territory ${siege.siegeTerritory} is not saved!")
-
-		// Clear FOB nations
-		for (forwardOperatingBase in ForwardOperatingBase.get(territory.bukkitWorld())) {
-			ForwardOperatingBase.updateById(forwardOperatingBase._id, setValue(ForwardOperatingBase::nation, null))
-		}
-	}
-
 }
