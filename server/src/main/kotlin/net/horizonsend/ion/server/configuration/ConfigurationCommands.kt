@@ -16,6 +16,7 @@ import org.bukkit.event.Listener
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.javaType
 
 @CommandAlias("ion")
 @CommandPermission("ion.config")
@@ -36,7 +37,7 @@ class ConfigurationCommands : BaseCommand(), Listener {
 		}
 	}
 
-	@Subcommand("config ships set")
+	@Subcommand("config set")
 	@CommandCompletion("@balancingFields @balancingValues @nothing")
 	fun set(sender: CommandSender, typeName: String, fieldName: String, value: String) {
 		val type = turretTypes.find { it.name == typeName } ?: run {
@@ -81,15 +82,19 @@ class ConfigurationCommands : BaseCommand(), Listener {
 				field.setter.call(obj, value)
 				done = true
 			}
+
+			else -> {
+				sender.userError("type is: ${type.returnType.javaType.typeName}, to add in the switch case")
+			}
 		}
 
 		if (done)
 			sender.success("changed balancing value")
 		else
-			sender.userError("type error, value isn't what the field accepts")
+			sender.userError("type error, value isn't what the field accepts or read above")
 	}
 
-	@Subcommand("config ships get")
+	@Subcommand("config get")
 	@CommandCompletion("@balancingFields @balancingValues")
 	fun set(sender: CommandSender, typeName: String, fieldName: String) {
 		val type = turretTypes.find { it.name == typeName } ?: run {

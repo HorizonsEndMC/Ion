@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.sendRichMessage
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 import kotlin.jvm.optionals.getOrNull
 
 
@@ -35,17 +36,24 @@ class VelocityMessageCommand : SimpleCommand {
 	override fun execute(invocation: SimpleCommand.Invocation) {
 		val sender = invocation.source()
 
-		val target = invocation.arguments()[0] ?: return sender.userError("Specify a player!")
+		if (invocation.arguments().size < 2)
+			return sender.userError("Specify a player!")
+
+		val target = invocation.arguments()[0]!!
 		val targetPlayer = IonProxy.proxy.getPlayer(target).getOrNull() ?: return sender.userError("Specify a player!")
 
-		val message = invocation.arguments().toList().subList(1, invocation.arguments().size).joinToString(separator = " ")
+		val message =
+			invocation.arguments().toList().subList(1, invocation.arguments().size).joinToString(separator = " ")
 
 		sendMessage(sender, targetPlayer, message)
 	}
 
-	override fun suggestAsync(invocation: SimpleCommand.Invocation?): CompletableFuture<List<String>>? {
-		return CompletableFuture.completedFuture(IonProxy.proxy.allPlayers.map { it.username })
-	}
+	override fun suggestAsync(invocation: SimpleCommand.Invocation): CompletableFuture<List<String>> =
+		CompletableFuture.completedFuture(
+			if (invocation.arguments().isEmpty()) IonProxy.proxy.allPlayers.map { it.username }
+			else IonProxy.proxy.allPlayers.map { it.username }
+				.filter { it.lowercase().startsWith(invocation.arguments()[0].lowercase()) }
+		)
 }
 
 class VelocityReplyCommand : SimpleCommand {
@@ -54,7 +62,8 @@ class VelocityReplyCommand : SimpleCommand {
 
 		val message = invocation.arguments().joinToString(separator = " ")
 
-		val target = VelocityMessageCommand.conversations[sender] ?: return sender.userError("You aren't talking to anyone!")
+		val target =
+			VelocityMessageCommand.conversations[sender] ?: return sender.userError("You aren't talking to anyone!")
 
 		VelocityMessageCommand.sendMessage(sender, target, message)
 	}

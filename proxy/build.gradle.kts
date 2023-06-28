@@ -3,7 +3,6 @@ import java.io.ByteArrayOutputStream
 plugins {
 	id("com.github.johnrengelman.shadow")
 
-	kotlin("kapt")
 	kotlin("plugin.serialization")
 	kotlin("jvm")
 }
@@ -22,7 +21,6 @@ dependencies {
 
 	// Platform
 	compileOnly("com.velocitypowered:velocity-api:3.1.1")
-	kapt("com.velocitypowered:velocity-api:3.1.1")
 
 	// Other Plugins
 	compileOnly("net.luckperms:api:5.4")
