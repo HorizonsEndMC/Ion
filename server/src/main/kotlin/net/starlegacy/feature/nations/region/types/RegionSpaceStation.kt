@@ -46,6 +46,8 @@ class RegionSpaceStation<T: SpaceStation<Owner>, Owner: DbObject>(spaceStation: 
 	var trustedNations: Set<Oid<Nation>> = spaceStation.trustedNations; private set
 
 	val color: Int get() = SpaceStations.spaceStationCache[name].get().color
+	val ownerName: String get() = SpaceStations.spaceStationCache[name].get().ownerName
+	val ownerType: String get() = SpaceStations.spaceStationCache[name].get().ownershipType
 
 	override fun contains(x: Int, y: Int, z: Int): Boolean {
 		return distanceSquared(this.x.d(), 0.0, this.z.d(), x.d(), 0.0, z.d()) <= radius.toDouble().squared()

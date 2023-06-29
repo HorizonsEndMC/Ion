@@ -59,7 +59,7 @@ object NationsMap : SLComponent() {
 		Tasks.sync {
 			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
-//			Regions.getAllOf<RegionSpaceStation>().forEach(::addSpaceStation)
+			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 		}
 	}
 
@@ -272,7 +272,7 @@ object NationsMap : SLComponent() {
 
 		marker.description = """
 		<p><h2>${station.name}</h2></p>
- 		<p><h3>Owned by ${station.name}</h3></p>
+ 		<p><h3>Owned by ${station.ownerType} ${station.ownerName}</h3></p>
 		<p><i>${station.radius} block radius</i></p>
 		""".trimIndent()
 	}

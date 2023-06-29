@@ -31,7 +31,6 @@ import net.starlegacy.feature.misc.Shuttles
 import net.starlegacy.feature.nations.NationsMasterTasks
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
-import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.MAX_LEVEL
 import net.starlegacy.feature.space.CachedPlanet
@@ -194,6 +193,11 @@ fun registerCommands(manager: PaperCommandManager) {
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val slPlayerId = player.slPlayerId
 			Blueprint.col.find(Blueprint::owner eq slPlayerId).map { it.name }.toList()
+		},
+		"spaceStations" to { c ->
+			val player = c.player
+
+			SpaceStations.all().filter { it.hasOwnershipContext(player.slPlayerId) }.map { it.name }
 		}
 	).forEach { manager.commandCompletions.registerAsyncCompletion(it.key, it.value) }
 
