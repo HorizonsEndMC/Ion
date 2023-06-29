@@ -70,6 +70,7 @@ object NationsMap : SLComponent() {
 
 		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
+		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 	}
 
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {

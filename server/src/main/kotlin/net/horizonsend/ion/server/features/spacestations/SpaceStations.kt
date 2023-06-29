@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationInterface
 import net.starlegacy.SLComponent
 import net.starlegacy.util.optional
 import java.util.Optional
@@ -53,7 +53,7 @@ object SpaceStations : SLComponent() {
 
 	fun all() = spaceStations
 
-	fun invalidate(station: SpaceStation<*>) {
+	fun invalidate(station: SpaceStationInterface<*>) {
 		spaceStations.removeAll { it.databaseId == station._id }
 
 		createCached(station)
@@ -77,7 +77,7 @@ object SpaceStations : SLComponent() {
 		with(spaceStationCache) { invalidateAll(); cleanUp() }
 	}
 
-	fun createCached(station: SpaceStation<*>): CachedSpaceStation<*, *, *> {
+	fun createCached(station: SpaceStationInterface<*>): CachedSpaceStation<*, *, *> {
 		val cachedStation: CachedSpaceStation<*, *, *> = when (station) {
 			is NationSpaceStation -> CachedNationSpaceStation(
 				databaseId = station._id,

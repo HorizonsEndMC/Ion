@@ -11,6 +11,8 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStation
 import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
@@ -128,6 +130,22 @@ object IonServer : JavaPlugin() {
 		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 		// such as reloading or other plugins doing things they probably shouldn't.
 		for (world in server.worlds) IonWorld.register(world.minecraft)
+
+		// Temp migration code
+		if (!NationSpaceStation.all().any()) {
+			for (spaceStation in SpaceStation.all()) {
+
+				NationSpaceStation.create(
+					owner = spaceStation.nation,
+					name = spaceStation.name,
+					world = spaceStation.world,
+					x = spaceStation.x,
+					z = spaceStation.x,
+					radius = spaceStation.radius,
+					trustLevel = spaceStation.trustLevel.new
+				)
+			}
+		}
 
 		legacyEnable(commandManager)
 

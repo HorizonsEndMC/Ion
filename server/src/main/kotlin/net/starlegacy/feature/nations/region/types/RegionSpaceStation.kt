@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationInterface
 import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.database.string
 import net.horizonsend.ion.server.features.spacestations.CachedNationSpaceStation
@@ -30,7 +30,7 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.Id
 import kotlin.jvm.optionals.getOrNull
 
-class RegionSpaceStation<T: SpaceStation<Owner>, Owner: DbObject>(spaceStation: SpaceStation<Owner>) : Region<T>(spaceStation), RegionTopLevel {
+class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(spaceStation: SpaceStationInterface<Owner>) : Region<T>(spaceStation), RegionTopLevel {
 	override val priority: Int = 0
 
 	override var world: String = spaceStation.world; private set
@@ -58,15 +58,15 @@ class RegionSpaceStation<T: SpaceStation<Owner>, Owner: DbObject>(spaceStation: 
 	}
 
 	override fun update(delta: ChangeStreamDocument<T>) {
-		delta[SpaceStation<Owner>::name]?.let { name = it.string() }
-		delta[SpaceStation<Owner>::world]?.let { world = it.string() }
-		delta[SpaceStation<Owner>::x]?.let { x = it.int() }
-		delta[SpaceStation<Owner>::z]?.let { z = it.int() }
-		delta[SpaceStation<Owner>::radius]?.let { radius = it.int() }
-		delta[SpaceStation<Owner>::owner]?.let { ownerId = it.id() }
-		delta[SpaceStation<Owner>::trustLevel]?.let { trustLevel = it.enumValue() }
-		delta[SpaceStation<Owner>::trustedPlayers]?.let { col -> trustedPlayers = col.mappedSet { it.slPlayerId() } }
-		delta[SpaceStation<Owner>::trustedNations]?.let { col -> trustedNations = col.mappedSet { it.oid() } }
+		delta[SpaceStationInterface<Owner>::name]?.let { name = it.string() }
+		delta[SpaceStationInterface<Owner>::world]?.let { world = it.string() }
+		delta[SpaceStationInterface<Owner>::x]?.let { x = it.int() }
+		delta[SpaceStationInterface<Owner>::z]?.let { z = it.int() }
+		delta[SpaceStationInterface<Owner>::radius]?.let { radius = it.int() }
+		delta[SpaceStationInterface<Owner>::owner]?.let { ownerId = it.id() }
+		delta[SpaceStationInterface<Owner>::trustLevel]?.let { trustLevel = it.enumValue() }
+		delta[SpaceStationInterface<Owner>::trustedPlayers]?.let { col -> trustedPlayers = col.mappedSet { it.slPlayerId() } }
+		delta[SpaceStationInterface<Owner>::trustedNations]?.let { col -> trustedNations = col.mappedSet { it.oid() } }
 
 		NationsMap.updateSpaceStation(this)
 	}

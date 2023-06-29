@@ -23,7 +23,7 @@ data class PlayerSpaceStation(
 	override var trustedNations: Set<Oid<Nation>>,
 
 	override var trustLevel: SpaceStations.TrustLevel
-) : SpaceStation<SLPlayer> {
+) : SpaceStationInterface<SLPlayer> {
 
 	companion object : SpaceStationCompanion<SLPlayer, PlayerSpaceStation>(
 		PlayerSpaceStation::class,
