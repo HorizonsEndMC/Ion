@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
@@ -38,7 +38,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
-object Bazaars : SLComponent() {
+object Bazaars : IonComponent() {
 	override fun supportsVanilla(): Boolean {
 		return true
 	}

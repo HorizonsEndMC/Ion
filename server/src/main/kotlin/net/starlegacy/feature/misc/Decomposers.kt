@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.minecraft
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.util.CHISELED_TYPES
@@ -23,7 +23,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import kotlin.math.max
 
-object Decomposers : SLComponent() {
+object Decomposers : IonComponent() {
 	val busySigns = mutableMapOf<Location, DecomposeTask>()
 
 	private const val MAX_LENGTH = 100

@@ -3,7 +3,7 @@ package net.starlegacy.feature.space
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.space.Moon
 import net.horizonsend.ion.server.database.schema.space.Planet
@@ -18,7 +18,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.event.world.WorldUnloadEvent
 import java.util.Optional
 
-object Space : SLComponent() {
+object Space : IonComponent() {
 	private val stars = mutableListOf<CachedStar>()
 	private val planets = mutableListOf<CachedPlanet>()
 	private val moons = mutableListOf<CachedMoon>()

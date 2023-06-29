@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.landsieges.multiblock.SiegeBeaconMult
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextColor
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.starlegacy.feature.nations.region.Regions
@@ -27,7 +27,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 
-object BeaconSiegeBattles : SLComponent() {
+object BeaconSiegeBattles : IonComponent() {
 	fun updateBeaconSieges() {
 		val finishedBeaconSieges = mutableListOf<MoonSieges.BeaconSiege>()
 

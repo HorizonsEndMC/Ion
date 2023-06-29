@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.NationCache
 import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.server.database.schema.nations.Settlement
@@ -23,7 +23,7 @@ import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-object NationsMap : SLComponent() {
+object NationsMap : IonComponent() {
 	private fun syncOnly(block: () -> Unit) = when {
 		Bukkit.isPrimaryThread() -> block()
 		else -> Tasks.sync(block)

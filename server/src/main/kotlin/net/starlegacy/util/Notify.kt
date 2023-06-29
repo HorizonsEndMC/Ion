@@ -4,10 +4,9 @@ import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import java.util.UUID
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.nations.Nation
@@ -16,7 +15,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
 import org.litote.kmongo.id.WrappedObjectId
 
-object Notify : SLComponent() {
+object Notify : IonComponent() {
 	infix fun online(message: Component) {
 		notifyOnlineAction(MiniMessage.miniMessage().serialize(message))
 		globalChannel(PlainTextComponentSerializer.plainText().serialize(message))

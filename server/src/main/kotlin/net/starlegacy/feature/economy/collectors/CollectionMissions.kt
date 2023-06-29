@@ -13,7 +13,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.trade.EcoStations
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.economy.CollectedItem
@@ -42,7 +42,7 @@ import org.litote.kmongo.inc
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-object CollectionMissions : SLComponent() {
+object CollectionMissions : IonComponent() {
 	data class Config(val generateAmount: Int = 27, val xpPerCreditRoot: Double = 0.5, val buyMultiplier: Double = 2.0)
 
 	private lateinit var config: Config

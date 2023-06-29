@@ -1,6 +1,6 @@
 package net.starlegacy.util
 
-import net.horizonsend.ion.server.debug
+import net.horizonsend.ion.server.miscellaneous.commands.debug
 import org.bukkit.entity.Player
 import java.lang.System.nanoTime
 import java.util.UUID

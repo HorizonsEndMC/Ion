@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.thruster
 
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.isGlass
 import net.starlegacy.util.isGlassPane

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server
+package net.horizonsend.ion.server.miscellaneous.commands
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
