@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.database.schema.misc.Cryopod
 import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 import net.starlegacy.SETTINGS
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.database.schema.economy.CargoCrate
 import net.horizonsend.ion.server.database.schema.economy.CargoCrateShipment
@@ -50,7 +50,7 @@ import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdGenerator
 import org.litote.kmongo.util.KMongoUtil
 
-object MongoManager : SLComponent() {
+object MongoManager : IonComponent() {
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
 
 	internal lateinit var client: MongoClient

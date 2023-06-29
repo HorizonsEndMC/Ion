@@ -1,7 +1,7 @@
 package net.starlegacy.feature.machine
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.starlegacy.util.Tasks
@@ -28,7 +28,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-object AreaShields : SLComponent() {
+object AreaShields : IonComponent() {
 	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()
 
 	override fun onEnable() {

@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import org.bukkit.Bukkit
@@ -15,7 +15,7 @@ import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-object PowerMachines : SLComponent() {
+object PowerMachines : IonComponent() {
 	override fun onEnable() {
 		// IIRC the below is a hacky fix for generators, it should be removed if possible, moved if not
 

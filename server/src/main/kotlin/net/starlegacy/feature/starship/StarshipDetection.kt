@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.listen
 import net.starlegacy.util.Vec3i
@@ -29,7 +29,7 @@ import kotlin.collections.set
 import kotlin.math.min
 import kotlin.math.sqrt
 
-object StarshipDetection : SLComponent() {
+object StarshipDetection : IonComponent() {
 	class DetectionFailedException(message: String) : Exception(message)
 
 	private val activeTasks = ConcurrentHashMap<Player, BukkitTask>()

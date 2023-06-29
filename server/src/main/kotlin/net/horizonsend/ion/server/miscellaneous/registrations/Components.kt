@@ -1,5 +1,6 @@
-package net.starlegacy
+package net.horizonsend.ion.server.miscellaneous.registrations
 
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.starlegacy.cache.Caches
 import net.starlegacy.feature.chat.ChannelSelections
@@ -58,7 +59,7 @@ import net.starlegacy.feature.tutorial.TutorialManager
 import net.starlegacy.util.Notify
 import net.starlegacy.util.redisaction.RedisActions
 
-val components: List<SLComponent> = listOf(
+val components: List<IonComponent> = listOf(
 	RedisActions,
 	Caches,
 	Notify,

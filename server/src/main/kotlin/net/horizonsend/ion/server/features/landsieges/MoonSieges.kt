@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.landsieges.BeaconSiegeBattles.updateB
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
@@ -21,7 +21,7 @@ import org.litote.kmongo.setValue
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
 
-object MoonSieges : SLComponent() {
+object MoonSieges : IonComponent() {
 	var siegeActive: Boolean = false
 	val siegeDays = arrayOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
 

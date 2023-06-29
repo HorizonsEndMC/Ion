@@ -9,7 +9,7 @@ import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.SETTINGS
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
@@ -28,7 +28,6 @@ import net.starlegacy.util.redisaction.RedisAction
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {
@@ -248,7 +247,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 
 	abstract fun onChat(player: Player, event: AsyncPlayerChatEvent)
 
-	companion object ChannelActions : SLComponent() {
+	companion object ChannelActions : IonComponent() {
 		private val globalAction = { message: NormalChatMessage ->
 			val component = message.buildChatComponent()
 

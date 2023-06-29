@@ -4,7 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.trade.CargoCrates
 import net.horizonsend.ion.server.database.Oid
@@ -69,7 +69,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-object ShipmentManager : SLComponent() {
+object ShipmentManager : IonComponent() {
 	private data class Delivery(
 		val id: String,
 		val crate: CargoCrate,

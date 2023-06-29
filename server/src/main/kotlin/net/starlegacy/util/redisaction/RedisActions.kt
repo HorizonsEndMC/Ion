@@ -12,7 +12,7 @@ import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SETTINGS
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.starlegacy.redisPool
 import net.starlegacy.util.Tasks
@@ -25,7 +25,7 @@ import java.lang.reflect.Type
 import java.util.UUID
 import java.util.concurrent.Executors
 
-object RedisActions : SLComponent() {
+object RedisActions : IonComponent() {
 	private val gson = GsonBuilder().registerTypeAdapter(
 		Oid::class.java,
 		object : JsonSerializer<Oid<*>>, JsonDeserializer<Oid<*>>, InstanceCreator<Oid<*>> {

@@ -1,7 +1,7 @@
 // package net.starlegacy.feature.machine
 //
 // import java.util.concurrent.TimeUnit
-// import net.starlegacy.SLComponent
+// import net.horizonsend.ion.server.IonComponent
 // import net.horizonsend.ion.server.features.multiblock.Multiblocks
 // import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TurretMultiblock
 // import net.starlegacy.feature.starship.active.ActiveStarships
@@ -17,7 +17,7 @@
 // import org.bukkit.event.player.PlayerMoveEvent
 // import org.bukkit.inventory.EquipmentSlot
 //
-// object Turrets : SLComponent() {
+// object Turrets : IonComponent() {
 // 	private lateinit var turretMultiblocks: List<TurretMultiblock>
 //
 // 	override fun onEnable() {

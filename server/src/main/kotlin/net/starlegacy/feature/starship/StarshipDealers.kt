@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.command.starship.BlueprintCommand
 import net.starlegacy.feature.nations.gui.item
 import net.starlegacy.util.MenuHelper
@@ -28,7 +28,7 @@ import org.bukkit.inventory.ItemStack
 import java.lang.System.currentTimeMillis
 import java.util.UUID
 
-object StarshipDealers : SLComponent() {
+object StarshipDealers : IonComponent() {
 	private val lastBuyTimes = mutableMapOf<ServerConfiguration.Ship, MutableMap<UUID, Long>>()
 	private val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
 

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.transport.pipe
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.feature.machine.GeneratorFuel
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.feature.transport.pipe.filter.FilterData
@@ -41,7 +41,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-object Pipes : SLComponent() {
+object Pipes : IonComponent() {
 	private lateinit var thread: ExecutorService
 	private val pending = AtomicInteger(0)
 	private val inventoryCheckTasks = ConcurrentLinkedQueue<CheckInventoryTask>()

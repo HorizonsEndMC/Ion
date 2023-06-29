@@ -1,6 +1,6 @@
 package net.starlegacy.feature.economy.city
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.SettlementCache
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.enumValue
@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import java.util.concurrent.ConcurrentHashMap
 
-object TradeCities : SLComponent() {
+object TradeCities : IonComponent() {
 	private val cities: MutableMap<Oid<Territory>, TradeCityData> = ConcurrentHashMap()
 
 	override fun onEnable() {

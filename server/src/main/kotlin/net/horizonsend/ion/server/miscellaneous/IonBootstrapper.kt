@@ -1,8 +1,9 @@
-package net.horizonsend.ion.server
+package net.horizonsend.ion.server.miscellaneous
 
 import io.papermc.paper.plugin.bootstrap.BootstrapContext
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext
+import net.horizonsend.ion.server.IonServer
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("Unused", "UnstableApiUsage")

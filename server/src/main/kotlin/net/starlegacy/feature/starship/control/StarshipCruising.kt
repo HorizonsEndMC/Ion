@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship.control
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -20,7 +20,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
-object StarshipCruising : SLComponent() {
+object StarshipCruising : IonComponent() {
 	const val SECONDS_PER_CRUISE = 2.0
 
 	class CruiseData(

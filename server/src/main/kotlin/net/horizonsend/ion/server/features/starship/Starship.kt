@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.extensions.hint
-import net.horizonsend.ion.server.IonWorld
+import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.mainThreadCheck
 import net.minecraft.core.BlockPos

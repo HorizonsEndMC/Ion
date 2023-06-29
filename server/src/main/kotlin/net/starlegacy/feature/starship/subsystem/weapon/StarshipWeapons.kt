@@ -4,8 +4,8 @@ import com.google.common.collect.HashMultimap
 import com.google.common.util.concurrent.AtomicDouble
 import net.horizonsend.ion.common.extensions.alertActionMessage
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
-import net.horizonsend.ion.server.debug
-import net.horizonsend.ion.server.debugRed
+import net.horizonsend.ion.server.miscellaneous.commands.debug
+import net.horizonsend.ion.server.miscellaneous.commands.debugRed
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.starlegacy.feature.starship.active.ActiveStarship

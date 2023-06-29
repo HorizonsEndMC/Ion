@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.multiblock
 
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.legacy.starshipweapon.primary.MiniPhaserWeaponSubsystem
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
