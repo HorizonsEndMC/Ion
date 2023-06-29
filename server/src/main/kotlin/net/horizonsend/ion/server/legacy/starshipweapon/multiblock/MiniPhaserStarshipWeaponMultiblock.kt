@@ -1,15 +1,14 @@
 package net.horizonsend.ion.server.legacy.starshipweapon.multiblock
 
 import net.horizonsend.ion.server.legacy.starshipweapon.primary.MiniPhaserWeaponSubsystem
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
-import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object MiniPhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<MiniPhaserWeaponSubsystem>() {
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		y(+0) {
 			z(+0) { x(+0).type(Material.IRON_BLOCK) }
 			z(+1) { x(+0).type(Material.SPONGE) }

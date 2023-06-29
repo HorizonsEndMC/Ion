@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 
@@ -31,7 +30,7 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +6, -3)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-1).anyPipedInventory()
@@ -273,7 +272,7 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, -3)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+1) {
 				x(-1).anyPipedInventory()

@@ -7,8 +7,8 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship

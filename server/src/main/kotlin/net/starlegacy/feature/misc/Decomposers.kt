@@ -6,8 +6,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.starlegacy.SLComponent
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.util.CHISELED_TYPES
 import net.starlegacy.util.add
 import net.starlegacy.util.getFacing

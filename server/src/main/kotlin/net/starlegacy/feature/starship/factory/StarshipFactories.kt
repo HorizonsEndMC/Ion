@@ -8,8 +8,8 @@ import net.starlegacy.SLComponent
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.economy.bazaar.Merchants
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.misc.ShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.misc.ShipFactoryMultiblock
 import net.starlegacy.listen
 import net.starlegacy.javautil.SignUtils
 import net.starlegacy.util.Tasks

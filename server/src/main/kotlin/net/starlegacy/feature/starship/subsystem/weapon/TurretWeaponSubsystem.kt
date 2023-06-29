@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.starlegacy.feature.multiblock.starshipweapon.turret.TurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem

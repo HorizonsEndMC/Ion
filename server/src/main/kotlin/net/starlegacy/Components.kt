@@ -22,7 +22,7 @@ import net.starlegacy.feature.misc.Decomposers
 import net.starlegacy.feature.misc.DutyModeMonitor
 import net.starlegacy.feature.misc.GameplayTweaks
 import net.starlegacy.feature.misc.Shuttles
-import net.starlegacy.feature.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions

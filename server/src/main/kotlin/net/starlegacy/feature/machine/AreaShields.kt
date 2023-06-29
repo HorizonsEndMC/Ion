@@ -2,8 +2,8 @@ package net.starlegacy.feature.machine
 
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.areashield.AreaShield
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.isInRange
 import net.starlegacy.util.isWallSign
