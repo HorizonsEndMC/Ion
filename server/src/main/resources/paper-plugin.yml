@@ -14,7 +14,7 @@ dependencies:
     required: true
 
   - name: UnifiedMetrics
-    required: true
+    required: false
 
   - name: Citizens
     required: false
