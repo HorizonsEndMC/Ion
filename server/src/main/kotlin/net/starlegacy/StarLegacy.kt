@@ -6,7 +6,6 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import java.io.File
 import java.util.Locale
-import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -23,6 +22,7 @@ import net.horizonsend.ion.server.database.schema.economy.EcoStation
 import net.horizonsend.ion.server.database.schema.misc.Shuttle
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.feature.misc.CustomItem

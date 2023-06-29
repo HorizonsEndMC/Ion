@@ -1,13 +1,13 @@
 package net.starlegacy.feature.space
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.schema.space.Planet
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockplacement.BlockPlacement
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureNanoTime
 
-object Orbits : SLComponent() {
+object Orbits : IonComponent() {
 	// schedule orbiting all the planets every midnight
 	override fun onEnable() {
 // 		Tasks.sync {

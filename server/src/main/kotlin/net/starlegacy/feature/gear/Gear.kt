@@ -1,13 +1,13 @@
 package net.starlegacy.feature.gear
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 
-object Gear : SLComponent() {
+object Gear : IonComponent() {
 	override fun onEnable() {
 		PowerArmorManager.init()
 

@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
@@ -30,7 +30,7 @@ import org.bukkit.event.EventHandler
 import kotlin.math.log10
 import kotlin.math.sqrt
 
-object Hyperspace : SLComponent() {
+object Hyperspace : IonComponent() {
 	private val warmupTasks = mutableMapOf<ActiveStarship, HyperspaceWarmup>()
 	private val movementTasks = mutableMapOf<ActiveStarship, HyperspaceMovement>()
 

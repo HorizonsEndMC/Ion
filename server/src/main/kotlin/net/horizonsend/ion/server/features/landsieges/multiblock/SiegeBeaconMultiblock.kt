@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
 import net.horizonsend.ion.server.features.landsieges.BeaconSiegeBattles.tryBeginBeaconSiege
+import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
@@ -13,6 +14,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isWallSign

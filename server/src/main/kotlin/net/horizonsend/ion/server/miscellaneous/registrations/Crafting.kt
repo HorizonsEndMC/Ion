@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.customitems.CustomItems

@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.legacy.multiblocks
 
+import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.leftFace
@@ -17,7 +19,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
 object DisposalMultiblock : Multiblock(), PowerStoringMultiblock,
-    FurnaceMultiblock {
+	FurnaceMultiblock {
 	override val name = "incinerator"
 
 	override var signText: Array<Component?> = arrayOf(

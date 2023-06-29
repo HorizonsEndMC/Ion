@@ -1,12 +1,12 @@
 package net.starlegacy.feature.nations
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.loadConfig
 
 lateinit var NATIONS_BALANCE: NationsBalancing.Config
 
-object NationsBalancing : SLComponent() {
+object NationsBalancing : IonComponent() {
 	data class Config(
 		val settlement: Config.Settlements = Settlements(),
 		val nation: Config.Nations = Nations(),

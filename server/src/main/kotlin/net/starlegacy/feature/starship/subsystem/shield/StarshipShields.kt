@@ -9,11 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.SLComponent
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
-import net.starlegacy.feature.multiblock.particleshield.ShieldMultiblock
-import net.starlegacy.feature.multiblock.particleshield.SphereShieldMultiblock
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -35,7 +31,7 @@ import kotlin.collections.set
 import kotlin.math.min
 import kotlin.math.sqrt
 
-object StarshipShields : SLComponent() {
+object StarshipShields : IonComponent() {
 	var LAST_EXPLOSION_ABSORBED = false
 
 	val updatedStarships = ConcurrentHashMap.newKeySet<ActiveStarship>()

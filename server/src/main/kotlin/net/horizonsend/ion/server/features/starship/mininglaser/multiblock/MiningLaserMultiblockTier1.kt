@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
 
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.util.Vec3i
