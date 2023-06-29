@@ -12,7 +12,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
-import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.progression.ShipKillXP
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.EnterableCelestialBody

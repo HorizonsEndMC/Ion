@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
-import net.starlegacy.feature.multiblock.particleshield.ShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.AbstractMultiblockSubsystem
 import net.starlegacy.util.d

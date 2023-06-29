@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem
 
-import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.block.Sign
 
