@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.legacy.listeners
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.LegacyBlockUtils
 import net.starlegacy.util.isStainedGlass

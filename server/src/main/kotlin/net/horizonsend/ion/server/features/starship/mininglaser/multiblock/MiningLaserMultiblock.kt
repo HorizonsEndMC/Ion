@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
 
 import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
-import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i

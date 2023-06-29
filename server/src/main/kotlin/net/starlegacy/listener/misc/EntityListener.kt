@@ -1,6 +1,6 @@
 package net.starlegacy.listener.misc
 
-import net.starlegacy.feature.multiblock.misc.MobDefender
+import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
 import net.starlegacy.listener.SLEventListener
 import org.bukkit.entity.Ghast
 import org.bukkit.entity.Monster
