@@ -12,6 +12,7 @@ import net.starlegacy.util.isAlphanumeric
 import org.litote.kmongo.Id
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -77,6 +78,8 @@ abstract class SpaceStationCompanion<Owner: DbObject, T: SpaceStation<Owner>>(
 		return@trx station._id as Oid<T>
 	}
 
+	fun rename(id: Oid<T>, newName: String) = col.updateOneById(id, setValue(nameProperty, newName))
+
 	fun setLocation(id: Oid<T>, newX: Int, newZ: Int, newWorld: String) = col.updateOneById(
 		id, and(setValue(xProperty, newX), setValue(zProperty, newZ), setValue(worldProperty, newWorld))
 	)
@@ -90,4 +93,8 @@ abstract class SpaceStationCompanion<Owner: DbObject, T: SpaceStation<Owner>>(
 	fun unTrustPlayer(id: Oid<T>, player: SLPlayerId) = col.updateOneById(id, pull(trustedPlayersProperty, player))
 	fun unTrustSettlement(id: Oid<T>, settlement: Oid<Settlement>) = col.updateOneById(id, pull(trustedSettlementsProperty, settlement))
 	fun unTrustNation(id: Oid<T>, nation: Oid<Nation>) = col.updateOneById(id, pull(trustedNationsProperty, nation))
+
+	fun setTrustLevel(id: Oid<T>, trustLevel: SpaceStations.TrustLevel) = col.updateOneById(id, setValue(trustLevelProperty, trustLevel))
+
+	fun delete(id: Oid<T>) = trx { col.deleteOneById(id) }
 }

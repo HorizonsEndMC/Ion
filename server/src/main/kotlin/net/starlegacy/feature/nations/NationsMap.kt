@@ -59,7 +59,7 @@ object NationsMap : SLComponent() {
 		Tasks.sync {
 			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
-			Regions.getAllOf<RegionSpaceStation>().forEach(::addSpaceStation)
+//			Regions.getAllOf<RegionSpaceStation>().forEach(::addSpaceStation)
 		}
 	}
 
@@ -245,7 +245,7 @@ object NationsMap : SLComponent() {
 		""".trimIndent()
 	}
 
-	fun addSpaceStation(station: RegionSpaceStation): Unit = syncOnly {
+	fun addSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
 		}
@@ -265,20 +265,19 @@ object NationsMap : SLComponent() {
 		markerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
 		val marker: CircleMarker = markerSet.findCircleMarker(id)
 
-		val nation = NationCache[station.nation]
+		val rgb = station.color
 
-		val rgb = nation.color
 		marker.setFillStyle(0.2, rgb)
 		marker.setLineStyle(5, 0.4, rgb)
 
 		marker.description = """
 		<p><h2>${station.name}</h2></p>
-		<p><h3>Owned by ${nation.name}</h3></p>
+ 		<p><h3>Owned by ${station.name}</h3></p>
 		<p><i>${station.radius} block radius</i></p>
 		""".trimIndent()
 	}
 
-	fun removeSpaceStation(station: RegionSpaceStation) = syncOnly {
+	fun removeSpaceStation(station: RegionSpaceStation<*, *>) = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
 		}
@@ -286,7 +285,7 @@ object NationsMap : SLComponent() {
 		markerSet.findCircleMarker(getMarkerID(station))?.deleteMarker()
 	}
 
-	fun updateSpaceStation(station: RegionSpaceStation): Unit = syncOnly {
+	fun updateSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
 		}
@@ -295,7 +294,7 @@ object NationsMap : SLComponent() {
 		addSpaceStation(station)
 	}
 
-	private fun getMarkerID(station: RegionSpaceStation) =
+	private fun getMarkerID(station: RegionSpaceStation<*, *>) =
 		"nation-station-" + station.id.toString()
 
 	override fun supportsVanilla(): Boolean {

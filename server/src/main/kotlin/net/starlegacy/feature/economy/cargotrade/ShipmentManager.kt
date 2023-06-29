@@ -43,6 +43,7 @@ import net.starlegacy.util.randomDouble
 import net.starlegacy.util.red
 import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.setLoreAndGet
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.withNBTString
 import net.starlegacy.util.yellow
@@ -416,7 +417,9 @@ object ShipmentManager : SLComponent() {
 				Settlement.deposit(settlementId, tax)
 				Notify.settlement(
 					settlementId = settlementId,
-					message = "&6Your settlement received &e${tax.toCreditsString()} from $playerName's completion of a shipment to it."
+					message = MiniMessage.miniMessage().deserialize(
+						"<gold>Your settlement received <yellow>${tax.toCreditsString()} <gold>from <aqua>$playerName's <gold>completion of a shipment to it."
+					)
 				)
 			}
 		}

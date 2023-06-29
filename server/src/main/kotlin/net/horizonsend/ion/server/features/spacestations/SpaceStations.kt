@@ -20,14 +20,10 @@ import java.util.Optional
 object SpaceStations : SLComponent() {
 	private val spaceStations = mutableListOf<CachedSpaceStation<*, *, *>>()
 
-	private val nationSpaceStations = mutableListOf<CachedNationSpaceStation>()
-	private val settlementSpaceStations = mutableListOf<CachedSettlementSpaceStation>()
-	private val playerSpaceStations = mutableListOf<CachedPlayerSpaceStation>()
-
 	val spaceStationCache: LoadingCache<String, Optional<CachedSpaceStation<*, *, *>>> =
 		CacheBuilder.newBuilder().weakKeys().build(
 			CacheLoader.from { name ->
-				return@from optional(spaceStations.firstOrNull { it.name == name })
+				return@from optional(spaceStations.firstOrNull { it.name.equals(name, ignoreCase = true) })
 			}
 		)
 
@@ -41,7 +37,21 @@ object SpaceStations : SLComponent() {
 
 	override fun onEnable() {
 		reload()
+
+		NationSpaceStation.watchInserts { change ->
+			change.fullDocument?.let { createCached(it) }
+		}
+
+		SettlementSpaceStation.watchInserts { change ->
+			change.fullDocument?.let { createCached(it) }
+		}
+
+		PlayerSpaceStation.watchInserts { change ->
+			change.fullDocument?.let { createCached(it) }
+		}
 	}
+
+	fun all() = spaceStations
 
 	fun invalidate(station: SpaceStation<*>) {
 		spaceStations.removeAll { it.databaseId == station._id }
@@ -63,6 +73,8 @@ object SpaceStations : SLComponent() {
 		for (playerSpaceStation in PlayerSpaceStation.all()) {
 			createCached(playerSpaceStation)
 		}
+
+		with(spaceStationCache) { invalidateAll(); cleanUp() }
 	}
 
 	fun createCached(station: SpaceStation<*>): CachedSpaceStation<*, *, *> {

@@ -6,17 +6,25 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.NationRole
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.database.uuid
+import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation.Companion.calculateCost
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
+import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
@@ -28,14 +36,10 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.distance
 import net.starlegacy.util.isAlphanumeric
-import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString
 import org.bukkit.World
 import org.bukkit.entity.Player
-import org.litote.kmongo.addToSet
-import org.litote.kmongo.eq
-import org.litote.kmongo.pull
-import org.litote.kmongo.setValue
+import org.litote.kmongo.Id
 
 @CommandAlias("nationspacestation|nspacestation|nstation|sstation|station|spacestation")
 object SpaceStationCommand : SLCommand() {
@@ -59,7 +63,7 @@ object SpaceStationCommand : SLCommand() {
 		}
 	}
 
-	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, id: Oid<NationSpaceStation>?) {
+	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, cachedStation: CachedSpaceStation<*, *, *>?) {
 		failIf(radius !in 15..10_000) { "Radius must be at least 15 and at most 10,000 blocks" }
 
 		val y = 128 // we don't care about comparing height here
@@ -101,10 +105,8 @@ object SpaceStationCommand : SLCommand() {
 		// Check conflicts with other stations
 		// (use the database directly, in order to avoid people making
 		// another one in the same location before the cache updates)
-		for (other in NationSpaceStation.all()) {
-			if (other._id == id) {
-				continue
-			}
+		for (other in SpaceStations.all()) {
+			if (other.databaseId == cachedStation?.databaseId) continue
 
 			val minDistance = other.radius + radius
 			val distance = distance(x, y, z, other.x, y, other.z)
@@ -125,12 +127,39 @@ object SpaceStationCommand : SLCommand() {
 		}
 	}
 
-
-
-	@Subcommand("create")
-	@Description("Claim this area of space as a space station")
+	@Subcommand("create nation")
 	@Suppress("unused")
-	fun onCreate(sender: Player, name: String, radius: Int, @Optional cost: Int?) = asyncCommand(sender) {
+	fun createNation(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		val nation: Oid<Nation> = requireNationIn(sender)
+		requireNationPermission(sender, nation, SpaceStations.SpaceStationPermission.CREATE_STATION.nation)
+
+		create(sender, name, radius, cost, nation, NationSpaceStation.Companion)
+	}
+
+	@Subcommand("create settlement")
+	@Suppress("unused")
+	fun createSettlement(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		val nation: Oid<Settlement> = requireSettlementIn(sender)
+		requireSettlementPermission(sender, nation, SpaceStations.SpaceStationPermission.CREATE_STATION.settlement)
+
+		create(sender, name, radius, cost, nation, SettlementSpaceStation.Companion)
+	}
+
+	@Subcommand("create personal")
+	@Suppress("unused")
+	fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		create(sender, name, radius, cost, sender.slPlayerId, PlayerSpaceStation.Companion)
+	}
+
+	// Check settlement / nation permissions in their own version
+	fun <Owner: DbObject>create(
+		sender: Player,
+		name: String,
+		radius: Int,
+		@Optional cost: Int?,
+		owner: Id<Owner>,
+		companion: SpaceStationCompanion<Owner, *>)
+	{
 		failIf(!sender.hasPermission("nations.spacestation.create")) {
 			"You can't create space stations here!"
 		}
@@ -139,9 +168,6 @@ object SpaceStationCommand : SLCommand() {
 		failIf(
 			disallowedWorlds.contains(sender.world.name.lowercase())
 		) { "Space stations cannot be created in systems with no security" }
-
-		val nation: Oid<Nation> = requireNationIn(sender)
-		requireNationPermission(sender, nation, NationRole.Permission.CREATE_STATION)
 
 		validateName(name)
 
@@ -160,47 +186,64 @@ object SpaceStationCommand : SLCommand() {
 				"/nstation $name $radius $realCost"
 		}
 
-		NationSpaceStation.create(nation, name, world.name, x, z, radius)
-		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		Notify.all(MiniMessage.miniMessage().deserialize("<light_purple>${getNationName(nation)} <gray>established space station <aqua>$name"))
+		companion.create(
+			owner,
+			name,
+			world.name,
+			x,
+			z,
+			radius,
+			SpaceStations.TrustLevel.MANUAL
+		)
 	}
 
-	private fun requireStation(nation: Oid<Nation>, name: String) = NationSpaceStation.find(NationSpaceStation::owner eq nation)
-		.firstOrNull { it.name.equals(name, true) }
-		?: fail { "Your nation doesn't own a station named $name" }
+	private fun requireStation(player: SLPlayerId, name: String): CachedSpaceStation<*, *, *> {
+		val station = SpaceStations.all().firstOrNull {
+			it.name.equals(name, ignoreCase = true)
+		} ?: fail { "Space Station $name doesn't exist!" }
 
-	private fun requireManagementContext(sender: Player, name: String): Pair<Oid<Nation>, NationSpaceStation> {
-		val nation: Oid<Nation> = requireNationIn(sender)
-		val nationSpaceStation: NationSpaceStation = requireStation(nation, name)
-		if (!nationSpaceStation.managers.contains(sender.slPlayerId)) {
-			requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
-		}
-		return nation to nationSpaceStation
+		if (!station.hasOwnershipContext(player)) fail { "Your ${station.ownershipType} doesn't own $name" }
+
+		return station
+	}
+
+	private fun requirePermission(
+		player: SLPlayerId,
+		station: CachedSpaceStation<*, *, *>,
+		permission: SpaceStations.SpaceStationPermission
+	) {
+		if (!station.hasPermission(player, permission)) fail { "You don't have permission $permission" }
 	}
 
 	@Subcommand("abandon")
 	@Description("Delete a space station")
 	@Suppress("unused")
 	fun onAbandon(sender: Player, station: String) = asyncCommand(sender) {
-		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationPermission(sender, nation, NationRole.Permission.DELETE_STATION)
-		NationSpaceStation.delete(spaceStation._id)
-		Notify.all(MiniMessage.miniMessage().deserialize("<pink>${getNationName(nation)} <gray>abandoned space station <aqua>$station"))
+		val cachedStation = requireStation(sender.slPlayerId, station)
+		requirePermission(sender.slPlayerId, cachedStation, SpaceStations.SpaceStationPermission.DELETE_STATION)
+
+		cachedStation.abandon()
+
+		Notify.all(
+			MiniMessage.miniMessage().deserialize(
+				"<gray>${cachedStation.ownershipType} <light_purple>${cachedStation.ownerName} <gray>abandoned space station <aqua>$station"
+			)
+		)
 	}
 
 	@Subcommand("resize")
 	@Description("Resize the station")
 	@Suppress("unused")
 	fun onResize(sender: Player, station: String, newRadius: Int, @Optional cost: Int?) {
-		val (nation, spaceStation) = requireManagementContext(sender, station)
-		requireNationPermission(sender, nation, NationRole.Permission.MANAGE_STATION)
+		val spaceStation = requireStation(sender.slPlayerId, station)
+		requirePermission(sender.slPlayerId, spaceStation, SpaceStations.SpaceStationPermission.MANAGE_STATION)
 		val stationName = spaceStation.name
 
 		val location = sender.location
 		val world = location.world
 		val x = location.blockX
 		val z = location.blockZ
-		checkDimensions(world, x, z, newRadius, spaceStation._id)
+		checkDimensions(world, x, z, newRadius, spaceStation)
 
 		val realCost = calculateCost(spaceStation.radius, newRadius)
 		requireMoney(sender, realCost, "create a space station")
@@ -211,9 +254,11 @@ object SpaceStationCommand : SLCommand() {
 				"/nstation resize $name $newRadius $realCost"
 		}
 
-		NationSpaceStation.updateById(spaceStation._id, setValue(NationSpaceStation::radius, newRadius))
+		spaceStation.changeRadius(newRadius)
+		spaceStation.invalidate()
+
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		sender msg "&7Resized &b$stationName&7 to &b$newRadius"
+		sender.sendRichMessage("<gray>7Resized <aqua>$stationName<gray> to <aqua>$newRadius")
 	}
 
 	@Subcommand("set trustlevel")
@@ -221,105 +266,185 @@ object SpaceStationCommand : SLCommand() {
 	@Description("Change the setting for who automatically can build in the station")
 	@Suppress("unused")
 	fun onSetTrustLevel(sender: Player, station: String, trustLevel: SpaceStations.TrustLevel) {
-		val (_, spaceStation) = requireManagementContext(sender, station)
+		val spaceStation = requireStation(sender.slPlayerId, station)
 		val stationName = spaceStation.name
 		failIf(spaceStation.trustLevel == trustLevel) { "$stationName's trust level is already $trustLevel" }
-		NationSpaceStation.updateById(spaceStation._id, setValue(NationSpaceStation::trustLevel, trustLevel))
-		sender msg "&7Set trust level of &b$stationName&7 to &b$trustLevel"
+
+		spaceStation.changeTrustLevel(trustLevel)
+		spaceStation.invalidate()
+
+		sender.sendRichMessage("<gray>Set trust level of <aqua>$stationName<gray> to <aqua>$trustLevel")
 	}
 
 	@Subcommand("trusted list")
 	@Suppress("unused")
 	fun onTrustedList(sender: Player, station: String) {
-		val (_, spaceStation) = requireManagementContext(sender, station)
+		val spaceStation = requireStation(sender.slPlayerId, station)
 		val stationName: String = spaceStation.name
+
 		val trustedPlayers: String = spaceStation.trustedPlayers.map(::getPlayerName).sorted().joinToString()
-		sender msg "&7Trusted players in $stationName:&b $trustedPlayers"
+		sender.sendRichMessage("<Gold>Trusted players in $stationName: <aqua>$trustedPlayers")
+
+		val trustedSettlements: String = spaceStation.trustedSettlements.map(::getSettlementName).sorted().joinToString()
+		sender.sendRichMessage("<Gold>Trusted settlements in $stationName: <aqua>$trustedSettlements")
+
 		val trustedNations: String = spaceStation.trustedNations.map(::getNationName).sorted().joinToString()
-		sender msg "&7Trusted nations in $stationName:&b $trustedNations"
+		sender.sendRichMessage("<Gold>Trusted nations in $stationName: <aqua>$trustedNations")
 	}
 
 	@Subcommand("trusted add player")
 	@Description("Give a player build access to the station")
 	@Suppress("unused")
 	fun onTrustedAddPlayer(sender: Player, station: String, player: String) = asyncCommand(sender) {
-		val (_, spaceStation) = requireManagementContext(sender, station)
+		val spaceStation = requireStation(sender.slPlayerId, station)
 		val stationName = spaceStation.name
+
 		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
 		val playerName: String = getPlayerName(playerId)
+
+		requirePermission(sender.slPlayerId, spaceStation, SpaceStations.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(spaceStation.trustedPlayers.contains(playerId)) {
 			"$playerName is already trusted in $stationName"
 		}
 
-		NationSpaceStation.updateById(spaceStation._id, addToSet(NationSpaceStation::trustedPlayers, playerId))
-		sender msg "&7Added &b$playerName&7 to &b$stationName"
+		spaceStation.trustPlayer(playerId)
+		spaceStation.invalidate()
+
+		sender.sendRichMessage("<gray> Added <aqua>$playerName<gray> to <aqua>$stationName")
 		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
-	@Subcommand("trusted remove player")
-	@Description("Revoke a player's build access to the station")
+	@Subcommand("trusted add settlement")
+	@Description("Give a settlement build access to the station")
 	@Suppress("unused")
-	fun onTrustedRemovePlayer(sender: Player, station: String, player: String) = asyncCommand(sender) {
-		val (_, spaceStation) = requireManagementContext(sender, station)
+	fun onTrustedAddSettlement(sender: Player, station: String, settlement: String) = asyncCommand(sender) {
+		val spaceStation = requireStation(sender.slPlayerId, station)
 		val stationName = spaceStation.name
-		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
-		val playerName: String = getPlayerName(playerId)
 
-		failIf(!spaceStation.trustedPlayers.contains(playerId)) {
-			"$playerName is not trusted in $stationName"
+		val settlementId: Oid<Settlement> = SettlementCache.getByName(settlement) ?: fail {
+			"Settlement $settlement not found"
 		}
 
-		NationSpaceStation.updateById(spaceStation._id, pull(NationSpaceStation::trustedPlayers, playerId))
-		sender msg "&7Removed &b$playerName&7 from &b$stationName"
-		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		requirePermission(sender.slPlayerId, spaceStation, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+
+		failIf(spaceStation.trustedSettlements.contains(settlementId)) {
+			"$settlement is already trusted in $stationName"
+		}
+
+		spaceStation.trustSettlement(settlementId)
+		spaceStation.invalidate()
+
+		sender.sendRichMessage("<gray> Added <aqua>$settlement<gray> to <aqua>$stationName")
+		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted add nation")
 	@Description("Give a nation build access to the station")
 	@Suppress("unused")
 	fun onTrustedAddNation(sender: Player, station: String, nation: String) = asyncCommand(sender) {
-		val (_, spaceStation) = requireManagementContext(sender, station)
+		val spaceStation = requireStation(sender.slPlayerId, station)
 		val stationName = spaceStation.name
-		val nationId: Oid<Nation> = resolveNation(nation)
-		val nationName: String = getNationName(nationId)
+
+		val nationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
+			"Settlement $nation not found"
+		}
+
+		requirePermission(sender.slPlayerId, spaceStation, SpaceStations.SpaceStationPermission.MANAGE_STATION)
 
 		failIf(spaceStation.trustedNations.contains(nationId)) {
-			"$nationName is already a trusted nation in $stationName"
+			"$nation is already trusted in $stationName"
 		}
 
-		NationSpaceStation.updateById(spaceStation._id, addToSet(NationSpaceStation::trustedNations, nationId))
-		sender msg "&7Added nation &b$nationName&7 to &b$stationName"
-		Notify.nation(nationId, "&7Your nation was added to station &b$stationName&7 by &b${sender.name}")
+		spaceStation.trustNation(nationId)
+		spaceStation.invalidate()
+
+		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$stationName")
+		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
-	@Subcommand("trusted remove nation")
-	@Description("Revoke a nation's build access to the station")
+	@Subcommand("trusted remove player")
+	@Description("Revoke a player's build access to the station")
 	@Suppress("unused")
-	fun onTrustedRemoveNation(sender: Player, station: String, nation: String) = asyncCommand(sender) {
-		val (_, spaceStation) = requireManagementContext(sender, station)
+	fun onTrustedRemovePlayer(sender: Player, station: String, player: String) = asyncCommand(sender) {
+		val spaceStation = requireStation(sender.slPlayerId, station)
 		val stationName = spaceStation.name
-		val nationId: Oid<Nation> = resolveNation(nation)
-		val nationName: String = getNationName(nationId)
 
-		failIf(!spaceStation.trustedNations.contains(nationId)) {
-			"$nationName is not a trusted nation in $stationName"
+		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
+		val playerName: String = getPlayerName(playerId)
+
+		requirePermission(sender.slPlayerId, spaceStation, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+
+		failIf(spaceStation.trustedPlayers.contains(playerId)) {
+			"$playerName is already trusted in $stationName"
 		}
 
-		NationSpaceStation.updateById(spaceStation._id, pull(NationSpaceStation::trustedNations, nationId))
-		sender msg "&7Removed nation &b$nationName&7 from &b$stationName"
-		Notify.nation(nationId, "&7Your nation was removed from station &b$stationName&7 by &b${sender.name}")
+		spaceStation.unTrustPlayer(playerId)
+		spaceStation.invalidate()
+
+		sender.sendRichMessage("<gray> Removed <aqua>$playerName<gray> from <aqua>$stationName")
+		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+	}
+
+
+	@Subcommand("trusted add settlement")
+	@Description("Give a settlement build access to the station")
+	@Suppress("unused")
+	fun onTrustedRemoveSettlement(sender: Player, station: String, settlement: String) = asyncCommand(sender) {
+		val spaceStation = requireStation(sender.slPlayerId, station)
+		val stationName = spaceStation.name
+
+		val settlementId: Oid<Settlement> = SettlementCache.getByName(settlement) ?: fail {
+			"Settlement $settlement not found"
+		}
+
+		requirePermission(sender.slPlayerId, spaceStation, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+
+		failIf(!spaceStation.trustedSettlements.contains(settlementId)) {
+			"$settlement isn't trusted in $stationName"
+		}
+
+		spaceStation.unTrustSettlement(settlementId)
+		spaceStation.invalidate()
+
+		sender.sendRichMessage("<gray> Removed <aqua>$settlement<gray> from <aqua>$stationName")
+		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted add nation")
+	@Description("Give a nation build access to the station")
+	@Suppress("unused")
+	fun onTrustedRemoveNation(sender: Player, station: String, nation: String) = asyncCommand(sender) {
+		val spaceStation = requireStation(sender.slPlayerId, station)
+		val stationName = spaceStation.name
+
+		val nationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
+			"Nation $nation not found"
+		}
+
+		requirePermission(sender.slPlayerId, spaceStation, SpaceStations.SpaceStationPermission.MANAGE_STATION)
+
+		failIf(!spaceStation.trustedNations.contains(nationId)) {
+			"$nation isn't trusted in $stationName"
+		}
+
+		spaceStation.unTrustNation(nationId)
+		spaceStation.invalidate()
+
+		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$stationName")
+		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your nation was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("set name")
 	@Description("Rename the station")
 	@Suppress("unused")
 	fun onRename(sender: Player, station: String, newName: String) = asyncCommand(sender) {
-		val (_, spaceStation) = requireManagementContext(sender, station)
+		val spaceStation = requireStation(sender.slPlayerId, station)
 
 		validateName(newName)
 
-		NationSpaceStation.updateById(spaceStation._id, setValue(NationSpaceStation::name, newName))
+		spaceStation.rename(newName)
+		spaceStation.invalidate()
 	}
 }
 

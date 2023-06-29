@@ -276,7 +276,7 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.setLeader(settlementId, slPlayerId)
 
-		Notify.settlement(settlementId, "${sender.name} changed your settlement's leader to $player")
+		Notify.settlement(settlementId, text("${sender.name} changed your settlement's leader to $player"))
 
 		// leader update automatically triggers entire settlement access cache update in CacheHelper
 	}
@@ -290,7 +290,7 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.setMinBuildAccess(settlementId, accessLevel)
 
-		Notify.settlement(settlementId, "${sender.name} changed your settlement's min build access to $accessLevel")
+		Notify.settlement(settlementId, text("${sender.name} changed your settlement's min build access to $accessLevel"))
 		val description = when (accessLevel) {
 			Settlement.ForeignRelation.NONE -> "Anyone, even nationless and settlementless people (should probably NEVER select this)"
 			Settlement.ForeignRelation.ALLY -> "Anyone who is a nation ally, nation member, or settlement member"
