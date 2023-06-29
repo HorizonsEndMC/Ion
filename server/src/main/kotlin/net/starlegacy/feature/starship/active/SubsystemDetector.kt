@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
-import net.horizonsend.ion.server.features.landsieges.aaguns.AAGunMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AAGunMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
@@ -129,10 +129,6 @@ object SubsystemDetector {
 
 			is DrillMultiblock -> {
 				starship.drillCount++
-			}
-
-			is AAGunMultiblock -> {
-
 			}
 
 			is CryoPodMultiblock -> {

@@ -10,19 +10,15 @@ import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.Nation.Companion.exists
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.trx
+import net.minecraft.world.phys.Vec3
+import net.starlegacy.util.Vec3i
+import net.starlegacy.util.Vec3iWithWorld
 import org.bukkit.Color
-import org.litote.kmongo.addToSet
-import org.litote.kmongo.and
-import org.litote.kmongo.contains
-import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
-import org.litote.kmongo.eq
-import org.litote.kmongo.inc
-import org.litote.kmongo.ne
-import org.litote.kmongo.or
-import org.litote.kmongo.pull
+import org.bukkit.Location
+import org.litote.kmongo.*
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 
 /**
@@ -51,7 +47,8 @@ data class Nation(
 	var capital: Oid<Settlement>,
 	var color: Int,
 	override var balance: Int = 0,
-	val invites: MutableSet<Oid<Settlement>> = mutableSetOf()
+	val invites: MutableSet<Oid<Settlement>> = mutableSetOf(),
+	val aaguns: MutableSet<Vec3iWithWorld> = mutableSetOf()
 ) : DbObject, MoneyHolder {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
 		ensureUniqueIndexCaseInsensitive(Nation::name, indexOptions = IndexOptions().textVersion(3))
@@ -73,13 +70,13 @@ data class Nation(
 
 			// update the settlements members
 			SLPlayer.col.updateMany(
-				sess, SLPlayer::settlement eq capitalId, org.litote.kmongo.setValue(
+				sess, SLPlayer::settlement eq capitalId, setValue(
 					SLPlayer::nation, id
 				)
 			)
 
 			// update the settlement
-			Settlement.updateById(sess, capitalId, org.litote.kmongo.setValue(Settlement::nation, id))
+			Settlement.updateById(sess, capitalId, setValue(Settlement::nation, id))
 
 			// create the actual nation
 			col.insertOne(sess, Nation(id, name, capitalId, color))
@@ -91,11 +88,11 @@ data class Nation(
 			require(exists(sess, id))
 
 			// Update all the territories owned by the nation
-			Territory.col.updateMany(sess, Territory::nation eq id, org.litote.kmongo.setValue(Territory::nation, null))
+			Territory.col.updateMany(sess, Territory::nation eq id, setValue(Territory::nation, null))
 
 			// Update all the stations owned by the nation
 			CapturableStation.col.updateMany(
-				sess, CapturableStation::nation eq id, org.litote.kmongo.setValue(CapturableStation::nation, null)
+				sess, CapturableStation::nation eq id, setValue(CapturableStation::nation, null)
 			)
 
 			CapturableStationSiege.col.deleteMany(sess, CapturableStationSiege::nation eq id)
@@ -110,7 +107,7 @@ data class Nation(
 			// unset the nation of all member settlements
 			Settlement.col.updateMany(
 				sess, Settlement::nation eq id,
-				org.litote.kmongo.setValue(Settlement::nation, null)
+				setValue(Settlement::nation, null)
 			)
 
 			// Delete all the nation roles associated with the nation
@@ -123,7 +120,7 @@ data class Nation(
 
 			// unset nation for all members
 			SLPlayer.col.updateMany(
-				sess, SLPlayer::nation eq id, org.litote.kmongo.setValue(SLPlayer::nation, null)
+				sess, SLPlayer::nation eq id, setValue(SLPlayer::nation, null)
 			)
 
 			SpaceStation.col.updateMany(
@@ -172,13 +169,13 @@ data class Nation(
 		fun setName(nationId: Oid<Nation>, newName: String): Unit = trx { sess ->
 			require(none(sess, and(Nation::_id ne nationId, nameQuery(newName)))) { "A different nation with that name already exists" }
 
-			updateById(sess, nationId, org.litote.kmongo.setValue(Nation::name, newName))
+			updateById(sess, nationId, setValue(Nation::name, newName))
 		}
 
 		fun setColor(nationId: Oid<Nation>, rgb: Int) {
 			Color.fromRGB(rgb) // this will throw an exception if it's invalid
 
-			updateById(nationId, org.litote.kmongo.setValue(Nation::color, rgb))
+			updateById(nationId, setValue(Nation::color, rgb))
 		}
 
 		fun setCapital(nationId: Oid<Nation>, settlementId: Oid<Settlement>): Unit = trx { sess ->
@@ -186,7 +183,15 @@ data class Nation(
 
 			require(matches(sess, nationId, Nation::capital ne settlementId)) { "Settlement is already the capital" }
 
-			updateById(sess, nationId, org.litote.kmongo.setValue(Nation::capital, settlementId))
+			updateById(sess, nationId, setValue(Nation::capital, settlementId))
+		}
+
+		fun addAAGun(nationId: Oid<Nation>, location: Location) = trx { sess ->
+			updateById(sess, nationId, addToSet(Nation::aaguns, Vec3iWithWorld(location)))
+		}
+
+		fun removeAAGun(nationId: Oid<Nation>, location: Location) = trx { sess ->
+			updateById(sess, nationId, pull(Nation::aaguns, Vec3iWithWorld(location)))
 		}
 	}
 

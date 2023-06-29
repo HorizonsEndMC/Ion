@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonComponent
+import net.horizonsend.ion.server.features.landsieges.AAGuns
 import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.starlegacy.cache.Caches
 import net.starlegacy.feature.chat.ChannelSelections
@@ -134,5 +135,6 @@ val components: List<IonComponent> = listOf(
 	Decomposers,
 
 	DutyModeMonitor,
-	MoonSieges
+	MoonSieges,
+	AAGuns
 )
