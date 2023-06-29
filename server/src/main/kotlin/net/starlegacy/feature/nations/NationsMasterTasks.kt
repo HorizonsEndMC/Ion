@@ -101,8 +101,10 @@ object NationsMasterTasks {
 				Nation.deposit(nationId, stationIncome)
 				Notify.nation(
 					nationId,
-					"&6Your nation received &e${stationIncome.toCreditsString()}&6 credits " +
-						"from captured space station hourly income with &3$stationCount&6 stations"
+					MiniMessage.miniMessage().deserialize(
+						"<gold>Your nation received <yellow>${stationIncome.toCreditsString()}<gold> credits " +
+							"from captured space station hourly income with <dark_aqua>$stationCount<gold> stations"
+					)
 				)
 			}
 
@@ -203,7 +205,7 @@ object NationsMasterTasks {
 			val offlinePlayer = Bukkit.getOfflinePlayer(owner.uuid)
 
 			if (!VAULT_ECO.has(offlinePlayer, rent.toDouble())) {
-				Notify.settlement(zone.settlement, "<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}")
+				Notify.settlement(zone.settlement, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
 				continue
 			}
 

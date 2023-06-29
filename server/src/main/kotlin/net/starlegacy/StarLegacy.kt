@@ -23,12 +23,15 @@ import net.horizonsend.ion.server.database.schema.economy.EcoStation
 import net.horizonsend.ion.server.database.schema.misc.Shuttle
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.Shuttles
 import net.starlegacy.feature.nations.NationsMasterTasks
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
+import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.MAX_LEVEL
 import net.starlegacy.feature.space.CachedPlanet
@@ -46,6 +49,7 @@ import org.litote.kmongo.eq
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Protocol
+import kotlin.jvm.optionals.getOrNull
 
 lateinit var SETTINGS: Config
 lateinit var redisPool: JedisPool
@@ -122,6 +126,11 @@ fun registerCommands(manager: PaperCommandManager) {
 
 			return@registerContext EcoStations.getByName(name)
 				?: throw InvalidCommandArgument("Eco station $name not found")
+		}
+
+		registerContext(CachedSpaceStation::class.java) { c: BukkitCommandExecutionContext ->
+			SpaceStations.spaceStationCache[c.popFirstArg().uppercase(Locale.getDefault())].getOrNull()
+				?: throw InvalidCommandArgument("No such space station")
 		}
 	}
 

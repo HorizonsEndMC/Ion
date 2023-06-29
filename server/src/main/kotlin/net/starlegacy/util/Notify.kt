@@ -39,26 +39,26 @@ object Notify : SLComponent() {
 		Bukkit.getPlayer(uuid)?.sendMessage(MiniMessage.miniMessage().deserialize(message))
 	}.registerRedisAction("notify-player", runSync = false)
 
-	fun settlement(settlementId: Oid<Settlement>, message: String) {
-		notifySettlementAction(settlementId.toString() to "&3$message".colorize())
+	fun settlement(settlementId: Oid<Settlement>, message: Component) {
+		notifySettlementAction(settlementId.toString() to MiniMessage.miniMessage().serialize(message))
 	}
 
 	private val notifySettlementAction = { (idString, message): Pair<String, String> ->
 		val id: Oid<Settlement> = WrappedObjectId(idString)
 		Bukkit.getOnlinePlayers()
 			.filter { PlayerCache[it].settlementOid == id }
-			.forEach { it.sendMessage(message) }
+			.forEach { it.sendMessage(MiniMessage.miniMessage().deserialize(message)) }
 	}.registerRedisAction("notify-settlement", runSync = false)
 
-	fun nation(nationId: Oid<Nation>, message: String) {
-		notifyNationAction(nationId.toString() to "&6$message".colorize())
+	fun nation(nationId: Oid<Nation>, message: Component) {
+		notifyNationAction(nationId.toString() to MiniMessage.miniMessage().serialize(message))
 	}
 
 	private val notifyNationAction = { (idString, message): Pair<String, String> ->
 		val id: Oid<Nation> = WrappedObjectId(idString)
 		Bukkit.getOnlinePlayers()
 			.filter { PlayerCache[it].nationOid == id }
-			.forEach { it.sendMessage(message) }
+			.forEach { it.sendMessage(MiniMessage.miniMessage().deserialize(message)) }
 	}.registerRedisAction("notify-nation", runSync = false)
 
 	infix fun eventsChannel(message: String) {

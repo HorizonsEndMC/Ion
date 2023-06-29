@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.NationsMap
@@ -141,7 +142,7 @@ internal object NationAdminCommand : SLCommand() {
 	}
 
 	@CommandPermission("nations.admin.movestation")
-	@Subcommand("nation station set location")
+	@Subcommand("spacestation set location")
 	fun onStationSetLocaiton(sender: CommandSender, station: String, world: World, x: Int, z: Int) =
 		asyncCommand(sender) {
 			val nationSpaceStation = NationSpaceStation.findOne(NationSpaceStation::name eq station)
@@ -152,6 +153,11 @@ internal object NationAdminCommand : SLCommand() {
 			)
 			sender msg "Set position of $station to $x, $z"
 		}
+
+	@Subcommand("spacestation reload")
+	fun onStationReload() {
+		SpaceStations.reload()
+	}
 
 	@Subcommand("station set quarter")
 	fun onStationSetQuarter(sender: CommandSender, station: String, quarter: Int) = asyncCommand(sender) {
