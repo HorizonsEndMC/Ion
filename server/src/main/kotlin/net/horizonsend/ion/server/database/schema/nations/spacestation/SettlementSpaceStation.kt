@@ -1,18 +1,12 @@
 package net.horizonsend.ion.server.database.schema.nations.spacestation
 
-import com.mongodb.client.model.Filters
 import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.trx
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import org.litote.kmongo.Id
-import org.litote.kmongo.deleteOneById
-import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
 
 data class SettlementSpaceStation(
 	override val _id: Oid<SettlementSpaceStation>,
@@ -29,7 +23,7 @@ data class SettlementSpaceStation(
 	override var trustedNations: Set<Oid<Nation>>,
 
 	override var trustLevel: SpaceStations.TrustLevel
-) : SpaceStation<Settlement> {
+) : SpaceStationInterface<Settlement> {
 
 	companion object : SpaceStationCompanion<Settlement, SettlementSpaceStation>(
 		SettlementSpaceStation::class,

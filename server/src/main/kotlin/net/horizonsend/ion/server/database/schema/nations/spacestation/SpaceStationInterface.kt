@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.database.schema.nations.spacestation
 
+import com.mongodb.client.model.Filters
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
@@ -22,7 +24,57 @@ import org.litote.kmongo.updateOneById
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-interface SpaceStation<T> : DbObject {
+data class SpaceStation(
+	override val _id: Oid<SpaceStation>,
+	var nation: Oid<Nation>,
+	var name: String,
+	var world: String,
+	var x: Int,
+	var z: Int,
+	var radius: Int,
+	var managers: Set<SLPlayerId>,
+	var trustedPlayers: Set<SLPlayerId>,
+	var trustedNations: Set<Oid<Nation>>,
+	var trustLevel: TrustLevel
+) : DbObject {
+	enum class TrustLevel(val new: SpaceStations.TrustLevel) {
+		MANUAL(SpaceStations.TrustLevel.MANUAL),
+		NATION(SpaceStations.TrustLevel.NATION_MEMBER),
+		ALLY(SpaceStations.TrustLevel.ALLY)
+	}
+
+	companion object : OidDbObjectCompanion<SpaceStation>(SpaceStation::class, setup = {
+		ensureUniqueIndex(SpaceStation::name)
+		ensureIndex(SpaceStation::nation)
+		ensureIndex(SpaceStation::managers)
+		ensureIndex(SpaceStation::trustedPlayers)
+		ensureIndex(SpaceStation::trustedNations)
+	}) {
+		private fun nameQuery(name: String) = Filters.regex("name", "^$name$", "i")
+
+		fun create(
+			nation: Oid<Nation>,
+			name: String,
+			world: String,
+			x: Int,
+			z: Int,
+			radius: Int
+		): Oid<SpaceStation> = trx { sess ->
+			require(Nation.none(sess, nameQuery(name)))
+			val id = objId<SpaceStation>()
+			val trustLevel = TrustLevel.MANUAL
+			val station = SpaceStation(id, nation, name, world, x, z, radius, setOf(), setOf(), setOf(), trustLevel)
+			col.insertOne(sess, station)
+			return@trx id
+		}
+
+		fun delete(id: Oid<SpaceStation>) {
+			col.deleteOneById(id)
+		}
+	}
+}
+
+interface SpaceStationInterface<T> : DbObject {
 	override val _id: Oid<*>
 
 	var owner: Id<T>
@@ -41,7 +93,7 @@ interface SpaceStation<T> : DbObject {
 	var trustLevel: SpaceStations.TrustLevel
 }
 
-abstract class SpaceStationCompanion<Owner: DbObject, T: SpaceStation<Owner>>(
+abstract class SpaceStationCompanion<Owner: DbObject, T: SpaceStationInterface<Owner>>(
 	clazz: KClass<T>,
 	private val ownerProperty: KProperty<Id<Owner>>,
 	private val nameProperty: KProperty<String>,

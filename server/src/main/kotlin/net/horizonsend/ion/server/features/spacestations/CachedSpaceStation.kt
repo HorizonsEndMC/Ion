@@ -13,9 +13,8 @@ import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationInterface
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationCompanion
-import net.horizonsend.ion.server.database.trx
 import net.horizonsend.ion.server.database.uuid
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -25,10 +24,9 @@ import net.starlegacy.util.squared
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.litote.kmongo.Id
-import org.litote.kmongo.deleteOneById
 import kotlin.math.roundToInt
 
-abstract class CachedSpaceStation<T: SpaceStation<O>, O: DbObject, C: SpaceStationCompanion<O, T>> {
+abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: SpaceStationCompanion<O, T>> {
 	abstract val databaseId: Oid<T>
 
 	abstract val owner: Id<O>

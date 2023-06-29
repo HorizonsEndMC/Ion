@@ -3,6 +3,7 @@ package net.starlegacy.command.nations.admin
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.success
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -20,6 +21,8 @@ import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.NationsMasterTasks
 import net.starlegacy.feature.nations.TerritoryImporter
+import net.starlegacy.feature.nations.region.Regions
+import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.utils.isActive
 import net.starlegacy.feature.nations.utils.isInactive
 import net.starlegacy.util.msg
@@ -155,8 +158,11 @@ internal object NationAdminCommand : SLCommand() {
 		}
 
 	@Subcommand("spacestation reload")
-	fun onStationReload() {
+	@Suppress("unused")
+	fun onStationReload(sender: CommandSender) {
 		SpaceStations.reload()
+		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
+		sender.success("Reloaded space stations")
 	}
 
 	@Subcommand("station set quarter")

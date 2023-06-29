@@ -23,7 +23,7 @@ data class NationSpaceStation(
 	override var trustedNations: Set<Oid<Nation>>,
 
 	override var trustLevel: SpaceStations.TrustLevel
-) : SpaceStation<Nation> {
+) : SpaceStationInterface<Nation> {
 
 	companion object : SpaceStationCompanion<Nation, NationSpaceStation>(
 		NationSpaceStation::class,
