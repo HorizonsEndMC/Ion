@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon.Companion.BEACON_DETECTION_RADIUS
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon.Companion.BEACON_SIEGE_MAX_TIME_MS
-import net.horizonsend.ion.server.features.landsieges.multiblock.SiegeBeaconMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.SiegeBeaconMultiblock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextColor

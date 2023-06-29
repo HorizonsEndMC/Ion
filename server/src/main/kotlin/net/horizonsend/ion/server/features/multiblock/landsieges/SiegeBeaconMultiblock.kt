@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.landsieges.multiblock
+package net.horizonsend.ion.server.features.multiblock.landsieges
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.database.schema.nations.NationRelation

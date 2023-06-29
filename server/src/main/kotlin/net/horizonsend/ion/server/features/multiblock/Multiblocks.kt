@@ -39,8 +39,8 @@ import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMulti
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
-import net.horizonsend.ion.server.features.landsieges.aaguns.AAGunMultiblock
-import net.horizonsend.ion.server.features.landsieges.multiblock.SiegeBeaconMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AAGunMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.SiegeBeaconMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
