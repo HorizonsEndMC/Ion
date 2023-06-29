@@ -32,7 +32,8 @@ object AAGunMultiblock : Multiblock(), PowerStoringMultiblock {
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		at(+0, +0, +0).anyWool()
+		at(+0, +0, +0).sponge()
+		at(+0, +0, +1).stainedGlass()
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
