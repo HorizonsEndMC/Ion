@@ -83,11 +83,12 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 
 	fun abandon() = companion.delete(databaseId)
 
-	fun invalidate() {
-		val database = companion.findById(databaseId) as T
+	fun invalidate(recreate: Boolean = true) {
+		val database = companion.findById(databaseId) ?: return
 
 		SpaceStations.invalidate(database)
-		SpaceStations.createCached(database)
+
+		if (recreate) SpaceStations.createCached(database)
 	}
 
 	companion object {

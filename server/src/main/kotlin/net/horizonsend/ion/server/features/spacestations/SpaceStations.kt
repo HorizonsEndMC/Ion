@@ -54,7 +54,8 @@ object SpaceStations : SLComponent() {
 	fun all() = spaceStations
 
 	fun invalidate(station: SpaceStationInterface<*>) {
-		spaceStations.removeAll { it.databaseId == station._id }
+		spaceStations.removeAll { it.name == station.name }
+		with(spaceStationCache) { invalidate(station.name); cleanUp() }
 
 		createCached(station)
 	}

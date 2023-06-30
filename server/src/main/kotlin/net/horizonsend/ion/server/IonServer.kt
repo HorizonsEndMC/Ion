@@ -131,6 +131,8 @@ object IonServer : JavaPlugin() {
 		// such as reloading or other plugins doing things they probably shouldn't.
 		for (world in server.worlds) IonWorld.register(world.minecraft)
 
+		legacyEnable(commandManager)
+
 		// Temp migration code
 		if (!NationSpaceStation.all().any()) {
 			for (spaceStation in SpaceStation.all()) {
@@ -146,8 +148,6 @@ object IonServer : JavaPlugin() {
 				)
 			}
 		}
-
-		legacyEnable(commandManager)
 
 		Bukkit.getScheduler().runTaskLater(
 			this,

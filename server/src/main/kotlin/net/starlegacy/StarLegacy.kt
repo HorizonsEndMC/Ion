@@ -128,7 +128,7 @@ fun registerCommands(manager: PaperCommandManager) {
 		}
 
 		registerContext(CachedSpaceStation::class.java) { c: BukkitCommandExecutionContext ->
-			SpaceStations.spaceStationCache[c.popFirstArg().uppercase(Locale.getDefault())].getOrNull()
+			SpaceStations.spaceStationCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
 				?: throw InvalidCommandArgument("No such space station")
 		}
 	}
