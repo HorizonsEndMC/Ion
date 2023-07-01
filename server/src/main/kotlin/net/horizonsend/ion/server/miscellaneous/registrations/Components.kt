@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonComponent
-import net.horizonsend.ion.server.features.landsieges.AAGuns
 import net.horizonsend.ion.server.features.landsieges.MoonSieges
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.cache.Caches
