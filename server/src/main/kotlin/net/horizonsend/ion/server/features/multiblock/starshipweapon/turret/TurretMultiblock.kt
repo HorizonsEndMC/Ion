@@ -39,7 +39,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
-abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem>() {
+abstract class TurretMultiblock : RotatingMultiblock(), StarshipWeaponMultiblock<TurretWeaponSubsystem> {
 	init {
 		shape.signCentered()
 		shape.ignoreDirection()
@@ -148,92 +148,7 @@ abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem
 		return getFacing(sign)
 	}
 
-	fun rotate(sign: Sign, oldFace: BlockFace, newFace: BlockFace): BlockFace {
-		val i = when (newFace) {
-			oldFace -> return oldFace
-			oldFace.rightFace -> 1
-			oldFace.oppositeFace -> 2
-			oldFace.leftFace -> 3
-			else -> error("Failed to calculate rotation iteration count from $oldFace to $newFace")
-		}
-
-		val nmsRotation: Rotation = when (i) {
-			1 -> Rotation.CLOCKWISE_90
-			2 -> Rotation.CLOCKWISE_180
-			3 -> Rotation.COUNTERCLOCKWISE_90
-			else -> return oldFace // can only be 0
-		}
-
-		val theta: Double = 90.0 * i
-		val radians: Double = Math.toRadians(theta)
-		val cosFactor: Double = cos(radians)
-		val sinFactor: Double = sin(radians)
-		val locations = shape.getLocations(oldFace)
-		val oldKeys = LongOpenHashSet(locations.size)
-		val newKeys = LongOpenHashSet(locations.size)
-		val placements = Long2ObjectOpenHashMap<BlockData>()
-
-		val world = sign.world
-
-		val air = Material.AIR.createBlockData()
-
-		for ((x0, y0, z0) in locations) {
-			val x = x0 + sign.x
-			val y = y0 + sign.y
-			val z = z0 + sign.z
-			val block = world.getBlockAt(x, y, z)
-			val data = block.blockData
-			val newData = data.nms.rotate(nmsRotation).createCraftBlockData()
-			val nx0 = (x0.toDouble() * cosFactor - z0.toDouble() * sinFactor).roundToInt()
-			val nz0 = (x0.toDouble() * sinFactor + z0.toDouble() * cosFactor).roundToInt()
-			val nx = nx0 + sign.x
-			val nz = nz0 + sign.z
-
-			if (!locations.contains(Vec3i(nx0, y0, nz0)) && !world.getBlockAt(nx, y, nz).type.isAir) {
-				return oldFace
-			}
-
-			val oldKey = blockKey(x, y, z)
-			oldKeys.add(oldKey)
-			placements.putIfAbsent(oldKey, air) // old block, may have been removed
-
-			val newKey = blockKey(nx, y, nz)
-			newKeys.add(newKey)
-			placements[newKey] = newData
-		}
-
-		placeBlocks(placements, world)
-
-		moveEntitiesInWindow(sign, oldFace, newFace)
-
-		updateSubsystem(sign, oldKeys, newKeys, newFace)
-
-		return newFace
-	}
-
-	private fun placeBlocks(placements: Long2ObjectOpenHashMap<BlockData>, world: World) {
-		for ((key, data) in placements) {
-			world.getBlockAtKey(key).setBlockData(data, false)
-		}
-	}
-
-	private fun moveEntitiesInWindow(sign: Sign, oldFace: BlockFace, newFace: BlockFace) {
-		val oldPilotBlock = getPilotLoc(sign, oldFace).block
-		val newPilotLoc = getPilotLoc(sign, newFace)
-		for (entity in oldPilotBlock.chunk.entities) {
-			val entityLoc = entity.location
-
-			if (entityLoc.block != oldPilotBlock) {
-				continue
-			}
-
-			val loc = newPilotLoc.clone()
-			loc.direction = entityLoc.direction
-			entity.teleport(newPilotLoc)
-		}
-	}
-
-	private fun updateSubsystem(sign: Sign, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) {
+	fun updateSubsystem(sign: Sign, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) {
 		val starship = ActiveStarships.findByBlock(sign.block) ?: return
 		val signPos = Vec3i(sign.location)
 		val subsystem = starship.turrets.firstOrNull { it.pos == signPos } ?: return

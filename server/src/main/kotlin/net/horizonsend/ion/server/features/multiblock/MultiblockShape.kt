@@ -34,6 +34,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
 import java.util.*
 import kotlin.collections.component1
@@ -45,7 +46,7 @@ private typealias BlockRequirement = (Block, BlockFace) -> Boolean
 
 class MultiblockShape {
 	// Cache of direction to requirement, so it doesn't need to be calculated every time based on the direction
-	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, BlockRequirement>>()
+	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, Pair<BlockData, BlockRequirement>>>()
 
 	private var signCentered = false
 	private var ignoreDirection = false // ignore whether inward direction matches
@@ -87,25 +88,25 @@ class MultiblockShape {
 	 *
 	 * @sample net.starlegacy.feature.multiblock.areashield.AreaShield10.buildStructure
 	 */
-	fun z(z: Int, block: MultiblockShape.Z.() -> Unit) = MultiblockShape.Z(
+	fun z(z: Int, block: Z.() -> Unit) = Z(
 		this,
 		z
 	).block()
 
-	fun z(zValues: IntProgression, block: MultiblockShape.Z.() -> Unit) {
+	fun z(zValues: IntProgression, block: Z.() -> Unit) {
 		for (z in zValues) {
 			z(z, block)
 		}
 	}
 
 	class Z(private val shape: MultiblockShape, val z: Int) {
-		fun y(y: Int, block: MultiblockShape.Z.ZY.() -> Unit) = MultiblockShape.Z.ZY(
+		fun y(y: Int, block: Z.ZY.() -> Unit) = Z.ZY(
 			shape,
 			z,
 			y
 		).block()
 
-		fun y(yValues: IntProgression, block: MultiblockShape.Z.ZY.() -> Unit) {
+		fun y(yValues: IntProgression, block: Z.ZY.() -> Unit) {
 			for (y in yValues) {
 				y(y, block)
 			}
@@ -122,25 +123,25 @@ class MultiblockShape {
 		}
 	}
 
-	fun y(y: Int, block: MultiblockShape.Y.() -> Unit) = MultiblockShape.Y(
+	fun y(y: Int, block: Y.() -> Unit) = Y(
 		this,
 		y
 	).block()
 
-	fun y(yValues: IntProgression, block: MultiblockShape.Y.() -> Unit) {
+	fun y(yValues: IntProgression, block: Y.() -> Unit) {
 		for (y in yValues) {
 			y(y, block)
 		}
 	}
 
 	class Y(private val shape: MultiblockShape, val y: Int) {
-		fun z(z: Int, block: MultiblockShape.Y.YZ.() -> Unit) = MultiblockShape.Y.YZ(
+		fun z(z: Int, block: YZ.() -> Unit) = YZ(
 			shape,
 			y,
 			z
 		).block()
 
-		fun z(zValues: IntProgression, block: MultiblockShape.Y.YZ.() -> Unit) {
+		fun z(zValues: IntProgression, block: YZ.() -> Unit) {
 			for (z in zValues) {
 				z(z, block)
 			}
@@ -157,7 +158,7 @@ class MultiblockShape {
 		}
 	}
 
-	fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, BlockRequirement> {
+	fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, Pair<BlockData, BlockRequirement>> {
 		return requirements.getOrPut(inwardFace) {
 			require(CARDINAL_BLOCK_FACES.contains(inwardFace)) { "Unsupported inward direction: $inwardFace" }
 			return@getOrPut mutableMapOf()
@@ -179,7 +180,9 @@ class MultiblockShape {
 	}
 
 	fun checkRequirementsSpecific(origin: Block, face: BlockFace, loadChunks: Boolean, particles: Boolean): Boolean {
-		return getRequirementMap(face).all { (coords, requirement) ->
+		return getRequirementMap(face).all { (coords, requirementMap) ->
+			val (_, requirement) = requirementMap
+
 			val x = coords.x
 			val y = coords.y
 			val z = coords.z
@@ -202,7 +205,7 @@ class MultiblockShape {
 
 	private val allLocations = mutableSetOf<Vec3i>() // used for checking for duplicates
 
-	private fun addRequirement(right: Int, upward: Int, inward: Int, requirement: BlockRequirement) {
+	private fun addRequirement(right: Int, upward: Int, inward: Int, type: BlockData, requirement: BlockRequirement) {
 		if (!allLocations.add(Vec3i(right, upward, inward))) {
 			Exception("Multiblock ${javaClass.simpleName} has more than one block at $right, $upward, $inward!").printStackTrace()
 		}
@@ -214,25 +217,25 @@ class MultiblockShape {
 			val intTrio = Vec3i(x, upward, z)
 			val requirementMap = getRequirementMap(inwardFace)
 
-			requirementMap[intTrio] = requirement
+			requirementMap[intTrio] = type to requirement
 		}
 	}
 
 	@Suppress("unused")
 	class RequirementBuilder(val shape: MultiblockShape, val right: Int, val upward: Int, val inward: Int) {
-		private fun complete(requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, requirement)
+		private fun complete(type: BlockData, requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, type, requirement)
 
 		fun type(type: Material) {
-			complete { block, _ -> block.getTypeSafe() == type }
+			complete(type.createBlockData()) { block, _ -> block.getTypeSafe() == type }
 		}
 
 		fun anyType(vararg types: Material) {
 			val typeSet = EnumSet.copyOf(types.toList())
-			complete { block, _ -> typeSet.contains(block.getTypeSafe()) }
+			complete(types.first().createBlockData()) { block, _ -> typeSet.contains(block.getTypeSafe()) }
 		}
 
 		fun customBlock(customBlock: CustomBlock) {
-			complete { block, _ -> CustomBlocks[block] === customBlock }
+			complete(customBlock.blockData) { block, _ -> CustomBlocks[block] === customBlock }
 		}
 
 		fun anyType(types: Iterable<Material>) = anyType(*types.toList().toTypedArray())
@@ -257,7 +260,12 @@ class MultiblockShape {
 		fun anyWool() = filteredTypes { it.isWool }
 
 		fun anySlab() = filteredTypes { it.isSlab }
-		fun anyDoubleSlab() = complete { block, _ ->
+		fun anyDoubleSlab() = complete(
+			Material.STONE_BRICK_SLAB.createBlockData().apply {
+				this as Slab
+				this.type = Slab.Type.DOUBLE
+			}
+		) { block, _ ->
 			val blockData = block.blockData
 			return@complete blockData is Slab && blockData.type == Slab.Type.DOUBLE
 		}
@@ -334,7 +342,7 @@ class MultiblockShape {
 			Material.SEA_LANTERN
 		)
 
-		fun machineFurnace() = complete { block, inward ->
+		fun machineFurnace() = complete(Material.FURNACE.createBlockData()) { block, inward ->
 			val blockData = block.getNMSBlockData()
 			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
 			val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace

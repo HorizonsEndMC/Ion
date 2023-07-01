@@ -303,7 +303,9 @@ object Multiblocks : IonComponent() {
 			)
 
 			val face = sign.getFacing().oppositeFace
-			lastMatch.shape.getRequirementMap(face).forEach { (coords, requirement) ->
+			lastMatch.shape.getRequirementMap(face).forEach { (coords, requirementMap) ->
+				val (expected, requirement) = requirementMap
+
 				val x = coords.x
 				val y = coords.y
 				val z = coords.z
@@ -312,7 +314,7 @@ object Multiblocks : IonComponent() {
 				val requirementMet = requirement(relative, face)
 				if (!requirementMet) {
 					player.userError(
-						"Block at ${relative.location} doesn't match!"
+						"Block at ${relative.location} doesn't match! Expected $expected"
 					)
 				}
 			}
