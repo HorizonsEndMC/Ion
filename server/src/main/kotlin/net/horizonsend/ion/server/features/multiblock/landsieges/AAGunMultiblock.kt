@@ -5,41 +5,50 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.RotatingMultiblock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.feature.machine.AATurret
 import net.starlegacy.feature.nations.region.Regions
-import net.starlegacy.feature.nations.region.types.Region
-import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
-import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.nations.region.types.TerritoryRegion
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
+import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
+import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
+import net.starlegacy.util.rightFace
 import net.starlegacy.util.squared
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.util.Vector
 
-object AAGunMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+object AAGunMultiblock : RotatingMultiblock(), PowerStoringMultiblock, FurnaceMultiblock, InteractableMultiblock {
 	override val name: String = "aagun"
 	override val maxPower: Int = 1_000_000
 
 	private val ACTIVE_STATE = text("Active", NamedTextColor.GREEN).apply { this.decoration(TextDecoration.BOLD) }
 	private val INACTIVE_STATE = text("Inactive", NamedTextColor.RED).apply { this.decoration(TextDecoration.BOLD) }
+
+	/** Cooldown between shots **/
+	const val cooldownMillis: Long = 1000
 
 	override val signText: Array<Component?> = arrayOf(
 		text("Anti-Air", NamedTextColor.GOLD),
@@ -47,6 +56,8 @@ object AAGunMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock
 		null,
 		INACTIVE_STATE
 	)
+
+	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, shooter: Player) {}
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -189,5 +200,67 @@ object AAGunMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock
 			IonServer.balancing.starshipWeapons.triTurret.soundName,
 			null
 		).fire()
+	}
+
+	fun getPilotOffset(): Vec3i = Vec3i(+0, 4, +1)
+
+	private val pilotOffsets: Map<BlockFace, Vec3i> = CARDINAL_BLOCK_FACES.associate { inward ->
+		val right = inward.rightFace
+		val (x, y, z) = getPilotOffset()
+		val vec = Vec3i(x = right.modX * x + inward.modX * z, y = y, z = right.modZ * x + inward.modZ * z)
+		return@associate inward to vec
+	}
+
+	fun getPilotLoc(sign: Sign, face: BlockFace): Location {
+		return getPilotLoc(sign.world, sign.x, sign.y, sign.z, face)
+	}
+
+	fun getPilotLoc(world: World, x: Int, y: Int, z: Int, face: BlockFace): Location {
+		return pilotOffsets.getValue(face).toLocation(world).add(x + 0.5, y + 0.0, z + 0.5)
+	}
+
+	fun getSignFromPilot(player: Player): Sign? {
+		for (face in CARDINAL_BLOCK_FACES) {
+			val (x, y, z) = pilotOffsets.getValue(face)
+			val loc = player.location.subtract(x.toDouble(), y.toDouble(), z.toDouble())
+			val sign = loc.block.getState(false) as? Sign
+				?: continue
+
+			if (Multiblocks[sign] === this) {
+				return sign
+			}
+		}
+
+		return null
+	}
+
+	private fun moveEntitiesInWindow(sign: Sign, oldFace: BlockFace, newFace: BlockFace) {
+		val oldPilotBlock = getPilotLoc(sign, oldFace).block
+		val newPilotLoc = getPilotLoc(sign, newFace)
+		for (entity in oldPilotBlock.chunk.entities) {
+			val entityLoc = entity.location
+
+			if (entityLoc.block != oldPilotBlock) {
+				continue
+			}
+
+			val loc = newPilotLoc.clone()
+			loc.direction = entityLoc.direction
+			entity.teleport(newPilotLoc)
+		}
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player) {
+		if (!StarshipControl.isHoldingController(player)) return
+
+		val sign = event.clickedBlock?.state as? Sign ?: return
+		val multiblock = Multiblocks[sign] as? AAGunMultiblock ?: return
+		val face = multiblock.getFacing(sign)
+
+		// this is just to insert them into the cooldown to prevent accidentally shooting right when boardingm
+		// and to prevent leaving right after entering
+		AATurret.cooldown.tryExec(player) { player.teleport(multiblock.getPilotLoc(sign, face)) }
+
+		event.isCancelled = true
 	}
 }
