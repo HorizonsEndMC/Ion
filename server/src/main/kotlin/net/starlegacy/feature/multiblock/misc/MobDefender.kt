@@ -1,11 +1,11 @@
 package net.starlegacy.feature.multiblock.misc
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.getBlockIfLoaded
-import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.block.Sign
@@ -69,11 +69,11 @@ object MobDefender : Multiblock() {
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		mobDefenders.add(sign.location)
-		player msg "Created mob defender."
+		player.information("Created mob defender.")
 		save() // TODO: don't do this on the main thread >_>
 	}
 
-	// TODO: come up with something less retarded for this
+	// TODO: come up with something less stupid for this
 	private val mobDefenders = ArrayList<Location>()
 	private var config = YamlConfiguration()
 	private val file = File(IonServer.dataFolder, "mobdefenders.yml")
