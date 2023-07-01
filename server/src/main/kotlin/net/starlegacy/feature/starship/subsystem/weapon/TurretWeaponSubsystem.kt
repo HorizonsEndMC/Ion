@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomHeavyTurretMultiblock.updateSubsystem
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -38,7 +39,9 @@ abstract class TurretWeaponSubsystem(
 		}
 
 		val sign = getSign() ?: return false
-		this.face = multiblock.rotate(sign, this.face, face)
+		this.face = multiblock.rotate(sign, this.face, face) { multiblockSign, oldKeys, newKeys, newFace ->
+			updateSubsystem(multiblockSign, oldKeys, newKeys, newFace)
+		}
 		return this.face == face
 	}
 

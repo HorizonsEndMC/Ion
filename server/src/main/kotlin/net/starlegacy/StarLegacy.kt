@@ -22,6 +22,8 @@ import net.horizonsend.ion.server.database.schema.economy.EcoStation
 import net.horizonsend.ion.server.database.schema.misc.Shuttle
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
@@ -129,6 +131,13 @@ fun registerCommands(manager: PaperCommandManager) {
 			return@registerContext EcoStations.getByName(name)
 				?: throw InvalidCommandArgument("Eco station $name not found")
 		}
+
+		registerContext(Multiblock::class.java) { c: BukkitCommandExecutionContext ->
+			val name: String = c.popFirstArg()
+
+			Multiblocks.all().firstOrNull { it.javaClass.simpleName == name }
+				?: throw InvalidCommandArgument("Multiblock $name not found!")
+		}
 	}
 
 	// Add static tab completions
@@ -192,6 +201,9 @@ fun registerCommands(manager: PaperCommandManager) {
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
 			val slPlayerId = player.slPlayerId
 			Blueprint.col.find(Blueprint::owner eq slPlayerId).map { it.name }.toList()
+		},
+		"multiblocks" to { _ ->
+			Multiblocks.all().map { it.javaClass.simpleName }
 		}
 	).forEach { manager.commandCompletions.registerAsyncCompletion(it.key, it.value) }
 
