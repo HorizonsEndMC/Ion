@@ -7,13 +7,9 @@ import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
 import net.horizonsend.ion.server.database.trx
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.isInRange
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.World
-import org.bukkit.block.Sign
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 

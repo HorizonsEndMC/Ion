@@ -27,7 +27,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.server.database.Oid
@@ -36,7 +35,7 @@ import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.nations.NATIONS_BALANCE
@@ -547,9 +546,9 @@ internal object SettlementCommand : SLCommand() {
 			.append(newline())
 			.append(
 				text("Centered at ")
-					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+					.append(text(cachedTerritory.centerX()).color(NamedTextColor.WHITE))
 					.append(text(", "))
-					.append(text(cachedTerritory.centerZ).color(NamedTextColor.WHITE))
+					.append(text(cachedTerritory.centerZ()).color(NamedTextColor.WHITE))
 			)
 			.build()
 			.asHoverEvent()

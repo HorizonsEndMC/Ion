@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.trx
 import org.bson.conversions.Bson
 import org.litote.kmongo.and
@@ -21,14 +21,14 @@ import java.time.Instant
 import java.util.Date
 
 data class BazaarItem(
-	override val _id: Oid<BazaarItem>,
-	val cityTerritory: Oid<Territory>,
-	val seller: SLPlayerId,
-	var itemString: String,
-	var price: Double,
-	var stock: Int,
-	var lastUpdated: Date,
-	var balance: Double
+    override val _id: Oid<BazaarItem>,
+    val cityTerritory: Oid<Territory>,
+    val seller: SLPlayerId,
+    var itemString: String,
+    var price: Double,
+    var stock: Int,
+    var lastUpdated: Date,
+    var balance: Double
 ) : DbObject {
 	companion object : OidDbObjectCompanion<BazaarItem>(BazaarItem::class, setup = {
 		ensureIndex(BazaarItem::cityTerritory)
@@ -45,10 +45,10 @@ data class BazaarItem(
 		)
 
 		fun create(
-			cityTerritory: Oid<Territory>,
-			seller: SLPlayerId,
-			itemString: String,
-			price: Double
+            cityTerritory: Oid<Territory>,
+            seller: SLPlayerId,
+            itemString: String,
+            price: Double
 		): Oid<BazaarItem> = trx { sess ->
 			require(none(sess, matchQuery(cityTerritory, seller, itemString))) {
 				"$seller is already selling $itemString at $cityTerritory"

@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.database.uuid

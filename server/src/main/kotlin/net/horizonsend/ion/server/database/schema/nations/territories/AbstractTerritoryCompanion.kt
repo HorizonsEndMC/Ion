@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations.territories
 
 import com.mongodb.client.MongoCollection
 import net.horizonsend.ion.server.database.DbObject
@@ -6,7 +6,9 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.trx
+import org.bson.conversions.Bson
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
@@ -20,6 +22,7 @@ abstract class AbstractTerritoryCompanion<T: TerritoryInterface>(
 	val nameProperty: KProperty<String>,
 	val worldKProperty: KProperty<String>,
 	val polygonDataProperty: KProperty<ByteArray>,
+	val nationProperty: KProperty<Oid<Nation>?>,
 	setup: MongoCollection<T>.() -> Unit = {}
 ) : OidDbObjectCompanion<T>(
 	clazz,
@@ -29,6 +32,8 @@ abstract class AbstractTerritoryCompanion<T: TerritoryInterface>(
 		setup()
 	}
 ) {
+	abstract val unclaimedQuery: Bson
+
 	abstract fun new(id: Oid<T>, name: String, world: String, polygonData: ByteArray): T
 
 	fun create(name: String, world: String, polygonData: ByteArray) = trx { session ->
@@ -46,6 +51,14 @@ abstract class AbstractTerritoryCompanion<T: TerritoryInterface>(
 
 	fun findByName(name: String): T? = trx { sess ->
 		col.findOne(sess, Territory::name eq name)
+	}
+
+	fun setNation(id: Oid<Territory>, nation: Oid<Nation>?): Unit = trx { sess ->
+		if (nation != null) {
+			require(Territory.matches(sess, id, unclaimedQuery))
+			require(Nation.exists(sess, nation))
+		}
+		Territory.updateById(sess, id, setValue(nationProperty, nation))
 	}
 }
 

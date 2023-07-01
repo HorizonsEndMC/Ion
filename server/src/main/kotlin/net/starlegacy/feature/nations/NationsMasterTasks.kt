@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.uuid
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
@@ -23,7 +23,6 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
@@ -65,7 +64,7 @@ object NationsMasterTasks {
 		Settlement.delete(settlementId)
 
 		if (sendMessage) {
-			val message = "<red>Settlement $name on ${territory.world} at ${territory.centerX}, ${territory.centerZ} " +
+			val message = "<red>Settlement $name on ${territory.world} at ${territory.centerX()}, ${territory.centerZ()} " +
 				"was purged for ${NATIONS_BALANCE.settlement.inactivityDays}+ days of complete inactivity."
 			Notify all MiniMessage.miniMessage().deserialize(message)
 		}

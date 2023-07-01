@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.landsieges
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
 import net.horizonsend.ion.server.features.landsieges.BeaconSiegeBattles.tryBeginBeaconSiege
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.kyori.adventure.text.Component

@@ -10,11 +10,9 @@ import net.horizonsend.ion.server.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.Nation.Companion.exists
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.trx
-import net.minecraft.world.phys.Vec3
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.Vec3iWithWorld
 import org.bukkit.Color
 import org.bukkit.Location

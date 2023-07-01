@@ -5,19 +5,19 @@ import net.horizonsend.ion.server.database.binary
 import net.horizonsend.ion.server.database.get
 import net.horizonsend.ion.server.database.nullable
 import net.horizonsend.ion.server.database.oid
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.territories.ForwardOperatingBase
 import net.horizonsend.ion.server.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
 import java.awt.Polygon
 
-class RegionForwardOperatingBase(fob: ForwardOperatingBase) : Region<ForwardOperatingBase>(fob) {
+class RegionForwardOperatingBase(fob: ForwardOperatingBase) : Region<ForwardOperatingBase>(fob), TerritoryRegion {
 	override val priority: Int = 0
 	override var world: String = fob.world
-	var polygon: Polygon = unpackTerritoryPolygon(fob.polygonData); private set
-	var nation = fob.nation
-	var name = fob.name
+	override var polygon: Polygon = unpackTerritoryPolygon(fob.polygonData)
+	override var nation = fob.nation
+	override var name = fob.name
 
 	override fun contains(x: Int, y: Int, z: Int): Boolean {
 		TODO("Not yet implemented")

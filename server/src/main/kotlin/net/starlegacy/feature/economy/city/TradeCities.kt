@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.database.nullable
 import net.horizonsend.ion.server.database.oid
 import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import java.util.concurrent.ConcurrentHashMap
 
