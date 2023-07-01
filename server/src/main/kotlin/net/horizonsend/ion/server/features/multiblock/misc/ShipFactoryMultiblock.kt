@@ -22,11 +22,6 @@ object ShipFactoryMultiblock : Multiblock(), PowerStoringMultiblock {
 
 	override val maxPower: Int = 1_000_000
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.setLine(2, sign.getLine(1))
-		sign.setLine(1, player.uniqueId.toString())
-	}
-
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {

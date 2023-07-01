@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.getFacing
@@ -66,7 +67,7 @@ abstract class Multiblock {
 	}
 
 	open fun matchesUndetectedSign(sign: Sign): Boolean {
-		return sign.getLine(0).equals("[$name]", ignoreCase = true)
+		return (sign.line(0) as TextComponent).content().equals("[$name]", ignoreCase = true)
 	}
 
 	open fun setupSign(player: Player, sign: Sign) {
