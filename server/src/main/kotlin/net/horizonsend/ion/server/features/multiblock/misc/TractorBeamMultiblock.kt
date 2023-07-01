@@ -1,4 +1,4 @@
-package net.starlegacy.feature.multiblock.misc
+package net.horizonsend.ion.server.features.multiblock.misc
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
@@ -49,7 +49,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		tryDescend(player)
 	}
 
-	fun tryDescend(player: Player) {
+	private fun tryDescend(player: Player) {
 		val below = player.location.block.getRelative(BlockFace.DOWN)
 
 		if (below.type != Material.GLASS && !below.type.isStainedGlass) return
@@ -79,7 +79,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		}
 	}
 
-	fun tryAscend(player: Player) {
+	private fun tryAscend(player: Player) {
 		val blockStandingIn = player.location.block
 
 		for (i in player.world.minHeight..(player.world.maxHeight - blockStandingIn.y)) {
