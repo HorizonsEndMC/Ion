@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.economy.CityNPC
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager

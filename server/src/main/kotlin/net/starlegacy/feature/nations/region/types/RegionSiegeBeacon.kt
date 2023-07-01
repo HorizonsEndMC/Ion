@@ -2,23 +2,15 @@ package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.array
-import net.horizonsend.ion.server.database.enumValue
 import net.horizonsend.ion.server.database.get
 import net.horizonsend.ion.server.database.int
-import net.horizonsend.ion.server.database.mappedSet
 import net.horizonsend.ion.server.database.nullable
 import net.horizonsend.ion.server.database.oid
-import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
 import net.horizonsend.ion.server.database.string
 import net.minecraft.core.BlockPos
-import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.component1
@@ -28,10 +20,7 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.Material
-import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.DayOfWeek
 
 class RegionSiegeBeacon(beacon: SiegeBeacon) : Region<SiegeBeacon>(beacon), RegionTopLevel {
 	override val priority: Int = 0

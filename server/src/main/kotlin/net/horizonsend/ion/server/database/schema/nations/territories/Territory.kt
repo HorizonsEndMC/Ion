@@ -1,9 +1,12 @@
-package net.horizonsend.ion.server.database.schema.nations
+package net.horizonsend.ion.server.database.schema.nations.territories
 
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.none
 import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.trx
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
@@ -68,24 +71,17 @@ data class Territory(
 		Territory::name,
 		Territory::world,
 		Territory::polygonData,
+		Territory::nation,
 		setup = {
 			ensureIndex(Territory::settlement)
 			ensureIndex(Territory::nation)
 		}
 	) {
-		fun setNation(id: Oid<Territory>, nation: Oid<Nation>?): Unit = trx { sess ->
-			if (nation != null) {
-				require(matches(sess, id, unclaimedQuery))
-				require(Nation.exists(sess, nation))
-			}
-			updateById(sess, id, org.litote.kmongo.setValue(Territory::nation, nation))
-		}
-
 		override fun new(id: Oid<Territory>, name: String, world: String, polygonData: ByteArray): Territory =
 			Territory(id, name, world, polygonData)
 
 
-		val unclaimedQuery = and(Territory::settlement eq null, Territory::nation eq null, Territory::npcOwner eq null)
+		override val unclaimedQuery = and(Territory::settlement eq null, Territory::nation eq null, Territory::npcOwner eq null)
 
 		val claimedQuery = or(Territory::settlement ne null, Territory::nation ne null, Territory::npcOwner ne null)
 

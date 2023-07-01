@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.database.schema.economy.CargoCrateShipment
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData

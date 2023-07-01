@@ -17,6 +17,7 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
 import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
+import net.starlegacy.feature.nations.region.types.TerritoryRegion
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -161,7 +162,7 @@ object AAGunMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		val forward = sign.getFacing().oppositeFace
 		val location = sign.block.getRelative(forward).getRelative(forward).getRelative(BlockFace.UP).location
-		val territory = Regions.find(location).firstOrNull { it is RegionForwardOperatingBase } as? RegionForwardOperatingBase ?: return
+		val territory = Regions.find(location).firstOrNull { it is TerritoryRegion } as? TerritoryRegion ?: return
 
 		for ((player, ship) in PilotedStarships.map) {
 			if (player.location.distanceSquared(event.block.location) <= 150.squared() /* && TODO target check */) {

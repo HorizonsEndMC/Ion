@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -17,19 +17,19 @@ import java.util.concurrent.TimeUnit
 
 data class
 CargoCrateShipment(
-	override val _id: Oid<CargoCrateShipment> = objId(),
-	/** For outdated ones, this is an int, for newer ones, it's the same as _id */
+    override val _id: Oid<CargoCrateShipment> = objId(),
+    /** For outdated ones, this is an int, for newer ones, it's the same as _id */
 	val itemStoredId: String,
-	val player: SLPlayerId,
-	val crate: Oid<CargoCrate>,
-	val claimTime: Date,
-	val expireTime: Date,
-	val originTerritory: Oid<Territory>,
-	val destinationTerritory: Oid<Territory>,
-	var soldCrates: Int,
-	val totalCrates: Int,
-	val crateCost: Double,
-	val crateRevenue: Double
+    val player: SLPlayerId,
+    val crate: Oid<CargoCrate>,
+    val claimTime: Date,
+    val expireTime: Date,
+    val originTerritory: Oid<Territory>,
+    val destinationTerritory: Oid<Territory>,
+    var soldCrates: Int,
+    val totalCrates: Int,
+    val crateCost: Double,
+    val crateRevenue: Double
 ) : DbObject {
 	companion object : OidDbObjectCompanion<CargoCrateShipment>(CargoCrateShipment::class, setup = {
 		ensureUniqueIndex(CargoCrateShipment::itemStoredId)
@@ -38,15 +38,15 @@ CargoCrateShipment(
 		ensureIndex(CargoCrateShipment::destinationTerritory)
 	}) {
 		fun create(
-			player: SLPlayerId,
-			crate: Oid<CargoCrate>,
-			claimed: Date,
-			expires: Date,
-			from: Oid<Territory>,
-			to: Oid<Territory>,
-			total: Int,
-			cost: Double,
-			revenue: Double
+            player: SLPlayerId,
+            crate: Oid<CargoCrate>,
+            claimed: Date,
+            expires: Date,
+            from: Oid<Territory>,
+            to: Oid<Territory>,
+            total: Int,
+            cost: Double,
+            revenue: Double
 		): Oid<CargoCrateShipment> {
 			val id = objId<CargoCrateShipment>()
 			val itemId = id.toString()

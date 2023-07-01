@@ -5,20 +5,20 @@ import net.horizonsend.ion.server.database.binary
 import net.horizonsend.ion.server.database.get
 import net.horizonsend.ion.server.database.nullable
 import net.horizonsend.ion.server.database.oid
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
 import net.horizonsend.ion.server.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
 import java.awt.Polygon
 
-class RegionSiegeTerritory(territory: SiegeTerritory) : Region<SiegeTerritory>(territory) {
+class RegionSiegeTerritory(territory: SiegeTerritory) : Region<SiegeTerritory>(territory), TerritoryRegion {
 	override val priority: Int = 1
 	override var world: String = territory.world
-	var name = territory.name
-	var nation = territory.nation
+	override var name = territory.name
+	override var nation = territory.nation
 
-	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
+	override var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData)
 
 	override fun contains(x: Int, y: Int, z: Int): Boolean {
 		TODO("Not yet implemented")
