@@ -1,17 +1,12 @@
-package net.horizonsend.ion.server.database.schema.nations.moonsieges
+package net.horizonsend.ion.server.database.schema.nations.territories
 
-import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.OidDbObjectCompanion
-import net.horizonsend.ion.server.database.objId
-import net.horizonsend.ion.server.database.schema.nations.AbstractTerritoryCompanion
 import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.horizonsend.ion.server.database.schema.nations.TerritoryInterface
-import net.horizonsend.ion.server.database.trx
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
@@ -33,6 +28,7 @@ data class SiegeTerritory(
 		SiegeTerritory::name,
 		SiegeTerritory::world,
 		SiegeTerritory::polygonData,
+		SiegeTerritory::nation,
 		{
 			ensureIndex(SiegeTerritory::nation)
 		}
@@ -47,6 +43,8 @@ data class SiegeTerritory(
 				)
 			)
 		}
+
+		override val unclaimedQuery = and(nationProperty eq null)
 
 		override fun new(id: Oid<SiegeTerritory>, name: String, world: String, polygonData: ByteArray): SiegeTerritory =
 			SiegeTerritory(

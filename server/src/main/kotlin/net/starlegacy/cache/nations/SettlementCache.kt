@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.database.oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.database.string
 import net.starlegacy.feature.nations.NationsMap
@@ -24,14 +24,14 @@ object SettlementCache : ManualCache() {
 	private fun synced(block: () -> Unit): Unit = Tasks.sync(block)
 
 	data class SettlementData(
-		val id: Oid<Settlement>,
-		var territory: Oid<Territory>,
-		var name: String,
-		var leader: SLPlayerId,
-		var nation: Oid<Nation>?,
-		var cityState: Settlement.CityState?,
-		var minBuildAccess: Settlement.ForeignRelation?,
-		var tradeTax: Double? = null
+        val id: Oid<Settlement>,
+        var territory: Oid<Territory>,
+        var name: String,
+        var leader: SLPlayerId,
+        var nation: Oid<Nation>?,
+        var cityState: Settlement.CityState?,
+        var minBuildAccess: Settlement.ForeignRelation?,
+        var tradeTax: Double? = null
 	)
 
 	private val SETTLEMENT_DATA = ConcurrentHashMap<Oid<Settlement>, SettlementData>()

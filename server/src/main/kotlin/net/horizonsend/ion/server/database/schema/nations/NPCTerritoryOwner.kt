@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.objId
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.trx
 import org.bson.conversions.Bson
 import org.litote.kmongo.combine

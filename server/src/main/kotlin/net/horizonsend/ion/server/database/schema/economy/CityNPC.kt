@@ -5,30 +5,30 @@ import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.objId
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 
 data class CityNPC(
-	override val _id: Oid<CityNPC> = objId(),
-	var territory: Oid<Territory>,
-	var x: Double,
-	var y: Double,
-	var z: Double,
-	var skinData: ByteArray,
-	var type: Type
+    override val _id: Oid<CityNPC> = objId(),
+    var territory: Oid<Territory>,
+    var x: Double,
+    var y: Double,
+    var z: Double,
+    var skinData: ByteArray,
+    var type: Type
 ) : DbObject {
 	companion object : OidDbObjectCompanion<CityNPC>(CityNPC::class, setup = {
 		ensureIndex(CityNPC::territory)
 	}) {
 		fun create(
-			territory: Oid<Territory>,
-			x: Double,
-			y: Double,
-			z: Double,
-			skinData: ByteArray,
-			type: Type
+            territory: Oid<Territory>,
+            x: Double,
+            y: Double,
+            z: Double,
+            skinData: ByteArray,
+            type: Type
 		): Oid<CityNPC> {
 			val id = objId<CityNPC>()
 			col.insertOne(CityNPC(id, territory, x, y, z, skinData, type))

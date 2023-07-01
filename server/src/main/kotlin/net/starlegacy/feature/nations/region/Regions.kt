@@ -20,8 +20,10 @@ import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpa
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.ForwardOperatingBase
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase

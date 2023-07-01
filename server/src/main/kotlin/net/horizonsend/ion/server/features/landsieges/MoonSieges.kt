@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
 import net.horizonsend.ion.server.database.trx
 import net.horizonsend.ion.server.features.landsieges.BeaconSiegeBattles.updateBeaconSieges
 import net.kyori.adventure.text.Component.text
