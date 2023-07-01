@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.database.schema.nations.territories
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.result.InsertOneResult
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
@@ -36,7 +37,7 @@ abstract class AbstractTerritoryCompanion<T: TerritoryInterface>(
 
 	abstract fun new(id: Oid<T>, name: String, world: String, polygonData: ByteArray): T
 
-	fun create(name: String, world: String, polygonData: ByteArray) = trx { session ->
+	fun create(name: String, world: String, polygonData: ByteArray): InsertOneResult = trx { session ->
 		val id = objId<T>()
 
 		col.insertOne(

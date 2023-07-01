@@ -3,8 +3,9 @@ package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.minecraft.world.level.block.Rotation
+import net.starlegacy.feature.starship.active.ActiveStarship
+import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.leftFace
@@ -20,13 +21,32 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 abstract class RotatingMultiblock : Multiblock(){
-//	abstract val doNotRotate: Set<Vec3i>
+//	abstract val doNotRotate: Set<Vec3i> //TODO
+	fun getFacing(sign: Sign): BlockFace {
+		val block = sign.block
+
+		for (face in CARDINAL_BLOCK_FACES) {
+			if (!shape.checkRequirementsSpecific(block, face, loadChunks = true, particles = false)) {
+				continue
+			}
+
+			return face
+		}
+
+		error("Failed to find a face for sign at ${sign.location}")
+	}
+
+	fun getFacing(signPos: Vec3i, starship: ActiveStarship): BlockFace {
+		val block = signPos.toLocation(starship.serverLevel.world).block
+		val sign = block.state as Sign
+		return getFacing(sign)
+	}
 
 	fun rotate(
 		sign: Sign,
 		oldFace: BlockFace,
 		newFace: BlockFace,
-		callback: (sign: Sign, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace)-> Unit
+		callback: (sign: Sign, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) -> Unit = { _, _, _, _ -> }
 	): BlockFace {
 		val i = when (newFace) {
 			oldFace -> return oldFace

@@ -1,42 +1,25 @@
 package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
 import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.minecraft.world.level.block.Rotation
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.gayColors
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKey
-import net.starlegacy.util.leftFace
-import net.starlegacy.util.nms
 import net.starlegacy.util.rightFace
 import org.bukkit.Color
-import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.block.data.BlockData
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 abstract class TurretMultiblock : RotatingMultiblock(), StarshipWeaponMultiblock<TurretWeaponSubsystem> {
@@ -96,56 +79,6 @@ abstract class TurretMultiblock : RotatingMultiblock(), StarshipWeaponMultiblock
 
 	fun getMeanFirePoint(face: BlockFace): Vec3i {
 		return meanFirePoints.getValue(face)
-	}
-
-	private val pilotOffsets: Map<BlockFace, Vec3i> = CARDINAL_BLOCK_FACES.associate { inward ->
-		val right = inward.rightFace
-		val (x, y, z) = getPilotOffset()
-		val vec = Vec3i(x = right.modX * x + inward.modX * z, y = y, z = right.modZ * x + inward.modZ * z)
-		return@associate inward to vec
-	}
-
-	fun getPilotLoc(sign: Sign, face: BlockFace): Location {
-		return getPilotLoc(sign.world, sign.x, sign.y, sign.z, face)
-	}
-
-	fun getPilotLoc(world: World, x: Int, y: Int, z: Int, face: BlockFace): Location {
-		return pilotOffsets.getValue(face).toLocation(world).add(x + 0.5, y + 0.0, z + 0.5)
-	}
-
-	fun getSignFromPilot(player: Player): Sign? {
-		for (face in CARDINAL_BLOCK_FACES) {
-			val (x, y, z) = pilotOffsets.getValue(face)
-			val loc = player.location.subtract(x.toDouble(), y.toDouble(), z.toDouble())
-			val sign = loc.block.getState(false) as? Sign
-				?: continue
-
-			if (Multiblocks[sign] === this) {
-				return sign
-			}
-		}
-
-		return null
-	}
-
-	fun getFacing(sign: Sign): BlockFace {
-		val block = sign.block
-
-		for (face in CARDINAL_BLOCK_FACES) {
-			if (!shape.checkRequirementsSpecific(block, face, loadChunks = true, particles = false)) {
-				continue
-			}
-
-			return face
-		}
-
-		error("Failed to find a face for sign at ${sign.location}")
-	}
-
-	fun getFacing(signPos: Vec3i, starship: ActiveStarship): BlockFace {
-		val block = signPos.toLocation(starship.serverLevel.world).block
-		val sign = block.state as Sign
-		return getFacing(sign)
 	}
 
 	fun updateSubsystem(sign: Sign, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) {
