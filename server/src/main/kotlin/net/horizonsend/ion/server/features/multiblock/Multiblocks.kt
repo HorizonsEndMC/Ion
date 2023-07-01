@@ -39,13 +39,12 @@ import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMulti
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
-import net.horizonsend.ion.server.features.multiblock.landsieges.AAGunMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.landsieges.SiegeBeaconMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.misc.ShipFactoryMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
@@ -87,6 +86,7 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.Bott
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopTriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import org.bukkit.Location
@@ -203,7 +203,7 @@ object Multiblocks : IonComponent() {
 			MiningLaserMultiblockTier3Bottom,
 
 			SiegeBeaconMultiblock,
-			AAGunMultiblock,
+			AntiAirCannonMultiblock,
 		)
 	}
 

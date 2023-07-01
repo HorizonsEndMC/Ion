@@ -1,8 +1,6 @@
 package net.starlegacy.listener.misc
 
 import net.horizonsend.ion.common.extensions.successActionMessage
-import net.horizonsend.ion.common.extensions.userError
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem
 import net.starlegacy.feature.misc.CustomBlocks
@@ -12,13 +10,8 @@ import net.starlegacy.feature.misc.setPower
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.axis
-import net.starlegacy.util.getFacing
 import net.starlegacy.util.isBed
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -32,74 +25,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object InteractListener : SLEventListener() {
-	// Bring player down when they right click a tractor beam sign
-	@EventHandler
-	fun onPlayerInteractEventB(event: PlayerInteractEvent) {
-		if (event.item?.type != Material.CLOCK) return
-		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-		if (event.clickedBlock?.type?.isWallSign != true) return
-
-		val sign = event.clickedBlock ?: return
-		val below = event.player.location.block.getRelative(BlockFace.DOWN)
-
-		if (below.type != Material.GLASS && !below.type.isStainedGlass) return
-		if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) return
-
-		var distance = 1
-		val maxDistance = below.y - 1
-
-		while (distance < maxDistance) {
-			val relative = below.getRelative(BlockFace.DOWN, distance)
-
-			if (relative.type != Material.AIR) {
-				break
-			}
-
-			distance++
-		}
-
-		if (distance < 3) return
-
-		val relative = below.getRelative(BlockFace.DOWN, distance)
-		if (relative.type != Material.AIR) {
-			event.player.teleport(relative.location.add(0.5, 1.5, 0.5),
-				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.values()
-			)
-		}
-	}
-
-	// Bring the player up if they right click while facing up with a clock
-	// and there's a tractor beam above them
-	@EventHandler
-	fun onPlayerInteractEventC(event: PlayerInteractEvent) {
-		if (event.item?.type != Material.CLOCK) return
-		if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
-		if (event.player.location.pitch > -60) return
-
-		val original = event.player.location.block
-		for (i in event.player.world.minHeight..(event.player.world.maxHeight - original.y)) {
-			val block = original.getRelative(BlockFace.UP, i)
-			if (block.type == Material.AIR) continue
-
-			if (block.type == Material.GLASS || block.type.isStainedGlass) {
-				for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
-					val sign = block.getRelative(face, 2)
-					if (!sign.type.isWallSign) continue
-
-					if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
-					event.player.teleport(
-						block.location.add(0.5, 1.5, 0.5),
-						PlayerTeleportEvent.TeleportCause.PLUGIN,
-						*TeleportFlag.Relative.values()
-					)
-				}
-				continue
-			}
-			return
-		}
-	}
-
 	// Put power into the sign if right clicking with a battery
 	@EventHandler
 	fun onPlayerInteractEventE(event: PlayerInteractEvent) {

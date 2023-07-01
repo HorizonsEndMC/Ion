@@ -25,7 +25,7 @@ import net.starlegacy.feature.misc.DutyModeMonitor
 import net.starlegacy.feature.misc.GameplayTweaks
 import net.starlegacy.feature.misc.Shuttles
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.starlegacy.feature.machine.AATurret
+import net.starlegacy.feature.machine.AntiAirCannons
 import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions
@@ -139,5 +139,5 @@ val components: List<IonComponent> = listOf(
 
 	SpaceStations,
 	MoonSieges,
-	AATurret
+	AntiAirCannons
 )

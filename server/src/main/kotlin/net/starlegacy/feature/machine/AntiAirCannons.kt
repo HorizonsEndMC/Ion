@@ -2,8 +2,7 @@ package net.starlegacy.feature.machine
 
 import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.IonComponent
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.landsieges.AAGunMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonMultiblock
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.listen
 import net.starlegacy.util.PerPlayerCooldown
@@ -18,16 +17,14 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.EquipmentSlot
 
-object AATurret : IonComponent() {
-	private lateinit var turretMultiblocks: List<AAGunMultiblock>
+object AntiAirCannons : IonComponent() {
+	private lateinit var turretMultiblocks: List<AntiAirCannonMultiblock>
 
-	val cooldown = PerPlayerCooldown(AAGunMultiblock.cooldownMillis)
+	val cooldown = PerPlayerCooldown(AntiAirCannonMultiblock.cooldownMillis)
 
 	@EventHandler
 	fun onPlayerInteract(event: PlayerInteractEvent) {
 	}
-
-
 
 	override fun onEnable() {
 
@@ -45,7 +42,7 @@ object AATurret : IonComponent() {
 			}
 
 			var sign: Sign? = null
-			var multiblock: AAGunMultiblock? = null
+			var multiblock: AntiAirCannonMultiblock? = null
 
 			for (turret in turretMultiblocks) {
 				sign = turret.getSignFromPilot(player) ?: continue
@@ -72,7 +69,9 @@ object AATurret : IonComponent() {
 						val newFace = player.facing
 
 						// only fire if it can align properly
-						if (multiblock.rotate(sign, oldFace, newFace) == newFace) {
+						if (multiblock.rotate(sign, oldFace, newFace) { _, _, _, _ ->
+								AntiAirCannonMultiblock.moveEntitiesInWindow(sign, oldFace, newFace)
+							} == newFace)  {
 							val world = player.world
 							val pos = Vec3i(sign.location.toBlockKey())
 							val dir = player.location.direction
@@ -102,7 +101,7 @@ object AATurret : IonComponent() {
 		}
 	}
 
-	private fun handleTurretMovement(event: PlayerMoveEvent, turret: AAGunMultiblock, sign: Sign): Location {
+	private fun handleTurretMovement(event: PlayerMoveEvent, turret: AntiAirCannonMultiblock, sign: Sign): Location {
 		val newTo = event.to
 
 		if (event.from.distanceSquared(event.to) > 0) {

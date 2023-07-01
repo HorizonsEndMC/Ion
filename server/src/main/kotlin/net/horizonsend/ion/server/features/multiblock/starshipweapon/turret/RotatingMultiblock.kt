@@ -20,8 +20,9 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-abstract class RotatingMultiblock : Multiblock(){
-//	abstract val doNotRotate: Set<Vec3i> //TODO
+abstract class RotatingMultiblock : Multiblock() {
+	open val doNotRotate: Set<Vec3i> = setOf()
+
 	fun getFacing(sign: Sign): BlockFace {
 		val block = sign.block
 
@@ -77,6 +78,8 @@ abstract class RotatingMultiblock : Multiblock(){
 		val air = Material.AIR.createBlockData()
 
 		for ((x0, y0, z0) in locations) {
+			if (doNotRotate.contains(Vec3i(x0, y0, z0))) continue
+
 			val x = x0 + sign.x
 			val y = y0 + sign.y
 			val z = z0 + sign.z
