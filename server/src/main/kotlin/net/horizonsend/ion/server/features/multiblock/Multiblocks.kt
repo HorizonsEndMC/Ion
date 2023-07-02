@@ -39,7 +39,8 @@ import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMulti
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
-import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.landsieges.SiegeBeaconMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
@@ -203,7 +204,9 @@ object Multiblocks : IonComponent() {
 			MiningLaserMultiblockTier3Bottom,
 
 			SiegeBeaconMultiblock,
-			AntiAirCannonMultiblock,
+
+			AntiAirCannonBaseMultiblock,
+			AntiAirCannonTurretMultiblock,
 		)
 	}
 
