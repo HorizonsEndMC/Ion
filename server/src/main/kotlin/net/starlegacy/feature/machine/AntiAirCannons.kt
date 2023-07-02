@@ -1,107 +1,99 @@
 package net.starlegacy.feature.machine
 
+import net.horizonsend.ion.common.extensions.userError
 import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.IonComponent
-import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonTurretMultiblock
 import net.starlegacy.feature.starship.control.StarshipControl
-import net.starlegacy.listen
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.isGlass
 import org.bukkit.Location
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.EquipmentSlot
 
 object AntiAirCannons : IonComponent() {
-	private lateinit var turretMultiblocks: List<AntiAirCannonMultiblock>
-
-	val cooldown = PerPlayerCooldown(AntiAirCannonMultiblock.cooldownMillis)
+	val cooldown = PerPlayerCooldown(AntiAirCannonTurretMultiblock.cooldownMillis)
 
 	@EventHandler
 	fun onPlayerInteract(event: PlayerInteractEvent) {
+		// prevent double call
+		if (event.hand != EquipmentSlot.HAND) return
+
+		val player = event.player
+		val block = player.location.block
+
+		if (!block.type.isGlass) return
+
+		val sign = AntiAirCannonTurretMultiblock.getSignFromPilot(player) ?: return
+
+		when (event.action) {
+			// Leave the turret on right click
+			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
+				cooldown.tryExec(player) {
+					player.teleport(sign.location.add(0.5, 0.0, 0.5))
+				}
+			}
+
+			// Shoot on left click
+			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> tryShoot(player, sign)
+
+			else -> return
+		}
+		event.isCancelled = true
 	}
 
-	override fun onEnable() {
+	fun tryShoot(player: Player, baseSign: Sign) {
+		if (!StarshipControl.isHoldingController(player)) return
 
-		listen<PlayerInteractEvent>(EventPriority.NORMAL) { event ->
-			// prevent double call
-			if (event.hand != EquipmentSlot.HAND) {
-				return@listen
+		// if base gets blown up return
+		if (!AntiAirCannonBaseMultiblock.signMatchesStructure(baseSign, true)) return player.userError("Turret not intact!")
+
+		val turretOrigin = AntiAirCannonBaseMultiblock.getTurretPivotPoint(baseSign)
+		val turretDirection = AntiAirCannonBaseMultiblock.turretIntact(baseSign) ?: return player.userError("Turret not intact!")
+
+		cooldown.tryExec(player, AntiAirCannonTurretMultiblock.cooldownMillis, TimeUnit.NANOSECONDS) {
+			val oldFace = AntiAirCannonTurretMultiblock.getFacing(baseSign)
+			val newFace = player.facing
+
+			// only fire if it can align properly
+			val resultFace = AntiAirCannonTurretMultiblock.rotate(baseSign, oldFace, newFace) { _, _, _, _ ->
+				AntiAirCannonTurretMultiblock.moveEntitiesInWindow(baseSign, oldFace, newFace)
 			}
 
-			val player = event.player
-			val block = player.location.block
+			if (resultFace != newFace) return@tryExec
 
-			if (!block.type.isGlass) {
-				return@listen
-			}
+			val dir = player.location.direction
 
-			var sign: Sign? = null
-			var multiblock: AntiAirCannonMultiblock? = null
-
-			for (turret in turretMultiblocks) {
-				sign = turret.getSignFromPilot(player) ?: continue
-				multiblock = turret
-				break
-			}
-
-			if (sign == null || multiblock == null) return@listen
-
-			when (event.action) {
-				Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
-					cooldown.tryExec(player) {
-						player.teleport(sign.location.add(0.5, 0.0, 0.5))
-					}
-				}
-
-				Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
-					if (!StarshipControl.isHoldingController(player)) {
-						return@listen
-					}
-
-					cooldown.tryExec(player, multiblock.cooldownMillis, TimeUnit.NANOSECONDS) {
-						val oldFace = multiblock.getFacing(sign)
-						val newFace = player.facing
-
-						// only fire if it can align properly
-						if (multiblock.rotate(sign, oldFace, newFace) { _, _, _, _ ->
-								AntiAirCannonMultiblock.moveEntitiesInWindow(sign, oldFace, newFace)
-							} == newFace)  {
-							val world = player.world
-							val pos = Vec3i(sign.location.toBlockKey())
-							val dir = player.location.direction
-
-							multiblock.shoot(world, pos, newFace, dir, player)
-						}
-					}
-				}
-
-				else -> return@listen
-			}
-			event.isCancelled = true
-		}
-
-		listen<PlayerMoveEvent> { event ->
-			val player = event.player
-
-			if (!event.from.block.type.isGlass) {
-				return@listen
-			}
-
-			for (turret in turretMultiblocks) {
-				val sign = turret.getSignFromPilot(player) ?: continue
-				handleTurretMovement(event, turret, sign)
-				return@listen
-			}
+			AntiAirCannonTurretMultiblock.shoot(
+				player.world,
+				Vec3i(baseSign.location),
+				newFace,
+				dir,
+				player
+			)
 		}
 	}
 
-	private fun handleTurretMovement(event: PlayerMoveEvent, turret: AntiAirCannonMultiblock, sign: Sign): Location {
+	@EventHandler
+	fun onPlayerMove(event: PlayerMoveEvent) {
+		val player = event.player
+
+		if (!event.from.block.type.isGlass) {
+			return
+		}
+
+		val sign = AntiAirCannonTurretMultiblock.getSignFromPilot(player) ?: return
+		handleTurretMovement(event, sign)
+	}
+
+	private fun handleTurretMovement(event: PlayerMoveEvent, sign: Sign): Location {
 		val newTo = event.to
 
 		if (event.from.distanceSquared(event.to) > 0) {
@@ -110,12 +102,12 @@ object AntiAirCannons : IonComponent() {
 			newTo.z = newTo.blockZ + 0.5
 		}
 
-		val oldFace = turret.getFacing(sign)
+		val oldFace = AntiAirCannonTurretMultiblock.getFacing(sign)
 		val newFace = event.player.facing
 		if (oldFace != newFace) {
-			val finalFace = turret.rotate(sign, oldFace, newFace)
+			val finalFace = AntiAirCannonTurretMultiblock.rotate(sign, oldFace, newFace)
 			if (finalFace != oldFace) {
-				val pilotLocation = turret.getPilotLoc(sign, finalFace)
+				val pilotLocation = AntiAirCannonTurretMultiblock.getPilotLoc(sign, finalFace)
 				newTo.x = pilotLocation.x
 				newTo.y = pilotLocation.y
 				newTo.z = pilotLocation.z
