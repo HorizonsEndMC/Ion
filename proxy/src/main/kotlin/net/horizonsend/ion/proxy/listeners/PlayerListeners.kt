@@ -20,7 +20,7 @@ class PlayerListeners {
 			discord?.getTextChannelById(IonProxy.configuration.globalChannel)?.sendMessageEmbeds(
 				messageEmbed(
 					description = "[+ ${e.server.serverInfo.name}] ${e.player.username.replace("_", "\\_")}",
-					color = Colors.INFORMATION
+					color = Colors.SUCCESS
 				)
 			)?.queue()
 
@@ -53,7 +53,7 @@ class PlayerListeners {
 		discord?.getTextChannelById(IonProxy.configuration.globalChannel)?.sendMessageEmbeds(
 			messageEmbed(
 				description = "[- $serverName] ${e.player.username.replace("_", "\\_")}",
-				color = Colors.INFORMATION
+				color = Colors.USER_ERROR
 			)
 		)?.queue()
 	}
