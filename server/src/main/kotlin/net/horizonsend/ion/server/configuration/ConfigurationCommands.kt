@@ -52,7 +52,7 @@ class ConfigurationCommands : BaseCommand(), Listener {
 
 		val obj = type.get(IonServer.balancing.starshipWeapons)
 		var done = false
-		when (type.returnType) {
+		when (field.returnType) {
 			Int::class.createType() -> {
 				field.setter.call(obj, value.toInt())
 				done = true

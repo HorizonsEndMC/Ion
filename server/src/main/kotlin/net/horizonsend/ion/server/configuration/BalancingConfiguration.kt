@@ -325,6 +325,25 @@ data class BalancingConfiguration(
 			boostChargeNanos = 0,
 			aimDistance = 0
 		),
+		val tankCannon: StarshipWeapon = StarshipWeapon(
+			range = 20.0,
+			speed = 5.0,
+			shieldDamageMultiplier = 1,
+			thickness = 0.2,
+			particleThickness = 0.4,
+			explosionPower = 2.0f,
+			volume = 10,
+			pitch = 1.5f,
+			soundName = "entity.firework_rocket.blast_far",
+			powerUsage = 1800,
+			length = 2,
+			angleRadians = 180.0,
+			convergeDistance = 16.0,
+			extraDistance = 2,
+			fireCooldownNanos = 250,
+			boostChargeNanos = 0,
+			aimDistance = 0
+		),
 
 		// Heavy Weapons
 		val heavyLaser: StarshipWeapon = StarshipWeapon(
