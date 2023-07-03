@@ -300,7 +300,9 @@ object StarshipControl : IonComponent() {
 
 		val dy = if (starship.type.groundVehicle) {
 			getGroundClearance(starship)
-		} else { sin(-pitchRadians).roundToInt() * distance }
+		} else {
+			sin(-pitchRadians).roundToInt() * distance
+		}
 
 		val dz = if (vertical) 0 else cos(yawRadians).roundToInt() * distance
 
@@ -316,8 +318,9 @@ object StarshipControl : IonComponent() {
 		val world = starship.serverLevel.world
 		val newCenter = starship.centerOfMass.toLocation(world).add(dx.d(), dy.d(), dz.d())
 
-		val allPlanetsMoons: List<EnterableCelestialBody> = (Space.getPlanets() as List<EnterableCelestialBody>).toMutableList()
-			.apply { this.addAll(Space.getMoons() as List<EnterableCelestialBody>) }
+		val allPlanetsMoons: List<EnterableCelestialBody> =
+			(Space.getPlanets() as List<EnterableCelestialBody>).toMutableList()
+				.apply { this.addAll(Space.getMoons() as List<EnterableCelestialBody>) }
 
 		val celestialBody: EnterableCelestialBody = allPlanetsMoons.asSequence()
 			.filter { it.spaceWorld == world }
@@ -555,6 +558,8 @@ object StarshipControl : IonComponent() {
 		val playerFacing = player.facing
 		val dir = loc.direction.normalize()
 
+		player.debug("welcome to manualFire")
+
 		val target: Vector = getTarget(loc, dir, starship)
 
 		var weaponSet = starship.weaponSetSelections[player.uniqueId]
@@ -565,10 +570,16 @@ object StarshipControl : IonComponent() {
 			return
 		}
 
+		player.debug("weaponset isnt null and the ship is piloted")
+
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet])
 			.shuffled(ThreadLocalRandom.current())
 
+		player.debug("got the weapon, queueing the shots")
+
 		val queuedShots = queueShots(starship.controller!!, weapons, leftClick, playerFacing, dir, target)
+
+		player.debug("firing queued shots ${queuedShots.joinToString { it.javaClass.simpleName }}")
 		StarshipWeapons.fireQueuedShots(queuedShots, starship)
 	}
 
@@ -601,7 +612,7 @@ object StarshipControl : IonComponent() {
 	}
 
 	private fun queueShots(
-		player: Controller,
+		controller: Controller,
 		weapons: List<WeaponSubsystem>,
 		leftClick: Boolean,
 		playerFacing: BlockFace,
@@ -609,39 +620,51 @@ object StarshipControl : IonComponent() {
 		target: Vector
 	): LinkedList<StarshipWeapons.ManualQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
+		val player = if (controller is PlayerController) controller.player else null
 
 		for (weapon: WeaponSubsystem in weapons) {
+			player?.debug("testing subsystem ${weapon.javaClass.simpleName}")
+
+			player?.debug("is manual")
 			if (weapon !is ManualWeaponSubsystem) {
 				continue
 			}
 
+			player?.debug("is acceptable")
 			if (!weapon.isAcceptableDirection(playerFacing)) {
 				continue
 			}
 
+			player?.debug("is heavy weapon not left click")
 			if (weapon is HeavyWeaponSubsystem != !leftClick) {
 				continue
 			}
 
+			player?.debug("is cooled down")
 			if (!weapon.isCooledDown()) {
 				continue
 			}
 
+			player?.debug("is intact")
 			if (!weapon.isIntact()) {
 				continue
 			}
 
+			player?.debug("targeted dir")
 			val targetedDir: Vector = weapon.getAdjustedDir(dir, target)
 
+			player?.debug("check if turret ensure oriented")
 			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) {
 				continue
 			}
 
+			player?.debug("can fire check")
 			if (!weapon.canFire(targetedDir, target)) {
 				continue
 			}
 
-			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, player, targetedDir, target))
+			player?.debug("adding to queued ${weapon.javaClass.simpleName}")
+			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, controller, targetedDir, target))
 		}
 
 		return queuedShots
