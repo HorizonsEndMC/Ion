@@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.minecraft.world.level.block.Rotation
+import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.leftFace
@@ -23,19 +23,7 @@ import kotlin.math.sin
 abstract class RotatingMultiblock : Multiblock() {
 	open val doNotRotate: Set<Vec3i> = setOf()
 
-	fun getFacing(sign: Sign): BlockFace {
-		val block = sign.block
-
-		for (face in CARDINAL_BLOCK_FACES) {
-			if (!shape.checkRequirementsSpecific(block, face, loadChunks = true, particles = false)) {
-				continue
-			}
-
-			return face
-		}
-
-		error("Failed to find a face for sign at ${sign.location}")
-	}
+	abstract fun getFacing(sign: Sign): BlockFace
 
 	fun getFacing(signPos: Vec3i, starship: ActiveStarship): BlockFace {
 		val block = signPos.toLocation(starship.serverLevel.world).block
@@ -44,10 +32,11 @@ abstract class RotatingMultiblock : Multiblock() {
 	}
 
 	fun rotate(
-		sign: Sign,
+		origin: Vec3i,
+		world: World,
 		oldFace: BlockFace,
 		newFace: BlockFace,
-		callback: (sign: Sign, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) -> Unit = { _, _, _, _ -> }
+		callback: (sign: Vec3i, oldKeys: LongOpenHashSet, newKeys: LongOpenHashSet, newFace: BlockFace) -> Unit = { _, _, _, _ -> }
 	): BlockFace {
 		val i = when (newFace) {
 			oldFace -> return oldFace
@@ -68,32 +57,30 @@ abstract class RotatingMultiblock : Multiblock() {
 		val radians: Double = Math.toRadians(theta)
 		val cosFactor: Double = cos(radians)
 		val sinFactor: Double = sin(radians)
+
 		val locations = shape.getLocations(oldFace)
+
 		val oldKeys = LongOpenHashSet(locations.size)
 		val newKeys = LongOpenHashSet(locations.size)
 		val placements = Long2ObjectOpenHashMap<BlockData>()
 
-		val world = sign.world
-
 		val air = Material.AIR.createBlockData()
 
 		for ((x0, y0, z0) in locations) {
-			if (doNotRotate.contains(Vec3i(x0, y0, z0))) continue
-
-			val x = x0 + sign.x
-			val y = y0 + sign.y
-			val z = z0 + sign.z
+			val x = x0 + origin.x
+			val y = y0 + origin.y
+			val z = z0 + origin.z
 
 			val block = world.getBlockAt(x, y, z)
 			val data = block.blockData
 
-			val newData = data.nms.rotate(nmsRotation).createCraftBlockData()
+			val newData = if (CustomBlocks[data] == null) data.nms.rotate(nmsRotation).createCraftBlockData() else data
 
 			val nx0 = (x0.toDouble() * cosFactor - z0.toDouble() * sinFactor).roundToInt()
 			val nz0 = (x0.toDouble() * sinFactor + z0.toDouble() * cosFactor).roundToInt()
 
-			val nx = nx0 + sign.x
-			val nz = nz0 + sign.z
+			val nx = nx0 + origin.x
+			val nz = nz0 + origin.z
 
 			if (!locations.contains(Vec3i(nx0, y0, nz0)) && !world.getBlockAt(nx, y, nz).type.isAir) {
 				return oldFace
@@ -110,13 +97,18 @@ abstract class RotatingMultiblock : Multiblock() {
 
 		placeBlocks(placements, world)
 
-		callback(sign, oldKeys, newKeys, newFace)
+		callback(origin, oldKeys, newKeys, newFace)
 
 		return newFace
 	}
 
+	fun <V>Long2ObjectOpenHashMap<V>.putIf(key: Long, value: V, predicate: (Long2ObjectOpenHashMap<V>) -> Boolean) {
+		if (predicate(this)) this.put(key, value)
+	}
+
 	private fun placeBlocks(placements: Long2ObjectOpenHashMap<BlockData>, world: World) {
 		for ((key, data) in placements) {
+
 			world.getBlockAtKey(key).setBlockData(data, false)
 		}
 	}

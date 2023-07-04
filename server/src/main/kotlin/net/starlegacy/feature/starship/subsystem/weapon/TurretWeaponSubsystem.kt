@@ -39,8 +39,8 @@ abstract class TurretWeaponSubsystem(
 		}
 
 		val sign = getSign() ?: return false
-		this.face = multiblock.rotate(sign, this.face, face) { multiblockSign, oldKeys, newKeys, newFace ->
-			updateSubsystem(multiblockSign, oldKeys, newKeys, newFace)
+		this.face = multiblock.rotate(Vec3i(sign.location), sign.world, this.face, face) { _, oldKeys, newKeys, newFace ->
+			updateSubsystem(sign, oldKeys, newKeys, newFace)
 		}
 		return this.face == face
 	}
