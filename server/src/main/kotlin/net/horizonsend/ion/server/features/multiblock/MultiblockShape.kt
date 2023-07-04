@@ -27,6 +27,7 @@ import net.starlegacy.util.isSlab
 import net.starlegacy.util.isStainedGlass
 import net.starlegacy.util.isStainedGlassPane
 import net.starlegacy.util.isStairs
+import net.starlegacy.util.isTrapdoor
 import net.starlegacy.util.isWall
 import net.starlegacy.util.isWool
 import net.starlegacy.util.rightFace
@@ -271,6 +272,8 @@ class MultiblockShape {
 		}
 
 		fun concrete() = filteredTypes { it.isConcrete }
+
+		fun anyTrapdoor() = filteredTypes { it.isTrapdoor }
 
 		fun stoneBrick() = type(Material.STONE_BRICKS)
 
