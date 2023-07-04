@@ -18,6 +18,7 @@ import net.starlegacy.util.Vec3i
 import net.starlegacy.util.rightFace
 import org.bukkit.Color
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.util.Vector
@@ -42,6 +43,21 @@ abstract class TurretMultiblock : RotatingMultiblock(), StarshipWeaponMultiblock
 
 	protected abstract fun buildFirePointOffsets(): List<Vec3i>
 	protected abstract fun getPilotOffset(): Vec3i
+
+	override fun getFacing(sign: Sign): BlockFace {
+		val block = sign.block
+
+		for (face in CARDINAL_BLOCK_FACES) {
+			if (!shape.checkRequirementsSpecific(block, face, loadChunks = true, particles = false)) {
+				continue
+			}
+
+			return face
+		}
+
+		error("Failed to find a face for sign at ${sign.location}")
+	}
+
 
 	private val firePointOffsets: Map<BlockFace, List<Vec3i>> = CARDINAL_BLOCK_FACES.associate { inward ->
 		val right = inward.rightFace
