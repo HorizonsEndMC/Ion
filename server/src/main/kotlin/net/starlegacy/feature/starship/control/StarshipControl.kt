@@ -25,6 +25,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.starlegacy.feature.starship.subsystem.weapon.interfaces.RightClickManual
 import net.starlegacy.listen
 import net.starlegacy.util.*
 import org.bukkit.ChatColor
@@ -635,8 +636,13 @@ object StarshipControl : IonComponent() {
 				continue
 			}
 
-			player?.debug("is heavy weapon not left click")
-			if (weapon is HeavyWeaponSubsystem != !leftClick) {
+			player?.debug("is heavy weapon not left click and is not rightclickmanual")
+			if (weapon is HeavyWeaponSubsystem != !leftClick && weapon !is RightClickManual) {
+				continue
+			}
+
+			player?.debug("is rightclickmanual is rightclick")
+			if (weapon is RightClickManual && leftClick) {
 				continue
 			}
 

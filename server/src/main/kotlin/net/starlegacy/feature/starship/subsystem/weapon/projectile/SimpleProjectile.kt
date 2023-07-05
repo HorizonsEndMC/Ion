@@ -33,7 +33,7 @@ abstract class SimpleProjectile(
 ) : Projectile(starship, shooter) {
 	abstract val range: Double
 	abstract val speed: Double
-	abstract val shieldDamageMultiplier: Int
+	abstract val shieldDamageMultiplier: Double
 	abstract val thickness: Double
 	abstract val explosionPower: Float
 	open val volume: Int = 12

@@ -17,7 +17,7 @@ class PulseLaserProjectile(
 ) : LaserProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.pulseCannon.range
 	override val speed: Double = IonServer.balancing.starshipWeapons.pulseCannon.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pulseCannon.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.pulseCannon.shieldDamageMultiplier
 	override val thickness: Double = IonServer.balancing.starshipWeapons.pulseCannon.thickness
 	override val particleThickness: Double = IonServer.balancing.starshipWeapons.pulseCannon.particleThickness
 	override val explosionPower: Float = IonServer.balancing.starshipWeapons.pulseCannon.explosionPower

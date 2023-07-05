@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.landsieges
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
@@ -754,14 +755,14 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 			ship = null,
 			loc = barrelOffset.toLocation(shooter.world),
 			dir = dir,
-			speed = 50.0,
+			speed = IonServer.balancing.starshipWeapons.aaGun.speed,
 			color = getColor(shooter),
-			range = 250.0,
-			explosionPower = 20f,
-			shieldDamageMultiplier = 2,
-			particleThickness = 1.4,
+			range = IonServer.balancing.starshipWeapons.aaGun.range,
+			explosionPower = IonServer.balancing.starshipWeapons.aaGun.explosionPower,
+			shieldDamageMultiplier = IonServer.balancing.starshipWeapons.aaGun.shieldDamageMultiplier,
+			particleThickness = IonServer.balancing.starshipWeapons.aaGun.particleThickness,
 			shooter = null,
-			soundName = "starship.weapon.turbolaser.tri.shoot"
+			soundName = IonServer.balancing.starshipWeapons.aaGun.soundName
 		).fire()
 
 		PowerMachines.removePower(turretBaseSign, POWER_PER_SHOT)

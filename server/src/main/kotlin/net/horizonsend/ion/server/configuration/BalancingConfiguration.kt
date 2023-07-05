@@ -250,7 +250,7 @@ data class BalancingConfiguration(
 		val plasmaCannon: StarshipWeapon = StarshipWeapon(
 			range = 160.0,
 			speed = 400.0,
-			shieldDamageMultiplier = 3,
+			shieldDamageMultiplier = 3.0,
 			thickness = 0.3,
 			particleThickness = .5,
 			explosionPower = 4.0f,
@@ -271,7 +271,7 @@ data class BalancingConfiguration(
 		val laserCannon: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 250.0,
-			shieldDamageMultiplier = 1,
+			shieldDamageMultiplier = 1.0,
 			thickness = 0.2,
 			particleThickness = 0.44,
 			explosionPower = 2.0f,
@@ -290,7 +290,7 @@ data class BalancingConfiguration(
 		val pulseCannon: StarshipWeapon = StarshipWeapon(
 			range = 140.0,
 			speed = 170.0,
-			shieldDamageMultiplier = 1,
+			shieldDamageMultiplier = 1.0,
 			thickness = 0.2,
 			particleThickness = 0.4,
 			explosionPower = 2.0f,
@@ -309,7 +309,7 @@ data class BalancingConfiguration(
 		val miniPhaser: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 600.0,
-			shieldDamageMultiplier = 1,
+			shieldDamageMultiplier = 1.0,
 			thickness = 0.2,
 			particleThickness = 0.0, // not applicable
 			explosionPower = 2f,
@@ -328,7 +328,26 @@ data class BalancingConfiguration(
 		val tankCannon: StarshipWeapon = StarshipWeapon(
 			range = 20.0,
 			speed = 5.0,
-			shieldDamageMultiplier = 1,
+			shieldDamageMultiplier = 1.0,
+			thickness = 0.2,
+			particleThickness = 0.4,
+			explosionPower = 2.0f,
+			volume = 10,
+			pitch = 1.5f,
+			soundName = "entity.firework_rocket.blast_far",
+			powerUsage = 1800,
+			length = 2,
+			angleRadians = 180.0,
+			convergeDistance = 16.0,
+			extraDistance = 2,
+			fireCooldownNanos = 250,
+			boostChargeNanos = 0,
+			aimDistance = 0
+		),
+		val tankMG: StarshipWeapon = StarshipWeapon(
+			range = 20.0,
+			speed = 5.0,
+			shieldDamageMultiplier = 1.0,
 			thickness = 0.2,
 			particleThickness = 0.4,
 			explosionPower = 2.0f,
@@ -345,11 +364,12 @@ data class BalancingConfiguration(
 			aimDistance = 0
 		),
 
+
 		// Heavy Weapons
 		val heavyLaser: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 50.0,
-			shieldDamageMultiplier = 2,
+			shieldDamageMultiplier = 2.0,
 			thickness = 0.35,
 			particleThickness = 1.0,
 			explosionPower = 12.0f,
@@ -369,7 +389,7 @@ data class BalancingConfiguration(
 		val phaser: StarshipWeapon = StarshipWeapon(
 			range = 140.0,
 			speed = 1.0,
-			shieldDamageMultiplier = 55,
+			shieldDamageMultiplier = 55.0,
 			thickness = 0.2,
 			particleThickness = 0.0,
 			explosionPower = 2.0f,
@@ -388,7 +408,7 @@ data class BalancingConfiguration(
 		val protonTorpedo: StarshipWeapon = StarshipWeapon(
 			range = 100.0,
 			speed = 70.0,
-			shieldDamageMultiplier = 2,
+			shieldDamageMultiplier = 2.0,
 			thickness = 0.4,
 			particleThickness = 1.0,
 			explosionPower = 6.0f,
@@ -410,7 +430,7 @@ data class BalancingConfiguration(
 		val rocket: StarshipWeapon = StarshipWeapon(
 			range = 300.0,
 			speed = 5.0,
-			shieldDamageMultiplier = 5,
+			shieldDamageMultiplier = 5.0,
 			thickness = 1.0,
 			particleThickness = 0.0,
 			explosionPower = 10.0f,
@@ -429,7 +449,7 @@ data class BalancingConfiguration(
 		val sonicMissile: StarshipWeapon = StarshipWeapon(
 			range = 300.0,
 			speed = 200.0,
-			shieldDamageMultiplier = 10,
+			shieldDamageMultiplier = 10.0,
 			thickness = 0.2,
 			particleThickness = 0.0,
 			explosionPower = 15.0f,
@@ -450,7 +470,7 @@ data class BalancingConfiguration(
 		val lightTurret: StarshipWeapon = StarshipWeapon(
 			range = 200.0,
 			speed = 250.0,
-			shieldDamageMultiplier = 2,
+			shieldDamageMultiplier = 2.0,
 			thickness = 0.0,
 			particleThickness = 0.3,
 			explosionPower = 4.0f,
@@ -470,7 +490,7 @@ data class BalancingConfiguration(
 		val heavyTurret: StarshipWeapon = StarshipWeapon(
 			range = 500.0,
 			speed = 200.0,
-			shieldDamageMultiplier = 2,
+			shieldDamageMultiplier = 2.0,
 			thickness = 0.0,
 			particleThickness = 0.3,
 			explosionPower = 4.0f,
@@ -489,7 +509,7 @@ data class BalancingConfiguration(
 		val triTurret: StarshipWeapon = StarshipWeapon(
 			range = 500.0,
 			speed = 125.0,
-			shieldDamageMultiplier = 3,
+			shieldDamageMultiplier = 3.0,
 			thickness = 0.0,
 			particleThickness = 0.8,
 			explosionPower = 6f,
@@ -509,7 +529,7 @@ data class BalancingConfiguration(
 		val pointDefence: StarshipWeapon = StarshipWeapon(
 			range = 120.0,
 			speed = 150.0,
-			shieldDamageMultiplier = 0,
+			shieldDamageMultiplier = 0.0,
 			thickness = 0.2,
 			particleThickness = 0.35,
 			explosionPower = 0.0f,
@@ -528,7 +548,7 @@ data class BalancingConfiguration(
 		val cthulhuBeam: StarshipWeapon = StarshipWeapon(
 			range = 64.0,
 			speed = 1.0,
-			shieldDamageMultiplier = 10,
+			shieldDamageMultiplier = 10.0,
 			thickness = 1.0,
 			particleThickness = 0.0,
 			explosionPower = 1.0f,
@@ -543,13 +563,34 @@ data class BalancingConfiguration(
 			fireCooldownNanos = 10,
 			boostChargeNanos = 0,
 			aimDistance = 0
-		)
+		),
+
+		val aaGun: StarshipWeapon = StarshipWeapon(
+			range = 500.0,
+			speed = 125.0,
+			shieldDamageMultiplier = 3.0,
+			thickness = 0.0,
+			particleThickness = 0.8,
+			explosionPower = 6f,
+			volume = 0,
+			pitch = 2.0f,
+			soundName = "starship.weapon.turbolaser.tri.shoot",
+			powerUsage = 45000,
+			length = 0,
+			angleRadians = 0.0,
+			convergeDistance = 0.0,
+			extraDistance = 0,
+			fireCooldownNanos = 10,
+			boostChargeNanos = 3,
+			aimDistance = 0,
+			inaccuracyRadians = 3.0
+		),
 	) {
 		@Serializable
 		data class StarshipWeapon(
 			override var range: Double,
 			override var speed: Double,
-			override var shieldDamageMultiplier: Int,
+			override var shieldDamageMultiplier: Double,
 			override var thickness: Double,
 			override var particleThickness: Double,
 			override var explosionPower: Float,
@@ -574,7 +615,7 @@ data class BalancingConfiguration(
 		abstract class ProjectileBalancing : SubSystem() {
 			abstract var range: Double
 			abstract var speed: Double
-			abstract var shieldDamageMultiplier: Int
+			abstract var shieldDamageMultiplier: Double
 			abstract var thickness: Double
 			abstract var particleThickness: Double
 			abstract var explosionPower: Float

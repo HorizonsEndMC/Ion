@@ -17,7 +17,7 @@ class PhaserProjectile(
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.phaser.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.phaser.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.phaser.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.phaser.shieldDamageMultiplier
 	override val thickness: Double = IonServer.balancing.starshipWeapons.phaser.thickness
 	override val explosionPower: Float = IonServer.balancing.starshipWeapons.phaser.explosionPower
 	override val volume: Int = IonServer.balancing.starshipWeapons.phaser.volume

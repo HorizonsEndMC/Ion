@@ -18,7 +18,7 @@ class PlasmaLaserProjectile(
 ) : LaserProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.plasmaCannon.range
 	override val speed: Double = IonServer.balancing.starshipWeapons.plasmaCannon.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.plasmaCannon.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.plasmaCannon.shieldDamageMultiplier
 	override val color: Color
 		get() = if (starship!!.rainbowToggle) gayColors.random() else starship.weaponColor
 	override val thickness: Double = IonServer.balancing.starshipWeapons.plasmaCannon.thickness
