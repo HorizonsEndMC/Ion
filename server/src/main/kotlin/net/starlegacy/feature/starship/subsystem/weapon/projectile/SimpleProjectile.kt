@@ -49,6 +49,8 @@ abstract class SimpleProjectile(
 		firedAtNanos = System.nanoTime()
 		lastTick = firedAtNanos
 
+		println("1")
+
 		super.fire()
 
 		val soundName = soundName
@@ -104,9 +106,8 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		if (starship?.let { it.serverLevel.world }?.name?.lowercase(Locale.getDefault())
-				?.contains("hyperspace")!!
-		) return false
+		if (starship?.serverLevel?.world?.name?.lowercase(Locale.getDefault())?.contains("hyperspace") == true)
+			return false
 		if (GracePeriod.isGracePeriod) return false
 
 		val block: Block? = result.hitBlock
