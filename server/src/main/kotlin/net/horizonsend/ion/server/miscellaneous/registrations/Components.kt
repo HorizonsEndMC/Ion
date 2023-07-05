@@ -16,8 +16,8 @@ import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.collectors.CollectionMissions
 import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
-import net.starlegacy.feature.machine.AreaShields
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.miscellaneous.CombatNPCs
 import net.starlegacy.feature.misc.CustomRecipes
 import net.starlegacy.feature.misc.Decomposers
@@ -25,7 +25,7 @@ import net.starlegacy.feature.misc.DutyModeMonitor
 import net.starlegacy.feature.misc.GameplayTweaks
 import net.starlegacy.feature.misc.Shuttles
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.starlegacy.feature.machine.AntiAirCannons
+import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions

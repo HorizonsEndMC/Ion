@@ -4,7 +4,7 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.Starship
 import net.minecraft.server.level.ServerLevel
-import net.starlegacy.feature.machine.AreaShields
+import net.horizonsend.ion.server.features.machine.AreaShields
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.world.WorldInitEvent

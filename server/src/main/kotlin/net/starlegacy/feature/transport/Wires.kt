@@ -5,7 +5,7 @@ import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.metrics
 import net.horizonsend.ion.server.IonComponent
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield

@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape

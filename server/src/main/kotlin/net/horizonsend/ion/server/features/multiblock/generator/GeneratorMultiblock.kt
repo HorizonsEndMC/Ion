@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.generator
 
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.machine.GeneratorFuel
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.GeneratorFuel
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape

@@ -11,22 +11,18 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.RotatingMultiblock
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.miscellaneous.gayColors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.feature.machine.AntiAirCannons
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.AntiAirCannons
+import net.horizonsend.ion.server.features.machine.AntiAirCannons.isOccupied
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.starlegacy.feature.space.Space
-import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
-import net.starlegacy.util.Notify
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
@@ -38,7 +34,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.util.Vector
 
 object AntiAirCannonBaseMultiblock : Multiblock(), PowerStoringMultiblock, InteractableMultiblock {
 	override val name: String = "antiaircannon"
@@ -104,6 +99,8 @@ object AntiAirCannonBaseMultiblock : Multiblock(), PowerStoringMultiblock, Inter
 		pilotLoc.direction = turretFacing.direction
 
 		AntiAirCannons.cooldown.tryExec(player) {
+			if (isOccupied(sign)) return@tryExec player.userError("Turret is already occupied!")
+
 			player.information("Entering turret")
 			player.teleport(pilotLoc)
 		}
@@ -738,7 +735,7 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		if (power < POWER_PER_SHOT) return shooter.userError("Out of power!")
 
 		val left = AntiAirCannons.lastBarrel[shooter.uniqueId] ?: false
-		val barrelOffset =
+		val barrelEndPosition =
 			getFirePointOffset(facing.oppositeFace, left) +
 			AntiAirCannonBaseMultiblock.getTurretPivotPointOffset(facing.oppositeFace) +
 			Vec3i(turretBaseSign.location)
@@ -749,11 +746,11 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 		val dir = shooter.location.direction
 
-		println("barrel end: $barrelOffset")
+		println("barrel end: $barrelEndPosition")
 
 		TurretLaserProjectile(
 			ship = null,
-			loc = barrelOffset.toLocation(shooter.world),
+			loc = barrelEndPosition.toLocation(shooter.world).toCenterLocation(),
 			dir = dir,
 			speed = IonServer.balancing.starshipWeapons.aaGun.speed,
 			color = getColor(shooter),
@@ -774,7 +771,6 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		if (nation != null) {
 			return Color.fromRGB(NationCache[nation].color)
 		}
-
 
 		return Color.FUCHSIA
 	}

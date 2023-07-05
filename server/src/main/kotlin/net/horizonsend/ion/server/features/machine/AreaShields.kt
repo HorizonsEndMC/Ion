@@ -1,4 +1,4 @@
-package net.starlegacy.feature.machine
+package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonComponent

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.areashield
 
-import net.starlegacy.feature.machine.AreaShields
+import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import org.bukkit.ChatColor

@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship.factory
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKeyX

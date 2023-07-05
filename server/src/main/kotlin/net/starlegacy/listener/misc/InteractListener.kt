@@ -1,7 +1,7 @@
 package net.starlegacy.listener.misc
 
 import net.horizonsend.ion.common.extensions.successActionMessage
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.starlegacy.feature.misc.CustomBlockItem
 import net.starlegacy.feature.misc.CustomBlocks
 import net.starlegacy.feature.misc.CustomItems

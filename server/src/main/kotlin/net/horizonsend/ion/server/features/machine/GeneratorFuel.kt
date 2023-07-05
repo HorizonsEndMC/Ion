@@ -1,4 +1,4 @@
-package net.starlegacy.feature.machine
+package net.horizonsend.ion.server.features.machine
 
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
