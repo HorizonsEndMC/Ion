@@ -21,6 +21,7 @@ import net.horizonsend.ion.proxy.managers.ReminderManager
 import org.slf4j.Logger
 import java.io.File
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
 
 val IonProxy = IonProxyPlugin.INSTANCE
 
@@ -80,6 +81,16 @@ class IonProxyPlugin @Inject constructor(
 			register(this@IonProxyPlugin, PlayerListeners())
 			register(this@IonProxyPlugin, ProxyPingListener())
 		}
+
+		proxy.scheduler.buildTask(this) {
+			for ((key, value) in VelocityMessageCommand.conversations) {
+				if (key.get() == null)
+					VelocityMessageCommand.conversations.remove(key)
+
+				if (value.get() == null)
+					VelocityMessageCommand.conversations.remove(key)
+			}
+		}.repeat(5L, TimeUnit.SECONDS).schedule()
 
 		if (configuration.discordEnabled) {
 			discord()
