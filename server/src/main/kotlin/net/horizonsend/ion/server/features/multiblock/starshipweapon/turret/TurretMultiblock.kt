@@ -39,7 +39,7 @@ abstract class TurretMultiblock : RotatingMultiblock(), StarshipWeaponMultiblock
 	abstract val projectileSpeed: Int
 	abstract val projectileParticleThickness: Double
 	abstract val projectileExplosionPower: Float
-	abstract val projectileShieldDamageMultiplier: Int
+	abstract val projectileShieldDamageMultiplier: Double
 
 	protected abstract fun buildFirePointOffsets(): List<Vec3i>
 	protected abstract fun getPilotOffset(): Vec3i

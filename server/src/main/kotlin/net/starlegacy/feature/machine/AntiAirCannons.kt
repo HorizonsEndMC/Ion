@@ -93,8 +93,6 @@ object AntiAirCannons : IonComponent() {
 				resultFace,
 				baseSign
 			)
-
-			Notify.all(Component.text("pew pew pew"))
 		}
 	}
 
