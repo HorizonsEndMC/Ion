@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.charger
 
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.starlegacy.feature.misc.addPower
 import net.starlegacy.feature.misc.getMaxPower
 import net.starlegacy.feature.misc.getPower

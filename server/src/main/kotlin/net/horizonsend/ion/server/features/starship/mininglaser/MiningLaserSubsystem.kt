@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.countType
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.feature.machine.PowerMachines
+import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.StarshipType
