@@ -1,7 +1,7 @@
 package net.starlegacy.listener.gear
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.feature.machine.AreaShields
+import net.horizonsend.ion.server.features.machine.AreaShields
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.Tasks

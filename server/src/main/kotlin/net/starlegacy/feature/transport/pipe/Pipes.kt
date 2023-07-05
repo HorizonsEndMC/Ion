@@ -1,7 +1,7 @@
 package net.starlegacy.feature.transport.pipe
 
 import net.horizonsend.ion.server.IonComponent
-import net.starlegacy.feature.machine.GeneratorFuel
+import net.horizonsend.ion.server.features.machine.GeneratorFuel
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.feature.transport.pipe.filter.FilterData
 import net.starlegacy.feature.transport.pipe.filter.FilterItemData

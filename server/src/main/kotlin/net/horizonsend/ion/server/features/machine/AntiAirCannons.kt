@@ -1,4 +1,4 @@
-package net.starlegacy.feature.machine
+package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
@@ -6,20 +6,18 @@ import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonTurretMultiblock
-import net.kyori.adventure.text.Component
 import net.starlegacy.feature.starship.control.StarshipControl
-import net.starlegacy.util.Notify
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.isGlass
-import org.bukkit.Location
+import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.EquipmentSlot
 import java.util.UUID
 
@@ -47,12 +45,7 @@ object AntiAirCannons : IonComponent() {
 
 		when (event.action) {
 			// Leave the turret on right click
-			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
-				cooldown.tryExec(player) {
-					player.information("Exiting Turret")
-					player.teleport(sign.location.add(0.5, 0.0, 0.5))
-				}
-			}
+			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> exitTurret(player, sign)
 
 			// Shoot on left click
 			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> tryShoot(player, sign)
@@ -61,6 +54,33 @@ object AntiAirCannons : IonComponent() {
 		}
 
 		event.isCancelled = true
+	}
+
+	fun exitTurret(player: Player, baseSign: Sign) {
+		player.information("Exiting Turret")
+		player.teleport(baseSign.location.add(0.5, 0.0, 0.5))
+	}
+
+	fun isOccupied(baseSign: Sign): Boolean {
+		val windowBlock: Block = AntiAirCannonTurretMultiblock.getPilotLoc(baseSign)?.block ?: return false
+
+		for (entity in windowBlock.chunk.entities) {
+			val entityLoc = entity.location
+
+			if (entityLoc.block == windowBlock) return true
+		}
+
+		return false
+	}
+
+	@EventHandler
+	fun onPlayerCrouch(event: PlayerToggleSneakEvent) {
+		if (!event.isSneaking) return
+		if (!StarshipControl.isHoldingController(event.player)) return
+
+		val sign = AntiAirCannonTurretMultiblock.getSignFromPilot(event.player) ?: return
+
+		exitTurret(event.player, sign)
 	}
 
 	fun tryShoot(player: Player, baseSign: Sign) {
