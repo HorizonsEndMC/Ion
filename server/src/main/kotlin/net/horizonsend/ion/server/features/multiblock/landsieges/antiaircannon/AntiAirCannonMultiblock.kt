@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.landsieges
+package net.horizonsend.ion.server.features.multiblock.landsieges.antiaircannon
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
@@ -358,7 +358,7 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		shape.ignoreDirection()
 	}
 
-	val firePoints = listOf(
+	private val firePoints = listOf(
 		Vec3i(-3, 3, -7), // Left
 		Vec3i(3, 3, -7) // Right
 	)
@@ -718,8 +718,6 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		val (x, y, z) = offset
 		val right = face.rightFace
 
-		println("xyz $x, $y, $z")
-
 		return Vec3i(
 			x = (right.modX * x) + (face.modX * z),
 			y = y,
@@ -727,7 +725,7 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		)
 	}
 
-	const val POWER_PER_SHOT = 1000
+	private const val POWER_PER_SHOT = 1000
 
 	fun shoot(shooter: Player, facing: BlockFace, turretBaseSign: Sign) {
 		val power = PowerMachines.getPower(turretBaseSign, true)
@@ -736,42 +734,20 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 		val left = AntiAirCannons.lastBarrel[shooter.uniqueId] ?: false
 		val barrelEndPosition =
-			getFirePointOffset(facing.oppositeFace, left) +
-			AntiAirCannonBaseMultiblock.getTurretPivotPointOffset(facing.oppositeFace) +
-			Vec3i(turretBaseSign.location)
-
-		println("barrel offset ${getFirePointOffset(facing.oppositeFace, left)}")
+				getFirePointOffset(facing.oppositeFace, left) +
+				AntiAirCannonBaseMultiblock.getTurretPivotPointOffset(turretBaseSign.getFacing()) +
+				Vec3i(turretBaseSign.location)
 
 		AntiAirCannons.lastBarrel[shooter.uniqueId] = !left
 
 		val dir = shooter.location.direction
 
-		println("barrel end: $barrelEndPosition")
-
-		TurretLaserProjectile(
-			ship = null,
+		AntiAirCannonProjectile(
 			loc = barrelEndPosition.toLocation(shooter.world).toCenterLocation(),
 			dir = dir,
-			speed = IonServer.balancing.starshipWeapons.aaGun.speed,
-			color = getColor(shooter),
-			range = IonServer.balancing.starshipWeapons.aaGun.range,
-			explosionPower = IonServer.balancing.starshipWeapons.aaGun.explosionPower,
-			shieldDamageMultiplier = IonServer.balancing.starshipWeapons.aaGun.shieldDamageMultiplier,
-			particleThickness = IonServer.balancing.starshipWeapons.aaGun.particleThickness,
-			shooter = null,
-			soundName = IonServer.balancing.starshipWeapons.aaGun.soundName
+			shooter
 		).fire()
 
 		PowerMachines.removePower(turretBaseSign, POWER_PER_SHOT)
-	}
-
-	private fun getColor(shooter: Player): Color {
-		val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
-
-		if (nation != null) {
-			return Color.fromRGB(NationCache[nation].color)
-		}
-
-		return Color.FUCHSIA
 	}
 }

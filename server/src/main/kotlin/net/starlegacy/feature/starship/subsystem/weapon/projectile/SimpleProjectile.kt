@@ -49,8 +49,6 @@ abstract class SimpleProjectile(
 		firedAtNanos = System.nanoTime()
 		lastTick = firedAtNanos
 
-		println("1")
-
 		super.fire()
 
 		val soundName = soundName

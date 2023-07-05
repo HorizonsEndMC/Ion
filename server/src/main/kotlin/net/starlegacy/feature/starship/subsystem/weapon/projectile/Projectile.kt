@@ -7,7 +7,6 @@ import net.starlegacy.util.Tasks
 
 abstract class Projectile(val starship: ActiveStarship?, val shooter: Controller?) {
 	open fun fire() {
-		println("ticking")
 		Tasks.syncDelay(0, ::tick)
 	}
 
