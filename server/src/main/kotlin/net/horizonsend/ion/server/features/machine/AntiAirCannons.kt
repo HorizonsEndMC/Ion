@@ -4,8 +4,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.IonComponent
-import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonBaseMultiblock
-import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.antiaircannon.AntiAirCannonBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.antiaircannon.AntiAirCannonTurretMultiblock
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
@@ -44,9 +44,6 @@ object AntiAirCannons : IonComponent() {
 		val sign = AntiAirCannonTurretMultiblock.getSignFromPilot(player) ?: return
 
 		when (event.action) {
-			// Leave the turret on right click
-			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> exitTurret(player, sign)
-
 			// Shoot on left click
 			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> tryShoot(player, sign)
 
