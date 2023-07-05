@@ -6,7 +6,9 @@ import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonTurretMultiblock
+import net.kyori.adventure.text.Component
 import net.starlegacy.feature.starship.control.StarshipControl
+import net.starlegacy.util.Notify
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
@@ -88,8 +90,11 @@ object AntiAirCannons : IonComponent() {
 
 			AntiAirCannonTurretMultiblock.shoot(
 				player,
+				resultFace,
 				baseSign
 			)
+
+			Notify.all(Component.text("pew pew pew"))
 		}
 	}
 

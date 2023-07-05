@@ -1,17 +1,27 @@
 package net.horizonsend.ion.server.features.multiblock.landsieges
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.RotatingMultiblock
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.miscellaneous.gayColors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.feature.machine.AntiAirCannons
+import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.space.Space
+import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
@@ -19,6 +29,7 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -92,6 +103,7 @@ object AntiAirCannonBaseMultiblock : Multiblock(), PowerStoringMultiblock, Inter
 		pilotLoc.direction = turretFacing.direction
 
 		AntiAirCannons.cooldown.tryExec(player) {
+			player.information("Entering turret")
 			player.teleport(pilotLoc)
 		}
 
@@ -349,8 +361,8 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 	}
 
 	val firePoints = listOf(
-		Vec3i(-3, 3, 7), // Left
-		Vec3i(3, 3, 7) // Right
+		Vec3i(-3, 3, -7), // Left
+		Vec3i(3, 3, -7) // Right
 	)
 
 	// Centered on pivot point
@@ -702,16 +714,67 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		}
 	}
 
-	fun shoot(shooter: Player, turretBaseSign: Sign) {
-//		val dir = shooter.location.direction
-//
-//		getFirePointOffset
-//
-//		val origin = firePoints.random()
-//
-//		TurretLaserProjectile(
-//			starship = null,
-//
-//		)
+	fun getFirePointOffset(face: BlockFace, left: Boolean): Vec3i {
+		val offset = if (left) firePoints.first() else firePoints.last()
+
+		val (x, y, z) = offset
+		val right = face.rightFace
+
+		println("xyz $x, $y, $z")
+
+		return Vec3i(
+			x = (right.modX * x) + (face.modX * z),
+			y = y,
+			z = (right.modZ * x) + (face.modZ * z)
+		)
+	}
+
+	const val POWER_PER_SHOT = 1000
+
+	fun shoot(shooter: Player, facing: BlockFace, turretBaseSign: Sign) {
+		val power = PowerMachines.getPower(turretBaseSign, true)
+
+		if (power < POWER_PER_SHOT) return shooter.userError("Out of power!")
+
+		val left = AntiAirCannons.lastBarrel[shooter.uniqueId] ?: false
+		val barrelOffset =
+			getFirePointOffset(facing.oppositeFace, left) +
+			AntiAirCannonBaseMultiblock.getTurretPivotPointOffset(facing.oppositeFace) +
+			Vec3i(turretBaseSign.location)
+
+		println("barrel offset ${getFirePointOffset(facing.oppositeFace, left)}")
+
+		AntiAirCannons.lastBarrel[shooter.uniqueId] = !left
+
+		val dir = shooter.location.direction
+
+		println("barrel end: $barrelOffset")
+
+		TurretLaserProjectile(
+			ship = null,
+			loc = barrelOffset.toLocation(shooter.world),
+			dir = dir,
+			speed = 50.0,
+			color = getColor(shooter),
+			range = 250.0,
+			explosionPower = 20f,
+			shieldDamageMultiplier = 2,
+			particleThickness = 1.4,
+			shooter = null,
+			soundName = "starship.weapon.turbolaser.tri.shoot"
+		).fire()
+
+		PowerMachines.removePower(turretBaseSign, POWER_PER_SHOT)
+	}
+
+	private fun getColor(shooter: Player): Color {
+		val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
+
+		if (nation != null) {
+			return Color.fromRGB(NationCache[nation].color)
+		}
+
+
+		return Color.FUCHSIA
 	}
 }
