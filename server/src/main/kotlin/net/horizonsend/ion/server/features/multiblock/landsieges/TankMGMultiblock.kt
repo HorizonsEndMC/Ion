@@ -6,12 +6,13 @@ import net.horizonsend.ion.server.features.multiblock.landsieges.tank.TankMGSubs
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
+import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object TankMGMultiblock: SignlessStarshipWeaponMultiblock<TankMGSubsystem>() {
 	override fun MultiblockShape.buildStructure() {
-		at(+0, +0, +0).anyTrapdoor()
-		at(+0, +0, +1).anyStairs()
+		at(+0, +0, +0).anyStairs()
+		at(+0, +0, +1).grindstone()
 		at(+0, +0, +2).endRod()
 	}
 

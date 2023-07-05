@@ -331,6 +331,7 @@ class MultiblockShape {
 		fun pistonHead() = type(Material.PISTON_HEAD)
 
 		fun furnace() = type(Material.FURNACE)
+		fun grindstone() = type(Material.GRINDSTONE)
 		fun dispenser() = type(Material.DISPENSER)
 		fun lodestone() = type(Material.LODESTONE)
 		fun noteBlock() = type(Material.NOTE_BLOCK)
