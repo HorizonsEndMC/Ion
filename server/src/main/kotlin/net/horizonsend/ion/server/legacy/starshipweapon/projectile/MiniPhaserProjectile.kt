@@ -17,7 +17,7 @@ class MiniPhaserProjectile(
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.miniPhaser.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.miniPhaser.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.miniPhaser.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.miniPhaser.shieldDamageMultiplier
 	override val thickness: Double = IonServer.balancing.starshipWeapons.miniPhaser.thickness
 	override val explosionPower: Float = IonServer.balancing.starshipWeapons.miniPhaser.explosionPower
 	override val volume: Int = IonServer.balancing.starshipWeapons.miniPhaser.volume

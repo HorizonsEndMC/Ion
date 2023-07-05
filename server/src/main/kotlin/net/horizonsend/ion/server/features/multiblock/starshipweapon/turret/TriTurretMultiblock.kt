@@ -25,7 +25,7 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 	override val projectileSpeed: Int = IonServer.balancing.starshipWeapons.triTurret.speed.toInt()
 	override val projectileParticleThickness: Double = IonServer.balancing.starshipWeapons.triTurret.particleThickness
 	override val projectileExplosionPower: Float = IonServer.balancing.starshipWeapons.triTurret.explosionPower
-	override val projectileShieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.triTurret.shieldDamageMultiplier
+	override val projectileShieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.triTurret.shieldDamageMultiplier
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
 		Vec3i(-2, getYFactor() * 4, +3),

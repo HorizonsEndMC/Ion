@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.active
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.database.schema.misc.Cryopod
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.particleshield.EventShield
 import net.horizonsend.ion.server.features.multiblock.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
+import net.horizonsend.ion.server.miscellaneous.commands.debug
 import net.starlegacy.feature.starship.subsystem.RestrictedWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.CryoSubsystem
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
@@ -43,6 +45,7 @@ object SubsystemDetector {
 		val potentialThrusterBlocks = LinkedList<Block>()
 		val potentialWeaponBlocks = LinkedList<Block>()
 		val potentialSignBlocks = LinkedList<Block>()
+		starship.playerPilot?.debug("iterating blocks")
 		starship.iterateBlocks { x, y, z ->
 			val block = starship.serverLevel.world.getBlockAt(x, y, z)
 			val type = block.type
@@ -74,6 +77,7 @@ object SubsystemDetector {
 			detectWeapon(starship, block)
 		}
 		for (block in potentialSignBlocks) {
+			starship.playerPilot?.debug("trying to detect signs ${block.location}")
 			detectSign(starship, block)
 		}
 
@@ -99,6 +103,7 @@ object SubsystemDetector {
 					starship.weaponSets[node].add(weaponSubsystem)
 				}
 			}
+
 			return
 		}
 
@@ -156,7 +161,10 @@ object SubsystemDetector {
 			val subsystem = multiblock.createSubsystem(starship, pos, face)
 
 			if (subsystem is RestrictedWeaponSubsystem) {
-				if (subsystem.isRestricted(starship)) continue
+				if (subsystem.isRestricted(starship)) {
+					starship.userError("You have unallowed guns on your ship! (${subsystem.name}")
+					continue
+				}
 			}
 
 			if (isDuplicate(starship, subsystem)) {

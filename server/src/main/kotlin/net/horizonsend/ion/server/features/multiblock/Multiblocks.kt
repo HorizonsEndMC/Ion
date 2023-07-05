@@ -39,10 +39,7 @@ import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMulti
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
-import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonBaseMultiblock
-import net.horizonsend.ion.server.features.multiblock.landsieges.AntiAirCannonTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.landsieges.SiegeBeaconMultiblock
-import net.horizonsend.ion.server.features.multiblock.landsieges.TankCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.landsieges.*
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
@@ -209,7 +206,8 @@ object Multiblocks : IonComponent() {
 			AntiAirCannonBaseMultiblock,
 			AntiAirCannonTurretMultiblock,
 
-			TankCannonMultiblock
+			TankCannonMultiblock,
+			TankMGMultiblock
 		)
 	}
 

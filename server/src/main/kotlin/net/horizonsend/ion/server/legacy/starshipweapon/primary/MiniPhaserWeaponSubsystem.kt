@@ -26,7 +26,7 @@ class MiniPhaserWeaponSubsystem(
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.miniPhaser.extraDistance
 	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.miniPhaser.angleRadians)
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.miniPhaser.powerUsage
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.miniPhaser.fireCooldownNanos)
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.miniPhaser.fireCooldownNanos)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 

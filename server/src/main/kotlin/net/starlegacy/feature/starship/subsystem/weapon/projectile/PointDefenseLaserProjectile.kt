@@ -16,7 +16,7 @@ class PointDefenseLaserProjectile(
 	shooter: Controller?
 ) : LaserProjectile(starship, loc, dir, shooter) {
 	override val speed: Double = IonServer.balancing.starshipWeapons.pointDefence.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pointDefence.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.pointDefence.shieldDamageMultiplier
 	override val color: Color = Color.BLUE
 	override val thickness: Double = IonServer.balancing.starshipWeapons.pointDefence.thickness
 	override val particleThickness: Double = IonServer.balancing.starshipWeapons.pointDefence.particleThickness

@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
 import org.bukkit.command.CommandSender
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import java.io.File
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
@@ -114,8 +115,11 @@ class ConfigurationCommands : BaseCommand(), Listener {
 
 	@Subcommand("config save")
 	fun configSave(sender: CommandSender) {
+		File(IonServer.dataFolder, "server.json").delete()
+		File(IonServer.dataFolder, "balancing.json").delete()
+
 		Configuration.save(IonServer.configuration, IonServer.dataFolder, "server.json")
-		Configuration.save(IonServer.balancing, IonServer.dataFolder, "server.json")
+		Configuration.save(IonServer.balancing, IonServer.dataFolder, "balancing.json")
 
 		sender.success("Saved configs with current runtime values.")
 	}
