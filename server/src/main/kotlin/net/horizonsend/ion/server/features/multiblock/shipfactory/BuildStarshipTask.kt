@@ -4,20 +4,15 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.miscellaneous.lines
-import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.core.BlockPos
-import net.starlegacy.database.schema.starships.Blueprint
 import net.starlegacy.feature.transport.Extractors
-import net.starlegacy.javautil.SignUtils
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
 import net.starlegacy.util.component1
 import net.starlegacy.util.component2
 import net.starlegacy.util.component3
@@ -29,14 +24,12 @@ import net.starlegacy.util.readSignText
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.toBukkitBlockData
 import net.starlegacy.util.toLocation
-import net.starlegacy.util.toVector
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
-import kotlin.math.min
 
 /**
  * This task is ran to increment progress on the blueprint

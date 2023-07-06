@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.active
 
+import net.horizonsend.ion.server.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock

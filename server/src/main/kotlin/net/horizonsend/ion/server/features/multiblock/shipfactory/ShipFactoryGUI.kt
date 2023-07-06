@@ -9,6 +9,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -16,8 +18,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.core.BlockPos
-import net.starlegacy.database.schema.starships.Blueprint
-import net.starlegacy.database.slPlayerId
 import net.starlegacy.feature.nations.gui.guiButton
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.util.MenuHelper

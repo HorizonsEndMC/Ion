@@ -11,9 +11,6 @@ import net.horizonsend.ion.server.features.multiblock.starship.mininglaser.Minin
 import net.horizonsend.ion.server.features.multiblock.starship.mininglaser.MiningLaserMultiblockTier2Top
 import net.horizonsend.ion.server.features.multiblock.starship.mininglaser.MiningLaserMultiblockTier3Bottom
 import net.horizonsend.ion.server.features.multiblock.starship.mininglaser.MiningLaserMultiblockTier3Top
-import net.horizonsend.ion.server.features.multiblock.starship.weapon.CthulhuBeamMultiblockBottom
-import net.horizonsend.ion.server.features.multiblock.starship.weapon.CthulhuBeamMultiblockSide
-import net.horizonsend.ion.server.features.multiblock.starship.weapon.EnderCrystalStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.features.multiblock.starship.weapon.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starship.weapon.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
@@ -26,8 +23,6 @@ import net.starlegacy.feature.multiblock.areashield.AreaShield5
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier1
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier2
 import net.starlegacy.feature.multiblock.charger.ChargerMultiblockTier3
-import net.starlegacy.feature.multiblock.dockingtube.ConnectedDockingTubeMultiblock
-import net.starlegacy.feature.multiblock.dockingtube.DisconnectedDockingTubeMultiblock
 import net.starlegacy.feature.multiblock.drills.DrillMultiblockTier1
 import net.starlegacy.feature.multiblock.drills.DrillMultiblockTier2
 import net.starlegacy.feature.multiblock.drills.DrillMultiblockTier3
@@ -51,8 +46,11 @@ import net.horizonsend.ion.server.features.multiblock.cryopods.CryoPodMultiblock
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.multiblock.misc.ItemSplitterMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
-import net.starlegacy.feature.multiblock.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.shipfactory.ShipFactoryMultiblock
+import net.starlegacy.feature.multiblock.dockingtube.ConnectedDockingTubeMultiblock
+import net.starlegacy.feature.multiblock.dockingtube.DisconnectedDockingTubeMultiblock
+import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
+import net.starlegacy.feature.multiblock.misc.MobDefender
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblockAdvanced
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblockBasic
@@ -189,10 +187,6 @@ object Multiblocks : IonServerComponent() {
 			PointDefenseStarshipWeaponMultiblockTop,
 			PointDefenseStarshipWeaponMultiblockSide,
 			PointDefenseStarshipWeaponMultiblockBottom,
-
-			CthulhuBeamMultiblockBottom,
-			EnderCrystalStarshipWeaponMultiblockTop,
-			CthulhuBeamMultiblockSide,
 
 			TopLightTurretMultiblock,
 			BottomLightTurretMultiblock,

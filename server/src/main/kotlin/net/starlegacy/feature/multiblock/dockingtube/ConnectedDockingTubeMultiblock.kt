@@ -14,7 +14,6 @@ import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isDoor
 import net.starlegacy.util.isGlass
-import net.starlegacy.util.minus
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
