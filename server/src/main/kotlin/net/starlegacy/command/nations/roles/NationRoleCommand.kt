@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.database.schema.nations.NationRole
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.starlegacy.util.SLTextStyle
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 
 @CommandAlias("nationrole|nrole")

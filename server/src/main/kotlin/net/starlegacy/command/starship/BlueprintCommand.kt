@@ -42,7 +42,6 @@ import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.toBukkitBlockData
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq

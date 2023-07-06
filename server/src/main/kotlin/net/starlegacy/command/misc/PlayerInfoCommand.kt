@@ -17,7 +17,6 @@ import net.starlegacy.util.getDurationBreakdown
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object PlayerInfoCommand : SLCommand() {
 	@Suppress("Unused")

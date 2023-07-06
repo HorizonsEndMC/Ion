@@ -32,7 +32,6 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.LinkedList
 import java.util.Locale
 
@@ -131,7 +130,7 @@ object SubsystemDetector {
 			}
 
 			is CryoPodMultiblock -> {
-				val cryo = transaction { Cryopod[Vec3i(sign.location), sign.world.name] } ?: return
+				val cryo = Cryopod[Vec3i(sign.location), sign.world.name] ?: return
 				starship.subsystems += CryoSubsystem(starship, sign, multiblock, cryo)
 			}
 		}

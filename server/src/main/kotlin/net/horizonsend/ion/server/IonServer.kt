@@ -6,7 +6,6 @@ import com.comphenix.protocol.ProtocolLibrary
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.Configuration
-import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
@@ -57,7 +56,6 @@ object IonServer : JavaPlugin() {
 
 	private fun internalEnable() {
 		PacketType.values().forEach { ProtocolLibrary.getProtocolManager().addPacketListener(IonPacketListener(it)) }
-		Connectivity.open(dataFolder)
 
 		prefixProvider = {
 			when (it) {
@@ -170,7 +168,6 @@ object IonServer : JavaPlugin() {
 		IonWorld.unregisterAll()
 		legacyDisable()
 		CombatNPCs.npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
-		Connectivity.close()
 	}
 
 	override fun getDefaultBiomeProvider(worldName: String, id: String?): BiomeProvider {

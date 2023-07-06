@@ -10,7 +10,6 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
 import net.horizonsend.ion.common.Configuration
-import net.horizonsend.ion.common.Connectivity
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.proxy.commands.proxy.VelocityInfoCommand
 import net.horizonsend.ion.proxy.commands.proxy.VelocityMessageCommand
@@ -41,7 +40,6 @@ class IonProxyPlugin @Inject constructor(
 	@Subscribe
 	fun onInit(e: ProxyInitializeEvent) {
 		INSTANCE = this
-		Connectivity.open(dataFolder)
 
 		prefixProvider = {
 			when (it) {
@@ -89,9 +87,7 @@ class IonProxyPlugin @Inject constructor(
 	}
 
 	@Subscribe
-	fun onDisable(e: ProxyShutdownEvent) {
-		Connectivity.close()
-	}
+	fun onDisable(e: ProxyShutdownEvent) {  }
 
 	companion object {
 		lateinit var INSTANCE: IonProxyPlugin

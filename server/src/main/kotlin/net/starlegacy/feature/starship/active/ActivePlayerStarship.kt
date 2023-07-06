@@ -36,7 +36,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class ActivePlayerStarship(
 	val data: PlayerStarshipData,

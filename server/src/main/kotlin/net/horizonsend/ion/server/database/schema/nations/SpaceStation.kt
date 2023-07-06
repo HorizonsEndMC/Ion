@@ -1,14 +1,12 @@
 package net.horizonsend.ion.server.database.schema.nations
 
 import com.mongodb.client.model.Filters
-import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.DbObject
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.OidDbObjectCompanion
 import net.horizonsend.ion.server.database.objId
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.trx
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex

@@ -22,7 +22,6 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class RegionCapturableStation(station: CapturableStation) :
 	Region<CapturableStation>(station),
@@ -61,7 +60,7 @@ class RegionCapturableStation(station: CapturableStation) :
 	override fun calculateInaccessMessage(player: Player): String? {
 		val nation = nation ?: return "$name is not claimed by any nation!".intern()
 
-		val noAccessMessage = "$name is a station claimed by ${ transaction { NationCache[nation].name } }".intern()
+		val noAccessMessage = "$name is a station claimed by ${ NationCache[nation].name }".intern()
 
 		// if they're not in a nation they can't access any nation outposts
 		val playerNation = PlayerCache[player].nationOid ?: return noAccessMessage

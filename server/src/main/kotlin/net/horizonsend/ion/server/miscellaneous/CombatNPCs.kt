@@ -26,7 +26,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.setValue
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -167,14 +166,12 @@ object CombatNPCs : SLComponent() {
 		}
 
 		listen<PlayerDeathEvent>(priority = EventPriority.LOWEST) { event ->
-			transaction {
-				val data = SLPlayer[event.player]
-				if (data.wasKilled) {
-					event.drops.clear()
-					event.deathMessage(null)
+			val data = SLPlayer[event.player]
+			if (data.wasKilled) {
+				event.drops.clear()
+				event.deathMessage(null)
 
-					SLPlayer.updateById(data._id, setValue(SLPlayer::wasKilled, false))
-				}
+				SLPlayer.updateById(data._id, setValue(SLPlayer::wasKilled, false))
 			}
 		}
 	}

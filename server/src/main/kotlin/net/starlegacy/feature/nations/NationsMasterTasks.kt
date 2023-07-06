@@ -23,7 +23,6 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte

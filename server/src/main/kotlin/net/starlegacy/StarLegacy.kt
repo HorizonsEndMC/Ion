@@ -41,8 +41,6 @@ import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import redis.clients.jedis.Jedis

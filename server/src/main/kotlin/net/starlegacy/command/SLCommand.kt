@@ -34,7 +34,6 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandException
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.and
 import org.litote.kmongo.contains
 import org.litote.kmongo.eq

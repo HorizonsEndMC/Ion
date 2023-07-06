@@ -16,13 +16,10 @@ import net.starlegacy.SETTINGS
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @CommandAlias("removeprotection")
 object NewPlayerProtection : BaseCommand() {

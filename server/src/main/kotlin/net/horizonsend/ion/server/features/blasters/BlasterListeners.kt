@@ -20,7 +20,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class BlasterListeners : Listener {
 	@Suppress("Unused")

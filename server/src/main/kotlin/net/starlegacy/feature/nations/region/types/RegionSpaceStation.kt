@@ -20,7 +20,6 @@ import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.squared
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 
 class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spaceStation), RegionTopLevel {
@@ -99,6 +98,6 @@ class RegionSpaceStation(spaceStation: SpaceStation) : Region<SpaceStation>(spac
 			return null
 		}
 
-		return "&cSpace station $name is claimed by ${ transaction { NationCache[nation].name } } @ $x,$z x $radius"
+		return "&cSpace station $name is claimed by ${ NationCache[nation].name } @ $x,$z x $radius"
 	}
 }

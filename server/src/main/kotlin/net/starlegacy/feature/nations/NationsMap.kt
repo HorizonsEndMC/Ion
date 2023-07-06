@@ -17,7 +17,6 @@ import org.dynmap.markers.AreaMarker
 import org.dynmap.markers.CircleMarker
 import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object NationsMap : SLComponent() {

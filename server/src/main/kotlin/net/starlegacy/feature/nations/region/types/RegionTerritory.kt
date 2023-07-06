@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.database.string
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 
 class RegionTerritory(territory: Territory) :
@@ -108,7 +107,7 @@ class RegionTerritory(territory: Territory) :
 					return null
 				}
 
-				return "$name is claimed by ${ transaction { NationCache[nation].name } }".intern()
+				return "$name is claimed by ${ NationCache[nation].name }".intern()
 			}
 
 			// if it's a settlement

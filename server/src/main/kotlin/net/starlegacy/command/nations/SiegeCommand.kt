@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.nations.StationSieges
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 
 internal object SiegeCommand : SLCommand() {
 	@Suppress("unused")

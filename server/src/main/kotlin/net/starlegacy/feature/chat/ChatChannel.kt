@@ -28,7 +28,6 @@ import net.starlegacy.util.redisaction.RedisAction
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.eq
 
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {

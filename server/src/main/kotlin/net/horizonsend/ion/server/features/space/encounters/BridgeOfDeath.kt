@@ -27,8 +27,6 @@ import org.bukkit.entity.Fireball
 import org.bukkit.entity.ZombieVillager
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.Random as SqlRandom
 import net.starlegacy.cache.nations.NationCache
 
 object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {

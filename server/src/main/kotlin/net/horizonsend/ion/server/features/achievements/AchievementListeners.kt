@@ -9,7 +9,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class AchievementListeners : Listener {
 	@EventHandler
@@ -40,7 +39,7 @@ class AchievementListeners : Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	fun onEnterPlanetEvent(event: EnterPlanetEvent) = transaction {
+	fun onEnterPlanetEvent(event: EnterPlanetEvent) {
 		val playerData = SLPlayer[event.player.uniqueId]!!
 
 		event.player.rewardAchievement(
@@ -62,7 +61,7 @@ class AchievementListeners : Listener {
 				"lioda" -> Achievement.PLANET_LIODA
 				"qatra" -> Achievement.PLANET_QATRA
 				"kovfefe" -> Achievement.PLANET_KOVFEFE
-				else -> return@transaction
+				else -> return
 			}
 		)
 

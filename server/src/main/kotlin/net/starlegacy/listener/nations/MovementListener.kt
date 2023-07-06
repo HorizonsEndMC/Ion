@@ -28,7 +28,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object MovementListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {
@@ -67,7 +66,7 @@ object MovementListener : SLEventListener() {
 					}
 
 					territory.nation?.let { id: Oid<Nation> ->
-						subtitle += " (${transaction { NationCache[id].name }})"
+						subtitle += " (${NationCache[id].name})"
 					}
 
 					territory.npcOwner?.let { id: Oid<NPCTerritoryOwner> ->

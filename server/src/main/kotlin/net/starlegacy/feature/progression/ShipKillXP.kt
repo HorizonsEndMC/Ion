@@ -43,7 +43,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object ShipKillXP : SLComponent() {
 	data class Damager(val id: UUID, val size: Int)
@@ -180,7 +179,7 @@ object ShipKillXP : SLComponent() {
 		} ?: Component.text("A ").color(alertFeedbackColor).append(data.type.component)
 
 		val killedNationColor = SLPlayer.findIdByName(killedName)
-			?.let { SLPlayer[it]?.nation?.let { nationID -> transaction { NationCache[nationID]?.color } } }
+			?.let { SLPlayer[it]?.nation?.let { nationID -> NationCache[nationID]?.color } }
 			?: 16777215 // white // So many null checks, meh, it's not called too often.
 
 		val killedShipHover = Component.text()
@@ -200,8 +199,7 @@ object ShipKillXP : SLComponent() {
 				?: Component.text("a ").color(alertFeedbackColor).append(killerShip.type.component)
 
 		val killerNationColor = SLPlayer[getPlayer(killer.id)!!].nation?.let {
-				nationID ->
-			transaction { NationCache[nationID]?.color }
+				nationID -> NationCache[nationID]?.color
 		} ?: 16777215 // white // So many null checks, meh, it's not called too often.
 
 		val killerShipHover = Component.text()
@@ -240,8 +238,7 @@ object ShipKillXP : SLComponent() {
 				val assistPlayer = getPlayer(assist.first.id) ?: continue
 				val assistShip = ActiveStarships.findByPilot(assistPlayer) ?: continue
 				val assistNationColor = SLPlayer[assistPlayer].nation?.let {
-						nationID ->
-					transaction { NationCache[nationID]?.color }
+						nationID -> NationCache[nationID]?.color
 				} ?: 16777215 // white
 				val assistShipName = (assistShip as? ActivePlayerStarship)?.let { getDisplayNameComponent(it.data) }
 				val assistHoverEvent = Component.text()
