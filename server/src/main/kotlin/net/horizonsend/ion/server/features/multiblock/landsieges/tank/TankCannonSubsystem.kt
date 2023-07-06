@@ -35,6 +35,7 @@ class TankCannonSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace)
 		target: Vector?
 	) {
 		object : LaserProjectile(starship, loc, dir, shooter) {
+			override fun shouldPlayImpactSound() = true
 			override val range: Double get() = IonServer.balancing.starshipWeapons.tankCannon.range
 			override val speed: Double get() = IonServer.balancing.starshipWeapons.tankCannon.speed
 			override val shieldDamageMultiplier: Double get() = IonServer.balancing.starshipWeapons.tankCannon.shieldDamageMultiplier
