@@ -49,5 +49,5 @@ class TankMGSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 
 	override fun getRequiredAmmo(): ItemStack = ItemStack(Material.STONE)
 	override fun isRestricted(starship: ActiveStarship) =
-		starship.type != StarshipType.TANK
+		!listOf(StarshipType.TANK, StarshipType.IFV).any { it == starship.type }
 }

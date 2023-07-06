@@ -162,7 +162,7 @@ object SubsystemDetector {
 
 			if (subsystem is RestrictedWeaponSubsystem) {
 				if (subsystem.isRestricted(starship)) {
-					starship.userError("You have unallowed guns on your ship! (${subsystem.name}")
+					starship.userError("You have restrictred guns on your ship! (${subsystem.name}")
 					continue
 				}
 			}

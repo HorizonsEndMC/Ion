@@ -209,7 +209,8 @@ object Multiblocks : IonComponent() {
 			AntiAirCannonTurretMultiblock,
 
 			TankCannonMultiblock,
-			TankMGMultiblock
+			TankMGMultiblock,
+			IFVCannonMultiblock
 		)
 	}
 

@@ -363,6 +363,26 @@ data class BalancingConfiguration(
 			boostChargeNanos = 0,
 			aimDistance = 0
 		),
+		val ifvCannon: StarshipWeapon = StarshipWeapon(
+			range = 200.0,
+			speed = 250.0,
+			shieldDamageMultiplier = 2.0,
+			thickness = 0.0,
+			particleThickness = 0.3,
+			explosionPower = 4.0f,
+			volume = 10,
+			pitch = 2.0f,
+			soundName = "starship.weapon.turbolaser.light.shoot",
+			powerUsage = 6000,
+			length = 0,
+			angleRadians = 0.0,
+			convergeDistance = 0.0,
+			extraDistance = 0,
+			fireCooldownNanos = 250,
+			boostChargeNanos = 0,
+			aimDistance = 0,
+			inaccuracyRadians = 2.0
+		),
 
 
 		// Heavy Weapons

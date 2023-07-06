@@ -31,6 +31,8 @@ class AntiAirCannonProjectile(
 	override val thickness = IonServer.balancing.starshipWeapons.aaGun.particleThickness
 	override val soundName = IonServer.balancing.starshipWeapons.aaGun.soundName
 
+	override fun shouldPlayImpactSound() = true
+
 	private fun getColor(shooter: Player): Color {
 		val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
 
