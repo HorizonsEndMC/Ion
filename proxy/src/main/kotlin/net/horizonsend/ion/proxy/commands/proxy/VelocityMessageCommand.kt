@@ -2,14 +2,13 @@ package net.horizonsend.ion.proxy.commands.proxy
 
 import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.command.SimpleCommand
-import com.velocitypowered.api.proxy.ConsoleCommandSource
+import com.velocitypowered.api.event.Subscribe
+import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.proxy.Player
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.sendRichMessage
-import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
-
 
 class VelocityMessageCommand : SimpleCommand {
 	companion object {
@@ -17,7 +16,7 @@ class VelocityMessageCommand : SimpleCommand {
 			"<#7f7fff>[<#b8e0d4>$sender <#7f7fff>-> <#b8e0d4>$receiver<#7f7fff>] <white>$msg"
 		}
 
-		val conversations = mutableMapOf<WeakReference<CommandSource>, WeakReference<CommandSource>>()
+		val conversations = mutableMapOf<CommandSource, CommandSource>()
 
 		fun sendMessage(sender: CommandSource, target: CommandSource, message: String) {
 			val senderName = (sender as? Player)?.username ?: "CONSOLE"
@@ -28,12 +27,14 @@ class VelocityMessageCommand : SimpleCommand {
 			sender.sendRichMessage(format.invoke("me", targetName, message))
 			target.sendRichMessage(format.invoke(senderName, "me", message))
 
-			if (sender !is ConsoleCommandSource)
-				conversations[WeakReference(sender)] = WeakReference(target)
-
-			conversations[WeakReference(target)] = WeakReference(sender)
+			conversations[sender] = target
+			conversations[target] = sender
 		}
 	}
+
+	@Subscribe
+	fun leave(e: DisconnectEvent) =
+		conversations.remove(e.player)
 
 	override fun execute(invocation: SimpleCommand.Invocation) {
 		val sender = invocation.source()
@@ -43,7 +44,6 @@ class VelocityMessageCommand : SimpleCommand {
 
 		val target = invocation.arguments()[0]!!
 		val targetPlayer = IonProxy.proxy.getPlayer(target).orElse(null) ?: return sender.userError("Specify a player!")
-
 		val message =
 			invocation.arguments().toList().subList(1, invocation.arguments().size).joinToString(separator = " ")
 
@@ -61,11 +61,9 @@ class VelocityMessageCommand : SimpleCommand {
 class VelocityReplyCommand : SimpleCommand {
 	override fun execute(invocation: SimpleCommand.Invocation) {
 		val sender = invocation.source()
-
 		val message = invocation.arguments().joinToString(separator = " ")
-
 		val target =
-			VelocityMessageCommand.conversations[WeakReference(sender)]?.get() ?: return sender.userError("You aren't talking to anyone!")
+			VelocityMessageCommand.conversations[sender] ?: return sender.userError("You aren't talking to anyone!")
 
 		VelocityMessageCommand.sendMessage(sender, target, message)
 	}

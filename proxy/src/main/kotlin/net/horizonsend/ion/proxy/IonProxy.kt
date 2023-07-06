@@ -80,17 +80,8 @@ class IonProxyPlugin @Inject constructor(
 		event.apply {
 			register(this@IonProxyPlugin, PlayerListeners())
 			register(this@IonProxyPlugin, ProxyPingListener())
+			register(this@IonProxyPlugin, VelocityMessageCommand)
 		}
-
-		proxy.scheduler.buildTask(this) {
-			for ((key, value) in VelocityMessageCommand.conversations) {
-				if (key.get() == null)
-					VelocityMessageCommand.conversations.remove(key)
-
-				if (value.get() == null)
-					VelocityMessageCommand.conversations.remove(key)
-			}
-		}.repeat(5L, TimeUnit.SECONDS).schedule()
 
 		if (configuration.discordEnabled) {
 			discord()
