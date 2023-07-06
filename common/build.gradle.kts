@@ -35,7 +35,7 @@ dependencies {
 
 	api("com.zaxxer:HikariCP:5.0.1")
 
-	api("com.h2database:h2:2.1.214")
+	api("com.h2database:h2:2.2.220")
 
 	api("redis.clients:jedis:4.4.3")
 }
