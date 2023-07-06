@@ -30,7 +30,7 @@ object DiscordCommands {
 							[Voting Sites](https://wiki.horizonsend.net/en/vote)
 							""".trimIndent()
 				}
-			).queue()
+			).setEphemeral(true).queue()
 		}
 
 		discord?.onCommand("playerlist") {
@@ -45,7 +45,7 @@ object DiscordCommands {
 						}
 					}
 				}
-			).queue()
+			).setEphemeral(true).queue()
 		}
 	}
 }
