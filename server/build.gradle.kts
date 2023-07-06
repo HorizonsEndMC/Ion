@@ -52,7 +52,7 @@ dependencies {
 	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
 	implementation("org.litote.kmongo:kmongo:4.9.0")
 	implementation("io.github.skytasul:guardianbeam:2.3.3")
-	implementation("xyz.xenondevs.invui:invui:1.11")
+	implementation("xyz.xenondevs.invui:invui:1.12")
 	implementation("club.minnced:discord-webhooks:0.8.2")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
