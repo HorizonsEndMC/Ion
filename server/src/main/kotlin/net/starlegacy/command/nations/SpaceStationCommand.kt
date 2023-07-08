@@ -463,7 +463,7 @@ object SpaceStationCommand : SLCommand() {
 		SpaceStations.reload()
 
 		sender.sendRichMessage("<gray> Renamed <aqua>${station.name}<gray> to <aqua>$newName")
-		Notify.online(MiniMessage.miniMessage().deserialize("<gray>Space station <aqua>${station.name}<gray> has been renamed to <aqua>$newName by <aqua>${sender.name}"))
+		Notify.online(MiniMessage.miniMessage().deserialize("<gray>Space station <aqua>${station.name}<gray> has been renamed to <aqua>$newName<gray> by <aqua>${sender.name}"))
 	}
 }
 

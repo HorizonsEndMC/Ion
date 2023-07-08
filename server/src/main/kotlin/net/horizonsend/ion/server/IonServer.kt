@@ -133,22 +133,6 @@ object IonServer : JavaPlugin() {
 
 		legacyEnable(commandManager)
 
-		// Temp migration code
-		if (!NationSpaceStation.all().any()) {
-			for (spaceStation in SpaceStation.all()) {
-
-				NationSpaceStation.create(
-					owner = spaceStation.nation,
-					name = spaceStation.name,
-					world = spaceStation.world,
-					x = spaceStation.x,
-					z = spaceStation.x,
-					radius = spaceStation.radius,
-					trustLevel = spaceStation.trustLevel.new
-				)
-			}
-		}
-
 		Bukkit.getScheduler().runTaskLater(
 			this,
 			Runnable
