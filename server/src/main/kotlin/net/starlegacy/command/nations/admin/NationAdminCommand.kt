@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.SpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.schema.nations.territories.ForwardOperatingBase
@@ -26,7 +25,6 @@ import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.NationsMasterTasks
 import net.starlegacy.feature.nations.TerritoryImporter
-import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.utils.isActive
@@ -43,6 +41,7 @@ import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOne
+import kotlin.jvm.optionals.getOrNull
 
 @CommandAlias("nadmin|nationsadmin")
 @CommandPermission("nations.admin")
@@ -165,14 +164,15 @@ internal object NationAdminCommand : SLCommand() {
 	@Suppress("unused")
 	fun onStationSetLocaiton(sender: CommandSender, station: String, world: World, x: Int, z: Int) =
 		asyncCommand(sender) {
-			val nationSpaceStation = NationSpaceStation.findOne(NationSpaceStation::name eq station)
-				?: fail { "Station $station not found" }
-			NationSpaceStation.updateById(
-				nationSpaceStation._id,
-				set(NationSpaceStation::world setTo world.name, NationSpaceStation::x setTo x, NationSpaceStation::z setTo z)
+			val spaceStation = SpaceStations.spaceStationCache[station].getOrNull() ?: fail { "Station $station not found" }
+
+			spaceStation.setLocation(
+				x,
+				z,
+				world.name,
 			)
 
-			NationsMap.updateSpaceStation(Regions[spaceStation._id])
+			NationsMap.updateSpaceStation(Regions[spaceStation.databaseId])
 			sender msg "Set position of $station to $x, $z"
 		}
 

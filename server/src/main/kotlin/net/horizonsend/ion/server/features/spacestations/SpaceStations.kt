@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.spacestations
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.Nation
@@ -13,11 +14,10 @@ import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpa
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationInterface
-import net.starlegacy.SLComponent
 import net.starlegacy.util.optional
 import java.util.Optional
 
-object SpaceStations : SLComponent() {
+object SpaceStations : IonComponent() {
 	private val spaceStations = mutableListOf<CachedSpaceStation<*, *, *>>()
 
 	val spaceStationCache: LoadingCache<String, Optional<CachedSpaceStation<*, *, *>>> =
