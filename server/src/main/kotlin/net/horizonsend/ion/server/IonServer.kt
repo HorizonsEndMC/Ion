@@ -11,8 +11,6 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStation
 import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C

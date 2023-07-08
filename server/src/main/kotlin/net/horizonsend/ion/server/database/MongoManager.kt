@@ -32,7 +32,6 @@ import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpa
 import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStation
 import net.horizonsend.ion.server.database.schema.space.Planet
 import net.horizonsend.ion.server.database.schema.space.Star
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
@@ -95,7 +94,6 @@ object MongoManager : SLComponent() {
 		SettlementZone.init()
 		Territory.init()
 
-		SpaceStation.init() // Deprecated
 		NationSpaceStation.init()
 		SettlementSpaceStation.init()
 		PlayerSpaceStation.init()
