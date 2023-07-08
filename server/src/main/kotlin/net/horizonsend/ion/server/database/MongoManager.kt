@@ -6,11 +6,11 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.database.schema.Cryopod
+import net.horizonsend.ion.server.database.schema.misc.Cryopod
 import java.util.concurrent.Executors
 import kotlin.reflect.KClass
 import net.starlegacy.SETTINGS
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.database.schema.economy.CargoCrate
 import net.horizonsend.ion.server.database.schema.economy.CargoCrateShipment
@@ -28,10 +28,14 @@ import net.horizonsend.ion.server.database.schema.nations.NationRole
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
-import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
+import net.horizonsend.ion.server.database.schema.space.Moon
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.server.database.schema.space.Planet
 import net.horizonsend.ion.server.database.schema.space.Star
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
@@ -48,7 +52,7 @@ import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdGenerator
 import org.litote.kmongo.util.KMongoUtil
 
-object MongoManager : SLComponent() {
+object MongoManager : IonComponent() {
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
 
 	internal lateinit var client: MongoClient
@@ -101,6 +105,7 @@ object MongoManager : SLComponent() {
 		// space
 		Planet.init()
 		Star.init()
+		Moon.init()
 
 		// economy
 		CargoCrate.init()
@@ -115,6 +120,10 @@ object MongoManager : SLComponent() {
 		Blueprint.init()
 
 		Cryopod.init()
+
+		SiegeTerritory.init()
+		ForwardOperatingBase.init()
+		SiegeBeacon.init()
 	}
 
 	override fun onDisable() {

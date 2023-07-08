@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.control
 
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.listen
 import net.starlegacy.util.Tasks
@@ -24,7 +24,7 @@ import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.max
 
-object ContactsDisplay : SLComponent() {
+object ContactsDisplay : IonComponent() {
 	const val range = 6000
 	const val sqRange = range * range
 

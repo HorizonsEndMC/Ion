@@ -4,10 +4,10 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.database.schema.Cryopod
+import net.horizonsend.ion.server.database.schema.misc.Cryopod
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.trx
-import net.starlegacy.feature.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.starlegacy.util.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign

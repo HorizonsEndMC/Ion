@@ -17,7 +17,7 @@ class SonicMissileProjectile(
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.sonicMissile.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.sonicMissile.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.sonicMissile.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.sonicMissile.shieldDamageMultiplier
 	override val thickness: Double = IonServer.balancing.starshipWeapons.sonicMissile.thickness
 	override val explosionPower: Float = IonServer.balancing.starshipWeapons.sonicMissile.explosionPower
 	override val volume: Int = IonServer.balancing.starshipWeapons.sonicMissile.volume

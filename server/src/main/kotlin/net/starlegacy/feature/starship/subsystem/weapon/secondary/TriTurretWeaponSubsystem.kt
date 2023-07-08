@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.feature.multiblock.starshipweapon.turret.TriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TriTurretMultiblock
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem

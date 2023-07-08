@@ -2,7 +2,7 @@ package net.starlegacy.feature.tutorial
 
 import com.destroystokyo.paper.Title
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipDestruction
@@ -40,7 +40,7 @@ import kotlin.collections.set
 import kotlin.math.abs
 import net.horizonsend.ion.server.miscellaneous.minecraft
 
-object TutorialManager : SLComponent() {
+object TutorialManager : IonComponent() {
 	private var playersInTutorials = mutableMapOf<Player, TutorialPhase>()
 	private var readTimes = mutableMapOf<UUID, Long>()
 

@@ -24,12 +24,14 @@ import net.horizonsend.ion.server.features.space.generation.generators.SpaceChun
 import net.horizonsend.ion.server.miscellaneous.*
 import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
+import net.horizonsend.ion.server.miscellaneous.registrations.initializeCrafting
+import net.horizonsend.ion.server.miscellaneous.IonPacketListener
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
-import net.starlegacy.feature.machine.AreaShields
+import net.horizonsend.ion.server.features.machine.AreaShields
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.space.SpaceMap
 import net.starlegacy.feature.starship.hyperspace.HyperspaceMap

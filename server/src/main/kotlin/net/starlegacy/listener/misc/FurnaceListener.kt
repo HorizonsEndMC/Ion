@@ -2,8 +2,8 @@ package net.starlegacy.listener.misc
 
 import net.starlegacy.feature.misc.CustomBlockItem
 import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.feature.multiblock.FurnaceMultiblock
-import net.starlegacy.feature.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isWallSign

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem
 
-import net.horizonsend.ion.server.database.schema.Cryopod
+import net.horizonsend.ion.server.database.schema.misc.Cryopod
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.block.Sign

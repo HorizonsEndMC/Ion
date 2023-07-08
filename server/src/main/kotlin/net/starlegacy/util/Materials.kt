@@ -38,6 +38,7 @@ val DOOR_TYPES = getMatchingMaterials { it.name.endsWith("_DOOR") }
 val Material.isDoor: Boolean get() = DOOR_TYPES.contains(this)
 
 val TRAPDOOR_TYPES = getMatchingMaterials { it.name.endsWith("_TRAPDOOR") }
+val Material.isTrapdoor: Boolean get() = TRAPDOOR_TYPES.contains(this)
 
 val PRESSURE_PLATE_TYPES = getMatchingMaterials { it.name.endsWith("_PRESSURE_PLATE") }
 

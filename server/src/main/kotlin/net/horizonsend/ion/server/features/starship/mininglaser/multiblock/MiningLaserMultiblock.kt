@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
 
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
-import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsystem>(), PowerStoringMultiblock {
+abstract class MiningLaserMultiblock : Multiblock(), StarshipWeaponMultiblock<MiningLaserSubsystem>, PowerStoringMultiblock {
 	override val name = "mininglaser"
 	abstract val range: Double
 
@@ -45,9 +46,6 @@ abstract class MiningLaserMultiblock : StarshipWeaponMultiblock<MiningLaserSubsy
 		}
 	}
 
-	override fun onTransformSign(player: Player, sign: Sign) {
-		super<PowerStoringMultiblock>.onTransformSign(player, sign)
-	}
 
 	abstract fun getFirePointOffset(): Vec3i
 }

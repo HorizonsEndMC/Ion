@@ -21,7 +21,7 @@ import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.database.string
 import net.starlegacy.feature.nations.NationsMap
@@ -32,17 +32,18 @@ import org.litote.kmongo.eq
 class RegionTerritory(territory: Territory) :
 	Region<Territory>(territory),
 	RegionTopLevel,
-	RegionParent {
+	RegionParent,
+	TerritoryRegion {
 	override val priority: Int = 0
 
-	var name: String = territory.name; private set
+	override var name: String = territory.name
 	override var world: String = territory.world; private set
 	var settlement: Oid<Settlement>? = territory.settlement; private set
-	var nation: Oid<Nation>? = territory.nation; private set
+	override var nation: Oid<Nation>? = territory.nation
 	var npcOwner: Oid<NPCTerritoryOwner>? = territory.npcOwner; private set
 	override val children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 	var isProtected: Boolean = territory.isProtected; private set
-	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
+	override var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData)
 
 	val oldCost
 		get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(SETTINGS.territoryCost).toInt()
@@ -55,9 +56,6 @@ class RegionTerritory(territory: Territory) :
 			}
 			return abs(sum / 2) / 100
 		}
-
-	var centerX = polygon.xpoints.average().roundToInt(); private set
-	var centerZ = polygon.ypoints.average().roundToInt(); private set
 
 	val isUnclaimed get() = settlement == null && nation == null && npcOwner == null
 	val isClaimed get() = settlement != null || nation != null || npcOwner != null
@@ -73,11 +71,7 @@ class RegionTerritory(territory: Territory) :
 		delta[Territory::settlement]?.let { settlement = it.nullable()?.oid() }
 		delta[Territory::nation]?.let { nation = it.nullable()?.oid() }
 		delta[Territory::npcOwner]?.let { npcOwner = it.nullable()?.oid() }
-		delta[Territory::isProtected]?.let {
-			isProtected = it.boolean()
-			centerX = polygon.xpoints.average().roundToInt()
-			centerZ = polygon.ypoints.average().roundToInt()
-		}
+		delta[Territory::isProtected]?.let { isProtected = it.boolean() }
 
 		NationsMap.updateTerritory(this)
 	}
@@ -174,5 +168,5 @@ class RegionTerritory(territory: Territory) :
 		}
 	}
 
-	override fun toString(): String = "$name ($world@[$centerX,$centerZ])"
+	override fun toString(): String = "$name ($world@[${centerX()},${centerZ()}])"
 }

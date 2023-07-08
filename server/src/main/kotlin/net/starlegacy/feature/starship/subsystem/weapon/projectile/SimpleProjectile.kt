@@ -17,7 +17,6 @@ import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R3.util.CraftMagicNumbers
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale
@@ -30,9 +29,12 @@ abstract class SimpleProjectile(
 	var dir: Vector,
 	shooter: Controller?
 ) : Projectile(starship, shooter) {
+	companion object {
+		val noSoundList = java.util.Vector<Location>()
+	}
 	abstract val range: Double
 	abstract val speed: Double
-	abstract val shieldDamageMultiplier: Int
+	abstract val shieldDamageMultiplier: Double
 	abstract val thickness: Double
 	abstract val explosionPower: Float
 	open val volume: Int = 12
@@ -43,6 +45,9 @@ abstract class SimpleProjectile(
 	private var lastTick: Long = -1
 	protected var delta: Double = 0.0
 	private var hasHit: Boolean = false
+	private var hitLoc: Location? = null
+
+	open fun shouldPlayImpactSound() = false
 
 	override fun fire() {
 		firedAtNanos = System.nanoTime()
@@ -103,9 +108,8 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		if (starship?.let { it.serverLevel.world }?.name?.lowercase(Locale.getDefault())
-				?.contains("hyperspace")!!
-		) return false
+		if (starship?.serverLevel?.world?.name?.lowercase(Locale.getDefault())?.contains("hyperspace") == true)
+			return false
 		if (GracePeriod.isGracePeriod) return false
 
 		val block: Block? = result.hitBlock
@@ -143,6 +147,11 @@ abstract class SimpleProjectile(
 
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
 			if (!hasHit) {
+				if (shouldPlayImpactSound()) {
+					noSoundList.add(newLoc)
+					playCustomSound(newLoc, soundName.replace("shoot", "impact"), volume, pitch)
+				}
+
 				world.createExplosion(newLoc, explosionPower)
 				world.spawnParticle(
 					Particle.FLASH,

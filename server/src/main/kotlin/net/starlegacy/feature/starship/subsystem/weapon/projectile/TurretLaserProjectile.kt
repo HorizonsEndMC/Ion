@@ -15,7 +15,7 @@ class TurretLaserProjectile(
 	override val range: Double,
 	override val particleThickness: Double,
 	override val explosionPower: Float,
-	override val shieldDamageMultiplier: Int,
+	override val shieldDamageMultiplier: Double,
 	override val soundName: String,
 	shooter: Controller?
 ) : LaserProjectile(ship, loc, dir, shooter) {

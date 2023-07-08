@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem
 
-import net.starlegacy.feature.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing

@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.listen
@@ -30,7 +30,7 @@ import org.litote.kmongo.setValue
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-object CombatNPCs : SLComponent() {
+object CombatNPCs : IonComponent() {
 	private const val remainTimeMinutes = 4L
 
 	/** Map of NPC ID to its inventory */

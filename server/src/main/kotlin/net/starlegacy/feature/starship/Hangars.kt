@@ -4,7 +4,7 @@ import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.listen
 import net.starlegacy.util.PerWorld
 import net.starlegacy.util.Tasks
@@ -33,7 +33,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-object Hangars : SLComponent() {
+object Hangars : IonComponent() {
 	private val hangarData: PerWorld<Multimap<BlockData, Long>> = PerWorld(::load)
 
 	override fun onEnable() {

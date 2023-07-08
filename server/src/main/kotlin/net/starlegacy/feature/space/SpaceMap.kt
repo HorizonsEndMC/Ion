@@ -1,6 +1,6 @@
 package net.starlegacy.feature.space
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Color
@@ -8,7 +8,7 @@ import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerSet
 import kotlin.random.Random
 
-object SpaceMap : SLComponent() {
+object SpaceMap : IonComponent() {
 	private lateinit var markerSet: MarkerSet
 
 	override fun onEnable() {
@@ -69,6 +69,42 @@ object SpaceMap : SLComponent() {
 				setFillStyle(0.0, 0) // make the inside empty
 
 				val random = Random(planet.name.hashCode())
+				val r = random.nextInt(128, 255)
+				val g = random.nextInt(1, 20)
+				val b = random.nextInt(128, 255)
+				val color = Color.fromRGB(r, g, b)
+				setLineStyle(lineWeight, lineOpacity, color.asRGB())
+			}
+		}
+
+		for (moon in Space.getMoons()) {
+			markerSet.createMarker(
+				moon.id,
+				moon.name,
+				moon.spaceWorldName,
+				moon.location.x.toDouble(),
+				moon.location.y.toDouble(),
+				moon.location.z.toDouble(),
+				markerAPI.getMarkerIcon(moon.name.lowercase()),
+				false // ??
+			)
+
+			// planet ring
+			markerSet.createCircleMarker(
+				"${moon.id}_orbit",
+				moon.name,
+				false, // ??
+				moon.spaceWorldName,
+				moon.parent.location.x.toDouble(),
+				moon.parent.location.y.toDouble(),
+				moon.parent.location.z.toDouble(),
+				moon.orbitDistance.toDouble(),
+				moon.orbitDistance.toDouble(),
+				false // ??
+			)?.run {
+				setFillStyle(0.0, 0) // make the inside empty
+
+				val random = Random(moon.name.hashCode())
 				val r = random.nextInt(128, 255)
 				val g = random.nextInt(1, 20)
 				val b = random.nextInt(128, 255)

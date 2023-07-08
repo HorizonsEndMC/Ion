@@ -2,13 +2,15 @@ package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.debug
-import net.horizonsend.ion.server.debugBanner
+import net.horizonsend.ion.server.miscellaneous.commands.debug
+import net.horizonsend.ion.server.miscellaneous.commands.debugBanner
 import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
+import net.starlegacy.feature.space.EnterableCelestialBody
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
@@ -23,6 +25,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.starlegacy.feature.starship.subsystem.weapon.interfaces.RightClickManual
 import net.starlegacy.listen
 import net.starlegacy.util.*
 import org.bukkit.ChatColor
@@ -52,8 +55,9 @@ import kotlin.collections.shuffled
 import kotlin.collections.withIndex
 import kotlin.math.*
 
-object StarshipControl : SLComponent() {
+object StarshipControl : IonComponent() {
 	val CONTROLLER_TYPE = Material.CLOCK
+	private const val GROUND_VEHICLE_CLEARANCE = 2
 
 	fun isHoldingController(player: Player): Boolean {
 		val inventory = player.inventory
@@ -106,7 +110,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processManualFlight(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot?.userErrorAction("This ship type is not capable of moving.")
+			starship.controller?.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -125,7 +129,7 @@ object StarshipControl : SLComponent() {
 
 	private fun processDirectControl(starship: ActivePlayerStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot!!.userErrorAction("This ship type is not capable of moving.")
+			starship.controller!!.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -134,7 +138,7 @@ object StarshipControl : SLComponent() {
 			return
 		}
 
-		val pilot = starship.pilot ?: return
+		val pilot = (starship.controller as? PlayerController)?.player ?: return
 		val ping = getPing(pilot)
 		val movementCooldown = starship.directControlCooldown
 		val speedFac = if (ping > movementCooldown) 2 else 1
@@ -236,6 +240,8 @@ object StarshipControl : SLComponent() {
 		dy *= speedFac
 		dz *= speedFac
 
+		if (starship.type.groundVehicle) dy = getGroundClearance(starship)
+
 		when {
 			dy < 0 && starship.min.y + dy < 0 -> {
 				dy = -starship.min.y
@@ -265,7 +271,7 @@ object StarshipControl : SLComponent() {
 		}
 
 		if (Hyperspace.isWarmingUp(starship)) {
-			starship.pilot?.userErrorAction("Cannot move while in hyperspace warmup.")
+			starship.controller?.userErrorAction("Cannot move while in hyperspace warmup.")
 			return
 		}
 
@@ -292,7 +298,13 @@ object StarshipControl : SLComponent() {
 		val vertical = abs(pitchRadians) >= PI * 5 / 12 // 75 degrees
 
 		val dx = if (vertical) 0 else sin(-yawRadians).roundToInt() * distance
-		val dy = sin(-pitchRadians).roundToInt() * distance
+
+		val dy = if (starship.type.groundVehicle) {
+			getGroundClearance(starship)
+		} else {
+			sin(-pitchRadians).roundToInt() * distance
+		}
+
 		val dz = if (vertical) 0 else cos(yawRadians).roundToInt() * distance
 
 		if (locationCheck(starship, dx, dy, dz)) {
@@ -302,11 +314,16 @@ object StarshipControl : SLComponent() {
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
+	/** Checks for planet entrance or world border **/
 	fun locationCheck(starship: ActivePlayerStarship, dx: Int, dy: Int, dz: Int): Boolean {
 		val world = starship.serverLevel.world
-		val newCenter = starship.centerOfMassVec3i.toLocation(world).add(dx.d(), dy.d(), dz.d())
+		val newCenter = starship.centerOfMass.toLocation(world).add(dx.d(), dy.d(), dz.d())
 
-		val planet = Space.getPlanets().asSequence()
+		val allPlanetsMoons: List<EnterableCelestialBody> =
+			(Space.getPlanets() as List<EnterableCelestialBody>).toMutableList()
+				.apply { this.addAll(Space.getMoons() as List<EnterableCelestialBody>) }
+
+		val celestialBody: EnterableCelestialBody = allPlanetsMoons.asSequence()
 			.filter { it.spaceWorld == world }
 			.filter {
 				it.location.toLocation(world).distanceSquared(newCenter) < starship.getEntryRange(it).toDouble().pow(2)
@@ -314,7 +331,7 @@ object StarshipControl : SLComponent() {
 			.firstOrNull()
 			?: return false
 
-		val border = planet.planetWorld?.worldBorder
+		val border = celestialBody.planetWorld?.worldBorder
 			?.takeIf { it.size < 60_000_000 } // don't use if it's the default, giant border
 		val halfLength = if (border == null) 2500.0 else border.size / 2.0
 		val centerX = border?.center?.x ?: halfLength
@@ -322,18 +339,52 @@ object StarshipControl : SLComponent() {
 
 		val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.serverLevel.world.maxHeight)
 		val offset = newCenter.toVector()
-			.subtract(planet.location.toVector())
+			.subtract(celestialBody.location.toVector())
 			.normalize().multiply(distance)
 
 		val x = centerX + offset.x
 		val y = 250.0 - (starship.max.y - starship.min.y)
 		val z = centerZ + offset.z
-		val target = Location(planet.planetWorld, x, y, z).toBlockLocation()
+		val target = Location(celestialBody.planetWorld, x, y, z).toBlockLocation()
 
-		starship.sendMessage("&7&oEntering &2&o${planet.name}&7&o...")
+		starship.sendMessage("&7&oEntering &2&o${celestialBody.name}&7&o...")
 
 		StarshipTeleportation.teleportStarship(starship, target)
 		return true
+	}
+
+	fun getGroundClearance(starship: ActiveStarship): Int {
+
+		val hitboxMin = starship.hitbox.min
+		val hitboxMax = starship.hitbox.max
+
+		val startY = starship.hitbox.min.y
+		val (centerX, _, centerZ) = starship.centerOfMass
+
+		val sampledPoints = mutableListOf<Int>()
+
+		fun getClearance(startX: Int, startZ: Int): Int {
+			for (y in startY downTo 0) {
+				if (starship.blocks.contains(blockKey(startX, y, startZ))) continue
+
+				if (!starship.serverLevel.world.getBlockAt(startX, y, startZ).type.isAir) {
+					return max(-3, y - startY + GROUND_VEHICLE_CLEARANCE)
+				}
+			}
+
+			return 0
+		}
+
+		// Center
+		sampledPoints.add(getClearance(centerX, centerZ))
+
+		// Corners
+		sampledPoints.add(getClearance(hitboxMin.x, hitboxMin.z))
+		sampledPoints.add(getClearance(hitboxMax.x, hitboxMin.z))
+		sampledPoints.add(getClearance(hitboxMin.x, hitboxMax.z))
+		sampledPoints.add(getClearance(hitboxMax.x, hitboxMax.z))
+
+		return sampledPoints.max()
 	}
 
 	fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
@@ -508,6 +559,8 @@ object StarshipControl : SLComponent() {
 		val playerFacing = player.facing
 		val dir = loc.direction.normalize()
 
+		player.debug("welcome to manualFire")
+
 		val target: Vector = getTarget(loc, dir, starship)
 
 		var weaponSet = starship.weaponSetSelections[player.uniqueId]
@@ -518,10 +571,16 @@ object StarshipControl : SLComponent() {
 			return
 		}
 
+		player.debug("weaponset isnt null and the ship is piloted")
+
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet])
 			.shuffled(ThreadLocalRandom.current())
 
+		player.debug("got the weapon, queueing the shots")
+
 		val queuedShots = queueShots(starship.controller!!, weapons, leftClick, playerFacing, dir, target)
+
+		player.debug("firing queued shots ${queuedShots.joinToString { it.javaClass.simpleName }}")
 		StarshipWeapons.fireQueuedShots(queuedShots, starship)
 	}
 
@@ -554,7 +613,7 @@ object StarshipControl : SLComponent() {
 	}
 
 	private fun queueShots(
-		player: Controller,
+		controller: Controller,
 		weapons: List<WeaponSubsystem>,
 		leftClick: Boolean,
 		playerFacing: BlockFace,
@@ -562,39 +621,56 @@ object StarshipControl : SLComponent() {
 		target: Vector
 	): LinkedList<StarshipWeapons.ManualQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
+		val player = if (controller is PlayerController) controller.player else null
 
 		for (weapon: WeaponSubsystem in weapons) {
+			player?.debug("testing subsystem ${weapon.javaClass.simpleName}")
+
+			player?.debug("is manual")
 			if (weapon !is ManualWeaponSubsystem) {
 				continue
 			}
 
+			player?.debug("is acceptable")
 			if (!weapon.isAcceptableDirection(playerFacing)) {
 				continue
 			}
 
-			if (weapon is HeavyWeaponSubsystem != !leftClick) {
+			player?.debug("is heavy weapon not left click and is not rightclickmanual")
+			if (weapon is HeavyWeaponSubsystem != !leftClick && weapon !is RightClickManual) {
 				continue
 			}
 
+			player?.debug("is rightclickmanual is rightclick")
+			if (weapon is RightClickManual && leftClick) {
+				continue
+			}
+
+			player?.debug("is cooled down")
 			if (!weapon.isCooledDown()) {
 				continue
 			}
 
+			player?.debug("is intact")
 			if (!weapon.isIntact()) {
 				continue
 			}
 
+			player?.debug("targeted dir")
 			val targetedDir: Vector = weapon.getAdjustedDir(dir, target)
 
+			player?.debug("check if turret ensure oriented")
 			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) {
 				continue
 			}
 
+			player?.debug("can fire check")
 			if (!weapon.canFire(targetedDir, target)) {
 				continue
 			}
 
-			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, player, targetedDir, target))
+			player?.debug("adding to queued ${weapon.javaClass.simpleName}")
+			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, controller, targetedDir, target))
 		}
 
 		return queuedShots

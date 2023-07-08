@@ -4,11 +4,11 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.metrics
-import net.starlegacy.SLComponent
-import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.multiblock.areashield.AreaShield
+import net.horizonsend.ion.server.IonComponent
+import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.Vec3i
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.min
 import kotlin.system.measureNanoTime
 
-object Wires : SLComponent() {
+object Wires : IonComponent() {
 	val INPUT_COMPUTER_BLOCK = Material.NOTE_BLOCK
 
 	private lateinit var thread: ExecutorService

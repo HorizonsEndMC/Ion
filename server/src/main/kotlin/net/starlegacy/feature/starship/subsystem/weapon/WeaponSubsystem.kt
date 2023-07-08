@@ -11,7 +11,7 @@ abstract class WeaponSubsystem(
 	pos: Vec3i
 ) : StarshipSubsystem(starship, pos) {
 	val name = this.javaClass.simpleName.removeSuffix("WeaponSubsystem")
-	open var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250L)
+	open val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250L)
 	var lastFire: Long = System.nanoTime()
 	abstract val powerUsage: Int
 

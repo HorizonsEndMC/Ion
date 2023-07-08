@@ -106,7 +106,7 @@ class RocketProjectile(
 
 	override val range: Double = IonServer.balancing.starshipWeapons.rocket.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.rocket.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.rocket.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.rocket.shieldDamageMultiplier
 	override val thickness: Double = IonServer.balancing.starshipWeapons.rocket.thickness
 	override val explosionPower: Float = IonServer.balancing.starshipWeapons.rocket.explosionPower
 	override val volume: Int = IonServer.balancing.starshipWeapons.rocket.volume

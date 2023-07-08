@@ -3,7 +3,7 @@ package net.starlegacy.feature.nations.region
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.horizonsend.ion.server.database.DbObject
@@ -15,14 +15,20 @@ import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
-import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.ForwardOperatingBase
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
+import net.horizonsend.ion.server.database.schema.nations.territories.SiegeTerritory
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
+import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
 import net.starlegacy.feature.nations.region.types.RegionParent
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
+import net.starlegacy.feature.nations.region.types.RegionSiegeBeacon
+import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.nations.region.types.RegionTopLevel
@@ -40,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 import kotlin.reflect.KClass
 
-object Regions : SLComponent() {
+object Regions : IonComponent() {
 	override fun supportsVanilla(): Boolean {
 		return true
 	}
@@ -62,6 +68,12 @@ object Regions : SLComponent() {
 		registerRegionType(SettlementSpaceStation.Companion) { RegionSpaceStation(it) }
 
 		registerRegionType(PlayerSpaceStation.Companion) { RegionSpaceStation(it) }
+
+		registerRegionType(SiegeTerritory.Companion) { RegionSiegeTerritory(it) }
+
+		registerRegionType(ForwardOperatingBase.Companion) { RegionForwardOperatingBase(it) }
+
+		registerRegionType(SiegeBeacon.Companion) { RegionSiegeBeacon(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

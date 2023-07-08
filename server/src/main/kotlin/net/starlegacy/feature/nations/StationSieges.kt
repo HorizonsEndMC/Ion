@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.horizonsend.ion.server.database.Oid
@@ -44,7 +44,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 
-object StationSieges : SLComponent() {
+object StationSieges : IonComponent() {
 	data class Siege(val siegerId: SLPlayerId, val stationId: Oid<CapturableStation>, val start: Long)
 
 	private val sieges = mutableListOf<Siege>()

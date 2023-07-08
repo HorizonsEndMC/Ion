@@ -7,12 +7,12 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.feature.economy.city.TradeCityType
@@ -38,7 +38,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
-object Bazaars : SLComponent() {
+object Bazaars : IonComponent() {
 	override fun supportsVanilla(): Boolean {
 		return true
 	}
@@ -77,12 +77,12 @@ object Bazaars : SLComponent() {
 	}
 
 	private fun openItemMenu(
-		player: Player,
-		terrId: Oid<Territory>,
-		item: String,
-		sort: SortingBy,
-		descend: Boolean,
-		remote: Boolean
+        player: Player,
+        terrId: Oid<Territory>,
+        item: String,
+        sort: SortingBy,
+        descend: Boolean,
+        remote: Boolean
 	): Unit = Tasks.async {
 		val city: TradeCityData = TradeCities.getIfCity(Regions[terrId])
 			?: return@async player.serverError("Territory is no longer a city")

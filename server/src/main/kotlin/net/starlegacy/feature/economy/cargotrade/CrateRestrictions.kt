@@ -1,6 +1,6 @@
 package net.starlegacy.feature.economy.cargotrade
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.trade.CargoCrates
 import net.horizonsend.ion.server.database.schema.economy.CargoCrateShipment
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager.getShipmentItemId
@@ -41,7 +41,7 @@ import org.bukkit.inventory.PlayerInventory
 import java.time.Instant
 import java.util.Date
 
-object CrateRestrictions : SLComponent() {
+object CrateRestrictions : IonComponent() {
 	private val CRATE_HOLDER = Material.STICKY_PISTON
 	private const val MIN_FREE_SPACE = 1
 

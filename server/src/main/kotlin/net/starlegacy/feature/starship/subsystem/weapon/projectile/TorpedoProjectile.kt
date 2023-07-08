@@ -18,7 +18,7 @@ class TorpedoProjectile(
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
 	override val range: Double = IonServer.balancing.starshipWeapons.protonTorpedo.range
 	override val speed: Double = IonServer.balancing.starshipWeapons.protonTorpedo.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.protonTorpedo.shieldDamageMultiplier
+	override val shieldDamageMultiplier: Double = IonServer.balancing.starshipWeapons.protonTorpedo.shieldDamageMultiplier
 	override val color: Color = Color.fromRGB(255, 0, 255)
 	override val thickness: Double = IonServer.balancing.starshipWeapons.protonTorpedo.thickness
 	override val particleThickness: Double = IonServer.balancing.starshipWeapons.protonTorpedo.particleThickness

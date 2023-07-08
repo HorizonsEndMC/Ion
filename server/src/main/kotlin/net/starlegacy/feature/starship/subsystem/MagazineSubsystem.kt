@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem
 
-import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.rightFace
 import org.bukkit.block.Sign

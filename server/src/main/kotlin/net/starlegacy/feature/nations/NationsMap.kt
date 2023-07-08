@@ -1,12 +1,16 @@
 package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.NationCache
 import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
+import net.starlegacy.feature.nations.region.types.RegionForwardOperatingBase
+import net.starlegacy.feature.nations.region.types.RegionSiegeBeacon
+import net.starlegacy.feature.nations.region.types.RegionSiegeTerritory
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.util.Tasks
@@ -19,7 +23,7 @@ import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-object NationsMap : SLComponent() {
+object NationsMap : IonComponent() {
 	private fun syncOnly(block: () -> Unit) = when {
 		Bukkit.isPrimaryThread() -> block()
 		else -> Tasks.sync(block)
@@ -57,9 +61,11 @@ object NationsMap : SLComponent() {
 
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
-			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
+			Regions.getAllOf<RegionSiegeTerritory>().forEach(::addSiegeTerritory)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
+			Regions.getAllOf<RegionForwardOperatingBase>().forEach(::addForwardOperatingBase)
+			Regions.getAllOf<RegionSiegeBeacon>().forEach(::addSiegeBeacon)
 		}
 	}
 
@@ -73,6 +79,7 @@ object NationsMap : SLComponent() {
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 	}
 
+	// Start territories
 	fun addTerritory(territory: RegionTerritory): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
@@ -192,7 +199,9 @@ object NationsMap : SLComponent() {
 		marker.setFillStyle(fillOpacity, fillRGB)
 		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
 	}
+	// End territories
 
+	// Start capturable station
 	fun addCapturableStation(station: RegionCapturableStation): Unit = syncOnly {
 		removeCapturableStation(station)
 
@@ -245,7 +254,9 @@ object NationsMap : SLComponent() {
 		</p>
 		""".trimIndent()
 	}
+	// End capturable space stations
 
+	// Start nation space stations
 	fun addSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
@@ -297,6 +308,260 @@ object NationsMap : SLComponent() {
 
 	private fun getMarkerID(station: RegionSpaceStation<*, *>) =
 		"nation-station-" + station.id.toString()
+
+	// End nation space stations
+
+	// Start siege territories
+	fun updateSiegeTerritory(territory: RegionSiegeTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+
+		if (marker == null) {
+			log.warn("No area marker for territory with ID ${territory.id}")
+			addSiegeTerritory(territory)
+			return@syncOnly
+		}
+
+		var fillOpacity = 0.3
+		var fillRGB = Integer.parseInt("333333", 16)
+		var lineThickness = 10
+		var lineOpacity = 0.75
+		var lineRGB = Integer.parseInt("333333", 16)
+
+		marker.label = territory.name
+
+		val nation: Nation? = territory.nation?.let(Nation.Companion::findById)
+
+		if (nation != null) {
+			val rgb = nation.color
+			fillOpacity = 0.2
+			fillRGB = rgb
+			lineOpacity = 0.5
+			lineRGB = rgb
+			marker.label += " (${nation.name})"
+		}
+
+		marker.description = """
+		<p><h2>${territory.name}</h2></p><p>
+		${if (nation == null) {
+			"""
+			""".trimIndent()
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			""".trimIndent()
+		}}
+			<p>Siegeable every saturday and sunday
+		</p>
+		""".trimIndent()
+
+		marker.setFillStyle(fillOpacity, fillRGB)
+		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
+	}
+
+	private fun removeSiegeTerritory(territory: RegionSiegeTerritory): Unit = syncOnly {
+		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+	}
+
+	fun addSiegeTerritory(territory: RegionSiegeTerritory): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		try {
+			removeSiegeTerritory(territory)
+
+			val world = territory.bukkitWorld ?: return@syncOnly
+			val polygon = territory.polygon
+
+			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
+			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
+
+			markerSet.createAreaMarker(
+				territory.id.toString(),
+				territory.name,
+				false,
+				world.name,
+				xPoints.map { it.toDouble() }.toDoubleArray(),
+				yPoints.map { it.toDouble() }.toDoubleArray(),
+				false
+			)
+
+			updateSiegeTerritory(territory)
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
+	}
+	// End siege territories
+
+	// Start FOB
+	fun updateForwardOperatingBase(territory: RegionForwardOperatingBase): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: AreaMarker? = markerSet.findAreaMarker(territory.id.toString())
+
+		if (marker == null) {
+			log.warn("No area marker for territory with ID ${territory.id}")
+			addForwardOperatingBase(territory)
+			return@syncOnly
+		}
+
+		var fillOpacity = 0.3
+		var fillRGB = Integer.parseInt("333333", 16)
+		var lineThickness = 10
+		var lineOpacity = 0.75
+		var lineRGB = Integer.parseInt("333333", 16)
+
+		marker.label = territory.name
+
+		val nation: Nation? = territory.nation?.let(Nation.Companion::findById)
+
+		if (nation != null) {
+			val rgb = nation.color
+			fillOpacity = 0.2
+			fillRGB = rgb
+			lineOpacity = 0.5
+			lineRGB = rgb
+			marker.label += " (${nation.name})"
+		}
+
+		marker.description = """
+		<p><h2>${territory.name}</h2></p><p>
+		${if (nation == null) {
+			"""
+			""".trimIndent()
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			""".trimIndent()
+		}}
+		</p>
+		""".trimIndent()
+
+		marker.setFillStyle(fillOpacity, fillRGB)
+		marker.setLineStyle(lineThickness, lineOpacity, lineRGB)
+	}
+
+	private fun removeForwardOperatingBase(territory: RegionForwardOperatingBase): Unit = syncOnly {
+		markerSet.findAreaMarker(territory.id.toString())?.deleteMarker()
+	}
+
+	fun addForwardOperatingBase(territory: RegionForwardOperatingBase): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		try {
+			removeForwardOperatingBase(territory)
+
+			val world = territory.bukkitWorld ?: return@syncOnly
+			val polygon = territory.polygon
+
+			val xPoints = polygon.xpoints ?: error("Null x points for ${territory.name} in ${territory.world}")
+			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
+
+			markerSet.createAreaMarker(
+				territory.id.toString(),
+				territory.name,
+				false,
+				world.name,
+				xPoints.map { it.toDouble() }.toDoubleArray(),
+				yPoints.map { it.toDouble() }.toDoubleArray(),
+				false
+			)
+
+			updateForwardOperatingBase(territory)
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
+	}
+	// End FOB
+
+	// Start Siege Beacons
+	fun removeSiegeBeacon(beacon: RegionSiegeBeacon): Unit = syncOnly {
+		markerSet.findAreaMarker(beacon.id.toString())?.deleteMarker()
+	}
+
+	fun addSiegeBeacon(beacon: RegionSiegeBeacon): Unit = syncOnly {
+		removeSiegeBeacon(beacon)
+
+		val name = beacon.name
+		val world = beacon.world
+		val x = beacon.x.toDouble()
+		val y = beacon.y.toDouble()
+		val z = beacon.z.toDouble()
+		val radius = SiegeBeacon.BEACON_CAPTURE_RADIUS
+
+		val beaconMarker = markerSet.createMarker(
+			beacon.id.toString(),
+			beacon.name,
+			beacon.world,
+			beacon.x.toDouble(),
+			beacon.y.toDouble(),
+			beacon.z.toDouble(),
+			markerAPI.getMarkerIcon("sun"),
+			false // ??
+		)
+
+		markerSet.createCircleMarker(
+			name,
+			name,
+			false,
+			world,
+			x,
+			y,
+			z,
+			radius.toDouble(),
+			radius.toDouble(),
+			false
+		)
+
+		updateSiegeBeacon(beacon)
+	}
+
+	fun updateSiegeBeacon(beacon: RegionSiegeBeacon): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val beaconMarker = markerSet.createMarker(
+			beacon.id.toString(),
+			beacon.name,
+			beacon.world,
+			beacon.x.toDouble(),
+			beacon.y.toDouble(),
+			beacon.z.toDouble(),
+			markerAPI.getMarkerIcon("sun"),
+			false // ??
+		)
+
+		val marker: CircleMarker = markerSet.findCircleMarker(beacon.name)
+			?: return@syncOnly addSiegeBeacon(beacon)
+
+		val nation = beacon.owner?.let(NationCache::get)
+
+		val rgb = nation?.color ?: Color.WHITE.asRGB()
+		marker.setFillStyle(0.0, Color.WHITE.asRGB())
+		marker.setLineStyle(5, 0.8, rgb)
+
+		marker.description = """
+		<p><h2>${beacon.name}</h2></p><p>
+		${if (nation == null) {
+			""
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			<h4>${beacon.points} points</h4>
+			""".trimIndent()
+		}}
+		</p>
+		""".trimIndent()
+	}
 
 	override fun supportsVanilla(): Boolean {
 		return true

@@ -17,12 +17,12 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.util.HSVLike
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.database.uuid
@@ -55,7 +55,7 @@ import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
 import org.litote.kmongo.setValue
 
-object StarshipComputers : SLComponent() {
+object StarshipComputers : IonComponent() {
 
 	val COMPUTER_TYPE = Material.JUKEBOX
 

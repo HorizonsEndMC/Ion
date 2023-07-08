@@ -6,7 +6,7 @@ import com.google.common.cache.LoadingCache
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.horizonsend.ion.server.database.Oid
 import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.PilotedStarships
@@ -28,7 +28,7 @@ import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
 import kotlin.collections.set
 
-object ActiveStarships : SLComponent() {
+object ActiveStarships : IonComponent() {
 	private val set = ObjectOpenHashSet<ActiveStarship>()
 	private val playerShipIdMap = Object2ObjectOpenHashMap<Oid<PlayerStarshipData>, ActivePlayerStarship>()
 	private val playerShipLocationMap: LoadingCache<World, Long2ObjectOpenHashMap<PlayerStarshipData>> = CacheBuilder

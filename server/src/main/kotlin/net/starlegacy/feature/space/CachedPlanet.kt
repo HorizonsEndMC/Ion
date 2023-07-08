@@ -21,28 +21,30 @@ import org.bukkit.util.noise.SimplexNoiseGenerator
 import java.util.*
 
 class CachedPlanet(
-    val databaseId: Oid<Planet>,
-    override val name: String,
-    sun: CachedStar,
-    val planetWorldName: String,
-    val rogue: Boolean,
-    val x: Int,
-    val z: Int,
-    val size: Double,
-    orbitDistance: Int,
-    private val orbitSpeed: Double,
-    orbitProgress: Double,
-    val seed: Long,
-    val crustMaterials: List<BlockData>,
-    val crustNoise: Double,
-    val cloudDensity: Double,
-    val cloudMaterials: List<BlockData>,
-    val cloudDensityNoise: Double,
-    val cloudThreshold: Double,
-    val cloudNoise: Double
-) : CelestialBody(sun.spaceWorldName, calculateOrbitLocation(sun, orbitDistance, orbitProgress)), NamedCelestialBody {
+	val databaseId: Oid<Planet>,
+	override val name: String,
+	sun: CachedStar,
+	override val worldName: String,
+	val rogue: Boolean,
+	val x: Int,
+	val z: Int,
+	val size: Double,
+	orbitDistance: Int,
+	private val orbitSpeed: Double,
+	orbitProgress: Double,
+	val seed: Long,
+	val crustMaterials: List<BlockData>,
+	val crustNoise: Double,
+	val cloudDensity: Double,
+	val cloudMaterials: List<BlockData>,
+	val cloudDensityNoise: Double,
+	val cloudThreshold: Double,
+	val cloudNoise: Double
+) : EnterableCelestialBody(worldName, sun.spaceWorldName, calculateOrbitLocation(sun, orbitDistance, orbitProgress)) {
+	override val outerRadius: Int get() = atmosphereRadius
+
 	companion object {
-		private const val CRUST_RADIUS_MAX = 115
+		private const val CRUST_RADIUS_MAX = 191
 
 		fun calculateOrbitLocation(sun: CachedStar, orbitDistance: Int, orbitProgress: Double): Vec3i {
 			val (x, y, z) = sun.location
@@ -68,7 +70,6 @@ class CachedPlanet(
 	}
 
 	var sun = sun; private set
-	val planetWorld: World? get() = Bukkit.getWorld(planetWorldName)
 	var orbitDistance: Int = orbitDistance; private set
 	var orbitProgress: Double = orbitProgress; private set
 

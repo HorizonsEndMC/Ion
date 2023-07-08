@@ -4,8 +4,8 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.legacy.ores.Ore
-import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
+import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.starship.isFlyable
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.nms

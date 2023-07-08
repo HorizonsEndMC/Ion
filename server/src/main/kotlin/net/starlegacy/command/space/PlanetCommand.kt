@@ -285,7 +285,7 @@ object PlanetCommand : SLCommand() {
 	fun onGetPos(sender: CommandSender, planet: CachedPlanet) {
 		sender.information(
 			"${planet.name} is at ${planet.location} in ${planet.spaceWorldName}. " +
-				"Its planet world is ${planet.planetWorldName}"
+				"Its planet world is ${planet.worldName}"
 		)
 	}
 
@@ -297,7 +297,7 @@ object PlanetCommand : SLCommand() {
 			"<dark_green>${planet.name}\n" +
 				"  <gray>Sun: <aqua>${planet.sun.name}\n" +
 				"  <gray>Space World: <aqua>${planet.spaceWorldName}\n" +
-				"  <gray>Planet World: <aqua>${planet.planetWorldName}\n" +
+				"  <gray>Planet World: <aqua>${planet.worldName}\n" +
 				"  <gray>Rogue: <aqua>${planet.rogue}\n" +
 				"  <gray>Fixed location: <aqua>${planet.x}, ${planet.z}\n" +
 				"  <gray>Size: <aqua>${planet.size}\n" +

@@ -27,8 +27,7 @@ enum class StarshipType(
 	val overridePermission: String,
 	val eventship: Boolean = false,
 	val poweroverrider: Double = 1.0,
-	val maxMiningLasers: Int = 0,
-	val miningLaserTier: Int = 0
+	val groundVehicle: Boolean
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -46,7 +45,8 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#ffff32",
 		overridePermission = "ion.ships.override.1",
-		poweroverrider = 0.0
+		poweroverrider = 0.0,
+		groundVehicle = true
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
@@ -62,7 +62,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.IRON_NUGGET,
 		isWarship = true,
 		colour = "#ff8000",
-		overridePermission = "ion.ships.override.1"
+		overridePermission = "ion.ships.override.1",
+		groundVehicle = false
 	),
 	GUNSHIP(
 		displayName = "Gunship",
@@ -78,7 +79,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.IRON_INGOT,
 		isWarship = true,
 		colour = "#ff4000",
-		overridePermission = "ion.ships.override.10"
+		overridePermission = "ion.ships.override.10",
+		groundVehicle = false
 	),
 	CORVETTE(
 		displayName = "Corvette",
@@ -94,7 +96,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.IRON_BLOCK,
 		isWarship = true,
 		colour = "#ff0000",
-		overridePermission = "ion.ships.override.20"
+		overridePermission = "ion.ships.override.20",
+		groundVehicle = false
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -110,7 +113,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.LAPIS_BLOCK,
 		isWarship = true,
 		colour = "#c00000",
-		overridePermission = "ion.ships.override.40"
+		overridePermission = "ion.ships.override.40",
+		groundVehicle = false
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -126,7 +130,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.GOLD_BLOCK,
 		isWarship = true,
 		colour = "#800000",
-		overridePermission = "ion.ships.override.60"
+		overridePermission = "ion.ships.override.60",
+		groundVehicle = false
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
@@ -142,8 +147,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.DIAMOND_BLOCK,
 		isWarship = true,
 		colour = "#0c5ce8",
-		overridePermission = "ion.ships.override.battlecruiser"
-
+		overridePermission = "ion.ships.override.battlecruiser",
+		groundVehicle = false
 	),
 	BATTLESHIP(
 		displayName = "Battleship",
@@ -159,8 +164,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.MAGMA_BLOCK,
 		isWarship = true,
 		colour = "#0c5ce8",
-		overridePermission = "ion.ships.override.battleship"
-
+		overridePermission = "ion.ships.override.battleship",
+		groundVehicle = false
 	),
 	DREADNOUGHT(
 		displayName = "Dreadnought",
@@ -176,7 +181,46 @@ enum class StarshipType(
 		menuItemMaterial = Material.EMERALD_BLOCK,
 		isWarship = true,
 		colour = "#320385",
-		overridePermission = "ion.ships.override.dreadnought"
+		overridePermission = "ion.ships.override.dreadnought",
+		groundVehicle = false
+	),
+	TANK(
+		displayName = "Tank",
+		minSize = 100,
+		maxSize = 475,
+		minLevel = 1,
+		concretePercent = 0.0,
+		containerPercent = 0.045,
+		crateLimitMultiplier = 1.0,
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 300,
+		hyperspaceRangeMultiplier = 1.2,
+		menuItemMaterial = Material.GOLD_NUGGET,
+		isWarship = true,
+		colour = "#71797E",
+		overridePermission = "ion.ships.override.1",
+		poweroverrider = 0.7,
+		groundVehicle = true
+	),
+	IFV(
+		displayName = "IFV",
+		minSize = 100,
+		maxSize = 475,
+		minLevel = 1,
+		concretePercent = 0.0,
+		containerPercent = 0.045,
+		crateLimitMultiplier = 1.0,
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 300,
+		hyperspaceRangeMultiplier = 1.2,
+		menuItemMaterial = Material.IRON_NUGGET,
+		isWarship = true,
+		colour = "#CED2D7",
+		overridePermission = "ion.ships.override.1",
+		poweroverrider = 0.7,
+		groundVehicle = true
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
@@ -194,8 +238,7 @@ enum class StarshipType(
 		colour = "#008033",
 		overridePermission = "ion.ships.override.1",
 		poweroverrider = 0.7,
-		maxMiningLasers = 1,
-		miningLaserTier = 1
+		groundVehicle = false
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -213,8 +256,7 @@ enum class StarshipType(
 		colour = "#008066",
 		overridePermission = "ion.ships.override.10",
 		poweroverrider = 0.7,
-		maxMiningLasers = 1,
-		miningLaserTier = 2
+		groundVehicle = false
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -232,8 +274,7 @@ enum class StarshipType(
 		colour = "#008099",
 		overridePermission = "ion.ships.override.20",
 		poweroverrider = 0.7,
-		maxMiningLasers = 2,
-		miningLaserTier = 2
+		groundVehicle = false
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -251,8 +292,7 @@ enum class StarshipType(
 		colour = "#0080cc",
 		overridePermission = "ion.ships.override.40",
 		poweroverrider = 0.7,
-		maxMiningLasers = 4,
-		miningLaserTier = 3
+		groundVehicle = false
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -270,8 +310,7 @@ enum class StarshipType(
 		colour = "#0080ff",
 		overridePermission = "ion.ships.override.60",
 		poweroverrider = 0.7,
-		maxMiningLasers = 6,
-		miningLaserTier = 3
+		groundVehicle = false
 	),
 	PLATFORM(
 		displayName = "Platform",
@@ -289,7 +328,8 @@ enum class StarshipType(
 		isWarship = false,
 		colour = "#ffffff",
 		overridePermission = "ion.ships.override.1",
-		poweroverrider = 0.0
+		poweroverrider = 0.0,
+		groundVehicle = false
 	),
 	UNIDENTIFIEDSHIP(
 		displayName = "UnidentifiedShip",
@@ -308,7 +348,8 @@ enum class StarshipType(
 		colour = "#d0e39d",
 		overridePermission = "ion.ships.eventship",
 		eventship = true,
-		poweroverrider = 2.0
+		poweroverrider = 2.0,
+		groundVehicle = false
 	);
 
 	val formatted: String get() = "<$colour>$displayName</$colour>"

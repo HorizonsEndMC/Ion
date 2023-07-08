@@ -1,7 +1,8 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomHeavyTurretMultiblock.updateSubsystem
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.starlegacy.feature.multiblock.starshipweapon.turret.TurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
@@ -38,15 +39,13 @@ abstract class TurretWeaponSubsystem(
 		}
 
 		val sign = getSign() ?: return false
-		this.face = multiblock.rotate(sign, this.face, face)
+		this.face = multiblock.rotate(Vec3i(sign.location), sign.world, this.face, face) { _, oldKeys, newKeys, newFace ->
+			updateSubsystem(sign, oldKeys, newKeys, newFace)
+		}
 		return this.face == face
 	}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		val blockLocation = multiblock.getPilotLoc(starship.serverLevel.world, pos.x, pos.y, pos.z, face).toBlockLocation()
-		if (pos.toLocation(starship.serverLevel.world).chunk.entities.any { it.location.toBlockLocation() == blockLocation }) {
-			return false
-		}
 		// return whether or not any of the fire points are not obstructed
 		// (plus the parent classes's conditions)
 		return getFirePoints().all { !starship.isInternallyObstructed(it, dir) }

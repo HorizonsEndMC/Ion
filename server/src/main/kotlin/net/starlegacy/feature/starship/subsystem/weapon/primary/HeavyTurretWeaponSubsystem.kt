@@ -2,8 +2,8 @@ package net.starlegacy.feature.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.HeavyTurretMultiblock
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.starlegacy.feature.multiblock.starshipweapon.turret.HeavyTurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.util.Vec3i

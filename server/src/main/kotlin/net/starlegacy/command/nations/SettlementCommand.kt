@@ -27,7 +27,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.server.database.Oid
@@ -36,7 +35,7 @@ import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.nations.NATIONS_BALANCE
@@ -97,6 +96,7 @@ internal object SettlementCommand : SLCommand() {
 		validateName(name, null)
 
 		val territory = requireTerritoryIn(sender)
+
 		requireTerritoryUnclaimed(territory)
 
 		val realCost = territory.cost
@@ -113,7 +113,8 @@ internal object SettlementCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_SETTLEMENT)
 
-		Notify all MiniMessage.miniMessage().deserialize("<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!")
+		Notify all MiniMessage.miniMessage()
+			.deserialize("<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!")
 
 		// No manual territory cache update is needed as settlement creation should automatically trigger that
 	}
@@ -131,7 +132,8 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.delete(settlement)
 
-		Notify all MiniMessage.miniMessage().deserialize("<yellow>${sender.name} has disbanded their settlement $settlementName!")
+		Notify all MiniMessage.miniMessage()
+			.deserialize("<yellow>${sender.name} has disbanded their settlement $settlementName!")
 
 		// No manual territory cache update is needed as settlement removal from territory should automatically trigger that
 		// Additionally, all members of the settlement should be updated as their player cache will be updated,
@@ -149,21 +151,32 @@ internal object SettlementCommand : SLCommand() {
 
 		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.INVITE)
 
-		failIf(SLPlayer.matches(slPlayerId, SLPlayer::settlement eq settlementId)) { "$player is already in your settlement!" }
+		failIf(
+			SLPlayer.matches(
+				slPlayerId,
+				SLPlayer::settlement eq settlementId
+			)
+		) { "$player is already in your settlement!" }
 
 		val settlementName = getSettlementName(settlementId)
 
 		if (Settlement.isInvitedTo(settlementId, slPlayerId)) {
 			Settlement.removeInvite(settlementId, slPlayerId)
 			sender msg "&bRemoved $player's invite to your settlement."
-			Notify.player(playerId, MiniMessage.miniMessage().deserialize("<yellow>You were un-invited from $settlementName by ${sender.name}"))
+			Notify.player(
+				playerId,
+				MiniMessage.miniMessage()
+					.deserialize("<yellow>You were un-invited from $settlementName by ${sender.name}")
+			)
 		} else {
 			Settlement.addInvite(settlementId, slPlayerId)
 			sender msg "&bInvited $player to your settlement."
 			Notify.player(
 				playerId,
-				MiniMessage.miniMessage().deserialize("<aqua>You were invited to $settlementName by ${sender.name}. " +
-						"To join, use <italic>/s join $settlementName")
+				MiniMessage.miniMessage().deserialize(
+					"<aqua>You were invited to $settlementName by ${sender.name}. " +
+						"To join, use <italic>/s join $settlementName"
+				)
 			)
 		}
 	}
@@ -186,11 +199,18 @@ internal object SettlementCommand : SLCommand() {
 		val settlementId: Oid<Settlement> = resolveSettlement(settlement)
 		val settlementName = getSettlementName(settlementId)
 
-		failIf(!Settlement.isInvitedTo(settlementId, sender.slPlayerId)) { "You're not invited the settlement $settlementName!" }
+		failIf(
+			!Settlement.isInvitedTo(
+				settlementId,
+				sender.slPlayerId
+			)
+		) { "You're not invited the settlement $settlementName!" }
 
 		SLPlayer.joinSettlement(sender.slPlayerId, settlementId)
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<green>${sender.name} joined the settlement $settlementName!"))
+		Notify.online(
+			MiniMessage.miniMessage().deserialize("<green>${sender.name} joined the settlement $settlementName!")
+		)
 
 		// No manual territory cache updating is needed, as the player is added to the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -206,7 +226,9 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(sender.slPlayerId)
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} left the settlement $settlementName!"))
+		Notify.online(
+			MiniMessage.miniMessage().deserialize("<yellow>${sender.name} left the settlement $settlementName!")
+		)
 
 		// No manual territory cache updating is needed, as the player is removed from the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -234,7 +256,10 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(slPlayerId)
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} kicked $player from settlement $settlementName!"))
+		Notify.online(
+			MiniMessage.miniMessage()
+				.deserialize("<yellow>${sender.name} kicked $player from settlement $settlementName!")
+		)
 	}
 
 	@Subcommand("set name")
@@ -259,7 +284,9 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.setName(settlementId, newName)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<aqua>${sender.name} renamed their settlement $oldName to $newName!"))
+		Notify.online(
+			MiniMessage.miniMessage().deserialize("<aqua>${sender.name} renamed their settlement $oldName to $newName!")
+		)
 	}
 
 	@Subcommand("set leader")
@@ -459,7 +486,8 @@ internal object SettlementCommand : SLCommand() {
 		val message = text().color(TextColor.fromHexString("#b8e0d4"))
 
 		val lineWidth = 45
-		val lineBreak = text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
+		val lineBreak =
+			text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
 
 		val cached = SettlementCache[settlementId]
 
@@ -516,10 +544,11 @@ internal object SettlementCommand : SLCommand() {
 			.append(newline())
 			.append(text("Planet: ").append(text(cachedTerritory.world).color(NamedTextColor.WHITE)))
 			.append(newline())
-			.append(text("Centered at ")
-				.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
-				.append(text(", "))
-				.append(text(cachedTerritory.centerZ).color(NamedTextColor.WHITE))
+			.append(
+				text("Centered at ")
+					.append(text(cachedTerritory.centerX()).color(NamedTextColor.WHITE))
+					.append(text(", "))
+					.append(text(cachedTerritory.centerZ()).color(NamedTextColor.WHITE))
 			)
 			.build()
 			.asHoverEvent()
@@ -623,7 +652,8 @@ internal object SettlementCommand : SLCommand() {
 
 		if (names.size > limit) {
 			namesList.append(text("...").color(TextColor.fromHexString("#b8e0d4")))
-			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
+			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA))
+				.hoverEvent(fullNamesList.asComponent().asHoverEvent())
 		}
 
 		message.append(namesList)

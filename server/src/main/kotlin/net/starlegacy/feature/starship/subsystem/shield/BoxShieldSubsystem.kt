@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
-import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Vec3i
 import net.starlegacy.util.leftFace

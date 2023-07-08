@@ -6,7 +6,6 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import java.io.File
 import java.util.Locale
-import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
@@ -23,6 +22,9 @@ import net.horizonsend.ion.server.database.schema.economy.EcoStation
 import net.horizonsend.ion.server.database.schema.misc.Shuttle
 import net.horizonsend.ion.server.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.feature.misc.CustomItem
@@ -33,6 +35,7 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.MAX_LEVEL
+import net.starlegacy.feature.space.CachedMoon
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
@@ -115,6 +118,11 @@ fun registerCommands(manager: PaperCommandManager) {
 				?: throw InvalidCommandArgument("No such planet")
 		}
 
+		registerContext(CachedMoon::class.java) { c: BukkitCommandExecutionContext ->
+			Space.moonNameCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
+				?: throw InvalidCommandArgument("No such moon")
+		}
+
 		registerContext(CargoCrate::class.java) { c: BukkitCommandExecutionContext ->
 			CargoCrates[c.popFirstArg().uppercase(Locale.getDefault())]
 				?: throw InvalidCommandArgument("No such crate")
@@ -130,6 +138,13 @@ fun registerCommands(manager: PaperCommandManager) {
 		registerContext(CachedSpaceStation::class.java) { c: BukkitCommandExecutionContext ->
 			SpaceStations.spaceStationCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
 				?: throw InvalidCommandArgument("No such space station")
+		}
+
+		registerContext(Multiblock::class.java) { c: BukkitCommandExecutionContext ->
+			val name: String = c.popFirstArg()
+
+			Multiblocks.all().firstOrNull { it.javaClass.simpleName == name }
+				?: throw InvalidCommandArgument("Multiblock $name not found!")
 		}
 	}
 
@@ -174,6 +189,7 @@ fun registerCommands(manager: PaperCommandManager) {
 		},
 		"stars" to { _ -> Space.getStars().map(CachedStar::name) },
 		"planets" to { _ -> Space.getPlanets().map(CachedPlanet::name) },
+		"moons" to { _ -> Space.getMoons().map(CachedMoon::name) },
 		"crates" to { _ -> CargoCrates.crates.map { it.name } },
 		"collecteditems" to { _ -> CollectedItem.all().map { "${EcoStations[it.station].name}.${it.itemString}" } },
 		"ecostations" to { _ -> EcoStations.getAll().map { it.name } },
@@ -198,6 +214,9 @@ fun registerCommands(manager: PaperCommandManager) {
 			val player = c.player
 
 			SpaceStations.all().filter { it.hasOwnershipContext(player.slPlayerId) }.map { it.name }
+		},
+		"multiblocks" to { _ ->
+			Multiblocks.all().map { it.javaClass.simpleName }
 		}
 	).forEach { manager.commandCompletions.registerAsyncCompletion(it.key, it.value) }
 

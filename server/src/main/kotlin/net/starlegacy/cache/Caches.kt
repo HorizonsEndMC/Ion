@@ -1,14 +1,15 @@
 package net.starlegacy.cache
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonComponent
 import net.starlegacy.cache.nations.NationCache
 import net.starlegacy.cache.nations.PlayerCache
 import net.starlegacy.cache.nations.RelationCache
 import net.starlegacy.cache.nations.SettlementCache
+import net.starlegacy.cache.nations.SiegeBeacons
 import net.starlegacy.cache.trade.CargoCrates
 import net.starlegacy.cache.trade.EcoStations
 
-object Caches : SLComponent() {
+object Caches : IonComponent() {
 	private val caches: List<Cache> = listOf(
 		PlayerCache,
 		SettlementCache,
@@ -16,7 +17,9 @@ object Caches : SLComponent() {
 		RelationCache,
 
 		CargoCrates,
-		EcoStations
+		EcoStations,
+
+		SiegeBeacons
 	)
 
 	override fun onEnable() = caches.forEach(Cache::load)
