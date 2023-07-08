@@ -22,6 +22,9 @@ class RemoveGhostShipCommand : BaseCommand() {
 
 		val ship = DeactivatedPlayerStarships.getLockedContaining(sender.world, x, y, z)
 
-		ship?.let { PlayerStarshipData.remove(it._id) }
+		ship?.let {
+			PlayerStarshipData.remove(it._id)
+			DeactivatedPlayerStarships.removeState(ship)
+		}
 	}
 }
