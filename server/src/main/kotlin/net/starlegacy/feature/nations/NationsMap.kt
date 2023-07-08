@@ -62,7 +62,6 @@ object NationsMap : IonComponent() {
 		// map has to load before other components so do this a tick later
 		Tasks.sync {
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
-			Regions.getAllOf<RegionSpaceStation>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionSiegeTerritory>().forEach(::addSiegeTerritory)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionForwardOperatingBase>().forEach(::addForwardOperatingBase)
@@ -563,9 +562,6 @@ object NationsMap : IonComponent() {
 		</p>
 		""".trimIndent()
 	}
-
-	private fun getMarkerID(station: RegionSpaceStation) =
-		"nation-station-" + station.id.toString()
 
 	override fun supportsVanilla(): Boolean {
 		return true

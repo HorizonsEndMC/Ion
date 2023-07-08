@@ -28,9 +28,6 @@ import net.horizonsend.ion.server.database.schema.nations.NationRole
 import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.horizonsend.ion.server.database.schema.nations.SettlementRole
 import net.horizonsend.ion.server.database.schema.nations.SettlementZone
-import net.horizonsend.ion.server.database.schema.nations.Territory
-import net.horizonsend.ion.server.database.schema.nations.moonsieges.ForwardOperatingBase
-import net.horizonsend.ion.server.database.schema.nations.SpaceStation
 import net.horizonsend.ion.server.database.schema.nations.territories.Territory
 import net.horizonsend.ion.server.database.schema.nations.territories.ForwardOperatingBase
 import net.horizonsend.ion.server.database.schema.nations.moonsieges.SiegeBeacon
