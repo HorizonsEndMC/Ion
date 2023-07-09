@@ -1,5 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.debugRed
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
@@ -140,6 +141,15 @@ abstract class SimpleProjectile(
 		val armorBlastResist = CraftMagicNumbers.getBlock(Material.STONE).explosionResistance
 		val impactedBlastResist = CraftMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
+
+		starship?.controller?.playerPilot?.debugRed(
+			"ship dmg: \n\n" +
+			"armorBlastResist = $armorBlastResist, \n" +
+			"impactedBlastResist = $impactedBlastResist, \n" +
+			"fraction = $fraction, \n" +
+			"shieldDamageMultiplier = $shieldDamageMultiplier, \n" +
+			"result = ${fraction * explosionPower * shieldDamageMultiplier}"
+		)
 
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
 			if (!hasHit) {

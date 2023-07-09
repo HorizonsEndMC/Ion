@@ -107,7 +107,7 @@ class BlasterProjectile(
 			Bukkit.getPluginManager().callEvent(e)
 
 			if (!e.isCancelled)
-				hitEntity.damage(damage)
+				hitEntity.damage(damage, shooter)
 
 			return
 		}

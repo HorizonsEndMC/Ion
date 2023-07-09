@@ -59,6 +59,7 @@ import net.starlegacy.util.Notify
 import net.starlegacy.util.redisaction.RedisActions
 
 val components: List<SLComponent> = listOf(
+	GameplayTweaks,
 	RedisActions,
 	Caches,
 	Notify,
@@ -74,7 +75,6 @@ val components: List<SLComponent> = listOf(
 	CombatNPCs,
 
 	CustomRecipes,
-	GameplayTweaks,
 
 	SpaceWorlds,
 	Space,

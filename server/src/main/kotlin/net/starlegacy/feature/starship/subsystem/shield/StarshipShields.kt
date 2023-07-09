@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.debugRed
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
@@ -18,24 +19,8 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipActivatedEvent
 import net.starlegacy.feature.starship.event.StarshipDeactivatedEvent
-import net.starlegacy.util.PerWorld
-import net.starlegacy.util.SLTextStyle
-import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
-import net.starlegacy.util.blockKeyX
-import net.starlegacy.util.blockKeyY
-import net.starlegacy.util.blockKeyZ
-import net.starlegacy.util.d
-import net.starlegacy.util.distanceSquared
-import net.starlegacy.util.getFacing
-import net.starlegacy.util.getSphereBlocks
-import net.starlegacy.util.nms
-import net.starlegacy.util.rightFace
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.Particle
-import org.bukkit.Sound
-import org.bukkit.World
+import net.starlegacy.util.*
+import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.boss.BarColor
@@ -216,9 +201,6 @@ object StarshipShields : SLComponent() {
 		val world: World = location.world
 		val nmsWorld = world.minecraft
 		val chunkKey: Long = location.chunk.chunkKey
-
-		val time: Long = world.time
-
 		val size: Int = blockList.size
 
 		if (blockList.isEmpty()) {
@@ -341,6 +323,7 @@ object StarshipShields : SLComponent() {
 			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsLevel)
 		}
 
+		starship.controller?.playerPilot?.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power = shield.power - usage
 
 		if (usage > 0) {

@@ -7,11 +7,8 @@ import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand
 import net.horizonsend.ion.server.features.regeneration.RegenerateCommand
-import net.horizonsend.ion.server.miscellaneous.commands.CalcExpCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
-import net.horizonsend.ion.server.miscellaneous.commands.CheckProtectionCommand
-import net.horizonsend.ion.server.miscellaneous.commands.FixExtractorsCommand
-import net.horizonsend.ion.server.miscellaneous.commands.RemoveGhostShipCommand
+import net.horizonsend.ion.server.miscellaneous.commands.*
 
 val commands = arrayOf(
 	SpaceGenCommand(),
@@ -26,5 +23,6 @@ val commands = arrayOf(
 	RegenerateCommand(),
 	RemoveGhostShipCommand(),
 
-	AchievementsCommand()
+	AchievementsCommand(),
+	BlastResistanceCommand()
 )
