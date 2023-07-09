@@ -4,7 +4,7 @@ import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.secondary.TorpedoWeaponSubsystem
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.block.BlockFace
 
 object TorpedoStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<TorpedoWeaponSubsystem>() {

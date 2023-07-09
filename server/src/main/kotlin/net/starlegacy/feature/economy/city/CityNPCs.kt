@@ -7,11 +7,11 @@ import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.economy.CityNPC
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.economy.CityNPC
+import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager
@@ -61,11 +61,11 @@ object CityNPCs : SLComponent() {
 	fun getCityNpcType(npc: NPC): CityNPC.Type? = npcTypeMap[npc.uniqueId]
 
 	private data class NpcInfo(
-		val id: Oid<CityNPC>,
-		val name: String,
-		val location: Location,
-		val type: CityNPC.Type,
-		val skin: Skins.SkinData
+        val id: Oid<CityNPC>,
+        val name: String,
+        val location: Location,
+        val type: CityNPC.Type,
+        val skin: Skins.SkinData
 	)
 
 	/**

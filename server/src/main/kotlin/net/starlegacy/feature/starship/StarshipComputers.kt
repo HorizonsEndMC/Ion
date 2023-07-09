@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import net.horizonsend.ion.common.database.Oid
 import java.util.LinkedList
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.hint
@@ -18,14 +19,15 @@ import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.util.HSVLike
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
-import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.database.slPlayerId
-import net.horizonsend.ion.server.database.uuid
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.server.miscellaneous.isPilot
+import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
 import net.starlegacy.feature.nations.region.Regions

@@ -4,9 +4,10 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
@@ -37,7 +38,7 @@ internal class Starships : BaseCommand() {
 					if (it.captain != sender.slPlayerId) " owned by <aqua>${SLPlayer[it.captain]?.lastKnownName}</aqua>" else ""
 				val serverUnknown = if (it.serverName == null) " <red>(Unspecified Server)</red>" else ""
 
-				"${it.starshipType.formatted} at <green>$x</green>, <green>$y</green>, <green>$z</green> @ <gold>${it.levelName}</gold>$ownedBy$serverUnknown"
+				"${it.starshipType.formatted()} at <green>$x</green>, <green>$y</green>, <green>$z</green> @ <gold>${it.levelName}</gold>$ownedBy$serverUnknown"
 			}
 		)
 	}

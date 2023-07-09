@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -45,7 +45,7 @@ class AchievementsCommand : BaseCommand() {
 	fun onAchievementRevoke(sender: CommandSender, achievement: Achievement, target: String) {
 		val playerData = SLPlayer[target] ?: return sender.userError("Player $target does not exist.")
 
-		SLPlayer.updateById(playerData._id, pull(SLPlayer::achievements, achievement))
+		SLPlayer.updateById(playerData._id, pull(SLPlayer::achievements, achievement.name))
 
 		sender.success("Took achievement ${achievement.name} from $target.")
 	}

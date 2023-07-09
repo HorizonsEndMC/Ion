@@ -1,10 +1,10 @@
 package net.starlegacy.feature.economy.cargotrade
 
+import net.horizonsend.ion.common.database.Oid
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.trade.CargoCrates
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.economy.CargoCrate
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.features.cache.trade.CargoCrates
+import net.horizonsend.ion.common.database.schema.economy.CargoCrate
+import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.feature.economy.city.TradeCityType

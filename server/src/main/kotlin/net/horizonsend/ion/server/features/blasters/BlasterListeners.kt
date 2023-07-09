@@ -8,8 +8,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.cache.nations.PlayerCache
-import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener

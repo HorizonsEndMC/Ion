@@ -5,7 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.rightFace
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.axis
 import org.bukkit.Axis
 import org.bukkit.Location

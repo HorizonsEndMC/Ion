@@ -2,7 +2,6 @@ package net.starlegacy.feature.starship.hyperspace
 
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.dynmap.bukkit.DynmapPlugin

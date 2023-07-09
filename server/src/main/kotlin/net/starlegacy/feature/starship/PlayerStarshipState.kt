@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
@@ -27,12 +27,12 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 data class PlayerStarshipState(
-	/** Set of chunks included in the saved ship */
+    /** Set of chunks included in the saved ship */
 	val coveredChunks: LongOpenHashSet,
-	/** Map of location to material type id */
+    /** Map of location to material type id */
 	val blockMap: Long2ObjectOpenHashMap<BlockData>,
-	val minPoint: Vec3i,
-	val maxPoint: Vec3i
+    val minPoint: Vec3i,
+    val maxPoint: Vec3i
 ) {
 	companion object {
 		fun createFromActiveShip(starship: ActiveStarship): PlayerStarshipState {

@@ -1,9 +1,9 @@
 package net.starlegacy.feature.economy.city
 
-import net.starlegacy.cache.nations.SettlementCache
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 
 data class TradeCityData(

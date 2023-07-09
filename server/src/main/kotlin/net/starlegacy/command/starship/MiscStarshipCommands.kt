@@ -17,10 +17,10 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.starlegacy.cache.nations.PlayerCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.server.database.schema.nations.NationRelation
-import net.horizonsend.ion.server.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.PilotedStarships
@@ -37,7 +37,8 @@ import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import net.starlegacy.feature.starship.subsystem.NavCompSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.redis
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.parseData
 import net.starlegacy.util.distance
 import net.starlegacy.util.normalize
 import net.starlegacy.util.randomInt
@@ -123,7 +124,7 @@ object MiscStarshipCommands : SLCommand() {
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
-			(navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
+			(navComp.multiblock.baseRange * StarshipType.valueOf(starship.data.starshipType).hyperspaceRangeMultiplier).roundToInt()
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -148,7 +149,7 @@ object MiscStarshipCommands : SLCommand() {
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
-			(navComp.multiblock.baseRange * starship.data.starshipType.hyperspaceRangeMultiplier).roundToInt()
+			(navComp.multiblock.baseRange * StarshipType.valueOf(starship.data.starshipType).hyperspaceRangeMultiplier).roundToInt()
 
 		val destinationPos = Space.getPlanet(destination)?.let {
 			Pos(

@@ -8,9 +8,9 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
-import net.starlegacy.cache.trade.CargoCrates
+import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.server.database.schema.economy.CargoCrate
+import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.starlegacy.feature.economy.cargotrade.CrateItems
 import net.starlegacy.feature.economy.cargotrade.ShipmentBalancing
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager

@@ -1,28 +1,29 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.server.features.cache.nations.SettlementCache
 import net.starlegacy.command.nations.settlementZones.SettlementZoneCommand
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.document
-import net.horizonsend.ion.server.database.enumValue
-import net.horizonsend.ion.server.database.get
-import net.horizonsend.ion.server.database.int
-import net.horizonsend.ion.server.database.mappedSet
-import net.horizonsend.ion.server.database.nullable
-import net.horizonsend.ion.server.database.oid
-import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.NationRelation
-import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.SettlementZone
-import net.horizonsend.ion.server.database.schema.nations.Territory
-import net.horizonsend.ion.server.database.slPlayerId
-import net.horizonsend.ion.server.database.string
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.document
+import net.horizonsend.ion.common.database.enumValue
+import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.mappedSet
+import net.horizonsend.ion.common.database.nullable
+import net.horizonsend.ion.common.database.oid
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.SettlementZone
+import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.string
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.util.PerPlayerCooldown
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -32,8 +33,8 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 	var settlement: Oid<Settlement> = zone.settlement; private set
 	var territory: Oid<Territory> = zone.territory; private set
 	var name: String = zone.name; private set
-	var minPoint: Vec3i = zone.minPoint; private set
-	var maxPoint: Vec3i = zone.maxPoint; private set
+	var minPoint: Vec3i = Vec3i(zone.minPoint); private set
+	var maxPoint: Vec3i = Vec3i(zone.maxPoint); private set
 	var cachedPrice: Int? = zone.price; private set
 	var cachedRent: Int? = zone.rent; private set
 	var owner: SLPlayerId? = zone.owner; private set

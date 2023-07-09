@@ -7,7 +7,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.TargetTrackingCannonWeap
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.HeavyLaserProjectile
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -16,9 +16,9 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class HeavyLaserWeaponSubsystem(
-	starship: ActiveStarship,
-	pos: Vec3i,
-	face: BlockFace
+    starship: ActiveStarship,
+    pos: Vec3i,
+    face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {

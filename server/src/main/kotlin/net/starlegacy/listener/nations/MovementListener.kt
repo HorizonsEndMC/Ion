@@ -1,5 +1,6 @@
 package net.starlegacy.listener.nations
 
+import net.horizonsend.ion.common.database.Oid
 import java.lang.System.currentTimeMillis
 import java.time.Duration.ofMillis
 import java.util.Collections
@@ -10,14 +11,13 @@ import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.title.Title
 import net.kyori.adventure.title.Title.Times.times
-import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.cache.nations.SettlementCache
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
-import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.SettlementZone
-import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.SettlementZone
+import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone

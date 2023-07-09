@@ -6,8 +6,9 @@ import com.google.common.cache.LoadingCache
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.bukkitWorld
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.orNull

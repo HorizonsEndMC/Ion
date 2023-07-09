@@ -3,8 +3,8 @@ package net.starlegacy.command.nations.money
 import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.nations.MoneyHolder
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.nations.MoneyHolder
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString

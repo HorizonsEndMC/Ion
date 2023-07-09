@@ -9,7 +9,8 @@ import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.miscellaneous.get
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
 import java.time.Duration

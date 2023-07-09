@@ -8,7 +8,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -17,9 +17,9 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class SonicMissileWeaponSubsystem(
-	starship: ActiveStarship,
-	pos: Vec3i,
-	face: BlockFace
+    starship: ActiveStarship,
+    pos: Vec3i,
+    face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {

@@ -1,5 +1,6 @@
 package net.starlegacy.feature.nations
 
+import net.horizonsend.ion.common.database.Oid
 import java.lang.System.currentTimeMillis
 import java.time.ZonedDateTime
 import java.util.Date
@@ -13,16 +14,16 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.cache.nations.PlayerCache
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.CapturableStation
-import net.horizonsend.ion.server.database.schema.nations.CapturableStationSiege
-import net.horizonsend.ion.server.database.schema.nations.NationRelation
-import net.horizonsend.ion.server.database.slPlayerId
-import net.horizonsend.ion.server.database.uuid
+import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.progression.SLXP

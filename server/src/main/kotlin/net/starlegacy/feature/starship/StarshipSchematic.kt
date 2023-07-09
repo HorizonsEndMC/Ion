@@ -9,7 +9,7 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import com.sk89q.worldedit.world.World as WEWorld

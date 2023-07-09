@@ -5,7 +5,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import net.starlegacy.SETTINGS
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.miscellaneous.get
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
 import org.bukkit.Sound
@@ -15,10 +16,10 @@ import org.litote.kmongo.addToSet
 fun Player.rewardAchievement(achievement: Achievement) {
 	if (!SETTINGS.master) return
 
-	val playerData = SLPlayer[this@rewardAchievement]
-	if (playerData.achievements.find { it == achievement } != null) return
+	val playerData = SLPlayer[this]
+	if (playerData.achievements.map { Achievement.valueOf(it) }.find { it == achievement } != null) return
 
-	SLPlayer.updateById(playerData._id, addToSet(SLPlayer::achievements, achievement))
+	SLPlayer.updateById(playerData._id, addToSet(SLPlayer::achievements, achievement.name))
 
 	vaultEconomy?.depositPlayer(this@rewardAchievement, achievement.creditReward.toDouble())
 

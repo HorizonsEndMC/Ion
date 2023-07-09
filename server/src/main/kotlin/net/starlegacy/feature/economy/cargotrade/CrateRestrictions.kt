@@ -1,8 +1,8 @@
 package net.starlegacy.feature.economy.cargotrade
 
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.trade.CargoCrates
-import net.horizonsend.ion.server.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.server.features.cache.trade.CargoCrates
+import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager.getShipmentItemId
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships

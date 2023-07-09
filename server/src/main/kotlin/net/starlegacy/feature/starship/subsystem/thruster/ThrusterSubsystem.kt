@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship.subsystem.thruster
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.StarshipSubsystem
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.block.BlockFace
 
 /** thruster subsystem representing a single thruster, the facing direction being forward */

@@ -1,27 +1,29 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.database.DbObject
-import net.starlegacy.cache.nations.PlayerCache
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.enumValue
-import net.horizonsend.ion.server.database.get
-import net.horizonsend.ion.server.database.id
-import net.horizonsend.ion.server.database.int
-import net.horizonsend.ion.server.database.mappedSet
-import net.horizonsend.ion.server.database.oid
-import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.horizonsend.ion.server.database.schema.nations.NationRelation
-import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationInterface
-import net.horizonsend.ion.server.database.slPlayerId
-import net.horizonsend.ion.server.database.string
+import net.horizonsend.ion.common.database.DbObject
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.enumValue
+import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.id
+import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.mappedSet
+import net.horizonsend.ion.common.database.oid
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.features.spacestations.CachedNationSpaceStation
 import net.horizonsend.ion.server.features.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
-import net.starlegacy.cache.nations.RelationCache
+import net.horizonsend.ion.server.features.cache.nations.RelationCache
+import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared
@@ -40,7 +42,7 @@ class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(space
 	var z: Int = spaceStation.z; private set
 	var radius: Int = spaceStation.radius; private set
 	var ownerId: Id<Owner> = spaceStation.owner; private set
-	var trustLevel: SpaceStations.TrustLevel = spaceStation.trustLevel; private set
+	var trustLevel: SpaceStationCompanion.TrustLevel = spaceStation.trustLevel; private set
 	var trustedPlayers: Set<SLPlayerId> = spaceStation.trustedPlayers; private set
 	var trustedSettlements: Set<Oid<Settlement>> = spaceStation.trustedSettlements; private set
 	var trustedNations: Set<Oid<Nation>> = spaceStation.trustedNations; private set
@@ -88,7 +90,7 @@ class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(space
 		playerData.settlementOid?.let { playerSettlement ->
 			if (trustedSettlements.contains(playerSettlement)) return null
 
-			if (trustLevel == SpaceStations.TrustLevel.SETTLEMENT_MEMBER &&
+			if (trustLevel == SpaceStationCompanion.TrustLevel.SETTLEMENT_MEMBER &&
 				cached is CachedSettlementSpaceStation &&
 				cached.owner == playerSettlement) return null
 		}
@@ -99,7 +101,7 @@ class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(space
 
 			if (cached !is CachedNationSpaceStation) return@let
 
-			if (trustLevel == SpaceStations.TrustLevel.NATION_MEMBER &&
+			if (trustLevel == SpaceStationCompanion.TrustLevel.NATION_MEMBER &&
 				cached.owner == playerNation) return null
 
 			val relation = RelationCache[cached.owner, playerNation]

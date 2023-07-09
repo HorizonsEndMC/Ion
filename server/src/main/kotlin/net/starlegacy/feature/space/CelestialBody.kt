@@ -3,7 +3,7 @@ package net.starlegacy.feature.space
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockplacement.BlockPlacement.placeImmediate
 import net.starlegacy.util.blockplacement.BlockPlacement.queue

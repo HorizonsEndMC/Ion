@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
-import net.minecraft.core.Vec3i
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.feature.starship.active.ActivePlayerStarship

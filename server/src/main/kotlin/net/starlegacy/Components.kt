@@ -1,7 +1,7 @@
 package net.starlegacy
 
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
-import net.starlegacy.cache.Caches
+import net.horizonsend.ion.server.features.cache.Caches
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.chat.ChatChannel
 import net.starlegacy.feature.economy.bazaar.Bazaars

@@ -8,11 +8,11 @@ import kotlin.collections.set
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
-import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.minecraft.world.level.block.Rotation
-import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.cache.nations.PlayerCache
-import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.gayColors
@@ -21,10 +21,9 @@ import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.nms

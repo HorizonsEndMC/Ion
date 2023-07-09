@@ -2,6 +2,7 @@ package net.starlegacy.feature.starship.active
 
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.common.database.Oid
 import java.lang.Math.cbrt
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -12,10 +13,10 @@ import net.horizonsend.ion.server.features.starship.controllers.LegacyController
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
-import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.cache.nations.PlayerCache
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.miscellaneous.bukkitWorld
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
@@ -53,8 +54,8 @@ class ActivePlayerStarship(
 	hitbox
 ) {
 	val carriedShips: MutableMap<PlayerStarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
-	override val type: StarshipType = data.starshipType
-	override val interdictionRange: Int = data.starshipType.interdictionRange
+	override val type: StarshipType = StarshipType.valueOf(data.starshipType)
+	override val interdictionRange: Int = type.interdictionRange
 
 	var lastUnpilotTime: Long = 0
 

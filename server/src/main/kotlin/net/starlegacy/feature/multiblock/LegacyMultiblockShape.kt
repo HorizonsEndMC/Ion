@@ -11,7 +11,7 @@ import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.CONCRETE_TYPES
 import net.starlegacy.util.MATERIALS
 import net.starlegacy.util.STAINED_TERRACOTTA_TYPES
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.blockFace
 import net.starlegacy.util.getNMSBlockData
 import net.starlegacy.util.getRelativeIfLoaded

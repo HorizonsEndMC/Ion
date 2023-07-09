@@ -7,7 +7,6 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.msg
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.Damageable
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.LivingEntity

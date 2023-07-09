@@ -2,22 +2,21 @@ package net.starlegacy.feature.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TriTurretMultiblock
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class TriTurretWeaponSubsystem(
-	ship: ActiveStarship,
-	pos: Vec3i,
-	face: BlockFace,
-	override val multiblock: TriTurretMultiblock
+    ship: ActiveStarship,
+    pos: Vec3i,
+    face: BlockFace,
+    override val multiblock: TriTurretMultiblock
 ) : TurretWeaponSubsystem(ship, pos, face),
 	HeavyWeaponSubsystem, AutoWeaponSubsystem {
 	override val inaccuracyRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.triTurret.inaccuracyRadians)

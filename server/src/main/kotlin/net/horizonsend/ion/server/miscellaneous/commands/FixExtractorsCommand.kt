@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.Default
 import com.sk89q.worldedit.WorldEdit
 import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.feature.transport.Extractors
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.entity.Player
 
 @CommandAlias("fixextractors")

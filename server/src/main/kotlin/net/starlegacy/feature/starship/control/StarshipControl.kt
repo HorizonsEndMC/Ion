@@ -11,6 +11,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
+import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.StarshipType.PLATFORM
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -282,8 +283,8 @@ object StarshipControl : SLComponent() {
 		starship.sneakMovements++
 		val sneakMovements = starship.sneakMovements
 
-		val maxAccel = starship.data.starshipType.maxSneakFlyAccel
-		val accelDistance = starship.data.starshipType.sneakFlyAccelDistance
+		val maxAccel = StarshipType.valueOf(starship.data.starshipType).maxSneakFlyAccel
+		val accelDistance = StarshipType.valueOf(starship.data.starshipType).sneakFlyAccelDistance
 
 		val yawRadians = Math.toRadians(pilot.location.yaw.toDouble())
 		val pitchRadians = Math.toRadians(pilot.location.pitch.toDouble())

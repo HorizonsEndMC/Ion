@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.active;
 
-import net.starlegacy.util.Vec3i;
+import net.horizonsend.ion.server.miscellaneous.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;

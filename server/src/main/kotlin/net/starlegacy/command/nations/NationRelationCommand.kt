@@ -5,8 +5,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.server.database.schema.nations.NationRelation
-import net.horizonsend.ion.server.database.schema.nations.NationRole
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.schema.nations.NationRole
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq

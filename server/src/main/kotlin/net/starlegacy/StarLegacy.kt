@@ -4,27 +4,23 @@ import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
-import java.io.File
-import java.util.Locale
-import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.common.CommonConfig
+import net.horizonsend.ion.common.database.MongoManager
+import net.horizonsend.ion.common.database.MongoManager.INITIALIZATION_COMPLETE
+import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.server.features.cache.trade.CargoCrates
+import net.horizonsend.ion.server.features.cache.trade.EcoStations
+import net.horizonsend.ion.common.database.schema.economy.*
+import net.horizonsend.ion.common.database.schema.misc.Shuttle
+import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.cache.nations.NationCache
-import net.starlegacy.cache.nations.PlayerCache
-import net.starlegacy.cache.nations.SettlementCache
-import net.starlegacy.cache.trade.CargoCrates
-import net.starlegacy.cache.trade.EcoStations
-import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.server.database.MongoManager
-import net.horizonsend.ion.server.database.schema.economy.BazaarItem
-import net.horizonsend.ion.server.database.schema.economy.CargoCrate
-import net.horizonsend.ion.server.database.schema.economy.CityNPC
-import net.horizonsend.ion.server.database.schema.economy.CollectedItem
-import net.horizonsend.ion.server.database.schema.economy.EcoStation
-import net.horizonsend.ion.server.database.schema.misc.Shuttle
-import net.horizonsend.ion.server.database.schema.starships.Blueprint
-import net.horizonsend.ion.server.database.slPlayerId
 import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
+import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.Shuttles
@@ -48,16 +44,17 @@ import org.litote.kmongo.eq
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Protocol
-import kotlin.jvm.optionals.getOrNull
+import java.io.File
+import java.util.*
 
 lateinit var SETTINGS: Config
 lateinit var redisPool: JedisPool
-var INITIALIZATION_COMPLETE: Boolean = false
 
 val sharedDataFolder by lazy { File(SETTINGS.sharedFolder).apply { mkdirs() } }
 
 fun legacyEnable(commandManager: PaperCommandManager) {
-	SETTINGS = loadConfig(IonServer.dataFolder, "config") // Settings
+	SETTINGS = loadConfig(IonServer.dataFolder, "config") // Setting
+	CommonConfig.init(IonServer.dataFolder)// s
 	MongoManager.onEnable() // Database
 	redisPool = JedisPool(SETTINGS.redis.host, Protocol.DEFAULT_PORT) // Redis
 	for (component in components) { // Components

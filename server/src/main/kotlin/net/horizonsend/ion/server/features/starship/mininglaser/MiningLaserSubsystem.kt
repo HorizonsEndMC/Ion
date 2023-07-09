@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
@@ -18,7 +17,7 @@ import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.toLocation
@@ -30,15 +29,14 @@ import org.bukkit.SoundCategory
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 
 class MiningLaserSubsystem(
-	override val starship: ActivePlayerStarship,
-	pos: Vec3i,
-	private val face: BlockFace,
-	val multiblock: MiningLaserMultiblock
+    override val starship: ActivePlayerStarship,
+    pos: Vec3i,
+    private val face: BlockFace,
+    val multiblock: MiningLaserMultiblock
 ) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
 	private val firingTasks = mutableListOf<BukkitTask>()
 	var isFiring = false

@@ -7,6 +7,7 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.citizensnpcs.api.event.NPCLeftClickEvent
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.extensions.userError
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -14,10 +15,9 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.SLComponent
-import net.starlegacy.cache.trade.EcoStations
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.economy.CollectedItem
-import net.horizonsend.ion.server.database.schema.economy.EcoStation
+import net.horizonsend.ion.server.features.cache.trade.EcoStations
+import net.horizonsend.ion.common.database.schema.economy.CollectedItem
+import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.nations.gui.playerClicker

@@ -3,16 +3,16 @@ package net.horizonsend.ion.server.features.spacestations
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.nations.Nation
-import net.horizonsend.ion.server.database.schema.nations.NationRole
-import net.horizonsend.ion.server.database.schema.nations.Settlement
-import net.horizonsend.ion.server.database.schema.nations.SettlementRole
-import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
-import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationInterface
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.SettlementRole
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
 import net.starlegacy.SLComponent
 import net.starlegacy.util.optional
 import java.util.Optional
@@ -32,8 +32,6 @@ object SpaceStations : SLComponent() {
 		MANAGE_STATION(NationRole.Permission.MANAGE_STATION, SettlementRole.Permission.MANAGE_STATION),
 		DELETE_STATION(NationRole.Permission.DELETE_STATION, SettlementRole.Permission.DELETE_STATION)
 	}
-
-	enum class TrustLevel { NONE, MANUAL, SETTLEMENT_MEMBER, NATION_MEMBER, ALLY }
 
 	override fun onEnable() {
 		reload()

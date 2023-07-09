@@ -1,8 +1,8 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.database.DbObject
-import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.common.database.DbObject
+import net.horizonsend.ion.common.database.Oid
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World

@@ -1,6 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.debugRed
 import net.horizonsend.ion.server.miscellaneous.minecraft

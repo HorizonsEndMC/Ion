@@ -2,12 +2,13 @@ package net.starlegacy.feature.starship
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.database.objId
-import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.bukkitWorld
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarshipFactory
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -64,7 +65,7 @@ object DeactivatedPlayerStarships : SLComponent() {
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
 			val data = PlayerStarshipData(
-				id, captain, type,
+				id, captain, type.name,
 				IonServer.configuration.serverName, worldName, blockKey, name = name
 			)
 			PlayerStarshipData.add(data)
@@ -91,10 +92,10 @@ object DeactivatedPlayerStarships : SLComponent() {
 	}
 
 	fun updateType(data: PlayerStarshipData, newType: StarshipType) {
-		data.starshipType = newType
+		data.starshipType = newType.name
 
 		Tasks.async {
-			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::starshipType, newType))
+			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::starshipType, newType.name))
 		}
 
 		// remove the current state in case the new type no longer matches the ship's state

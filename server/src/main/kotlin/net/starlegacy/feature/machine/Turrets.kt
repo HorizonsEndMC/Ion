@@ -7,7 +7,7 @@
 // import net.starlegacy.feature.starship.active.ActiveStarships
 // import net.starlegacy.feature.starship.control.StarshipControl
 // import net.starlegacy.util.PerPlayerCooldown
-// import net.starlegacy.util.Vec3i
+// import net.horizonsend.ion.server.miscellaneous.Vec3i
 // import net.starlegacy.util.isGlass
 // import org.bukkit.Location
 // import org.bukkit.block.Sign

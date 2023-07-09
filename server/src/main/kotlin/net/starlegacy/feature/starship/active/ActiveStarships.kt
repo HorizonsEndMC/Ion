@@ -6,9 +6,10 @@ import com.google.common.cache.LoadingCache
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.common.database.Oid
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.database.Oid
-import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.miscellaneous.bukkitWorld
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipDestruction
 import net.starlegacy.feature.starship.StarshipType.SPEEDER

@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks

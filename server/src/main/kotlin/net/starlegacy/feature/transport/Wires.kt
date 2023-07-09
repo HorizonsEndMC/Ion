@@ -11,7 +11,7 @@ import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.feature.multiblock.areashield.AreaShield
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.getStateIfLoaded
@@ -230,16 +230,16 @@ object Wires : SLComponent() {
 	 * @param isDirectional Whether the current wire block type is a directional connector
 	 */
 	private fun checkComputers(
-		world: World,
-		x: Int,
-		y: Int,
-		z: Int,
-		isDirectional: Boolean,
-		direction: BlockFace,
-		computers: Set<BlockFace>,
-		wires: Set<BlockFace>,
-		originComputer: Vec3i?,
-		distance: Int
+        world: World,
+        x: Int,
+        y: Int,
+        z: Int,
+        isDirectional: Boolean,
+        direction: BlockFace,
+        computers: Set<BlockFace>,
+        wires: Set<BlockFace>,
+        originComputer: Vec3i?,
+        distance: Int
 	) {
 		val validComputers = computers.asSequence()
 			.mapNotNull { getStateIfLoaded(world, x + it.modX, y + it.modY, z + it.modZ) }

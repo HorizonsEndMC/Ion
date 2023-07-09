@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.subsystem
 
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 
 abstract class StarshipSubsystem(open val starship: ActiveStarship, var pos: Vec3i) {
 	/**

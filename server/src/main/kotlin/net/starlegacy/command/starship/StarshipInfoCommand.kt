@@ -6,7 +6,8 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.factory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.util.isConcrete
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -25,7 +26,8 @@ object StarshipInfoCommand : SLCommand() {
 		val size = ship.initialBlockCount
 
 		p.sendRichMessage(
-			"<aqua>${ship.data.name} <white>(${ship.data.starshipType.displayName}) ($size blocks)\n" +
+			"<aqua>${ship.data.name} <white>(${
+				StarshipType.valueOf(ship.data.starshipType).displayName}) ($size blocks)\n" +
 				"   <gray>Mass:<white> ${ship.mass}\n" +
 				"   <gray>World:<white> ${ship.serverLevel.world.name}\n" +
 				"   <gray>Pilot:<white> ${ship.pilot?.name}"

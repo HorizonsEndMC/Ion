@@ -2,11 +2,11 @@ package net.starlegacy.listener.gear
 
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
-import net.starlegacy.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.NationCache
 import java.time.Instant
 import java.util.Locale
 import java.util.UUID
-import net.starlegacy.cache.nations.PlayerCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.feature.gear.powerarmor.PowerArmorModule
 import net.starlegacy.feature.misc.CustomItems

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
-import net.starlegacy.util.Vec3i
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.block.BlockFace
 
 sealed class MiningLaserMultiblockTier3 : MiningLaserMultiblock() {

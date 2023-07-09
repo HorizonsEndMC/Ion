@@ -17,10 +17,11 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
-import net.starlegacy.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.server.database.schema.starships.Blueprint
-import net.horizonsend.ion.server.database.slPlayerId
+import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.*
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
@@ -35,7 +36,6 @@ import net.starlegacy.feature.starship.factory.StarshipFactories
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.Vec3i
 import net.starlegacy.util.isAlphanumeric
 import net.starlegacy.util.nms
 import net.starlegacy.util.placeSchematicEfficiently
@@ -87,7 +87,7 @@ object BlueprintCommand : SLCommand() {
 			failIf(Blueprint.count(Blueprint::owner eq slPlayerId) > getMaxBlueprints(sender)) {
 				"You can only have up to ${getMaxBlueprints(sender)} blueprints."
 			}
-			Blueprint.create(slPlayerId, name, starship.data.starshipType, pilotLoc, starship.initialBlockCount, data)
+			Blueprint.create(slPlayerId, name, StarshipType.valueOf(starship.data.starshipType), pilotLoc, starship.initialBlockCount, data)
 			sender.success("Saved blueprint $name")
 		} else {
 			val blueprint = getBlueprint(sender, name)
@@ -157,7 +157,7 @@ object BlueprintCommand : SLCommand() {
 		}
 		MenuHelper.apply {
 			val items: List<GuiItem> = blueprints.map { blueprint ->
-				guiButton(blueprint.type.menuItem) {
+				guiButton(StarshipType.valueOf(blueprint.type).menuItem) {
 					playerClicker.closeInventory()
 					Tasks.async { showMaterials(playerClicker, blueprint) }
 				}.setName(blueprint.name).setRichLore(blueprintInfo(blueprint))
@@ -194,10 +194,10 @@ object BlueprintCommand : SLCommand() {
 		val pilotLoc = blueprint.pilotLoc
 
 		Tasks.syncBlocking {
-			checkObstruction(sender, schematic, pilotLoc)
+			checkObstruction(sender, schematic, Vec3i(pilotLoc))
 
-			loadSchematic(sender, schematic, pilotLoc) { origin ->
-				tryPilot(sender, origin, blueprint.type, blueprint.name)
+			loadSchematic(sender, schematic, Vec3i(pilotLoc)) { origin ->
+				tryPilot(sender, origin, StarshipType.valueOf(blueprint.type), blueprint.name)
 			}
 		}
 	}
@@ -212,10 +212,10 @@ object BlueprintCommand : SLCommand() {
 		val pilotLoc = blueprint.pilotLoc
 
 		Tasks.syncBlocking {
-			checkObstruction(sender, schematic, pilotLoc)
+			checkObstruction(sender, schematic, Vec3i(pilotLoc))
 
-			loadSchematic(sender, schematic, pilotLoc) { origin ->
-				tryPilot(sender, origin, blueprint.type, blueprint.name) { starship ->
+			loadSchematic(sender, schematic, Vec3i(pilotLoc)) { origin ->
+				tryPilot(sender, origin, StarshipType.valueOf(blueprint.type), blueprint.name) { starship ->
 
 					starship.iterateBlocks { x, y, z ->
 						val block = starship.serverLevel.world.getBlockAt(x, y, z)
