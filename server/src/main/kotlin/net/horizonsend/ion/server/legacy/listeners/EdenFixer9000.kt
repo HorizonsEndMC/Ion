@@ -21,7 +21,7 @@ class EdenFixer9000 : Listener {
 		if (!event.chunk.world.name.lowercase().contains("eden")) return
 
 		val chunkOreVersion = event.chunk.persistentDataContainer.get(NamespacedKeys.EDEN_FIX, PersistentDataType.BYTE)
-		if (chunkOreVersion == 1.toByte()) return
+		if (chunkOreVersion == 2.toByte()) return
 
 		val removePercentage = 0.9
 
@@ -41,9 +41,6 @@ class EdenFixer9000 : Listener {
 						val blockData = chunkSnapshot.getBlockData(x, y, z)
 						if (!evilBlocks.contains(blockData.material)) continue
 
-						if (y < maxBlockY) if (chunkSnapshot.getBlockType(x, y + 1, z).isAir) continue
-						if (y > minBlockY) if (chunkSnapshot.getBlockType(x, y - 1, z).isAir) continue
-
 						if (randomDouble(0.0, 1.0) <= removePercentage) removedBlocks += BlockPos(x, y, z); runningTotal++
 					}
 				}
@@ -60,7 +57,7 @@ class EdenFixer9000 : Listener {
 						event.chunk.persistentDataContainer.set(
 							NamespacedKeys.EDEN_FIX,
 							PersistentDataType.BYTE,
-							1
+							2
 						)
 					}
 				)
