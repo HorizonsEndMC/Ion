@@ -23,8 +23,6 @@ class EdenFixer9000 : Listener {
 		val chunkOreVersion = event.chunk.persistentDataContainer.get(NamespacedKeys.EDEN_FIX, PersistentDataType.BYTE)
 		if (chunkOreVersion == 2.toByte()) return
 
-		val removePercentage = 0.9
-
 		val evilBlocks = setOf(Material.SCULK_SENSOR, Material.SCULK_CATALYST, Material.SCULK_SHRIEKER)
 
 		val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
@@ -41,7 +39,7 @@ class EdenFixer9000 : Listener {
 						val blockData = chunkSnapshot.getBlockData(x, y, z)
 						if (!evilBlocks.contains(blockData.material)) continue
 
-						if (randomDouble(0.0, 1.0) <= removePercentage) removedBlocks += BlockPos(x, y, z); runningTotal++
+						removedBlocks += BlockPos(x, y, z); runningTotal++
 					}
 				}
 
