@@ -1,7 +1,7 @@
 package net.starlegacy.feature.misc
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -12,7 +12,7 @@ import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
-object CustomRecipes : SLComponent() {
+object CustomRecipes : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.syncDelay(1) {
 			registerMineralRecipes()

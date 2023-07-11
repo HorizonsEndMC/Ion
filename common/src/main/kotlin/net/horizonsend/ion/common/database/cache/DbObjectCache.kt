@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.cache
+package net.horizonsend.ion.common.database.cache
 
 import com.googlecode.cqengine.ConcurrentIndexedCollection
 import com.googlecode.cqengine.attribute.support.FunctionalSimpleAttribute
@@ -9,7 +9,6 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.oid
-import net.starlegacy.util.Tasks
 import org.litote.kmongo.Id
 import kotlin.reflect.KProperty1
 
@@ -19,8 +18,8 @@ abstract class DbObjectCache<T : DbObject, ID : Id<T>>(private val companion: Oi
 
 	protected abstract val idAttribute: FunctionalSimpleAttribute<T, ID>
 
-	//    private val mutex = Any()
-	//    private fun synced(block: () -> Unit): Unit = synchronized(mutex, block)
+	private val mutex = Any()
+	private fun synced(block: () -> Unit): Unit = synchronized(mutex, block)
 
 	override fun load() {
 		cache = ConcurrentIndexedCollection()
@@ -31,21 +30,21 @@ abstract class DbObjectCache<T : DbObject, ID : Id<T>>(private val companion: Oi
 
 		companion.watchInserts { change ->
 			val fullDocument = change.fullDocument ?: return@watchInserts
-			Tasks.sync {
+			synced {
 				cache.add(fullDocument)
 				onInsert(fullDocument)
 			}
 		}
 
 		companion.watchUpdates { change ->
-			Tasks.sync {
+			synced {
 				val cached = this[change.oid as ID]
 				update(cached, change)
 			}
 		}
 
 		companion.watchDeletes {
-			Tasks.sync {
+			synced {
 				val cached = this[it.oid as ID]
 				cache.remove(cached)
 				onDelete(cached)

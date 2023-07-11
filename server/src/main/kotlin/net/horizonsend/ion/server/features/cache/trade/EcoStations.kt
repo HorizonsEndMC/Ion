@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.cache.trade
 import com.googlecode.cqengine.index.hash.HashIndex
 import com.googlecode.cqengine.query.QueryFactory
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.features.cache.DbObjectCache
+import net.horizonsend.ion.common.database.cache.DbObjectCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.get

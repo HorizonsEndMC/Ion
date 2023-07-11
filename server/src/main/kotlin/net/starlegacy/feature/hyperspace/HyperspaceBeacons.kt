@@ -1,11 +1,11 @@
 package net.starlegacy.feature.hyperspace
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerSet
 
-object HyperspaceBeacons : SLComponent() {
+object HyperspaceBeacons : IonServerComponent() {
 	fun reloadDynmap() {
 		val api = try { DynmapPlugin.plugin.markerAPI } catch (_: Error) { return } // dynmap not installed
 		var set: MarkerSet? = api.getMarkerSet("beacons")

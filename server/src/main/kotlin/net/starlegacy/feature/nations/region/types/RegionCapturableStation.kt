@@ -1,10 +1,10 @@
 package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import java.time.DayOfWeek
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.array
 import net.horizonsend.ion.common.database.enumValue

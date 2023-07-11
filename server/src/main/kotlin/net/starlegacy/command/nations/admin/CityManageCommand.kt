@@ -4,7 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.starlegacy.util.msg

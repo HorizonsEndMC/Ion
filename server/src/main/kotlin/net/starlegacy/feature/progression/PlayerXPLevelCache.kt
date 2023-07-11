@@ -1,7 +1,7 @@
 package net.starlegacy.feature.progression
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
-object PlayerXPLevelCache : SLComponent() {
+object PlayerXPLevelCache : IonServerComponent() {
 	private val cacheThread: ExecutorService = Executors.newSingleThreadExecutor()
 
 	override fun onEnable() {

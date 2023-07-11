@@ -5,7 +5,10 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
+import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.Configuration
+import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.getUpdateMessage
@@ -43,6 +46,7 @@ import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
+abstract class IonServerComponent: Listener, IonComponent()
 
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
@@ -56,6 +60,8 @@ object IonServer : JavaPlugin() {
 
 	private fun internalEnable() {
 		PacketType.values().forEach { ProtocolLibrary.getProtocolManager().addPacketListener(IonPacketListener(it)) }
+		CommonConfig.init(IonServer.dataFolder)// s
+		DBManager.onEnable() // Database
 
 		prefixProvider = {
 			when (it) {
@@ -128,6 +134,13 @@ object IonServer : JavaPlugin() {
 		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 		// such as reloading or other plugins doing things they probably shouldn't.
 		for (world in server.worlds) IonWorld.register(world.minecraft)
+
+		for (component in components) { // Components
+			component.onEnable()
+
+			if (component is IonServerComponent)
+			IonServer.server.pluginManager.registerEvents(component, IonServer)
+		}
 
 		legacyEnable(commandManager)
 

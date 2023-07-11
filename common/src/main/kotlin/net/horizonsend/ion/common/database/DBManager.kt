@@ -45,15 +45,19 @@ import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdGenerator
 import org.litote.kmongo.util.KMongoUtil
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.Protocol
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ThreadFactory
 
-object MongoManager {
+object DBManager {
 	var INITIALIZATION_COMPLETE: Boolean = false
 
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
 
 	internal lateinit var client: MongoClient
+
+	lateinit var jedisPool: JedisPool
 
 	@PublishedApi // to allow it to be used in inline functions
 	internal lateinit var database: MongoDatabase
@@ -69,6 +73,8 @@ object MongoManager {
 	)
 
 	fun onEnable() {
+		jedisPool = JedisPool(CommonConfig.redis.host, Protocol.DEFAULT_PORT)
+
 		IdGenerator.defaultGenerator = ObjectIdGenerator
 
 		System.setProperty(
@@ -128,6 +134,8 @@ object MongoManager {
 	}
 
 	fun onDisable() {
+		jedisPool.close()
+
 		if (::client.isInitialized) {
 			client.close()
 		}

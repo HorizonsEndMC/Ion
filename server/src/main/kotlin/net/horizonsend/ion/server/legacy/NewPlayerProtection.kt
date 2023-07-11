@@ -13,9 +13,9 @@ import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
 import net.starlegacy.SETTINGS
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.feature.progression.PlayerXPLevelCache

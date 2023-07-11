@@ -5,8 +5,11 @@ import java.io.File
 
 object CommonConfig {
 	lateinit var db: DBConfig
+	lateinit var redis: Redis
+
 	fun init(folder: File) {
 		db = Configuration.load(folder, "db.json")
+		redis = Configuration.load(folder, "redis.json")
 	}
 }
 
@@ -17,4 +20,9 @@ data class DBConfig(
 	val database: String = "test",
 	val username: String = "test",
 	val password: String = "test"
+)
+
+data class Redis(
+	val host: String = "redis",
+	val channel: String = "starlegacytest"
 )

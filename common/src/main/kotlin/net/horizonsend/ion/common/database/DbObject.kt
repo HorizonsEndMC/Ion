@@ -12,11 +12,11 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.client.model.changestream.OperationType
 import com.mongodb.client.result.UpdateResult
-import net.horizonsend.ion.common.database.MongoManager.INITIALIZATION_COMPLETE
+import net.horizonsend.ion.common.database.DBManager.INITIALIZATION_COMPLETE
 import java.io.Closeable
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
-import net.horizonsend.ion.common.database.MongoManager.getCollection
+import net.horizonsend.ion.common.database.DBManager.getCollection
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.litote.kmongo.EMPTY_BSON
@@ -135,9 +135,9 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 
 		val cursor: MongoCursor<ChangeStreamDocument<T>> = changeStreamIterable.iterator()
 		@Suppress("UNCHECKED_CAST")
-        (MongoManager.registerWatching(cursor as MongoCursor<ChangeStreamDocument<*>>))
+        (DBManager.registerWatching(cursor as MongoCursor<ChangeStreamDocument<*>>))
 
-		MongoManager.threadPool.submit {
+		DBManager.threadPool.submit {
 			while (true) {
 				val change: ChangeStreamDocument<T>
 				try {
@@ -173,7 +173,7 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 		return Closeable {
 			cursor.close()
 			@Suppress("UNCHECKED_CAST")
-            (MongoManager.closeWatch(cursor as MongoCursor<ChangeStreamDocument<*>>))
+            (DBManager.closeWatch(cursor as MongoCursor<ChangeStreamDocument<*>>))
 		}
 	}
 

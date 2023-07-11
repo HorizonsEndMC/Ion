@@ -3,14 +3,14 @@ package net.starlegacy.feature.space
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.listen
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import java.io.File
 
-object SpaceWorlds : SLComponent() {
+object SpaceWorlds : IonServerComponent() {
 	private fun getSpaceFlagFile(world: World) = File(world.worldFolder, "data/starlegacy/space.flag")
 
 	private val cache: LoadingCache<World, Boolean> = CacheBuilder.newBuilder()

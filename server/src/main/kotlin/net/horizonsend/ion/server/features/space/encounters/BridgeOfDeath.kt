@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.starlegacy.util.Notify
@@ -27,7 +27,7 @@ import org.bukkit.entity.Fireball
 import org.bukkit.entity.ZombieVillager
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
-import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 
 object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 	private fun checkAir(block: Block): Boolean {

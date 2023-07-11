@@ -7,15 +7,15 @@ import java.util.UUID
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
 import org.litote.kmongo.id.WrappedObjectId
 
-object Notify : SLComponent() {
+object Notify : IonServerComponent() {
 	infix fun online(message: Component) {
 		notifyOnlineAction(MiniMessage.miniMessage().serialize(message))
 		globalChannel(PlainTextComponentSerializer.plainText().serialize(message))

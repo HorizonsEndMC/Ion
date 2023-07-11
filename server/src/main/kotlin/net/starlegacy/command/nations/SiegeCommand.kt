@@ -1,7 +1,7 @@
 package net.starlegacy.command.nations
 
 import co.aikar.commands.annotation.CommandAlias
-import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.nations.StationSieges

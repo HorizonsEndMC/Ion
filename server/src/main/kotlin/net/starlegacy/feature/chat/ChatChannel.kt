@@ -9,10 +9,10 @@ import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.SETTINGS
-import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -24,7 +24,7 @@ import net.starlegacy.feature.space.Space
 import net.starlegacy.util.SLTextStyle
 import net.starlegacy.util.colorize
 import net.starlegacy.util.msg
-import net.starlegacy.util.redisaction.RedisAction
+import net.horizonsend.ion.common.utils.redisaction.RedisAction
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
@@ -247,7 +247,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 
 	abstract fun onChat(player: Player, event: AsyncPlayerChatEvent)
 
-	companion object ChannelActions : SLComponent() {
+	companion object ChannelActions : IonServerComponent() {
 		private val globalAction = { message: NormalChatMessage ->
 			val component = message.buildChatComponent()
 

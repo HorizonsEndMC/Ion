@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.active
 
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipDestruction
@@ -29,7 +29,7 @@ import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-object ActiveStarshipMechanics : SLComponent() {
+object ActiveStarshipMechanics : IonServerComponent() {
 	override fun onEnable() {
 		scheduleTasks()
 	}

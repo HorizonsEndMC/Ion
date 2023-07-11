@@ -4,9 +4,10 @@ import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import net.horizonsend.ion.common.database.*
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
@@ -15,6 +16,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpa
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionParent
@@ -36,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 import kotlin.reflect.KClass
 
-object Regions : SLComponent() {
+object Regions : IonServerComponent() {
 	override fun supportsVanilla(): Boolean {
 		return true
 	}
@@ -116,6 +118,35 @@ object Regions : SLComponent() {
 
 			val settlementId = fullDocument.parent
 			refreshSettlementTerritoryLocally(settlementId)
+		}
+
+		SLPlayer.watchUpdates { change ->
+			if (change.containsUpdated(SLPlayer::settlement) || change.containsUpdated(SLPlayer::nation)) {
+				Tasks.async {
+					refreshPlayerLocally(change.slPlayerId.uuid)
+				}
+			}
+		}
+
+		Settlement.watchUpdates { change ->
+			if (change.containsUpdated(Settlement::leader) ||
+				change.containsUpdated(Settlement::minimumBuildAccess) ||
+				change.containsUpdated(Settlement::cityState) ||
+				change.containsUpdated(Settlement::name) ||
+				change.containsUpdated(Settlement::nation)
+			) {
+				updateRegionsAsync(change.oid)
+			}
+		}
+	}
+
+	private fun updateRegionsAsync(id: Oid<Settlement>) {
+		Tasks.async {
+			val data = SettlementCache.SETTLEMENT_DATA[id] ?: return@async
+
+			refreshSettlementTerritoryLocally(id)
+			refreshSettlementMembersLocally(id)
+			NationsMap.updateTerritory(Regions[data.territory])
 		}
 	}
 

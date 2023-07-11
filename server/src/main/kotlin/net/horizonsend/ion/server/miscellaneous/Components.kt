@@ -1,5 +1,8 @@
-package net.starlegacy
+package net.horizonsend.ion.server.miscellaneous
 
+import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.utils.redisaction.RedisActions
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.server.features.cache.Caches
 import net.starlegacy.feature.chat.ChannelSelections
@@ -56,9 +59,8 @@ import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.feature.transport.pipe.filter.Filters
 import net.starlegacy.feature.tutorial.TutorialManager
 import net.starlegacy.util.Notify
-import net.starlegacy.util.redisaction.RedisActions
 
-val components: List<SLComponent> = listOf(
+val components: List<IonComponent> = listOf(
 	GameplayTweaks,
 	RedisActions,
 	Caches,

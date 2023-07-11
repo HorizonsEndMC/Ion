@@ -9,7 +9,7 @@ import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.starlegacy.feature.economy.bazaar.Bazaars
@@ -32,7 +32,7 @@ import java.util.UUID
 /**
  * Manages NPCs for cities, handles the synchronization of them with the worlds
  */
-object CityNPCs : SLComponent() {
+object CityNPCs : IonServerComponent() {
 	private val isCitizensLoaded get() = IonServer.server.pluginManager.isPluginEnabled("Citizens")
 
 	private lateinit var citizensRegistry: NPCRegistry

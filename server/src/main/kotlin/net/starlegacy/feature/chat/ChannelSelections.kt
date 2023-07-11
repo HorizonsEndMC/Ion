@@ -2,7 +2,7 @@ package net.starlegacy.feature.chat
 
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.listen
 import net.starlegacy.redis
 import net.starlegacy.util.Tasks
@@ -18,7 +18,7 @@ import java.util.Collections
 import java.util.Locale
 import java.util.UUID
 
-object ChannelSelections : SLComponent() {
+object ChannelSelections : IonServerComponent() {
 	private val localCache = Collections.synchronizedMap(mutableMapOf<UUID, ChatChannel>())
 
 	private fun redisKey(playerID: UUID): String = "chat.selectedchannel.$playerID"

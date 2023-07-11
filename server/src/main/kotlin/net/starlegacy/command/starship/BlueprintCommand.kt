@@ -17,7 +17,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
-import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.slPlayerId

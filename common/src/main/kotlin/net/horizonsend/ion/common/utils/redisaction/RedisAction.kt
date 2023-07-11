@@ -1,7 +1,5 @@
-package net.starlegacy.util.redisaction
+package net.horizonsend.ion.common.utils.redisaction
 
-import net.starlegacy.util.Tasks
-import org.bukkit.Bukkit
 import java.lang.reflect.Type
 
 abstract class RedisAction<Data>(val id: String, val type: Type, val runSync: Boolean) {
@@ -13,12 +11,7 @@ abstract class RedisAction<Data>(val id: String, val type: Type, val runSync: Bo
 	internal fun castAndReceive(data: Any): Unit = onReceive(data as Data)
 
 	operator fun invoke(data: Data) {
-		if (Bukkit.isPrimaryThread() || !runSync) {
-			onReceive(data)
-		} else {
-			Tasks.sync { onReceive(data) }
-		}
-
+		onReceive(data)
 		RedisActions.publish(id, data, type)
 	}
 }

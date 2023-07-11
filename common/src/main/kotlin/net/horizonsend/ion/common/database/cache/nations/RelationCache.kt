@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.cache.nations
+package net.horizonsend.ion.common.database.cache.nations
 
 import com.googlecode.cqengine.index.compound.CompoundIndex
 import com.googlecode.cqengine.index.hash.HashIndex
@@ -6,8 +6,8 @@ import com.googlecode.cqengine.query.QueryFactory.and
 import com.googlecode.cqengine.query.QueryFactory.equal
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.cache.Cache
-import net.horizonsend.ion.server.features.cache.DbObjectCache
+import net.horizonsend.ion.common.database.cache.Cache
+import net.horizonsend.ion.common.database.cache.DbObjectCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get

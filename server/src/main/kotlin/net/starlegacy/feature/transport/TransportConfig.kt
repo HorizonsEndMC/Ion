@@ -1,6 +1,6 @@
 package net.starlegacy.feature.transport
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.loadConfig
 
@@ -26,7 +26,7 @@ data class TransportConfig(
 		val maxDistance: Int = 2000
 	)
 
-	companion object : SLComponent() {
+	companion object : IonServerComponent() {
 		override fun onEnable() {
 			reload()
 		}

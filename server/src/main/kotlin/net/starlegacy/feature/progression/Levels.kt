@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.Notify
@@ -35,7 +35,7 @@ data class LevelsConfig(val creditsPerXP: Double = 2.5, val cost: CostSection = 
 /** Maximum attainable level */
 internal const val MAX_LEVEL = 100
 
-object Levels : SLComponent() {
+object Levels : IonServerComponent() {
 	private val queue = ConcurrentLinkedQueue<UUID>()
 
 	override fun onEnable() {

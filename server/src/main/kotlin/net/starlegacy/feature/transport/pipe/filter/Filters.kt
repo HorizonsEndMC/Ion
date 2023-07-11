@@ -3,7 +3,7 @@ package net.starlegacy.feature.transport.pipe.filter
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.util.Tasks
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.Bukkit
@@ -22,7 +22,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.TimeUnit
 
-object Filters : SLComponent() {
+object Filters : IonServerComponent() {
 	private val cache: LoadingCache<FilterDataKey, FilterData> = CacheBuilder.newBuilder()
 		.expireAfterWrite(1L, TimeUnit.MINUTES)
 		.build(

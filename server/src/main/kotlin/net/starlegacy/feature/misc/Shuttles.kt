@@ -7,7 +7,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
 import net.horizonsend.ion.common.database.Oid
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.starlegacy.feature.nations.gui.openConfirmMenu
@@ -40,7 +40,7 @@ import java.time.Instant
 import java.util.UUID
 import kotlin.collections.set
 
-object Shuttles : SLComponent() {
+object Shuttles : IonServerComponent() {
 	const val TICKET_COST = 20
 
 	private lateinit var SCHEMATIC_FOLDER: File

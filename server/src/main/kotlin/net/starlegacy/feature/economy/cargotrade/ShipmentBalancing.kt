@@ -1,12 +1,12 @@
 package net.starlegacy.feature.economy.cargotrade
 
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.loadConfig
 
 lateinit var balancing: ShipmentBalancing.ShipmentBalancingConfig
 
-object ShipmentBalancing : SLComponent() {
+object ShipmentBalancing : IonServerComponent() {
 	data class ShipmentBalancingConfig(
 		val generator: GeneratorSection = GeneratorSection(),
 		val importExport: ImportExportSection = ImportExportSection(),

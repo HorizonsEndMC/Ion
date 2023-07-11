@@ -1,10 +1,9 @@
-package net.horizonsend.ion.server.features.cache.nations
+package net.horizonsend.ion.common.database.cache.nations
 
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
-import net.horizonsend.ion.server.features.cache.ManualCache
+import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
@@ -16,12 +15,8 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
-import net.starlegacy.feature.nations.NationsMap
-import net.starlegacy.feature.nations.region.Regions
-import net.starlegacy.util.Tasks
 
 object SettlementCache : ManualCache() {
-	private fun synced(block: () -> Unit): Unit = Tasks.sync(block)
 
 	data class SettlementData(
 		val id: Oid<Settlement>,
@@ -34,7 +29,7 @@ object SettlementCache : ManualCache() {
 		var tradeTax: Double? = null
 	)
 
-	private val SETTLEMENT_DATA = ConcurrentHashMap<Oid<Settlement>, SettlementData>()
+	val SETTLEMENT_DATA = ConcurrentHashMap<Oid<Settlement>, SettlementData>()
 	private val nameCache = ConcurrentHashMap<String, Oid<Settlement>>()
 
 	override fun load() {
@@ -99,15 +94,6 @@ object SettlementCache : ManualCache() {
 				change[Settlement::minimumBuildAccess]?.let {
 					data.minBuildAccess = it.nullable()?.enumValue<Settlement.ForeignRelation>()
 				}
-
-				if (change.containsUpdated(Settlement::leader) ||
-					change.containsUpdated(Settlement::minimumBuildAccess) ||
-					change.containsUpdated(Settlement::cityState) ||
-					change.containsUpdated(Settlement::name) ||
-					change.containsUpdated(Settlement::nation)
-				) {
-					updateRegionsAsync(id)
-				}
 			}
 		}
 
@@ -120,16 +106,6 @@ object SettlementCache : ManualCache() {
 				SETTLEMENT_DATA.remove(id)
 				nameCache.remove(name.lowercase(Locale.getDefault()))
 			}
-		}
-	}
-
-	private fun updateRegionsAsync(id: Oid<Settlement>) {
-		Tasks.async {
-			val data = SETTLEMENT_DATA[id] ?: return@async
-
-			Regions.refreshSettlementTerritoryLocally(id)
-			Regions.refreshSettlementMembersLocally(id)
-			NationsMap.updateTerritory(Regions[data.territory])
 		}
 	}
 

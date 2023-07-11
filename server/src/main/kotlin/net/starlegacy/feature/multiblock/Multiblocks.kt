@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.Minin
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.multiblock.ammopress.StandardAmmoPressMultiblock
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
 import net.starlegacy.feature.multiblock.areashield.AreaShield20
@@ -97,7 +97,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.persistence.PersistentDataType
 
-object Multiblocks : SLComponent() {
+object Multiblocks : IonServerComponent() {
 	private lateinit var multiblocks: List<Multiblock>
 
 	private fun initMultiblocks() {

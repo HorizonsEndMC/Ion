@@ -1,10 +1,9 @@
-package net.starlegacy
+package net.horizonsend.ion.common
 
-import net.starlegacy.util.redisaction.RedisAction
-import net.starlegacy.util.redisaction.RedisActions
-import org.bukkit.event.Listener
+import net.horizonsend.ion.common.utils.redisaction.RedisAction
+import net.horizonsend.ion.common.utils.redisaction.RedisActions
 
-abstract class SLComponent : Listener {
+abstract class IonComponent {
 	protected val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(javaClass)
 
 	open fun onEnable() {}

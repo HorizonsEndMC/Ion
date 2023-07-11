@@ -4,8 +4,8 @@ import com.mongodb.client.MongoIterable
 import java.lang.Integer.min
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.ProjectedResults
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer

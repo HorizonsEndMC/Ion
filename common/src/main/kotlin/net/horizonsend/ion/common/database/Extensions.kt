@@ -37,7 +37,7 @@ import org.litote.kmongo.withDocumentClass
 /** Runs code with multi document transaction, only things that use the clientsession use the transaction,
  * can throw error from concurrency, if the code must retry upon write concern then use trx */
 fun <T> session(transactional: (ClientSession) -> T): T {
-	MongoManager.client.startSession().use { session ->
+	DBManager.client.startSession().use { session ->
 		try {
 			session.startTransaction()
 			val ret = session.let(transactional)
@@ -51,7 +51,7 @@ fun <T> session(transactional: (ClientSession) -> T): T {
 }
 
 /** Everything in here MUST be done through the clientsession, lest duplicate events occur */
-fun <T> trx(transactional: (ClientSession) -> T): T = MongoManager.client.startSession().use { session ->
+fun <T> trx(transactional: (ClientSession) -> T): T = DBManager.client.startSession().use { session ->
 	val start = System.currentTimeMillis()
 
 	while (true) {
@@ -154,7 +154,7 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 
 		try {
 			return when (value) {
-				is Document -> MongoManager.decode(value)
+				is Document -> DBManager.decode(value)
 				else -> Gson().fromJson(value?.json, R::class.java)
 			}
 		} catch (exception: Exception) {
@@ -218,7 +218,7 @@ fun BsonValue.array(): BsonArray = asArray()
 fun <T> BsonValue.mappedList(function: (BsonValue) -> T): List<T> = array().map(function)
 fun <T> BsonValue.mappedSet(function: (BsonValue) -> T): Set<T> = array().asSequence().map(function).toSet()
 inline fun <reified T : Enum<T>> BsonValue.enumValue(): T = enumValueOf(string())
-inline fun <reified T> BsonValue.document(): T = MongoManager.decode(asDocument())
+inline fun <reified T> BsonValue.document(): T = DBManager.decode(asDocument())
 fun <T : DbObject> BsonValue.oid(): Oid<T> = when {
 	isObjectId -> WrappedObjectId(asObjectId().value)
 	else -> error("Unrecognized object id type $json")

@@ -13,11 +13,11 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpa
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
-import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.util.optional
 import java.util.Optional
 
-object SpaceStations : SLComponent() {
+object SpaceStations : IonServerComponent() {
 	private val spaceStations = mutableListOf<CachedSpaceStation<*, *, *>>()
 
 	val spaceStationCache: LoadingCache<String, Optional<CachedSpaceStation<*, *, *>>> =
