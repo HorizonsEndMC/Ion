@@ -18,7 +18,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 
 class SettlementChat : Channel {
 	override val name = "settlement"
-	override val prefix = "<dark_aqua><bold>Settlement "
+	override val prefix = "<dark_aqua><bold>Settlement</bold> "
 	override val displayName = "<aqua>Settlement"
 	override val commands = listOf("schat", "sc", "settlementchat")
 	override val color = NamedTextColor.AQUA
@@ -29,7 +29,7 @@ class SettlementChat : Channel {
 	}
 
 	override fun processMessage(player: Player, e: PlayerChatEvent): Boolean {
-		val roleString = PlayerCache[player].settlementTag ?: ""
+		val roleString = PlayerCache[player].settlementTag?.let { " $it " } ?: ""
 
 		PlayerCache[player].settlementOid ?: run {
 			player.userError("You're not in a settlement! &o(Hint: To get back to global, use /global)")
@@ -42,9 +42,9 @@ class SettlementChat : Channel {
 			it.sendMessage(
 				(
 					prefix +
-						roleString +
+						"<reset>" + roleString +
 						"<aqua>${player.username}</aqua>" +
-						"${user?.cachedData?.metaData?.suffix ?: " "} " +
+						(user?.cachedData?.metaData?.suffix ?: " ") +
 						"<dark_gray>»</dark_gray> "
 					).miniMessage().hoverEvent(ChannelManager.playerInfo(player)).append(
 						if (player.hasPermission("ion.minimessage"))
@@ -87,15 +87,15 @@ class NationChat : Channel {
 		}
 
 		val settlementName = SettlementCache[settlement].name
-		val roleString = playerData.nationTag ?: ""
+		val roleString = playerData.nationTag?.let { " $it " } ?: " "
 
 		receivers(player).forEach {
 			it.sendMessage(
 				(
 					prefix +
-						roleString +
+						"<reset>" +
 						"<aqua>${settlementName}</aqua>" +
-						" $roleString" +
+						roleString +
 						"<red>${player.username}</red> " +
 						"<dark_gray>»</dark_gray> "
 					).miniMessage().hoverEvent(ChannelManager.playerInfo(player)).append(
@@ -135,15 +135,15 @@ class AllyChat : Channel {
 		}
 
 		val nationName = NationCache[nation].name
-		val roleString = playerData.nationTag ?: ""
+		val roleString = playerData.nationTag?.let { " $it " } ?: " "
 
 		receivers(player).forEach {
 			it.sendMessage(
 				(
 					prefix +
-						roleString +
+						"<reset>" +
 						"<yellow>${nationName}</yellow>" +
-						" $roleString" +
+						roleString +
 						"<aqua>${player.username}</aqua> " +
 						"<dark_gray>»</dark_gray> "
 					).miniMessage().hoverEvent(ChannelManager.playerInfo(player)).append(

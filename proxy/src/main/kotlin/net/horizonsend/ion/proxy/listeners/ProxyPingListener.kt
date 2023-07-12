@@ -58,7 +58,7 @@ class ProxyPingListener {
 	fun startTask(): ProxyPingListener {
 		IonProxy.proxy.scheduler.buildTask(IonProxy) {
 			messages = generateMessages()
-		}.repeat(5, TimeUnit.MINUTES)
+		}.repeat(5, TimeUnit.MINUTES).schedule()
 
 		return this
 	}

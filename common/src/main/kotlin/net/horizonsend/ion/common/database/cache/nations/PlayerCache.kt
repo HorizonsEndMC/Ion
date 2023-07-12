@@ -28,14 +28,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 	// priority monitor so it happens after the insert in SLCore, which is at HIGHEST
 	fun callOnPreLogin(uuid: UUID) {
-		cache(uuid.slPlayerId, checkNotNull(SLPlayer[uuid]))
+		cache(uuid.slPlayerId, SLPlayer[uuid] ?: return)
 	}
 
 	// lowest in case anything uses this data in other join listeners, and since lowest join event
 	// is always after monitor async player pre login event, though the async player pre login event
 	// may not be called if the plugin is not registered when they initiate authentication, like in a restart
-	fun callOnLoginLow(uuid: UUID, isVelocity: Boolean = false) {
-		if (!PLAYER_DATA.containsKey(uuid) && !isVelocity) {
+	fun callOnLoginLow(uuid: UUID) {
+		if (!PLAYER_DATA.containsKey(uuid)) {
 			kickUUID(uuid, "<red>Failed to load data! Please try again.")
 		}
 	}

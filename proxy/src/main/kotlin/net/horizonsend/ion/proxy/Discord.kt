@@ -29,5 +29,5 @@ fun discord() {
 	DiscordCommands.setup()
 	IonProxy.proxy.scheduler.buildTask(IonProxy) {
 		discord?.presence?.setPresence(OnlineStatus.ONLINE, playing("with ${IonProxy.proxy.playerCount} players!"))
-	}.repeat(5, TimeUnit.SECONDS)
+	}.repeat(5, TimeUnit.SECONDS).schedule()
 }

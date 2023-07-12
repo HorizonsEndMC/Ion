@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.utils.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import java.time.Duration
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -42,7 +43,12 @@ object PlayerCache : AbstractPlayerCache() {
 
 	@Subscribe
 	fun login(e: ServerConnectedEvent) {
-		callOnLoginLow(e.player.uniqueId, true)
+		if (!PlayerCache.PLAYER_DATA.containsKey(e.player.uniqueId)) {
+			IonProxy.proxy.scheduler.buildTask(IonProxy) {
+				callOnPreLogin(e.player.uniqueId)
+				callOnLoginLow(e.player.uniqueId)
+			}.delay(Duration.ofSeconds(1)).schedule()
+		}
 	}
 
 	@Subscribe

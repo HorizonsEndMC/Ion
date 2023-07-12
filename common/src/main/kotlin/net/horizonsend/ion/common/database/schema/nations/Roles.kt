@@ -114,7 +114,7 @@ abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T 
 		.projection(colorProperty, nameProperty)
 		.firstOrNull()
 		?.projected(colorProperty, nameProperty)
-		?.let { "${it[colorProperty]}${it[nameProperty]}" }
+		?.let { "<${it[colorProperty]}>${it[nameProperty]}" }
 
 	fun delete(id: Oid<T>) {
 		col.deleteOneById(id)

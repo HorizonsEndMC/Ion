@@ -7,7 +7,7 @@ import net.kyori.adventure.text.format.TextColor
 
 interface Channel {
 	val name: String
-	val prefix: String
+	val prefix: String?
 	val displayName: String
 	val commands: List<String>
 	val color: TextColor

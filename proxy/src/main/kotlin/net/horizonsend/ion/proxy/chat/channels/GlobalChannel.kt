@@ -21,7 +21,7 @@ import java.io.File
 
 class GlobalChannel : Channel {
 	override val name = "global"
-	override val prefix = ""
+	override val prefix = null
 	override val displayName = "<dark_green>Global"
 	override val commands = listOf("global", "g")
 	override val color: TextColor = NamedTextColor.WHITE

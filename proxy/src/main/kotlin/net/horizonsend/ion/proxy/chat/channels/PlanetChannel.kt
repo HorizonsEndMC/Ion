@@ -12,7 +12,7 @@ class PlanetChannel : Channel {
 	override val name = "planet"
 	override val prefix = ""
 	override val displayName = "<blue>Planet"
-	override val commands = listOf("planet", "pl")
+	override val commands = listOf("planetchat", "pc")
 	override val color = NamedTextColor.BLUE
 	override val checkPermission = true
 

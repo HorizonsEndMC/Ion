@@ -121,12 +121,12 @@ object ChannelManager : IonComponent() {
 		val players =
 			if (channel.checkPermission)
 				channel.receivers(player)
-					.filter { it.lpHasPermission("ion.channel.${channel.name.lowercase()}") }
-			else channel.receivers(player)
+					.filter { it.lpHasPermission("ion.channel.${channel.name.lowercase()}") && it != player }
+			else channel.receivers(player).filterNot { it == player }
 
 		val userNation = PlayerCache[player].nationOid
 
-		players.forEach {
+		(players + player).forEach {
 			val relationColor =
 				userNation?.let { user ->
 					PlayerCache[it].nationOid?.let { RelationCache[it, user].textStyle }
@@ -134,14 +134,14 @@ object ChannelManager : IonComponent() {
 
 			it.sendMessage(
 				(
-					channel.prefix +
-						"<reset><${relationColor}>${userNation?.let { NationCache[it].name + " " } ?: ""}</$relationColor>" +
-						(user?.cachedData?.metaData?.prefix ?: " ") +
+					(channel.prefix?.let { "$it " } ?: "") +
+						"<reset><${relationColor}>${userNation?.let { NationCache[it].name.capitalize() + " " } ?: ""}</$relationColor>" +
+						(user?.cachedData?.metaData?.prefix ?: "") +
 						"<dark_gray>[<aqua>${PlayerCache[player].level}<dark_gray>] " + "<white>${player.username}</white>" +
 						(user?.cachedData?.metaData?.suffix ?: " ") +
 						"<dark_gray>»</dark_gray> "
 					).miniMessage().hoverEvent(playerInfo(player)).append(
-						if (player.hasPermission("ion.minimessage"))
+						if (player.lpHasPermission("ion.minimessage"))
 							e.message.miniMessage().color(channel.color)
 						else
 							text(
