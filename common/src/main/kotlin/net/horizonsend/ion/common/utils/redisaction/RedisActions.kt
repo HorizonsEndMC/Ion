@@ -86,7 +86,7 @@ object RedisActions : IonComponent() {
 		}
 	})
 
-	internal fun <Data> publish(messageId: String, data: Data, type: Type) {
+	fun <Data> publish(messageId: String, data: Data, type: Type) {
 		val content = gson.toJson(data, type)
 		val message = "$id:$messageId:$content"
 		executor.execute {
@@ -126,14 +126,14 @@ object RedisActions : IonComponent() {
 			}
 
 			try {
-					pluginMessage.castAndReceive(data)
+				pluginMessage.castAndReceive(data)
 			} catch (exception: Exception) {
-					log.error("Error while executing redis action $message", exception)
+				log.error("Error while executing redis action $message", exception)
 			}
 		}
 	}
 
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 }

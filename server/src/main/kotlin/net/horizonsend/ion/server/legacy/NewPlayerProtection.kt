@@ -5,22 +5,22 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import kotlin.math.pow
-import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
 import net.starlegacy.SETTINGS
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
-import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.feature.progression.PlayerXPLevelCache
+import net.starlegacy.util.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
+import kotlin.math.pow
 
 @CommandAlias("removeprotection")
 object NewPlayerProtection : BaseCommand() {
@@ -28,6 +28,13 @@ object NewPlayerProtection : BaseCommand() {
 
 	private val protectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
+
+	fun onEnable() {
+		Tasks.syncRepeat(5 * 20 * 60, 5 * 20 * 60) {
+			for (player in Bukkit.getOnlinePlayers())
+				player.updateProtection()
+		}
+	}
 
 	@Default
 	@Suppress("unused") // Command

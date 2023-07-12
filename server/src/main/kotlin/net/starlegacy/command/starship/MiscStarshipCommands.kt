@@ -36,7 +36,7 @@ import net.starlegacy.feature.starship.hyperspace.MassShadows
 import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import net.starlegacy.feature.starship.subsystem.NavCompSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
-import net.starlegacy.redis
+import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.horizonsend.ion.server.miscellaneous.parseData
 import net.starlegacy.util.distance

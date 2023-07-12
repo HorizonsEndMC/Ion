@@ -131,7 +131,7 @@ object PlayerXPLevelCache : IonServerComponent() {
 		block.invoke(this@PlayerXPLevelCache)
 	}
 
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 }

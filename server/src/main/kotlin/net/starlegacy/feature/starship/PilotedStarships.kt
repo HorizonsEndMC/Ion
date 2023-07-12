@@ -25,7 +25,7 @@ import net.starlegacy.feature.starship.subsystem.shield.ShieldSubsystem
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.listen
-import net.starlegacy.redis
+import net.horizonsend.ion.common.redis
 import net.starlegacy.util.Tasks
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.horizonsend.ion.server.miscellaneous.bukkitWorld

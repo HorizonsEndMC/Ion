@@ -16,6 +16,7 @@ dependencies {
 	compileOnly("net.kyori:adventure-text-logger-slf4j:4.14.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
 	compileOnly("net.md-5:bungeecord-chat:1.16-R0.1")
+	compileOnly("net.luckperms:api:5.4")
 
 	api(kotlin("reflect"))
 	api(kotlin("stdlib"))

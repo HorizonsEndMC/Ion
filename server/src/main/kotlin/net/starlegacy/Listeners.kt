@@ -9,7 +9,6 @@ import net.starlegacy.listener.gear.PowerArmorListener
 import net.starlegacy.listener.gear.PowerToolListener
 import net.starlegacy.listener.gear.SwordListener
 import net.starlegacy.listener.misc.BlockListener
-import net.starlegacy.listener.misc.ChatListener
 import net.starlegacy.listener.misc.EntityListener
 import net.starlegacy.listener.misc.FurnaceListener
 import net.starlegacy.listener.misc.InteractListener
@@ -21,7 +20,6 @@ import net.starlegacy.listener.nations.MovementListener
 
 val listeners = listOf(
 	JoinLeaveListener,
-	ChatListener,
 	MovementListener,
 	FriendlyFireListener,
 	ProtectionListener,

@@ -40,7 +40,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
-import redis.clients.jedis.Jedis
 import java.io.File
 import java.util.*
 
@@ -49,7 +48,6 @@ lateinit var SETTINGS: Config
 val sharedDataFolder by lazy { File(SETTINGS.sharedFolder).apply { mkdirs() } }
 
 fun legacyEnable(commandManager: PaperCommandManager) {
-	SETTINGS = loadConfig(IonServer.dataFolder, "config") // Setting
 	for (listeners in listeners) IonServer.server.pluginManager.registerEvents(listeners, IonServer) // Listeners
 	registerCommands(commandManager)
 	scheduleNationTasks()
@@ -64,8 +62,6 @@ fun legacyDisable() {
 	} catch (e: Exception) {
 		e.printStackTrace()
 	}
-
-	DBManager.onDisable()
 }
 
 fun scheduleNationTasks() {
@@ -213,4 +209,3 @@ inline fun <reified T : Event> listen(
 	)
 }
 
-fun <T> redis(block: Jedis.() -> T): T = DBManager.jedisPool.resource.use(block)

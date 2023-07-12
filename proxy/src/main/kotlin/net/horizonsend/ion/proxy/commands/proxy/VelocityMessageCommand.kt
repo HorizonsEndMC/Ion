@@ -7,7 +7,7 @@ import com.velocitypowered.api.event.connection.DisconnectEvent
 import com.velocitypowered.api.proxy.Player
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.proxy.IonProxy
-import net.horizonsend.ion.proxy.sendRichMessage
+import net.horizonsend.ion.proxy.utils.sendRichMessage
 import java.util.concurrent.CompletableFuture
 
 class VelocityMessageCommand : SimpleCommand {

@@ -13,6 +13,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 	/** Values should only be set here*/
 	data class PlayerData(
 		val id: SLPlayerId,
+		var xp: Int?,
+		var level: Int?,
 		var settlementOid: Oid<Settlement>?,
 		var nationOid: Oid<Nation>?,
 		var settlementTag: String?,
@@ -32,8 +34,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 	// lowest in case anything uses this data in other join listeners, and since lowest join event
 	// is always after monitor async player pre login event, though the async player pre login event
 	// may not be called if the plugin is not registered when they initiate authentication, like in a restart
-	fun callOnLoginLow(uuid: UUID) {
-		if (!PLAYER_DATA.containsKey(uuid)) {
+	fun callOnLoginLow(uuid: UUID, isVelocity: Boolean = false) {
+		if (!PLAYER_DATA.containsKey(uuid) && !isVelocity) {
 			kickUUID(uuid, "<red>Failed to load data! Please try again.")
 		}
 	}
@@ -73,6 +75,24 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					data.nationOid = newNation
 					data.nationTag = null // when leaving/joining a nation, you have no role either way
+				}
+			}
+
+			change[SLPlayer::xp]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val newNation = it.int()
+					data.xp = newNation
+				}
+			}
+
+			change[SLPlayer::level]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val newNation = it.int()
+					data.level = newNation
 				}
 			}
 		}
@@ -120,7 +140,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			NationRole.getTag(id)
 		}
 
-		PLAYER_DATA[id.uuid] = PlayerData(id, settlement, nation, settlementTag, nationTag)
+		PLAYER_DATA[id.uuid] = PlayerData(id, data.xp, data.level, settlement, nation, settlementTag, nationTag)
 	}
 	operator fun get(playerId: UUID): PlayerData = PLAYER_DATA[playerId]
 		?: error("Data wasn't cached for $playerId")

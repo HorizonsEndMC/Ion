@@ -6,12 +6,12 @@ import com.comphenix.protocol.ProtocolLibrary
 import github.scarsz.discordsrv.DiscordSRV
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.CommonConfig
-import net.horizonsend.ion.common.Configuration
+import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
-import net.horizonsend.ion.common.getUpdateMessage
+import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.client.networking.Packets
@@ -24,11 +24,13 @@ import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
+import net.horizonsend.ion.server.legacy.NewPlayerProtection
 import net.horizonsend.ion.server.miscellaneous.*
 import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
+import net.starlegacy.SETTINGS
 import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
@@ -39,6 +41,7 @@ import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
 import net.starlegacy.legacyDisable
 import net.starlegacy.legacyEnable
 import net.starlegacy.util.Notify
+import net.starlegacy.util.loadConfig
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.entity.Player
@@ -61,7 +64,6 @@ object IonServer : JavaPlugin() {
 	private fun internalEnable() {
 		PacketType.values().forEach { ProtocolLibrary.getProtocolManager().addPacketListener(IonPacketListener(it)) }
 		CommonConfig.init(IonServer.dataFolder)// s
-		DBManager.onEnable() // Database
 
 		prefixProvider = {
 			when (it) {
@@ -135,12 +137,15 @@ object IonServer : JavaPlugin() {
 		// such as reloading or other plugins doing things they probably shouldn't.
 		for (world in server.worlds) IonWorld.register(world.minecraft)
 
+		SETTINGS = loadConfig(IonServer.dataFolder, "config") // Setting
 		for (component in components) { // Components
 			component.onEnable()
 
 			if (component is IonServerComponent)
 			IonServer.server.pluginManager.registerEvents(component, IonServer)
 		}
+
+		NewPlayerProtection.onEnable()
 
 		legacyEnable(commandManager)
 

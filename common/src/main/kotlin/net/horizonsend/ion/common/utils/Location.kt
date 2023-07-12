@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common
+package net.horizonsend.ion.common.utils
 
 typealias IntLocation = Triple<Int, Int, Int>
 typealias DoubleLocation = Triple<Double, Double, Double>

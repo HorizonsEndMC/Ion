@@ -18,7 +18,7 @@ import java.util.Properties
 import kotlin.math.sqrt
 
 object Merchants : IonServerComponent() {
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 

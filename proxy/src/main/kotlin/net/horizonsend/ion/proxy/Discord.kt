@@ -10,17 +10,19 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.proxy.commands.DiscordCommands
 import java.util.concurrent.TimeUnit
 
-val discord = runCatching {
-	light(IonProxy.configuration.discordBotToken, enableCoroutines = true) {
-		setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
-		setMemberCachePolicy(MemberCachePolicy.ALL)
-		setChunkingFilter(ChunkingFilter.ALL)
-		disableCache(CacheFlag.values().toList())
-		setEnableShutdownHook(false)
+val discord by lazy {
+	runCatching {
+		light(IonProxy.configuration.discordBotToken, enableCoroutines = true) {
+			setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
+			setMemberCachePolicy(MemberCachePolicy.ALL)
+			setChunkingFilter(ChunkingFilter.ALL)
+			disableCache(CacheFlag.entries)
+			setEnableShutdownHook(false)
+		}
+	}.getOrElse {
+		IonProxy.logger.warn("discord error $it")
+		null
 	}
-}.getOrElse {
-	IonProxy.logger.warn("discord error $it")
-	null
 }
 
 fun discord() {

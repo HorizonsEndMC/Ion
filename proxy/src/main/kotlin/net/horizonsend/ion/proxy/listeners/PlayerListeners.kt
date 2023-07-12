@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.special
 import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.discord
-import net.horizonsend.ion.proxy.messageEmbed
+import net.horizonsend.ion.proxy.utils.messageEmbed
 import kotlin.jvm.optionals.getOrNull
 
 class PlayerListeners {

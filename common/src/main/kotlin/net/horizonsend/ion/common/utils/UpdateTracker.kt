@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common
+package net.horizonsend.ion.common.utils
 
 import java.io.File
 

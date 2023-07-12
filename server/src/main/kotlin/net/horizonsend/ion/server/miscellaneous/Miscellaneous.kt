@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
-import net.horizonsend.ion.common.DoubleLocation
+import net.horizonsend.ion.common.utils.DoubleLocation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import java.util.EnumSet
 import net.horizonsend.ion.server.IonServer
