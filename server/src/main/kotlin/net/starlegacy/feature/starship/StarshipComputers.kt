@@ -27,6 +27,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.miscellaneous.isPilot
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
 import net.starlegacy.feature.nations.region.Regions
@@ -241,36 +242,24 @@ object StarshipComputers : IonServerComponent() {
 			items.add(
 				guiButton(Material.BEACON) {
 					player.closeInventory()
-					player.beginConversation(
-						Conversation(
-							IonServer, player,
-							object : StringPrompt() {
-								override fun getPromptText(context: ConversationContext): String {
-									return "Enter player name:"
-								}
-
-								override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
-									if (input != null) {
-										Tasks.async {
-											val id = SLPlayer.findIdByName(input)
-											if (id == null) {
-												player.userError("Player not found")
-											} else {
-												DeactivatedPlayerStarships.addPilot(data, id)
-												data.pilots += id
-												PlayerStarshipData.updateById(
-													data._id,
-													addToSet(PlayerStarshipData::pilots, id)
-												)
-												player.success("Added $input as a pilot to starship.")
-											}
-										}
-									}
-									return null
-								}
+					player.input("Enter player name:") {p, input ->
+						Tasks.async {
+							val id = SLPlayer.findIdByName(input)
+							if (id == null) {
+								player.userError("Player not found")
+							} else {
+								DeactivatedPlayerStarships.addPilot(data, id)
+								data.pilots += id
+								PlayerStarshipData.updateById(
+									data._id,
+									addToSet(PlayerStarshipData::pilots, id)
+								)
+								player.success("Added $input as a pilot to starship.")
 							}
-						)
-					)
+						}
+
+						null
+					}
 				}.setName("Add Pilot")
 			)
 			Tasks.async {
