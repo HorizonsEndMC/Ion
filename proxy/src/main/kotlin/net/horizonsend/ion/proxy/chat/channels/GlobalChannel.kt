@@ -3,6 +3,7 @@ package net.horizonsend.ion.proxy.chat.channels
 import com.velocitypowered.api.event.player.PlayerChatEvent
 import com.velocitypowered.api.proxy.Player
 import dev.minn.jda.ktx.generics.getChannel
+import litebans.api.Database
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.horizonsend.ion.common.Colors
 import net.horizonsend.ion.common.extensions.userErrorAction
@@ -32,6 +33,10 @@ class GlobalChannel : Channel {
 	}
 
 	override fun processMessage(player: Player, event: PlayerChatEvent): Boolean {
+		if (Database.get().isPlayerMuted(player.uniqueId, null)) {
+			return false
+		}
+
 		if (event.message.split(" ").any { racism.contains(it) }) {
 			player.userErrorAction(
 				"You can't use that word! " +

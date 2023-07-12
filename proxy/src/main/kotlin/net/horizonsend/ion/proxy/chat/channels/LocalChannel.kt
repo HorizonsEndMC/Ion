@@ -3,6 +3,7 @@ package net.horizonsend.ion.proxy.chat.channels
 import com.google.gson.reflect.TypeToken
 import com.velocitypowered.api.event.player.PlayerChatEvent
 import com.velocitypowered.api.proxy.Player
+import litebans.api.Database
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
 import net.horizonsend.ion.proxy.chat.Channel
 import net.kyori.adventure.text.format.NamedTextColor
@@ -17,6 +18,10 @@ class LocalChannel : Channel {
 	override val checkPermission = true
 
 	override fun processMessage(player: Player, event: PlayerChatEvent): Boolean {
+		if (Database.get().isPlayerMuted(player.uniqueId, null)) {
+			return false
+		}
+
 		RedisActions.publish<Pair<UUID, String>>(
 			"local-chat",
 			player.uniqueId to event.message,

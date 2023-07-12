@@ -21,6 +21,7 @@ dependencies {
 
 	// Platform
 	compileOnly("com.velocitypowered:velocity-api:3.1.1")
+	compileOnly("com.gitlab.ruany", "LiteBansAPI", "0.3.5")
 
 	// Other Plugins
 	compileOnly("net.luckperms:api:5.4")
