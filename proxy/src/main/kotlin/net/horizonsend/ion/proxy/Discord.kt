@@ -1,6 +1,8 @@
 package net.horizonsend.ion.proxy
 
+import com.velocitypowered.api.proxy.Player
 import dev.minn.jda.ktx.jdabuilder.light
+import litebans.api.Database
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity.playing
 import net.dv8tion.jda.api.requests.GatewayIntent

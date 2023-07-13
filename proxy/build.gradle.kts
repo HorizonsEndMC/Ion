@@ -25,7 +25,6 @@ dependencies {
 
 	// Other Plugins
 	compileOnly("net.luckperms:api:5.4")
-	compileOnly("dev.simplix:protocolize-api:2.3.0")
 
 	// Included Dependencies
 	implementation("net.dv8tion:JDA:5.0.0-beta.12")

@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.chat.Channel
 import net.horizonsend.ion.proxy.discord
+import net.horizonsend.ion.proxy.utils.isMuted
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
@@ -33,9 +34,8 @@ class GlobalChannel : Channel {
 	}
 
 	override fun processMessage(player: Player, event: PlayerChatEvent): Boolean {
-		if (Database.get().isPlayerMuted(player.uniqueId, null)) {
+		if (player.isMuted())
 			return false
-		}
 
 		if (event.message.split(" ").any { racism.contains(it) }) {
 			player.userErrorAction(
