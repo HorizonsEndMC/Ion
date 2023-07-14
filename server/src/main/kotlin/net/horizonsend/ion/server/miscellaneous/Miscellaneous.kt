@@ -8,10 +8,12 @@ import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
+import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Shulker
+import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.level.chunk.ChunkStatus
 import net.starlegacy.util.Tasks
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
@@ -51,6 +53,19 @@ fun mainThreadCheck() {
 			"This function may be unsafe to use asynchronously.",
 			Throwable()
 		)
+	}
+}
+
+fun Player.worldBorderEffect(duration: Long) {
+	val start = ClientboundSetBorderWarningDistancePacket(WorldBorder().apply { this.warningBlocks = Int.MAX_VALUE })
+	val end = ClientboundSetBorderWarningDistancePacket(
+		WorldBorder().apply { this.warningBlocks = this@worldBorderEffect.worldBorder?.warningDistance ?: 0 }
+	)
+
+	this.minecraft.connection.send(start)
+
+	Tasks.syncDelayTask(duration) {
+		this.minecraft.connection.send(end)
 	}
 }
 

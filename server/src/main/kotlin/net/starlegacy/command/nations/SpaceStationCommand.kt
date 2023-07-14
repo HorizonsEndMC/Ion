@@ -202,7 +202,9 @@ object SpaceStationCommand : SLCommand() {
 		val station = SpaceStations.spaceStationCache[name].get()
 
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		Notify.all(MiniMessage.miniMessage().deserialize("<light_purple>${station.ownerName} <gray>established space station <aqua>$name"))
+		Notify.all(MiniMessage.miniMessage().deserialize(
+			"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>established space station <aqua>$name")
+		)
 	}
 
 	private fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
