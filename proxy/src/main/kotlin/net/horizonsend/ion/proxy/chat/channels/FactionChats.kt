@@ -131,7 +131,10 @@ class AllyChat : Channel {
 
 	override fun receivers(player: Player): List<Player> {
 		return super.receivers(player)
-			.filter { RelationCache[PlayerCache[it].nationOid!!, PlayerCache[player].nationOid!!].ordinal >= NationRelation.Level.ALLY.ordinal }
+			.filter {
+				NationRelation.getRelationActual(PlayerCache[player].nationOid ?: return@filter false,
+					PlayerCache[it].nationOid ?: return@filter false).ordinal >= NationRelation.Level.ALLY.ordinal
+			}
 	}
 
 	override fun processMessage(player: Player, e: PlayerChatEvent): Boolean {
