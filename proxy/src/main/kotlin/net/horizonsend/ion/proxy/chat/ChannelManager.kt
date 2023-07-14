@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.miniMessage
 import net.horizonsend.ion.common.redis
@@ -64,8 +65,13 @@ object ChannelManager : IonComponent() {
 						val player = invocation.source() as? Player
 						val oldChannel = localCache[player?.uniqueId] ?: global
 
+						if (player?.lpHasPermission("ion.chat.${channel.name.lowercase()}") != true) {
+							player?.userError("You don't have access to that chat.")
+							return
+						}
+
 						if (oldChannel == channel) {
-							player?.userErrorAction(
+							player.userErrorAction(
 								"""
 									<red>You're already in chat ${channel.displayName.uppercase(Locale.getDefault())}<red>!" <italic>(Hint: To get back to global, use /global)
 									""".trimIndent()
@@ -73,9 +79,9 @@ object ChannelManager : IonComponent() {
 
 							return
 						} else {
-							localCache[player?.uniqueId] = channel
+							localCache[player.uniqueId] = channel
 
-							player?.informationAction(
+							player.informationAction(
 								"""
 									<white>Switched to ${channel.displayName.uppercase(Locale.getDefault())}<white> chat! <white>To switch back to your previous chat, use '/${oldChannel.commands.first()}'
 									""".trimIndent()
@@ -84,7 +90,7 @@ object ChannelManager : IonComponent() {
 
 						IonProxy.proxy.scheduler.buildTask(IonProxy) {
 							redis {
-								player?.uniqueId?.let {
+								player.uniqueId?.let {
 									set(redisKey(it), channel.name)
 								}
 							}

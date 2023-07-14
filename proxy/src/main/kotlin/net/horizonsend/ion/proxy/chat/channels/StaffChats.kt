@@ -76,7 +76,7 @@ class ServerChat : Channel {
 	override val name = "server"
 	override val prefix = "<aqua><bold>Server"
 	override val displayName = "<aqua>Server"
-	override val commands = listOf("serverchat")
+	override val commands = listOf("serverlocal")
 	override val color = NamedTextColor.GREEN
 	override val checkPermission = true
 
