@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.legacy.starshipweapon.secondary.SonicMissileWe
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 

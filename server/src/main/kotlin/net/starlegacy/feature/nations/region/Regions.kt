@@ -2,19 +2,23 @@ package net.starlegacy.feature.nations.region
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
-import net.horizonsend.ion.common.database.*
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
-import net.horizonsend.ion.common.database.schema.nations.CapturableStation
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.SettlementRole
-import net.horizonsend.ion.common.database.schema.nations.SettlementZone
-import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
-import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
-import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.SettlementCache
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.OidDbObjectCompanion
+import net.horizonsend.ion.server.database.containsUpdated
+import net.horizonsend.ion.server.database.oid
+import net.horizonsend.ion.server.database.schema.nations.CapturableStation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.SettlementRole
+import net.horizonsend.ion.server.database.schema.nations.SettlementZone
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
 import net.starlegacy.feature.nations.region.types.Region
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionParent
@@ -168,8 +172,8 @@ object Regions : SLComponent() {
 	inline fun <reified T : Region<*>> getAllOf(): Iterable<T> = getAllOf(T::class)
 
 	private inline fun <reified A : DbObject, reified B : Region<A>> registerRegionType(
-		objectCompanion: OidDbObjectCompanion<A>,
-		crossinline createNew: (A) -> B
+        objectCompanion: OidDbObjectCompanion<A>,
+        crossinline createNew: (A) -> B
 	) {
 		// cache all existing ones
 		objectCompanion.all().map(createNew).forEach(cache::add)

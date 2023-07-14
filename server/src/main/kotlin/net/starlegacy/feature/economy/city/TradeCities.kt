@@ -1,15 +1,15 @@
 package net.starlegacy.feature.economy.city
 
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.enumValue
-import net.horizonsend.ion.common.database.get
-import net.horizonsend.ion.common.database.nullable
-import net.horizonsend.ion.common.database.oid
-import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.starlegacy.cache.nations.SettlementCache
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.enumValue
+import net.horizonsend.ion.server.database.get
+import net.horizonsend.ion.server.database.nullable
+import net.horizonsend.ion.server.database.oid
+import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.Territory
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import java.util.concurrent.ConcurrentHashMap
 

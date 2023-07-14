@@ -6,12 +6,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.server.database.schema.Cryopod
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
@@ -19,7 +19,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.isFlyable
 import net.starlegacy.feature.starship.subsystem.CryoSubsystem
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY

@@ -1,10 +1,10 @@
 package net.starlegacy.listener.nations
 
-import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.starlegacy.SETTINGS
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.starlegacy.cache.nations.PlayerCache
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
 import net.starlegacy.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType

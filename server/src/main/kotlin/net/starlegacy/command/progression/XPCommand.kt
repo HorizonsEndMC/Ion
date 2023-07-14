@@ -5,8 +5,8 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.MAX_LEVEL
 import org.bukkit.command.CommandSender

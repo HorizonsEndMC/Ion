@@ -14,8 +14,10 @@ import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE
+import net.minecraft.resources.ResourceLocation
+import net.starlegacy.cache.nations.NationCache
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
 import net.starlegacy.feature.space.SpaceWorlds
 import net.starlegacy.util.Tasks
 import org.bukkit.Color

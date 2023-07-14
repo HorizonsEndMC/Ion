@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.server.database.schema.nations.CapturableStation
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import org.bukkit.entity.Player

@@ -10,7 +10,7 @@ import net.starlegacy.feature.transport.transportConfig
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.MATERIALS
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.chunkKeyX
@@ -144,14 +144,14 @@ object Pipes : SLComponent() {
 	 * @param source The coordinates of the inventory block extracted from
 	 */
 	fun startPipeChain(
-        world: World,
-        x: Int,
-        y: Int,
-        z: Int,
-        dir: BlockFace,
-        source: Vec3i,
-        extractor: Vec3i,
-        filteredItems: Set<FilterItemData>
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		dir: BlockFace,
+		source: Vec3i,
+		extractor: Vec3i,
+		filteredItems: Set<FilterItemData>
 	) {
 		thread.submit {
 			step(PipeChainData(source, extractor, world, x, y, z, dir, 0, filteredItems))

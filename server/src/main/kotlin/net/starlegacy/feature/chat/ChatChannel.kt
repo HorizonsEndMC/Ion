@@ -1,7 +1,7 @@
 package net.starlegacy.feature.chat
 
 import github.scarsz.discordsrv.DiscordSRV
-import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.NodeEqualityPredicate
@@ -10,13 +10,13 @@ import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.TextComponent
 import net.starlegacy.SETTINGS
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
-import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
-import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.SettlementCache
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.utils.hover
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.SLXP
@@ -357,8 +357,8 @@ private data class NormalChatMessage(
 ) : ChatMessage()
 
 private data class NationsChatMessage<A : DbObject>(
-	val id: Oid<A>,
-	override val prefix: String,
-	override val message: String,
-	override val playerInfo: String
+    val id: Oid<A>,
+    override val prefix: String,
+    override val message: String,
+    override val playerInfo: String
 ) : ChatMessage()

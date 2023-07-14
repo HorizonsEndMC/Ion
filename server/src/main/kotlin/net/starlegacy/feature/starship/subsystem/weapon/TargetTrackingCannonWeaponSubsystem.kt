@@ -1,14 +1,14 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 abstract class TargetTrackingCannonWeaponSubsystem(
-    starship: ActiveStarship,
-    pos: Vec3i,
-    face: BlockFace
+	starship: ActiveStarship,
+	pos: Vec3i,
+	face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face) {
 	override val convergeDist: Double = 0.0 // not needed since the adjusted direction is overridden
 	override val angleRadians: Double = Math.toRadians(180.0) // unrestricted

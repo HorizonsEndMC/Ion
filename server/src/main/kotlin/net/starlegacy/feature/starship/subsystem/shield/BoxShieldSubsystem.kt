@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship.subsystem.shield
 
 import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
 import org.bukkit.block.Block

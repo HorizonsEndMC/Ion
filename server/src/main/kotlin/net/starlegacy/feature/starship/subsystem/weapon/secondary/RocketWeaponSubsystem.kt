@@ -11,7 +11,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsuming
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.RocketProjectile
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.vectorToBlockFace
@@ -21,10 +21,10 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class RocketWeaponSubsystem(
-    starship: ActiveStarship,
-    pos: Vec3i,
-    override var face: BlockFace,
-    private val multiblock: RocketStarshipWeaponMultiblock
+	starship: ActiveStarship,
+	pos: Vec3i,
+	override var face: BlockFace,
+	private val multiblock: RocketStarshipWeaponMultiblock
 ) : WeaponSubsystem(starship, pos),
 	HeavyWeaponSubsystem,
 	DirectionalSubsystem,

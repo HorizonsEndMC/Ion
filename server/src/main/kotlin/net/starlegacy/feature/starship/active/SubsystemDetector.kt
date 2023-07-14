@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.active
 
-import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.server.database.schema.Cryopod
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblock
@@ -24,7 +24,7 @@ import net.starlegacy.feature.starship.subsystem.thruster.ThrusterSubsystem
 import net.starlegacy.feature.starship.subsystem.thruster.ThrusterType
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isFroglight
 import net.starlegacy.util.isWallSign

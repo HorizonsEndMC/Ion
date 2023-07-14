@@ -9,12 +9,12 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.common.database.schema.space.Star
+import net.horizonsend.ion.server.database.schema.space.Star
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.command.CommandSender

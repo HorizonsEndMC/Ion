@@ -14,7 +14,7 @@ import net.starlegacy.SLComponent
 import net.starlegacy.command.starship.BlueprintCommand
 import net.starlegacy.feature.nations.gui.item
 import net.starlegacy.util.MenuHelper
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
 import net.starlegacy.util.placeSchematicEfficiently

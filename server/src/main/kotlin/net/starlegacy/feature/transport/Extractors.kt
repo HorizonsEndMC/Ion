@@ -9,7 +9,7 @@ import net.starlegacy.feature.transport.pipe.filter.Filters
 import net.starlegacy.listen
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.coordinates
 import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.getBlockTypeSafe

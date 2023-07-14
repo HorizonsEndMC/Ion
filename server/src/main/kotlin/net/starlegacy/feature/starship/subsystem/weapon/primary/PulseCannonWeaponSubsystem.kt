@@ -8,7 +8,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PulseLaserProjectile
 import net.starlegacy.util.STAINED_GLASS_TYPES
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import org.bukkit.Color
 import org.bukkit.DyeColor
 import org.bukkit.Location

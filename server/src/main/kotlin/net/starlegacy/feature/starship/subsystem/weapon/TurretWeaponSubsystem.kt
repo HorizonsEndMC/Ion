@@ -5,7 +5,7 @@ import net.starlegacy.feature.multiblock.starshipweapon.turret.TurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.vectorToBlockFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -13,9 +13,9 @@ import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
 
 abstract class TurretWeaponSubsystem(
-    ship: ActiveStarship,
-    pos: Vec3i,
-    override var face: BlockFace
+	ship: ActiveStarship,
+	pos: Vec3i,
+	override var face: BlockFace
 ) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
 	private fun getSign() = starship.serverLevel.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign
 

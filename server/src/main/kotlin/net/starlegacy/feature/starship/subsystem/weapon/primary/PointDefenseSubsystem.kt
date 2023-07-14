@@ -1,12 +1,13 @@
 package net.starlegacy.feature.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
+import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.randomDouble
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player

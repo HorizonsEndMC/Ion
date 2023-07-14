@@ -10,10 +10,10 @@ import net.horizonsend.ion.common.extensions.success
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.common.database.schema.economy.BazaarItem
-import net.horizonsend.ion.common.database.schema.economy.CityNPC
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.server.database.schema.economy.BazaarItem
+import net.horizonsend.ion.server.database.schema.economy.CityNPC
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.city.CityNPCs
@@ -32,7 +32,6 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.displayNameString
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.util.roundToHundredth
 import net.starlegacy.util.toCreditsString
 import org.bukkit.DyeColor

@@ -2,23 +2,23 @@ package net.horizonsend.ion.server.features.spacestations
 
 import com.mongodb.client.result.UpdateResult
 import net.horizonsend.ion.server.features.spacestations.SpaceStations.SpaceStationPermission
-import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.schema.nations.NationRole
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.SettlementRole
-import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
-import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
-import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
-import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
-import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
-import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.horizonsend.ion.server.database.DbObject
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.NationRole
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.SettlementRole
+import net.horizonsend.ion.server.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationInterface
+import net.horizonsend.ion.server.database.schema.nations.spacestation.SpaceStationCompanion
+import net.horizonsend.ion.server.database.uuid
+import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.util.squared
 import org.bukkit.Bukkit
@@ -42,7 +42,7 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 	abstract var trustedSettlements: Set<Oid<Settlement>>
 	abstract var trustedNations: Set<Oid<Nation>>
 
-	abstract var trustLevel: SpaceStationCompanion.TrustLevel
+	abstract var trustLevel: SpaceStations.TrustLevel
 
 	abstract val companion: C
 
@@ -79,7 +79,7 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 	fun unTrustPlayer(player: SLPlayerId): UpdateResult = companion.unTrustPlayer(databaseId, player)
 	fun unTrustSettlement(id: Oid<Settlement>): UpdateResult = companion.unTrustSettlement(databaseId, id)
 	fun unTrustNation(id: Oid<Nation>): UpdateResult = companion.unTrustNation(databaseId, id)
-	fun changeTrustLevel(level: SpaceStationCompanion.TrustLevel): UpdateResult = companion.setTrustLevel(databaseId, level)
+	fun changeTrustLevel(level: SpaceStations.TrustLevel): UpdateResult = companion.setTrustLevel(databaseId, level)
 
 	fun abandon() = companion.delete(databaseId)
 
@@ -118,7 +118,7 @@ class CachedNationSpaceStation(
 	override var trustedPlayers: Set<SLPlayerId>,
 	override var trustedSettlements: Set<Oid<Settlement>>,
 	override var trustedNations: Set<Oid<Nation>>,
-	override var trustLevel: SpaceStationCompanion.TrustLevel,
+	override var trustLevel: SpaceStations.TrustLevel,
 ) : CachedSpaceStation<NationSpaceStation, Nation, NationSpaceStation.Companion>() {
 	override val companion = NationSpaceStation.Companion
 	override val ownerName: String get() = NationCache[owner].name
@@ -146,7 +146,7 @@ class CachedSettlementSpaceStation(
 	override var trustedPlayers: Set<SLPlayerId>,
 	override var trustedSettlements: Set<Oid<Settlement>>,
 	override var trustedNations: Set<Oid<Nation>>,
-	override var trustLevel: SpaceStationCompanion.TrustLevel,
+	override var trustLevel: SpaceStations.TrustLevel,
 ) : CachedSpaceStation<SettlementSpaceStation, Settlement, SettlementSpaceStation.Companion>() {
 	override val companion = SettlementSpaceStation.Companion
 	override val ownerName: String get() = SettlementCache[owner].name
@@ -174,7 +174,7 @@ class CachedPlayerSpaceStation(
 	override var trustedPlayers: Set<SLPlayerId>,
 	override var trustedSettlements: Set<Oid<Settlement>>,
 	override var trustedNations: Set<Oid<Nation>>,
-	override var trustLevel: SpaceStationCompanion.TrustLevel,
+	override var trustLevel: SpaceStations.TrustLevel,
 ) : CachedSpaceStation<PlayerSpaceStation, SLPlayer, PlayerSpaceStation.Companion>() {
 	override val companion = PlayerSpaceStation.Companion
 	override val ownerName = Bukkit.getPlayer(owner.uuid)?.name ?: SLPlayer.getName(owner) ?: error("No such player $owner")

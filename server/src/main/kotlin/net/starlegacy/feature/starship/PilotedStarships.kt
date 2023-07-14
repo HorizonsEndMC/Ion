@@ -12,9 +12,9 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.event.StarshipPilotEvent
@@ -27,10 +27,7 @@ import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.listen
 import net.horizonsend.ion.common.redis
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.horizonsend.ion.server.miscellaneous.bukkitWorld
-import net.horizonsend.ion.server.miscellaneous.createData
-import net.horizonsend.ion.server.miscellaneous.isPilot
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
@@ -169,7 +166,7 @@ object PilotedStarships : SLComponent() {
 
 			return false
 		}
-		if (!StarshipType.valueOf(data.starshipType).canUse(player)) {
+		if (!data.starshipType.canUse(player)) {
 			player.userErrorActionMessage("You are not high enough level to pilot this!")
 			return false
 		}
@@ -321,12 +318,12 @@ object PilotedStarships : SLComponent() {
 	}
 
 	fun getDisplayName(data: PlayerStarshipData): String {
-		return data.name ?: StarshipType.valueOf(data.starshipType).formatted
+		return data.name ?: data.starshipType.formatted
 	}
 
 	fun getDisplayNameComponent(data: PlayerStarshipData): Component = data.name?.let {
 		MiniMessage.miniMessage().deserialize(it)
-	} ?: MiniMessage.miniMessage().deserialize(StarshipType.valueOf(data.starshipType).formatted)
+	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.formatted)
 
 	fun getRawDisplayName(data: PlayerStarshipData): String {
 		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()

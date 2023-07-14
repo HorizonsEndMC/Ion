@@ -8,7 +8,7 @@ import net.starlegacy.feature.misc.removePower
 import net.starlegacy.listen
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.distanceSquared
 import net.starlegacy.util.isInside
 import net.starlegacy.util.squared

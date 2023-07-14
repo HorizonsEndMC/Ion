@@ -8,7 +8,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.Projectiles
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.nms

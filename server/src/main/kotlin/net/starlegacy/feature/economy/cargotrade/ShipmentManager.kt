@@ -1,20 +1,20 @@
 package net.starlegacy.feature.economy.cargotrade
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.trade.CargoCrates
-import net.horizonsend.ion.common.database.schema.economy.CargoCrate
-import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
-import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.CapturableStation
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.slPlayerId
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.trade.CargoCrates
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.economy.CargoCrate
+import net.horizonsend.ion.server.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.CapturableStation
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.slPlayerId
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.feature.economy.city.TradeCityType
@@ -43,7 +43,6 @@ import net.starlegacy.util.randomDouble
 import net.starlegacy.util.red
 import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.setLoreAndGet
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.withNBTString
@@ -539,10 +538,10 @@ object ShipmentManager : SLComponent() {
 	}
 
 	private fun createBoxedCrateItem(
-		itemStack: ItemStack,
-		shipment: UnclaimedShipment,
-		shipmentId: Oid<CargoCrateShipment>,
-		expires: Date
+        itemStack: ItemStack,
+        shipment: UnclaimedShipment,
+        shipmentId: Oid<CargoCrateShipment>,
+        expires: Date
 	): ItemStack {
 		val destination: RegionTerritory = Regions[shipment.to.territoryId]
 		val systemName = Space.planetNameCache[destination.world].orNull()?.spaceWorldName

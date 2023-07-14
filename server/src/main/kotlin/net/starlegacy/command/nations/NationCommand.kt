@@ -21,20 +21,20 @@ import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.nations.PlayerCache
-import net.horizonsend.ion.server.features.cache.nations.RelationCache
-import net.horizonsend.ion.server.features.cache.nations.SettlementCache
+import net.starlegacy.cache.nations.NationCache
+import net.starlegacy.cache.nations.PlayerCache
+import net.starlegacy.cache.nations.RelationCache
+import net.starlegacy.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
-import net.horizonsend.ion.common.database.schema.nations.NationRole
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.NationRelation
+import net.horizonsend.ion.server.database.schema.nations.NationRole
+import net.horizonsend.ion.server.database.schema.nations.Settlement
+import net.horizonsend.ion.server.database.schema.nations.Territory
+import net.horizonsend.ion.server.database.uuid
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
@@ -642,9 +642,9 @@ internal object NationCommand : SLCommand() {
 		val leaderRoleComp = leaderRole?.let { leader ->
 			text(leader.name).color(
 				color(
-					SLTextStyle.valueOf(leader.color).wrappedColor.color.red,
-					SLTextStyle.valueOf(leader.color).wrappedColor.color.green,
-					SLTextStyle.valueOf(leader.color).wrappedColor.color.blue
+					leader.color.wrappedColor.color.red,
+					leader.color.wrappedColor.color.green,
+					leader.color.wrappedColor.color.blue
 				)
 			)
 		} ?: text()

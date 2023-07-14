@@ -13,7 +13,7 @@ import com.sk89q.worldedit.session.ClipboardHolder
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.command.SLCommand
-import net.horizonsend.ion.common.database.schema.misc.Shuttle
+import net.horizonsend.ion.server.database.schema.misc.Shuttle
 import net.starlegacy.feature.misc.Shuttles
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.isAlphanumeric

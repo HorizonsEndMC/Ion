@@ -10,7 +10,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.StarshipWeapons
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.actionAndMsg
 import net.starlegacy.util.isInRange
 import net.starlegacy.util.msg

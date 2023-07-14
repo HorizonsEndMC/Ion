@@ -12,7 +12,7 @@ import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotEvent
 import net.starlegacy.listen
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.execConsoleCmd
 import net.starlegacy.util.gray
 import net.starlegacy.util.msg

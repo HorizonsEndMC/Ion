@@ -1,6 +1,6 @@
 package net.starlegacy.feature.economy.collectors
 
-import net.horizonsend.ion.common.database.schema.economy.CollectedItem
+import net.horizonsend.ion.server.database.schema.economy.CollectedItem
 
 /**
  * @property item The base item stack this mission is collecting

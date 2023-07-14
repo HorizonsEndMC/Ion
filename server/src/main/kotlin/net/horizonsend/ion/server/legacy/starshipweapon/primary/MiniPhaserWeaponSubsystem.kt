@@ -7,7 +7,7 @@ import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -16,9 +16,9 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class MiniPhaserWeaponSubsystem(
-    starship: ActiveStarship,
-    pos: Vec3i,
-    face: BlockFace
+	starship: ActiveStarship,
+	pos: Vec3i,
+	face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face),
 	AmmoConsumingWeaponSubsystem {
 	override val length: Int = IonServer.balancing.starshipWeapons.miniPhaser.length

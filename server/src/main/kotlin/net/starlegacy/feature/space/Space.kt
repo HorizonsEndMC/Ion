@@ -4,11 +4,11 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.space.Planet
-import net.horizonsend.ion.common.database.schema.space.Star
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.space.Planet
+import net.horizonsend.ion.server.database.schema.space.Star
 import net.starlegacy.listen
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.optional
 import org.bukkit.Bukkit
 import org.bukkit.Material

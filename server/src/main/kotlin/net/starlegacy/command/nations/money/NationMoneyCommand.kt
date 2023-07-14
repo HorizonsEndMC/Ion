@@ -5,9 +5,9 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.server.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.Oid
+import net.horizonsend.ion.server.database.schema.nations.NationRole
 import net.starlegacy.command.nations.money.MoneyCommand
 import org.bukkit.entity.Player
 

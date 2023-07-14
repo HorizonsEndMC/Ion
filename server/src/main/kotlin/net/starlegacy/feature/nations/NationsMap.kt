@@ -1,13 +1,10 @@
 package net.starlegacy.feature.nations
 
-import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.database.schema.nations.Nation
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.server.features.cache.nations.NationCache
-import net.horizonsend.ion.common.database.get
-import net.horizonsend.ion.common.database.int
-import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.string
+import net.starlegacy.cache.nations.NationCache
+import net.horizonsend.ion.server.database.schema.nations.NPCTerritoryOwner
+import net.horizonsend.ion.server.database.schema.nations.Settlement
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
@@ -20,7 +17,6 @@ import org.dynmap.markers.AreaMarker
 import org.dynmap.markers.CircleMarker
 import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
-import java.io.Closeable
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object NationsMap : SLComponent() {
@@ -37,28 +33,16 @@ object NationsMap : SLComponent() {
 		get() = markerAPI.getMarkerSet("nations")
 			?: markerAPI.createMarkerSet("nations", "Nations, Settlements, & Stations", null, false)
 
-	private lateinit var updates: Closeable
-
 	override fun onEnable() {
 		if (!dynmapLoaded) {
 			log.warn("Dynmap not loaded!")
-		}
-
-		updates = Nation.watchUpdates { change ->
-			change[Nation::name]?.let {
-				updateOwners()
-			}
-
-			change[Nation::color]?.let {
-				updateOwners()
-			}
 		}
 
 		reloadDynmap()
 	}
 
 	override fun onDisable() {
-		updates.close()
+		// empty
 	}
 
 	fun reloadDynmap() = syncOnly {
