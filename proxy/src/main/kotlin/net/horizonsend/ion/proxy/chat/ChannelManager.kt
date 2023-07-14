@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
@@ -20,10 +21,8 @@ import net.horizonsend.ion.proxy.IonProxy
 import net.horizonsend.ion.proxy.chat.channels.*
 import net.horizonsend.ion.proxy.features.cache.PlayerCache
 import net.horizonsend.ion.proxy.lpHasPermission
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import java.util.*
 
@@ -132,41 +131,30 @@ object ChannelManager : IonComponent() {
 			else channel.receivers(player).filterNot { it == player }
 
 		val userNation = PlayerCache[player].nationOid
-		val channelPrefixComponent = channel.prefix?.miniMessage()?.append(text(" ")) ?: empty()
-		val playerPrefixComponent = user?.cachedData?.metaData?.prefix?.miniMessage() ?: empty()
-		val playerSuffixComponent = user?.cachedData?.metaData?.suffix?.miniMessage() ?: empty()
 
 		(players + player).forEach {
 			val relationColor =
 				userNation?.let { user ->
-					PlayerCache[it].nationOid?.let { RelationCache[it, user].color }
-				} ?: NamedTextColor.WHITE
+					PlayerCache[it].nationOid?.let { RelationCache[it, user].textStyle }
+				} ?: NationRelation.Level.NONE.textStyle
 
 			it.sendMessage(
-				text().append(
-					channelPrefixComponent,
-					(userNation?.let { text(NationCache[it].name.capitalize() + " ") } ?: empty()).color(relationColor),
-
-					playerPrefixComponent,
-
-					text("[").color(NamedTextColor.DARK_GRAY),
-					text((PlayerCache[player].level ?: 1)).color(NamedTextColor.AQUA),
-					text("]").color(NamedTextColor.DARK_GRAY),
-					text(" "),
-					text(player.username).color(NamedTextColor.WHITE),
-
-					playerSuffixComponent,
-
-					text(" » ").color(NamedTextColor.DARK_GRAY),
-				).hoverEvent(playerInfo(player)).append(
-					if (player.lpHasPermission("ion.minimessage"))
-						e.message.miniMessage().color(channel.color)
-					else
-						text(
-							MiniMessage.miniMessage()
-								.stripTags(e.message)
-						).color(channel.color)
-				)
+				(
+					(channel.prefix?.let { "$it " } ?: "") +
+						"<reset><${relationColor}>${userNation?.let { NationCache[it].name.capitalize() + " " } ?: ""}</$relationColor>" +
+						(user?.cachedData?.metaData?.prefix ?: "") +
+						"<dark_gray>[<aqua>${PlayerCache[player].level}<dark_gray>] " + "<white>${player.username}</white>" +
+						(user?.cachedData?.metaData?.suffix ?: " ") +
+						"<dark_gray>»</dark_gray> "
+					).miniMessage().hoverEvent(playerInfo(player)).append(
+						if (player.lpHasPermission("ion.minimessage"))
+							e.message.miniMessage().color(channel.color)
+						else
+							text(
+								MiniMessage.miniMessage()
+									.stripTags(e.message)
+							).color(channel.color)
+					)
 			)
 		}
 	}
