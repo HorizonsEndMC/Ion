@@ -18,6 +18,7 @@ import net.starlegacy.command.misc.DyeCommand
 import net.starlegacy.command.misc.GToggleCommand
 import net.starlegacy.command.misc.GlobalGameRuleCommand
 import net.starlegacy.command.misc.ListCommand
+import net.starlegacy.command.misc.MultiblockCommand
 import net.starlegacy.command.misc.PlayerInfoCommand
 import net.starlegacy.command.misc.ShuttleCommand
 import net.starlegacy.command.misc.TransportDebugCommand
@@ -105,5 +106,7 @@ val commands = listOf(
 	Starships(),
 	GracePeriod,
 	NewPlayerProtection,
-	AdminCommands
+	AdminCommands,
+
+	MultiblockCommand()
 )

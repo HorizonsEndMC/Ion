@@ -39,6 +39,11 @@ import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass3
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.misc.MobDefender
@@ -85,11 +90,9 @@ import net.starlegacy.feature.multiblock.starshipweapon.turret.BottomTriTurretMu
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.starlegacy.feature.multiblock.starshipweapon.turret.TopTriTurretMultiblock
-import net.starlegacy.util.getFacing
-import net.starlegacy.util.getRelativeIfLoaded
 import org.bukkit.Location
-import org.bukkit.block.Block
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
@@ -297,20 +300,36 @@ object Multiblocks : IonServerComponent() {
 				"Improperly built ${lastMatch.name}. Make sure every block is correctly placed!"
 			)
 
-			val face = sign.getFacing().oppositeFace
-			lastMatch.shape.getRequirementMap(face).forEach { (coords, requirement) ->
-				val x = coords.x
-				val y = coords.y
-				val z = coords.z
-				val relative: Block = sign.block.getRelativeIfLoaded(x, y, z) ?: return
-
-				val requirementMet = requirement(relative, face)
-				if (!requirementMet) {
-					player.userError(
-						"Block at ${relative.location} doesn't match!"
-					)
-				}
-			}
+			setupCommand(player, sign, lastMatch)
 		}
+	}
+
+	private fun setupCommand(player: Player, sign: Sign, lastMatch: Multiblock) {
+		val multiblockType = lastMatch.name
+
+		val possibleTiers = multiblocks.filter { it.name == multiblockType }
+
+		val message = text()
+			.append(text("Which type of $multiblockType are you trying to build? (Click one)"))
+			.append(newline())
+
+		for (tier in possibleTiers) {
+			val tierName = tier.javaClass.simpleName
+
+			val command = "/multiblock check $tierName ${sign.x} ${sign.y} ${sign.z}"
+
+			val tierText = text().color(NamedTextColor.GRAY)
+				.append(text("["))
+				.append(text(tierName).color(NamedTextColor.DARK_GREEN).decorate(TextDecoration.BOLD))
+				.append(text("]"))
+				.clickEvent(ClickEvent.runCommand(command))
+				.hoverEvent(text(command).asHoverEvent())
+
+			if (possibleTiers.indexOf(tier) != possibleTiers.size - 1) tierText.append(text(", "))
+
+			message.append(tierText)
+		}
+
+		player.sendMessage(message.build())
 	}
 }

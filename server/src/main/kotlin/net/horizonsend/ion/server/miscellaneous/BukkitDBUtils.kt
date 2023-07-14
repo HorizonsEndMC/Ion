@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.starlegacy.feature.starship.StarshipSchematic
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.util.*
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter.Blue
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World

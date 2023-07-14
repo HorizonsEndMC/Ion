@@ -4,7 +4,6 @@ import co.aikar.commands.BukkitCommandCompletionContext
 import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
-import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.database.DBManager.INITIALIZATION_COMPLETE
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -23,6 +22,8 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.misc.Shuttles
+import net.starlegacy.feature.multiblock.Multiblock
+import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.nations.NationsMasterTasks
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
@@ -32,7 +33,6 @@ import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
 import net.starlegacy.util.Tasks
-import net.starlegacy.util.loadConfig
 import net.starlegacy.util.orNull
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
@@ -114,6 +114,13 @@ fun registerCommands(manager: PaperCommandManager) {
 			SpaceStations.spaceStationCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
 				?: throw InvalidCommandArgument("No such space station")
 		}
+
+		registerContext(Multiblock::class.java) { c: BukkitCommandExecutionContext ->
+			val name: String = c.popFirstArg()
+
+			Multiblocks.all().firstOrNull { it.javaClass.simpleName == name }
+				?: throw InvalidCommandArgument("Multiblock $name not found!")
+		}
 	}
 
 	// Add static tab completions
@@ -181,6 +188,9 @@ fun registerCommands(manager: PaperCommandManager) {
 			val player = c.player
 
 			SpaceStations.all().filter { it.hasOwnershipContext(player.slPlayerId) }.map { it.name }
+		},
+		"multiblocks" to { _ ->
+			Multiblocks.all().map { it.javaClass.simpleName }
 		}
 	).forEach { manager.commandCompletions.registerAsyncCompletion(it.key, it.value) }
 

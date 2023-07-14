@@ -3,7 +3,7 @@ package net.starlegacy.feature.multiblock
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import net.starlegacy.feature.misc.CustomBlock
 import net.starlegacy.feature.misc.CustomBlocks
-import net.starlegacy.feature.multiblock.areashield.AreaShield10.buildStructure
+import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.feature.transport.Wires
 import net.starlegacy.feature.transport.pipe.Pipes
@@ -11,7 +11,6 @@ import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.CONCRETE_TYPES
 import net.starlegacy.util.MATERIALS
 import net.starlegacy.util.STAINED_TERRACOTTA_TYPES
-import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.blockFace
 import net.starlegacy.util.getNMSBlockData
 import net.starlegacy.util.getRelativeIfLoaded
@@ -34,6 +33,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
 import java.util.*
 import kotlin.collections.component1
@@ -45,9 +45,9 @@ private typealias BlockRequirement = (Block, BlockFace) -> Boolean
 
 class LegacyMultiblockShape {
 	// Cache of direction to requirement, so it doesn't need to be calculated every time based on the direction
-	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, BlockRequirement>>()
+	private val requirements = mutableMapOf<BlockFace, MutableMap<Vec3i, Pair<BlockData, BlockRequirement>>>()
 
-	private var signCentered = false
+	var signCentered = false
 	private var ignoreDirection = false // ignore whether inward direction matches
 
 	fun signCentered() {
@@ -74,14 +74,23 @@ class LegacyMultiblockShape {
 	 *     at(+0, +0, +0).machineFurnace()
 	 * ```
 	 */
-	fun at(x: Int, y: Int, z: Int) = RequirementBuilder(shape = this, right = x, upward = y, inward = z)
+	fun at(x: Int, y: Int, z: Int) =
+		RequirementBuilder(
+			shape = this,
+			right = x,
+			upward = y,
+			inward = z
+		)
 
 	/**
 	 * This is used for structuring it by y, z, x. See the area shield multiblocks for an example.
 	 *
 	 * @sample net.starlegacy.feature.multiblock.areashield.AreaShield10.buildStructure
 	 */
-	fun z(z: Int, block: Z.() -> Unit) = Z(this, z).block()
+	fun z(z: Int, block: Z.() -> Unit) = Z(
+		this,
+		z
+	).block()
 
 	fun z(zValues: IntProgression, block: Z.() -> Unit) {
 		for (z in zValues) {
@@ -90,7 +99,11 @@ class LegacyMultiblockShape {
 	}
 
 	class Z(private val shape: LegacyMultiblockShape, val z: Int) {
-		fun y(y: Int, block: ZY.() -> Unit) = ZY(shape, z, y).block()
+		fun y(y: Int, block: ZY.() -> Unit) = ZY(
+			shape,
+			z,
+			y
+		).block()
 
 		fun y(yValues: IntProgression, block: ZY.() -> Unit) {
 			for (y in yValues) {
@@ -109,7 +122,10 @@ class LegacyMultiblockShape {
 		}
 	}
 
-	fun y(y: Int, block: Y.() -> Unit) = Y(this, y).block()
+	fun y(y: Int, block: Y.() -> Unit) = Y(
+		this,
+		y
+	).block()
 
 	fun y(yValues: IntProgression, block: Y.() -> Unit) {
 		for (y in yValues) {
@@ -118,7 +134,11 @@ class LegacyMultiblockShape {
 	}
 
 	class Y(private val shape: LegacyMultiblockShape, val y: Int) {
-		fun z(z: Int, block: YZ.() -> Unit) = YZ(shape, y, z).block()
+		fun z(z: Int, block: YZ.() -> Unit) = YZ(
+			shape,
+			y,
+			z
+		).block()
 
 		fun z(zValues: IntProgression, block: YZ.() -> Unit) {
 			for (z in zValues) {
@@ -137,7 +157,7 @@ class LegacyMultiblockShape {
 		}
 	}
 
-	fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, BlockRequirement> {
+	fun getRequirementMap(inwardFace: BlockFace): MutableMap<Vec3i, Pair<BlockData, BlockRequirement>> {
 		return requirements.getOrPut(inwardFace) {
 			require(CARDINAL_BLOCK_FACES.contains(inwardFace)) { "Unsupported inward direction: $inwardFace" }
 			return@getOrPut mutableMapOf()
@@ -159,7 +179,9 @@ class LegacyMultiblockShape {
 	}
 
 	fun checkRequirementsSpecific(origin: Block, face: BlockFace, loadChunks: Boolean, particles: Boolean): Boolean {
-		return getRequirementMap(face).all { (coords, requirement) ->
+		return getRequirementMap(face).all { (coords, requirementMap) ->
+			val (_, requirement) = requirementMap
+
 			val x = coords.x
 			val y = coords.y
 			val z = coords.z
@@ -182,7 +204,7 @@ class LegacyMultiblockShape {
 
 	private val allLocations = mutableSetOf<Vec3i>() // used for checking for duplicates
 
-	private fun addRequirement(right: Int, upward: Int, inward: Int, requirement: BlockRequirement) {
+	private fun addRequirement(right: Int, upward: Int, inward: Int, type: BlockData, requirement: BlockRequirement) {
 		if (!allLocations.add(Vec3i(right, upward, inward))) {
 			Exception("Multiblock ${javaClass.simpleName} has more than one block at $right, $upward, $inward!").printStackTrace()
 		}
@@ -194,25 +216,25 @@ class LegacyMultiblockShape {
 			val intTrio = Vec3i(x, upward, z)
 			val requirementMap = getRequirementMap(inwardFace)
 
-			requirementMap[intTrio] = requirement
+			requirementMap[intTrio] = type to requirement
 		}
 	}
 
 	@Suppress("unused")
 	class RequirementBuilder(val shape: LegacyMultiblockShape, val right: Int, val upward: Int, val inward: Int) {
-		private fun complete(requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, requirement)
+		private fun complete(type: BlockData, requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, type, requirement)
 
 		fun type(type: Material) {
-			complete { block, _ -> block.getTypeSafe() == type }
+			complete(type.createBlockData()) { block, _ -> block.getTypeSafe() == type }
 		}
 
 		fun anyType(vararg types: Material) {
 			val typeSet = EnumSet.copyOf(types.toList())
-			complete { block, _ -> typeSet.contains(block.getTypeSafe()) }
+			complete(types.first().createBlockData()) { block, _ -> typeSet.contains(block.getTypeSafe()) }
 		}
 
 		fun customBlock(customBlock: CustomBlock) {
-			complete { block, _ -> CustomBlocks[block] === customBlock }
+			complete(customBlock.blockData) { block, _ -> CustomBlocks[block] === customBlock }
 		}
 
 		fun anyType(types: Iterable<Material>) = anyType(*types.toList().toTypedArray())
@@ -237,7 +259,12 @@ class LegacyMultiblockShape {
 		fun anyWool() = filteredTypes { it.isWool }
 
 		fun anySlab() = filteredTypes { it.isSlab }
-		fun anyDoubleSlab() = complete { block, _ ->
+		fun anyDoubleSlab() = complete(
+			Material.STONE_BRICK_SLAB.createBlockData().apply {
+				this as Slab
+				this.type = Slab.Type.DOUBLE
+			}
+		) { block, _ ->
 			val blockData = block.blockData
 			return@complete blockData is Slab && blockData.type == Slab.Type.DOUBLE
 		}
@@ -314,7 +341,7 @@ class LegacyMultiblockShape {
 			Material.SEA_LANTERN
 		)
 
-		fun machineFurnace() = complete { block, inward ->
+		fun machineFurnace() = complete(Material.FURNACE.createBlockData()) { block, inward ->
 			val blockData = block.getNMSBlockData()
 			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
 			val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
