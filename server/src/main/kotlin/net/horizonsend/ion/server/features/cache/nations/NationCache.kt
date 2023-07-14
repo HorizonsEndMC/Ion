@@ -1,6 +1,6 @@
-package net.horizonsend.ion.common.database.cache.nations
+package net.horizonsend.ion.server.features.cache.nations
 
-import net.horizonsend.ion.common.database.cache.ManualCache
+import net.horizonsend.ion.server.features.cache.ManualCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
@@ -69,7 +69,7 @@ object NationCache : ManualCache() {
 
 			NATION_DATA.remove(id)
 			nameCache.remove(data.name)
-		}
+			}
 	}
 
 	fun all(): List<NationData> = NATION_DATA.values.toList()

@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.metrics
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.PowerStoringMultiblock
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.min
 import kotlin.system.measureNanoTime
 
-object Wires : IonServerComponent() {
+object Wires : SLComponent() {
 	val INPUT_COMPUTER_BLOCK = Material.NOTE_BLOCK
 
 	private lateinit var thread: ExecutorService

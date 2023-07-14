@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.slPlayerId
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.feature.economy.city.TradeCityType
@@ -70,7 +71,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-object ShipmentManager : IonServerComponent() {
+object ShipmentManager : SLComponent() {
 	private data class Delivery(
 		val id: String,
 		val crate: CargoCrate,

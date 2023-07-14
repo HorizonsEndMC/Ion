@@ -2,13 +2,13 @@ package net.horizonsend.ion.server.features.cache.trade
 
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.common.database.cache.ManualCache
+import net.horizonsend.ion.server.features.cache.ManualCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.starlegacy.feature.economy.cargotrade.CrateItems
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager
-import net.horizonsend.ion.common.utils.redisaction.RedisAction
-import net.horizonsend.ion.common.utils.redisaction.RedisActions
+import net.starlegacy.util.redisaction.RedisAction
+import net.starlegacy.util.redisaction.RedisActions
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
 import org.bukkit.inventory.ItemStack
@@ -39,17 +39,17 @@ object CargoCrates : ManualCache() {
 
 		CrateItems.invalidateAll()
 
-		ITEM_MAP = crates.associateBy {
-			(Material.valueOf(it.color.shulkerMaterial) to CrateItems[it].itemMeta!!.displayName)
-		}
+		ITEM_MAP = crates.map {
+			(Material.valueOf(it.color.shulkerMaterial) to CrateItems[it].itemMeta!!.displayName) to it
+		}.toMap()
 
-		NAME_MAP = crates.associateBy {
-			it.name.uppercase(Locale.getDefault())
-		}
+		NAME_MAP = crates.map {
+			it.name.uppercase(Locale.getDefault()) to it
+		}.toMap()
 
-		ID_MAP = crates.associateBy {
-			it._id
-		}
+		ID_MAP = crates.map {
+			it._id to it
+		}.toMap()
 
 		// state of crates has changed, so regenerate shipments
 		ShipmentManager.regenerateShipmentsAsync()
@@ -70,7 +70,7 @@ object CargoCrates : ManualCache() {
 	 */
 	internal fun reloadData() {
 		import()
-		CargoCrates.refreshGlobal(System.currentTimeMillis())
+		refreshGlobal(System.currentTimeMillis())
 	}
 
 	private fun import() {

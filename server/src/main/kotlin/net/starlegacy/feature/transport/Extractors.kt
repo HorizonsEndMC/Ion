@@ -2,7 +2,7 @@ package net.starlegacy.feature.transport
 
 import com.google.gson.Gson
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.feature.transport.pipe.filter.FilterItemData
 import net.starlegacy.feature.transport.pipe.filter.Filters
@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 import kotlin.concurrent.fixedRateTimer
 
-object Extractors : IonServerComponent() {
+object Extractors : SLComponent() {
 	private const val extractorTicksPerSecond = 1.0
 
 	val EXTRACTOR_BLOCK = Material.CRAFTING_TABLE

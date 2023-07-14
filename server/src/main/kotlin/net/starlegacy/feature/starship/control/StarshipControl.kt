@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.displayNameString
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipType
@@ -53,7 +53,7 @@ import kotlin.collections.shuffled
 import kotlin.collections.withIndex
 import kotlin.math.*
 
-object StarshipControl : IonServerComponent() {
+object StarshipControl : SLComponent() {
 	val CONTROLLER_TYPE = Material.CLOCK
 
 	fun isHoldingController(player: Player): Boolean {

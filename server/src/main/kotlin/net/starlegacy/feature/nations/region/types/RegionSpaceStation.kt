@@ -2,7 +2,7 @@ package net.starlegacy.feature.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.spacestations.CachedNationSpaceStatio
 import net.horizonsend.ion.server.features.spacestations.CachedPlayerSpaceStation
 import net.horizonsend.ion.server.features.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
-import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.server.features.cache.nations.RelationCache
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.util.d

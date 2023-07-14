@@ -1,7 +1,7 @@
 package net.starlegacy.feature.economy.cargotrade
 
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.nations.Territory
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.pow
 
-object ShipmentGenerator : IonServerComponent() {
+object ShipmentGenerator : SLComponent() {
 	override fun onEnable() {
 		scheduleRegenerateTask()
 	}

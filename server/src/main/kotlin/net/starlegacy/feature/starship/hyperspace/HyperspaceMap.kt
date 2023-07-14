@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.hyperspace
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
@@ -8,7 +8,7 @@ import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerAPI
 import org.dynmap.markers.MarkerSet
 
-object HyperspaceMap : IonServerComponent() {
+object HyperspaceMap : SLComponent() {
 	private lateinit var markerSet: MarkerSet
 	private var markers = mutableMapOf<ActiveStarship, HyperspaceMarker>()
 

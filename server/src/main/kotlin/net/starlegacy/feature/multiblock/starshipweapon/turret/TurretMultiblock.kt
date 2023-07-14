@@ -10,8 +10,8 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.minecraft.world.level.block.Rotation
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController

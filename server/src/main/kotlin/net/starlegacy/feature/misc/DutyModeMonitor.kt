@@ -4,7 +4,7 @@ import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import net.starlegacy.SETTINGS
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotEvent
 import org.bukkit.entity.Player
@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 
-object DutyModeMonitor : IonServerComponent() {
+object DutyModeMonitor : SLComponent() {
 	private fun isInDutyMode(player: Player) = player.hasPermission("group.dutymode")
 
 	@EventHandler

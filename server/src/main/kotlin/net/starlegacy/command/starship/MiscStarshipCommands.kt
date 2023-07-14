@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.nations.PlayerCache
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint

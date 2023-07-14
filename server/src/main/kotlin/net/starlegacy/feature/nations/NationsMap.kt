@@ -1,11 +1,13 @@
 package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.starlegacy.SLComponent
+import net.horizonsend.ion.server.features.cache.nations.NationCache
 import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.int
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.string
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
@@ -21,7 +23,7 @@ import org.dynmap.markers.MarkerAPI
 import java.io.Closeable
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-object NationsMap : IonServerComponent() {
+object NationsMap : SLComponent() {
 	private fun syncOnly(block: () -> Unit) = when {
 		Bukkit.isPrimaryThread() -> block()
 		else -> Tasks.sync(block)

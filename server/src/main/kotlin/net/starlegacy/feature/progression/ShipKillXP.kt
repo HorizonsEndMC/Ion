@@ -20,11 +20,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.miscellaneous.CombatNPCKillEvent
-import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.server.features.cache.nations.NationCache
 import net.horizonsend.ion.server.miscellaneous.get
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent
 import net.starlegacy.feature.starship.PilotedStarships.getRawDisplayName
@@ -45,7 +45,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 
-object ShipKillXP : IonServerComponent() {
+object ShipKillXP : SLComponent() {
 	data class Damager(val id: UUID, val size: Int)
 
 	private data class ShipDamageData(

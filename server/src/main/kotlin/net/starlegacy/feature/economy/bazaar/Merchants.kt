@@ -1,7 +1,7 @@
 package net.starlegacy.feature.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.sharedDataFolder
@@ -17,8 +17,8 @@ import java.io.FileWriter
 import java.util.Properties
 import kotlin.math.sqrt
 
-object Merchants : IonServerComponent() {
-	override fun vanillaOnly(): Boolean {
+object Merchants : SLComponent() {
+	override fun supportsVanilla(): Boolean {
 		return true
 	}
 

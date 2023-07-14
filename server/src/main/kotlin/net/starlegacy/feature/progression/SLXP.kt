@@ -1,6 +1,6 @@
 package net.starlegacy.feature.progression
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import java.util.UUID
 import java.util.concurrent.Future
 
-object SLXP : IonServerComponent() {
+object SLXP : SLComponent() {
 	/**
 	 * Gives XP to the specified player.
 	 * Not guaranteed to update instantly.

@@ -11,7 +11,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
@@ -48,7 +48,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-object PilotedStarships : IonServerComponent() {
+object PilotedStarships : SLComponent() {
 	internal val map = mutableMapOf<Player, ActivePlayerStarship>()
 
 	override fun onEnable() {

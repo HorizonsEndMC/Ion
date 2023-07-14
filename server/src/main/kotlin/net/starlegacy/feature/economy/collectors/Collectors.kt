@@ -7,7 +7,7 @@ import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.colorize
@@ -19,7 +19,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
-object Collectors : IonServerComponent() {
+object Collectors : SLComponent() {
 	private val isCitizensLoaded get() = IonServer.server.pluginManager.isPluginEnabled("Citizens")
 
 	private lateinit var citizensRegistry: NPCRegistry

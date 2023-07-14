@@ -7,7 +7,6 @@ import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.CommonConfig
-import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
 import java.util.concurrent.Executors
 import kotlin.reflect.KClass
@@ -46,19 +45,15 @@ import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdGenerator
 import org.litote.kmongo.util.KMongoUtil
-import redis.clients.jedis.JedisPool
-import redis.clients.jedis.Protocol
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ThreadFactory
 
-object DBManager : IonComponent() {
+object MongoManager {
 	var INITIALIZATION_COMPLETE: Boolean = false
 
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
 
 	internal lateinit var client: MongoClient
-
-	lateinit var jedisPool: JedisPool
 
 	@PublishedApi // to allow it to be used in inline functions
 	internal lateinit var database: MongoDatabase
@@ -73,9 +68,7 @@ object DBManager : IonComponent() {
 		}
 	)
 
-	override fun onEnable() {
-		jedisPool = JedisPool(CommonConfig.redis.host, Protocol.DEFAULT_PORT)
-
+	fun onEnable() {
 		IdGenerator.defaultGenerator = ObjectIdGenerator
 
 		System.setProperty(
@@ -134,9 +127,7 @@ object DBManager : IonComponent() {
 		Cryopod.init()
 	}
 
-	override fun onDisable() {
-		jedisPool.close()
-
+	fun onDisable() {
 		if (::client.isInitialized) {
 			client.close()
 		}

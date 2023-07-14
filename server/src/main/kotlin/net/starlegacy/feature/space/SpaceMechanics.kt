@@ -1,6 +1,6 @@
 package net.starlegacy.feature.space
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
 import net.starlegacy.feature.gear.powerarmor.PowerArmorModule
 import net.starlegacy.feature.misc.getPower
@@ -25,7 +25,7 @@ import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import java.util.concurrent.TimeUnit
 
-object SpaceMechanics : IonServerComponent() {
+object SpaceMechanics : SLComponent() {
 	override fun onEnable() {
 		Tasks.syncRepeat(10, 10) {
 			for (player in Bukkit.getOnlinePlayers()) {

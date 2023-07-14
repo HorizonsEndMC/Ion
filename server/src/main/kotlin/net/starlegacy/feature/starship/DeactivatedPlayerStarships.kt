@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
@@ -25,7 +25,7 @@ import org.litote.kmongo.setValue
 import java.io.File
 import java.util.UUID
 
-object DeactivatedPlayerStarships : IonServerComponent() {
+object DeactivatedPlayerStarships : SLComponent() {
 	private val DEACTIVATED_SHIP_WORLD_CACHES: MutableMap<World, DeactivatedShipWorldCache> = Object2ObjectOpenHashMap()
 
 	private fun getCache(world: World) = requireNotNull(DEACTIVATED_SHIP_WORLD_CACHES[world])

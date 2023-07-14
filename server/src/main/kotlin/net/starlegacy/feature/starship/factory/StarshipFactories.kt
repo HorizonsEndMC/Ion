@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.canAccess
@@ -40,8 +40,8 @@ import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.roundToInt
 
-object StarshipFactories : IonServerComponent() {
-	override fun vanillaOnly(): Boolean {
+object StarshipFactories : SLComponent() {
+	override fun supportsVanilla(): Boolean {
 		return true
 	}
 

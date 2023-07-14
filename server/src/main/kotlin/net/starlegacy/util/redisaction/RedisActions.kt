@@ -1,20 +1,31 @@
-package net.horizonsend.ion.common.utils.redisaction
+package net.starlegacy.util.redisaction
 
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.InstanceCreator
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
-import net.horizonsend.ion.common.CommonConfig
-import net.horizonsend.ion.common.IonComponent
-import net.horizonsend.ion.common.database.DBManager.jedisPool
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.server.IonServer
+import net.starlegacy.SETTINGS
+import net.starlegacy.SLComponent
+import net.starlegacy.redisPool
+import net.starlegacy.util.Tasks
 import org.bson.types.ObjectId
+import org.bukkit.event.EventHandler
+import org.bukkit.event.server.PluginDisableEvent
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Type
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
 
-object RedisActions : IonComponent() {
+object RedisActions : SLComponent() {
 	private val gson = GsonBuilder().registerTypeAdapter(
 		Oid::class.java,
 		object : JsonSerializer<Oid<*>>, JsonDeserializer<Oid<*>>, InstanceCreator<Oid<*>> {
@@ -51,17 +62,23 @@ object RedisActions : IonComponent() {
 	private lateinit var subscriber: Jedis
 
 	var enabled = false
+	private var loaded = false
+
 	override fun onEnable() {
-		channel = CommonConfig.redis.channel
+		channel = SETTINGS.redis.channel
 
 		pubSub = PubSubListener
-		subscriber = jedisPool.resource
+		subscriber = redisPool.resource
 
 		Thread({
 			subscriber.subscribe(pubSub, channel)
 		}, "StarLegacy Plugin Messaging").start()
 
 		enabled = true
+
+		Tasks.sync {
+			loaded = true
+		}
 	}
 
 	override fun onDisable() {
@@ -78,27 +95,37 @@ object RedisActions : IonComponent() {
 
 	private val id = UUID.randomUUID()
 
-	private val executor = Executors.newSingleThreadExecutor(object : ThreadFactory {
-		private var counter: Int = 0
+	private val executor = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("redis-action-publishing"))
 
-		override fun newThread(r: Runnable): Thread {
-			return Thread(r, "redis-action-publisher-${counter++}")
-		}
-	})
-
-	fun <Data> publish(messageId: String, data: Data, type: Type) {
+	internal fun <Data> publish(messageId: String, data: Data, type: Type) {
 		val content = gson.toJson(data, type)
 		val message = "$id:$messageId:$content"
 		executor.execute {
-			jedisPool.resource.use { it.publish(channel, message) }
+			redisPool.resource.use { it.publish(channel, message) }
 		}
+	}
+
+	@EventHandler
+	private fun onPluginDisable(event: PluginDisableEvent) {
+		map.values.removeIf { IonServer == event.plugin }
 	}
 
 	private object PubSubListener : JedisPubSub() {
 		override fun onMessage(channel: String, message: String) {
 			// to prevent weird things from happening, delay all update handling till initialization is complete
 			// however, we still need to listen immediately so we don't miss any updates
-			if (!enabled) return
+			if (!loaded) {
+				Tasks.sync {
+					onMessage(channel, message)
+				}
+				return
+			}
+
+			enabled = true
+
+			if (!enabled) {
+				return
+			}
 
 			val split = message.split(":")
 
@@ -125,15 +152,25 @@ object RedisActions : IonComponent() {
 				return
 			}
 
-			try {
-				pluginMessage.castAndReceive(data)
-			} catch (exception: Exception) {
-				log.error("Error while executing redis action $message", exception)
+			if (pluginMessage.runSync) {
+				Tasks.sync {
+					try {
+						pluginMessage.castAndReceive(data)
+					} catch (exception: Exception) {
+						log.error("Error while executing redis action $message", exception)
+					}
+				}
+			} else {
+				try {
+					pluginMessage.castAndReceive(data)
+				} catch (exception: Exception) {
+					log.error("Error while executing redis action $message", exception)
+				}
 			}
 		}
 	}
 
-	override fun vanillaOnly(): Boolean {
+	override fun supportsVanilla(): Boolean {
 		return true
 	}
 }

@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.gravitywell.GravityWellMultiblock
@@ -24,7 +24,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 
-object Interdiction : IonServerComponent() {
+object Interdiction : SLComponent() {
 	override fun onEnable() {
 		listen<PlayerInteractEvent> { event ->
 			val player = event.player

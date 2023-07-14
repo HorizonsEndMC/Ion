@@ -1,7 +1,8 @@
 package net.starlegacy.feature.misc
 
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockBehaviour
-import net.horizonsend.ion.server.IonServerComponent
+import net.starlegacy.SLComponent
 import net.starlegacy.feature.starship.FLYABLE_BLOCKS
 import net.starlegacy.feature.starship.Mass
 import net.starlegacy.listen
@@ -25,7 +26,7 @@ import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.world.PortalCreateEvent
 
-object GameplayTweaks : IonServerComponent() {
+object GameplayTweaks : SLComponent() {
 	override fun onEnable() {
 		// important: don't use anything from the materials.kt utility class here,
 		// in order to avoid this being initialized after that, and that giving wrong blast resistance
