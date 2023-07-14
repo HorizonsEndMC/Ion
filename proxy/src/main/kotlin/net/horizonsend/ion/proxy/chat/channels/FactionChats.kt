@@ -132,15 +132,15 @@ class AllyChat : Channel {
 	override fun receivers(player: Player): List<Player> {
 		return super.receivers(player)
 			.filter {
-				NationRelation.getRelationActual(PlayerCache[player].nationOid ?: return@filter false,
-					PlayerCache[it].nationOid ?: return@filter false).ordinal >= NationRelation.Level.ALLY.ordinal
+				NationRelation.getRelationActual(PlayerCache[it].nationOid ?: return@filter false,
+					PlayerCache[player].nationOid ?: return@filter false).ordinal >= NationRelation.Level.ALLY.ordinal
 			}
 	}
 
 	override fun processMessage(player: Player, e: PlayerChatEvent): Boolean {
 		val playerData = PlayerCache[player]
 		val nation = playerData.nationOid ?: run {
-			player.userError("&cYou're not in a nation! &o(Hint: To get back to global, use /global)")
+			player.userError("You're not in a nation! (Hint: To get back to global, use /global)")
 			return false
 		}
 
