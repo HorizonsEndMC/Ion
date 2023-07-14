@@ -23,7 +23,7 @@ dependencies {
 	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
 
 	api("org.litote.kmongo:kmongo-shared:4.9.0")
-	api("org.mongodb:bson:4.10.1")
+	api("org.mongodb:bson:4.10.2")
 
 	api("redis.clients:jedis:4.4.3")
 }
