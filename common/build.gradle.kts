@@ -15,8 +15,6 @@ dependencies {
 	compileOnly("net.kyori:adventure-api:4.14.0")
 	compileOnly("net.kyori:adventure-text-logger-slf4j:4.14.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
-	compileOnly("net.md-5:bungeecord-chat:1.16-R0.1")
-	compileOnly("net.luckperms:api:5.4")
 
 	api(kotlin("reflect"))
 	api(kotlin("stdlib"))
@@ -24,8 +22,8 @@ dependencies {
 	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
 
-	api("org.litote.kmongo:kmongo:4.9.0")
-	api("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+	api("org.litote.kmongo:kmongo-shared:4.9.0")
+	api("org.mongodb:bson:4.10.1")
 
 	api("redis.clients:jedis:4.4.3")
 }

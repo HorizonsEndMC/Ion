@@ -3,10 +3,9 @@ package net.starlegacy.feature.starship
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.starlegacy.SLComponent
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
 import net.starlegacy.listen
-import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.horizonsend.ion.server.miscellaneous.bukkitWorld
+import net.starlegacy.util.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
@@ -177,7 +176,7 @@ object StarshipDetection : SLComponent() {
 			if (maxZ == null || maxZ < z) maxZ = z
 		}
 
-		val type = StarshipType.valueOf(data.starshipType)
+		val type = data.starshipType
 
 		// Validate the size
 		val size = blockTypes.size
