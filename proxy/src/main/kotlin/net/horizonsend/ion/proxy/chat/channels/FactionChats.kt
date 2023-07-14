@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.proxy.chat.Channel
 import net.horizonsend.ion.proxy.chat.ChannelManager
 import net.horizonsend.ion.proxy.features.cache.PlayerCache
+import net.horizonsend.ion.proxy.utils.isMuted
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -30,6 +31,9 @@ class SettlementChat : Channel {
 
 	override fun processMessage(player: Player, e: PlayerChatEvent): Boolean {
 		val roleString = PlayerCache[player].settlementTag?.let { " $it " } ?: ""
+
+		if (player.isMuted())
+			return false
 
 		PlayerCache[player].settlementOid ?: run {
 			player.userError("You're not in a settlement! &o(Hint: To get back to global, use /global)")
@@ -86,6 +90,9 @@ class NationChat : Channel {
 			return false
 		}
 
+		if (player.isMuted())
+			return false
+
 		val settlementName = SettlementCache[settlement].name
 		val roleString = playerData.nationTag?.let { " $it " } ?: " "
 
@@ -133,6 +140,9 @@ class AllyChat : Channel {
 			player.userError("&cYou're not in a nation! &o(Hint: To get back to global, use /global)")
 			return false
 		}
+
+		if (player.isMuted())
+			return false
 
 		val nationName = NationCache[nation].name
 		val roleString = playerData.nationTag?.let { " $it " } ?: " "
