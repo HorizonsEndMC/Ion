@@ -28,8 +28,9 @@ object ChatBridge : IonServerComponent() {
 
 	override fun onEnable() {
 		{ (uuid, message): Pair<UUID, String> ->
-			val player = Bukkit.getPlayer(uuid)!!
+			val player = Bukkit.getPlayer(uuid)
 
+			if (player != null)
 			for (other in player.world.players) {
 				if (other.location.distanceSquared(player.location) <= distanceSquared) {
 					msg("<yellow><bold>Local", NamedTextColor.YELLOW, message, player, other)
@@ -38,8 +39,9 @@ object ChatBridge : IonServerComponent() {
 		}.registerRedisAction("local-chat");
 
 		{ (uuid, message): Pair<UUID, String> ->
-			val player = Bukkit.getPlayer(uuid)!!
+			val player = Bukkit.getPlayer(uuid)
 
+			if (player != null)
 			if (Space.getPlanet(player.world) == null) {
 				player.userError("You're not on a planet! To go back to global chat, use /global")
 			} else for (other in player.world.players) {
