@@ -26,7 +26,7 @@ import kotlin.math.pow
 object NewPlayerProtection : BaseCommand() {
 	private val lpUserManager = LuckPermsProvider.get().userManager
 
-	private val protectionIndicator = SuffixNode.builder(" <gold>★ ", 0).build()
+	private val protectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 
 	fun onEnable() {

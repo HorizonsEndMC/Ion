@@ -118,13 +118,7 @@ object ChannelManager : IonComponent() {
 	@Subscribe
 	fun playerChat(e: PlayerChatEvent) {
 		val player = e.player
-		var channel = localCache[player?.uniqueId] ?: global
-		var message = e.message
-
-		if (e.message.startsWith("!")) {
-			channel = global
-			message = message.removePrefix("!")
-		}
+		val channel = localCache[player?.uniqueId] ?: global
 
 		e.result = PlayerChatEvent.ChatResult.denied()
 
@@ -137,14 +131,22 @@ object ChannelManager : IonComponent() {
 					.filter { it.lpHasPermission("ion.channel.${channel.name.lowercase()}") && it != player }
 			else channel.receivers(player).filterNot { it == player }
 
+		val userNation = PlayerCache[player].nationOid
 		val channelPrefixComponent = channel.prefix?.miniMessage()?.append(text(" ")) ?: empty()
 		val playerPrefixComponent = user?.cachedData?.metaData?.prefix?.miniMessage() ?: empty()
 		val playerSuffixComponent = user?.cachedData?.metaData?.suffix?.miniMessage() ?: empty()
 
 		(players + player).forEach {
+			val relationColor =
+				userNation?.let { user ->
+					PlayerCache[it].nationOid?.let { RelationCache[it, user].color }
+				} ?: NamedTextColor.WHITE
+
 			it.sendMessage(
 				text().append(
 					channelPrefixComponent,
+					(userNation?.let { text(NationCache[it].name.capitalize() + " ") } ?: empty()).color(relationColor),
+
 					playerPrefixComponent,
 
 					text("[").color(NamedTextColor.DARK_GRAY),
@@ -158,11 +160,11 @@ object ChannelManager : IonComponent() {
 					text(" » ").color(NamedTextColor.DARK_GRAY),
 				).hoverEvent(playerInfo(player)).append(
 					if (player.lpHasPermission("ion.minimessage"))
-						message.miniMessage().color(channel.color)
+						e.message.miniMessage().color(channel.color)
 					else
 						text(
 							MiniMessage.miniMessage()
-								.stripTags(message)
+								.stripTags(e.message)
 						).color(channel.color)
 				)
 			)
