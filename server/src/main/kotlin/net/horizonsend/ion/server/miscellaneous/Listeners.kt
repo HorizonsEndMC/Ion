@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManag
 import net.horizonsend.ion.server.legacy.listeners.BiomeFixer9001
 import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
-import net.horizonsend.ion.server.migrator.DataMigrator
 import net.horizonsend.ion.server.miscellaneous.listeners.CancelListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.GameplayTweaksListeners
 import net.horizonsend.ion.server.miscellaneous.listeners.HeadListener
@@ -30,7 +29,6 @@ val listeners = arrayOf(
 	CancelListeners(),
 	ChunkLoadListener(IonServer),
 	CustomItemListeners(),
-	DataMigrator,
 	EdenFixer9000(),
 	GameplayTweaksListeners(),
 	HeadListener(),

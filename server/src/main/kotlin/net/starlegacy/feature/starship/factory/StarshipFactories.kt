@@ -41,7 +41,7 @@ import kotlin.collections.set
 import kotlin.math.roundToInt
 
 object StarshipFactories : IonServerComponent() {
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 

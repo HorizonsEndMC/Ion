@@ -13,6 +13,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 	/** Values should only be set here*/
 	data class PlayerData(
 		val id: SLPlayerId,
+		var xp: Int?,
+		var level: Int?,
 		var settlementOid: Oid<Settlement>?,
 		var nationOid: Oid<Nation>?,
 		var settlementTag: String?,
@@ -26,7 +28,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 	// priority monitor so it happens after the insert in SLCore, which is at HIGHEST
 	fun callOnPreLogin(uuid: UUID) {
-		cache(uuid.slPlayerId, checkNotNull(SLPlayer[uuid]))
+		cache(uuid.slPlayerId, SLPlayer[uuid] ?: return)
 	}
 
 	// lowest in case anything uses this data in other join listeners, and since lowest join event
@@ -75,6 +77,24 @@ abstract class AbstractPlayerCache : ManualCache() {
 					data.nationTag = null // when leaving/joining a nation, you have no role either way
 				}
 			}
+
+			change[SLPlayer::xp]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val newNation = it.int()
+					data.xp = newNation
+				}
+			}
+
+			change[SLPlayer::level]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val newNation = it.int()
+					data.level = newNation
+				}
+			}
 		}
 
 		val mutex = Any()
@@ -120,7 +140,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			NationRole.getTag(id)
 		}
 
-		PLAYER_DATA[id.uuid] = PlayerData(id, settlement, nation, settlementTag, nationTag)
+		PLAYER_DATA[id.uuid] = PlayerData(id, data.xp, data.level, settlement, nation, settlementTag, nationTag)
 	}
 	operator fun get(playerId: UUID): PlayerData = PLAYER_DATA[playerId]
 		?: error("Data wasn't cached for $playerId")

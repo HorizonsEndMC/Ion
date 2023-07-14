@@ -1,6 +1,8 @@
 package net.horizonsend.ion.proxy
 
+import com.velocitypowered.api.proxy.Player
 import dev.minn.jda.ktx.jdabuilder.light
+import litebans.api.Database
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity.playing
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -10,22 +12,24 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.proxy.commands.DiscordCommands
 import java.util.concurrent.TimeUnit
 
-val discord = runCatching {
-	light(IonProxy.configuration.discordBotToken, enableCoroutines = true) {
-		setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
-		setMemberCachePolicy(MemberCachePolicy.ALL)
-		setChunkingFilter(ChunkingFilter.ALL)
-		disableCache(CacheFlag.values().toList())
-		setEnableShutdownHook(false)
+val discord by lazy {
+	runCatching {
+		light(IonProxy.configuration.discordBotToken, enableCoroutines = true) {
+			setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
+			setMemberCachePolicy(MemberCachePolicy.ALL)
+			setChunkingFilter(ChunkingFilter.ALL)
+			disableCache(CacheFlag.entries)
+			setEnableShutdownHook(false)
+		}
+	}.getOrElse {
+		IonProxy.logger.warn("discord error $it")
+		null
 	}
-}.getOrElse {
-	IonProxy.logger.warn("discord error $it")
-	null
 }
 
 fun discord() {
 	DiscordCommands.setup()
 	IonProxy.proxy.scheduler.buildTask(IonProxy) {
 		discord?.presence?.setPresence(OnlineStatus.ONLINE, playing("with ${IonProxy.proxy.playerCount} players!"))
-	}.repeat(5, TimeUnit.SECONDS)
+	}.repeat(5, TimeUnit.SECONDS).schedule()
 }

@@ -11,6 +11,7 @@ data class ProxyConfiguration(
 	val discordServer: Long = 0,
 	val globalChannel: Long = 0,
 	val linkedRole: Long = 0,
-	val roleMap: Map<String, Long> = mapOf()
+	val roleMap: Map<String, Long> = mapOf(),
+	val funnyWordsFile: String = "racism.txt"
 )
 

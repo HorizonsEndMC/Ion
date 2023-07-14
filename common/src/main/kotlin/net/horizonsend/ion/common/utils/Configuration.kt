@@ -1,7 +1,6 @@
-package net.horizonsend.ion.common
+package net.horizonsend.ion.common.utils
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream

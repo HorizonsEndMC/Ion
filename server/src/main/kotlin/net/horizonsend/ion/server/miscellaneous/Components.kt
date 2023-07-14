@@ -1,12 +1,11 @@
 package net.horizonsend.ion.server.miscellaneous
 
 import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.server.features.cache.Caches
-import net.starlegacy.feature.chat.ChannelSelections
-import net.starlegacy.feature.chat.ChatChannel
+import net.horizonsend.ion.server.legacy.NewPlayerProtection
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.cargotrade.CrateRestrictions
@@ -19,7 +18,6 @@ import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.CombatNPCs
 import net.starlegacy.feature.misc.CustomRecipes
 import net.starlegacy.feature.misc.Decomposers
 import net.starlegacy.feature.misc.DutyModeMonitor
@@ -62,6 +60,7 @@ import net.starlegacy.util.Notify
 
 val components: List<IonComponent> = listOf(
 	GameplayTweaks,
+	DBManager,
 	RedisActions,
 	Caches,
 	Notify,
@@ -70,9 +69,6 @@ val components: List<IonComponent> = listOf(
 	PlayerXPLevelCache,
 	Levels,
 	SLXP,
-
-	ChannelSelections,
-	ChatChannel.ChannelActions,
 
 	CombatNPCs,
 
@@ -136,5 +132,6 @@ val components: List<IonComponent> = listOf(
 
 	DutyModeMonitor,
 
-	SpaceStations
+	SpaceStations,
+	ChatBridge
 )

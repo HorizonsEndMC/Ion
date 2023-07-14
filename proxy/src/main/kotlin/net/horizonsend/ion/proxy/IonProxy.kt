@@ -5,12 +5,16 @@ import com.velocitypowered.api.event.EventManager
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
+import com.velocitypowered.api.plugin.Dependency
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
-import net.horizonsend.ion.common.Configuration
+import net.horizonsend.ion.common.CommonConfig
+import net.horizonsend.ion.common.database.DBManager
+import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.extensions.prefixProvider
+import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.proxy.commands.proxy.VelocityInfoCommand
 import net.horizonsend.ion.proxy.commands.proxy.VelocityMessageCommand
 import net.horizonsend.ion.proxy.commands.proxy.VelocityReplyCommand
@@ -20,13 +24,16 @@ import net.horizonsend.ion.proxy.managers.ReminderManager
 import org.slf4j.Logger
 import java.io.File
 import java.nio.file.Path
-import java.util.concurrent.TimeUnit
 
 val IonProxy = IonProxyPlugin.INSTANCE
 
 @Plugin(
 	id = "ion", name = "Ion", version = "0.1.0-SNAPSHOT",
 	url = "https://horizonsend.net", description = "Ion", authors = ["Rattlyy", "Astralchroma", "Gutin"],
+	dependencies = [
+		Dependency(id = "litebans", optional = true),
+		Dependency(id = "luckperms")
+	]
 )
 class IonProxyPlugin @Inject constructor(
 	val proxy: ProxyServer,
@@ -40,7 +47,6 @@ class IonProxyPlugin @Inject constructor(
 	@Subscribe
 	fun onInit(e: ProxyInitializeEvent) {
 		INSTANCE = this
-
 		prefixProvider = {
 			when (it) {
 				is ProxyServer -> ""
@@ -49,29 +55,41 @@ class IonProxyPlugin @Inject constructor(
 			}
 		}
 
-		val commandManager = proxy.commandManager
+		CommonConfig.init(IonProxy.dataFolder)
 
-		val infoCommand = commandManager.metaBuilder("info")
-			.aliases("map", "wiki", "patreon", "rules")
-			.plugin(this)
-			.build()
+		for (component in components) {
+			IonProxy.proxy.eventManager.register(IonProxy, component)
+			component.onEnable()
+		}
 
-		commandManager.register(infoCommand, VelocityInfoCommand())
+		proxy.commandManager.apply {
+			register(
+				metaBuilder("info")
+					.aliases("map", "wiki", "patreon", "rules")
+					.plugin(this)
+					.build(),
 
-		val messageCommand = commandManager.metaBuilder("message")
-			.aliases("msg", "tell", "whisper", "w")
-			.plugin(this)
-			.build()
+				VelocityInfoCommand()
+			)
 
+			register(
+				metaBuilder("message")
+					.aliases("msg", "tell", "whisper", "w")
+					.plugin(this)
+					.build(),
 
-		commandManager.register(messageCommand, VelocityMessageCommand())
+				VelocityMessageCommand()
+			)
 
-		val replyCommand = commandManager.metaBuilder("reply")
-			.aliases("r")
-			.plugin(this)
-			.build()
+			register(
+				metaBuilder("reply")
+					.aliases("r")
+					.plugin(this)
+					.build(),
 
-		commandManager.register(replyCommand, VelocityReplyCommand())
+				VelocityReplyCommand()
+			)
+		}
 
 		ReminderManager.scheduleReminders()
 
@@ -84,12 +102,20 @@ class IonProxyPlugin @Inject constructor(
 		if (configuration.discordEnabled) {
 			discord()
 		}
+
+		DBManager.INITIALIZATION_COMPLETE = true
 	}
 
 	@Subscribe
-	fun onDisable(e: ProxyShutdownEvent) {  }
+	fun onDisable(e: ProxyShutdownEvent) {
+		for (component in components.reversed()) {
+			component.onDisable()
+		}
+	}
 
 	companion object {
 		lateinit var INSTANCE: IonProxyPlugin
 	}
 }
+
+fun Player.lpHasPermission(s: String) = luckPerms.userManager.getUser(uniqueId)?.cachedData?.permissionData?.checkPermission(s)?.asBoolean() == true

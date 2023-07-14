@@ -27,6 +27,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.miscellaneous.isPilot
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
 import net.starlegacy.feature.nations.region.Regions
@@ -241,36 +242,24 @@ object StarshipComputers : IonServerComponent() {
 			items.add(
 				guiButton(Material.BEACON) {
 					player.closeInventory()
-					player.beginConversation(
-						Conversation(
-							IonServer, player,
-							object : StringPrompt() {
-								override fun getPromptText(context: ConversationContext): String {
-									return "Enter player name:"
-								}
-
-								override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
-									if (input != null) {
-										Tasks.async {
-											val id = SLPlayer.findIdByName(input)
-											if (id == null) {
-												player.userError("Player not found")
-											} else {
-												DeactivatedPlayerStarships.addPilot(data, id)
-												data.pilots += id
-												PlayerStarshipData.updateById(
-													data._id,
-													addToSet(PlayerStarshipData::pilots, id)
-												)
-												player.success("Added $input as a pilot to starship.")
-											}
-										}
-									}
-									return null
-								}
+					player.input("Enter player name:") {p, input ->
+						Tasks.async {
+							val id = SLPlayer.findIdByName(input)
+							if (id == null) {
+								player.userError("Player not found")
+							} else {
+								DeactivatedPlayerStarships.addPilot(data, id)
+								data.pilots += id
+								PlayerStarshipData.updateById(
+									data._id,
+									addToSet(PlayerStarshipData::pilots, id)
+								)
+								player.success("Added $input as a pilot to starship.")
 							}
-						)
-					)
+						}
+
+						null
+					}
 				}.setName("Add Pilot")
 			)
 			Tasks.async {
@@ -298,78 +287,65 @@ object StarshipComputers : IonServerComponent() {
 
 	private fun startRename(player: Player, data: PlayerStarshipData) {
 		player.closeInventory()
-		player.beginConversation(
-			Conversation(
-				IonServer, player,
-				object : StringPrompt() {
-					override fun getPromptText(context: ConversationContext): String {
-						return "Enter new starship name:"
-					}
+		player.input("Enter new starship name:") { r, input ->
+			Tasks.async {
+				val serialized = MiniMessage.miniMessage().deserialize(input)
 
-					override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
-						if (input != null) {
-							Tasks.async {
-								val serialized = MiniMessage.miniMessage().deserialize(input)
-
-								if (serialized.clickEvent() != null ||
-									input.contains("<rainbow>") ||
-									input.contains("<newline>") ||
-									input.contains("<reset>") ||
-									serialized.hoverEvent() != null ||
-									serialized.insertion() != null ||
-									serialized.hasDecoration(TextDecoration.OBFUSCATED) ||
-									((serialized as? TextComponent)?.content()?.length ?: 0) >= 16
-								) {
-									player.userError("ERROR: Disallowed tags!")
-									return@async
-								}
-
-								if (serialized.color() != null && !player.hasPermission("ion.starship.color")) {
-									player.userError(
-										"<COLOR> tags can only be used by $5+ patrons! Donate at\n" +
-											"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
-									)
-									return@async
-								}
-
-								if ((serialized.color() as? HSVLike) != null && serialized.color()!!.asHSV()
-									.v() < 0.25
-								) {
-									player.userError(
-										"Ship names can't be too dark to read!"
-									)
-									return@async
-								}
-
-								if (
-									serialized.decorations().any { it.value == TextDecoration.State.TRUE } &&
-									!player.hasPermission("ion.starship.italic")
-								) {
-									player.userError(
-										"\\<italic>, \\<bold>, \\<strikethrough> and \\<underlined> tags can only be used by $10+ patrons!\n" +
-											"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
-									)
-									return@async
-								}
-
-								if (serialized.font() != null && !player.hasPermission("ion.starship.font")) {
-									player.userError(
-										"\\<font> tags can only be used by $15+ patrons! Donate at\n" +
-											"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
-									)
-									return@async
-								}
-
-								DeactivatedPlayerStarships.updateName(data, input)
-
-								player.success("Changed starship name to $input")
-							}
-						}
-						return null
-					}
+				if (serialized.clickEvent() != null ||
+					input.contains("<rainbow>") ||
+					input.contains("<newline>") ||
+					input.contains("<reset>") ||
+					serialized.hoverEvent() != null ||
+					serialized.insertion() != null ||
+					serialized.hasDecoration(TextDecoration.OBFUSCATED) ||
+					((serialized as? TextComponent)?.content()?.length ?: 0) >= 16
+				) {
+					player.userError("ERROR: Disallowed tags!")
+					return@async
 				}
-			)
-		)
+
+				if (serialized.color() != null && !player.hasPermission("ion.starship.color")) {
+					player.userError(
+						"<COLOR> tags can only be used by $5+ patrons or Discord boosters! Donate at\n" +
+							"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+					)
+					return@async
+				}
+
+				if ((serialized.color() as? HSVLike) != null && serialized.color()!!.asHSV()
+						.v() < 0.25
+				) {
+					player.userError(
+						"Ship names can't be too dark to read!"
+					)
+					return@async
+				}
+
+				if (
+					serialized.decorations().any { it.value == TextDecoration.State.TRUE } &&
+					!player.hasPermission("ion.starship.italic")
+				) {
+					player.userError(
+						"\\<italic>, \\<bold>, \\<strikethrough> and \\<underlined> tags can only be used by $10+ patrons!\n" +
+							"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+					)
+					return@async
+				}
+
+				if (serialized.font() != null && !player.hasPermission("ion.starship.font")) {
+					player.userError(
+						"\\<font> tags can only be used by $15+ patrons! Donate at\n" +
+							"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
+					)
+					return@async
+				}
+
+				DeactivatedPlayerStarships.updateName(data, input)
+
+				player.success("Changed starship name to $input")
+			}
+			null
+		}
 	}
 
 	private fun openTypeMenu(player: Player, data: PlayerStarshipData) {

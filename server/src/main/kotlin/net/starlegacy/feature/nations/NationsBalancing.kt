@@ -51,7 +51,7 @@ object NationsBalancing : IonServerComponent() {
 		NATIONS_BALANCE = loadConfig(sharedDataFolder, "nations_balancing")
 	}
 
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 }

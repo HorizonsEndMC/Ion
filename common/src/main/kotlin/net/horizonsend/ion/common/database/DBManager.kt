@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCursor
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.CommonConfig
+import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
 import java.util.concurrent.Executors
 import kotlin.reflect.KClass
@@ -50,7 +51,7 @@ import redis.clients.jedis.Protocol
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ThreadFactory
 
-object DBManager {
+object DBManager : IonComponent() {
 	var INITIALIZATION_COMPLETE: Boolean = false
 
 	private val watching = mutableListOf<MongoCursor<ChangeStreamDocument<*>>>()
@@ -72,7 +73,7 @@ object DBManager {
 		}
 	)
 
-	fun onEnable() {
+	override fun onEnable() {
 		jedisPool = JedisPool(CommonConfig.redis.host, Protocol.DEFAULT_PORT)
 
 		IdGenerator.defaultGenerator = ObjectIdGenerator
@@ -133,7 +134,7 @@ object DBManager {
 		Cryopod.init()
 	}
 
-	fun onDisable() {
+	override fun onDisable() {
 		jedisPool.close()
 
 		if (::client.isInitialized) {

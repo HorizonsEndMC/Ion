@@ -18,7 +18,7 @@ import net.starlegacy.feature.nations.gui.skullItem
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
-import net.starlegacy.redis
+import net.horizonsend.ion.common.redis
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Notify
 import net.starlegacy.util.PerPlayerCooldown

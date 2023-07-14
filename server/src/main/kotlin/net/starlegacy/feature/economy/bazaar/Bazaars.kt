@@ -39,7 +39,7 @@ import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
 object Bazaars : IonServerComponent() {
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 

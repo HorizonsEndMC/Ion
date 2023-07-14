@@ -14,5 +14,5 @@ abstract class IonComponent {
 		return RedisActions.register(id, runSync, this)
 	}
 
-	open fun supportsVanilla(): Boolean = false
+	open fun vanillaOnly(): Boolean = false
 }

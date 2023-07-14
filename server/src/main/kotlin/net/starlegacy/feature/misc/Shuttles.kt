@@ -318,7 +318,7 @@ object Shuttles : IonServerComponent() {
 		Shuttle.moveLocation(shuttle._id, if (newPosition == -1) 0 else newPosition)
 	}
 
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 }

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.proxy
+package net.horizonsend.ion.proxy.utils
 
 import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.MessageEmbed

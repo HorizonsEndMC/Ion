@@ -25,12 +25,14 @@ services:
     image: "itzg/bungeecord"
     container_name: "waterfall"
     ports: [ 25565:25577 ]
+    tty: true
+    stdin_open: true
     volumes:
       - ./waterfall:/server
       - ../build/IonProxy.jar:/server/plugins/Ion.jar
       - ./config/waterfall/config.yml:/server/config.yml
     environment:
-      TYPE: "Waterfall"
+      TYPE: "VELOCITY"
       JVM_XX_OPTS: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 
   paper:

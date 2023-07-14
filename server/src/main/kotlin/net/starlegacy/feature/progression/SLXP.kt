@@ -79,7 +79,7 @@ object SLXP : IonServerComponent() {
 	 */
 	operator fun get(player: Player): Int = getCached(player)
 
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 }

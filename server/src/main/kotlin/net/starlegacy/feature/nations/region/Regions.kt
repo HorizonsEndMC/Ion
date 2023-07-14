@@ -39,7 +39,7 @@ import kotlin.collections.set
 import kotlin.reflect.KClass
 
 object Regions : IonServerComponent() {
-	override fun supportsVanilla(): Boolean {
+	override fun vanillaOnly(): Boolean {
 		return true
 	}
 
