@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.miscellaneous
 
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCDeathEvent
+import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.api.npc.NPCRegistry
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.kyori.adventure.text.Component.text
@@ -37,6 +39,8 @@ object CombatNPCs : IonServerComponent() {
 	private val inventories: MutableMap<Int, Array<ItemStack?>> = mutableMapOf()
 	val npcToPlayer = mutableMapOf<UUID, Pair<NPC, Location>>()
 
+	private lateinit var combatNpcRegistry: NPCRegistry
+
 	override fun onEnable() {
 		// weirdness happens when someone already logged in logs on. this is my hacky fix.
 		val lastJoinMap = mutableMapOf<UUID, Long>()
@@ -49,7 +53,8 @@ object CombatNPCs : IonServerComponent() {
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
 
-		// TODO: Combat NPCs are broken anyway, and they are the only thing creating chunk tickets so they could be the cause of lag right now, look into this whenever we try and bring back Combat NPCs.
+		combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
+
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
 			if (IonServer.configuration.serverName == "Creative") return@listen
@@ -72,7 +77,9 @@ object CombatNPCs : IonServerComponent() {
 				.toTypedArray()
 
 			val location = player.location
-			val npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, player.name, player.location)
+
+			val npc = combatNpcRegistry.createNPC(EntityType.PLAYER, player.name, player.location)
+
 			npc.entity.customName(text("${player.name} [NPC]"))
 			npc.isProtected = false
 			npc.spawn(player.location)
@@ -181,7 +188,7 @@ object CombatNPCs : IonServerComponent() {
 			npc.storedLocation.chunk.removePluginChunkTicket(IonServer)
 
 			npc.destroy()
-			CitizensAPI.getNPCRegistry().deregister(npc)
+			combatNpcRegistry.deregister(npc)
 		}
 }
 
