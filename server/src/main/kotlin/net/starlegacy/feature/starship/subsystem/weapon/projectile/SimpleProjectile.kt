@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.debugRed
+import net.horizonsend.ion.server.miscellaneous.commands.debugRed
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
