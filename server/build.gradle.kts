@@ -52,6 +52,10 @@ dependencies {
 	implementation("io.github.skytasul:guardianbeam:2.3.3")
 	implementation("xyz.xenondevs.invui:invui:1.12")
 	implementation("club.minnced:discord-webhooks:0.8.2")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.0.0-RC8")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.0.0-RC8")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.0.0-RC8")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-v1_19_R3:2.0.0-RC8")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }

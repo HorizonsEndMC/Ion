@@ -9,8 +9,8 @@ import org.bukkit.World
 import kotlin.math.sqrt
 
 object MassShadows {
-	private const val PLANET_RADIUS = 1000
-	private const val STAR_RADIUS = 1800
+	const val PLANET_RADIUS = 1000
+	const val STAR_RADIUS = 1800
 
 	data class MassShadowInfo(val description: String, val x: Int, val z: Int, val radius: Int, val distance: Int)
 
