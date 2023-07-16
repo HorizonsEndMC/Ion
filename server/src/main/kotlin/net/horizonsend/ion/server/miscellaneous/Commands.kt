@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.customitems.commands.CustomItemCommand
 import net.horizonsend.ion.server.features.regeneration.RegenerateCommand
+import net.horizonsend.ion.server.features.sidebar.command.ContactsCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 import net.horizonsend.ion.server.miscellaneous.commands.*
 
@@ -24,5 +25,6 @@ val commands = arrayOf(
 	RemoveGhostShipCommand(),
 
 	AchievementsCommand(),
-	BlastResistanceCommand()
+	BlastResistanceCommand(),
+	ContactsCommand()
 )

@@ -56,7 +56,12 @@ data class SLPlayer(
     var wasKilled: Boolean = false,
     var cryopods: Set<Oid<Cryopod>> = setOf(),
     var selectedCryopod: Oid<Cryopod>? = null,
-    var achievements: Set<String> = setOf()
+    var achievements: Set<String> = setOf(),
+
+	var contactsStarships: Boolean = true,
+	var planetsEnabled: Boolean = true,
+	var starsEnabled: Boolean = true,
+	var beaconsEnabled: Boolean = true,
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {

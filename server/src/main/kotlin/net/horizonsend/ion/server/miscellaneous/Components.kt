@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.miscellaneous
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
-import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.server.features.cache.Caches
-import net.horizonsend.ion.server.legacy.NewPlayerProtection
+import net.horizonsend.ion.server.features.sidebar.Sidebar
+import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.cargotrade.CrateRestrictions
@@ -18,11 +18,7 @@ import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.feature.machine.PowerMachines
-import net.starlegacy.feature.misc.CustomRecipes
-import net.starlegacy.feature.misc.Decomposers
-import net.starlegacy.feature.misc.DutyModeMonitor
-import net.starlegacy.feature.misc.GameplayTweaks
-import net.starlegacy.feature.misc.Shuttles
+import net.starlegacy.feature.misc.*
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.StationSieges
@@ -35,16 +31,9 @@ import net.starlegacy.feature.space.Orbits
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceMechanics
 import net.starlegacy.feature.space.SpaceWorlds
-import net.starlegacy.feature.starship.DeactivatedPlayerStarships
-import net.starlegacy.feature.starship.Hangars
-import net.starlegacy.feature.starship.Interdiction
-import net.starlegacy.feature.starship.PilotedStarships
-import net.starlegacy.feature.starship.StarshipComputers
-import net.starlegacy.feature.starship.StarshipDealers
-import net.starlegacy.feature.starship.StarshipDetection
+import net.starlegacy.feature.starship.*
 import net.starlegacy.feature.starship.active.ActiveStarshipMechanics
 import net.starlegacy.feature.starship.active.ActiveStarships
-import net.starlegacy.feature.starship.control.ContactsDisplay
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.factory.StarshipFactories
@@ -121,7 +110,6 @@ val components: List<IonComponent> = listOf(
 	StarshipControl,
 	StarshipShields,
 	StarshipCruising,
-	ContactsDisplay,
 	Hangars,
 	StarshipFactories,
 	TutorialManager,
@@ -133,5 +121,6 @@ val components: List<IonComponent> = listOf(
 	DutyModeMonitor,
 
 	SpaceStations,
-	ChatBridge
+	ChatBridge,
+	Sidebar
 )

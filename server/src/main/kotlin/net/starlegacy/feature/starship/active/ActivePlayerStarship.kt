@@ -59,7 +59,6 @@ class ActivePlayerStarship(
 
 	var lastUnpilotTime: Long = 0
 
-	@Deprecated("")
 	var pilot: Player?
 		get() = (controller as? PlayerController)?.serverPlayer?.bukkitEntity
 		set(value) {

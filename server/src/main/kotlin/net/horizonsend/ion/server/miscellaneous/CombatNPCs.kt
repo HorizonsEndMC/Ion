@@ -53,7 +53,9 @@ object CombatNPCs : IonServerComponent() {
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
 
-		combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
+		Tasks.sync {
+			combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
+		}
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
