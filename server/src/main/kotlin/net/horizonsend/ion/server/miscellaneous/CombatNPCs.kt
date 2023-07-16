@@ -53,7 +53,9 @@ object CombatNPCs : IonServerComponent() {
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
 
-		combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
+		Tasks.sync {
+			combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
+		}
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
@@ -149,7 +151,9 @@ object CombatNPCs : IonServerComponent() {
 			SLPlayer.updateById(playerId.slPlayerId, setValue(SLPlayer::wasKilled, true))
 			Tasks.async {
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
-				Notify.all(MiniMessage.miniMessage().deserialize("<red>Combat NPC of $name was slain by ${killer?.name}"))
+				Notify.all(
+					MiniMessage.miniMessage().deserialize("<red>Combat NPC of $name was slain by ${killer?.name}")
+				)
 				Tasks.sync {
 					CombatNPCKillEvent(playerId, name, killer).callEvent()
 				}
