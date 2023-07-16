@@ -18,7 +18,12 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var settlementOid: Oid<Settlement>?,
 		var nationOid: Oid<Nation>?,
 		var settlementTag: String?,
-		var nationTag: String?
+		var nationTag: String?,
+
+		var contactsStarships: Boolean = true,
+		var planetsEnabled: Boolean = true,
+		var starsEnabled: Boolean = true,
+		var beaconsEnabled: Boolean = true,
 	)
 
 	val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()
@@ -93,6 +98,42 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val newNation = it.int()
 					data.level = newNation
+				}
+			}
+
+			change[SLPlayer::contactsStarships]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val contactsStarships = it.boolean()
+					data.contactsStarships = contactsStarships
+				}
+			}
+
+			change[SLPlayer::planetsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val planetsEnabled = it.boolean()
+					data.planetsEnabled = planetsEnabled
+				}
+			}
+
+			change[SLPlayer::starsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val starsEnabled = it.boolean()
+					data.starsEnabled = starsEnabled
+				}
+			}
+
+			change[SLPlayer::beaconsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val beaconsEnabled = it.boolean()
+					data.beaconsEnabled = beaconsEnabled
 				}
 			}
 		}
