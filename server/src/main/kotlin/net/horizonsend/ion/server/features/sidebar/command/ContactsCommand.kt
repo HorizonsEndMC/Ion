@@ -23,7 +23,7 @@ class ContactsCommand : BaseCommand() {
 	) {
 		val contactsStarships = toggle ?: !PlayerCache[sender].contactsStarships
 		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::contactsStarships setTo contactsStarships))
-		sender.success("Changed Starship visibility to $contactsStarships")
+		sender.success("Changed starship visibility to $contactsStarships")
 	}
 
 	@Suppress("unused")
@@ -56,6 +56,6 @@ class ContactsCommand : BaseCommand() {
 	) {
 		val beaconsEnabled = toggle ?: !PlayerCache[sender].beaconsEnabled
 		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::beaconsEnabled setTo beaconsEnabled))
-		sender.success("Changed Starship visibility to $beaconsEnabled")
+		sender.success("Changed beacon visibility to $beaconsEnabled")
 	}
 }

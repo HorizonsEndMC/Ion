@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.repeatString
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -45,7 +44,7 @@ import org.bukkit.util.Vector
 import java.util.Locale
 import kotlin.math.abs
 
-class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
+class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 	companion object {
 		const val MIN_LENGTH = 40
 		private const val CONTACTS_RANGE = 6000
@@ -83,7 +82,7 @@ class MainSidebar(private val player: Player, private val sidebar: Sidebar) {
 		for (component in contactsComponents) lines.addComponent(component)
 
 		val componentSidebar = ComponentSidebarLayout(title, lines.build())
-		componentSidebar.apply(sidebar)
+		componentSidebar.apply(backingSidebar)
 	}
 
 	private fun distanceColor(distance: Int): NamedTextColor {

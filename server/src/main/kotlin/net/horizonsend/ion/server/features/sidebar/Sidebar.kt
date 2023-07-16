@@ -15,7 +15,6 @@ import java.util.*
 
 object Sidebar : IonServerComponent() {
 	private val playerSidebars: MutableMap<UUID, MainSidebar> = Collections.synchronizedMap(mutableMapOf<UUID, MainSidebar>())
-	private val sidebar by lazy { scoreboardLibrary.createSidebar() }
 	private val scoreboardLibrary by lazy {
 		try {
 			ScoreboardLibrary.loadScoreboardLibrary(IonServer)
@@ -38,13 +37,16 @@ object Sidebar : IonServerComponent() {
 
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
+		val sidebar = scoreboardLibrary.createSidebar()
 		sidebar.addPlayer(event.player)
 		playerSidebars[event.player.uniqueId] = MainSidebar(event.player, sidebar)
 	}
 
 	@EventHandler
 	fun onPlayerLeave(event: PlayerQuitEvent) {
-		sidebar.removePlayer(event.player)
+		val sidebar = playerSidebars[event.player.uniqueId] ?: return
+		sidebar.backingSidebar.removePlayer(event.player)
+		sidebar.backingSidebar.close()
 		playerSidebars.remove(event.player.uniqueId)
 	}
 }
