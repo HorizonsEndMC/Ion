@@ -34,9 +34,6 @@ object NamespacedKeys {
 	// Various encounter flags
 	val INACTIVE = key("inactive")
 	val LOCKED = key("locked")
-	val PASSCODE_CODE = key("passcode_code")
-
-	val DATA_VERSION = key("data_version")
 
 	val AMMO = key("Ammo")
 	val CUSTOM_ITEM = key("CustomItem")

@@ -178,17 +178,8 @@ object StarshipComputers : IonServerComponent() {
 			pane.addItem(
 				guiButton(Material.IRON_DOOR) {
 					toggleLockEnabled(playerClicker, data)
-					tryOpenMenu(player, data)
 				}.setName(MiniMessage.miniMessage().deserialize(lockDisplayTag)),
 				3, 0
-			)
-
-			pane.addItem(
-				guiButton(Material.NAME_TAG) {
-					startRename(playerClicker, data)
-					tryOpenMenu(player, data)
-				}.setName(MiniMessage.miniMessage().deserialize("<gray>Starship Name")),
-				8, 0
 			)
 
 			if (player.isTerritoryOwner()) {
@@ -199,6 +190,13 @@ object StarshipComputers : IonServerComponent() {
 					5, 0
 				)
 			}
+
+			pane.addItem(
+				guiButton(Material.NAME_TAG) {
+					startRename(playerClicker, data)
+				}.setName(MiniMessage.miniMessage().deserialize("<gray>Starship Name")),
+				8, 0
+			)
 
 			pane.setOnClick { e ->
 				e.isCancelled = true
@@ -291,14 +289,18 @@ object StarshipComputers : IonServerComponent() {
 			Tasks.async {
 				val serialized = MiniMessage.miniMessage().deserialize(input)
 
+				if ((serialized as TextComponent).content().length >= 16) {
+					player.userError("Ship names must be less than 16 characters!")
+					return@async
+				}
+
 				if (serialized.clickEvent() != null ||
 					input.contains("<rainbow>") ||
 					input.contains("<newline>") ||
 					input.contains("<reset>") ||
 					serialized.hoverEvent() != null ||
 					serialized.insertion() != null ||
-					serialized.hasDecoration(TextDecoration.OBFUSCATED) ||
-					((serialized as? TextComponent)?.content()?.length ?: 0) >= 16
+					serialized.hasDecoration(TextDecoration.OBFUSCATED)
 				) {
 					player.userError("ERROR: Disallowed tags!")
 					return@async

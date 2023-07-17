@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -20,10 +21,13 @@ import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
-object NewPlayerProtection : BaseCommand() {
+object NewPlayerProtection : BaseCommand(), Listener {
 	private val lpUserManager = LuckPermsProvider.get().userManager
 
 	private val protectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
@@ -87,5 +91,15 @@ object NewPlayerProtection : BaseCommand() {
 		if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
 		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns
 		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+	}
+
+	@EventHandler
+	fun onPlayerHurtNoob(event: EntityDamageByEntityEvent) {
+		if (event.entity !is Player || event.damager !is Player) return
+
+		if ((event.entity as Player).hasProtection()) event.damager.alert(
+				"The player you are attacking has new player protection!\n" +
+					"Attacking them for any reason other than self defense is against the rules"
+			)
 	}
 }

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.achievements
 
 import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
 import org.bukkit.event.EventHandler
@@ -40,10 +41,11 @@ class AchievementListeners : Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onEnterPlanetEvent(event: EnterPlanetEvent) {
-		val playerData = SLPlayer[event.player.uniqueId]!!
+		val player = (event.controller as? PlayerController)?.player ?: return
+		val playerData = SLPlayer[player.uniqueId]!!
 
-		event.player.rewardAchievement(
-			when (event.newworld.name.lowercase()) {
+		player.rewardAchievement(
+			when (event.newWorld.name.lowercase()) {
 				"chimgara" -> Achievement.PLANET_CHIMGARA
 				"chandra" -> Achievement.PLANET_CHANDRA
 				"damkoth" -> Achievement.PLANET_DAMKOTH
@@ -66,6 +68,7 @@ class AchievementListeners : Listener {
 		)
 
 		val achievements = playerData.achievements.map { Achievement.valueOf(it) }
+
 		if (achievements.containsAll(
 				listOf(
 					Achievement.PLANET_CHANDRA,
@@ -76,7 +79,7 @@ class AchievementListeners : Listener {
 				)
 			)
 		) {
-			event.player.rewardAchievement(Achievement.SYSTEM_ASTERI)
+			player.rewardAchievement(Achievement.SYSTEM_ASTERI)
 		}
 
 		if (achievements.containsAll(
@@ -88,7 +91,7 @@ class AchievementListeners : Listener {
 				)
 			)
 		) {
-			event.player.rewardAchievement(Achievement.SYSTEM_REGULUS)
+			player.rewardAchievement(Achievement.SYSTEM_REGULUS)
 		}
 
 		if (achievements.containsAll(
@@ -100,7 +103,7 @@ class AchievementListeners : Listener {
 				)
 			)
 		) {
-			event.player.rewardAchievement(Achievement.SYSTEM_SIRIUS)
+			player.rewardAchievement(Achievement.SYSTEM_SIRIUS)
 		}
 
 		if (achievements.containsAll(
@@ -112,7 +115,7 @@ class AchievementListeners : Listener {
 				)
 			)
 		) {
-			event.player.rewardAchievement(Achievement.SYSTEM_ILIOS)
+			player.rewardAchievement(Achievement.SYSTEM_ILIOS)
 		}
 	}
 }

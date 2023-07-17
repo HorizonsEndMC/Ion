@@ -109,7 +109,10 @@ object Hyperspace : IonServerComponent() {
 		val starship = warmup.ship
 		val originWorld = starship.serverLevel.world
 
-		for (player in starship.serverLevel.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)) {
+		val players = starship.serverLevel.world
+			.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)
+
+		for (player in players) {
 			player.playSound(
 				Sound.sound(
 					Key.key("minecraft:entity.elder_guardian.hurt"),
@@ -119,9 +122,9 @@ object Hyperspace : IonServerComponent() {
 				)
 			)
 		}
-		Space.getPlanets().filter {
-			it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMass.toLocation(starship.serverLevel.world)) < 2500
-		}
+		Space.getPlanets()
+			.filter { it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMass.toLocation(starship.serverLevel.world)) < 2500 }
+			.filter { it.spaceWorld == starship.serverLevel.world }
 			.forEach {
 				it.planetWorld?.playSound(
 					Sound.sound(

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.server.miscellaneous.enumSetOf
+import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.isShulkerBox
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -9,9 +10,13 @@ import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.entity.PotionSplashEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerFishEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.RecipeChoice.MaterialChoice
+import org.bukkit.inventory.ShapedRecipe
 
 class CancelListeners : Listener {
 	private val preventFormBlocks = enumSetOf(
@@ -87,4 +92,34 @@ class CancelListeners : Listener {
 			event.isCancelled = true
 		}
 	}
+
+	@EventHandler
+	@Suppress("Unused")
+	fun onAlchemy(event: PrepareItemCraftEvent) {
+		if (event.isRepair) return
+
+		// Crafting different types of custom blocks together turns them into an iron block
+		if (event.inventory.result?.type != Material.IRON_BLOCK) return
+
+		val customItems = mutableListOf<CustomItems.MineralCustomItem>()
+
+		// Store one of them, if they're not all this one, cancel the event
+		lateinit var mineralType: ItemStack
+
+		for (itemStack in event.inventory.matrix) {
+			itemStack ?: return
+			val customItem = CustomItems[itemStack] ?: continue
+
+			if (customItem !is CustomItems.MineralCustomItem) continue
+
+			customItems.add(customItem)
+			mineralType = itemStack
+		}
+
+		if (customItems.isEmpty()) return
+
+		if (!event.inventory.matrix.all { it == mineralType }) event.inventory.result = ItemStack(Material.AIR)
+	}
+	
+	//TODO cancel recipes requiring iron supplied with custom items
 }

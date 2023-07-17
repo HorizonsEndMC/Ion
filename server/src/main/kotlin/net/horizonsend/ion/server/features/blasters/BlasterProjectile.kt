@@ -103,11 +103,7 @@ class BlasterProjectile(
 			shooter.playSound(sound(key("minecraft:blaster.hitmarker.standard"), Source.PLAYER, 20f, 1.0f))
 			damage = newDamage
 
-			val e = EntityDamageByEntityEvent(shooter, hitEntity, EntityDamageEvent.DamageCause.PROJECTILE, damage)
-			Bukkit.getPluginManager().callEvent(e)
-
-			if (!e.isCancelled)
-				hitEntity.damage(damage, shooter)
+			hitEntity.damage(damage, shooter)
 
 			return
 		}

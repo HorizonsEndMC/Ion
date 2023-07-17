@@ -2,10 +2,12 @@ package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.space.SpaceMechanics
+import net.starlegacy.feature.starship.active.ActiveStarships
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 class MiscListeners : Listener {
@@ -31,11 +33,20 @@ class MiscListeners : Listener {
 	}
 
 	@EventHandler
+	@Suppress("Unused")
 	fun onEntityDamage(event: EntityDamageEvent) {
 		val player: Player = event.entity as? Player ?: return
 
 		if (event.cause == EntityDamageEvent.DamageCause.DROWNING && SpaceMechanics.isWearingSpaceSuit(player)) {
 			event.isCancelled = true
 		}
+	}
+
+	@EventHandler
+	@Suppress("Unused")
+	fun onPlayerDeath(event: PlayerDeathEvent) {
+		val starship = ActiveStarships.findByPilot(event.player) ?: return
+
+		starship.setDirectControlEnabled(false)
 	}
 }
