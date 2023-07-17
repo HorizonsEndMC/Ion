@@ -29,6 +29,7 @@ import org.bukkit.SoundCategory
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 
@@ -36,11 +37,12 @@ class MiningLaserSubsystem(
     override val starship: ActivePlayerStarship,
     pos: Vec3i,
     private val face: BlockFace,
-    val multiblock: MiningLaserMultiblock
+    val multiblock: MiningLaserMultiblock,
 ) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
 	private val firingTasks = mutableListOf<BukkitTask>()
-	var isFiring = false
+	private var isFiring = false
 	lateinit var targetedBlock: Vector
+	lateinit var lastUser: Player
 
 	// Const disabled sign text
 	private val DISABLED = Component.text("[DISABLED]").color(NamedTextColor.RED)
@@ -92,20 +94,6 @@ class MiningLaserSubsystem(
 		return multiblock.signMatchesStructure(sign, loadChunks = true, particles = false)
 	}
 
-// 	// TODO use this for the multiple guardian beams
-// 	private fun getPoints(axis: Vector): List<Location> {
-// 		val spread: Double = 360.0 / multiblock.beamCount
-// 		val points = mutableListOf<Location>()
-// 		val start = axis.clone().normalize().rotateAroundZ(90.0).multiply(multiblock.mineRadius).add(axis.clone())
-//
-// 		for (count in multiblock.beamCount.downTo(1)) {
-// 			val newLoc = start.rotateAroundNonUnitAxis(axis.clone(), spread * count)
-// 			points.add(newLoc.toLocation(starship.serverLevel.world))
-// 		}
-//
-// 		return points
-// 	}
-
 	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
 		val sign = getSign() ?: return
 
@@ -117,11 +105,14 @@ class MiningLaserSubsystem(
 		this.targetedBlock = (getFirePos() + pos).toVector().add(vectorToTarget)
 		setFiring(!isFiring, sign, shooter)
 
+		(shooter as? PlayerController)?.let { lastUser = it.player }
 		// If it is within range, the raycast will move it forward.
 	}
 
 	private fun setFiring(firing: Boolean, sign: Sign, user: Controller? = null) {
 		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
+
+		(user as? PlayerController)?.let { lastUser = it.player }
 
 		when (firing) {
 			true -> {
@@ -262,7 +253,7 @@ class MiningLaserSubsystem(
 			toDestroy = blocks,
 			output = multiblock.getOutput(sign),
 			people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
-			player = (starship.controller as PlayerController).player
+			player = (starship.controller as? PlayerController)?.player ?: lastUser
 		)
 
 		if (blocksBroken > 0) {
