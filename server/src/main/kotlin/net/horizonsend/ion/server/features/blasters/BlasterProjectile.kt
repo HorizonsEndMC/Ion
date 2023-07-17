@@ -18,11 +18,8 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.util.Vector
 import kotlin.math.pow
-
 
 class BlasterProjectile(
 	val test: Location,
