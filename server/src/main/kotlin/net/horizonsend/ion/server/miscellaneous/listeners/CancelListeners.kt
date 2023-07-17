@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.server.miscellaneous.enumSetOf
+import net.starlegacy.util.isShulkerBox
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.entity.PotionSplashEvent
@@ -76,5 +78,13 @@ class CancelListeners : Listener {
 	@Suppress("Unused")
 	fun onPotionSplashEvent(event: PotionSplashEvent) {
 		event.isCancelled = true
+	}
+
+	@EventHandler
+	@Suppress("Unused")
+	fun onDispenseShulker(event: BlockDispenseEvent) {
+		if (event.item.type.isShulkerBox || event.block.type.isShulkerBox) {
+			event.isCancelled = true
+		}
 	}
 }
