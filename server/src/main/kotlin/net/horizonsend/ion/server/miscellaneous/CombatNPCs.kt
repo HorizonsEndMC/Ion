@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous
 
 import net.citizensnpcs.api.CitizensAPI
+import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.event.NPCDeathEvent
 import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
@@ -19,6 +20,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
@@ -109,6 +111,12 @@ object CombatNPCs : IonServerComponent() {
 				location.chunk.removePluginChunkTicket(IonServer)
 				destroyNPC(npc)
 			}
+		}
+
+		listen<NPCDamageByEntityEvent>(EventPriority.LOWEST) { event ->
+			if (event.damager is Player) return@listen
+
+			event.isCancelled = true
 		}
 
 		listen<NPCDeathEvent>(EventPriority.LOWEST) { event ->
