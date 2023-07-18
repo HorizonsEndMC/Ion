@@ -24,6 +24,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.kyori.adventure.text.Component.text
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import net.starlegacy.feature.progression.SLXP
@@ -46,7 +47,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 
 object StationSieges : IonServerComponent() {
-	data class Siege(val siegerId: SLPlayerId, val stationId: Oid<CapturableStation>, val start: Long)
+	data class Siege(var siegerId: SLPlayerId, val stationId: Oid<CapturableStation>, val start: Long)
 
 	private val sieges = mutableListOf<Siege>()
 
@@ -326,9 +327,49 @@ object StationSieges : IonServerComponent() {
 		return starship.initialBlockCount >= StarshipType.CORVETTE.minSize
 	}
 
+	fun getAllies(sieger: Player, stationId: Oid<CapturableStation>): List<Player> {
+		val players = mutableListOf<Player>()
+
+		val station: RegionCapturableStation = Regions[stationId]
+		val world: World = sieger.world
+		val oldNation = station.nation
+
+		val playerNation = PlayerCache[sieger].nationOid
+
+		if (playerNation == null) {
+			sieger.userError("You need to be in a nation to siege a station.")
+			return players
+		}
+
+		for (otherPlayer in world.players) {
+			if (otherPlayer.slPlayerId == sieger.slPlayerId) continue
+			if (oldNation == null) continue
+			if (!station.contains(otherPlayer.location)) continue
+
+			val otherPlayerNation = PlayerCache[otherPlayer].nationOid ?: continue
+
+			if (NationRelation.getRelationActual(playerNation, otherPlayerNation).ordinal >= NationRelation.Level.ALLY.ordinal) {
+
+				players.add(otherPlayer)
+			}
+		}
+
+		return players
+	}
+
 	@EventHandler
 	fun onPlayerQuit(event: PlayerQuitEvent) {
-		tryEndSiege(event.player)
+		val player = event.player
+
+		val siege = sieges.find { it.siegerId == player.slPlayerId } ?: return
+		val allies = getAllies(player, siege.stationId)
+
+		if (allies.isEmpty()) return tryEndSiege(event.player)
+
+		val newSieger = allies.firstOrNull() ?: return tryEndSiege(event.player)
+
+		siege.siegerId = newSieger.slPlayerId
+		Notify.online(text("Sieger ${player.name} disconnected, so the siege was transferred to ${newSieger.name}"))
 	}
 
 	@EventHandler
