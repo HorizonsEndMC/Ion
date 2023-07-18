@@ -260,14 +260,6 @@ class MiningLaserSubsystem(
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocksBroken).toInt(), true)
 
 			laserEnd.world.spawnParticle(Particle.EXPLOSION_HUGE, laserEnd, 1)
-		} else {
-			starship.sendMessage(
-				Component.text(
-					"Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} is trying to break air!"
-				).color(NamedTextColor.RED)
-			)
-
-			setFiring(false, sign)
 		}
 
 		// Sound is 5 seconds, ticks every quarter second
