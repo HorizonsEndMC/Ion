@@ -49,7 +49,9 @@ import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
-abstract class IonServerComponent: Listener, IonComponent()
+
+
+abstract class IonServerComponent : Listener, IonComponent()
 
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
@@ -141,7 +143,7 @@ object IonServer : JavaPlugin() {
 			component.onEnable()
 
 			if (component is IonServerComponent)
-			IonServer.server.pluginManager.registerEvents(component, IonServer)
+				IonServer.server.pluginManager.registerEvents(component, IonServer)
 		}
 
 		NewPlayerProtection.onEnable()
