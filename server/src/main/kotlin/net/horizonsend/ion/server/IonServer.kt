@@ -77,7 +77,6 @@ object IonServer : JavaPlugin() {
 		// Commands
 		val commandManager = PaperCommandManager(this)
 
-		@Suppress("Deprecation")
 		commandManager.enableUnstableAPI("help")
 
 		for (command in commands) {
@@ -90,7 +89,7 @@ object IonServer : JavaPlugin() {
 
 		commandManager.commandCompletions.registerStaticCompletion(
 			"achievements",
-			Achievement.values().map { it.name }
+			Achievement.entries.map { it.name }
 		)
 
 		commandManager.commandCompletions.registerCompletion("customItem") { context ->
@@ -116,7 +115,7 @@ object IonServer : JavaPlugin() {
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, FoundS2C.ID.toString())
 
 		// Void networking
-		for (packet in Packets.values()) {
+		for (packet in Packets.entries) {
 			logger.info("Registering ${packet.id}")
 
 			Bukkit.getMessenger().registerOutgoingPluginChannel(this, packet.id.toString())
