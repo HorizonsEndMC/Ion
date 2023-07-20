@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.enumSetOf
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.util.isShulkerBox
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockFadeEvent
@@ -13,6 +15,7 @@ import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerFishEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
@@ -120,6 +123,19 @@ class CancelListeners : Listener {
 
 		if (!event.inventory.matrix.all { it == mineralType }) event.inventory.result = ItemStack(Material.AIR)
 	}
-	
+
+	@EventHandler(priority = EventPriority.LOW)
+	@Suppress("Unused", "Deprecation")
+	fun onPlayerKickEvent(event: PlayerKickEvent) {
+		// Really dumb solution for players being kicked due to "out of order chat messages"
+		if (event.reason.lowercase().contains("out-of-order")) {
+			event.player.userError(
+				"The server attempted to kick you for out-of-order chat messages. You may need to retry any recent commands."
+			)
+
+			event.isCancelled = true
+		}
+	}
+
 	//TODO cancel recipes requiring iron supplied with custom items
 }

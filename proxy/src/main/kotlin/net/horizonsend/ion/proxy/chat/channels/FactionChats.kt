@@ -16,6 +16,7 @@ import net.horizonsend.ion.proxy.utils.isMuted
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.litote.kmongo.eq
 
 class SettlementChat : Channel {
 	override val name = "settlement"
@@ -130,8 +131,23 @@ class AllyChat : Channel {
 	override val checkPermission = false
 
 	override fun receivers(player: Player): List<Player> {
+		val playerData = PlayerCache[player]
+		val nation = playerData.nationOid ?: return run {
+			println("shouldnt have happened, ally chat nationOid is null but is checked before it even reaches here")
+			emptyList()
+		} //shouldnt happen
 		return super.receivers(player)
-			.filter { RelationCache[PlayerCache[it].nationOid!!, PlayerCache[player].nationOid!!].ordinal >= NationRelation.Level.ALLY.ordinal }
+			.filter {
+				val playerNation = PlayerCache.getIfOnline(it)?.nationOid ?: return@filter false
+
+				for (relation in NationRelation.find(NationRelation::nation eq nation)) {
+					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY)) {
+						return@filter true
+					}
+				}
+
+				return@filter false
+			}
 	}
 
 	override fun processMessage(player: Player, e: PlayerChatEvent): Boolean {
