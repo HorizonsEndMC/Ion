@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.hyperdrive
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.starlegacy.feature.multiblock.MultiblockShape
 
 object HyperdriveMultiblockClass1 : HyperdriveMultiblock() {
 	override val maxPower = 30_000

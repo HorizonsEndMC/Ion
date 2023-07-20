@@ -5,13 +5,13 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
+import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.database.schema.starships.Blueprint
-import net.horizonsend.ion.server.database.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.updateMeta
+import net.horizonsend.ion.server.miscellaneous.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -34,6 +34,7 @@ import net.wesjd.anvilgui.AnvilGUI.ResponseAction
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
@@ -87,7 +88,16 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 					player.userError("Enter a valid blueprint first!")
 				} else {
 					val items = getMaterials(blueprint!!).map { (material, count) ->
-						guiButton(ItemStack(material, count).updateMeta { it.lore(listOf(text(count, NamedTextColor.WHITE))) })
+						guiButton(ItemStack(material, count).updateMeta {
+							it.lore(
+								listOf(
+									text(
+										count,
+										NamedTextColor.WHITE
+									)
+								)
+							)
+						})
 					}
 
 					for (item in items) {
@@ -108,7 +118,9 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 			) {
 				if (blueprint == null) {
 					player.userError("Enter a valid blueprint first!")
-				} else { onPrintMaterials(blueprint!!) }
+				} else {
+					onPrintMaterials(blueprint!!)
+				}
 			}.setName(text("Print Materials List", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)),
 			5, 0
 		)
@@ -141,7 +153,7 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 				ItemStack(Material.ENDER_EYE)
 			) {
 				//TODO
-			}.setName(text("Preview", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)),
+			}.setName(text("Replace Blocks", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)),
 			3, 2
 		)
 
@@ -149,7 +161,10 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 			guiButton(
 				ItemStack(Material.IRON_BARS)
 			) {
-				//TODO
+				for ((_, location) in getBlocks(blueprint!!))
+					highlightBlock(player, BlockPos(location.x, location.y, location.z), 20 * 15)
+
+				player.closeInventory()
 			}.setName(text("Show Bounding Box", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)),
 			5, 2
 		)
@@ -159,8 +174,9 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 				guiButton(
 					ItemStack(Material.RED_CONCRETE)
 				) { onToggle(true) }
-					.setName(text("OFFLINE", NamedTextColor.RED).decorate(TextDecoration.BOLD)
-						.decoration(TextDecoration.ITALIC, false)
+					.setName(
+						text("OFFLINE", NamedTextColor.RED).decorate(TextDecoration.BOLD)
+							.decoration(TextDecoration.ITALIC, false)
 					)
 			} else {
 				guiButton(
@@ -187,7 +203,13 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 			.onComplete { completion: Completion ->
 				val answer = completion.text
 
-				if (Blueprint.col.findOne(and(Blueprint::name eq answer, Blueprint::owner eq player.slPlayerId)) == null) {
+				if (Blueprint.col.findOne(
+						and(
+							Blueprint::name eq answer,
+							Blueprint::owner eq player.slPlayerId
+						)
+					) == null
+				) {
 					return@onComplete listOf(ResponseAction.replaceInputText("Blueprint $answer not found!"))
 				}
 
@@ -250,11 +272,11 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 				.setLoreComponent(
 					listOf(
 						text().decoration(TextDecoration.ITALIC, false)
-						.append(text("Current Value: ", NamedTextColor.GRAY))
-						.append(text(data.offsetX).color(NamedTextColor.WHITE))
-						.build()
-				)
-			),
+							.append(text("Current Value: ", NamedTextColor.GRAY))
+							.append(text(data.offsetX).color(NamedTextColor.WHITE))
+							.build()
+					)
+				),
 			7, 0
 		)
 		pane.addItem(
@@ -343,15 +365,21 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 		clicker.success("Updated $offset offset to $newValue")
 	}
 
-	private fun arrowButton(modelData: Int, name: Component, currentValue: Int, action: InventoryClickEvent.() -> Unit): GuiItem {
+	private fun arrowButton(
+		modelData: Int,
+		name: Component,
+		currentValue: Int,
+		action: InventoryClickEvent.() -> Unit
+	): GuiItem {
 		val item = ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta { it.setCustomModelData(modelData) }
 
 		return guiButton(item, action).setName(name.decoration(TextDecoration.ITALIC, false))
-			.setLoreComponent(listOf(
-				text().decoration(TextDecoration.ITALIC, false)
-					.append(text("Current Value: ", NamedTextColor.GRAY))
-					.append(text(currentValue).color(NamedTextColor.WHITE))
-					.build()
+			.setLoreComponent(
+				listOf(
+					text().decoration(TextDecoration.ITALIC, false)
+						.append(text("Current Value: ", NamedTextColor.GRAY))
+						.append(text(currentValue).color(NamedTextColor.WHITE))
+						.build()
 				)
 			)
 	}
@@ -364,14 +392,17 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 				currentValue = data.offsetX
 				106
 			}
+
 			'Y' -> {
 				currentValue = data.offsetY
 				107
 			}
+
 			'Z' -> {
 				currentValue = data.offsetZ
 				108
 			}
+
 			else -> throw NoSuchElementException()
 		}
 
@@ -380,13 +411,15 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 		}).setName(text("$type: $currentValue").decoration(TextDecoration.ITALIC, false))
 	}
 
-	private fun onPrintMaterials(blueprint: Blueprint) { Tasks.async { player.userError(getMaterials(blueprint).toString()) } }
+	private fun onPrintMaterials(blueprint: Blueprint) {
+		Tasks.async { player.userError(getMaterials(blueprint).toString()) }
+	}
 
 	private fun openMaterialsMenu(page: Int, items: List<GuiItem>): MenuHelper = MenuHelper.apply { //FIXME
 		val header = StaticPane(0, 0, 9, 1)
 
 		header.fillWith(ItemStack(Material.BLACK_STAINED_GLASS_PANE), 1, 0, 6, 1)
-			{ this.isCancelled = true }
+		{ this.isCancelled = true }
 
 		header.addItem(
 			guiButton(ItemStack(Material.REDSTONE_BLOCK)) {
@@ -446,6 +479,20 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 		return materials.mapValues { (_, atomic) -> atomic.toInt() }
 	}
 
+	private fun getBlocks(blueprint: Blueprint): Map<BlockData, Vec3i> {
+		val clipboard = getClipboard(blueprint)
+		return clipboard.region.mapNotNull {
+			val state = clipboard.getBlock(it)
+			val blockData = state.toBukkitBlockData()
+
+			if (blockData.material.isAir) {
+				return@mapNotNull null
+			} else {
+				return@mapNotNull blockData to Vec3i(it.blockX, it.blockY, it.blockZ)
+			}
+		}.toMap()
+	}
+
 	private fun onToggle(running: Boolean) { //FIXME
 		player.information(if (running) "Enabled" else "Disabled")
 		show()
@@ -479,10 +526,14 @@ class ShipFactoryGUI(val player: Player, val multiblock: Sign, val data: ShipFac
 		)
 	}
 
-	fun iterateRegion(blueprint: Blueprint, origin: BlockPos, action: (blueprintBlock: Block, worldBlock: Block) -> Unit) {
+	fun iterateRegion(
+		blueprint: Blueprint,
+		origin: BlockPos,
+		action: (blueprintBlock: Block, worldBlock: Block) -> Unit
+	) {
 		val clipboard = getClipboard(blueprint)
 
-		val (offsetX: Int , offsetY: Int , offsetZ: Int) = data
+		val (offsetX: Int, offsetY: Int, offsetZ: Int) = data
 
 		val (signX, signY, signZ) = origin
 

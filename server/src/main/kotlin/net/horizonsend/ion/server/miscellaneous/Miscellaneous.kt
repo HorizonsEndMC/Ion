@@ -23,12 +23,12 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.*
-import net.starlegacy.util.Vec3i
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.entity.Entity
+import java.util.UUID
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -98,7 +98,12 @@ fun runnable(e: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunn
 fun <T : Entity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
 	this.spawnEntity(location, type) as T
 
+private val highlights = mutableMapOf<UUID, MutableList<BlockPos>>()
 fun highlightBlock(bukkitPlayer: Player, pos: BlockPos, duration: Long) {
+	if (highlights.containsKey(bukkitPlayer.uniqueId)) {
+		if (highlights[bukkitPlayer.uniqueId]!!.contains(pos)) return
+	}
+
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
 	val shulker =
@@ -108,10 +113,23 @@ fun highlightBlock(bukkitPlayer: Player, pos: BlockPos, duration: Long) {
 			isInvisible = true
 		}
 
+	(highlights[bukkitPlayer.uniqueId] ?: run {
+		val list = mutableListOf<BlockPos>()
+
+		highlights[bukkitPlayer.uniqueId] = list
+
+		list
+	}).add(pos)
+
 	conn.send(ClientboundAddEntityPacket(shulker))
 	shulker.entityData.refresh(player)
 
-	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(shulker.id)) }
+	Tasks.syncDelayTask(duration) {
+		highlights[player.uuid]?.remove(pos)
+		if (highlights[player.uuid]?.isEmpty() == true) highlights.remove(player.uuid)
+
+		conn.send(ClientboundRemoveEntitiesPacket(shulker.id))
+	}
 }
 
 fun repeatString(string: String, count: Int): String {

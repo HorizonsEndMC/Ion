@@ -36,7 +36,6 @@ import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass2
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass3
 import net.starlegacy.feature.multiblock.hyperdrive.HyperdriveMultiblockClass4
 import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
-import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
@@ -49,7 +48,6 @@ import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.shipfactory.ShipFactoryMultiblock
 import net.starlegacy.feature.multiblock.dockingtube.ConnectedDockingTubeMultiblock
 import net.starlegacy.feature.multiblock.dockingtube.DisconnectedDockingTubeMultiblock
-import net.starlegacy.feature.multiblock.misc.AirlockMultiblock
 import net.starlegacy.feature.multiblock.misc.MobDefender
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
 import net.starlegacy.feature.multiblock.navigationcomputer.NavigationComputerMultiblockAdvanced

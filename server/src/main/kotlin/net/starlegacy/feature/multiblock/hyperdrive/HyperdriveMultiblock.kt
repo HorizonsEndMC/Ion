@@ -1,7 +1,5 @@
 package net.starlegacy.feature.multiblock.hyperdrive
 
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
-import net.md_5.bungee.api.ChatColor
 import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.CARDINAL_BLOCK_FACES

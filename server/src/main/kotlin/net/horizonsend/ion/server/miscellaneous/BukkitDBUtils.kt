@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.multiblock.shipfactory.ShipFactoryMaterialCosts
 import net.starlegacy.feature.starship.StarshipSchematic
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.util.*
@@ -62,6 +63,16 @@ fun Blueprint.loadClipboard(): Clipboard {
 fun Blueprint.canAccess(player: Player): Boolean {
 	val slPlayerId = player.slPlayerId
 	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
+}
+
+fun Blueprint.Companion.calculateBlueprintCost(blueprint: Blueprint): Int {
+	val clipboard = blueprint.loadClipboard()
+
+	return clipboard.region
+		.map { clipboard.getBlock(it).toBukkitBlockData() }
+		.filter { !it.material.isAir }
+		.sumOf { ShipFactoryMaterialCosts.getPrice(it) }
+		.toInt()
 }
 
 class Vec3i: DBVec3i {

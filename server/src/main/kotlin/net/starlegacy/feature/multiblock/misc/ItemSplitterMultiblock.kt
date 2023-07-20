@@ -8,8 +8,8 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.multiblock.FurnaceMultiblock
 import net.starlegacy.feature.multiblock.InteractableMultiblock
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
+import net.starlegacy.feature.multiblock.MultiblockShape
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getStateIfLoaded
 import net.starlegacy.util.rightFace
@@ -35,7 +35,7 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		BLACKLIST
 	)
 
-	override fun LegacyMultiblockShape.buildStructure() {
+	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+1) {
 				x(0).anyPipedInventory()

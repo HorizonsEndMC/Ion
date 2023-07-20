@@ -3,8 +3,6 @@ package net.horizonsend.ion.server.features.multiblock.starship.mininglaser
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.util.Vec3i
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 import org.bukkit.block.BlockFace
 

@@ -1,8 +1,7 @@
 package net.starlegacy.feature.multiblock.hyperdrive
 
 import net.starlegacy.feature.multiblock.MultiblockShape
-import net.starlegacy.util.Vec3i
-import net.starlegacy.feature.multiblock.LegacyMultiblockShape
+
 import net.horizonsend.ion.server.miscellaneous.Vec3i
 
 object HyperdriveMultiblockClass4 : HyperdriveMultiblock() {

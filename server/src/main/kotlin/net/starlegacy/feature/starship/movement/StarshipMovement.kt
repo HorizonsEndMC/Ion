@@ -12,8 +12,6 @@ import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.features.multiblock.cryopods.CryoPods
 import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
