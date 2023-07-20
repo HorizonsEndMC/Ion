@@ -51,7 +51,7 @@ object AreaShields : IonServerComponent() {
 			val world = Bukkit.getWorld(worldName)
 
 			if (world == null) {
-				log.warn("WORLD NOT FOUND $world! FAILED TO LOAD AREA SHIELD!")
+				log.warn("WORLD $worldName NOT FOUND $world! FAILED TO LOAD AREA SHIELD!")
 				continue
 			}
 

@@ -52,7 +52,7 @@ class StarshipFactoryPrinter(
 	}
 
 	private fun countMaterials() {
-		for (item: ItemStack? in inventory.contents!!) {
+		for (item: ItemStack? in inventory.contents) {
 			if (item == null || item.type.isAir) {
 				continue
 			}
@@ -143,7 +143,7 @@ class StarshipFactoryPrinter(
 		for ((printItem, count) in usedItems) {
 			var remainingCount = count
 
-			for (item: ItemStack? in inventory.contents!!) {
+			for (item: ItemStack? in inventory.contents) {
 				if (item == null || item.type.isAir) {
 					continue
 				}

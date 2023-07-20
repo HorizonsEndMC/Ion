@@ -45,6 +45,7 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock
+import net.starlegacy.feature.multiblock.misc.ItemSplitterMultiblock
 import net.starlegacy.feature.multiblock.misc.MagazineMultiblock
 import net.starlegacy.feature.multiblock.misc.MobDefender
 import net.starlegacy.feature.multiblock.misc.ShipFactoryMultiblock
@@ -201,7 +202,9 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier2Top,
 			MiningLaserMultiblockTier2Bottom,
 			MiningLaserMultiblockTier3Top,
-			MiningLaserMultiblockTier3Bottom
+			MiningLaserMultiblockTier3Bottom,
+
+			ItemSplitterMultiblock
 		)
 	}
 
