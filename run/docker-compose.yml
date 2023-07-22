@@ -40,7 +40,9 @@ services:
   paper:
     image: "itzg/minecraft-server"
     container_name: "paper"
-    ports: [ 5005:5005 ]
+    ports:
+      - "5005:5005"
+      - "8123:8123"
     tty: true
     stdin_open: true
     volumes:
