@@ -321,7 +321,7 @@ internal object SettlementCommand : SLCommand() {
 	}
 
 	@Subcommand("top|list")
-	@Description("View the top settlements on Star Legacy")
+	@Description("View the top settlements on Horizon's End")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
 		val lines = mutableListOf<TextComponent>()
 		lines += lineBreak().fromLegacy()
