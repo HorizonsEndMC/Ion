@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.runnable
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
@@ -18,6 +17,8 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace
 import net.starlegacy.util.toLocation
@@ -42,10 +43,10 @@ class MiningLaserSubsystem(
 	private val firingTasks = mutableListOf<BukkitTask>()
 	private var isFiring = false
 	lateinit var targetedBlock: Vector
-	lateinit var lastUser: Player
+	private lateinit var lastUser: Player
 
 	// Const disabled sign text
-	private val DISABLED = Component.text("[DISABLED]").color(NamedTextColor.RED)
+	private val DISABLED = text("[DISABLED]").color(NamedTextColor.RED)
 
 	// Starship power usage, 0
 	override val powerUsage: Int = 0
@@ -66,7 +67,7 @@ class MiningLaserSubsystem(
 	}
 
 	private fun setUser(sign: Sign, player: String?) {
-		val line3 = player?.let { Component.text(player) } ?: DISABLED
+		val line3 = player?.let { text(player) } ?: DISABLED
 		sign.line(3, line3)
 		sign.update(false, false)
 	}
@@ -204,9 +205,11 @@ class MiningLaserSubsystem(
 			return
 		}
 
-		if (!SpaceWorlds.contains(starship.serverLevel.world)) {
+		val isPlots = starship.serverLevel.world.name.contains("plots", ignoreCase = true)
+
+		if (!SpaceWorlds.contains(starship.serverLevel.world) && !isPlots) {
 			starship.sendMessage(
-				Component.text("The Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} wasn't able to initialize its gravitational collection beam and was disabled! (Move to a space world)")
+				text("The Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} wasn't able to initialize its gravitational collection beam and was disabled! (Move to a space world)")
 			)
 			return setFiring(false, sign, null)
 		}
@@ -241,7 +244,7 @@ class MiningLaserSubsystem(
 		val blocks = getBlocksToDestroy(laserEnd.block)
 		if (blocks.any { starship.contains(it.x, it.y, it.z) }) {
 			starship.sendMessage(
-				Component.text(
+				text(
 					"Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!"
 				).color(NamedTextColor.RED)
 			)
@@ -260,6 +263,8 @@ class MiningLaserSubsystem(
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocksBroken).toInt(), true)
 
 			laserEnd.world.spawnParticle(Particle.EXPLOSION_HUGE, laserEnd, 1)
+		}  else {
+			starship.sendActionBar(text("Mining laser is trying to break air!", NamedTextColor.RED))
 		}
 
 		// Sound is 5 seconds, ticks every quarter second
