@@ -17,6 +17,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import kotlin.math.roundToInt
 
 object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name = "incinerator"
@@ -115,7 +116,7 @@ object DisposalMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultibl
 			inventory.clear(i)
 		}
 
-		PowerMachines.setPower(sign, power - 3 * amountToClear)
+		PowerMachines.setPower(sign, power - (powerConsumed * amountToClear).roundToInt())
 		furnace.cookTime = 20.toShort()
 
 		event.isCancelled = true
