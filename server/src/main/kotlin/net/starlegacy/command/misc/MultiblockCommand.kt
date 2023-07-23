@@ -7,6 +7,8 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.highlightBlock
+import net.minecraft.core.BlockPos
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.getFacing
@@ -44,6 +46,9 @@ class MultiblockCommand : SLCommand() {
 			val requirementMet = requirement(relative, face)
 
 			if (!requirementMet) {
+				val (xx, yy, zz) = Vec3i(relative.location)
+
+				highlightBlock(sender, BlockPos(xx, yy, zz), 5 * 20L)
 				sender.userError(
 					"Block at ${Vec3i(relative.location)} doesn't match! Expected ${expected.material}, found ${relative.type}."
 				)
