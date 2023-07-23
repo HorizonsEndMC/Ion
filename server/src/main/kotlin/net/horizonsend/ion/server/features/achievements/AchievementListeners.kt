@@ -5,10 +5,13 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
+import org.bukkit.Bukkit.getPlayer
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent
 
 class AchievementListeners : Listener {
@@ -30,6 +33,23 @@ class AchievementListeners : Listener {
 	fun onPlayerAttemptPickupItemEvent(event: PlayerAttemptPickupItemEvent) {
 		event.player.rewardAchievement(
 			when (event.item.itemStack) {
+				CustomItems.MINERAL_TITANIUM.singleItem() -> Achievement.ACQUIRE_TITANIUM
+				CustomItems.MINERAL_ALUMINUM.singleItem() -> Achievement.ACQUIRE_ALUMINIUM
+				CustomItems.MINERAL_CHETHERITE.singleItem() -> Achievement.ACQUIRE_CHETHERITE
+				CustomItems.MINERAL_URANIUM.singleItem() -> Achievement.ACQUIRE_URANIUM
+				else -> return
+			}
+		)
+	}
+
+	@EventHandler
+	@Suppress("Unused")
+	fun onPlayerAttemptPickupItemEvent(event: InventoryDragEvent) {
+		val item = event.cursor ?: return
+		val player = getPlayer(event.view.player.uniqueId) ?: return
+
+		player.rewardAchievement(
+			when (item) {
 				CustomItems.MINERAL_TITANIUM.singleItem() -> Achievement.ACQUIRE_TITANIUM
 				CustomItems.MINERAL_ALUMINUM.singleItem() -> Achievement.ACQUIRE_ALUMINIUM
 				CustomItems.MINERAL_CHETHERITE.singleItem() -> Achievement.ACQUIRE_CHETHERITE

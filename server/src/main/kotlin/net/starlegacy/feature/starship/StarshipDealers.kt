@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.starlegacy.command.starship.BlueprintCommand
 import net.starlegacy.feature.nations.gui.item
 import net.starlegacy.util.MenuHelper
@@ -109,6 +111,8 @@ object StarshipDealers : IonServerComponent() {
 			BlueprintCommand.tryPilot(player, vec3i, ship.shipType, ship.displayName)
 
 			player.success("Successfully bought a ${ship.schematicName} (Cost: ${ship.price}\n Remaining Balance: ${player.getMoneyBalance()})")
+
+			player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
 		}
 	}
 
