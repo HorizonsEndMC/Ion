@@ -61,6 +61,10 @@ object PlayerCache : AbstractPlayerCache() {
 	override fun kickUUID(uuid: UUID, msg: String): Unit =
 		IonProxy.proxy.getPlayer(uuid).getOrNull()?.disconnect(miniMessage().deserialize(msg))!!
 
+	override fun getColoredTag(nameColorPair: Pair<String, String>?): String? {
+		return nameColorPair?.first //TODO: Find an actual solution
+	}
+
 	fun getIfOnline(player: Player): PlayerData? = PLAYER_DATA[player.uniqueId]
 
 	operator fun get(player: Player): PlayerData = PLAYER_DATA[player.uniqueId]

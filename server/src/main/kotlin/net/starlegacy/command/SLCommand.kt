@@ -105,12 +105,12 @@ abstract class SLCommand : BaseCommand() {
 	}
 
 	protected fun getSettlementTag(id: SLPlayerId, name: String, color: SLTextStyle = SLTextStyle.RESET): String {
-		val tag = SettlementRole.getTag(id)?.plus(" ") ?: ""
+		val tag = PlayerCache.getColoredTag(SettlementRole.getTag(id))?.plus(" ") ?: ""
 		return "$tag$color$name"
 	}
 
 	protected fun getNationTag(id: SLPlayerId, name: String, color: SLTextStyle = SLTextStyle.RESET): String {
-		val tag = NationRole.getTag(id)?.plus(" ") ?: ""
+		val tag = PlayerCache.getColoredTag(NationRole.getTag(id))?.plus(" ") ?: ""
 		return "$tag$color$name"
 	}
 

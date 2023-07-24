@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.database.projected
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.trx
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.addToSet
@@ -108,13 +109,13 @@ abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T 
 		.sort(descending(weightProperty))
 		.firstOrNull()
 
-	fun getTag(playerId: SLPlayerId): String? = col.withDocumentClass<Document>()
+	fun getTag(playerId: SLPlayerId): Pair<String, String>? = col.withDocumentClass<Document>()
 		.find(membersProperty contains playerId)
 		.sort(descending(weightProperty))
 		.projection(colorProperty, nameProperty)
 		.firstOrNull()
 		?.projected(colorProperty, nameProperty)
-		?.let { "<${it[colorProperty]}>${it[nameProperty]}" }
+		?.let { it[nameProperty] to it[colorProperty]  }
 
 	fun delete(id: Oid<T>) {
 		col.deleteOneById(id)

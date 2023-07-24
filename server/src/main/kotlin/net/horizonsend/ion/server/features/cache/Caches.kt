@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.listen
+import net.starlegacy.util.SLTextStyle
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -46,6 +47,13 @@ object PlayerCache : AbstractPlayerCache() {
 		listen<PlayerJoinEvent>(priority = EventPriority.LOWEST) { event ->
 			callOnLoginLow(event.player.uniqueId)
 		}
+	}
+
+	override fun getColoredTag(nameColorPair: Pair<String, String>?): String? {
+		if (nameColorPair?.first == null)
+			return null
+
+		return "${SLTextStyle.valueOf(nameColorPair.second).wrappedColor}${nameColorPair.first}"
 	}
 
 	override fun onlinePlayerIds(): List<SLPlayerId> =

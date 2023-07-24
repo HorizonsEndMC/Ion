@@ -144,8 +144,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 		fun recalculateTags(): Unit = synchronized(mutex) {
 			for ((id, data) in PLAYER_DATA) {
 				val slPlayerId = id.slPlayerId
-				data.settlementOid?.let { data.settlementTag = SettlementRole.getTag(slPlayerId) }
-				data.nationOid?.let { data.nationTag = NationRole.getTag(slPlayerId) }
+				data.settlementOid?.let { data.settlementTag = getColoredTag(SettlementRole.getTag(slPlayerId)) }
+				data.nationOid?.let { data.nationTag = getColoredTag(NationRole.getTag(slPlayerId)) }
 			}
 		}
 
@@ -172,17 +172,20 @@ abstract class AbstractPlayerCache : ManualCache() {
 		val settlementTag: String? = if (settlement == null) {
 			null
 		} else {
-			SettlementRole.getTag(id)
+			getColoredTag(SettlementRole.getTag(id))
 		}
 
 		val nationTag: String? = if (nation == null) {
 			null
 		} else {
-			NationRole.getTag(id)
+			getColoredTag(NationRole.getTag(id))
 		}
 
 		PLAYER_DATA[id.uuid] = PlayerData(id, data.xp, data.level, settlement, nation, settlementTag, nationTag)
 	}
+
+	abstract fun getColoredTag(nameColorPair: Pair<String, String>?): String?
+
 	operator fun get(playerId: UUID): PlayerData = PLAYER_DATA[playerId]
 		?: error("Data wasn't cached for $playerId")
 

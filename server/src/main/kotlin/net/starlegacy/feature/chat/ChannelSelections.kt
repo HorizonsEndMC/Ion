@@ -56,7 +56,7 @@ object ChannelSelections : IonServerComponent() {
 			val args: List<String> = message.removePrefix("/").split(" ")
 			val command: String = args[0].lowercase(Locale.getDefault())
 
-			ChatChannel.values().firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
+			ChatChannel.entries.firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
 				event.isCancelled = true
 
 				val playerID: UUID = player.uniqueId
