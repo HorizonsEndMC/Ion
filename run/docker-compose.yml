@@ -12,7 +12,6 @@ services:
     ports: [ 127.0.0.1:27017:27017 ]
     volumes:
       - ./config/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - ./db:/data/db:rw
     healthcheck:
       test: "test $$(echo 'rs.initiate().ok' | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --host mongo) -eq 1"
       interval: 1s

@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import kotlin.math.ceil
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.ENCOUNTER
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.NamespacedKey

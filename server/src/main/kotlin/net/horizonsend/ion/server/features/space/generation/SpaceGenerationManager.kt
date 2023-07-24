@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companio
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateChunk
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SPACE_GEN_VERSION
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SPACE_GEN_VERSION
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos

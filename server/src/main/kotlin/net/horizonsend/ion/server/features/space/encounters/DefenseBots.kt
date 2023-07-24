@@ -4,8 +4,8 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -14,7 +14,7 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.util.toBlockPos
-import net.horizonsend.ion.server.miscellaneous.updateMeta
+import net.horizonsend.ion.server.miscellaneous.registrations.updateMeta
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Chest

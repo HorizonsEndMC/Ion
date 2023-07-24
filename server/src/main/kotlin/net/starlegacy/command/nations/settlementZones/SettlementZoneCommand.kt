@@ -32,7 +32,7 @@ import net.starlegacy.util.isAlphanumeric
 import net.starlegacy.util.msg
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.toText
-import net.horizonsend.ion.server.miscellaneous.updateMeta
+import net.horizonsend.ion.server.miscellaneous.registrations.updateMeta
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 import org.bukkit.Material

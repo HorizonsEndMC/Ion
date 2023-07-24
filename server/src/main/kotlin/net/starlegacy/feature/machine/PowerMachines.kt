@@ -1,7 +1,7 @@
 package net.starlegacy.feature.machine
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.server.IonServerComponent

@@ -1,8 +1,10 @@
-package net.horizonsend.ion.server
+package net.horizonsend.ion.server.miscellaneous
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.miscellaneous.commands.debugRed
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.starlegacy.feature.starship.control.StarshipControl

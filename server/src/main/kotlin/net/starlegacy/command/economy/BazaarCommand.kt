@@ -13,7 +13,6 @@ import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.slPlayerId
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.city.CityNPCs
@@ -30,8 +29,8 @@ import net.starlegacy.feature.space.Space
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.displayNameString
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.util.roundToHundredth
 import net.starlegacy.util.toCreditsString

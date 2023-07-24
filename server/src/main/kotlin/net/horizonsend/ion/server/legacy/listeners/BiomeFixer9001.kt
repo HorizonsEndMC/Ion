@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.legacy.listeners
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Bukkit
 import org.bukkit.block.Biome
 import org.bukkit.event.EventHandler

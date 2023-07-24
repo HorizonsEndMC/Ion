@@ -65,7 +65,7 @@ fun Blueprint.canAccess(player: Player): Boolean {
 }
 
 class Vec3i: DBVec3i {
-	constructor(a: DBVec3i) : this(a.x, a.y, a.z)
+	constructor(a: DBVec3i) : super(a.x, a.y, a.z)
 	constructor(x: Int, y: Int, z: Int) : super(x, y, z)
 	@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 	constructor(blockKey: Long) : super(blockKeyX(blockKey), blockKeyY(blockKey), blockKeyZ(blockKey))

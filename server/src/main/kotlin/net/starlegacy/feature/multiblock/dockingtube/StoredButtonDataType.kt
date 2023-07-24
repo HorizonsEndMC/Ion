@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.dockingtube
 
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import org.bukkit.Material
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer

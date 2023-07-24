@@ -4,8 +4,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
-import net.horizonsend.ion.server.miscellaneous.updateMeta
-import net.starlegacy.util.SLTextStyle
+import net.horizonsend.ion.server.miscellaneous.registrations.updateMeta
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

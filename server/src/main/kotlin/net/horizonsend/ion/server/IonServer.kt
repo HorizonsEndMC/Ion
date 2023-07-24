@@ -8,12 +8,12 @@ import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.IonComponent
-import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.CombatNPCs
 import net.horizonsend.ion.server.features.client.networking.Packets
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.client.whereisit.mod.FoundS2C
@@ -28,6 +28,10 @@ import net.horizonsend.ion.server.legacy.NewPlayerProtection
 import net.horizonsend.ion.server.miscellaneous.*
 import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
+import net.horizonsend.ion.server.miscellaneous.registrations.commands
+import net.horizonsend.ion.server.miscellaneous.registrations.components
+import net.horizonsend.ion.server.miscellaneous.registrations.initializeCrafting
+import net.horizonsend.ion.server.miscellaneous.registrations.listeners
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.FriendlyByteBuf
 import net.starlegacy.SETTINGS

@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.space.encounters.Encounters.createLootChest
 import net.horizonsend.ion.server.features.space.encounters.Encounters.setChestFlag
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.feature.nations.gui.skullItem

@@ -2,8 +2,7 @@ package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.debugRed
+import net.horizonsend.ion.server.miscellaneous.commands.debugRed
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
@@ -11,10 +10,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.IonServerComponent
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.feature.multiblock.particleshield.BoxShieldMultiblock
-import net.starlegacy.feature.multiblock.particleshield.ShieldMultiblock
-import net.starlegacy.feature.multiblock.particleshield.SphereShieldMultiblock
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships

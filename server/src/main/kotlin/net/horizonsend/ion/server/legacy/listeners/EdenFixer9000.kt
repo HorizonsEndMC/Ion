@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.legacy.listeners
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.minecraft.core.BlockPos
-import net.starlegacy.util.randomDouble
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventHandler

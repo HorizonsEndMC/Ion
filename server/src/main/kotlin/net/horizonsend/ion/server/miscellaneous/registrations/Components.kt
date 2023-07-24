@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
@@ -6,6 +6,8 @@ import net.horizonsend.ion.common.utils.redisaction.RedisActions
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
+import net.horizonsend.ion.server.features.CombatNPCs
+import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
 import net.starlegacy.feature.economy.cargotrade.CrateRestrictions
@@ -117,10 +119,10 @@ val components: List<IonComponent> = listOf(
 	StarshipDealers,
 	ShipKillXP,
 	Decomposers,
+	ChannelSelections,
 
 	DutyModeMonitor,
 
 	SpaceStations,
-	ChatBridge,
 	Sidebar
 )

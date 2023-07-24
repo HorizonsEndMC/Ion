@@ -1,6 +1,6 @@
 package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.debugRed
+import net.horizonsend.ion.server.miscellaneous.commands.debugRed
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
@@ -18,7 +18,6 @@ import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R3.util.CraftMagicNumbers
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale

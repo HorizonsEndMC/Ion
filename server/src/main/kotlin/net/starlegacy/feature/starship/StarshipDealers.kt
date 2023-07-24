@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
 import net.starlegacy.util.placeSchematicEfficiently
-import net.horizonsend.ion.server.miscellaneous.updateMeta
+import net.horizonsend.ion.server.miscellaneous.registrations.updateMeta
 import net.starlegacy.util.withdrawMoney
 import org.bukkit.Location
 import org.bukkit.entity.Player

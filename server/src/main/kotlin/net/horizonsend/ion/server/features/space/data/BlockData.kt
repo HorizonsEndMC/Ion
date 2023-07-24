@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.space.data
 
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.BLOCK_ENTITY
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.BLOCK_STATE
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.BLOCK_ENTITY
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.BLOCK_STATE
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils

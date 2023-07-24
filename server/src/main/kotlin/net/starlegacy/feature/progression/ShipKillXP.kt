@@ -23,7 +23,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
-import net.horizonsend.ion.server.miscellaneous.CombatNPCKillEvent
+import net.horizonsend.ion.server.features.CombatNPCKillEvent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.miscellaneous.get
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent

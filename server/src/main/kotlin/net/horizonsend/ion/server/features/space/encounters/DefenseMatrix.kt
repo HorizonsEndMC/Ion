@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.encounters
 import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.minecraft.nbt.CompoundTag

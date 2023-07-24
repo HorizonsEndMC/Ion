@@ -13,8 +13,9 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.*
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
-import net.md_5.bungee.api.ChatColor
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.Levels
@@ -30,13 +31,15 @@ import org.litote.kmongo.eq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class SLCommand : BaseCommand() {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	companion object {
-		val ASYNC_COMMAND_THREAD = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-async-commands"))
+		val ASYNC_COMMAND_THREAD: ExecutorService = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-async-commands"))
 	}
 
 	/**
@@ -52,18 +55,19 @@ abstract class SLCommand : BaseCommand() {
 				block()
 			} catch (e: Exception) {
 				if (e is CommandException || e is InvalidCommandArgument) {
-					sender.sendMessage("${ChatColor.RED}Error: ${e.message}")
+					sender.userError("Error: ${e.message}")
 					return@submit
 				}
 
 				val cause = e.cause
 				if (cause is CommandException || cause is InvalidCommandArgument) {
-					sender.sendMessage("${ChatColor.RED}Error: ${cause.message}")
+					sender.userError("Error: ${cause.message}")
 					return@submit
 				}
 
-				log.error("Command Error for ${sender.name}", e)
-				sender.sendMessage("${ChatColor.DARK_RED}Something went wrong with that command, please tell staff")
+				val uuid = UUID.randomUUID()
+				log.error("Command Error for ${sender.name}, id: $uuid", e)
+				sender.serverError("Something went wrong with that command, please tell staff.\nError ID: $uuid")
 			}
 		}
 	}
@@ -80,7 +84,7 @@ abstract class SLCommand : BaseCommand() {
 	//endregion
 
 	@HelpCommand
-	fun onHelp(sender: CommandSender, help: CommandHelp) = help.showHelp()
+	fun onHelp(help: CommandHelp) = help.showHelp()
 
 	protected val linesPerPage = 8
 
@@ -238,8 +242,7 @@ abstract class SLCommand : BaseCommand() {
 	protected fun getSettlementTerritory(settlementId: Oid<Settlement>): RegionTerritory {
 		val territoryId = Settlement.findPropById(settlementId, Settlement::territory)
 			?: error("Failed to get territory for settlement $settlementId")
-		val region: RegionTerritory? = Regions[territoryId]
-		return region ?: error("Territory $territoryId not cached")
+		return Regions[territoryId]
 	}
 
 	protected fun getStarshipRiding(sender: Player) = ActiveStarships.findByPassenger(sender)

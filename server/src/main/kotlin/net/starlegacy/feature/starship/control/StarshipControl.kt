@@ -2,10 +2,10 @@ package net.starlegacy.feature.starship.control
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.debug
-import net.horizonsend.ion.server.debugBanner
+import net.horizonsend.ion.server.miscellaneous.commands.debug
+import net.horizonsend.ion.server.miscellaneous.commands.debugBanner
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.miscellaneous.displayNameString
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.server.IonServerComponent

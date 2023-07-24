@@ -3,8 +3,8 @@ package net.starlegacy.feature.starship
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.starlegacy.feature.progression.Levels
-import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.registrations.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.registrations.setLoreAndGet
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

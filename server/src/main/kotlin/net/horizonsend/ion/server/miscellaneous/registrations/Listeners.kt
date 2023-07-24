@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonWorld
+import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners

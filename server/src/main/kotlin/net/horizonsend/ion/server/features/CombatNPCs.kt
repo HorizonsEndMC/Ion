@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.features
 
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent
@@ -13,6 +13,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.get
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.starlegacy.listen
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks

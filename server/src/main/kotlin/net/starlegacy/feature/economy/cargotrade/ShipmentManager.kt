@@ -40,8 +40,8 @@ import net.starlegacy.util.msg
 import net.starlegacy.util.orNull
 import net.starlegacy.util.randomDouble
 import net.starlegacy.util.red
-import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.registrations.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.registrations.setLoreAndGet
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.util.toCreditsString

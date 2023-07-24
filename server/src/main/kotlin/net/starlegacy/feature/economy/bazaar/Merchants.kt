@@ -7,7 +7,7 @@ import net.starlegacy.feature.economy.city.TradeCityData
 import net.starlegacy.sharedDataFolder
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameComponent
 import net.starlegacy.util.toCreditsString
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq

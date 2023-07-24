@@ -22,8 +22,8 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.displayNameString
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Material
 import org.bukkit.entity.Player

@@ -12,7 +12,7 @@ import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.starlegacy.feature.economy.collectors.CollectionMissions
-import net.horizonsend.ion.server.miscellaneous.displayNameString
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

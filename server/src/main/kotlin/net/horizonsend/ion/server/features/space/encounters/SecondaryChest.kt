@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST_MONEY
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SECONDARY_CHEST_MONEY
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.util.VAULT_ECO
 import org.bukkit.block.Chest

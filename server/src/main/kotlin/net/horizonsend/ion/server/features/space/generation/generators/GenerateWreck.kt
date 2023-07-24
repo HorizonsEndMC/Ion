@@ -7,9 +7,9 @@ import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.space.encounters.Encounter
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.ENCOUNTER
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.SECONDARY_CHEST_MONEY
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.ENCOUNTER
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SECONDARY_CHEST
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SECONDARY_CHEST_MONEY
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.DoubleTag
 import net.minecraft.nbt.StringTag

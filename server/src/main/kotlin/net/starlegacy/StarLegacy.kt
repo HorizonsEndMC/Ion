@@ -14,7 +14,7 @@ import net.horizonsend.ion.common.database.schema.economy.*
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.components
+import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.server.miscellaneous.slPlayerId

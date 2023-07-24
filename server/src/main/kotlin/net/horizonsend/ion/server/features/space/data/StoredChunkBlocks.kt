@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.space.data
 
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import org.bukkit.Chunk
 import org.bukkit.persistence.PersistentDataAdapterContext

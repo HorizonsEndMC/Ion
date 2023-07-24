@@ -24,8 +24,8 @@ import net.starlegacy.util.isInRange
 import net.starlegacy.util.msg
 import net.starlegacy.util.placeSchematicEfficiently
 import net.starlegacy.util.readSchematic
-import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.setLoreAndGet
+import net.horizonsend.ion.server.miscellaneous.registrations.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.registrations.setLoreAndGet
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
 import org.bukkit.Location

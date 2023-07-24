@@ -11,7 +11,7 @@ import net.starlegacy.feature.misc.addPower
 import net.starlegacy.feature.misc.isPowerable
 import net.starlegacy.feature.misc.removePower
 import net.starlegacy.feature.misc.setPower
-import net.horizonsend.ion.server.miscellaneous.displayNameString
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 

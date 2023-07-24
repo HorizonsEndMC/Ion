@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.IonServer
 import net.md_5.bungee.api.ChatColor.RED
 import net.starlegacy.util.Skins
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.setDisplayNameAndGet
+import net.horizonsend.ion.server.miscellaneous.registrations.setDisplayNameAndGet
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Bukkit
 import org.bukkit.Material

@@ -27,8 +27,8 @@ import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.colorize
-import net.horizonsend.ion.server.miscellaneous.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.displayNameString
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
 import net.starlegacy.util.loadConfig
 import net.starlegacy.util.msg
 import net.starlegacy.util.randomRange

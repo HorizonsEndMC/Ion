@@ -5,11 +5,11 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.LOCKED
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.X
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.Y
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.Z
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.X
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Z
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.runnable
 import net.minecraft.core.BlockPos

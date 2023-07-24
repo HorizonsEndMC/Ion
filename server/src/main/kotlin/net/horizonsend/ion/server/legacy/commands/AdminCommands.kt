@@ -20,7 +20,7 @@ object AdminCommands : BaseCommand() {
 		CapturableStation.findById(
 			CapturableStation.create(
 				stationname,
-				sender.world.toString(),
+				sender.world.name,
 				x,
 				z,
 				siegehour,

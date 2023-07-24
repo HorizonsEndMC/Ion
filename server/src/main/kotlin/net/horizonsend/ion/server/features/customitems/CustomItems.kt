@@ -6,14 +6,14 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWea
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Singleshot
 import net.horizonsend.ion.server.features.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.blasters.objects.Magazine
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys.CUSTOM_ITEM
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.updateMeta
+import net.horizonsend.ion.server.miscellaneous.registrations.updateMeta
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_HOE

@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.Minin
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblockTier3Top
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.SonicMissileWeaponMultiblock
-import net.horizonsend.ion.server.miscellaneous.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.multiblock.ammopress.StandardAmmoPressMultiblock
 import net.starlegacy.feature.multiblock.areashield.AreaShield10
