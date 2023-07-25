@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

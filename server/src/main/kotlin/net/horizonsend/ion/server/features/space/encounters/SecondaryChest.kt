@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SECONDARY_CHEST_MONEY
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.util.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import org.bukkit.block.Chest
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType

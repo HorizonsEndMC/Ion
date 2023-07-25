@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.util.spherePoints
+import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import org.bukkit.Sound
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType

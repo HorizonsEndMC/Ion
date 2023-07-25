@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.IonServer
-import net.starlegacy.command.SLCommand
+import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createType

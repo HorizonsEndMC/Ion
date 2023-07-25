@@ -14,7 +14,7 @@ import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.horizonsend.ion.common.database.string
-import net.starlegacy.feature.economy.collectors.Collectors
+import net.horizonsend.ion.server.features.economy.collectors.Collectors
 
 object EcoStations : DbObjectCache<EcoStation, Oid<EcoStation>>(EcoStation.Companion) {
 	override val idAttribute = attribute(EcoStation::_id)

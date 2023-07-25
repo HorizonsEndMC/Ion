@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
-import net.starlegacy.feature.economy.cargotrade.CrateItems
-import net.starlegacy.feature.economy.cargotrade.ShipmentManager
+import net.horizonsend.ion.server.features.economy.cargotrade.CrateItems
+import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
 import net.horizonsend.ion.common.utils.redisaction.RedisAction
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
 import org.bukkit.Material
@@ -70,7 +70,7 @@ object CargoCrates : ManualCache() {
 	 */
 	internal fun reloadData() {
 		import()
-		CargoCrates.refreshGlobal(System.currentTimeMillis())
+		refreshGlobal(System.currentTimeMillis())
 	}
 
 	private fun import() {

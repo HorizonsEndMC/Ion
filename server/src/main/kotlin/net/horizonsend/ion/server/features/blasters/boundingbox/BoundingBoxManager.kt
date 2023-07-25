@@ -121,8 +121,8 @@ object BoundingBoxManager {
 
 		for (type in EntityType.values()) {
 			if (!entityTypeBoundingBox.containsKey(type) && type.isAlive) {
-				setEntityTypeBoundingBox(type, HUMANOID);
-			}
+				setEntityTypeBoundingBox(type, HUMANOID)
+            }
 		}
 	}
 }

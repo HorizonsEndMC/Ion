@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.sidebar.bars.MainSidebar
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary
 import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException
 import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary
-import net.starlegacy.util.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent

@@ -16,8 +16,8 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.starlegacy.feature.space.SpaceWorlds
-import net.starlegacy.util.Tasks
+import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB

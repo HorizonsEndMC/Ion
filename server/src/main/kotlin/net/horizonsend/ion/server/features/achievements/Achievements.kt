@@ -7,8 +7,8 @@ import net.kyori.adventure.title.Title
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.feature.progression.SLXP
+import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.features.progression.SLXP
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet

@@ -30,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import static net.starlegacy.util.CoordinatesKt.*;
-
 public class BlockPlacementRaw {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -63,14 +61,14 @@ public class BlockPlacementRaw {
 
 	public void addToWorldQueue(Long2ObjectOpenHashMap<BlockState> queue, Long2ObjectOpenHashMap<BlockState[][][]> worldQueue, World world) {
 		queue.forEach((coords, blockData) -> {
-			int y = blockKeyY(coords);
-			int x = blockKeyX(coords);
-			int z = blockKeyZ(coords);
+			int y = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyY(coords);
+			int x = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyX(coords);
+			int z = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyZ(coords);
 
 			int chunkX = x >> 4;
 			int chunkZ = z >> 4;
 
-			long chunkKey = chunkKey(chunkX, chunkZ);
+			long chunkKey = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKey(chunkX, chunkZ);
 
 			BlockState[][][] chunkQueue = worldQueue.computeIfAbsent(chunkKey, c -> emptyChunkMap(world));
 
@@ -114,8 +112,8 @@ public class BlockPlacementRaw {
 //          actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, chunkKey, blocks, immediate);
 
 			// Actually Place Chunk
-			int cx = chunkKeyX(chunkKey);
-			int cz = chunkKeyZ(chunkKey);
+			int cx = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyX(chunkKey);
+			int cz = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyZ(chunkKey);
 
 			boolean isLoaded = world.isChunkLoaded(cx, cz);
 

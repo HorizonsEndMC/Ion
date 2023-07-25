@@ -19,8 +19,8 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
-import net.starlegacy.feature.nations.NATIONS_BALANCE
-import net.starlegacy.util.squared
+import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
+import net.horizonsend.ion.server.miscellaneous.utils.squared
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.litote.kmongo.Id

@@ -7,7 +7,7 @@ import org.bukkit.ChatColor;
 import java.util.List;
 
 public class SignUtils {
-    private static Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
     public static String convertLine(String jsonLine) {
         if (jsonLine == null) return "";

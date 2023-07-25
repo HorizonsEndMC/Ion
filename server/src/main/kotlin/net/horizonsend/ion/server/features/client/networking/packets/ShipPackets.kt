@@ -5,9 +5,9 @@ import net.horizonsend.ion.server.features.client.networking.Packets
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.network.FriendlyByteBuf
-import net.starlegacy.feature.starship.active.ActiveStarships
-import net.starlegacy.util.Tasks
-import net.starlegacy.util.roundToHundredth
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.roundToHundredth
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import kotlin.math.roundToInt

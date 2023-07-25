@@ -16,8 +16,8 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
-import net.starlegacy.feature.misc.CustomItems.MINERAL_ALUMINUM
-import net.starlegacy.feature.misc.CustomItems.MINERAL_TITANIUM
+import net.horizonsend.ion.server.features.misc.CustomItems.MINERAL_ALUMINUM
+import net.horizonsend.ion.server.features.misc.CustomItems.MINERAL_TITANIUM
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR

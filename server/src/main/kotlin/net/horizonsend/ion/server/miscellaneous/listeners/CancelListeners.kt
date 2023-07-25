@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
-import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.listener.SLEventListener
-import net.starlegacy.util.isShulkerBox
+import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority

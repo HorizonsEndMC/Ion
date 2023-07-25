@@ -13,8 +13,8 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.util.toBlockPos
-import net.horizonsend.ion.server.miscellaneous.registrations.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Chest

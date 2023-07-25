@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.giveReward
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.block.Chest
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent

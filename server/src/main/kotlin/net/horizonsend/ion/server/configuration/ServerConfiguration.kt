@@ -7,9 +7,9 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConf
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.feature.starship.StarshipType
-import net.starlegacy.util.nms
-import net.starlegacy.util.readSchematic
+import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material

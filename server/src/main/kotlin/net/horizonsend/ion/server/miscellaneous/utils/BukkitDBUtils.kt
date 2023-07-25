@@ -10,9 +10,8 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.starlegacy.feature.starship.StarshipSchematic
-import net.starlegacy.feature.starship.StarshipType
-import net.starlegacy.util.*
+import net.horizonsend.ion.server.features.starship.StarshipSchematic
+import net.horizonsend.ion.server.features.starship.StarshipType
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World

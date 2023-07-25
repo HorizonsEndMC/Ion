@@ -16,8 +16,8 @@ import net.minecraft.nbt.StringTag
 import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.starlegacy.util.nms
-import net.starlegacy.util.toBukkitBlockData
+import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 
 object GenerateWreck {
 	fun generateWreckSection(

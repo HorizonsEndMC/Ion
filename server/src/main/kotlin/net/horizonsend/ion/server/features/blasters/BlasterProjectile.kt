@@ -10,8 +10,8 @@ import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.starlegacy.feature.gear.powerarmor.PowerArmorManager
-import net.starlegacy.util.Tasks
+import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.*
 import org.bukkit.Particle.DustOptions
 import org.bukkit.block.Block

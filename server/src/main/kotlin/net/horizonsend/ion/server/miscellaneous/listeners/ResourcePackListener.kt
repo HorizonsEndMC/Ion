@@ -4,8 +4,8 @@ import com.google.common.io.BaseEncoding
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.GameMode
 import org.bukkit.Material.CHAINMAIL_BOOTS
 import org.bukkit.Material.CHAINMAIL_CHESTPLATE
@@ -14,7 +14,6 @@ import org.bukkit.Material.CHAINMAIL_LEGGINGS
 import org.bukkit.Material.CLOCK
 import org.bukkit.Material.COOKED_BEEF
 import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
 import org.bukkit.inventory.ItemStack

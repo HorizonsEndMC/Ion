@@ -17,12 +17,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
-import net.starlegacy.Config
-import net.starlegacy.command.SLCommand
-import net.starlegacy.listener.SLEventListener
-import net.starlegacy.util.Notify
-import net.starlegacy.util.Tasks
-import net.starlegacy.util.loadConfig
+import net.horizonsend.ion.server.miscellaneous.LegacyConfig
+import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -44,7 +43,7 @@ val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs(
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
-	var legacySettings: Config = loadConfig(IonServer.dataFolder, "config") // Setting
+	var legacySettings: LegacyConfig = loadConfig(IonServer.dataFolder, "config") // Setting
 
 	override fun onEnable() {
 		val exception = runCatching(::internalEnable).exceptionOrNull() ?: return
@@ -116,7 +115,7 @@ object IonServer : JavaPlugin() {
 	override fun onDisable() {
 		IonWorld.unregisterAll()
 
-		SLCommand.ASYNC_COMMAND_THREAD.shutdown()
+		net.horizonsend.ion.server.command.SLCommand.ASYNC_COMMAND_THREAD.shutdown()
 
 		for (component in components.asReversed()) try {
 			component.onDisable()

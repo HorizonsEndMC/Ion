@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.starlegacy.command.SLCommand
+import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.entity.Player
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo

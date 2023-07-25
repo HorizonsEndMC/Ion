@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.starlegacy.command.SLCommand
+import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.Material
 import org.bukkit.entity.Player
 

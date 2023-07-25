@@ -47,8 +47,6 @@ data class BlockData(val blockState: BlockState, var blockEntityTag: CompoundTag
 		other as BlockData
 
 		if (blockState != other.blockState) return false
-		if (blockEntityTag != other.blockEntityTag) return false
-
-		return true
+		return blockEntityTag == other.blockEntityTag
 	}
 }

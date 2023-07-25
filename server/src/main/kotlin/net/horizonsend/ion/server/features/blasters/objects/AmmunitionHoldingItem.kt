@@ -10,7 +10,7 @@ import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
-import net.horizonsend.ion.server.miscellaneous.registrations.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import org.bukkit.Material
 import org.bukkit.Material.matchMaterial
 import org.bukkit.entity.Player

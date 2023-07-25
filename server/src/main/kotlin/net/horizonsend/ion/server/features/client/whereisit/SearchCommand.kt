@@ -10,15 +10,14 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
-import net.starlegacy.command.SLCommand
-import net.starlegacy.util.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 @CommandAlias("itemsearch")
 @CommandPermission("ion.search")
-object SearchCommand : SLCommand() {
+object SearchCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Default
 	fun default(
 		player: Player,
@@ -45,7 +44,7 @@ object SearchCommand : SLCommand() {
 		player: Player,
 		customItem: String
 	) {
-		val itemStack = net.starlegacy.feature.misc.CustomItems[customItem]?.itemStack(1) ?: run {
+		val itemStack = net.horizonsend.ion.server.features.misc.CustomItems[customItem]?.itemStack(1) ?: run {
 			player.userError("Can't find item $customItem!")
 			return
 		}

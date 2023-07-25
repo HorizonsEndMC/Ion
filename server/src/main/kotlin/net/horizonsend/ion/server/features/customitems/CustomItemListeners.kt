@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority

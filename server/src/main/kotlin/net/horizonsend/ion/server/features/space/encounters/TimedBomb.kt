@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.util.spherePoints
+import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import org.bukkit.Sound
 import org.bukkit.block.Chest
 import org.bukkit.event.player.PlayerInteractEvent

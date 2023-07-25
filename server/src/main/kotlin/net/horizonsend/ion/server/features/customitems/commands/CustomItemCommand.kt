@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.getByIdentifier
-import net.starlegacy.command.SLCommand
+import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 

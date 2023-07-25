@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.util.distance
-import net.starlegacy.util.toBlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import org.bukkit.FluidCollisionMode
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType

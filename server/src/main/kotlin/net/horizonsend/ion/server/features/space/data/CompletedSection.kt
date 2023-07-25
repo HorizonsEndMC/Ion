@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.LevelChunk
-import net.starlegacy.util.component1
-import net.starlegacy.util.component2
+import net.horizonsend.ion.server.miscellaneous.utils.component1
+import net.horizonsend.ion.server.miscellaneous.utils.component2
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType

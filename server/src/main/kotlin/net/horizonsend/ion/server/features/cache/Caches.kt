@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.starlegacy.util.SLTextStyle
+import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority

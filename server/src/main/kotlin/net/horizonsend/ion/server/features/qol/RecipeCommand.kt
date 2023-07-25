@@ -11,6 +11,9 @@ import net.horizonsend.ion.server.features.customitems.CustomItems
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
@@ -20,9 +23,16 @@ import org.bukkit.inventory.ShapelessRecipe
 @CommandAlias("recipe")
 @Suppress("Unused")
 @CommandPermission("ion.recipe")
-class RecipeCommand : BaseCommand() {
+class RecipeCommand : BaseCommand(), Listener {
 	companion object {
 		val invs = mutableListOf<InventoryView>()
+	}
+
+	@EventHandler
+	fun onClick(ev: InventoryClickEvent) {
+		if (invs.contains(ev.view)) {
+			ev.isCancelled = true
+		}
 	}
 
 	@Default
@@ -50,7 +60,7 @@ class RecipeCommand : BaseCommand() {
 		sender: Player,
 		customItem: String
 	) {
-		val itemStack = net.starlegacy.feature.misc.CustomItems[customItem] ?: return
+		val itemStack = net.horizonsend.ion.server.features.misc.CustomItems[customItem] ?: return
 		val recipe = Bukkit.getRecipe(NamespacedKey(IonServer, itemStack.id))
 
 		if (recipe is ShapedRecipe) {

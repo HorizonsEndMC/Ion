@@ -8,8 +8,8 @@ import net.horizonsend.ion.server.features.space.encounters.Encounters.setChestF
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.feature.nations.gui.skullItem
-import net.starlegacy.util.MenuHelper
+import net.horizonsend.ion.server.features.nations.gui.skullItem
+import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_HARP
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_SNARE

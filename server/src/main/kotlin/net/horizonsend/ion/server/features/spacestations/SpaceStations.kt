@@ -14,7 +14,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpa
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
 import net.horizonsend.ion.server.IonServerComponent
-import net.starlegacy.util.optional
+import net.horizonsend.ion.server.miscellaneous.utils.optional
 import java.util.Optional
 
 object SpaceStations : IonServerComponent() {

@@ -10,7 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener

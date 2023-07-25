@@ -11,8 +11,8 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOC
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.util.spherePoints
-import net.starlegacy.util.toBlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block

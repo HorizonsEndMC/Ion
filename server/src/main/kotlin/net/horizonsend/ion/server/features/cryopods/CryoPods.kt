@@ -10,8 +10,8 @@ import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitLocation
 import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.starlegacy.feature.multiblock.Multiblocks
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler

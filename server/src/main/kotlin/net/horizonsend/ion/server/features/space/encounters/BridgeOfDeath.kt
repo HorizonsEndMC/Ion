@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
-import net.starlegacy.feature.nations.gui.input
-import net.starlegacy.util.Notify
-import net.starlegacy.util.toBlockPos
+import net.horizonsend.ion.server.features.nations.gui.input
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest

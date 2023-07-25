@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
 
 import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
-import net.starlegacy.feature.multiblock.PowerStoringMultiblock
-import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
-import net.starlegacy.feature.starship.active.ActivePlayerStarship
-import net.starlegacy.feature.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.starlegacy.util.getFacing
-import net.starlegacy.util.leftFace
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory

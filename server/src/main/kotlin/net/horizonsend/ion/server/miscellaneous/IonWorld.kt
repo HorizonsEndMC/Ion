@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.server.level.ServerLevel
-import net.starlegacy.feature.machine.AreaShields
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldUnloadEvent

@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.server.legacy.events.EnterPlanetEvent
+import net.horizonsend.ion.server.events.EnterPlanetEvent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.starlegacy.feature.misc.CustomItems
-import net.starlegacy.feature.starship.event.StarshipDetectEvent
-import net.starlegacy.listener.SLEventListener
+import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
+import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
