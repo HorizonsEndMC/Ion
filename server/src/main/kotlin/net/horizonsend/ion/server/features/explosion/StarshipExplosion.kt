@@ -24,6 +24,7 @@ class StarshipExplosion(
 
 	fun explode(applyPhysics: Boolean = true, callback: () -> Unit = {}) {
 		getBlocksAsync()
+		if (useRays) getRayBlocksAsync()
 
 		val event = StarshipCauseExplosionEvent(
 			originator,
@@ -34,9 +35,13 @@ class StarshipExplosion(
 
 		if (isCancelled) return
 
-		removeBlocksAsync(applyPhysics)
+		Tasks.sync {
+			removeBlocks(applyPhysics)
 
-		Tasks.sync(callback)
+			if (useFire) applyFire()
+
+			callback()
+		}
 	}
 
 	/** populates the blocks list **/
@@ -44,8 +49,18 @@ class StarshipExplosion(
 		//TODO
 	}
 
+	/** If specified for the explosion to use rays, it additionally populates the blocks list **/
+	fun getRayBlocksAsync() {
+		//TODO
+	}
+
+	/** Applies fire to the explosion after blocks have been removed **/
+	fun applyFire() {
+		// TODO
+	}
+
 	/** removes blocks specified in the blocks list **/
-	fun removeBlocksAsync(applyPhysics: Boolean) {
+	fun removeBlocks(applyPhysics: Boolean) {
 		for (block in blocks) {
 			block.setType(Material.AIR, applyPhysics)
 		}
