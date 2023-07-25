@@ -1,7 +1,7 @@
 package net.starlegacy.listener.nations
 
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.starlegacy.SETTINGS
+import net.starlegacy.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -37,7 +37,7 @@ object FriendlyFireListener : SLEventListener() {
 	}
 
 	fun isFriendlyFire(damaged: Player, damager: Player): Boolean {
-		if (SETTINGS.allowFriendlyFire) {
+		if (LegacySettings.allowFriendlyFire) {
 			return false
 		}
 

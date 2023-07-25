@@ -32,7 +32,7 @@ import java.util.UUID
 /**
  * Manages NPCs for cities, handles the synchronization of them with the worlds
  */
-object CityNPCs : IonServerComponent() {
+object CityNPCs : IonServerComponent(true) {
 	private val isCitizensLoaded get() = IonServer.server.pluginManager.isPluginEnabled("Citizens")
 
 	private lateinit var citizensRegistry: NPCRegistry

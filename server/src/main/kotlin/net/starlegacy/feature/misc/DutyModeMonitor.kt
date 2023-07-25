@@ -3,7 +3,7 @@ package net.starlegacy.feature.misc
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import net.starlegacy.SETTINGS
+import net.starlegacy.LegacySettings
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.starship.event.StarshipPilotedEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotEvent
@@ -94,7 +94,7 @@ object DutyModeMonitor : IonServerComponent() {
 	}
 
 	private fun record(player: Player, content: String) {
-		val url = SETTINGS.dutyModeMonitorWebhook ?: return
+		val url = LegacySettings.dutyModeMonitorWebhook ?: return
 
 		val builder = WebhookClientBuilder(url)
 

@@ -1,20 +1,16 @@
 package net.horizonsend.ion.server.configuration
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
 import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties

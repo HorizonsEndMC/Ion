@@ -5,11 +5,12 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.server.IonServer
+import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
 
 @CommandAlias("graceperiodtoggle")
 @CommandPermission("graceperiodtoggle")
-object GracePeriod : BaseCommand() {
+object GracePeriod : SLCommand() {
 	private val gracePeriodFile = IonServer.dataFolder.resolve("gracePeriod")
 
 	var isGracePeriod = gracePeriodFile.exists()

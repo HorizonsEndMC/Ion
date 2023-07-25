@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.achievements
 
 import co.aikar.commands.BaseCommand
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -19,6 +20,13 @@ import org.litote.kmongo.pull
 @CommandAlias("achievements")
 @Suppress("Unused")
 object AchievementsCommand : SLCommand() {
+	override fun onEnable(commandManager: PaperCommandManager) {
+		commandManager.commandCompletions.registerStaticCompletion(
+			"achievements",
+			Achievement.entries.map { it.name }
+		)
+	}
+
 	@Default
 	fun onAchievementsList(sender: Player) {
 		sender.openScreen(AchievementsScreen(sender.name))

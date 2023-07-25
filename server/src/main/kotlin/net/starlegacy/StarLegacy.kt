@@ -45,15 +45,12 @@ import org.litote.kmongo.eq
 import java.io.File
 import java.util.*
 
-lateinit var SETTINGS: Config
+lateinit var LegacySettings: Config
 
-val sharedDataFolder by lazy { File(SETTINGS.sharedFolder).apply { mkdirs() } }
+val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
 
 fun legacyEnable(commandManager: PaperCommandManager) {
-	for (listeners in listeners) IonServer.server.pluginManager.registerEvents(listeners, IonServer) // Listeners
 	registerCommands(commandManager)
-	scheduleNationTasks()
-	INITIALIZATION_COMPLETE = true
 }
 
 fun legacyDisable() {
@@ -67,7 +64,7 @@ fun legacyDisable() {
 }
 
 fun scheduleNationTasks() {
-	if (SETTINGS.master) {
+	if (LegacySettings.master) {
 		// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
 		Tasks.asyncRepeat(20 * 60, 20 * 60 * 60) {
 			NationsMasterTasks.executeAll()

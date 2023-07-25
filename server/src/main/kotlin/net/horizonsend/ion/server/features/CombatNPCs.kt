@@ -36,7 +36,7 @@ import org.litote.kmongo.setValue
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-object CombatNPCs : IonServerComponent() {
+object CombatNPCs : IonServerComponent(true) {
 	private const val remainTimeMinutes = 4L
 
 	/** Map of NPC ID to its inventory */
@@ -57,9 +57,7 @@ object CombatNPCs : IonServerComponent() {
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
 
-		Tasks.sync {
-			combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
-		}
+		combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->

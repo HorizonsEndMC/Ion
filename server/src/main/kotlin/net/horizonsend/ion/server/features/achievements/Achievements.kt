@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.miscellaneous.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
-import net.starlegacy.SETTINGS
+import net.starlegacy.LegacySettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.miscellaneous.get
 import net.starlegacy.feature.misc.CustomItems
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet
 
 fun Player.rewardAchievement(achievement: Achievement) {
-	if (!SETTINGS.master) return
+	if (!LegacySettings.master) return
 
 	val playerData = SLPlayer[this]
 	if (playerData.achievements.map { Achievement.valueOf(it) }.find { it == achievement } != null) return

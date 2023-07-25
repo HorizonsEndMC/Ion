@@ -21,7 +21,7 @@ import org.dynmap.markers.MarkerAPI
 import java.io.Closeable
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-object NationsMap : IonServerComponent() {
+object NationsMap : IonServerComponent(true) {
 	private fun syncOnly(block: () -> Unit) = when {
 		Bukkit.isPrimaryThread() -> block()
 		else -> Tasks.sync(block)

@@ -1,12 +1,38 @@
 package net.horizonsend.ion.server.features.client.whereisit.mod
 
 import io.netty.buffer.Unpooled
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.client.networking.Packets
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+
+object ModNetworking : IonServerComponent() {
+	override fun onEnable() {
+		Bukkit.getMessenger().registerIncomingPluginChannel(IonServer, SearchC2S.ID.toString(), Searcher::handle)
+		Bukkit.getMessenger().registerOutgoingPluginChannel(IonServer, FoundS2C.ID.toString())
+
+		for (packet in Packets.entries) {
+			log.info("Registering ${packet.id}")
+
+			Bukkit.getMessenger().registerOutgoingPluginChannel(IonServer, packet.id.toString())
+			Bukkit.getMessenger().registerIncomingPluginChannel(
+				IonServer,
+				packet.id.toString()
+			) { s: String, player: Player, bytes: ByteArray ->
+				log.info("Received message on $s by ${player.name}")
+				val buf = FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))
+				packet.handler.c2s(buf, player)
+			}
+		}
+	}
+}
 
 class FoundS2C(results: Map<BlockPos, SearchResult>) : FriendlyByteBuf(Unpooled.buffer()) {
 	init {

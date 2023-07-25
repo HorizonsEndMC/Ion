@@ -28,10 +28,12 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-object AreaShields : IonServerComponent() {
+object AreaShields : IonServerComponent(true) {
 	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()
 
 	override fun onEnable() {
+		loadData()
+
 		Tasks.asyncRepeat(0L, 20L * 60L) {
 			saveData()
 		}

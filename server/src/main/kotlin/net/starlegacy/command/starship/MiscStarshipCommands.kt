@@ -1,5 +1,6 @@
 package net.starlegacy.command.starship
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -58,6 +59,12 @@ import kotlin.math.ln
 import kotlin.math.roundToInt
 
 object MiscStarshipCommands : SLCommand() {
+	override fun onEnable(commandManager: PaperCommandManager) {
+		commandManager.commandCompletions.registerCompletion("hyperspaceGates") {
+			IonServer.configuration.beacons.map { it.name.replace(" ", "_") }
+		}
+	}
+
 	@Suppress("unused")
 	@CommandAlias("release")
 	fun onRelease(sender: Player) {

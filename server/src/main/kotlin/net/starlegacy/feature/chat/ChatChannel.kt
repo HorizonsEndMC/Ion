@@ -8,7 +8,7 @@ import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.TextComponent
-import net.starlegacy.SETTINGS
+import net.starlegacy.LegacySettings
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -33,7 +33,7 @@ import org.litote.kmongo.eq
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {
 	GLOBAL("<dark_green>Global", listOf("global", "g"), SLTextStyle.RESET) {
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
-			if (SETTINGS.chat.noGlobalWorlds.contains(player.world.name)) {
+			if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) {
 				player.userErrorAction(
 					"You can't use global chat in this world! " +
 						"<italic>(If you need assistance, please use /msg)"
@@ -68,7 +68,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		}
 	},
 	LOCAL("<yellow>Local", listOf("local", "l"), SLTextStyle.YELLOW) {
-		private val distanceSquared = SETTINGS.chat.localDistance * SETTINGS.chat.localDistance
+		private val distanceSquared = LegacySettings.chat.localDistance * LegacySettings.chat.localDistance
 
 		override fun onChat(player: Player, event: AsyncPlayerChatEvent) {
 			val prefix = "&e&lLocal".colorize() + " " + event.format.format(player.displayName, "")
@@ -257,7 +257,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			}
 
 			for (player in Bukkit.getOnlinePlayers()) {
-				if (SETTINGS.chat.noGlobalWorlds.contains(player.world.name)) {
+				if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) {
 					continue
 				}
 				if (node != null) {

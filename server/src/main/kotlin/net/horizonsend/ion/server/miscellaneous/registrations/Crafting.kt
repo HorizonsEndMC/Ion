@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
@@ -77,268 +78,292 @@ import org.bukkit.inventory.RecipeChoice.ExactChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
-fun initializeCrafting() {
-	// Prismarine Bricks
-	Bukkit.addRecipe(FurnaceRecipe(NamespacedKey(IonServer, "prismarine_bricks"), ItemStack(PRISMARINE_BRICKS), PRISMARINE, 1f, 200))
+object Crafting : IonServerComponent() {
+	override fun onEnable() {
+		// Prismarine Bricks
+		Bukkit.addRecipe(
+			FurnaceRecipe(
+				NamespacedKey(IonServer, "prismarine_bricks"),
+				ItemStack(PRISMARINE_BRICKS),
+				PRISMARINE,
+				1f,
+				200
+			)
+		)
 
-	// Bell
-	shapedRecipe("bell", BELL) {
-		shape("sos", "igi", "ggg")
+		// Bell
+		shapedRecipe("bell", BELL) {
+			shape("sos", "igi", "ggg")
 
-		setIngredient('g', GOLD_BLOCK)
-		setIngredient('i', IRON_BLOCK)
-		setIngredient('o', OAK_LOG)
-		setIngredient('s', STICK)
+			setIngredient('g', GOLD_BLOCK)
+			setIngredient('i', IRON_BLOCK)
+			setIngredient('o', OAK_LOG)
+			setIngredient('s', STICK)
+		}
+
+		// Wool -> String
+		val wool = arrayOf(
+			LIGHT_BLUE_WOOL,
+			LIGHT_GRAY_WOOL,
+			MAGENTA_WOOL,
+			ORANGE_WOOL,
+			PURPLE_WOOL,
+			YELLOW_WOOL,
+			BLACK_WOOL,
+			BROWN_WOOL,
+			GREEN_WOOL,
+			WHITE_WOOL,
+			BLUE_WOOL,
+			CYAN_WOOL,
+			GRAY_WOOL,
+			LIME_WOOL,
+			PINK_WOOL,
+			RED_WOOL
+		)
+
+		for (material in wool) {
+			shapelessRecipe(material.name.lowercase(), ItemStack(STRING, 4), arrayOf(material))
+		}
+
+		// Saddle
+		shapedRecipe("saddle", SADDLE) {
+			shape("lll", "tat")
+
+			setIngredient('l', LEATHER)
+			setIngredient('t', TRIPWIRE)
+			setIngredient('a', AIR)
+		}
+
+		// Ochre Froglight
+		shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
+			shape("xhx", "hlh", "xhx")
+
+			setIngredient('h', HONEYCOMB)
+			setIngredient('l', SHROOMLIGHT)
+			setIngredient('x', AIR)
+		}
+
+		// Verdant Froglight
+		shapedRecipe("verdant_froglight", VERDANT_FROGLIGHT) {
+			shape("xsx", "sls", "xsx")
+
+			setIngredient('s', SLIME_BALL)
+			setIngredient('l', SHROOMLIGHT)
+			setIngredient('x', AIR)
+		}
+
+		// Pearlescent Froglight
+		shapedRecipe("pearlescent_froglight", PEARLESCENT_FROGLIGHT) {
+			shape("xax", "ala", "xax")
+
+			setIngredient('a', AMETHYST_SHARD)
+			setIngredient('l', SHROOMLIGHT)
+			setIngredient('x', AIR)
+		}
+
+		// Prismarine Crystals
+		shapelessRecipe("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), arrayOf(SEA_LANTERN))
+
+		// Nether Wart Block -> Nether Warts
+		shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
+
+		// Blaster Barrel Crafting
+		itemStackShapeRecipe("blaster_barrel", GUN_BARREL.constructItemStack()) {
+			shape("tct", "ppp", "tct")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('p', PRISMARINE_CRYSTALS)
+		}
+
+		// Pistol Receiver Crafting
+		itemStackShapeRecipe("pistol_receiver", PISTOL_RECEIVER.constructItemStack()) {
+			shape("xxx", "irt", "xxx")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('r', REDSTONE_BLOCK)
+			setIngredient('i', IRON_TRAPDOOR)
+			setIngredient('x', AIR)
+		}
+
+		// Rifle Receiver Crafting
+		itemStackShapeRecipe("rifle_receiver", RIFLE_RECEIVER.constructItemStack()) {
+			shape("xtx", "igt", "xtx")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('g', GOLD_BLOCK)
+			setIngredient('i', IRON_TRAPDOOR)
+			setIngredient('x', AIR)
+		}
+
+		// SMB Receiver Crafting
+		itemStackShapeRecipe("smb_receiver", SMB_RECEIVER.constructItemStack()) {
+			shape("xtx", "idx", "xtx")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('d', DIAMOND_BLOCK)
+			setIngredient('i', IRON_TRAPDOOR)
+			setIngredient('x', AIR)
+		}
+
+		// Sniper Receiver Crafting
+		itemStackShapeRecipe("sniper_receiver", SNIPER_RECEIVER.constructItemStack()) {
+			shape("xtx", "ieb", "xtx")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('e', EMERALD_BLOCK)
+			setIngredient('b', ExactChoice(MINERAL_TITANIUM.fullBlock.singleItem()))
+			setIngredient('i', IRON_TRAPDOOR)
+			setIngredient('x', AIR)
+		}
+
+		// Shotgun Receiver Crafting
+		itemStackShapeRecipe("shotgun_receiver", SHOTGUN_RECEIVER.constructItemStack()) {
+			shape("xxx", "icb", "xtx")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('c', COPPER_BLOCK)
+			setIngredient('b', ExactChoice(MINERAL_TITANIUM.fullBlock.singleItem()))
+			setIngredient('i', IRON_TRAPDOOR)
+			setIngredient('x', AIR)
+		}
+
+		// Cannon Receiver Crafting
+		itemStackShapeRecipe("cannon_receiver", CANNON_RECEIVER.constructItemStack()) {
+			shape("xxx", "xba", "gxx")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('b', ExactChoice(MINERAL_ALUMINUM.fullBlock.singleItem()))
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('x', AIR)
+		}
+
+		// Pistol Crafting
+		itemStackShapeRecipe("pistol", PISTOL.constructItemStack()) {
+			shape("xxx", "apb", "cxx")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('p', PISTOL_RECEIVER.constructItemStack())
+			setIngredient('b', GUN_BARREL.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+		}
+
+		// Rifle Crafting
+		itemStackShapeRecipe("rifle", RIFLE.constructItemStack()) {
+			shape("xxx", "apb", "acx")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('p', RIFLE_RECEIVER.constructItemStack())
+			setIngredient('b', GUN_BARREL.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+		}
+
+		// SMB Crafting
+		itemStackShapeRecipe("submachine_blaster", SUBMACHINE_BLASTER.constructItemStack()) {
+			shape("xxx", "apb", "acx")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('p', SMB_RECEIVER.constructItemStack())
+			setIngredient('b', GUN_BARREL.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+		}
+
+		// Sniper Crafting
+		itemStackShapeRecipe("sniper", CustomItems.SNIPER.constructItemStack()) {
+			shape("xgx", "apb", "acx")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('p', SNIPER_RECEIVER.constructItemStack())
+			setIngredient('b', GUN_BARREL.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('g', GLASS)
+			setIngredient('x', AIR)
+		}
+
+		// Shotgun Crafting
+		itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
+			shape("xxb", "apb", "acx")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('p', SHOTGUN_RECEIVER.constructItemStack())
+			setIngredient('b', GUN_BARREL.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+		}
+
+		itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
+			shape("xax", "xcb", "pxx")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('p', CANNON_RECEIVER.constructItemStack())
+			setIngredient('b', GUN_BARREL.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('x', AIR)
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+		}
+
+		// Circuitry Crafting 1
+		itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
+			shape("qdq", "arg", "ccc")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('q', QUARTZ)
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('d', GREEN_DYE)
+			setIngredient('r', REDSTONE)
+		}
+
+		// Circuitry Crafting 2
+		itemStackShapeRecipe("circuitry_2", CIRCUITRY.constructItemStack()) {
+			shape("qdq", "gra", "ccc")
+
+			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('q', QUARTZ)
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('d', GREEN_DYE)
+			setIngredient('r', REDSTONE)
+		}
+
+		// Standard Magazine Crafting
+		itemStackShapeRecipe("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
+			shape("xxx", "rlr", "ttt")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('l', LAPIS_BLOCK)
+			setIngredient('r', REDSTONE)
+			setIngredient('x', AIR)
+		}
+
+		itemStackShapeRecipe("special_magazine", SPECIAL_MAGAZINE.constructItemStack()) {
+			shape("xxx", "rer", "ttt")
+
+			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('e', EMERALD_BLOCK)
+			setIngredient('r', REDSTONE)
+			setIngredient('x', AIR)
+		}
 	}
 
-	// Wool -> String
-	val wool = arrayOf(
-		LIGHT_BLUE_WOOL, LIGHT_GRAY_WOOL, MAGENTA_WOOL, ORANGE_WOOL, PURPLE_WOOL, YELLOW_WOOL, BLACK_WOOL, BROWN_WOOL,
-		GREEN_WOOL, WHITE_WOOL, BLUE_WOOL, CYAN_WOOL, GRAY_WOOL, LIME_WOOL, PINK_WOOL, RED_WOOL
-	)
-
-	for (material in wool) {
-		shapelessRecipe(material.name.lowercase(), ItemStack(STRING, 4), arrayOf(material))
+	private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
+		val recipe = ShapedRecipe(NamespacedKey(IonServer, name), ItemStack(result))
+		execute(recipe)
+		Bukkit.addRecipe(recipe)
 	}
 
-	// Saddle
-	shapedRecipe("saddle", SADDLE) {
-		shape("lll", "tat")
-
-		setIngredient('l', LEATHER)
-		setIngredient('t', TRIPWIRE)
-		setIngredient('a', AIR)
+	private fun itemStackShapeRecipe(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit) {
+		val recipe = ShapedRecipe(NamespacedKey(IonServer, name), result)
+		execute(recipe)
+		Bukkit.addRecipe(recipe)
 	}
 
-	// Ochre Froglight
-	shapedRecipe("ochre_froglight", OCHRE_FROGLIGHT) {
-		shape("xhx", "hlh", "xhx")
-
-		setIngredient('h', HONEYCOMB)
-		setIngredient('l', SHROOMLIGHT)
-		setIngredient('x', AIR)
+	private fun shapelessRecipe(name: String, result: ItemStack, ingredients: Array<Material>) {
+		val recipe = ShapelessRecipe(NamespacedKey(IonServer, name), result)
+		for (ingredient in ingredients) recipe.addIngredient(ingredient)
+		Bukkit.addRecipe(recipe)
 	}
-
-	// Verdant Froglight
-	shapedRecipe("verdant_froglight", VERDANT_FROGLIGHT) {
-		shape("xsx", "sls", "xsx")
-
-		setIngredient('s', SLIME_BALL)
-		setIngredient('l', SHROOMLIGHT)
-		setIngredient('x', AIR)
-	}
-
-	// Pearlescent Froglight
-	shapedRecipe("pearlescent_froglight", PEARLESCENT_FROGLIGHT) {
-		shape("xax", "ala", "xax")
-
-		setIngredient('a', AMETHYST_SHARD)
-		setIngredient('l', SHROOMLIGHT)
-		setIngredient('x', AIR)
-	}
-
-	// Prismarine Crystals
-	shapelessRecipe("prismarine_crystals", ItemStack(PRISMARINE_CRYSTALS, 4), arrayOf(SEA_LANTERN))
-
-	// Nether Wart Block -> Nether Warts
-	shapelessRecipe("nether_warts", ItemStack(NETHER_WART, 9), arrayOf(NETHER_WART_BLOCK))
-
-	// Blaster Barrel Crafting
-	itemStackShapeRecipe("blaster_barrel", GUN_BARREL.constructItemStack()) {
-		shape("tct", "ppp", "tct")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('c', COPPER_INGOT)
-		setIngredient('p', PRISMARINE_CRYSTALS)
-	}
-
-	// Pistol Receiver Crafting
-	itemStackShapeRecipe("pistol_receiver", PISTOL_RECEIVER.constructItemStack()) {
-		shape("xxx", "irt", "xxx")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('r', REDSTONE_BLOCK)
-		setIngredient('i', IRON_TRAPDOOR)
-		setIngredient('x', AIR)
-	}
-
-	// Rifle Receiver Crafting
-	itemStackShapeRecipe("rifle_receiver", RIFLE_RECEIVER.constructItemStack()) {
-		shape("xtx", "igt", "xtx")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('g', GOLD_BLOCK)
-		setIngredient('i', IRON_TRAPDOOR)
-		setIngredient('x', AIR)
-	}
-
-	// SMB Receiver Crafting
-	itemStackShapeRecipe("smb_receiver", SMB_RECEIVER.constructItemStack()) {
-		shape("xtx", "idx", "xtx")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('d', DIAMOND_BLOCK)
-		setIngredient('i', IRON_TRAPDOOR)
-		setIngredient('x', AIR)
-	}
-
-	// Sniper Receiver Crafting
-	itemStackShapeRecipe("sniper_receiver", SNIPER_RECEIVER.constructItemStack()) {
-		shape("xtx", "ieb", "xtx")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('e', EMERALD_BLOCK)
-		setIngredient('b', ExactChoice(MINERAL_TITANIUM.fullBlock.singleItem()))
-		setIngredient('i', IRON_TRAPDOOR)
-		setIngredient('x', AIR)
-	}
-
-	// Shotgun Receiver Crafting
-	itemStackShapeRecipe("shotgun_receiver", SHOTGUN_RECEIVER.constructItemStack()) {
-		shape("xxx", "icb", "xtx")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('c', COPPER_BLOCK)
-		setIngredient('b', ExactChoice(MINERAL_TITANIUM.fullBlock.singleItem()))
-		setIngredient('i', IRON_TRAPDOOR)
-		setIngredient('x', AIR)
-	}
-
-	// Cannon Receiver Crafting
-	itemStackShapeRecipe("cannon_receiver", CANNON_RECEIVER.constructItemStack()) {
-		shape("xxx", "xba", "gxx")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('b', ExactChoice(MINERAL_ALUMINUM.fullBlock.singleItem()))
-		setIngredient('g', GOLD_INGOT)
-		setIngredient('x', AIR)
-	}
-
-	// Pistol Crafting
-	itemStackShapeRecipe("pistol", PISTOL.constructItemStack()) {
-		shape("xxx", "apb", "cxx")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('p', PISTOL_RECEIVER.constructItemStack())
-		setIngredient('b', GUN_BARREL.constructItemStack())
-		setIngredient('c', CIRCUITRY.constructItemStack())
-		setIngredient('x', AIR)
-	}
-
-	// Rifle Crafting
-	itemStackShapeRecipe("rifle", RIFLE.constructItemStack()) {
-		shape("xxx", "apb", "acx")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('p', RIFLE_RECEIVER.constructItemStack())
-		setIngredient('b', GUN_BARREL.constructItemStack())
-		setIngredient('c', CIRCUITRY.constructItemStack())
-		setIngredient('x', AIR)
-	}
-
-	// SMB Crafting
-	itemStackShapeRecipe("submachine_blaster", SUBMACHINE_BLASTER.constructItemStack()) {
-		shape("xxx", "apb", "acx")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('p', SMB_RECEIVER.constructItemStack())
-		setIngredient('b', GUN_BARREL.constructItemStack())
-		setIngredient('c', CIRCUITRY.constructItemStack())
-		setIngredient('x', AIR)
-	}
-
-	// Sniper Crafting
-	itemStackShapeRecipe("sniper", CustomItems.SNIPER.constructItemStack()) {
-		shape("xgx", "apb", "acx")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('p', SNIPER_RECEIVER.constructItemStack())
-		setIngredient('b', GUN_BARREL.constructItemStack())
-		setIngredient('c', CIRCUITRY.constructItemStack())
-		setIngredient('g', GLASS)
-		setIngredient('x', AIR)
-	}
-
-	// Shotgun Crafting
-	itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
-		shape("xxb", "apb", "acx")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('p', SHOTGUN_RECEIVER.constructItemStack())
-		setIngredient('b', GUN_BARREL.constructItemStack())
-		setIngredient('c', CIRCUITRY.constructItemStack())
-		setIngredient('x', AIR)
-	}
-
-	itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
-		shape("xax", "xcb", "pxx")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('p', CANNON_RECEIVER.constructItemStack())
-		setIngredient('b', GUN_BARREL.constructItemStack())
-		setIngredient('c', CIRCUITRY.constructItemStack())
-		setIngredient('x', AIR)
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-	}
-
-	// Circuitry Crafting 1
-	itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
-		shape("qdq", "arg", "ccc")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('c', COPPER_INGOT)
-		setIngredient('q', QUARTZ)
-		setIngredient('g', GOLD_INGOT)
-		setIngredient('d', GREEN_DYE)
-		setIngredient('r', REDSTONE)
-	}
-
-	// Circuitry Crafting 2
-	itemStackShapeRecipe("circuitry_2", CIRCUITRY.constructItemStack()) {
-		shape("qdq", "gra", "ccc")
-
-		setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-		setIngredient('c', COPPER_INGOT)
-		setIngredient('q', QUARTZ)
-		setIngredient('g', GOLD_INGOT)
-		setIngredient('d', GREEN_DYE)
-		setIngredient('r', REDSTONE)
-	}
-
-	// Standard Magazine Crafting
-	itemStackShapeRecipe("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
-		shape("xxx", "rlr", "ttt")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('l', LAPIS_BLOCK)
-		setIngredient('r', REDSTONE)
-		setIngredient('x', AIR)
-	}
-
-	itemStackShapeRecipe("special_magazine", SPECIAL_MAGAZINE.constructItemStack()) {
-		shape("xxx", "rer", "ttt")
-
-		setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
-		setIngredient('e', EMERALD_BLOCK)
-		setIngredient('r', REDSTONE)
-		setIngredient('x', AIR)
-	}
-}
-
-private fun shapedRecipe(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
-	val recipe = ShapedRecipe(NamespacedKey(IonServer, name), ItemStack(result))
-	execute(recipe)
-	Bukkit.addRecipe(recipe)
-}
-
-private fun itemStackShapeRecipe(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit) {
-	val recipe = ShapedRecipe(NamespacedKey(IonServer, name), result)
-	execute(recipe)
-	Bukkit.addRecipe(recipe)
-}
-
-private fun shapelessRecipe(name: String, result: ItemStack, ingredients: Array<Material>) {
-	val recipe = ShapelessRecipe(NamespacedKey(IonServer, name), result)
-	for (ingredient in ingredients) recipe.addIngredient(ingredient)
-	Bukkit.addRecipe(recipe)
 }

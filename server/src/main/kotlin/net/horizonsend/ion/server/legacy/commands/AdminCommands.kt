@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
 import org.bukkit.entity.Player
@@ -13,7 +14,7 @@ import java.time.DayOfWeek
 
 @CommandAlias("capturablestation")
 @CommandPermission("ion.core.capturablestation.create")
-object AdminCommands : BaseCommand() {
+object AdminCommands : SLCommand() {
 	@Suppress("unused")
 	@Default
 	fun capturableStationCreation(sender: Player, stationname: String, x: Int, z: Int, siegehour: Int) {

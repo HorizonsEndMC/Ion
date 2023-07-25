@@ -8,7 +8,7 @@ import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerSet
 import kotlin.random.Random
 
-object SpaceMap : IonServerComponent() {
+object SpaceMap : IonServerComponent(true) {
 	private lateinit var markerSet: MarkerSet
 
 	override fun onEnable() {

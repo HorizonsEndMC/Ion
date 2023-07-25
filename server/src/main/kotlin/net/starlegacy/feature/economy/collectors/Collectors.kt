@@ -19,7 +19,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
-object Collectors : IonServerComponent() {
+object Collectors : IonServerComponent(true) {
 	private val isCitizensLoaded get() = IonServer.server.pluginManager.isPluginEnabled("Citizens")
 
 	private lateinit var citizensRegistry: NPCRegistry

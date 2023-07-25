@@ -8,7 +8,7 @@ import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerAPI
 import org.dynmap.markers.MarkerSet
 
-object HyperspaceMap : IonServerComponent() {
+object HyperspaceMap : IonServerComponent(true) {
 	private lateinit var markerSet: MarkerSet
 	private var markers = mutableMapOf<ActiveStarship, HyperspaceMarker>()
 

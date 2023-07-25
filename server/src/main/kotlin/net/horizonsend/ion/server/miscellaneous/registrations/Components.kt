@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.server.features.CombatNPCs
+import net.horizonsend.ion.server.features.PacketHandler
+import net.horizonsend.ion.server.features.client.whereisit.mod.ModNetworking
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
@@ -14,8 +16,10 @@ import net.starlegacy.feature.economy.cargotrade.CrateRestrictions
 import net.starlegacy.feature.economy.cargotrade.ShipmentBalancing
 import net.starlegacy.feature.economy.cargotrade.ShipmentGenerator
 import net.starlegacy.feature.economy.cargotrade.ShipmentManager
+import net.starlegacy.feature.economy.city.CityNPCs
 import net.starlegacy.feature.economy.city.TradeCities
 import net.starlegacy.feature.economy.collectors.CollectionMissions
+import net.starlegacy.feature.economy.collectors.Collectors
 import net.starlegacy.feature.gear.Gear
 import net.starlegacy.feature.hyperspace.HyperspaceBeacons
 import net.starlegacy.feature.machine.AreaShields
@@ -23,16 +27,14 @@ import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.misc.*
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.nations.NationsBalancing
+import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.feature.progression.ShipKillXP
-import net.starlegacy.feature.space.Orbits
-import net.starlegacy.feature.space.Space
-import net.starlegacy.feature.space.SpaceMechanics
-import net.starlegacy.feature.space.SpaceWorlds
+import net.starlegacy.feature.space.*
 import net.starlegacy.feature.starship.*
 import net.starlegacy.feature.starship.active.ActiveStarshipMechanics
 import net.starlegacy.feature.starship.active.ActiveStarships
@@ -40,6 +42,7 @@ import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising
 import net.starlegacy.feature.starship.factory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
+import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
 import net.starlegacy.feature.starship.subsystem.shield.StarshipShields
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.feature.transport.TransportConfig
@@ -64,6 +67,7 @@ val components: List<IonComponent> = listOf(
 	CombatNPCs,
 
 	CustomRecipes,
+	Crafting,
 
 	SpaceWorlds,
 	Space,
@@ -124,5 +128,15 @@ val components: List<IonComponent> = listOf(
 	DutyModeMonitor,
 
 	SpaceStations,
-	Sidebar
+	Sidebar,
+	PacketHandler,
+	ModNetworking,
+
+	SpaceMap,
+	NationsMap,
+	HyperspaceMap,
+	HyperspaceBeacons,
+	Collectors,
+	CityNPCs,
+	AreaShields
 )

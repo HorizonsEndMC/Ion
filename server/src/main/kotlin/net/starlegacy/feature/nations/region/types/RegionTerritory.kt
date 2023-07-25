@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
-import net.starlegacy.SETTINGS
+import net.starlegacy.LegacySettings
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
@@ -22,13 +22,11 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player
-import org.litote.kmongo.eq
 
 class RegionTerritory(territory: Territory) :
 	Region<Territory>(territory),
@@ -46,7 +44,7 @@ class RegionTerritory(territory: Territory) :
 	var polygon: Polygon = unpackTerritoryPolygon(territory.polygonData); private set
 
 	val oldCost
-		get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(SETTINGS.territoryCost).toInt()
+		get() = sqrt((polygon.bounds.width * polygon.bounds.height).toDouble()).times(LegacySettings.territoryCost).toInt()
 	val cost: Int
 		get() {
 			val n = polygon.npoints

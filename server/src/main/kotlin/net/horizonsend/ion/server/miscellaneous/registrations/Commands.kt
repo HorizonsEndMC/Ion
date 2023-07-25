@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.legacy.commands.RainbowProjectileCommand
 import net.horizonsend.ion.server.legacy.commands.RandomTargetCommand
 import net.horizonsend.ion.server.legacy.commands.Starships
 import net.horizonsend.ion.server.miscellaneous.commands.*
+import net.starlegacy.command.SLCommand
 import net.starlegacy.command.economy.BazaarCommand
 import net.starlegacy.command.economy.CityNpcCommand
 import net.starlegacy.command.economy.CollectedItemCommand
@@ -56,7 +57,7 @@ import net.starlegacy.command.starship.StarshipDebugCommand
 import net.starlegacy.command.starship.StarshipInfoCommand
 import net.starlegacy.command.starship.TutorialStartStopCommand
 
-val commands = listOf(
+val commands: List<SLCommand> = listOf(
 	GToggleCommand,
 	PlayerInfoCommand,
 	DyeCommand,

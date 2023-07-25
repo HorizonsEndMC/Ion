@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.starlegacy.command.SLCommand
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ
@@ -17,7 +18,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.or
 
 @CommandAlias("starships")
-object Starships : BaseCommand() {
+object Starships : SLCommand() {
 	@Default
 	fun starships(sender: Player) {
 		sender.sendRichMessage(

@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
 import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.miscellaneous.listeners.*
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
+import net.starlegacy.listener.SLEventListener
 import net.starlegacy.listener.gear.DetonatorListener
 import net.starlegacy.listener.gear.DoubleJumpListener
 import net.starlegacy.listener.gear.PowerArmorListener
@@ -30,8 +31,9 @@ import net.starlegacy.listener.gear.SwordListener
 import net.starlegacy.listener.misc.*
 import net.starlegacy.listener.nations.FriendlyFireListener
 import net.starlegacy.listener.nations.MovementListener
+import org.bukkit.event.Listener
 
-val listeners = listOf(
+val listeners: List<Listener> = listOf(
 	// StarLegacy
 	JoinLeaveListener,
 	MovementListener,
@@ -74,7 +76,6 @@ val listeners = listOf(
 	VoidNetwork(),
 	CryoPods,
 	BiomeFixer9001(),
-	NewPlayerProtection,
 	TractorBeamMultiblock,
 
 	// Achievement Listeners
