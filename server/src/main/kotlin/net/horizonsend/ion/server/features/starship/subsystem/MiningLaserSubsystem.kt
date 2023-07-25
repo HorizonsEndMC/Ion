@@ -198,7 +198,7 @@ class MiningLaserSubsystem(
 		val sign = getSign() ?: return cancelTask()
 		val controller = starship.controller
 
-		if (!ActiveStarships.isActive(starship)) {
+		if (!ActiveStarships.isActive(starship) || controller == null) {
 			setFiring(false, sign)
 			return
 		}
