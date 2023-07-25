@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.listener.gear
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material

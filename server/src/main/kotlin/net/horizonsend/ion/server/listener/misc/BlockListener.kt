@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.stripColor

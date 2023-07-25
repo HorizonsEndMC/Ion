@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.movement
 import io.papermc.paper.entity.TeleportFlag
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
-import net.horizonsend.ion.server.features.misc.CustomBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem

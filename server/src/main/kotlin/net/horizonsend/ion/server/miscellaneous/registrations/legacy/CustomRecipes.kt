@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.misc
+package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent

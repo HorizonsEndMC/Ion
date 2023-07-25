@@ -18,8 +18,8 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
-import net.horizonsend.ion.server.features.misc.CustomItem
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.sharedDataFolder

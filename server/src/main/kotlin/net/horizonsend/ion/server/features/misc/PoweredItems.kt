@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.misc
 
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.PoweredCustomItem
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.stripColor
 import org.bukkit.inventory.ItemStack

@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.misc.CustomBlockItem
-import net.horizonsend.ion.server.features.misc.CustomBlocks
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.setPower
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock

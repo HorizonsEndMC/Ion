@@ -7,8 +7,8 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Planet.Companion.setX
 import net.horizonsend.ion.common.database.schema.space.Planet.Companion.setZ
-import net.horizonsend.ion.server.features.misc.CustomItem
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.d
 import net.horizonsend.ion.server.miscellaneous.utils.getSphereBlocks

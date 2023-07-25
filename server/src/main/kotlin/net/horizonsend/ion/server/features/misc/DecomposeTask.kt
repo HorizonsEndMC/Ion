@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.ores.Ore
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.starship.isFlyable
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import org.bukkit.Bukkit

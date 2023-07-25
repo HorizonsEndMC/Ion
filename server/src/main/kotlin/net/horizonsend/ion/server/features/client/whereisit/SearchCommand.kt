@@ -44,7 +44,7 @@ object SearchCommand : net.horizonsend.ion.server.command.SLCommand() {
 		player: Player,
 		customItem: String
 	) {
-		val itemStack = net.horizonsend.ion.server.features.misc.CustomItems[customItem]?.itemStack(1) ?: run {
+		val itemStack = net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems[customItem]?.itemStack(1) ?: run {
 			player.userError("Can't find item $customItem!")
 			return
 		}

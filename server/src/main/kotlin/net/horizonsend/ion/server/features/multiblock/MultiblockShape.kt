@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.minecraft.world.level.block.AbstractFurnaceBlock
-import net.horizonsend.ion.server.features.misc.CustomBlock
-import net.horizonsend.ion.server.features.misc.CustomBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlock
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires

@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.misc.CustomBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape

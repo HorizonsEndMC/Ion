@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace

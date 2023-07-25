@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import org.bukkit.Material

@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.gear.powerarmor
 
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.inventory.ItemStack
 import java.util.Locale
 
 enum class PowerArmorModule(
-	private val customItem: CustomItems.PowerModuleItem,
-	vararg compatibleTypes: PowerArmorType
+    private val customItem: CustomItems.PowerModuleItem,
+    vararg compatibleTypes: PowerArmorType
 ) {
 	ROCKET_BOOSTING(CustomItems.POWER_MODULE_ROCKET_BOOSTING, PowerArmorType.BOOTS),
 	SPEED_BOOSTING(CustomItems.POWER_MODULE_SPEED_BOOSTING, PowerArmorType.LEGGINGS),

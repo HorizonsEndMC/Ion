@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.gear.powerarmor
 
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
 import net.horizonsend.ion.server.listener.gear.hasMovedInLastSecond

@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds

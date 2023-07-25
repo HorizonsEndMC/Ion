@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.IonPacketHandler
 import net.horizonsend.ion.server.features.client.networking.Packets
 import net.minecraft.network.FriendlyByteBuf
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import net.horizonsend.ion.server.features.customitems.CustomItems as LegacyCustomItems

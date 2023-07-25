@@ -3,14 +3,12 @@ package net.horizonsend.ion.server.features.achievements
 import net.horizonsend.ion.server.events.EnterPlanetEvent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit.getPlayer
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent

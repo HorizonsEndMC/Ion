@@ -60,7 +60,7 @@ class RecipeCommand : BaseCommand(), Listener {
 		sender: Player,
 		customItem: String
 	) {
-		val itemStack = net.horizonsend.ion.server.features.misc.CustomItems[customItem] ?: return
+		val itemStack = net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems[customItem] ?: return
 		val recipe = Bukkit.getRecipe(NamespacedKey(IonServer, itemStack.id))
 
 		if (recipe is ShapedRecipe) {

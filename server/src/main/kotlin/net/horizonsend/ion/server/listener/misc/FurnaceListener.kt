@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.misc.CustomBlockItem
-import net.horizonsend.ion.server.features.misc.CustomItems
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.listener.SLEventListener
