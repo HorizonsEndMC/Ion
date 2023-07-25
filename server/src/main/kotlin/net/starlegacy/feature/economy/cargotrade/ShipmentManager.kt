@@ -337,7 +337,7 @@ object ShipmentManager : IonServerComponent() {
 					val originCityName = delivery.originCity.displayName
 					val destinationCityName = delivery.destinationCity.displayName
 					player msg "${if (isReturn) "&dReturned" else "&dDelivered"} &b$amountImported " +
-						"${crate.color.chatColor}${crate.name} &dCrates " +
+						"${crate.color.legacyChatColor}${crate.name} &dCrates " +
 						"from &1$originCityName " +
 						"&d${if (!isReturn) "to " else "meant for "}&1$destinationCityName " +
 						"&dearning &6$revenueString &dfor shipment with ID &3${delivery.id}"

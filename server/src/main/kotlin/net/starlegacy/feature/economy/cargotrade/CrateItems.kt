@@ -18,7 +18,7 @@ object CrateItems {
 	operator fun get(crate: CargoCrate): ItemStack = crateItemTemplates[
 		crate._id, {
 			ItemStack(Material.valueOf(crate.color.shulkerMaterial), 1).updateMeta { meta ->
-				meta.setDisplayName("${crate.color.chatColor}${crate.name}${ChatColor.RESET} Cargo Crate")
+				meta.setDisplayName("${crate.color.legacyChatColor}${crate.name}${ChatColor.RESET} Cargo Crate")
 			}.ensureServerConversions()
 		}
 	]

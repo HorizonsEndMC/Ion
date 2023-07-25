@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.trx
+import net.md_5.bungee.api.ChatColor
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -33,18 +34,21 @@ data class CargoCrate(
 		}
 	}
 
-	enum class Color(val chatColor: String, val shulkerMaterial: String) {
-		WHITE("WHITE", "WHITE_SHULKER_BOX"),
-		ORANGE("GOLD", "ORANGE_SHULKER_BOX"),
-		MAGENTA("RED", "MAGENTA_SHULKER_BOX"),
-		YELLOW("YELLOW", "YELLOW_SHULKER_BOX"),
-		GRAY("DARK_GRAY", "GRAY_SHULKER_BOX"),
-		LIGHT_GRAY("GRAY", "LIGHT_GRAY_SHULKER_BOX"),
-		CYAN("DARK_AQUA", "CYAN_SHULKER_BOX"),
-		BLUE("BLUE", "BLUE_SHULKER_BOX"),
-		BROWN("GOLD", "BROWN_SHULKER_BOX"),
-		GREEN("DARK_GREEN", "GREEN_SHULKER_BOX"),
-		BLACK("BLACK", "BLACK_SHULKER_BOX")
+	enum class Color(
+		@Deprecated("Legacy chat formatting") val legacyChatColor: ChatColor,
+		val shulkerMaterial: String
+	) {
+		WHITE(ChatColor.WHITE, "WHITE_SHULKER_BOX"),
+		ORANGE(ChatColor.GOLD, "ORANGE_SHULKER_BOX"),
+		MAGENTA(ChatColor.RED, "MAGENTA_SHULKER_BOX"),
+		YELLOW(ChatColor.YELLOW, "YELLOW_SHULKER_BOX"),
+		GRAY(ChatColor.DARK_GRAY, "GRAY_SHULKER_BOX"),
+		LIGHT_GRAY(ChatColor.GRAY, "LIGHT_GRAY_SHULKER_BOX"),
+		CYAN(ChatColor.DARK_AQUA, "CYAN_SHULKER_BOX"),
+		BLUE(ChatColor.BLUE, "BLUE_SHULKER_BOX"),
+		BROWN(ChatColor.GOLD, "BROWN_SHULKER_BOX"),
+		GREEN(ChatColor.DARK_GREEN, "GREEN_SHULKER_BOX"),
+		BLACK(ChatColor.BLACK, "BLACK_SHULKER_BOX")
 	}
 
 	fun getValue(planet: String): Double = values.getOrDefault(planet, 0.0)
