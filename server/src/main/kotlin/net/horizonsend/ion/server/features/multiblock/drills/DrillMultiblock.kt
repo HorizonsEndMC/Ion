@@ -17,9 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -90,7 +87,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			maxBroken: Int,
 			toDestroy: MutableList<Block>,
 			output: Inventory,
-			player: Player,
+			canBuild: (Block) -> Boolean,
 			cancel: (Sign) -> Unit
 		): Int {
 			var broken = 0
@@ -100,9 +97,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 					continue
 				}
 
-				val testEvent = BlockBreakEvent(block, player)
-				testEvent.isDropItems = false
-				if (!testEvent.callEvent()) {
+				if (!canBuild(block)) {
 					continue
 				}
 
@@ -259,9 +254,10 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val maxBroken = max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
 
 		val broken = breakBlocks(sign, maxBroken, toDestroy, getOutput(sign.block), player) {
-			player.userErrorAction("Not enough space.")
+			val testEvent = BlockBreakEvent(it, player)
+			testEvent.isDropItems = false
 
-			setUser(sign, null)
+			return@breakBlocks testEvent.callEvent()
 		}
 
 		val powerUsage = broken * 10
