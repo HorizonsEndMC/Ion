@@ -208,17 +208,18 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 							)
 							.color(color),
 						height = text("$height")
+							.append(text("y"))
 							.append(
 								text(repeatString(" ", 3 - height.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
 						distance = text("${distance}")
+							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
-							.append(text("m"))
 							.color(color),
 						distanceInt = distance,
 						padding = empty()
@@ -249,17 +250,18 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 							)
 							.color(color),
 						height = text("$height")
+							.append(text("y"))
 							.append(
 								text(repeatString(" ", 3 - height.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
 						distance = text("${distance}")
+							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
-							.append(text("m"))
 							.color(color),
 						distanceInt = distance,
 						padding = empty()
@@ -290,17 +292,18 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 							)
 							.color(color),
 						height = text("$height")
+							.append(text("y"))
 							.append(
 								text(repeatString(" ", 3 - height.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
 						distance = text("${distance}")
+							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
-							.append(text("m"))
 							.color(color),
 						distanceInt = distance,
 						padding = empty()
@@ -329,17 +332,18 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 							)
 							.color(color),
 						height = text("$height")
+							.append(text("y"))
 							.append(
 								text(repeatString(" ", 3 - height.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
 						distance = text("${distance}")
+							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
 									.font(key("horizonsend:sidebar"))
 							)
-							.append(text("m"))
 							.color(color),
 						distanceInt = distance,
 						padding = empty()
