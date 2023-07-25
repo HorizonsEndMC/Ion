@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.UnpilotedController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
@@ -148,6 +149,7 @@ object PilotedStarships : IonServerComponent() {
 		map.remove(player)
 		starship.oldpilot = player
 		starship.pilot = null
+		starship.controller = UnpilotedController(player, starship)
 		starship.lastUnpilotTime = System.nanoTime()
 		starship.clearPassengers()
 		starship.shieldBars.values.forEach { it.removeAll() }
