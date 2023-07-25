@@ -6,8 +6,8 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import org.bukkit.entity.Player
@@ -18,10 +18,10 @@ import org.litote.kmongo.setTo
 class ContactsCommand : BaseCommand() {
 	@Default
 	@Suppress("unused")
-	fun test(
+	fun defaultCase(
 		sender: Player
 	) {
-		sender.information("Usage: /contacts <contact> [toggle]")
+		sender.userError("Usage: /contacts <contact> [toggle]")
 	}
 
 	@Suppress("unused")
