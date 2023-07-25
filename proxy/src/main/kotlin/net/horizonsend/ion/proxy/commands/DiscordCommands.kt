@@ -41,7 +41,7 @@ object DiscordCommands {
 						field {
 							name =
 								"${server.serverInfo.name.replaceFirstChar { it.titlecase(Locale.getDefault()) }}'s players"
-							value = server.playersConnected.joinToString("\n") { it.username }
+							value = server.playersConnected.joinToString("\n") { it.username.replace("_", "\\_") }
 						}
 					}
 				}
