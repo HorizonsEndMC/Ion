@@ -2,9 +2,11 @@ package net.horizonsend.ion.server.features.sidebar.command
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
@@ -14,6 +16,14 @@ import org.litote.kmongo.setTo
 
 @CommandAlias("contacts")
 class ContactsCommand : BaseCommand() {
+	@Default
+	@Suppress("unused")
+	fun test(
+		sender: Player
+	) {
+		sender.information("Usage: /contacts <contact> [toggle]")
+	}
+
 	@Suppress("unused")
 	@Subcommand("starship")
 	fun onToggleStarship(
