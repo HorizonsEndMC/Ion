@@ -137,8 +137,9 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 		// identify valid contacts
 		val starships: List<ActiveStarship> = if (starshipsEnabled) {
-			ActiveStarships.getInWorld(player.world).filter {
-				it.centerOfMass.toVector().distanceSquared(playerVector) <= CONTACTS_SQRANGE &&
+			ActiveStarships.all().filter {
+				it.serverLevel.world == player.world &&
+					it.centerOfMass.toVector().distanceSquared(playerVector) <= CONTACTS_SQRANGE &&
 					(it as ActivePlayerStarship).pilot !== player &&
 					(it as ActivePlayerStarship).pilot?.gameMode != GameMode.SPECTATOR
 			}
