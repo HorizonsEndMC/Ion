@@ -11,11 +11,12 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
+import net.starlegacy.command.SLCommand
 import org.bukkit.entity.Player
 
 @CommandPermission("ion.spacegen")
 @CommandAlias("spacegen")
-class SpaceGenCommand : BaseCommand() {
+object SpaceGenCommand : SLCommand() {
 	@Suppress("unused")
 	@CommandCompletion("Range")
 	@Subcommand("regenerate")

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.legacy.listeners
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.block.Biome
 import org.bukkit.event.EventHandler
@@ -10,7 +11,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
-class BiomeFixer9001 : Listener {
+class BiomeFixer9001 : SLEventListener() {
 	val needsFixing = listOf("Rubaciea", "Aret")
 
 	@EventHandler(priority = EventPriority.MONITOR)

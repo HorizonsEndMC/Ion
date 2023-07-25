@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.Vec3i
 import net.horizonsend.ion.server.miscellaneous.bukkitLocation
 import net.horizonsend.ion.server.miscellaneous.get
 import net.starlegacy.feature.multiblock.Multiblocks
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
@@ -24,7 +25,7 @@ import org.litote.kmongo.addToSet
 import org.litote.kmongo.setValue
 import java.util.UUID
 
-object CryoPods: Listener {
+object CryoPods: SLEventListener() {
 	fun setCryoPod(playerID: UUID, worldName: String, pos: Vec3i) = trx { session ->
 		val slPlayer = SLPlayer[playerID] ?: return@trx
 

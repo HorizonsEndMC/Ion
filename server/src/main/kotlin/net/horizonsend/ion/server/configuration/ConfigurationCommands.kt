@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.configuration
 
 import co.aikar.commands.BaseCommand
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -10,6 +11,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.events.IonEnableEvent
+import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -21,18 +23,17 @@ import kotlin.reflect.jvm.javaType
 @CommandAlias("ion")
 @CommandPermission("ion.config")
 @Suppress("unused")
-class ConfigurationCommands : BaseCommand(), Listener {
+object ConfigurationCommands : SLCommand() {
 	private val turretTypes = BalancingConfiguration.StarshipWeapons::class.memberProperties
 	private val changeableFields = BalancingConfiguration.StarshipWeapons.StarshipWeapon::class.memberProperties
 		.filterIsInstance<KMutableProperty<*>>()
 
-	@EventHandler
-	fun enable(e: IonEnableEvent) {
-		e.manager.commandCompletions.registerCompletion("balancingFields") {
+	override fun onEnable(commandManager: PaperCommandManager) {
+		commandManager.commandCompletions.registerCompletion("balancingFields") {
 			turretTypes.map { it.name }
 		}
 
-		e.manager.commandCompletions.registerCompletion("balancingValues") {
+		commandManager.commandCompletions.registerCompletion("balancingValues") {
 			changeableFields.map { it.name }
 		}
 	}

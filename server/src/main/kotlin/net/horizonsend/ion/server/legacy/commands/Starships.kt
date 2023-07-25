@@ -17,7 +17,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.or
 
 @CommandAlias("starships")
-internal class Starships : BaseCommand() {
+object Starships : BaseCommand() {
 	@Default
 	fun starships(sender: Player) {
 		sender.sendRichMessage(

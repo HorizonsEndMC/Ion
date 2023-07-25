@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.feature.starship.PlayerStarshipState
 import net.starlegacy.feature.starship.event.StarshipPilotEvent
+import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
@@ -19,7 +20,7 @@ import org.bukkit.event.enchantment.EnchantItemEvent
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent
 import org.bukkit.inventory.ItemStack
 
-class GameplayTweaksListeners : Listener {
+class GameplayTweaksListeners : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun craftPilotEvent(event: StarshipPilotEvent) {

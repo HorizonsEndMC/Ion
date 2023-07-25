@@ -4,12 +4,13 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotedEvent
+import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.distance
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import java.util.UUID
 
-object HyperspaceBeaconManager : Listener {
+object HyperspaceBeaconManager : SLEventListener() {
 	// Your problem if it throws null pointers
 	val beaconWorlds get() = IonServer.configuration.beacons.groupBy { it.spaceLocation.bukkitWorld() }
 

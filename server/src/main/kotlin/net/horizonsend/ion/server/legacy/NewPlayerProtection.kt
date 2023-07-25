@@ -17,6 +17,7 @@ import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
 import net.starlegacy.SETTINGS
+import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
@@ -28,7 +29,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
-object NewPlayerProtection : BaseCommand(), Listener {
+object NewPlayerProtection : SLCommand(), Listener {
 	private val lpUserManager = LuckPermsProvider.get().userManager
 
 	private val protectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()

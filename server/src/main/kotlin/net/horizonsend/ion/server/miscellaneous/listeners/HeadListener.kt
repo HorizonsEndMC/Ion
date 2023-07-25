@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -10,7 +11,7 @@ import java.lang.System.currentTimeMillis
 import java.util.UUID
 
 @Suppress("Unused")
-class HeadListener : Listener {
+class HeadListener : SLEventListener() {
 	private val coolDowns = mutableMapOf<UUID, Long>()
 
 	@EventHandler

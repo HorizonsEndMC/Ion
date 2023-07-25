@@ -7,13 +7,14 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.starlegacy.command.SLCommand
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
 @CommandAlias("convert")
 @Suppress("Unused")
 @CommandPermission("ion.convert")
-class ConvertCommand : BaseCommand() { // I imagine we'll need more than blasters in the future
+object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters in the future
 	@Subcommand("blaster")
 	fun onConvertBlaster(sender: Player) { // Easier than trying to figure out what the old type is.
 		val heldItem = sender.inventory.itemInMainHand

@@ -1,18 +1,18 @@
 package net.horizonsend.ion.server.miscellaneous.commands
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.get
+import net.starlegacy.command.SLCommand
 import org.bukkit.entity.Player
 import kotlin.math.floor
 
 @CommandAlias("calcxp")
 @CommandPermission("ion.calcxp")
-class CalcExpCommand : BaseCommand() {
+object CalcExpCommand : SLCommand() {
 	@Default
 	@Suppress("Unused")
 	fun onCustomItemCommand(

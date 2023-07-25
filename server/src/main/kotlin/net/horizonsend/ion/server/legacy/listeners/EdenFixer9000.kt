@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.legacy.listeners
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.minecraft.core.BlockPos
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -11,7 +12,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.persistence.PersistentDataType
 
-class EdenFixer9000 : Listener {
+class EdenFixer9000 : SLEventListener() {
 	private val airBlockData = Material.AIR.createBlockData()
 	var runningTotal = 0
 

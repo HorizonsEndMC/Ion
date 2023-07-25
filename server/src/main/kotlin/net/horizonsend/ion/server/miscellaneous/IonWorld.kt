@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.Starship
 import net.minecraft.server.level.ServerLevel
 import net.starlegacy.feature.machine.AreaShields
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.world.WorldInitEvent
@@ -16,7 +17,7 @@ class IonWorld private constructor(
 
 	val starships: MutableList<Starship> = mutableListOf()
 ) {
-	companion object : Listener {
+	companion object : SLEventListener() {
 		private val ionWorlds = mutableMapOf<ServerLevel, IonWorld>()
 
 		operator fun get(serverLevel: ServerLevel): IonWorld = ionWorlds[serverLevel]!!

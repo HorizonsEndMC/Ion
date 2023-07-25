@@ -2,12 +2,13 @@ package net.horizonsend.ion.server.features.screens.listeners
 
 import net.horizonsend.ion.server.features.screens.ScreenManager.isInScreen
 import net.horizonsend.ion.server.features.screens.ScreenManager.screen
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class InventoryClickListener : Listener {
+class InventoryClickListener : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun onInventoryClickEvent(event: InventoryClickEvent) {

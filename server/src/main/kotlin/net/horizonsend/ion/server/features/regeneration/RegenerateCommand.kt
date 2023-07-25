@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.PalettedContainer
 import net.minecraft.world.level.chunk.storage.ChunkSerializer
 import net.minecraft.world.level.chunk.storage.RegionFile
+import net.starlegacy.command.SLCommand
 import net.starlegacy.util.Tasks
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -34,7 +35,7 @@ import java.io.File
 
 @CommandPermission("ion.regenerate")
 @CommandAlias("regenerate")
-class RegenerateCommand : BaseCommand() {
+object RegenerateCommand : SLCommand() {
 	// The worlds in this folder are stripped down versions of worlds. Basically just renamed region folders
 	private val cleanWorldsFolder: File = IonServer.dataFolder.resolve("worlds")
 	private val scope = CoroutineScope(Dispatchers.Default)

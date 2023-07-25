@@ -3,6 +3,7 @@ package net.starlegacy.command
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.HelpCommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
@@ -41,6 +42,9 @@ abstract class SLCommand : BaseCommand() {
 	companion object {
 		val ASYNC_COMMAND_THREAD: ExecutorService = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-async-commands"))
 	}
+
+	open fun onEnable(commandManager: PaperCommandManager) {}
+	open fun onDisable() {}
 
 	/**
 	 * Run this block of code async. Also, no two blocks passed to this method will run at the same time,

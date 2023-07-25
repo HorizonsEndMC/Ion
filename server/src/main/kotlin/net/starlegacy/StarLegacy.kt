@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
+import net.horizonsend.ion.server.miscellaneous.registrations.commands
+import net.horizonsend.ion.server.miscellaneous.registrations.listeners
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.misc.CustomItem

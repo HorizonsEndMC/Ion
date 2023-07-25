@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -12,7 +13,7 @@ import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.meta.Damageable
 
-class CustomItemListeners : Listener {
+class CustomItemListeners : SLEventListener() {
 	@EventHandler(priority = EventPriority.LOWEST)
 	@Suppress("Unused")
 	fun rightClick(event: PlayerInteractEvent) {

@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.legacy.ores.Ore
 import net.horizonsend.ion.server.legacy.ores.OrePlacementConfig
 import net.horizonsend.ion.server.legacy.utilities.Position
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
@@ -21,7 +22,7 @@ TODO: Ore logic should be separated from the Listener, and the Async code should
 */
 
 @Suppress("Unused")
-class ChunkLoadListener(private val plugin: IonServer) : Listener {
+class ChunkLoadListener(private val plugin: IonServer) : SLEventListener() {
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		val placementConfiguration = try {

@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.GameMode
 import org.bukkit.Material.CHAINMAIL_BOOTS
 import org.bukkit.Material.CHAINMAIL_CHESTPLATE
@@ -20,7 +21,7 @@ import org.bukkit.inventory.ItemStack
 import java.net.URL
 import java.security.MessageDigest
 
-class ResourcePackListener : Listener {
+class ResourcePackListener : SLEventListener() {
 	private var cachedURL: String? = null
 	private var cachedHash: String? = null
 	private var lastUpdated: Long = 0

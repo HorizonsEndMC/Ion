@@ -21,7 +21,7 @@ import org.bukkit.inventory.EquipmentSlot
 
 @CommandAlias("multiblock")
 @CommandPermission("ion.multiblock")
-class MultiblockCommand : SLCommand() {
+object MultiblockCommand : SLCommand() {
 	@Subcommand("check")
 	@CommandCompletion("@multiblocks")
 	@CommandPermission("ion.multiblock.check")

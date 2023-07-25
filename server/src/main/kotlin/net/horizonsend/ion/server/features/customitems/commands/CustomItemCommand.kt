@@ -10,11 +10,12 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.customitems.CustomItems.getByIdentifier
+import net.starlegacy.command.SLCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @CommandAlias("customitem")
-class CustomItemCommand : BaseCommand() {
+object CustomItemCommand : SLCommand() {
 	@Default
 	@Suppress("Unused")
 	@CommandPermission("ion.customitem")

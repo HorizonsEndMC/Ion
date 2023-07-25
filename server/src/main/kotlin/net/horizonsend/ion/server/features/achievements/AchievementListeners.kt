@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.starship.event.StarshipDetectEvent
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -14,7 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent
 
-class AchievementListeners : Listener {
+class AchievementListeners : SLEventListener() {
 	@EventHandler
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
 		val killer = event.entity.killer ?: return // Only player kills

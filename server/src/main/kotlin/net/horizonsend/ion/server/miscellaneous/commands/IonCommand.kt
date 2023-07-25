@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.starlegacy.command.SLCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -15,7 +16,7 @@ import java.util.*
 
 @CommandAlias("ion")
 @CommandPermission("ion.utilities")
-object IonCommand : BaseCommand() {
+object IonCommand : SLCommand() {
 	val debugEnabledPlayers = mutableListOf<UUID>()
 
 	@Suppress("Unused")

@@ -11,13 +11,14 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.miscellaneous.get
+import net.starlegacy.command.SLCommand
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
 import java.time.Duration
 import kotlin.math.pow
 
 @CommandAlias("checkprotection")
-class CheckProtectionCommand : BaseCommand() {
+object CheckProtectionCommand : SLCommand() {
 
 	@Default
 	@Suppress("Unused")

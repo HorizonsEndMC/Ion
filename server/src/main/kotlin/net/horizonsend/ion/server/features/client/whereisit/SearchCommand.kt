@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.highlightBlock
+import net.starlegacy.command.SLCommand
 import net.starlegacy.util.Tasks
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -18,7 +19,7 @@ import org.bukkit.inventory.ItemStack
 
 @CommandAlias("itemsearch")
 @CommandPermission("ion.search")
-class SearchCommand : BaseCommand() {
+object SearchCommand : SLCommand() {
 	@Default
 	fun default(
 		player: Player,

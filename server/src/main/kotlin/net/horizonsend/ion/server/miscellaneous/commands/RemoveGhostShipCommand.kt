@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
 import net.starlegacy.util.component1
 import net.starlegacy.util.component2
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player
 
 @CommandPermission("ion.removeghostship")
 @CommandAlias("removeghostship")
-class RemoveGhostShipCommand : BaseCommand() {
+object RemoveGhostShipCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun onDeleteGhostShip(sender: Player) {

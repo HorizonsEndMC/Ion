@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.listeners
 import net.horizonsend.ion.server.IonServer
 import net.starlegacy.feature.space.SpaceMechanics
 import net.starlegacy.feature.starship.active.ActiveStarships
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -10,7 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
-class MiscListeners : Listener {
+class MiscListeners : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPlayerQuitEvent(event: PlayerQuitEvent) {

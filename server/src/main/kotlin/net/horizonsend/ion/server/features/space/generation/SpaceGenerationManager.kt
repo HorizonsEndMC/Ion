@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SPA
 import net.horizonsend.ion.server.miscellaneous.minecraft
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
+import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.*
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.event.EventHandler
@@ -26,7 +27,7 @@ import org.bukkit.persistence.PersistentDataType.BYTE
 import java.util.Random
 import kotlin.math.ceil
 
-object SpaceGenerationManager : Listener {
+object SpaceGenerationManager : SLEventListener() {
 	val worldGenerators: MutableMap<ServerLevel, SpaceGenerator?> = mutableMapOf()
 
 	val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())

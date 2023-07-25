@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.features.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.blasters.BlasterListeners
@@ -17,16 +16,43 @@ import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.legacy.NewPlayerProtection
 import net.horizonsend.ion.server.legacy.listeners.BiomeFixer9001
+import net.horizonsend.ion.server.legacy.listeners.BowHitListener
 import net.horizonsend.ion.server.legacy.listeners.ChunkLoadListener
 import net.horizonsend.ion.server.legacy.listeners.EdenFixer9000
-import net.horizonsend.ion.server.miscellaneous.listeners.CancelListeners
-import net.horizonsend.ion.server.miscellaneous.listeners.GameplayTweaksListeners
-import net.horizonsend.ion.server.miscellaneous.listeners.HeadListener
-import net.horizonsend.ion.server.miscellaneous.listeners.MiscListeners
-import net.horizonsend.ion.server.miscellaneous.listeners.ResourcePackListener
+import net.horizonsend.ion.server.miscellaneous.IonWorld
+import net.horizonsend.ion.server.miscellaneous.listeners.*
 import net.starlegacy.feature.multiblock.misc.TractorBeamMultiblock
+import net.starlegacy.listener.gear.DetonatorListener
+import net.starlegacy.listener.gear.DoubleJumpListener
+import net.starlegacy.listener.gear.PowerArmorListener
+import net.starlegacy.listener.gear.PowerToolListener
+import net.starlegacy.listener.gear.SwordListener
+import net.starlegacy.listener.misc.*
+import net.starlegacy.listener.nations.FriendlyFireListener
+import net.starlegacy.listener.nations.MovementListener
 
-val listeners = arrayOf(
+val listeners = listOf(
+	// StarLegacy
+	JoinLeaveListener,
+	MovementListener,
+	FriendlyFireListener,
+	ProtectionListener,
+	ChatListener,
+
+	BlockListener,
+	EntityListener,
+	FurnaceListener,
+	InteractListener,
+	InventoryListener,
+	BowHitListener,
+
+	DetonatorListener,
+	DoubleJumpListener,
+	PowerArmorListener,
+	PowerToolListener,
+	SwordListener,
+
+	// Ion
 	BlasterListeners(),
 	CancelListeners(),
 	ChunkLoadListener(IonServer),

@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.screens.ScreenManager.openScreen
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.starlegacy.command.SLCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -17,7 +18,7 @@ import org.litote.kmongo.pull
 
 @CommandAlias("achievements")
 @Suppress("Unused")
-class AchievementsCommand : BaseCommand() {
+object AchievementsCommand : SLCommand() {
 	@Default
 	fun onAchievementsList(sender: Player) {
 		sender.openScreen(AchievementsScreen(sender.name))

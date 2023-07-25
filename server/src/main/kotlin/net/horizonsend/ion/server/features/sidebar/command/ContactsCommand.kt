@@ -10,12 +10,13 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.starlegacy.command.SLCommand
 import org.bukkit.entity.Player
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 
 @CommandAlias("contacts")
-class ContactsCommand : BaseCommand() {
+object ContactsCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun defaultCase(

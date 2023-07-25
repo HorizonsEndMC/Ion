@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.screens.listeners
 
 import net.horizonsend.ion.server.features.screens.ScreenManager.isInScreen
+import net.starlegacy.listener.SLEventListener
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryDragEvent
 
-class InventoryDragListener : Listener {
+class InventoryDragListener : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun onInventoryDragEvent(event: InventoryDragEvent) {
