@@ -21,7 +21,7 @@ import net.kyori.adventure.text.Component.text
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
-import org.bukkit.Bukkit.getPlayer
+import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Material
 import org.bukkit.Particle
