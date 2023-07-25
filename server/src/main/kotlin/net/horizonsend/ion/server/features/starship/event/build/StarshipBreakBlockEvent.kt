@@ -1,15 +1,21 @@
-package net.horizonsend.ion.server.features.explosion
+package net.horizonsend.ion.server.features.starship.event.build
 
-import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.controllers.Controller
+import org.bukkit.block.Block
+import org.bukkit.event.Cancellable
+import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class ExplosionImpactStarshipEvent(
-	originator: Controller,
-	explosion: StarshipExplosion,
-	val impactedStarship: Starship
-) : StarshipCauseExplosionEvent(originator, explosion) {
+class StarshipBreakBlockEvent(
+	val controller: Controller,
+	val block: Block
+) : Event(), Cancellable {
 	private var isCancelled: Boolean = false
+	private var dropItems: Boolean = true
+
+	init {
+	    isCancelled = !controller.canDestroyBlock(block)
+	}
 
 	override fun getHandlers(): HandlerList {
 		return handlerList
