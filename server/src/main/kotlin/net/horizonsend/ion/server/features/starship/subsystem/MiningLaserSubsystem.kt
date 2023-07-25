@@ -29,7 +29,6 @@ import org.bukkit.SoundCategory
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 
@@ -42,10 +41,9 @@ class MiningLaserSubsystem(
 	private val firingTasks = mutableListOf<BukkitTask>()
 	private var isFiring = false
 	lateinit var targetedBlock: Vector
-	private lateinit var lastUser: Player
 
 	// Const disabled sign text
-	private val DISABLED = text("[DISABLED]").color(NamedTextColor.RED)
+	private val disabled = text("[DISABLED]").color(NamedTextColor.RED)
 
 	// Starship power usage, 0
 	override val powerUsage: Int = 0
@@ -66,7 +64,7 @@ class MiningLaserSubsystem(
 	}
 
 	private fun setUser(sign: Sign, player: String?) {
-		val line3 = player?.let { text(player) } ?: DISABLED
+		val line3 = player?.let { text(player) } ?: disabled
 		sign.line(3, line3)
 		sign.update(false, false)
 	}
@@ -105,14 +103,11 @@ class MiningLaserSubsystem(
 		this.targetedBlock = (getFirePos() + pos).toVector().add(vectorToTarget)
 		setFiring(!isFiring, sign, shooter)
 
-		(shooter as? PlayerController)?.let { lastUser = it.player }
 		// If it is within range, the raycast will move it forward.
 	}
 
 	private fun setFiring(firing: Boolean, sign: Sign, user: Controller? = null) {
 		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
-
-		(user as? PlayerController)?.let { lastUser = it.player }
 
 		when (firing) {
 			true -> {
@@ -198,6 +193,7 @@ class MiningLaserSubsystem(
 		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
 		// Cancel if
 		val sign = getSign() ?: return cancelTask()
+		val controller = starship.controller
 
 		if (!ActiveStarships.isActive(starship)) {
 			setFiring(false, sign)
@@ -241,6 +237,7 @@ class MiningLaserSubsystem(
 		CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks().apply { start(IonServer) }
 
 		val blocks = getBlocksToDestroy(laserEnd.block)
+
 		if (blocks.any { starship.contains(it.x, it.y, it.z) }) {
 			starship.sendMessage(
 				text(
@@ -249,17 +246,26 @@ class MiningLaserSubsystem(
 			)
 			return setFiring(false, sign, null)
 		}
+
 		val blocksBroken = DrillMultiblock.breakBlocks(
 			sign = sign,
 			maxBroken = multiblock.maxBroken,
 			toDestroy = blocks,
-			output = multiblock.getOutput(sign),
-			player = (starship.controller as? PlayerController)?.player ?: lastUser
-		) {
-			starship.userErrorAction("Not enough space!")
+			output = multiblock.getOutput(sign)
+			{
+				val event = StarshipBreakBlockEvent(
+					controller,
+					it
+				).callEvent()
 
-			DrillMultiblock.setUser(sign, null)
-		}
+				controller.canDestroyBlock(it) && event
+			},
+			{
+				starship.userErrorAction("Not enough space!")
+
+				DrillMultiblock.setUser(sign, null)
+			}
+		)
 
 		if (blocksBroken > 0) {
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocksBroken).toInt(), true)
