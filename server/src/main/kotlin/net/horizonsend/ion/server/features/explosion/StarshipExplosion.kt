@@ -19,6 +19,9 @@ class StarshipExplosion(
 	val originator: Controller,
 	val blocks: MutableList<Block> = mutableListOf()
 ) {
+	var useRays = false
+	var useFire = false
+
 	fun explode(applyPhysics: Boolean = true, callback: () -> Unit = {}) {
 		getBlocksAsync()
 
