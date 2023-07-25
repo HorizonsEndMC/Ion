@@ -1,7 +1,7 @@
 package net.starlegacy.feature.transport.pipe
 
 import net.starlegacy.feature.transport.pipe.filter.FilterItemData
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 

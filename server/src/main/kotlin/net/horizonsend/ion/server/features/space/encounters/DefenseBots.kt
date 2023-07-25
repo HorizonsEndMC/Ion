@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
-import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
+import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor

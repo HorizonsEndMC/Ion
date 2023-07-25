@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
-import net.horizonsend.ion.server.miscellaneous.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.drills.DrillMultiblock
@@ -16,8 +16,7 @@ import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.kyori.adventure.text.Component
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component.text
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.rightFace

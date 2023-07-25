@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.miscellaneous.mainThreadCheck
+import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 

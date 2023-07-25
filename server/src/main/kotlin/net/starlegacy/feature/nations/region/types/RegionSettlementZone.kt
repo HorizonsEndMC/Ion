@@ -22,8 +22,8 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.util.PerPlayerCooldown
-import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 

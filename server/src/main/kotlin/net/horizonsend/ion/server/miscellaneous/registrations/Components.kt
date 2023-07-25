@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.server.features.CombatNPCs
 import net.horizonsend.ion.server.features.PacketHandler
 import net.horizonsend.ion.server.features.client.whereisit.mod.ModNetworking
+import net.horizonsend.ion.server.legacy.NewPlayerProtection
 import net.starlegacy.feature.chat.ChannelSelections
 import net.starlegacy.feature.economy.bazaar.Bazaars
 import net.starlegacy.feature.economy.bazaar.Merchants
@@ -28,6 +29,7 @@ import net.starlegacy.feature.misc.*
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.nations.NationsBalancing
 import net.starlegacy.feature.nations.NationsMap
+import net.starlegacy.feature.nations.NationsMasterTasks
 import net.starlegacy.feature.nations.StationSieges
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.progression.Levels
@@ -138,5 +140,6 @@ val components: List<IonComponent> = listOf(
 	HyperspaceBeacons,
 	Collectors,
 	CityNPCs,
-	AreaShields
+	AreaShields,
+	NationsMasterTasks
 )

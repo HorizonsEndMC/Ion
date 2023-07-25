@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.misc.DecomposerMultiblock

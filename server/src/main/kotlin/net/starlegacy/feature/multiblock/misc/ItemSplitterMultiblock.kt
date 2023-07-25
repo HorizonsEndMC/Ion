@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.misc
 
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor

@@ -1,7 +1,9 @@
 package net.starlegacy.command.space
 
+import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -15,16 +17,28 @@ import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Orbits
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceMap
+import net.starlegacy.util.orNull
 import net.starlegacy.util.randomDouble
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureNanoTime
 
 @CommandAlias("planet")
 @CommandPermission("space.planet")
 object PlanetCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(CachedPlanet::class.java) { c: BukkitCommandExecutionContext ->
+			Space.planetNameCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
+				?: throw InvalidCommandArgument("No such planet")
+		}
+
+		registerAsyncCompletion(manager, "stars") { _ -> Space.getStars().map(CachedStar::name) }
+		registerAsyncCompletion(manager, "planets") { _ -> Space.getPlanets().map(CachedPlanet::name) }
+	}
+
 	@Subcommand("create")
 	@CommandCompletion("@nothing true|false x z @stars @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
 	fun onCreate(

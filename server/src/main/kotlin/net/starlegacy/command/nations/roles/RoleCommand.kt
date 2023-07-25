@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.database.schema.nations.Role
 import net.horizonsend.ion.common.database.schema.nations.RoleCompanion
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.feature.nations.gui.editRoleGUI
 import net.starlegacy.feature.nations.gui.editRolePermissionGUI
 import net.starlegacy.feature.nations.gui.guiButton

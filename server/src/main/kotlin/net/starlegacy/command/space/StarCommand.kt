@@ -1,7 +1,9 @@
 package net.starlegacy.command.space
 
+import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -14,15 +16,24 @@ import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.starlegacy.util.orNull
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.*
 
 @CommandAlias("star")
 @CommandPermission("space.star")
 object StarCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(CachedStar::class.java) { c: BukkitCommandExecutionContext ->
+			Space.starNameCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
+				?: throw InvalidCommandArgument("No such star")
+		}
+	}
+
 	@Subcommand("create")
 	@CommandCompletion("@nothing @worlds @nothing @nothing SEA_LANTERN|GLOWSTONE|MAGMA @nothing")
 	fun onCreate(

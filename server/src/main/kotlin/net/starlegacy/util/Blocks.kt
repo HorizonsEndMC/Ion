@@ -1,7 +1,7 @@
 package net.starlegacy.util
 
 import com.google.common.collect.ImmutableSet
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.server.level.ServerLevel
 import org.bukkit.Axis
 import org.bukkit.Material

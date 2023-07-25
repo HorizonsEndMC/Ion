@@ -8,8 +8,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
-import net.horizonsend.ion.server.miscellaneous.highlightBlock
-import net.horizonsend.ion.server.miscellaneous.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.util.spherePoints
 import net.starlegacy.util.toBlockPos

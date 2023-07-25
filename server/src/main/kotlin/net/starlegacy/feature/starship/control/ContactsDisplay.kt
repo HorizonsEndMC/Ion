@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship.control
 import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.starship.active.ActiveStarships
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.colorize
 import org.bukkit.Bukkit.getOnlinePlayers

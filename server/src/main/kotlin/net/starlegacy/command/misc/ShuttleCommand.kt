@@ -1,5 +1,6 @@
 package net.starlegacy.command.misc
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -28,6 +29,11 @@ import java.util.*
 @CommandAlias("shuttle")
 @CommandPermission("starlegacy.shuttle.admin")
 object ShuttleCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "shuttles") { _ -> Shuttle.all().map { it.name } }
+		registerAsyncCompletion(manager, "shuttleSchematics") { _ -> Shuttles.getAllSchematics() }
+	}
+
 	private val worldEditPlugin: WorldEditPlugin get() = JavaPlugin.getPlugin(WorldEditPlugin::class.java)
 
 	private fun validateName(name: String) {

@@ -1,7 +1,7 @@
 package net.starlegacy.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
-import net.horizonsend.ion.server.miscellaneous.isPilot
+import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.starlegacy.command.nations.SpaceStationCommand
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory

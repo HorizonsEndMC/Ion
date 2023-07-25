@@ -13,7 +13,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.miscellaneous.get
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.util.getDurationBreakdown

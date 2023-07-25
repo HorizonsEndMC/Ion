@@ -3,7 +3,7 @@ package net.starlegacy.feature.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block

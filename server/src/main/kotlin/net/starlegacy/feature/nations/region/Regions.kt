@@ -24,7 +24,7 @@ import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionSpaceStation
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.nations.region.types.RegionTopLevel
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.Tasks
 import org.bson.types.ObjectId
 import org.bukkit.Bukkit

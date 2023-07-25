@@ -42,7 +42,7 @@ import net.starlegacy.util.randomDouble
 import net.starlegacy.util.red
 import net.horizonsend.ion.server.miscellaneous.registrations.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.registrations.setLoreAndGet
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.util.toCreditsString
 import net.starlegacy.util.withNBTString

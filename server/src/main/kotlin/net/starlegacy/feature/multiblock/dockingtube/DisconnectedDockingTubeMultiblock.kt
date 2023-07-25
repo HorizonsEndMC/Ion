@@ -9,7 +9,7 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.isDoor

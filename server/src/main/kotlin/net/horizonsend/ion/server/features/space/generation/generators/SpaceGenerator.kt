@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk

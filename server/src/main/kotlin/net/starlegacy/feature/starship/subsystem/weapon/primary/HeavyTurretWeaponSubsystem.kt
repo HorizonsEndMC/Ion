@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.starlegacy.feature.multiblock.starshipweapon.turret.HeavyTurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 

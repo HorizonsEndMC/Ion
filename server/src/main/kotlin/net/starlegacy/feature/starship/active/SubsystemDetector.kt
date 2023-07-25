@@ -24,7 +24,7 @@ import net.starlegacy.feature.starship.subsystem.thruster.ThrusterSubsystem
 import net.starlegacy.feature.starship.subsystem.thruster.ThrusterType
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isFroglight
 import net.starlegacy.util.isWallSign

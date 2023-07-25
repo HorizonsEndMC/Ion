@@ -1,5 +1,6 @@
 package net.starlegacy.command.nations.admin
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -13,6 +14,10 @@ import org.bukkit.command.CommandSender
 @CommandAlias("citymanage")
 @CommandPermission("nations.citymanage")
 internal object CityManageCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "settlements") { _ -> SettlementCache.all().map { it.name } }
+	}
+
 	@Subcommand("register")
 	@CommandCompletion("@settlements")
 	fun onRegister(sender: CommandSender, settlement: String) = asyncCommand(sender) {

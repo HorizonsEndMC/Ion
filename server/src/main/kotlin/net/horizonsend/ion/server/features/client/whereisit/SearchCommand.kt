@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.client.whereisit
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -10,7 +9,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.client.whereisit.mod.Searcher
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.miscellaneous.highlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.starlegacy.command.SLCommand
 import net.starlegacy.util.Tasks
 import org.bukkit.Material

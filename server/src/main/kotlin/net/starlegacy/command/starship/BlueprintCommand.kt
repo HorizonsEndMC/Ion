@@ -1,5 +1,7 @@
 package net.starlegacy.command.starship
 
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -22,6 +24,7 @@ import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.*
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.progression.Levels
 import net.starlegacy.feature.starship.DeactivatedPlayerStarships
@@ -49,6 +52,13 @@ import org.litote.kmongo.save
 
 @CommandAlias("blueprint")
 object BlueprintCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "blueprints") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val slPlayerId = player.slPlayerId
+			Blueprint.col.find(Blueprint::owner eq slPlayerId).map { it.name }.toList()
+		}
+	}
 
 	private fun getMaxBlueprints(player: Player): Int {
 		return Levels[player] * 3 + 20

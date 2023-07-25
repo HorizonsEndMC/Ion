@@ -1,6 +1,7 @@
 package net.starlegacy.command.misc
 
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -10,6 +11,10 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
 object GlobalGameRuleCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "gamerules") { _ -> Bukkit.getWorlds().first().gameRules.toList() }
+	}
+
 	@Suppress("Unused")
 	@CommandAlias("globalgamerule")
 	@CommandPermission("slcore.globalgamerule")

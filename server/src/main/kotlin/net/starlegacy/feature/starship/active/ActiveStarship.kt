@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
@@ -30,7 +30,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY

@@ -1,6 +1,6 @@
 package net.starlegacy.feature.multiblock.particleshield
 
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.msg

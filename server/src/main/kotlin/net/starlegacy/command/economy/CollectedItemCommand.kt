@@ -1,6 +1,7 @@
 package net.starlegacy.command.economy
 
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -22,6 +23,11 @@ import org.litote.kmongo.eq
 @CommandAlias("collecteditem|citem")
 @CommandPermission("trade.collecteditem")
 object CollectedItemCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "collecteditems") { _ -> CollectedItem.all().map { "${EcoStations[it.station].name}.${it.itemString}" } }
+		registerAsyncCompletion(manager, "ecostations") { _ -> EcoStations.getAll().map { it.name } }
+	}
+
 	private fun validateValue(value: Double) {
 		if (value <= 0) {
 			throw InvalidCommandArgument("Value can't be <= 0")

@@ -23,7 +23,7 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation

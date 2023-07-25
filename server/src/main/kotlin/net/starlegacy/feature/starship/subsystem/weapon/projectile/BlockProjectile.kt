@@ -2,13 +2,13 @@ package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.Projectiles
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.getBlockIfLoaded
 import net.starlegacy.util.getRelativeIfLoaded
 import net.starlegacy.util.nms

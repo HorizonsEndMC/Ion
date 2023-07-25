@@ -1,5 +1,7 @@
 package net.starlegacy.command.nations.settlementZones
 
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
@@ -9,7 +11,7 @@ import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
@@ -24,6 +26,17 @@ import org.bukkit.entity.Player
 
 @CommandAlias("settlementplot|splot")
 internal object SettlementPlotCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "plots") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val slPlayerId = player.slPlayerId
+
+			Regions.getAllOf<RegionSettlementZone>()
+				.filter { it.owner == slPlayerId }
+				.map { it.name }
+		}
+	}
+
 	@Subcommand("buy")
 	@Description("Buy the zone you're standing in as a plot (with confirmation)")
 	fun onBuy(sender: Player, @Optional price: Int?) = asyncCommand(sender) {

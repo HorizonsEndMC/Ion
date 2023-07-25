@@ -1,7 +1,7 @@
 package net.starlegacy.listener.nations
 
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.starlegacy.LegacySettings
+import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.NationRelation

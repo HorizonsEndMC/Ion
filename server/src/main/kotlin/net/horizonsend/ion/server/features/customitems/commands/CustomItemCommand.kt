@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.customitems.commands
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
@@ -18,8 +17,8 @@ import org.bukkit.entity.Player
 
 @CommandAlias("customitem")
 object CustomItemCommand : SLCommand() {
-	override fun onEnable(commandManager: PaperCommandManager) {
-		commandManager.commandCompletions.registerCompletion("customItem") { context ->
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerCompletion("customItem") { context ->
 			CustomItems.identifiers.filter { context.player.hasPermission("ion.customitem.$it") }
 		}
 	}

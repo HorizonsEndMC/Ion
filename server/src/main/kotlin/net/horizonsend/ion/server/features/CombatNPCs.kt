@@ -13,9 +13,10 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.get
+import net.horizonsend.ion.server.miscellaneous.utils.firsts
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import org.bukkit.Bukkit
@@ -193,6 +194,10 @@ object CombatNPCs : IonServerComponent(true) {
 				SLPlayer.updateById(data._id, setValue(SLPlayer::wasKilled, false))
 			}
 		}
+	}
+
+	override fun onDisable() {
+		npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
 	}
 
 	fun destroyNPC(npc: NPC): CompletableFuture<Unit> =

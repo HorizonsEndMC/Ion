@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.legacy.ShipFactoryMaterialCosts
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.transport.Extractors
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY
 import net.starlegacy.util.blockKeyZ

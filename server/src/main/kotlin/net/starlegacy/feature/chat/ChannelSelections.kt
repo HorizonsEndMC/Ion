@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServerComponent
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.enumValueOfOrNull
 import org.bukkit.Bukkit

@@ -2,7 +2,7 @@ package net.starlegacy.feature.starship.subsystem
 
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.isWallSign
 import org.bukkit.block.BlockFace

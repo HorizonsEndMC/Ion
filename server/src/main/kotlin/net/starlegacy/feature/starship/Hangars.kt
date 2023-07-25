@@ -5,7 +5,7 @@ import com.google.common.collect.Multimaps
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.IonServerComponent
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.PerWorld
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.blockKeyX

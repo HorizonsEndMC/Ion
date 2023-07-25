@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.repeatString
+import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text

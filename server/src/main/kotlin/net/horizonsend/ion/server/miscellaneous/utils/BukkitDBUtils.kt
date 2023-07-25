@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.common.database.objId

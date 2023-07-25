@@ -1,6 +1,9 @@
 package net.starlegacy.command.economy
 
+import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.ConditionFailedException
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -21,6 +24,15 @@ import org.bukkit.entity.Player
 @CommandAlias("ecostation")
 @CommandPermission("slcore.ecostation")
 object EcoStationCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(EcoStation::class.java) { c: BukkitCommandExecutionContext ->
+			val name: String = c.popFirstArg()
+
+			return@registerContext EcoStations.getByName(name)
+				?: throw InvalidCommandArgument("Eco station $name not found")
+		}
+	}
+
 	@Subcommand("create")
 	@CommandCompletion("@nothing @worlds @nothing @nothing @nothing @nothing @nothing")
 	fun onCreate(sender: CommandSender, name: String, world: World, x: Int, z: Int) = asyncCommand(sender) {

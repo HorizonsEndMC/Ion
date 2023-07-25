@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
-import net.starlegacy.LegacySettings
+import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
@@ -23,7 +23,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.string
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.feature.nations.region.unpackTerritoryPolygon
 import org.bukkit.entity.Player

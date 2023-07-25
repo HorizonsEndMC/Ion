@@ -38,8 +38,8 @@ import net.starlegacy.feature.starship.subsystem.HyperdriveSubsystem
 import net.starlegacy.feature.starship.subsystem.NavCompSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.common.redis
-import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.horizonsend.ion.server.miscellaneous.parseData
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.parseData
 import net.starlegacy.util.distance
 import net.starlegacy.util.normalize
 import net.starlegacy.util.randomInt
@@ -59,8 +59,8 @@ import kotlin.math.ln
 import kotlin.math.roundToInt
 
 object MiscStarshipCommands : SLCommand() {
-	override fun onEnable(commandManager: PaperCommandManager) {
-		commandManager.commandCompletions.registerCompletion("hyperspaceGates") {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerCompletion("hyperspaceGates") {
 			IonServer.configuration.beacons.map { it.name.replace(" ", "_") }
 		}
 	}

@@ -1,9 +1,9 @@
 package net.starlegacy.feature.starship.subsystem.shield
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.commands.debugRed
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.minecraft.world.level.Level

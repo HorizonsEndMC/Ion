@@ -2,6 +2,7 @@ package net.starlegacy.command.progression
 
 import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -16,6 +17,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.starlegacy.feature.progression.Levels
+import net.starlegacy.feature.progression.MAX_LEVEL
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import net.starlegacy.feature.progression.SLXP
 import net.starlegacy.util.toCreditsString
@@ -30,6 +32,10 @@ import kotlin.math.abs
 @CommandAlias("advanceadmin")
 @CommandPermission("advance.admin")
 object AdvanceAdminCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerStaticCompletion(manager, "levels", (0..MAX_LEVEL).joinToString("|"))
+	}
+
 	@Suppress("Unused")
 	@Subcommand("xp get")
 	@CommandCompletion("@players")

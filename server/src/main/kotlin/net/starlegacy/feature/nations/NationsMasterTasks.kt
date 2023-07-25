@@ -14,12 +14,15 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.LegacySettings
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.nations.utils.ACTIVE_AFTER_TIME
 import net.starlegacy.feature.nations.utils.INACTIVE_BEFORE_TIME
 import net.starlegacy.util.Notify
+import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
 import net.starlegacy.util.toCreditsString
 import org.bukkit.Bukkit
@@ -28,8 +31,15 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
 
-object NationsMasterTasks {
-	fun executeAll() {
+object NationsMasterTasks : IonServerComponent() {
+	override fun onEnable() {
+		if (LegacySettings.master) {
+			// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
+			Tasks.asyncRepeat(20 * 60, 20 * 60 * 60, ::executeAll)
+		}
+	}
+
+	private fun executeAll() {
 		checkPurges()
 
 		executeMoneyTasks()

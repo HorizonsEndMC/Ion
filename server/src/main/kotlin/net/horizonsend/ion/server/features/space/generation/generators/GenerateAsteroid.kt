@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.space.generation.generators
 
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
-import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.util.noise.PerlinOctaveGenerator
 import org.bukkit.util.noise.SimplexOctaveGenerator
@@ -133,15 +133,15 @@ object GenerateAsteroid {
  * @param octaves The number of octaves of noise to apply. Generally 1, but higher for small asteroids. Increases roughness.
  **/
 data class AsteroidGenerationData(
-	val seed: Long,
-	override val x: Int,
-	override val y: Int,
-	override val z: Int,
-	val oreRatio: Double,
-	val palette: WeightedRandomList<BlockState>,
-	val paletteID: Int,
-	val size: Double,
-	val octaves: Int,
+    val seed: Long,
+    override val x: Int,
+    override val y: Int,
+    override val z: Int,
+    val oreRatio: Double,
+    val palette: WeightedRandomList<BlockState>,
+    val paletteID: Int,
+    val size: Double,
+    val octaves: Int,
 ) : SpaceGenerationData() {
 	val random = Random(seed)
 	val sizeFactor = size / 15

@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.miscellaneous.gayColors
+import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.feature.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
@@ -23,7 +23,7 @@ import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.leftFace
 import net.starlegacy.util.nms

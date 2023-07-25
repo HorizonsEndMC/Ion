@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY

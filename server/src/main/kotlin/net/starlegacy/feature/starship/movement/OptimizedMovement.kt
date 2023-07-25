@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.movement
 
 import co.aikar.commands.ConditionFailedException
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.BaseEntityBlock

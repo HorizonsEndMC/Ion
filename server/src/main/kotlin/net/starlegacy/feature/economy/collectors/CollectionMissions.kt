@@ -22,7 +22,7 @@ import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.progression.SLXP
-import net.starlegacy.sharedDataFolder
+import net.horizonsend.ion.server.sharedDataFolder
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO

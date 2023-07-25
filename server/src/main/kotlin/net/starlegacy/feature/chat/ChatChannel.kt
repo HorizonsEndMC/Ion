@@ -8,7 +8,7 @@ import net.luckperms.api.node.NodeEqualityPredicate
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.TextComponent
-import net.starlegacy.LegacySettings
+import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache

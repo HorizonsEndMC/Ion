@@ -1,5 +1,8 @@
 package net.starlegacy.command.nations.settlementZones
 
+import co.aikar.commands.BukkitCommandExecutionContext
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
@@ -19,11 +22,12 @@ import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionSettlementZone
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.horizonsend.ion.common.redis
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Notify
 import net.starlegacy.util.PerPlayerCooldown
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.action
 import net.starlegacy.util.colorize
 import net.starlegacy.util.d
@@ -53,6 +57,23 @@ import kotlin.random.Random
 internal object SettlementZoneCommand : SLCommand() {
 	private const val maxHorizontalArea = 200 * 200
 	private const val maxZonesPerSettlement = 150
+
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(RegionSettlementZone::class.java) { c: BukkitCommandExecutionContext ->
+			val arg = c.popFirstArg() ?: throw InvalidCommandArgument("Zone is required")
+			return@registerContext Regions.getAllOf<RegionSettlementZone>().firstOrNull { it.name == arg }
+				?: throw InvalidCommandArgument("Zone $arg not found")
+		}
+
+		registerAsyncCompletion(manager, "zones") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val settlement = PlayerCache[player].settlementOid
+
+			Regions.getAllOf<RegionSettlementZone>()
+				.filter { settlement != null && it.settlement == settlement }
+				.map { it.name }
+		}
+	}
 
 	private fun getSelectionKey(sender: Player): String = "nations.settlement_zone_command.selection.${sender.uniqueId}"
 
@@ -199,7 +220,13 @@ internal object SettlementZoneCommand : SLCommand() {
 		val territory: RegionTerritory = getSettlementTerritory(settlement)
 
 		val loc = sender.location
-		failIf(territory.world != loc.world.name || !territory.contains(loc.blockX, loc.blockY, loc.blockZ)) { "You're can only make zones inside of your settlement's territory" }
+		failIf(
+			territory.world != loc.world.name || !territory.contains(
+				loc.blockX,
+				loc.blockY,
+				loc.blockZ
+			)
+		) { "You're can only make zones inside of your settlement's territory" }
 
 		val (pos1: Vec3i, pos2: Vec3i) = validateSelection(sender, settlement, territory)
 
@@ -377,7 +404,10 @@ internal object SettlementZoneCommand : SLCommand() {
 		sender msg "&aDeleted settlement zone ${zone.name}"
 
 		if (owner != null) {
-			Notify.player(owner.uuid, MiniMessage.miniMessage().deserialize("Your settlement zone ${zone.name} was deleted by ${sender.name}"))
+			Notify.player(
+				owner.uuid,
+				MiniMessage.miniMessage().deserialize("Your settlement zone ${zone.name} was deleted by ${sender.name}")
+			)
 		}
 	}
 
@@ -443,7 +473,8 @@ internal object SettlementZoneCommand : SLCommand() {
 
 		sender msg "&aReclaimed region ${zone.name} from ${getPlayerName(owner)}"
 
-		val message = MiniMessage.miniMessage().deserialize("<gray>${sender.name} reclaimed your plot ${zone.name} in ${getSettlementName(settlement)}")
+		val message = MiniMessage.miniMessage()
+			.deserialize("<gray>${sender.name} reclaimed your plot ${zone.name} in ${getSettlementName(settlement)}")
 		Notify.player(owner.uuid, message)
 	}
 }

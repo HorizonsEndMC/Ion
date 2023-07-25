@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.sidebar.command
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
@@ -9,7 +8,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.command.SLCommand
 import org.bukkit.entity.Player
 import org.litote.kmongo.set

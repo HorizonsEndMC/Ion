@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.regeneration
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
@@ -18,7 +17,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtOps

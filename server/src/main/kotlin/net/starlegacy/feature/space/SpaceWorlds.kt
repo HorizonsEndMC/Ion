@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.IonServerComponent
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent

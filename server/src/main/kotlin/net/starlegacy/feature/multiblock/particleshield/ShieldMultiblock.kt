@@ -1,7 +1,7 @@
 package net.starlegacy.feature.multiblock.particleshield
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.Tasks

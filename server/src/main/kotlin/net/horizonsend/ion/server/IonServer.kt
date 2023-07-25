@@ -10,50 +10,41 @@ import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.CombatNPCs
-import net.horizonsend.ion.server.features.client.networking.packets.ShipData
-import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
-import net.horizonsend.ion.server.legacy.NewPlayerProtection
 import net.horizonsend.ion.server.miscellaneous.IonWorld
-import net.horizonsend.ion.server.miscellaneous.events.IonDisableEvent
-import net.horizonsend.ion.server.miscellaneous.firsts
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
-import net.starlegacy.LegacySettings
-import net.starlegacy.feature.economy.city.CityNPCs
-import net.starlegacy.feature.economy.collectors.Collectors
-import net.starlegacy.feature.hyperspace.HyperspaceBeacons
-import net.starlegacy.feature.machine.AreaShields
-import net.starlegacy.feature.nations.NationsMap
-import net.starlegacy.feature.nations.NationsMasterTasks
-import net.starlegacy.feature.space.SpaceMap
-import net.starlegacy.feature.starship.hyperspace.HyperspaceMap
-import net.starlegacy.legacyDisable
-import net.starlegacy.legacyEnable
+import net.starlegacy.Config
+import net.starlegacy.command.SLCommand
 import net.starlegacy.listener.SLEventListener
-import net.starlegacy.scheduleNationTasks
 import net.starlegacy.util.Notify
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.loadConfig
 import org.bukkit.Bukkit
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
 
 abstract class IonServerComponent(
 	val runAfterTick: Boolean = false
 ) : Listener, IonComponent()
 
+val LegacySettings get() = IonServer.legacySettings
+val BalancingConfiguration get() = IonServer.balancing
+val ServerConfiguration get() = IonServer.balancing
+
+val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
+
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
+	var legacySettings: Config = loadConfig(IonServer.dataFolder, "config") // Setting
 
 	override fun onEnable() {
 		val exception = runCatching(::internalEnable).exceptionOrNull() ?: return
@@ -62,9 +53,12 @@ object IonServer : JavaPlugin() {
 	}
 
 	private fun internalEnable() {
-		CommonConfig.init(IonServer.dataFolder)// s
+		CommonConfig.init(IonServer.dataFolder) // DB Configs
 
-		prefixProvider = {
+		balancing = Configuration.load(dataFolder, "balancing.json") // Balancing Settings
+		configuration = Configuration.load(dataFolder, "server.json") // Server Settings
+		legacySettings = loadConfig(IonServer.dataFolder, "config") // Legacy Settings
+		prefixProvider = { // Audience extensions
 			when (it) {
 				is Player -> "to ${it.name}: "
 				else -> ""
@@ -72,14 +66,18 @@ object IonServer : JavaPlugin() {
 		}
 
 		// Commands
-		val commandManager = PaperCommandManager(this).apply { enableUnstableAPI("help") }
+		val commandManager = PaperCommandManager(this).apply {
+			enableUnstableAPI("help")
+			enableUnstableAPI("brigadier")
+		}
 
-		for (command in commands) {
-			commandManager.registerCommand(command)
-			command.onEnable(commandManager)
+		// First register all the completions, then register the actual commands
+		commands.forEach { it.onEnable(commandManager) }
+		commands.forEach {
+			commandManager.registerCommand(it)
 
-			if (command is Listener) {
-				server.pluginManager.registerEvents(command, this)
+			if (it is Listener) {
+				server.pluginManager.registerEvents(it, this)
 			}
 		}
 
@@ -95,8 +93,6 @@ object IonServer : JavaPlugin() {
 		// such as reloading or other plugins doing things they probably shouldn't.
 		for (world in server.worlds) IonWorld.register(world.minecraft)
 
-		LegacySettings = loadConfig(IonServer.dataFolder, "config") // Setting
-
 		for (component in components) { // Components
 			if (component is IonServerComponent) {
 				if (component.runAfterTick)
@@ -107,41 +103,26 @@ object IonServer : JavaPlugin() {
 			} else component.onEnable()
 		}
 
-		scheduleNationTasks()
-
-		NewPlayerProtection.onEnable()
-
-		if (LegacySettings.master) {
-			// 20 ticks * 60 = 1 minute, 20 ticks * 60 * 60 = 1 hour
-			Tasks.asyncRepeat(20 * 60, 20 * 60 * 60) {
-				NationsMasterTasks.executeAll()
-			}
-		}
-
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB
 
-		legacyEnable(commandManager)
+		val message = getUpdateMessage(dataFolder) ?: return
+		slF4JLogger.info(message)
 
-		Bukkit.getScheduler().runTaskLater(
-			this,
-			Runnable
-			{
-				val message = getUpdateMessage(dataFolder) ?: return@Runnable
-				slF4JLogger.info(message)
-
-				Notify.eventsChannel("${configuration.serverName} $message")
-				DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
-					?.sendMessage("${configuration.serverName} $message")
-			},
-			1
-		)
+		Notify.eventsChannel("${configuration.serverName} $message")
+		DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
+			?.sendMessage("${configuration.serverName} $message")
 	}
 
 	override fun onDisable() {
-		Bukkit.getPluginManager().callEvent(IonDisableEvent())
 		IonWorld.unregisterAll()
-		legacyDisable()
-		CombatNPCs.npcToPlayer.values.firsts().forEach(CombatNPCs::destroyNPC)
+
+		SLCommand.ASYNC_COMMAND_THREAD.shutdown()
+
+		for (component in components.asReversed()) try {
+			component.onDisable()
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
 	}
 
 	override fun getDefaultBiomeProvider(worldName: String, id: String?): BiomeProvider {

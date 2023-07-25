@@ -4,7 +4,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.starship.FLYABLE_BLOCKS
 import net.starlegacy.feature.starship.Mass
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.SLAB_TYPES
 import net.starlegacy.util.STAINED_GLASS_PANE_TYPES
 import net.starlegacy.util.STAINED_GLASS_TYPES

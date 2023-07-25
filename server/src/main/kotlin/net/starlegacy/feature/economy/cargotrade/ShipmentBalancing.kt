@@ -1,7 +1,7 @@
 package net.starlegacy.feature.economy.cargotrade
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.starlegacy.sharedDataFolder
+import net.horizonsend.ion.server.sharedDataFolder
 import net.starlegacy.util.loadConfig
 
 lateinit var balancing: ShipmentBalancing.ShipmentBalancingConfig

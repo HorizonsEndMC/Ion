@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.database.schema.space.Planet.Companion.setX
 import net.horizonsend.ion.common.database.schema.space.Planet.Companion.setZ
 import net.starlegacy.feature.misc.CustomItem
 import net.starlegacy.feature.misc.CustomItems
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.d
 import net.starlegacy.util.getSphereBlocks
 import net.starlegacy.util.i

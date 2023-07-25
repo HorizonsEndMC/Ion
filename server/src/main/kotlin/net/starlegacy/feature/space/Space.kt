@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Star
-import net.starlegacy.listen
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.optional
 import org.bukkit.Bukkit
 import org.bukkit.Material

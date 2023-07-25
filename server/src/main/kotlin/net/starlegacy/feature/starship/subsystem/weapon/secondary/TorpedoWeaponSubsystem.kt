@@ -6,7 +6,7 @@ import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.TorpedoProjectile
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector

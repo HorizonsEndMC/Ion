@@ -3,7 +3,7 @@ package net.starlegacy.feature.multiblock
 import net.minecraft.world.level.block.AbstractFurnaceBlock
 import net.starlegacy.feature.misc.CustomBlock
 import net.starlegacy.feature.misc.CustomBlocks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.feature.transport.Extractors
 import net.starlegacy.feature.transport.Wires
 import net.starlegacy.feature.transport.pipe.Pipes

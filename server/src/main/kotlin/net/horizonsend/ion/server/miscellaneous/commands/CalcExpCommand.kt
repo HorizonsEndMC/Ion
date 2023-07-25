@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.get
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.starlegacy.command.SLCommand
 import org.bukkit.entity.Player
 import kotlin.math.floor

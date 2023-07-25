@@ -10,7 +10,7 @@ import net.starlegacy.feature.transport.transportConfig
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.MATERIALS
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.chunkKey
 import net.starlegacy.util.chunkKeyX

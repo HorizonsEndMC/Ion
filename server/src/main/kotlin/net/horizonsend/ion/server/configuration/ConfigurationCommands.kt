@@ -24,12 +24,12 @@ object ConfigurationCommands : SLCommand() {
 	private val changeableFields = BalancingConfiguration.StarshipWeapons.StarshipWeapon::class.memberProperties
 		.filterIsInstance<KMutableProperty<*>>()
 
-	override fun onEnable(commandManager: PaperCommandManager) {
-		commandManager.commandCompletions.registerCompletion("balancingFields") {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerCompletion("balancingFields") {
 			turretTypes.map { it.name }
 		}
 
-		commandManager.commandCompletions.registerCompletion("balancingValues") {
+		manager.commandCompletions.registerCompletion("balancingValues") {
 			changeableFields.map { it.name }
 		}
 	}

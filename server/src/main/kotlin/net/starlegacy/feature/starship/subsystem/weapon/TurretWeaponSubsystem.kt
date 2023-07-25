@@ -5,7 +5,7 @@ import net.starlegacy.feature.multiblock.starshipweapon.turret.TurretMultiblock
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.subsystem.DirectionalSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.vectorToBlockFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign

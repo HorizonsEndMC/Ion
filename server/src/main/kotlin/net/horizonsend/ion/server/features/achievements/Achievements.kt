@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.server.miscellaneous.vaultEconomy
+import net.horizonsend.ion.server.miscellaneous.utils.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
-import net.starlegacy.LegacySettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.miscellaneous.get
+import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.feature.progression.SLXP
 import org.bukkit.Sound

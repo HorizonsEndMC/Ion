@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
-import net.horizonsend.ion.server.miscellaneous.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag

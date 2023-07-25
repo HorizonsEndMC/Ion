@@ -1,6 +1,6 @@
 package net.starlegacy.util
 
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction

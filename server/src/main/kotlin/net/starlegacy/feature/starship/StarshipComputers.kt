@@ -9,7 +9,6 @@ import net.horizonsend.ion.common.extensions.serverErrorActionMessage
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
@@ -25,8 +24,8 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.miscellaneous.isPilot
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.isPilot
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.feature.nations.gui.input
 import net.starlegacy.feature.nations.gui.playerClicker
 import net.starlegacy.feature.nations.gui.skullItem
@@ -42,10 +41,6 @@ import net.starlegacy.util.toText
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.conversations.Conversation
-import org.bukkit.conversations.ConversationContext
-import org.bukkit.conversations.Prompt
-import org.bukkit.conversations.StringPrompt
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority

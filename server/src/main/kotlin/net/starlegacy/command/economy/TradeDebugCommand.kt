@@ -1,6 +1,8 @@
 package net.starlegacy.command.economy
 
+import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -24,11 +26,21 @@ import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.util.getNBTInt
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.*
 import kotlin.system.measureTimeMillis
 
 @CommandAlias("tradedebug|tdebug|tbug")
 @CommandPermission("trade.debug")
 object TradeDebugCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(CargoCrate::class.java) { c: BukkitCommandExecutionContext ->
+			CargoCrates[c.popFirstArg().uppercase(Locale.getDefault())]
+				?: throw InvalidCommandArgument("No such crate")
+		}
+
+		registerAsyncCompletion(manager, "crates") { _ -> CargoCrates.crates.map { it.name } }
+	}
+
 	@Suppress("Unused")
 	@Subcommand("rebalance")
 	@Description("Reload the balance config and regenerate shipments")

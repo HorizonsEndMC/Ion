@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.transport.pipe.Pipes
 import net.starlegacy.feature.transport.pipe.filter.FilterItemData
 import net.starlegacy.feature.transport.pipe.filter.Filters
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.coordinates
 import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.getBlockTypeSafe

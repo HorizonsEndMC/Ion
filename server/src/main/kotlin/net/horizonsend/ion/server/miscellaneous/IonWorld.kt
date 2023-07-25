@@ -3,11 +3,12 @@ package net.horizonsend.ion.server.miscellaneous
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.server.level.ServerLevel
 import net.starlegacy.feature.machine.AreaShields
 import net.starlegacy.listener.SLEventListener
 import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import kotlin.DeprecationLevel.ERROR

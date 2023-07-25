@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.features.spacestations.CachedPlayerSpaceStatio
 import net.horizonsend.ion.server.features.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.feature.nations.NationsMap
 import net.starlegacy.util.d
 import net.starlegacy.util.distanceSquared

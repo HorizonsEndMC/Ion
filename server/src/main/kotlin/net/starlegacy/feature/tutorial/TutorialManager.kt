@@ -10,9 +10,9 @@ import net.starlegacy.feature.starship.event.StarshipRotateEvent
 import net.starlegacy.feature.starship.event.StarshipStartCruisingEvent
 import net.starlegacy.feature.starship.event.StarshipTranslateEvent
 import net.starlegacy.feature.starship.event.StarshipUnpilotEvent
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.execConsoleCmd
 import net.starlegacy.util.gray
 import net.starlegacy.util.msg
@@ -38,7 +38,7 @@ import java.lang.ref.WeakReference
 import java.util.UUID
 import kotlin.collections.set
 import kotlin.math.abs
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 
 object TutorialManager : IonServerComponent() {
 	private var playersInTutorials = mutableMapOf<Player, TutorialPhase>()

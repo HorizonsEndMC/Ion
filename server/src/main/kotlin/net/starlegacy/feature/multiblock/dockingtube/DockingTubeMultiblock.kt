@@ -6,7 +6,7 @@ import net.starlegacy.feature.multiblock.InteractableMultiblock
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.rightFace
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.axis
 import org.bukkit.Axis
 import org.bukkit.Location

@@ -1,5 +1,7 @@
 package net.starlegacy.command.economy
 
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
@@ -31,18 +33,32 @@ import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.registrations.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.util.roundToHundredth
 import net.starlegacy.util.toCreditsString
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import kotlin.math.ceil
 
 @CommandAlias("bazaar")
 object BazaarCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "bazaarItemStrings") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val slPlayerId = player.slPlayerId
+			val territory = Regions.findFirstOf<RegionTerritory>(player.location)
+				?: throw InvalidCommandArgument("You're not in a territory!")
+			BazaarItem.findProp(
+				and(BazaarItem::seller eq slPlayerId, BazaarItem::cityTerritory eq territory.id),
+				BazaarItem::itemString
+			).toList()
+		}
+	}
+
 	private fun validateItemString(itemString: String): ItemStack {
 		try {
 			val itemStack = Bazaars.fromItemString(itemString)

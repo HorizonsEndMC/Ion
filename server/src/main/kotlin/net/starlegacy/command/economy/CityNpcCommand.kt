@@ -1,6 +1,7 @@
 package net.starlegacy.command.economy
 
 import co.aikar.commands.ConditionFailedException
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
@@ -26,6 +27,10 @@ import java.util.UUID
 
 @CommandAlias("citynpc|cnpc")
 object CityNpcCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerStaticCompletion(manager, "npctypes", CityNPC.Type.entries.joinToString("|") { it.name })
+	}
+
 	private fun getCurrentCityContext(sender: Player): Triple<Location, RegionTerritory, TradeCityData> {
 		val location: Location = sender.location
 		val territory: RegionTerritory = Regions.findFirstOf(location)

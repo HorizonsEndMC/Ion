@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOC
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Z
-import net.horizonsend.ion.server.miscellaneous.highlightBlock
-import net.horizonsend.ion.server.miscellaneous.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.starlegacy.util.spherePoints

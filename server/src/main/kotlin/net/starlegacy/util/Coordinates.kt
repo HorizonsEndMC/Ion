@@ -1,6 +1,6 @@
 package net.starlegacy.util
 
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.ChunkPos
 import org.bukkit.Bukkit

@@ -4,9 +4,9 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.starlegacy.listen
-import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.horizonsend.ion.server.miscellaneous.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.starlegacy.util.blockKey
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY

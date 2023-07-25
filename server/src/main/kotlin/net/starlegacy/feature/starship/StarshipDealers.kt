@@ -16,7 +16,7 @@ import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.starlegacy.command.starship.BlueprintCommand
 import net.starlegacy.feature.nations.gui.item
 import net.starlegacy.util.MenuHelper
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.getMoneyBalance
 import net.starlegacy.util.hasEnoughMoney
 import net.starlegacy.util.placeSchematicEfficiently

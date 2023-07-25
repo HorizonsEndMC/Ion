@@ -14,7 +14,7 @@ import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.active.ActiveStarships
 import net.starlegacy.feature.starship.control.StarshipCruising
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.LegacyItemUtils
 import net.starlegacy.util.isWallSign
 import net.starlegacy.util.toLocation

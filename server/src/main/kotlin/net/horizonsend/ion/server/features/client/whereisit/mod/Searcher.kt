@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.client.whereisit.mod
 
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.FriendlyByteBuf

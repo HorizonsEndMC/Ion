@@ -1,13 +1,11 @@
 package net.horizonsend.ion.server.legacy.commands
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.command.SLCommand
 import net.starlegacy.util.blockKeyX
 import net.starlegacy.util.blockKeyY

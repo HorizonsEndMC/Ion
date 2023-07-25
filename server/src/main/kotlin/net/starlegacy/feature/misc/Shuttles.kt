@@ -12,10 +12,10 @@ import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.starlegacy.feature.nations.gui.openConfirmMenu
 import net.starlegacy.feature.nations.gui.playerClicker
-import net.starlegacy.sharedDataFolder
+import net.horizonsend.ion.server.sharedDataFolder
 import net.starlegacy.util.Tasks
 import net.starlegacy.util.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.action
 import net.starlegacy.util.actionAndMsg
 import net.starlegacy.util.colorize
@@ -210,12 +210,12 @@ object Shuttles : IonServerComponent() {
 	fun removeShuttleFromWorld(shuttle: Shuttle) = moveShuttle(shuttle, -1)
 
 	private data class ShuttleTeleportPlayersData(
-		val shuttle: String,
-		val schematic: String,
-		val world1: String,
-		val pos1: Vec3i,
-		val world2: String,
-		val pos2: Vec3i
+        val shuttle: String,
+        val schematic: String,
+        val world1: String,
+        val pos1: Vec3i,
+        val world2: String,
+        val pos2: Vec3i
 	)
 
 	private val teleportPlayers = { (shuttle, schem, world1Name, pos1, world2Name, pos2): ShuttleTeleportPlayersData ->

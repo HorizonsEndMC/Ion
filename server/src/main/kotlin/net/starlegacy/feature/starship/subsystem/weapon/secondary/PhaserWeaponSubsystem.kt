@@ -7,7 +7,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.projectile.PhaserProjectile
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace

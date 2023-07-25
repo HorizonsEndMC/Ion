@@ -4,7 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.starlegacy.feature.economy.city.TradeCityData
-import net.starlegacy.sharedDataFolder
+import net.horizonsend.ion.server.sharedDataFolder
 import net.starlegacy.util.MenuHelper
 import net.starlegacy.util.Tasks
 import net.horizonsend.ion.server.miscellaneous.registrations.displayNameComponent

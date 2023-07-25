@@ -1,7 +1,7 @@
 package net.starlegacy.feature.starship.subsystem.weapon
 
 import net.starlegacy.feature.starship.active.ActiveStarship
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 

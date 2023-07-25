@@ -14,7 +14,7 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.minecraft.nbt.ByteArrayTag
 import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.DoubleTag
@@ -70,11 +70,11 @@ fun Clipboard.paste(world: World, x: Int, y: Int, z: Int, ignoreAir: Boolean = f
 }
 
 fun placeSchematicEfficiently(
-	schematic: Clipboard,
-	world: World,
-	target: Vec3i,
-	ignoreAir: Boolean,
-	callback: () -> Unit = {}
+    schematic: Clipboard,
+    world: World,
+    target: Vec3i,
+    ignoreAir: Boolean,
+    callback: () -> Unit = {}
 ) {
 	Tasks.async {
 		val queue = Long2ObjectOpenHashMap<MinecraftBlockState>()

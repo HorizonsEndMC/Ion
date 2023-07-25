@@ -3,7 +3,7 @@ package net.starlegacy.javautil.blockplacement;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.horizonsend.ion.server.IonServer;
-import net.horizonsend.ion.server.miscellaneous.MiscellaneousKt;
+import net.horizonsend.ion.server.miscellaneous.utils.MiscellaneousKt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.server.level.ChunkHolder;

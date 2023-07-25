@@ -2,11 +2,10 @@ package net.starlegacy.feature.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.miscellaneous.gayColors
+import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.starlegacy.feature.starship.active.ActiveStarship
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 // from left to right red - orange - yellow - green - blue - purple

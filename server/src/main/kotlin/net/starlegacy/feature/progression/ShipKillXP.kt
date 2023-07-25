@@ -25,7 +25,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.features.CombatNPCKillEvent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.miscellaneous.get
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.starlegacy.feature.starship.PilotedStarships.getDisplayNameComponent
 import net.starlegacy.feature.starship.PilotedStarships.getRawDisplayName
 import net.starlegacy.feature.starship.StarshipType

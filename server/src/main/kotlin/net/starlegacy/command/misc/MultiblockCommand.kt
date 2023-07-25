@@ -1,16 +1,20 @@
 package net.starlegacy.command.misc
 
+import co.aikar.commands.BukkitCommandExecutionContext
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.Vec3i
-import net.horizonsend.ion.server.miscellaneous.highlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.minecraft.core.BlockPos
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.multiblock.Multiblock
+import net.starlegacy.feature.multiblock.Multiblocks
 import net.starlegacy.util.getFacing
 import net.starlegacy.util.getRelativeIfLoaded
 import org.bukkit.block.Block
@@ -22,12 +26,27 @@ import org.bukkit.inventory.EquipmentSlot
 @CommandAlias("multiblock")
 @CommandPermission("ion.multiblock")
 object MultiblockCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(Multiblock::class.java) { c: BukkitCommandExecutionContext ->
+			val name: String = c.popFirstArg()
+
+			Multiblocks.all().firstOrNull { it.javaClass.simpleName == name }
+				?: throw InvalidCommandArgument("Multiblock $name not found!")
+		}
+
+		registerStaticCompletion(
+			manager,
+			"multiblocks",
+			Multiblocks.all().joinToString("|") { it.javaClass.simpleName })
+	}
+
 	@Subcommand("check")
 	@CommandCompletion("@multiblocks")
 	@CommandPermission("ion.multiblock.check")
 	@Suppress("unused")
 	fun onCheck(sender: Player, lastMatch: Multiblock, x: Int, y: Int, z: Int) {
-		val sign = sender.world.getBlockAt(x, y, z).state as? Sign ?: return sender.userError("Block at $x $y $z isn't a sign!")
+		val sign = sender.world.getBlockAt(x, y, z).state as? Sign
+			?: return sender.userError("Block at $x $y $z isn't a sign!")
 
 		val face = sign.getFacing().oppositeFace
 

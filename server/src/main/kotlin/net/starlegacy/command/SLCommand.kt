@@ -1,9 +1,6 @@
 package net.starlegacy.command
 
-import co.aikar.commands.BaseCommand
-import co.aikar.commands.CommandHelp
-import co.aikar.commands.InvalidCommandArgument
-import co.aikar.commands.PaperCommandManager
+import co.aikar.commands.*
 import co.aikar.commands.annotation.HelpCommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
@@ -16,7 +13,7 @@ import net.horizonsend.ion.common.database.schema.nations.*
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionTerritory
 import net.starlegacy.feature.progression.Levels
@@ -40,11 +37,24 @@ abstract class SLCommand : BaseCommand() {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	companion object {
-		val ASYNC_COMMAND_THREAD: ExecutorService = Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-async-commands"))
+		val ASYNC_COMMAND_THREAD: ExecutorService =
+			Executors.newSingleThreadExecutor(Tasks.namedThreadFactory("sl-async-commands"))
 	}
 
-	open fun onEnable(commandManager: PaperCommandManager) {}
+	open fun onEnable(manager: PaperCommandManager) {}
 	open fun onDisable() {}
+
+	protected fun registerStaticCompletion(manager: PaperCommandManager, key: String, value: String) {
+		manager.commandCompletions.registerStaticCompletion(key, value)
+	}
+
+	protected fun registerAsyncCompletion(
+		manager: PaperCommandManager,
+		key: String,
+		value: (BukkitCommandCompletionContext) -> List<String>
+	) {
+		manager.commandCompletions.registerAsyncCompletion(key, value)
+	}
 
 	/**
 	 * Run this block of code async. Also, no two blocks passed to this method will run at the same time,
@@ -148,7 +158,8 @@ abstract class SLCommand : BaseCommand() {
 	protected fun resolveNation(name: String): Oid<Nation> = NationCache.getByName(name)
 		?: fail { "Nation $name not found" }
 
-	protected fun requireMinLevel(sender: Player, level: Int) = failIf(Levels[sender] < level) { "You need to be at least level $level to do that" }
+	protected fun requireMinLevel(sender: Player, level: Int) =
+		failIf(Levels[sender] < level) { "You need to be at least level $level to do that" }
 
 	protected fun requireTerritoryIn(sender: Player): RegionTerritory = Regions.findFirstOf(sender.location)
 		?: fail { "You're not in a territory on a planet" }
@@ -180,7 +191,12 @@ abstract class SLCommand : BaseCommand() {
 		failIf(!isNationLeader(sender, nationId)) { "Only the nation leader can do that" }
 
 	protected fun requireIsMemberOf(slPlayerId: SLPlayerId, settlementId: Oid<Settlement>, name: String? = null) {
-		failIf(!SLPlayer.isMemberOfSettlement(slPlayerId, settlementId)) { "${name ?: "That player"} is not a member of the settlement" }
+		failIf(
+			!SLPlayer.isMemberOfSettlement(
+				slPlayerId,
+				settlementId
+			)
+		) { "${name ?: "That player"} is not a member of the settlement" }
 	}
 
 	protected fun requireNotSettlementLeader(sender: Player, settlementId: Oid<Settlement>) {

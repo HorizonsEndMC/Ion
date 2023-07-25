@@ -6,7 +6,7 @@ import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.starship.StarshipDetection
 import net.starlegacy.feature.starship.factory.StarshipFactories
 import net.starlegacy.feature.starship.hyperspace.Hyperspace
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.util.isConcrete
 import org.bukkit.Bukkit

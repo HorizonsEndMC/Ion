@@ -11,12 +11,12 @@ import java.util.concurrent.TimeUnit
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.controllers.LegacyController
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.miscellaneous.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.starlegacy.feature.starship.StarshipType
 import net.starlegacy.feature.starship.control.StarshipControl
 import net.starlegacy.feature.starship.control.StarshipCruising

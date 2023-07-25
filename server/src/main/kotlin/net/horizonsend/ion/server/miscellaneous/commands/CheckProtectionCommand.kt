@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.commands
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.server.legacy.NewPlayerProtection.hasProtection
@@ -10,7 +9,7 @@ import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.miscellaneous.get
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.starlegacy.command.SLCommand
 import org.bukkit.Statistic
 import org.bukkit.entity.Player

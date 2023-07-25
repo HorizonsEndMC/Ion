@@ -4,7 +4,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
-import net.horizonsend.ion.server.miscellaneous.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.feature.starship.StarshipType

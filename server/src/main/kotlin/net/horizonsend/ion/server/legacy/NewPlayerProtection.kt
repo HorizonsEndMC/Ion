@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.legacy
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
@@ -9,12 +10,13 @@ import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
-import net.starlegacy.LegacySettings
+import net.horizonsend.ion.server.LegacySettings
 import net.starlegacy.command.SLCommand
 import net.starlegacy.feature.progression.PlayerXPLevelCache
 import net.starlegacy.util.Tasks
@@ -33,7 +35,7 @@ object NewPlayerProtection : SLCommand(), Listener {
 	private val protectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 
-	fun onEnable() {
+	override fun onEnable(manager: PaperCommandManager) {
 		Tasks.syncRepeat(5 * 20 * 60, 5 * 20 * 60) {
 			for (player in Bukkit.getOnlinePlayers())
 				player.updateProtection()

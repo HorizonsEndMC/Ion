@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.miscellaneous.utils
 
 import java.util.Random
 

@@ -3,7 +3,7 @@ package net.starlegacy.feature.transport
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.metrics
+import net.horizonsend.ion.server.miscellaneous.utils.metrics
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.machine.PowerMachines
 import net.starlegacy.feature.multiblock.Multiblocks
@@ -11,7 +11,7 @@ import net.starlegacy.feature.multiblock.PowerStoringMultiblock
 import net.starlegacy.feature.multiblock.areashield.AreaShield
 import net.starlegacy.util.ADJACENT_BLOCK_FACES
 import net.starlegacy.util.Tasks
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.getBlockDataSafe
 import net.starlegacy.util.getBlockTypeSafe
 import net.starlegacy.util.getStateIfLoaded

@@ -3,7 +3,7 @@ package net.starlegacy.feature.multiblock.hyperdrive
 import net.starlegacy.feature.multiblock.LegacyMultiblockShape
 import net.starlegacy.feature.multiblock.Multiblock
 import net.starlegacy.util.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.util.add

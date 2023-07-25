@@ -1,6 +1,8 @@
 package net.starlegacy.command.nations
 
+import co.aikar.commands.BukkitCommandExecutionContext
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
@@ -25,7 +27,7 @@ import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation.Comp
 import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
-import net.horizonsend.ion.server.miscellaneous.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.starlegacy.feature.nations.NATIONS_BALANCE
 import net.starlegacy.feature.nations.region.Regions
 import net.starlegacy.feature.nations.region.types.RegionCapturableStation
@@ -33,18 +35,28 @@ import net.starlegacy.feature.space.CachedPlanet
 import net.starlegacy.feature.space.CachedStar
 import net.starlegacy.feature.space.Space
 import net.starlegacy.feature.space.SpaceWorlds
-import net.starlegacy.util.Notify
-import net.starlegacy.util.VAULT_ECO
-import net.starlegacy.util.distance
-import net.starlegacy.util.isAlphanumeric
-import net.starlegacy.util.toCreditsString
+import net.starlegacy.util.*
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.litote.kmongo.Id
+import java.util.*
 
 @CommandAlias("spacestation|nspacestation|nstation|sstation|station|nationspacestation")
 object SpaceStationCommand : SLCommand() {
 	val disallowedWorlds = listOf("horizon", "trench", "au0821")
+
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(CachedSpaceStation::class.java) { c: BukkitCommandExecutionContext ->
+			SpaceStations.spaceStationCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
+				?: throw InvalidCommandArgument("No such space station")
+		}
+
+		registerAsyncCompletion(manager, "spacestations") { c ->
+			val player = c.player
+
+			SpaceStations.all().filter { it.hasOwnershipContext(player.slPlayerId) }.map { it.name }
+		}
+	}
 
 	private fun validateName(name: String) {
 		if (!name.isAlphanumeric()) {

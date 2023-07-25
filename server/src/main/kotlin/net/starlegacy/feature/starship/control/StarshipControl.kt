@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.miscellaneous.commands.debug
 import net.horizonsend.ion.server.miscellaneous.commands.debugBanner
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.registrations.displayNameString
-import net.horizonsend.ion.server.miscellaneous.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.starlegacy.feature.space.Space
@@ -24,7 +24,7 @@ import net.starlegacy.feature.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.WeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.starlegacy.feature.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.starlegacy.listen
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.starlegacy.util.*
 import org.bukkit.ChatColor
 import org.bukkit.Location

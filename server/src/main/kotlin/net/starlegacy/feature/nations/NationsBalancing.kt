@@ -1,7 +1,7 @@
 package net.starlegacy.feature.nations
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.starlegacy.sharedDataFolder
+import net.horizonsend.ion.server.sharedDataFolder
 import net.starlegacy.util.loadConfig
 
 lateinit var NATIONS_BALANCE: NationsBalancing.Config

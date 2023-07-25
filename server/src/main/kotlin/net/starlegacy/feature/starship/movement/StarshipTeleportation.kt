@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.starlegacy.feature.starship.active.ActivePlayerStarship
 import net.starlegacy.feature.starship.active.ActiveStarship
 import net.starlegacy.feature.starship.control.StarshipCruising
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.util.d
 import org.bukkit.Location
 import org.bukkit.World

@@ -1,8 +1,7 @@
-package net.horizonsend.ion.server.miscellaneous
+package net.horizonsend.ion.server.miscellaneous.utils
 
-import net.horizonsend.ion.common.utils.DoubleLocation
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
-import java.util.EnumSet
+import net.horizonsend.ion.common.utils.DoubleLocation
 import net.horizonsend.ion.server.IonServer
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
@@ -15,15 +14,16 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.monster.Shulker
 import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.level.chunk.ChunkStatus
-import net.starlegacy.util.Tasks
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
-import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 import net.minecraft.world.level.chunk.LevelChunk
+import net.starlegacy.util.Tasks
 import org.bukkit.*
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
+import java.util.*
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider

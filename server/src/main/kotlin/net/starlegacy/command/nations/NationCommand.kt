@@ -1,6 +1,7 @@
 package net.starlegacy.command.nations
 
 import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
@@ -10,7 +11,7 @@ import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.repeatString
+import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -23,7 +24,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.starlegacy.command.SLCommand
 import net.horizonsend.ion.common.database.Oid
@@ -69,6 +69,22 @@ import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
 internal object NationCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		registerAsyncCompletion(manager, "member_settlements") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val nation = PlayerCache[player].nationOid
+
+			SettlementCache.all().filter { nation != null && it.nation == nation }.map { it.name }
+		}
+
+		registerAsyncCompletion(manager, "nations") { _ -> NationCache.all().map { it.name } }
+		registerAsyncCompletion(manager, "outposts") { c ->
+			val player = c.player ?: throw InvalidCommandArgument("Players only")
+			val nation = PlayerCache[player].nationOid
+			Regions.getAllOf<RegionTerritory>().filter { it.nation == nation }.map { it.name }
+		}
+	}
+
 	private fun validateName(name: String, nationId: Oid<Nation>?) {
 		if (!"\\w*".toRegex().matches(name)) {
 			throw InvalidCommandArgument("Name must be alphanumeric")

@@ -1,14 +1,13 @@
 package net.horizonsend.ion.server.miscellaneous.listeners
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.enumSetOf
+import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.starlegacy.feature.misc.CustomItems
 import net.starlegacy.listener.SLEventListener
 import net.starlegacy.util.isShulkerBox
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
@@ -19,8 +18,6 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.RecipeChoice.MaterialChoice
-import org.bukkit.inventory.ShapedRecipe
 
 class CancelListeners : SLEventListener() {
 	private val preventFormBlocks = enumSetOf(

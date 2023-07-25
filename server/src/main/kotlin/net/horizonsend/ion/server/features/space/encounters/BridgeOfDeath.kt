@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
-import net.horizonsend.ion.server.miscellaneous.castSpawnEntity
+import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag

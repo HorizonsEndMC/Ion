@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.miscellaneous.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.starlegacy.feature.starship.PilotedStarships
 import net.starlegacy.feature.starship.StarshipDestruction
 import net.starlegacy.feature.starship.StarshipType.SPEEDER

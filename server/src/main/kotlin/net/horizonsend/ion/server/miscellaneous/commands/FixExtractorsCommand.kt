@@ -1,13 +1,12 @@
 package net.horizonsend.ion.server.miscellaneous.commands
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import com.sk89q.worldedit.WorldEdit
 import net.horizonsend.ion.common.extensions.success
 import net.starlegacy.feature.transport.Extractors
-import net.horizonsend.ion.server.miscellaneous.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.starlegacy.command.SLCommand
 import org.bukkit.entity.Player
 
