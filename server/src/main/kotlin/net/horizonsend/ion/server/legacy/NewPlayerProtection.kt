@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -97,7 +98,7 @@ object NewPlayerProtection : BaseCommand(), Listener {
 	fun onPlayerHurtNoob(event: EntityDamageByEntityEvent) {
 		if (event.entity !is Player || event.damager !is Player) return
 
-		if ((event.entity as Player).hasProtection()) event.damager.alert(
+		if ((event.entity as Player).hasProtection()) event.damager.alertAction(
 				"The player you are attacking has new player protection!\n" +
 					"Attacking them for any reason other than self defense is against the rules"
 			)
