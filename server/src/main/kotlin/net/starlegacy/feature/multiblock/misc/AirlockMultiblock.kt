@@ -44,6 +44,6 @@ object AirlockMultiblock : Multiblock() {
 
 	override fun onTransformSign(player: Player, sign: Sign) = sign.setLine(1, OFF)
 
-	const val OFF = "<red>-[OFF]-"
-	const val ON = "<green>-[ON]-"
+	val OFF = "${ChatColor.RED}-[OFF]-"
+	val ON = "${ChatColor.GREEN}-[ON]-"
 }

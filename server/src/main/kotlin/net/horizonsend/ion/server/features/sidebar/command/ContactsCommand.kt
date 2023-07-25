@@ -14,7 +14,6 @@ import org.litote.kmongo.setTo
 
 @CommandAlias("contacts")
 class ContactsCommand : BaseCommand() {
-
 	@Suppress("unused")
 	@Subcommand("starship")
 	fun onToggleStarship(
