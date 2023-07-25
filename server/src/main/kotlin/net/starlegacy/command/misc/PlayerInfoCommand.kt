@@ -14,6 +14,8 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.miscellaneous.get
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.starlegacy.util.getDurationBreakdown
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -62,7 +64,12 @@ object PlayerInfoCommand : SLCommand() {
 						if (senderNation != null) {
 							val relation: NationRelation.Level = NationRelation.getRelationActual(nationId, senderNation)
 
-							sender.sendMessage(relation.component)
+							sender.sendMessage(
+								text()
+									.append(text("Relation: ", NamedTextColor.GRAY))
+									.append(relation.component)
+									.build()
+							)
 						}
 					}
 				}
