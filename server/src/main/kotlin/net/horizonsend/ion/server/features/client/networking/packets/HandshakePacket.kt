@@ -16,7 +16,7 @@ object HandshakePacket : IonPacketHandler() {
 		VoidNetwork.modUsers.add(player.uniqueId)
 
 		for (id in VoidNetwork.modUsers - player.uniqueId) {
-			Packets.PLAYER_ADD.send(player)
+			Packets.PLAYER_ADD.send(player, id)
 		}
 	}
 
