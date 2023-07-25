@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -103,7 +103,7 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		if (starship?.let { it.serverLevel.world }?.name?.lowercase(Locale.getDefault())
+		if (starship?.serverLevel?.world?.name?.lowercase(Locale.getDefault())
 				?.contains("hyperspace")!!
 		) return false
 		if (GracePeriod.isGracePeriod) return false

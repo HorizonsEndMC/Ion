@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control
 
-import net.horizonsend.ion.server.legacy.commands.GracePeriod
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
