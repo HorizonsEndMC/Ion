@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.listeners
+package net.horizonsend.ion.server.listener.fixers
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf

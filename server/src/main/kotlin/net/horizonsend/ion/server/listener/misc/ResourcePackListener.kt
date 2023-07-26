@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.listeners
+package net.horizonsend.ion.server.listener.misc
 
 import com.google.common.io.BaseEncoding
 import net.horizonsend.ion.common.extensions.serverError

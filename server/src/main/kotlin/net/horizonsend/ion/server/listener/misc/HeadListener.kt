@@ -1,9 +1,8 @@
-package net.horizonsend.ion.server.miscellaneous.listeners
+package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta

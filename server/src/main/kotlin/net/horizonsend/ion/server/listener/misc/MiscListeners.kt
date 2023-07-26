@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.listeners
+package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.SpaceMechanics
