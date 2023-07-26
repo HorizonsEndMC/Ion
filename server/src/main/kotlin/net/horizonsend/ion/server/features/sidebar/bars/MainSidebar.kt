@@ -168,7 +168,10 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 		if (starshipsEnabled) {
 			for (starship in starships) {
-				val vector = starship.centerOfMass.toVector()
+				val vector = when (starship) {
+					is ActivePlayerStarship -> starship.controller?.playerPilot?.location?.toVector() ?: starship.centerOfMass.toVector()
+					else -> starship.centerOfMass.toVector()
+				}
 				val distance = vector.distance(playerVector).toInt()
 				val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
 				val height = vector.y.toInt()
