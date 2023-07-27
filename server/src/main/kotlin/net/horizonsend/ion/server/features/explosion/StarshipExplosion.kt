@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.explosion
 
 import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.event.explosion.StarshipCauseExplosionEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material
 import org.bukkit.World
