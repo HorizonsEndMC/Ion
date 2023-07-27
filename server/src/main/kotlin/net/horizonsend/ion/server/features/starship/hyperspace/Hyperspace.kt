@@ -16,9 +16,9 @@ import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipEnterHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipMoveEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipRotateEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipTranslateEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem

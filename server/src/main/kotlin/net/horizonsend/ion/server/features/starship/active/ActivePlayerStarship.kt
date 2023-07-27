@@ -18,9 +18,9 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
-import net.horizonsend.ion.server.features.starship.event.StarshipMoveEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipRotateEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipTranslateEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
@@ -55,9 +55,9 @@ class ActivePlayerStarship(
 	var lastUnpilotTime: Long = 0
 
 	var pilot: Player?
-		get() = (controller as? PlayerController)?.serverPlayer?.bukkitEntity
+		get() = (controller as? PlayerController)?.playerPilot
 		set(value) {
-			controller = if (value == null) null else LegacyController(value.minecraft, this)
+			controller = if (value == null) null else LegacyController(value, this)
 		}
 
 	var oldpilot: Player? = null
