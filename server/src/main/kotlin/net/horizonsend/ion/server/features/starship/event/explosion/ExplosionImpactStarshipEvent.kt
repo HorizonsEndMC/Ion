@@ -1,14 +1,15 @@
-package net.horizonsend.ion.server.features.explosion
+package net.horizonsend.ion.server.features.starship.event.explosion
 
+import net.horizonsend.ion.server.features.explosion.StarshipExplosion
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import org.bukkit.event.HandlerList
 
 class ExplosionImpactStarshipEvent(
-	originator: Controller,
+	controller: Controller,
 	explosion: StarshipExplosion,
 	val impactedStarship: Starship
-) : StarshipCauseExplosionEvent(originator, explosion) {
+) : StarshipCauseExplosionEvent(controller, explosion) {
 	private var isCancelled: Boolean = false
 
 	override fun getHandlers(): HandlerList {
@@ -18,11 +19,5 @@ class ExplosionImpactStarshipEvent(
 	companion object {
 		@JvmStatic
 		val handlerList = HandlerList()
-	}
-
-	override fun isCancelled(): Boolean = isCancelled
-
-	override fun setCancelled(cancel: Boolean) {
-		isCancelled = cancel
 	}
 }

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.controllers
 
+import net.horizonsend.ion.server.features.explosion.Damager
 import net.horizonsend.ion.server.features.starship.Starship
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
@@ -8,7 +9,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Player
 
-abstract class Controller(val starship: Starship, val name: String) : ForwardingAudience.Single {
+abstract class Controller(val starship: Starship, val name: String) : ForwardingAudience.Single, Damager {
 	abstract val pilotName: Component
 
 	override fun audience(): Audience = Audience.empty()
