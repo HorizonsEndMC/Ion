@@ -37,7 +37,7 @@ data class PlayerStarshipData(
 	var containedChunks: Set<Long>? = null,
 
     var lastUsed: Long = System.currentTimeMillis(),
-    var isLockEnabled: Boolean = false
+    var isLockEnabled: Boolean = true
 ) : DbObject {
 	companion object : OidDbObjectCompanion<PlayerStarshipData>(PlayerStarshipData::class, setup = {
 		ensureIndex(PlayerStarshipData::captain)

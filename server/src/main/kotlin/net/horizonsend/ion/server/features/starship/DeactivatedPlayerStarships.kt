@@ -65,8 +65,13 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
 			val data = PlayerStarshipData(
-				id, captain, type.name,
-				IonServer.configuration.serverName, worldName, blockKey, name = name
+				_id = id,
+				captain = captain,
+				starshipType = type.name,
+				serverName = IonServer.configuration.serverName,
+				levelName = worldName,
+				blockKey = blockKey,
+				name = name
 			)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
