@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.event.StarshipStartCruisingEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipStopCruisingEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

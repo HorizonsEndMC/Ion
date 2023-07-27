@@ -1,6 +1,7 @@
-package net.horizonsend.ion.server.features.starship.event
+package net.horizonsend.ion.server.features.starship.event.movement
 
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.event.PlayerStarshipEvent
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList

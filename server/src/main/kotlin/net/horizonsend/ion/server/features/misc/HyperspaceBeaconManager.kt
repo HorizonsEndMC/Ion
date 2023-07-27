@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.distance

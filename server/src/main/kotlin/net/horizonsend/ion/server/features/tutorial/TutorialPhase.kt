@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipRotateEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipStartCruisingEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipStopCruisingEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipTranslateEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.tutorial.message.ActionMessage
 import net.horizonsend.ion.server.features.tutorial.message.PopupMessage
