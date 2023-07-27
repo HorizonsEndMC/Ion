@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -84,11 +85,18 @@ object IonCommand : SLCommand() {
 }
 
 fun Player.debugBanner(message: String) = debug("------------------- $message -------------------")
-fun Player.debug(message: String) =
+fun Audience.debug(message: String) {
+	if (this !is Player) return
+
 	if (IonCommand.debugEnabledPlayers.contains(uniqueId)) {
 		information(message)
-	} else null
-fun Player.debugRed(message: String) =
+	}
+}
+
+fun Audience.debugRed(message: String) {
+	if (this !is Player) return
+
 	if (IonCommand.debugEnabledPlayers.contains(uniqueId)) {
 		serverError(message)
-	} else null
+	}
+}

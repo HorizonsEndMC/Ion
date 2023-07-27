@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.achievements
 
-import net.horizonsend.ion.server.events.EnterPlanetEvent
+import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
