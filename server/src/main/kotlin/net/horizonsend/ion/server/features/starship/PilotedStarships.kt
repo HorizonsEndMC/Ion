@@ -87,7 +87,7 @@ object PilotedStarships : IonServerComponent() {
 		starship.shields
 			.distinctBy(ShieldSubsystem::name)
 			.associateByTo(starship.shieldBars, ShieldSubsystem::name) { shield: ShieldSubsystem ->
-				// create the actualStyle boss bar
+				// create the actual boss bar
 				val bar: BossBar = Bukkit.createBossBar(shield.name, BarColor.GREEN, BarStyle.SEGMENTED_10)
 				if (shield.isReinforcementActive()) bar.color = BarColor.PURPLE
 				// add all passengers
@@ -161,7 +161,7 @@ object PilotedStarships : IonServerComponent() {
 
 			return false
 		}
-		if (!data.starshipType.actualType.canUse(player)) {
+		if (!data.starshipType.actual.canUse(player)) {
 			player.userErrorActionMessage("You are not high enough level to pilot this!")
 			return false
 		}
@@ -313,12 +313,12 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun getDisplayName(data: PlayerStarshipData): String {
-		return data.name ?: data.starshipType.actualType.formatted
+		return data.name ?: data.starshipType.actual.formatted
 	}
 
 	fun getDisplayNameComponent(data: PlayerStarshipData): Component = data.name?.let {
 		MiniMessage.miniMessage().deserialize(it)
-	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.actualType.formatted)
+	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.actual.formatted)
 
 	fun getRawDisplayName(data: PlayerStarshipData): String {
 		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()

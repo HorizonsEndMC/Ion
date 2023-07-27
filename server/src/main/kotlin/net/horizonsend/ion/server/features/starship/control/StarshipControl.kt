@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -281,8 +280,8 @@ object StarshipControl : IonServerComponent() {
 		starship.sneakMovements++
 		val sneakMovements = starship.sneakMovements
 
-		val maxAccel = starship.data.starshipType.actualType.maxSneakFlyAccel
-		val accelDistance = starship.data.starshipType.actualType.sneakFlyAccelDistance
+		val maxAccel = starship.data.starshipType.actual.maxSneakFlyAccel
+		val accelDistance = starship.data.starshipType.actual.sneakFlyAccelDistance
 
 		val yawRadians = Math.toRadians(pilot.location.yaw.toDouble())
 		val pitchRadians = Math.toRadians(pilot.location.pitch.toDouble())

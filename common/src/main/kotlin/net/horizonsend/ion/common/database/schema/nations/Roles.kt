@@ -48,7 +48,7 @@ abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T 
     clazz: KClass<T>,
     val parentProperty: KProperty<Oid<Parent>>,
     val nameProperty: KProperty<String>,
-    val colorProperty: KProperty<String>,
+    val colorProperty: KProperty<SLTextStyleDB>,
     val permissionsProperty: KProperty<Set<Permission>>,
     val membersProperty: KProperty<MutableSet<SLPlayerId>>,
     val weightProperty: KProperty<Int>,
@@ -61,9 +61,9 @@ abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T 
 }) {
 	fun nameQuery(name: String): Bson = Filters.regex("name", "^$name$", "i")
 
-	protected abstract fun new(parent: Oid<Parent>, name: String, color: String, weight: Int): T
+	protected abstract fun new(parent: Oid<Parent>, name: String, color: SLTextStyleDB, weight: Int): T
 
-	fun create(parent: Oid<Parent>, name: String, color: String, weight: Int): Oid<T> {
+	fun create(parent: Oid<Parent>, name: String, color: SLTextStyleDB, weight: Int): Oid<T> {
 		// require is alphanumeric and none for the same parent w/ same name (ignoring case)
 		require(none(and(parentProperty eq parent, nameQuery(name))))
 
@@ -141,7 +141,7 @@ data class SettlementRole(
 		SettlementRole::weight,
 		SLPlayer::settlement
 	) {
-		override fun new(parent: Oid<Settlement>, name: String, color: String, weight: Int): SettlementRole {
+		override fun new(parent: Oid<Settlement>, name: String, color: SLTextStyleDB, weight: Int): SettlementRole {
 			return SettlementRole(objId(), parent, name, color, weight)
 		}
 	}
@@ -184,7 +184,7 @@ data class NationRole(
 		NationRole::weight,
 		SLPlayer::nation
 	) {
-		override fun new(parent: Oid<Nation>, name: String, color: String, weight: Int): NationRole {
+		override fun new(parent: Oid<Nation>, name: String, color: SLTextStyleDB, weight: Int): NationRole {
 			return NationRole(objId(), parent, name, color, weight)
 		}
 	}

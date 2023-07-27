@@ -100,7 +100,7 @@ object DefuseBomb: Encounter(identifier = "defuse_bomb") {
 
 			// explosion
 			if (timeLimit * 20 == iteration) {
-				val explosionRadius = 15.0 // For spawning actualStyle explosions
+				val explosionRadius = 15.0 // For spawning actual explosions
 				val explosionDamage = 100.0
 				val explosionDamageRadius = 30.0 // For entity damage calculation
 				targetedBlock.location.spherePoints(explosionRadius / 2, 10).forEach {

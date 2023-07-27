@@ -1,16 +1,13 @@
 package net.horizonsend.ion.server.command.nations.roles
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.*
 import java.sql.Timestamp
 import java.util.UUID
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Role
 import net.horizonsend.ion.common.database.schema.nations.RoleCompanion
-import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.features.nations.gui.editRoleGUI
 import net.horizonsend.ion.server.features.nations.gui.editRolePermissionGUI
 import net.horizonsend.ion.server.features.nations.gui.guiButton
@@ -24,10 +21,7 @@ import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.litote.kmongo.addToSet
-import org.litote.kmongo.and
-import org.litote.kmongo.eq
-import org.litote.kmongo.pull
+import org.litote.kmongo.*
 
 /** Abstract role command logic class, has the logic but not the command description/tab completions due to ACF's restrictions */
 internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>> :
@@ -125,7 +119,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 					playerClicker.performCommand("$name edit $roleName")
 				}.name(role.coloredName).lore(
 					"Weight: ${role.weight}",
-					"Color: ${role.color.actualStyle.name}",
+					"Color: ${role.color.actual.name}",
 					"Members: ${role.members.size}",
 					"Permissions:",
 					role.permissions.joinToString("\n")
@@ -146,7 +140,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		validateColor(color)
 		validateWeight(sender, weight, parent)
 
-		roleCompanion.create(parent, name, color.name, weight)
+		roleCompanion.create(parent, name, SLTextStyleDB(color.name), weight)
 
 		sender msg "&3Created role $name"
 	}
@@ -156,7 +150,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		val roleData: T = requireManageableRole(sender, parent, role)
 
 		Tasks.sync {
-			editRoleGUI(sender, this.name, roleData.name, roleData.color.actualStyle, roleData.weight)
+			editRoleGUI(sender, this.name, roleData.name, roleData.color.actual, roleData.weight)
 		}
 	}
 
@@ -165,7 +159,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		val roleData: T = requireManageableRole(sender, parent, role)
 
 		Tasks.sync {
-			editRolePermissionGUI(sender, name, roleData.name, roleData.color.actualStyle, roleData.permissions, allPermissions)
+			editRolePermissionGUI(sender, name, roleData.name, roleData.color.actual, roleData.permissions, allPermissions)
 		}
 	}
 
@@ -207,7 +201,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		validateName(parent, newName)
 
-		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.nameProperty, newName))
+		roleCompanion.updateById(getId(roleData), setValue(roleCompanion.nameProperty, newName))
 
 		sender msg "&aRenamed ${roleData.name} to $newName"
 	}
@@ -218,9 +212,9 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		validateColor(newColor)
 
-		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.colorProperty, newColor.name))
+		roleCompanion.updateById(getId(roleData), setValue(roleCompanion.colorProperty, SLTextStyleDB(newColor.name)))
 
-		sender msg "&aChanged color of ${roleData.name} from ${roleData.color.actualStyle.name} to ${newColor.name}"
+		sender msg "&aChanged color of ${roleData.name} from ${roleData.color.actual.name} to ${newColor.name}"
 	}
 
 	open fun onEditWeight(sender: Player, role: String, newWeight: Int) = asyncCommand(sender) {
@@ -229,7 +223,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		validateWeight(sender, newWeight, parent)
 
-		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.weightProperty, newWeight))
+		roleCompanion.updateById(getId(roleData), setValue(roleCompanion.weightProperty, newWeight))
 
 		sender msg "&aChanged weight of ${roleData.name} from ${roleData.weight} to $newWeight"
 	}

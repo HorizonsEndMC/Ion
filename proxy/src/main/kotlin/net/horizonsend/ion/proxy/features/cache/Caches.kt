@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent
 import com.velocitypowered.api.event.player.ServerPreConnectEvent
 import com.velocitypowered.api.proxy.Player
 import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.cache.Cache
 import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
@@ -61,7 +62,7 @@ object PlayerCache : AbstractPlayerCache() {
 	override fun kickUUID(uuid: UUID, msg: String): Unit =
 		IonProxy.proxy.getPlayer(uuid).getOrNull()?.disconnect(miniMessage().deserialize(msg))!!
 
-	override fun getColoredTag(nameColorPair: Pair<String, String>?): String? {
+	override fun getColoredTag(nameColorPair: Pair<String, SLTextStyleDB>?): String? {
 		return nameColorPair?.first //TODO: Find an actual solution
 	}
 

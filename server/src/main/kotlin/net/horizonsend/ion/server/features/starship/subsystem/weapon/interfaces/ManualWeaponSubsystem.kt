@@ -6,7 +6,7 @@ import org.bukkit.util.Vector
 
 interface ManualWeaponSubsystem {
 	/**
-	 * Does the actualStyle firing of the weapon, does not use power or check for collision
+	 * Does the actual firing of the weapon, does not use power or check for collision
 	 */
 	fun manualFire(shooter: Controller, dir: Vector, target: Vector)
 

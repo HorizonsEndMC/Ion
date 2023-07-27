@@ -168,7 +168,7 @@ object StarshipDetection : IonServerComponent() {
 			if (maxZ == null || maxZ < z) maxZ = z
 		}
 
-		val type = data.starshipType.actualType
+		val type = data.starshipType.actual
 
 		// Validate the size
 		val size = blockTypes.size

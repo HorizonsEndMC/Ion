@@ -11,6 +11,7 @@ import com.mongodb.client.model.CollationStrength
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.result.UpdateResult
+import kotlinx.serialization.Serializable
 import java.util.UUID
 import kotlin.collections.set
 import kotlin.reflect.KProperty
@@ -34,8 +35,10 @@ import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.litote.kmongo.withDocumentClass
 
-typealias SLTextStyleDB = String
-typealias StarshipTypeDB = String
+@JvmInline
+value class SLTextStyleDB(val backing: String)
+@JvmInline @Serializable
+value class StarshipTypeDB(val backing: String)
 
 /** Runs code with multi document transaction, only things that use the clientsession use the transaction,
  * can throw error from concurrency, if the code must retry upon write concern then use trx */

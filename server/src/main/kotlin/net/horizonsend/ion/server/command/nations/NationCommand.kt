@@ -644,9 +644,9 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val leaderRoleComp = leaderRole?.let { leader ->
 			text(leader.name).color(
 				color(
-					leader.color.actualStyle.wrappedColor.color.red,
-					leader.color.actualStyle.wrappedColor.color.green,
-					leader.color.actualStyle.wrappedColor.color.blue
+					leader.color.actual.wrappedColor.color.red,
+					leader.color.actual.wrappedColor.color.green,
+					leader.color.actual.wrappedColor.color.blue
 				)
 			)
 		} ?: text()

@@ -24,8 +24,8 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.*
 
-val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
-val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
+val SLTextStyleDB.actual get() = SLTextStyle.valueOf(backing)
+val StarshipTypeDB.actual get() = StarshipType.valueOf(backing)
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
 
@@ -56,7 +56,7 @@ fun Blueprint.Companion.get(owner: SLPlayerId, name: String): Blueprint? {
 }
 
 fun Blueprint.Companion.create(owner: SLPlayerId, name: String, type: StarshipType, pilotLoc: Vec3i, size: Int, data: String) {
-	Blueprint.col.insertOne(Blueprint(objId(), owner, name, type.name, pilotLoc, size, data))
+	Blueprint.col.insertOne(Blueprint(objId(), owner, name, StarshipTypeDB(type.name), pilotLoc, size, data))
 }
 
 fun Blueprint.loadClipboard(): Clipboard {

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.cache
 
+import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.cache.Cache
 import net.horizonsend.ion.common.database.cache.nations.*
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
@@ -8,8 +9,8 @@ import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.miscellaneous.utils.actual
 import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -49,11 +50,11 @@ object PlayerCache : AbstractPlayerCache() {
 		}
 	}
 
-	override fun getColoredTag(nameColorPair: Pair<String, String>?): String? {
+	override fun getColoredTag(nameColorPair: Pair<String, SLTextStyleDB>?): String? {
 		if (nameColorPair?.first == null)
 			return null
 
-		return "${nameColorPair.second.actualStyle.wrappedColor}${nameColorPair.first}"
+		return "${nameColorPair.second.actual.wrappedColor}${nameColorPair.first}"
 	}
 
 	override fun onlinePlayerIds(): List<SLPlayerId> =
