@@ -55,7 +55,7 @@ dependencies {
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.0.0-RC10")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.0.0-RC8")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.0.0-RC8")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-v1_19_R3:2.0.0-RC8")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-v1_19_R3:2.0.0-RC10")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
