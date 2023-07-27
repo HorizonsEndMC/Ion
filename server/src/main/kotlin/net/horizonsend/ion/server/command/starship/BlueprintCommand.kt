@@ -96,7 +96,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			failIf(Blueprint.count(Blueprint::owner eq slPlayerId) > getMaxBlueprints(sender)) {
 				"You can only have up to ${getMaxBlueprints(sender)} blueprints."
 			}
-			Blueprint.create(slPlayerId, name, StarshipType.valueOf(starship.data.starshipType), pilotLoc, starship.initialBlockCount, data)
+			Blueprint.create(slPlayerId, name, starship.data.starshipType.actualType, pilotLoc, starship.initialBlockCount, data)
 			sender.success("Saved blueprint $name")
 		} else {
 			val blueprint = getBlueprint(sender, name)
@@ -166,7 +166,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 		MenuHelper.apply {
 			val items: List<GuiItem> = blueprints.map { blueprint ->
-				guiButton(StarshipType.valueOf(blueprint.type).menuItem) {
+				guiButton(blueprint.type.actualType.menuItem) {
 					playerClicker.closeInventory()
 					Tasks.async { showMaterials(playerClicker, blueprint) }
 				}.setName(blueprint.name).setRichLore(blueprintInfo(blueprint))
@@ -206,7 +206,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			checkObstruction(sender, schematic, Vec3i(pilotLoc))
 
 			loadSchematic(sender, schematic, Vec3i(pilotLoc)) { origin ->
-				tryPilot(sender, origin, StarshipType.valueOf(blueprint.type), blueprint.name)
+				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name)
 			}
 		}
 	}
@@ -224,7 +224,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			checkObstruction(sender, schematic, Vec3i(pilotLoc))
 
 			loadSchematic(sender, schematic, Vec3i(pilotLoc)) { origin ->
-				tryPilot(sender, origin, StarshipType.valueOf(blueprint.type), blueprint.name) { starship ->
+				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name) { starship ->
 
 					starship.iterateBlocks { x, y, z ->
 						val block = starship.serverLevel.world.getBlockAt(x, y, z)

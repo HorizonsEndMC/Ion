@@ -1,11 +1,8 @@
 package net.horizonsend.ion.common.database.schema.starships
 
-import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.OidDbObjectCompanion
+import net.horizonsend.ion.common.database.*
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.utils.DBVec3i
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -15,7 +12,7 @@ data class Blueprint(
 	override val _id: Oid<Blueprint>,
 	var owner: SLPlayerId,
 	var name: String,
-	var type: String,
+	var type: StarshipTypeDB,
 	var pilotLoc: DBVec3i,
 	var size: Int,
 	var blockData: String, // base64 representation of the schematic

@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
+import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -53,7 +53,7 @@ object PlayerCache : AbstractPlayerCache() {
 		if (nameColorPair?.first == null)
 			return null
 
-		return "${SLTextStyle.valueOf(nameColorPair.second).wrappedColor}${nameColorPair.first}"
+		return "${nameColorPair.second.actualStyle.wrappedColor}${nameColorPair.first}"
 	}
 
 	override fun onlinePlayerIds(): List<SLPlayerId> =

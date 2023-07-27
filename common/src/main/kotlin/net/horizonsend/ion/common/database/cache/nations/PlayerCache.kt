@@ -184,7 +184,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		PLAYER_DATA[id.uuid] = PlayerData(id, data.xp, data.level, settlement, nation, settlementTag, nationTag)
 	}
 
-	abstract fun getColoredTag(nameColorPair: Pair<String, String>?): String?
+	abstract fun getColoredTag(nameColorPair: Pair<String, SLTextStyleDB>?): String?
 
 	operator fun get(playerId: UUID): PlayerData = PLAYER_DATA[playerId]
 		?: error("Data wasn't cached for $playerId")

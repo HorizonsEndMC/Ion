@@ -74,7 +74,7 @@ object CityNpcCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val npc = requireNearbyNPC(sender)
 
 		CityNPC.delete(npc._id)
-		CityNPCs.synchronizeNPCsAsync() // update the actual npc
+		CityNPCs.synchronizeNPCsAsync() // update the actualStyle npc
 
 		sender.success("Deleted NPC!")
 	}

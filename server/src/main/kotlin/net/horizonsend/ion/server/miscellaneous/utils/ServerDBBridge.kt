@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import net.horizonsend.ion.common.database.SLTextStyleDB
+import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -21,6 +23,9 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import java.util.*
+
+val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
+val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
 

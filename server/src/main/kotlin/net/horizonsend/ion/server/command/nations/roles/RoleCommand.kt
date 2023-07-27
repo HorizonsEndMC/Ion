@@ -125,7 +125,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 					playerClicker.performCommand("$name edit $roleName")
 				}.name(role.coloredName).lore(
 					"Weight: ${role.weight}",
-					"Color: ${SLTextStyle.valueOf(role.color).name}",
+					"Color: ${role.color.actualStyle.name}",
 					"Members: ${role.members.size}",
 					"Permissions:",
 					role.permissions.joinToString("\n")
@@ -156,7 +156,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		val roleData: T = requireManageableRole(sender, parent, role)
 
 		Tasks.sync {
-			editRoleGUI(sender, this.name, roleData.name, SLTextStyle.valueOf(roleData.color), roleData.weight)
+			editRoleGUI(sender, this.name, roleData.name, roleData.color.actualStyle, roleData.weight)
 		}
 	}
 
@@ -165,7 +165,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 		val roleData: T = requireManageableRole(sender, parent, role)
 
 		Tasks.sync {
-			editRolePermissionGUI(sender, name, roleData.name, SLTextStyle.valueOf(roleData.color), roleData.permissions, allPermissions)
+			editRolePermissionGUI(sender, name, roleData.name, roleData.color.actualStyle, roleData.permissions, allPermissions)
 		}
 	}
 
@@ -220,7 +220,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		roleCompanion.updateById(getId(roleData), org.litote.kmongo.setValue(roleCompanion.colorProperty, newColor.name))
 
-		sender msg "&aChanged color of ${roleData.name} from ${SLTextStyle.valueOf(roleData.color).name} to ${newColor.name}"
+		sender msg "&aChanged color of ${roleData.name} from ${roleData.color.actualStyle.name} to ${newColor.name}"
 	}
 
 	open fun onEditWeight(sender: Player, role: String, newWeight: Int) = asyncCommand(sender) {

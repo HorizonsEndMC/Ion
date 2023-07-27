@@ -4,16 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
@@ -177,7 +168,7 @@ object StarshipDetection : IonServerComponent() {
 			if (maxZ == null || maxZ < z) maxZ = z
 		}
 
-		val type = StarshipType.valueOf(data.starshipType)
+		val type = data.starshipType.actualType
 
 		// Validate the size
 		val size = blockTypes.size

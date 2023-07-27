@@ -49,7 +49,7 @@ class ActivePlayerStarship(
 	hitbox
 ) {
 	val carriedShips: MutableMap<PlayerStarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
-	override val type: StarshipType = StarshipType.valueOf(data.starshipType)
+	override val type: StarshipType = data.starshipType.actualType
 	override val interdictionRange: Int = type.interdictionRange
 
 	var lastUnpilotTime: Long = 0

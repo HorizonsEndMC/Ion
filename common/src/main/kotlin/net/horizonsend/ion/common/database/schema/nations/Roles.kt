@@ -2,17 +2,12 @@ package net.horizonsend.ion.common.database.schema.nations
 
 import com.mongodb.client.MongoIterable
 import com.mongodb.client.model.Filters
+import net.horizonsend.ion.common.database.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
-import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.OidDbObjectCompanion
-import net.horizonsend.ion.common.database.objId
-import net.horizonsend.ion.common.database.projected
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.trx
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bson.Document
 import org.bson.conversions.Bson
@@ -41,7 +36,7 @@ sealed class Role<Parent : DbObject, Permission : Enum<Permission>> :
 	abstract override val _id: Oid<*>
 	abstract val parent: Oid<Parent>
 	abstract var name: String
-	abstract var color: String
+	abstract var color: SLTextStyleDB
 	abstract var weight: Int
 	abstract val permissions: MutableSet<Permission>
 	abstract val members: MutableSet<SLPlayerId>
@@ -109,7 +104,7 @@ abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T 
 		.sort(descending(weightProperty))
 		.firstOrNull()
 
-	fun getTag(playerId: SLPlayerId): Pair<String, String>? = col.withDocumentClass<Document>()
+	fun getTag(playerId: SLPlayerId): Pair<String, SLTextStyleDB>? = col.withDocumentClass<Document>()
 		.find(membersProperty contains playerId)
 		.sort(descending(weightProperty))
 		.projection(colorProperty, nameProperty)
@@ -131,7 +126,7 @@ data class SettlementRole(
     override val _id: Oid<SettlementRole>,
     override val parent: Oid<Settlement>,
     override var name: String,
-    override var color: String,
+    override var color: SLTextStyleDB,
     override var weight: Int,
     override var permissions: MutableSet<Permission> = mutableSetOf(),
     override var members: MutableSet<SLPlayerId> = mutableSetOf()
@@ -174,7 +169,7 @@ data class NationRole(
     override val _id: Oid<NationRole>,
     override val parent: Oid<Nation>,
     override var name: String,
-    override var color: String,
+    override var color: SLTextStyleDB,
     override var weight: Int,
     override var permissions: MutableSet<Permission> = mutableSetOf(),
     override var members: MutableSet<SLPlayerId> = mutableSetOf()

@@ -1,10 +1,7 @@
 package net.horizonsend.ion.common.database.schema.starships
 
-import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.OidDbObjectCompanion
+import net.horizonsend.ion.common.database.*
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.slPlayerId
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -24,7 +21,7 @@ data class PlayerStarshipData(
     /** Player UUID of the captain of the ship */
 	var captain: SLPlayerId,
 
-    var starshipType: String,
+    var starshipType: StarshipTypeDB,
 
     var serverName: String?,
     var levelName: String,

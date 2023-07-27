@@ -34,6 +34,9 @@ import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.litote.kmongo.withDocumentClass
 
+typealias SLTextStyleDB = String
+typealias StarshipTypeDB = String
+
 /** Runs code with multi document transaction, only things that use the clientsession use the transaction,
  * can throw error from concurrency, if the code must retry upon write concern then use trx */
 fun <T> session(transactional: (ClientSession) -> T): T {

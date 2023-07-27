@@ -37,12 +37,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsyste
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.common.redis
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.parseData
-import net.horizonsend.ion.server.miscellaneous.utils.distance
-import net.horizonsend.ion.server.miscellaneous.utils.normalize
-import net.horizonsend.ion.server.miscellaneous.utils.randomInt
-import net.horizonsend.ion.server.miscellaneous.utils.toVector
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -130,7 +125,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
-			(navComp.multiblock.baseRange * StarshipType.valueOf(starship.data.starshipType).hyperspaceRangeMultiplier).roundToInt()
+			(navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier).roundToInt()
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -155,7 +150,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
-			(navComp.multiblock.baseRange * StarshipType.valueOf(starship.data.starshipType).hyperspaceRangeMultiplier).roundToInt()
+			(navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier).roundToInt()
 
 		val destinationPos = Space.getPlanet(destination)?.let {
 			Pos(

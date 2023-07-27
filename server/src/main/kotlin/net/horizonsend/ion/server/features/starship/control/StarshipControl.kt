@@ -281,8 +281,8 @@ object StarshipControl : IonServerComponent() {
 		starship.sneakMovements++
 		val sneakMovements = starship.sneakMovements
 
-		val maxAccel = StarshipType.valueOf(starship.data.starshipType).maxSneakFlyAccel
-		val accelDistance = StarshipType.valueOf(starship.data.starshipType).sneakFlyAccelDistance
+		val maxAccel = starship.data.starshipType.actualType.maxSneakFlyAccel
+		val accelDistance = starship.data.starshipType.actualType.sneakFlyAccelDistance
 
 		val yawRadians = Math.toRadians(pilot.location.yaw.toDouble())
 		val pitchRadians = Math.toRadians(pilot.location.pitch.toDouble())

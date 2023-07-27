@@ -24,16 +24,8 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.common.redis
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
-import net.horizonsend.ion.server.miscellaneous.utils.createData
-import net.horizonsend.ion.server.miscellaneous.utils.isPilot
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -95,7 +87,7 @@ object PilotedStarships : IonServerComponent() {
 		starship.shields
 			.distinctBy(ShieldSubsystem::name)
 			.associateByTo(starship.shieldBars, ShieldSubsystem::name) { shield: ShieldSubsystem ->
-				// create the actual boss bar
+				// create the actualStyle boss bar
 				val bar: BossBar = Bukkit.createBossBar(shield.name, BarColor.GREEN, BarStyle.SEGMENTED_10)
 				if (shield.isReinforcementActive()) bar.color = BarColor.PURPLE
 				// add all passengers
@@ -169,7 +161,7 @@ object PilotedStarships : IonServerComponent() {
 
 			return false
 		}
-		if (!StarshipType.valueOf(data.starshipType).canUse(player)) {
+		if (!data.starshipType.actualType.canUse(player)) {
 			player.userErrorActionMessage("You are not high enough level to pilot this!")
 			return false
 		}
@@ -321,12 +313,12 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun getDisplayName(data: PlayerStarshipData): String {
-		return data.name ?: StarshipType.valueOf(data.starshipType).formatted
+		return data.name ?: data.starshipType.actualType.formatted
 	}
 
 	fun getDisplayNameComponent(data: PlayerStarshipData): Component = data.name?.let {
 		MiniMessage.miniMessage().deserialize(it)
-	} ?: MiniMessage.miniMessage().deserialize(StarshipType.valueOf(data.starshipType).formatted)
+	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.actualType.formatted)
 
 	fun getRawDisplayName(data: PlayerStarshipData): String {
 		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()
