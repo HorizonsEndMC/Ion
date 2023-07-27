@@ -51,7 +51,7 @@ object StarshipWeapons {
 	fun fireQueuedShots(queuedShots: List<QueuedShot>, ship: ActiveStarship) {
 		val boostPower = AtomicDouble(0.0)
 		val pilot =
-			if (ship.controller is PlayerController) (ship.controller as PlayerController).serverPlayer.bukkitEntity.player else null
+			if (ship.controller is PlayerController) (ship.controller as PlayerController).playerPilot else null
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
 			pilot?.debug("we have heavy weapons")
@@ -134,8 +134,7 @@ object StarshipWeapons {
 		}
 
 		if (!isPowerAvailable(weapon, boostPower)) {
-			(if (ship.controller is PlayerController) (ship.controller as PlayerController).serverPlayer.bukkitEntity.player else null)
-				?.debug("out of power")
+			ship.controller?.debug("out of power")
 			return true
 		}
 
