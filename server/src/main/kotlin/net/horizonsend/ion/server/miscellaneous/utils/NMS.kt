@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import net.minecraft.world.item.ItemStack as MinecraftItemStack
+import net.minecraft.world.level.block.Block as MinecraftBlock
+import org.bukkit.block.Block as BukkitBlock
+import org.bukkit.inventory.ItemStack as BukkitItemStack
 import net.minecraft.core.BlockPos
 import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
@@ -15,10 +18,6 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.craftbukkit.v1_19_R3.block.data.CraftBlockData
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
-import net.minecraft.world.item.ItemStack as MinecraftItemStack
-import net.minecraft.world.level.block.Block as MinecraftBlock
-import org.bukkit.block.Block as BukkitBlock
-import org.bukkit.inventory.ItemStack as BukkitItemStack
 
 //region Access Extensions
 inline val BlockData.nms: BlockState get() = (this as CraftBlockData).state
@@ -82,22 +81,10 @@ fun getNMSBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockState? {
 	}
 }
 
-/**
- * Will attempt to get the block in a thread safe manner.
- * If the chunk is not loaded or it's outside of the valid Y range, will return null.
- */
-fun getNMSBlockDataSafe(world: ServerLevel, x: Int, y: Int, z: Int): BlockState? {
-	if (y < world.minBuildHeight || y > world.maxBuildHeight) {
-		return null
-	}
+fun getNMSBlockDataSafe(world: World, pos: BlockPos): BlockState? {
+	val (x, y, z) = pos
 
-	return try {
-		val chunk: LevelChunk = world.getChunkIfLoaded(x shr 4, z shr 4) ?: return null
-
-		chunk.getBlockState(x and 15, y, z and 15)
-	} catch (indexOutOfBounds: IndexOutOfBoundsException) {
-		null
-	}
+	return getNMSBlockDataSafe(world, x, y, z)
 }
 
 fun MinecraftBlock.isAir(): Boolean = this == Blocks.AIR || this == Blocks.CAVE_AIR || this == Blocks.VOID_AIR || this == Blocks.LIGHT
