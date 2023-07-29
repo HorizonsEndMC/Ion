@@ -230,6 +230,11 @@ object CombatNPCs : IonServerComponent(true) {
 			npc.destroy()
 			combatNpcRegistry.deregister(npc)
 		}
+
+	/** Bukkit treats NPCs as Player **/
+	fun Player.isCombatNpc() : Boolean {
+		return combatNpcRegistry.isNPC(this)
+	}
 }
 
 class CombatNPCKillEvent(val id: UUID, val name: String, val killer: Entity?) : Event() {
