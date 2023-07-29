@@ -130,6 +130,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 	fun onPlayerJumpEvent(event: PlayerJumpEvent) {
 		if (event.player.inventory.itemInMainHand.type != Material.CLOCK) return
 
+		event.isCancelled = true
 		tryAscend(event.player)
 	}
 
