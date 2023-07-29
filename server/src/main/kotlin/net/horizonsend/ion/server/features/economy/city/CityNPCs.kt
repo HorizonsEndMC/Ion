@@ -8,10 +8,10 @@ import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
@@ -196,4 +196,8 @@ object CityNPCs : IonServerComponent(true) {
 			CitizensAPI.removeNamedNPCRegistry("trade-city-npcs")
 		}
 	}
+
+	fun Player.isCityNpc() = citizensRegistry.isNPC(this)
+
+	fun Player.isNpc() = CitizensAPI.getNPCRegistries().any { it.isNPC(this) }
 }
