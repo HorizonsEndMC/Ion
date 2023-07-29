@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.economy.city.CityNPCs.isNpc
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -107,6 +108,8 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	}
 
 	fun Player.hasProtection(): Boolean {
+		if (this.isNpc()) return false
+
 		val player = PlayerCache[this]
 		val playerLevel = PlayerXPLevelCache[this]
 
@@ -161,8 +164,8 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		if (event.entity !is Player || event.damager !is Player) return
 
 		if ((event.entity as Player).hasProtection()) event.damager.alertAction(
-				"The player you are attacking has new player protection!\n" +
-					"Attacking them for any reason other than self defense is against the rules"
-			)
+			"The player you are attacking has new player protection!\n" +
+				"Attacking them for any reason other than self defense is against the rules"
+		)
 	}
 }
