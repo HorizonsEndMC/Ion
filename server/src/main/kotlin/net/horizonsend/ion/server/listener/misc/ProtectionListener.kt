@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
+import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.command.nations.SpaceStationCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -109,12 +110,15 @@ object ProtectionListener : SLEventListener() {
 
 	private fun isLockedShipDenied(player: Player, location: Location): Boolean {
 		if (SpaceStationCommand.disallowedWorlds.contains(location.world.name.lowercase())) return false
+		if (player.uniqueId.lpHasPermission("ion.bypass-locks")) return false
+
 		val world = location.world
 		val x = location.blockX
 		val y = location.blockY
 		val z = location.blockZ
 		val data = DeactivatedPlayerStarships.getLockedContaining(world, x, y, z)
 			?: return false
+
 		return !data.isPilot(player)
 	}
 

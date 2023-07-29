@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -28,7 +29,7 @@ import kotlin.math.pow
 
 @CommandAlias("removeprotection")
 object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
-	private val lpUserManager = LuckPermsProvider.get().userManager
+	private val lpUserManager = luckPerms.userManager
 
 	private val protectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()

@@ -117,5 +117,3 @@ class IonProxyPlugin @Inject constructor(
 		lateinit var INSTANCE: IonProxyPlugin
 	}
 }
-
-fun Player.lpHasPermission(s: String) = luckPerms.userManager.getUser(uniqueId)?.cachedData?.permissionData?.checkPermission(s)?.asBoolean() == true

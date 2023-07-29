@@ -17,6 +17,7 @@ import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.features.nations.utils.hover
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -40,7 +41,6 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 				)
 			}
 
-			val luckPerms = LuckPermsProvider.get()
 			val group = luckPerms.groupManager.getGroup("noglobal")
 
 			if (group != null) {
@@ -251,7 +251,6 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 		private val globalAction = { message: NormalChatMessage ->
 			val component = message.buildChatComponent()
 
-			val luckPerms = LuckPermsProvider.get()
 			val node = luckPerms.groupManager.getGroup("noglobal")?.let {
 				luckPerms.nodeBuilderRegistry.forInheritance().group(it).value(true).build()
 			}
