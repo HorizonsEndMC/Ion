@@ -1,16 +1,18 @@
 package net.horizonsend.ion.server.features.multiblock.misc
 
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.Multiblock
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyBlockUtils
+import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -49,70 +51,68 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		tryDescend(player)
 	}
 
-	fun tryDescend(player: Player) {
+	private fun tryDescend(player: Player) {
 		val below = player.location.block.getRelative(BlockFace.DOWN)
 
 		if (below.type != Material.GLASS && !below.type.isStainedGlass) return
-		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
-			val sign = below.getRelative(face, 2)
-			if (!sign.type.isWallSign) continue
 
-			if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
+		var distance = 1
+		val maxDistance = below.y - 1
 
-			var distance = 1
-			val maxDistance = below.y - 1
-
-			while (distance < maxDistance) {
-				val relative = below.getRelative(BlockFace.DOWN, distance)
-
-				if (relative.type != Material.AIR) {
-					break
-				}
-
-				distance++
-			}
-
-			if (distance < 3) return
-
+		while (distance < maxDistance) {
 			val relative = below.getRelative(BlockFace.DOWN, distance)
-			if (relative.type != Material.AIR) {
-				player.teleport(
-					relative.location.add(0.5, 1.5, 0.5),
-					TeleportCause.PLUGIN,
-					*TeleportFlag.Relative.values()
-				)
 
-				return
+			if (relative.type != Material.AIR) {
+				break
 			}
+
+			distance++
 		}
+
+		if (distance < 3) return
+
+		val block = below.getRelative(BlockFace.DOWN, distance)
+
+		if (!checkMultiblock(block)) return
+
+		player.teleport(
+			block.location.add(0.5, 1.5, 0.5),
+			TeleportCause.PLUGIN,
+			*TeleportFlag.Relative.values()
+		)
 	}
 
-	fun tryAscend(player: Player) {
+	private fun tryAscend(player: Player) {
 		val blockStandingIn = player.location.block
 
 		for (i in player.world.minHeight..(player.world.maxHeight - blockStandingIn.y)) {
 			val block = blockStandingIn.getRelative(BlockFace.UP, i)
 			if (block.type == Material.AIR) continue
 
-			if (block.type == Material.GLASS || block.type.isStainedGlass) {
-				for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
-					val sign = block.getRelative(face, 2)
-					if (!sign.type.isWallSign) continue
+			if (!block.type.isGlass) continue
 
-					if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
+			if (!checkMultiblock(block)) continue
 
-					player.teleport(
-						block.location.add(0.5, 1.5, 0.5),
-						TeleportCause.PLUGIN,
-						*TeleportFlag.Relative.values()
-					)
-				}
-
-				continue
-			}
-
-			return
+			player.teleport(
+				block.location.add(0.5, 1.5, 0.5),
+				TeleportCause.PLUGIN,
+				*TeleportFlag.Relative.values()
+			)
 		}
+	}
+
+	/** From the glass block, check if it is part of a valid tractor beam **/
+	private fun checkMultiblock(block: Block): Boolean {
+		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
+			val sign = block.getRelative(face, 2)
+			if (!sign.type.isWallSign) continue
+
+			if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
+
+			return true
+		}
+
+		return false
 	}
 
 	// Bring the player up if they right click while facing up with a clock
