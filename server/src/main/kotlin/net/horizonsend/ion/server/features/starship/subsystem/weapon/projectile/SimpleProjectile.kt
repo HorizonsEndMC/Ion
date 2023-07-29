@@ -103,9 +103,7 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		if (starship?.serverLevel?.world?.name?.lowercase(Locale.getDefault())
-				?.contains("hyperspace", ignoreCase=true)!!
-		) return false
+		if (loc.world.name.lowercase(Locale.getDefault()).contains("hyperspace", ignoreCase=true)) return false
 		if (GracePeriod.isGracePeriod) return false
 
 		val block: Block? = result.hitBlock
