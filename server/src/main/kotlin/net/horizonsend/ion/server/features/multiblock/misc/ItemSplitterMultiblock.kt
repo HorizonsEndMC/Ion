@@ -25,8 +25,8 @@ import org.bukkit.inventory.ItemStack
 object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMultiblock {
 	override val name: String = "splitter"
 
-	val BLACKLIST = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
-	val WHITELIST = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
+	val BLACKLIST = text("X--- --->", NamedTextColor.GRAY, TextDecoration.BOLD)
+	val WHITELIST = text("<--- ---X", NamedTextColor.GRAY, TextDecoration.BOLD)
 
 	override val signText: Array<Component?> = arrayOf(
 		text("Item Splitter", NamedTextColor.GOLD),
