@@ -31,5 +31,6 @@ tasks.create("downloadTestServerDependencies") {
 	doFirst {
 		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts")
 		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs")
+		downloadJenkinsArtifact("ci.dmulloy2.net", "ProtocolLib", "contains(.)", "build/libs")
 	}
 }
