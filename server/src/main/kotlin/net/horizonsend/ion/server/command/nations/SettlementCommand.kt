@@ -528,9 +528,9 @@ internal object SettlementCommand : net.horizonsend.ion.server.command.SLCommand
 		val leaderRoleComp = leaderRole?.let { leader ->
 			text(leader.name).color(
 				TextColor.color(
-					leader.color.actual.wrappedColor.color.red,
-					leader.color.actual.wrappedColor.color.green,
-					leader.color.actual.wrappedColor.color.blue
+					leader.color.actualStyle.wrappedColor.color.red,
+					leader.color.actualStyle.wrappedColor.color.green,
+					leader.color.actualStyle.wrappedColor.color.blue
 				)
 			)
 		} ?: text()

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
@@ -68,7 +67,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			val data = PlayerStarshipData(
 				_id = id,
 				captain = captain,
-				starshipType = StarshipTypeDB(type.name),
+				starshipType = type.name,
 				serverName = IonServer.configuration.serverName,
 				levelName = worldName,
 				blockKey = blockKey,
@@ -98,10 +97,10 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 	}
 
 	fun updateType(data: PlayerStarshipData, newType: StarshipType) {
-		data.starshipType = StarshipTypeDB(newType.name)
+		data.starshipType = newType.name
 
 		Tasks.async {
-			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::starshipType, StarshipTypeDB(newType.name)))
+			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::starshipType, newType.name))
 		}
 
 		// remove the current state in case the new type no longer matches the ship's state

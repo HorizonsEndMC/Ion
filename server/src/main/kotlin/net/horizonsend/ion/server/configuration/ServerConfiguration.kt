@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.miscellaneous.utils.actual
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import org.bukkit.Bukkit
@@ -207,7 +207,7 @@ data class ServerConfiguration(
 		val lore: List<String>
 	) {
 		@kotlinx.serialization.Transient
-		val shipType: StarshipType = shipClass.actual
+		val shipType: StarshipType = shipClass.actualType
 
 		@kotlinx.serialization.Transient
 		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")

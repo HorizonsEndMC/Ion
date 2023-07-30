@@ -98,7 +98,7 @@ object IonServer : JavaPlugin() {
 			enableUnstableAPI("brigadier")
 		}
 
-		// First register all the completions, then register the actual commands
+		// First register all the completions, then register the actualStyle commands
 		commands.forEach { it.onEnable(commandManager) }
 		commands.forEach {
 			commandManager.registerCommand(it)

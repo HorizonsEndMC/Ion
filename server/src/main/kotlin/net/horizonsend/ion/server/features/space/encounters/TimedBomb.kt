@@ -27,7 +27,7 @@ object TimedBomb : Encounter(identifier = "timed_bomb") {
 				targetedBlock.location.world.playSound(targetedBlock.location, Sound.BLOCK_NOTE_BLOCK_BELL, 5.0f, 1.0f)
 			}
 			if (timeLimit * 20 == iteration) {
-				val explosionRadius = 10.0 // For spawning actual explosions
+				val explosionRadius = 10.0 // For spawning actualStyle explosions
 				val explosionDamage = 100.0
 				val explosionDamageRadius = 20.0 // For entity damage calculation
 				targetedBlock.location.spherePoints(explosionRadius, 10).forEach {

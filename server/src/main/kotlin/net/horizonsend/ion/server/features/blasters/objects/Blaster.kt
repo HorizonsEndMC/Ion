@@ -170,7 +170,7 @@ abstract class Blaster<T : Balancing>(
 		// Shell sound
 		/*
 		var relativeBlock = livingEntity.location.block.getRelative(DOWN)
-		val maxDistance = 4 // Add 1 to this value for the actual distance
+		val maxDistance = 4 // Add 1 to this value for the actualStyle distance
 
 		for (i in 0..maxDistance) {
 			if (!relativeBlock.isSolid) {
