@@ -60,6 +60,28 @@ object IonServer : JavaPlugin() {
 			}
 		}
 
+		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
+		// such as reloading or other plugins doing things they probably shouldn't.
+		for (world in server.worlds) IonWorld.register(world.minecraft)
+
+		for (component in components) { // Components
+			if (component is IonServerComponent) {
+				if (component.runAfterTick)
+					Tasks.sync { component.onEnable() }
+				else component.onEnable()
+
+				IonServer.server.pluginManager.registerEvents(component, IonServer)
+			} else component.onEnable()
+		}
+
+		// The listeners are defined in a separate file for the sake of keeping the main class clean.
+		for (listener in listeners) {
+			if (listener is SLEventListener)
+				listener.register()
+			else
+				server.pluginManager.registerEvents(listener, IonServer)
+		}
+
 		// Commands
 		val commandManager = PaperCommandManager(this).apply {
 			enableUnstableAPI("help")
@@ -74,28 +96,6 @@ object IonServer : JavaPlugin() {
 			if (it is Listener) {
 				server.pluginManager.registerEvents(it, this)
 			}
-		}
-
-		// The listeners are defined in a separate file for the sake of keeping the main class clean.
-		for (listener in listeners) {
-			if (listener is SLEventListener)
-				listener.register()
-			else
-				server.pluginManager.registerEvents(listener, IonServer)
-		}
-
-		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
-		// such as reloading or other plugins doing things they probably shouldn't.
-		for (world in server.worlds) IonWorld.register(world.minecraft)
-
-		for (component in components) { // Components
-			if (component is IonServerComponent) {
-				if (component.runAfterTick)
-					Tasks.sync { component.onEnable() }
-				else component.onEnable()
-
-				IonServer.server.pluginManager.registerEvents(component, IonServer)
-			} else component.onEnable()
 		}
 
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB
