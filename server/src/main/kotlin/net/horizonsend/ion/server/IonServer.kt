@@ -41,11 +41,21 @@ object IonServer : JavaPlugin() {
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
 	var legacySettings: LegacyConfig = loadConfig(IonServer.dataFolder, "config") // Setting
 
-	override fun onEnable() {
-		val exception = runCatching(::internalEnable).exceptionOrNull() ?: return
-		slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", exception)
-		Bukkit.shutdown()
-	}
+	override fun onEnable(): Unit =
+		runCatching(::internalEnable).fold(
+			{
+				val message = getUpdateMessage(dataFolder) ?: return
+				slF4JLogger.info(message)
+
+				try {
+					Notify.eventsChannel("${configuration.serverName} $message")
+				} catch (_: Exception) {}
+			},
+			{
+				slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", it)
+				Bukkit.shutdown()
+			}
+		)
 
 	private fun internalEnable() {
 		CommonConfig.init(IonServer.dataFolder) // DB Configs
@@ -99,13 +109,6 @@ object IonServer : JavaPlugin() {
 		}
 
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB
-
-		val message = getUpdateMessage(dataFolder) ?: return
-		slF4JLogger.info(message)
-
-		Notify.eventsChannel("${configuration.serverName} $message")
-		DiscordSRV.getPlugin().jda.getTextChannelById(1096907580577697833L)
-			?.sendMessage("${configuration.serverName} $message")
 	}
 
 	override fun onDisable() {
