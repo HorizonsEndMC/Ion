@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.utils
 import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import net.horizonsend.ion.common.utils.DoubleLocation
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.command.admin.IonCommand
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
@@ -70,8 +71,8 @@ fun Player.worldBorderEffect(duration: Long) {
 
 fun Location.triple() = DoubleLocation(x, y, z)
 
-fun <K>Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
-fun <V>Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
+fun <K> Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
+fun <V> Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
 
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
@@ -84,6 +85,22 @@ fun runnable(e: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunn
 @Suppress("UNCHECKED_CAST")
 fun <T : Entity> World.castSpawnEntity(location: Location, type: org.bukkit.entity.EntityType) =
 	this.spawnEntity(location, type) as T
+
+fun debugHighlightBlock(x: Number, y: Number, z: Number) {
+	IonCommand.debugEnabledPlayers.mapNotNull { Bukkit.getPlayer(it) }.forEach {
+		if (it.location.distanceSquared(
+				Location(
+					it.world,
+					x.toDouble(),
+					y.toDouble(),
+					z.toDouble()
+				)
+			) > 30 * 30
+		) return@forEach
+
+		highlightBlock(it, BlockPos(x.toInt(), y.toInt(), z.toInt()), 5L)
+	}
+}
 
 fun highlightBlock(bukkitPlayer: Player, pos: BlockPos, duration: Long) {
 	val player = bukkitPlayer.minecraft

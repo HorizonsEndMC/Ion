@@ -18,18 +18,10 @@ import org.bukkit.block.data.type.WallSign
  * @see getNMSBlockDataSafe
  */
 fun getBlockTypeSafe(world: World, x: Int, y: Int, z: Int): Material? {
-	IonCommand.debugEnabledPlayers.mapNotNull { Bukkit.getPlayer(it) }.forEach {
-		highlightBlock(it, BlockPos(x, y, z), 5L)
-	}
-
 	return getNMSBlockDataSafe(world, x, y, z)?.bukkitMaterial
 }
 
 fun getBlockTypeSafe(world: ServerLevel, x: Int, y: Int, z: Int): Material? {
-	IonCommand.debugEnabledPlayers.mapNotNull { Bukkit.getPlayer(it) }.forEach {
-		highlightBlock(it, BlockPos(x, y, z), 5L)
-	}
-
 	return getNMSBlockDataSafe(world, x, y, z)?.bukkitMaterial
 }
 
@@ -37,10 +29,6 @@ fun getBlockTypeSafe(world: ServerLevel, x: Int, y: Int, z: Int): Material? {
  * @see getNMSBlockDataSafe
  */
 fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockData? {
-	IonCommand.debugEnabledPlayers.mapNotNull { Bukkit.getPlayer(it) }.forEach {
-		highlightBlock(it, BlockPos(x, y, z), 5L)
-	}
-
 	return getNMSBlockDataSafe(world, x, y, z)?.createCraftBlockData()
 }
 
@@ -50,10 +38,6 @@ fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockData? {
 fun getBlockIfLoaded(world: World, x: Int, y: Int, z: Int): Block? {
 	if (y < 0 || y > world.maxHeight) {
 		return null
-	}
-
-	IonCommand.debugEnabledPlayers.mapNotNull { Bukkit.getPlayer(it) }.forEach {
-		highlightBlock(it, BlockPos(x, y, z), 5L)
 	}
 
 	return world.minecraft.getChunkIfLoaded(x shr 4, z shr 4)?.cbukkit?.getBlock(x and 15, y, z and 15)
