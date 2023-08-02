@@ -139,5 +139,6 @@ val commands: List<SLCommand> = listOf(
 	AchievementsCommand,
 	BlastResistanceCommand,
 	ContactsCommand,
+    WaypointCommand,
 	BountyCommand
 )
