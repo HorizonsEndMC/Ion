@@ -56,6 +56,7 @@ dependencies {
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.0.0-RC12")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.0.0-RC12")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.0.0-RC12")
+    implementation("org.jgrapht:jgrapht-core:1.5.2")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }
