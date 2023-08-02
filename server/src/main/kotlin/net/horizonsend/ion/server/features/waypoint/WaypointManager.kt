@@ -101,6 +101,10 @@ object WaypointManager : IonComponent() {
 			)
 		}
 	}
+
+	fun getVertex(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>, name: String): WaypointVertex? {
+		return graph.vertexSet().find { it.name == name }
+	}
 }
 
 data class WaypointVertex(val name: String, val loc: Location) {
