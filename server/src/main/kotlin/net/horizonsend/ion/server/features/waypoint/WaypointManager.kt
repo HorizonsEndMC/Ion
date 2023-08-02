@@ -1,9 +1,13 @@
 package net.horizonsend.ion.server.features.waypoint
 
 import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import org.bukkit.Location
+import org.bukkit.entity.Player
+import org.jgrapht.GraphTests
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
 
@@ -59,10 +63,44 @@ object WaypointManager : IonComponent() {
             // add edges between vertices linked to another
             if (vertex.linkedWaypoint != null) {
                 val edge = graph.addEdge(vertex, vertex.linkedWaypoint)
-                graph.setEdgeWeight(edge, 60000.0)
+                graph.setEdgeWeight(edge, Hyperspace.INTER_SYSTEM_DISTANCE.toDouble())
             }
         }
     }
+
+	fun reloadMainMap() {
+		if (!GraphTests.isEmpty(mainMap)) {
+			mainMap.removeAllEdges(mainMap.edgeSet())
+			mainMap.removeAllVertices(mainMap.vertexSet())
+		}
+	}
+
+	fun printMainMapVertices(player: Player) {
+		for (vertex in mainMap.vertexSet()) {
+			player.information(
+				StringBuilder(vertex.name)
+					.append(" at ${vertex.loc}")
+					.append(" with companion vertex ${vertex.linkedWaypoint?.name}")
+					.toString()
+			)
+		}
+	}
+
+	fun printMainMapEdges(player: Player) {
+		for (edge in mainMap.edgeSet()) {
+			player.information(
+				StringBuilder("Edge from ")
+					.append(edge.source.name)
+					.append(" -> ")
+					.append(edge.destination.name)
+					.append(when (edge.hyperspaceEdge) {
+						true -> " and is inter-system"
+						else -> " is not inter-system"
+					})
+					.toString()
+			)
+		}
+	}
 }
 
 data class WaypointVertex(val name: String, val loc: Location) {

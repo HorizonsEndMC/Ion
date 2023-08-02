@@ -38,6 +38,7 @@ object Hyperspace : IonServerComponent() {
 	fun isMoving(starship: ActiveStarship) = movementTasks.containsKey(starship)
 
 	const val HYPERMATTER_AMOUNT = 2
+	const val INTER_SYSTEM_DISTANCE = 60000
 
 	override fun onDisable() {
 		movementTasks.forEach { (_, hyperspaceMovement) ->

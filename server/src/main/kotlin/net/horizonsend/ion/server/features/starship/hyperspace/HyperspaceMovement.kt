@@ -33,7 +33,7 @@ class HyperspaceMovement(
 
 	private fun remainingDistance(): Double {
 		return if (originWorld == dest.world) { distance(x, 0.0, z, dest.x, 0.0, dest.z) } else {
-			60000 - travelled
+			Hyperspace.INTER_SYSTEM_DISTANCE - travelled
 		}
 	}
 

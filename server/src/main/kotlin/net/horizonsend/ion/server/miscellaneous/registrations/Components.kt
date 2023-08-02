@@ -68,6 +68,7 @@ import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.TutorialManager
+import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
@@ -162,6 +163,7 @@ val components: List<IonComponent> = listOf(
 	CityNPCs,
 	AreaShields,
 	NationsMasterTasks,
+    WaypointManager,
 
 	Bounties,
 	CustomMobSpawning
