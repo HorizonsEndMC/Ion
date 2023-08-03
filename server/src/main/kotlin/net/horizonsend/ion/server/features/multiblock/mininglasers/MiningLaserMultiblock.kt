@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
+package net.horizonsend.ion.server.features.multiblock.mininglasers
 
-import net.horizonsend.ion.server.features.starship.mininglaser.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship

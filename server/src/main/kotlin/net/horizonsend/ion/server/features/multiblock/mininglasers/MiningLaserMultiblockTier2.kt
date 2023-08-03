@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.mininglaser.multiblock
+package net.horizonsend.ion.server.features.multiblock.mininglasers
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -6,30 +6,30 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 
-sealed class MiningLaserMultiblockTier1 : MiningLaserMultiblock() {
+sealed class MiningLaserMultiblockTier2 : MiningLaserMultiblock() {
 	override val signText: Array<Component?> = arrayOf(
 		Component.text("Mining ").color(NamedTextColor.DARK_GRAY)
 			.append(Component.text("Laser").color(NamedTextColor.GREEN)),
-		Component.text("Tier 1").color(NamedTextColor.AQUA),
+		Component.text("Tier 2").color(NamedTextColor.AQUA),
 		Component.text(""),
 		Component.text("")
 	)
 
-	override val maxPower: Int = 100000
+	override val maxPower: Int = 300000
 	override val beamOrigin = Triple(0, 3, 1)
-	override val range: Double = 60.0
-	override val mineRadius = 3
-	override val beamCount: Int = 1
-	override val maxBroken: Int = 5
-	override val sound: String = "starship.weapon.mining_laser.t1_loop"
+	override val range: Double = 90.0
+	override val mineRadius = 5
+	override val beamCount: Int = 3
+	override val maxBroken: Int = 7
+	override val sound: String = "starship.weapon.mining_laser.t2_loop"
 
-	override val tier: Int = 1
+	override val tier: Int = 2
 }
 
-object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
+object MiningLaserMultiblockTier2Top : MiningLaserMultiblockTier2() {
 	override val side = BlockFace.UP
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, -2)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +5, -2)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -47,35 +47,59 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 
 			y(+1) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).titaniumBlock()
 				x(+1).anyStairs()
 			}
 
 			y(+2) {
+				x(+0).ironBlock()
+			}
+
+			y(+3) {
+				x(-1).anyStairs()
+				x(+0).stainedTerracotta()
+				x(+1).anyStairs()
+			}
+
+			y(+4) {
 				x(+0).anyGlassPane()
 			}
 		}
 
 		z(+1) {
 			y(-1) {
+				x(-1).titaniumBlock()
+				x(+0).emeraldBlock()
+				x(+1).titaniumBlock()
+			}
+
+			y(+0) {
+				x(-1).anyGlass()
+				x(+0).emeraldBlock()
+				x(+1).anyGlass()
+			}
+
+			y(+1) {
+				x(-1).titaniumBlock()
+				x(+0).emeraldBlock()
+				x(+1).titaniumBlock()
+			}
+
+			y(+2) {
 				x(-1).ironBlock()
 				x(+0).emeraldBlock()
 				x(+1).ironBlock()
 			}
 
-			y(+0) {
-				x(-1).titaniumBlock()
-				x(+0).emeraldBlock()
-				x(+1).titaniumBlock()
-			}
-			y(+1) {
+			y(+3) {
 				x(-1).stainedTerracotta()
 				x(+0).emeraldBlock()
 				x(+1).stainedTerracotta()
 			}
-			y(+2) {
+
+			y(+4) {
 				x(-1).anyGlassPane()
-				x(+0).ironBlock()
+				x(+0).lodestone()
 				x(+1).anyGlassPane()
 			}
 		}
@@ -83,33 +107,43 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 		z(+2) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).ironBlock()
+				x(+0).titaniumBlock()
 				x(+1).anyStairs()
 			}
 
 			y(+0) {
 				x(-1).anyGlassPane()
-				x(+0).anyGlass()
+				x(+0).titaniumBlock()
 				x(+1).anyGlassPane()
 			}
 
 			y(+1) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).titaniumBlock()
 				x(+1).anyStairs()
 			}
 
 			y(+2) {
+				x(+0).ironBlock()
+			}
+
+			y(+3) {
+				x(-1).anyStairs()
+				x(+0).stainedTerracotta()
+				x(+1).anyStairs()
+			}
+
+			y(+4) {
 				x(+0).anyGlassPane()
 			}
 		}
 	}
 }
 
-object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
+object MiningLaserMultiblockTier2Bottom : MiningLaserMultiblockTier2() {
 	override val side = BlockFace.DOWN
 
-	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, -2)
+	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -5, -2)
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -127,35 +161,59 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).titaniumBlock()
 				x(+1).anyStairs()
 			}
 
 			y(-2) {
+				x(+0).ironBlock()
+			}
+
+			y(-3) {
+				x(-1).anyStairs()
+				x(+0).stainedTerracotta()
+				x(+1).anyStairs()
+			}
+
+			y(-4) {
 				x(+0).anyGlassPane()
 			}
 		}
 
 		z(+1) {
 			y(+1) {
+				x(-1).titaniumBlock()
+				x(+0).emeraldBlock()
+				x(+1).titaniumBlock()
+			}
+
+			y(+0) {
+				x(-1).anyGlass()
+				x(+0).emeraldBlock()
+				x(+1).anyGlass()
+			}
+
+			y(-1) {
+				x(-1).titaniumBlock()
+				x(+0).emeraldBlock()
+				x(+1).titaniumBlock()
+			}
+
+			y(-2) {
 				x(-1).ironBlock()
 				x(+0).emeraldBlock()
 				x(+1).ironBlock()
 			}
 
-			y(+0) {
-				x(-1).titaniumBlock()
-				x(+0).emeraldBlock()
-				x(+1).titaniumBlock()
-			}
-			y(-1) {
+			y(-3) {
 				x(-1).stainedTerracotta()
 				x(+0).emeraldBlock()
 				x(+1).stainedTerracotta()
 			}
-			y(-2) {
+
+			y(-4) {
 				x(-1).anyGlassPane()
-				x(+0).ironBlock()
+				x(+0).lodestone()
 				x(+1).anyGlassPane()
 			}
 		}
@@ -163,23 +221,33 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 		z(+2) {
 			y(+1) {
 				x(-1).anyStairs()
-				x(+0).ironBlock()
+				x(+0).titaniumBlock()
 				x(+1).anyStairs()
 			}
 
-			y(+0) {
+			y(-0) {
 				x(-1).anyGlassPane()
-				x(+0).anyGlass()
+				x(+0).titaniumBlock()
 				x(+1).anyGlassPane()
 			}
 
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).stainedTerracotta()
+				x(+0).titaniumBlock()
 				x(+1).anyStairs()
 			}
 
 			y(-2) {
+				x(+0).ironBlock()
+			}
+
+			y(-3) {
+				x(-1).anyStairs()
+				x(+0).stainedTerracotta()
+				x(+1).anyStairs()
+			}
+
+			y(-4) {
 				x(+0).anyGlassPane()
 			}
 		}

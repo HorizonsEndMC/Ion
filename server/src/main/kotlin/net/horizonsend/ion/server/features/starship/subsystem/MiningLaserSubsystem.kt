@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.mininglaser
+package net.horizonsend.ion.server.features.starship.subsystem
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.alert
@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.features.starship.mininglaser.multiblock.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -34,10 +34,10 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 
 class MiningLaserSubsystem(
-    override val starship: ActivePlayerStarship,
-    pos: Vec3i,
-    private val face: BlockFace,
-    val multiblock: MiningLaserMultiblock,
+	override val starship: ActivePlayerStarship,
+	pos: Vec3i,
+	private val face: BlockFace,
+	val multiblock: MiningLaserMultiblock,
 ) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
 	private val firingTasks = mutableListOf<BukkitTask>()
 	private var isFiring = false
