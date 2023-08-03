@@ -2,16 +2,12 @@
 
 # <p align="center"> Ion </p>
 
-Ion is the main plugin used on Horizon's End, it is split into 2 plugins, a Waterfall Proxy Plugin and a Paper Server
+Ion is the main plugin used on Horizon's End, it is split into 2 plugins, a Velocity Proxy Plugin and a Paper Server
 Plugin. Ion uses the released Star Legacy Plugin as its foundations, the original source of which can be found at
-[MicleBrick/StarLegacy](https://github.com/MicleBrick/StarLegacy), although we are slowly looking to replace
-this code with more modern and stable implementations.
+[MicleBrick/StarLegacy](https://github.com/MicleBrick/StarLegacy).
 
 As Ion is developed and maintained specifically for Horizon's End, pre-compiled builds are not distributed and no
 support will be provided for those wishing to use the plugin for their own server.
-
-In the future we may consider separating parts of Ion and developing them into standalone plugins / mods / libraries,
-however there are no plans for this in the near future.
 
 If you wish to help develop Ion, then it's best to coordinate with Horizon's End Staff in the
 [Development Discord](https://discord.gg/p6mghBKU).
