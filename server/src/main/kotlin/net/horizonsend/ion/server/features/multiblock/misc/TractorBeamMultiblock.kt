@@ -53,29 +53,37 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		val below = player.location.block.getRelative(BlockFace.DOWN)
 
 		if (below.type != Material.GLASS && !below.type.isStainedGlass) return
+		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
+			val sign = below.getRelative(face, 2)
+			if (!sign.type.isWallSign) continue
 
-		var distance = 1
-		val maxDistance = below.y - 1
+			if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
 
-		while (distance < maxDistance) {
-			val relative = below.getRelative(BlockFace.DOWN, distance)
+			var distance = 1
+			val maxDistance = below.y - 1
 
-			if (relative.type != Material.AIR) {
-				break
+			while (distance < maxDistance) {
+				val relative = below.getRelative(BlockFace.DOWN, distance)
+
+				if (relative.type != Material.AIR) {
+					break
+				}
+
+				distance++
 			}
 
-			distance++
-		}
+			if (distance < 3) return
 
-		if (distance < 3) return
+			val relative = below.getRelative(BlockFace.DOWN, distance)
+			if (relative.type != Material.AIR) {
+				player.teleport(
+					relative.location.add(0.5, 1.5, 0.5),
+					TeleportCause.PLUGIN,
+					*TeleportFlag.Relative.values()
+				)
 
-		val relative = below.getRelative(BlockFace.DOWN, distance)
-		if (relative.type != Material.AIR) {
-			player.teleport(
-				relative.location.add(0.5, 1.5, 0.5),
-				TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.values()
-			)
+				return
+			}
 		}
 	}
 
