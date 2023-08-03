@@ -7,9 +7,9 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipType.SPEEDER
@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -130,7 +131,7 @@ object ActiveStarships : IonServerComponent() {
 		worldMap[oldWorld].remove(starship)
 		worldMap[newWorld].add(starship)
 
-		if (starship.type == SPEEDER && newWorld.name == "Space") StarshipDestruction.destroy(starship)
+		if (starship.type == SPEEDER && SpaceWorlds.contains(newWorld)) StarshipDestruction.destroy(starship)
 	}
 
 	operator fun get(playerShipId: Oid<PlayerStarshipData>) = playerShipIdMap[playerShipId]
