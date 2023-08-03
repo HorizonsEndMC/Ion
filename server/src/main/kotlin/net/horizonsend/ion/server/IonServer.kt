@@ -49,7 +49,8 @@ object IonServer : JavaPlugin() {
 
 				try {
 					Notify.eventsChannel("${configuration.serverName} $message")
-				} catch (_: Exception) {}
+				} catch (_: Exception) {
+				}
 			},
 			{
 				slF4JLogger.error("An exception occurred during plugin startup! The server will now exit.", it)
