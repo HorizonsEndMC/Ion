@@ -2,30 +2,20 @@ package net.horizonsend.ion.server.features.starship
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.Oid
-import java.util.LinkedList
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.common.extensions.hint
-import net.horizonsend.ion.common.extensions.serverErrorActionMessage
-import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.successActionMessage
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.format.TextDecoration.BOLD
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.util.HSVLike
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.miscellaneous.utils.isPilot
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.common.extensions.hint
+import net.horizonsend.ion.common.extensions.serverErrorActionMessage
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.successActionMessage
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.gui.skullItem
@@ -37,7 +27,16 @@ import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.isPilot
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toText
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.format.TextDecoration.BOLD
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.util.HSVLike
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -51,6 +50,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
 import org.litote.kmongo.setValue
+import java.util.LinkedList
 
 object StarshipComputers : IonServerComponent() {
 
@@ -280,7 +280,7 @@ object StarshipComputers : IonServerComponent() {
 
 	private fun startRename(player: Player, data: PlayerStarshipData) {
 		player.closeInventory()
-		player.input("Enter new starship name:") { r, input ->
+		player.input("Enter new ship name:") { r, input ->
 			Tasks.async {
 				val serialized = MiniMessage.miniMessage().deserialize(input)
 

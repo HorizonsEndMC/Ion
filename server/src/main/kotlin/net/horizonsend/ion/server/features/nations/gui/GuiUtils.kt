@@ -12,10 +12,10 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.IonServer
-import net.md_5.bungee.api.ChatColor.RED
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
+import net.md_5.bungee.api.ChatColor.RED
 import net.wesjd.anvilgui.AnvilGUI
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -125,9 +125,11 @@ class AnvilInput(val question: String, action: AnvilInputAction) {
 fun Player.input(question: String, action: AnvilInputAction) = Tasks.sync {
 	AnvilGUI.Builder()
 		.plugin(IonServer)
-		.text(question)
+		.title(question)
+		.text(".")
 		.onComplete { player, field ->
-			AnvilGUI.Response.text(action(player, field))
+			val stripped = field.substringAfter('.')
+			AnvilGUI.Response.text(action(player, stripped))
 		}
 		.open(this)
 }
