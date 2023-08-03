@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server
 
 import co.aikar.commands.PaperCommandManager
-import github.scarsz.discordsrv.DiscordSRV
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
@@ -29,6 +28,7 @@ import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import net.horizonsend.ion.server.command.SLCommand
 
 val LegacySettings get() = IonServer.legacySettings
 val BalancingConfiguration get() = IonServer.balancing
@@ -99,7 +99,7 @@ object IonServer : JavaPlugin() {
 			// enableUnstableAPI("brigadier") BROKEN DO NOT ENABLE
 		}
 
-		// First register all the completions, then register the actualStyle commands
+		// First register all the completions, then register the actual commands
 		commands.forEach { it.onEnable(commandManager) }
 		commands.forEach {
 			commandManager.registerCommand(it)
@@ -115,7 +115,7 @@ object IonServer : JavaPlugin() {
 	override fun onDisable() {
 		IonWorld.unregisterAll()
 
-		net.horizonsend.ion.server.command.SLCommand.ASYNC_COMMAND_THREAD.shutdown()
+		SLCommand.ASYNC_COMMAND_THREAD.shutdown()
 
 		for (component in components.asReversed()) try {
 			component.onDisable()
