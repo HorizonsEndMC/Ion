@@ -4,7 +4,6 @@ import java.util.Locale
 import java.util.function.Supplier
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
-import net.horizonsend.ion.server.features.blasters.BlasterProjectile
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.kyori.adventure.audience.Audience
@@ -16,6 +15,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Color
@@ -231,26 +231,22 @@ abstract class Blaster<T : Balancing>(
 
 	protected open fun fireProjectiles(livingEntity: LivingEntity) {
 		val location = livingEntity.eyeLocation.clone()
-		location.y = location.y - 0.125
+
+		location.y -= 0.125
 		location.add(location.direction.clone().multiply(0.125))
 
-		val sway = balancing.shotDeviation
-		val dir = location.direction.normalize().add(Vector((Math.random() * 2 * sway) - sway, (Math.random() * 2 * sway) - sway,
-			(Math.random() * 2 * sway) - sway)).normalize()
-
-		BlasterProjectile(
+		RayTracedParticleProjectile(
 			location,
 			livingEntity,
 			balancing,
 			REDSTONE,
-			dir,
 			explosiveShot,
 			DustOptions(
 				getParticleColor(livingEntity),
 				particleSize
 			),
 			soundWhizz,
-		).shootProjectile()
+		).fire()
 	}
 
 	private fun checkAndDecrementAmmo(itemStack: ItemStack, livingEntity: InventoryHolder): Boolean {
