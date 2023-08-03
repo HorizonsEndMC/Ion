@@ -3,18 +3,13 @@ package net.horizonsend.ion.server.command.nations.admin
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.success
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
-import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.server.features.spacestations.SpaceStations
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -24,6 +19,8 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
+import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.spacestations.SpaceStations
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import org.bukkit.World
@@ -32,39 +29,45 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.ne
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOne
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 @CommandAlias("nadmin|nationsadmin")
 @CommandPermission("nations.admin")
 internal object NationAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("rebalance")
+	@Suppress("unused")
 	fun onRebalance(sender: CommandSender) {
 		NationsBalancing.reload()
 		sender msg "&aRebalanced"
 	}
 
 	@Subcommand("refresh map")
+	@Suppress("unused")
 	fun onRefreshMap(sender: CommandSender) {
 		NationsMap.reloadDynmap()
 		sender msg "Refreshed map"
 	}
 
 	@Subcommand("runtask money")
+	@Suppress("unused")
 	fun onRunTaskIncome(sender: CommandSender) {
 		NationsMasterTasks.executeMoneyTasks()
 		sender msg "Executed income task"
 	}
 
 	@Subcommand("runtask purge")
+	@Suppress("unused")
 	fun onRunTaskPurge(sender: CommandSender) = asyncCommand(sender) {
 		NationsMasterTasks.checkPurges()
 		sender msg "Executed purge task"
 	}
 
 	@Subcommand("player set settlement")
+	@Suppress("unused")
 	fun onPlayerSetSettlement(sender: CommandSender, player: String, settlement: String) = asyncCommand(sender) {
 		val playerId = resolveOfflinePlayer(player).slPlayerId
 		val settlementId = resolveSettlement(settlement)
@@ -84,6 +87,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 		"${(dividend / divisor * 100).roundToInt()}% ($dividend)"
 
 	@Subcommand("player stats")
+	@Suppress("unused")
 	fun onPlayerStats(sender: CommandSender) = asyncCommand(sender) {
 		sender msg "Pulling from db..."
 		val allPlayers = SLPlayer.all()
@@ -114,6 +118,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("settlement set leader")
+	@Suppress("unused")
 	fun onSettlementSetLeader(sender: CommandSender, settlement: String, player: String) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		val playerId = resolveOfflinePlayer(player).slPlayerId
@@ -123,6 +128,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("settlement purge")
+	@Suppress("unused")
 	fun onSettlementPurge(sender: CommandSender, settlement: String, sendMessage: Boolean) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		NationsMasterTasks.purgeSettlement(settlementId, sendMessage)
@@ -130,6 +136,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("settlement set balance")
+	@Suppress("unused")
 	fun onSettlementSetBalance(sender: CommandSender, settlement: String, balance: Int) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		Settlement.updateById(settlementId, setValue(Settlement::balance, balance))
@@ -137,6 +144,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("nation set balance")
+	@Suppress("unused")
 	fun onNationSetBalance(sender: CommandSender, nation: String, balance: Int) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
 		Nation.updateById(nationId, setValue(Nation::balance, balance))
@@ -145,15 +153,14 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 
 	@CommandPermission("nations.admin.movestation")
 	@Subcommand("spacestation set location")
-	fun onStationSetLocaiton(sender: CommandSender, station: String, world: World, x: Int, z: Int) =
+	@Suppress("unused")
+	fun onStationSetLocaiton(sender: CommandSender, station: CachedSpaceStation<*, *, *>, world: World, x: Int, z: Int) =
 		asyncCommand(sender) {
-			val nationSpaceStation = NationSpaceStation.findOne(NationSpaceStation::name eq station)
-				?: fail { "Station $station not found" }
-			NationSpaceStation.updateById(
-				nationSpaceStation._id,
-				set(NationSpaceStation::world setTo world.name, NationSpaceStation::x setTo x, NationSpaceStation::z setTo z)
-			)
-			sender msg "Set position of $station to $x, $z"
+
+			station.setLocation(x, z, world.name)
+			SpaceStations.reload()
+
+			sender.success("Set position of $station to $x, $z")
 		}
 
 	@Subcommand("spacestation reload")
@@ -165,6 +172,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("station set quarter")
+	@Suppress("unused")
 	fun onStationSetQuarter(sender: CommandSender, station: String, quarter: Int) = asyncCommand(sender) {
 		failIf(quarter !in 1..4) { "Quarter must be within [1, 4]" }
 		val station = CapturableStation.findOne(CapturableStation::name eq station)
@@ -175,6 +183,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("station clearsieges")
+	@Suppress("unused")
 	fun onStationClearSieges(sender: CommandSender, nation: String) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
 		val daysPerSiege = NATIONS_BALANCE.capturableStation.daysPerSiege
@@ -187,6 +196,7 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("territoryimport")
+	@Suppress("unused")
 	fun onTerritoryImport(sender: CommandSender) {
 		TerritoryImporter.importOldTerritories(sender)
 	}
