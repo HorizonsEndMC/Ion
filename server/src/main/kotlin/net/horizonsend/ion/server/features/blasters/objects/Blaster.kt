@@ -18,6 +18,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
@@ -233,6 +234,15 @@ abstract class Blaster<T : Balancing>(
 		val location = livingEntity.eyeLocation.clone()
 
 		location.y -= 0.125
+
+		if (balancing.shotDeviation > 0) {
+			val offsetX = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
+			val offsetY = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
+			val offsetZ = randomDouble(-1 * balancing.shotDeviation, balancing.shotDeviation)
+
+			location.direction = location.direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
+		}
+
 		location.add(location.direction.clone().multiply(0.125))
 
 		RayTracedParticleProjectile(
