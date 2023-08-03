@@ -96,7 +96,7 @@ object IonServer : JavaPlugin() {
 		// Commands
 		val commandManager = PaperCommandManager(this).apply {
 			enableUnstableAPI("help")
-			enableUnstableAPI("brigadier")
+			// enableUnstableAPI("brigadier") BROKEN DO NOT ENABLE
 		}
 
 		// First register all the completions, then register the actualStyle commands
