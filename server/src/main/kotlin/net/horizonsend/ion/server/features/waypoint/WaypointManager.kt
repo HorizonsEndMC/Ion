@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.waypoint
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.Space
@@ -21,7 +22,7 @@ import java.util.*
 
 object WaypointManager : IonServerComponent() {
 	// mainGraph holds the server graph
-	private val mainGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+	val mainGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
 
 	// playerGraphs hold copies of mainGraph, with add'l vertices per player (for shortest path calculation)
 	val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
@@ -83,6 +84,44 @@ object WaypointManager : IonServerComponent() {
 		}
 	}
 
+	fun printGraphVertices(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?, player: Player) {
+		if (graph == null) {
+			player.serverError("Graph does not exist")
+			return
+		}
+		for (vertex in graph.vertexSet()) {
+			player.information(
+				StringBuilder(vertex.name)
+					.append(" at ${vertex.loc}")
+					.append(" with companion vertex ${vertex.linkedWaypoint?.name}")
+					.toString()
+			)
+		}
+	}
+
+	fun printGraphEdges(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?, player: Player) {
+		if (graph == null) {
+			player.serverError("Graph does not exist")
+			return
+		}
+		for (edge in graph.edgeSet()) {
+			val sourceVertex = graph.getEdgeSource(edge)
+			val targetVertex = graph.getEdgeTarget(edge)
+			player.information(
+				StringBuilder("Edge from ")
+					.append(sourceVertex.name)
+					.append(" -> ")
+					.append(targetVertex.name)
+					.append(
+						when (edge.hyperspaceEdge) {
+							true -> " and is inter-system"
+							else -> " is not inter-system"
+						}
+					)
+					.toString()
+			)
+		}
+	}
 
 	private fun deleteGraph(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?) {
 		if (graph != null) {
@@ -150,37 +189,6 @@ object WaypointManager : IonServerComponent() {
 		}
 		populateMainGraphVertices()
 		populateMainGraphEdges()
-	}
-
-	fun printMainGraphVertices(player: Player) {
-		for (vertex in mainGraph.vertexSet()) {
-			player.information(
-				StringBuilder(vertex.name)
-					.append(" at ${vertex.loc}")
-					.append(" with companion vertex ${vertex.linkedWaypoint?.name}")
-					.toString()
-			)
-		}
-	}
-
-	fun printMainGraphEdges(player: Player) {
-		for (edge in mainGraph.edgeSet()) {
-			val sourceVertex = mainGraph.getEdgeSource(edge)
-			val targetVertex = mainGraph.getEdgeTarget(edge)
-			player.information(
-				StringBuilder("Edge from ")
-					.append(sourceVertex.name)
-					.append(" -> ")
-					.append(targetVertex.name)
-					.append(
-						when (edge.hyperspaceEdge) {
-							true -> " and is inter-system"
-							else -> " is not inter-system"
-						}
-					)
-					.toString()
-			)
-		}
 	}
 
 	/**
