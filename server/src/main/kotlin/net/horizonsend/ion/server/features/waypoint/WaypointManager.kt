@@ -12,66 +12,69 @@ import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
 
 object WaypointManager : IonComponent() {
-    val mainMap = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+	val mainMap = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
 
-    override fun onEnable() {
-        populateMapVertices(mainMap)
-        populateMapEdges(mainMap)
-    }
+	override fun onEnable() {
+		populateMapVertices(mainMap)
+		populateMapEdges(mainMap)
+	}
 
-    private fun populateMapVertices(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
-        // add all planets as vertices to graph
-        for (planet in Space.getPlanets()) {
-            val wp = WaypointVertex(
-                name = planet.planetWorldName,
-                loc = planet.location.toLocation(planet.spaceWorld)
-            )
-            graph.addVertex(wp)
-        }
+	private fun populateMapVertices(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
+		// add all planets as vertices to graph
+		for (planet in Space.getPlanets()) {
+			val wp = WaypointVertex(
+				name = planet.planetWorldName,
+				loc = planet.location.toLocation(planet.spaceWorld)
+			)
+			graph.addVertex(wp)
+		}
 
-        // add all beacons as vertices to graph
-        for (beacon in IonServer.configuration.beacons) {
-            // 2 vertices for each beacon's entry and exit point
-            val wpEntry = WaypointVertex(
-                name = StringBuilder(beacon.name).append(" Entry").toString(),
-                loc = beacon.spaceLocation.toLocation()
-            )
-            val wpExit = WaypointVertex(
-                name = StringBuilder(beacon.name).append(" Exit").toString(),
-                loc = beacon.destination.toLocation()
-            )
-            // link vertices with each other (for edge connections later)
-            wpEntry.linkedWaypoint = wpExit
-            wpExit.linkedWaypoint = wpEntry
-            mainMap.addVertex(wpEntry)
-            mainMap.addVertex(wpExit)
-        }
-    }
+		// add all beacons as vertices to graph
+		for (beacon in IonServer.configuration.beacons) {
+			// 2 vertices for each beacon's entry and exit point
+			val wpEntry = WaypointVertex(
+				name = StringBuilder(beacon.name).append(" Entry").toString(),
+				loc = beacon.spaceLocation.toLocation()
+			)
+			val wpExit = WaypointVertex(
+				name = StringBuilder(beacon.name).append(" Exit").toString(),
+				loc = beacon.destination.toLocation()
+			)
+			// link vertices with each other (for edge connections later)
+			wpEntry.linkedWaypoint = wpExit
+			wpExit.linkedWaypoint = wpEntry
+			mainMap.addVertex(wpEntry)
+			mainMap.addVertex(wpExit)
+		}
+	}
 
-    private fun populateMapEdges(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
-        // add edges for each vertex
-        for (vertex in graph.vertexSet()) {
-            // connect vertices that are in the same space world (and not itself)
-            for (otherVertex in graph.vertexSet()) {
-                if (vertex == otherVertex) continue
-                if (vertex.loc.world == otherVertex.loc.world) {
-                    val edge = graph.addEdge(vertex, otherVertex)
-                    graph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
-                }
-            }
+	private fun populateMapEdges(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
+		// add edges for each vertex
+		for (vertex in graph.vertexSet()) {
+			// connect vertices that are in the same space world (and not itself)
+			for (otherVertex in graph.vertexSet()) {
+				if (vertex == otherVertex) continue
+				if (vertex.loc.world == otherVertex.loc.world) {
+					val edge = graph.addEdge(vertex, otherVertex)
+					graph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
+				}
+			}
 
-            // add edges between vertices linked to another
-            if (vertex.linkedWaypoint != null) {
-                val edge = graph.addEdge(vertex, vertex.linkedWaypoint)
-                graph.setEdgeWeight(edge, Hyperspace.INTER_SYSTEM_DISTANCE.toDouble())
-            }
-        }
-    }
+			// add edges between vertices linked to another
+			if (vertex.linkedWaypoint != null) {
+				val edge = graph.addEdge(vertex, vertex.linkedWaypoint)
+				edge.hyperspaceEdge = true
+				graph.setEdgeWeight(edge, Hyperspace.INTER_SYSTEM_DISTANCE.toDouble())
+			}
+		}
+	}
 
 	fun reloadMainMap() {
 		if (!GraphTests.isEmpty(mainMap)) {
 			mainMap.removeAllEdges(mainMap.edgeSet())
 			mainMap.removeAllVertices(mainMap.vertexSet())
+			populateMapVertices(mainMap)
+			populateMapEdges(mainMap)
 		}
 	}
 
@@ -90,13 +93,15 @@ object WaypointManager : IonComponent() {
 		for (edge in mainMap.edgeSet()) {
 			player.information(
 				StringBuilder("Edge from ")
-					.append(edge.source.name)
+					.append(mainMap.getEdgeSource(edge).name)
 					.append(" -> ")
-					.append(edge.destination.name)
-					.append(when (edge.hyperspaceEdge) {
-						true -> " and is inter-system"
-						else -> " is not inter-system"
-					})
+					.append(mainMap.getEdgeTarget(edge).name)
+					.append(
+						when (edge.hyperspaceEdge) {
+							true -> " and is inter-system"
+							else -> " is not inter-system"
+						}
+					)
 					.toString()
 			)
 		}
@@ -107,16 +112,6 @@ object WaypointManager : IonComponent() {
 	}
 }
 
-data class WaypointVertex(val name: String, val loc: Location) {
-    var linkedWaypoint: WaypointVertex? = null
-}
+data class WaypointVertex(val name: String, val loc: Location, var linkedWaypoint: WaypointVertex? = null)
 
-data class WaypointEdge(val source: WaypointVertex, val destination: WaypointVertex) : DefaultWeightedEdge() {
-    var hyperspaceEdge = false
-
-    init {
-        if (source.loc.world != destination.loc.world) {
-            hyperspaceEdge = true
-        }
-    }
-}
+data class WaypointEdge(var hyperspaceEdge: Boolean = false) : DefaultWeightedEdge()
