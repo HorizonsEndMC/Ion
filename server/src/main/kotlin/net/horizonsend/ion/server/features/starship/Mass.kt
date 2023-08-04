@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import org.bukkit.Material
 import java.util.EnumMap
+import kotlin.math.max
 
 object Mass {
 	val BLAST_RESIST_MASS_MULTIPLIER = 5.0
@@ -14,7 +15,7 @@ object Mass {
 			when {
 				it.isShulkerBox -> 1000.0
 				it.isConcrete -> 1.0
-				else -> it.blastResistance * BLAST_RESIST_MASS_MULTIPLIER
+				else -> max(it.blastResistance * BLAST_RESIST_MASS_MULTIPLIER, 1.0)
 			}
 		}
 	)
