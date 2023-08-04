@@ -26,7 +26,7 @@ object WaypointCommand : SLCommand() {
 	fun onReloadMainMap(
 		sender: Player
 	) {
-		WaypointManager.reloadMainMap()
+		WaypointManager.reloadMainGraph()
 		sender.success("Main map reloaded")
 	}
 
@@ -39,10 +39,10 @@ object WaypointCommand : SLCommand() {
 	) {
 		when (option) {
 			"vertex" -> {
-				WaypointManager.printMainMapVertices(sender)
+				WaypointManager.printMainGraphVertices(sender)
 			}
 			"edge" -> {
-				WaypointManager.printMainMapEdges(sender)
+				WaypointManager.printMainGraphEdges(sender)
 			}
 			else -> {
 				throw InvalidCommandArgument("Invalid choice; select vertex/edge")
