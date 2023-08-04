@@ -78,7 +78,4 @@ object SpaceMap : IonServerComponent(true) {
 		}
 	}
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

@@ -39,11 +39,8 @@ import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
 object Bazaars : IonServerComponent() {
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 
-	fun onClickBazaarNPC(player: Player, city: TradeCityData) {
+    fun onClickBazaarNPC(player: Player, city: TradeCityData) {
 		val territoryId: Oid<Territory> = city.territoryId
 
 		openMainMenu(territoryId, player, false)

@@ -133,7 +133,4 @@ object RedisActions : IonComponent() {
 		}
 	}
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

@@ -154,7 +154,4 @@ object Space : IonServerComponent() {
 
 	fun getStar(starName: String): CachedStar? = starNameCache[starName].orElse(null)
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

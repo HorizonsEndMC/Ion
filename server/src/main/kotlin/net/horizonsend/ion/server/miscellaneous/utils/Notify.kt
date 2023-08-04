@@ -90,7 +90,4 @@ object Notify : IonServerComponent() {
 		}
 	}
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

@@ -45,7 +45,4 @@ object SpaceWorlds : IonServerComponent() {
 		with(cache) { invalidateAll(); cleanUp() }
 	}
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

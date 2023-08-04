@@ -63,7 +63,4 @@ object Orbits : IonServerComponent() {
 		}
 	}
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

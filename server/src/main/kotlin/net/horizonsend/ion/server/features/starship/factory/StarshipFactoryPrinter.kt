@@ -24,7 +24,7 @@ import kotlin.math.min
 
 class StarshipFactoryPrinter(
 	private val world: World,
-	private val inventory: Inventory,
+	private val inventories: List<Inventory>,
 	private val blocks: Long2ObjectOpenHashMap<BlockData>,
 	private val signs: Long2ObjectOpenHashMap<Array<String>>,
 	private var availableCredits: Double = 0.0
@@ -52,15 +52,17 @@ class StarshipFactoryPrinter(
 	}
 
 	private fun countMaterials() {
-		for (item: ItemStack? in inventory.contents) {
-			if (item == null || item.type.isAir) {
-				continue
+		for (inventory in inventories) {
+			for (item: ItemStack? in inventory.contents) {
+				if (item == null || item.type.isAir) {
+					continue
+				}
+
+				val printItem = PrintItem(item)
+
+				val oldAmount = availableItems.getOrDefault(printItem, 0)
+				availableItems[printItem] = oldAmount + item.amount
 			}
-
-			val printItem = PrintItem(item)
-
-			val oldAmount = availableItems.getOrDefault(printItem, 0)
-			availableItems[printItem] = oldAmount + item.amount
 		}
 	}
 
@@ -143,26 +145,28 @@ class StarshipFactoryPrinter(
 		for ((printItem, count) in usedItems) {
 			var remainingCount = count
 
-			for (item: ItemStack? in inventory.contents) {
-				if (item == null || item.type.isAir) {
-					continue
+			for (inventory in inventories) {
+				for (item: ItemStack? in inventory.contents) {
+					if (item == null || item.type.isAir) {
+						continue
+					}
+
+					if (printItem != PrintItem(item)) {
+						continue
+					}
+
+					val amount = min(remainingCount, item.amount)
+					item.amount -= amount
+					remainingCount -= amount
+
+					if (remainingCount == 0) {
+						break
+					}
 				}
 
-				if (printItem != PrintItem(item)) {
-					continue
+				if (remainingCount > 0) {
+					Throwable("$remainingCount missing of $printItem").printStackTrace()
 				}
-
-				val amount = min(remainingCount, item.amount)
-				item.amount -= amount
-				remainingCount -= amount
-
-				if (remainingCount == 0) {
-					break
-				}
-			}
-
-			if (remainingCount > 0) {
-				Throwable("$remainingCount missing of $printItem").printStackTrace()
 			}
 		}
 	}

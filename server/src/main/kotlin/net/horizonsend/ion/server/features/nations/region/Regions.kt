@@ -39,11 +39,8 @@ import kotlin.collections.set
 import kotlin.reflect.KClass
 
 object Regions : IonServerComponent() {
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 
-	@Synchronized
+    @Synchronized
 	private fun locked(block: () -> Unit) = block()
 
 	private val cache = RegionCache()

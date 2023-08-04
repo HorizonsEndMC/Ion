@@ -18,11 +18,8 @@ import java.util.Properties
 import kotlin.math.sqrt
 
 object Merchants : IonServerComponent() {
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 
-	override fun onEnable() {
+    override fun onEnable() {
 		reloadMerchants()
 		Tasks.asyncRepeat(20L * 60 * 60, 20L * 60 * 60) {
 			reloadMerchants()

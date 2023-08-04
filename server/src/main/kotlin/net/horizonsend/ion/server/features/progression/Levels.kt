@@ -8,7 +8,6 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.miscellaneous.utils.*
-import net.horizonsend.ion.server.miscellaneous.utils.Notify.online
 import net.horizonsend.ion.server.sharedDataFolder
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -181,7 +180,4 @@ object Levels : IonServerComponent() {
 	 */
 	operator fun get(player: Player): Int = getCached(player)
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

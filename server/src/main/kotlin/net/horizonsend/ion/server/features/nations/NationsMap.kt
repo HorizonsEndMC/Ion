@@ -312,7 +312,4 @@ object NationsMap : IonServerComponent(true) {
 	private fun getMarkerID(station: RegionSpaceStation<*, *>) =
 		"nation-station-" + station.id.toString()
 
-	override fun vanillaOnly(): Boolean {
-		return true
-	}
 }

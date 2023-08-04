@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.pipe
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
+import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.pipe.filter.FilterData
 import net.horizonsend.ion.server.features.transport.pipe.filter.FilterItemData
@@ -387,6 +388,15 @@ object Pipes : IonServerComponent() {
 
 				// ensure we're not attempting to deliver to the same inventory
 				if (destinationInventory.location == sourceInventory.location) {
+					continue@destinationLoop
+				}
+
+				for ((loc, invs) in StarshipFactories.connectedChests) {
+					if (loc != Vec3i(dest.location)) continue@destinationLoop
+
+					if (invs.none { it.x == sourceInventory.location!!.x && it.y == sourceInventory.location!!.y && it.z == sourceInventory.location!!.z })
+						invs.add(sourceInventory.location!!)
+
 					continue@destinationLoop
 				}
 

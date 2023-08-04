@@ -13,6 +13,4 @@ abstract class IonComponent {
 	inline fun <reified T, B> ((T) -> B).registerRedisAction(id: String, runSync: Boolean = true): RedisAction<T> {
 		return RedisActions.register(id, runSync, this)
 	}
-
-	open fun vanillaOnly(): Boolean = false
 }
