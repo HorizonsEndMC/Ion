@@ -18,12 +18,18 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph
 import java.util.*
 
 object WaypointManager : IonServerComponent() {
-	val mainGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+	// mainGraph holds the server graph
+	private val mainGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+
+	// playerGraphs hold copies of mainGraph, with add'l vertices per player (for shortest path calculation)
 	val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
 
+	// ********************************
+	// server component handlers
+	// ********************************
 	override fun onEnable() {
-		populateGraphVertices(mainGraph)
-		populateGraphEdges(mainGraph)
+		populateMainGraphVertices()
+		populateMainGraphEdges()
 
 		// update all graphs every five seconds
 		Tasks.syncRepeat(0L, 100L) {
@@ -41,17 +47,34 @@ object WaypointManager : IonServerComponent() {
 		deleteGraph(mainGraph)
 	}
 
-	private fun populateGraphVertices(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
-		// add all planets as vertices to graph
+	// ********************************
+	// helper functions
+	// ********************************
+	fun getVertex(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>, name: String): WaypointVertex? {
+		return graph.vertexSet().find { it.name == name }
+	}
+
+	private fun deleteGraph(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?) {
+		if (graph != null) {
+			graph.removeAllEdges(graph.edgeSet())
+			graph.removeAllVertices(graph.vertexSet())
+		}
+	}
+
+	// ********************************
+	// mainGraph-specific functions
+	// ********************************
+	private fun populateMainGraphVertices() {
+		// add all planets as vertices to mainGraph
 		for (planet in Space.getPlanets()) {
 			val wp = WaypointVertex(
 				name = planet.name,
 				loc = planet.location.toLocation(planet.spaceWorld)
 			)
-			graph.addVertex(wp)
+			mainGraph.addVertex(wp)
 		}
 
-		// add all beacons as vertices to graph
+		// add all beacons as vertices to mainGraph
 		for (beacon in IonServer.configuration.beacons) {
 			// 2 vertices for each beacon's entry and exit point
 			val wpEntry = WaypointVertex(
@@ -70,35 +93,24 @@ object WaypointManager : IonServerComponent() {
 		}
 	}
 
-	private fun populateGraphEdges(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
+	private fun populateMainGraphEdges() {
 		// add edges for each vertex
-		for (vertex in graph.vertexSet()) {
+		for (vertex in mainGraph.vertexSet()) {
 			// connect vertices that are in the same space world (and not itself) (celestials in the same world)
-			for (otherVertex in graph.vertexSet()) {
+			for (otherVertex in mainGraph.vertexSet()) {
 				if (vertex == otherVertex) continue
 				if (vertex.loc.world == otherVertex.loc.world) {
-					val edge = graph.addEdge(vertex, otherVertex)
-					graph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
+					val edge = mainGraph.addEdge(vertex, otherVertex)
+					mainGraph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
 				}
 			}
 
 			// add edges between vertices linked to another (i.e. beacons)
 			if (vertex.linkedWaypoint != null) {
-				val edge = graph.addEdge(vertex, vertex.linkedWaypoint)
+				val edge = mainGraph.addEdge(vertex, vertex.linkedWaypoint)
 				edge.hyperspaceEdge = true
-				graph.setEdgeWeight(edge, Hyperspace.INTER_SYSTEM_DISTANCE.toDouble())
+				mainGraph.setEdgeWeight(edge, Hyperspace.INTER_SYSTEM_DISTANCE.toDouble())
 			}
-		}
-	}
-
-	fun getVertex(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>, name: String): WaypointVertex? {
-		return graph.vertexSet().find { it.name == name }
-	}
-
-	private fun deleteGraph(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?) {
-		if (graph != null) {
-			graph.removeAllEdges(graph.edgeSet())
-			graph.removeAllVertices(graph.vertexSet())
 		}
 	}
 
@@ -106,8 +118,8 @@ object WaypointManager : IonServerComponent() {
 		if (!GraphTests.isEmpty(mainGraph)) {
 			deleteGraph(mainGraph)
 		}
-		populateGraphVertices(mainGraph)
-		populateGraphEdges(mainGraph)
+		populateMainGraphVertices()
+		populateMainGraphEdges()
 	}
 
 	fun printMainGraphVertices(player: Player) {
@@ -139,6 +151,9 @@ object WaypointManager : IonServerComponent() {
 		}
 	}
 
+	// ********************************
+	// listeners
+	// ********************************
 	@Suppress("unused")
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
