@@ -31,7 +31,7 @@ object WaypointCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
-	@Subcommand("test")
+	@Subcommand("main")
 	@CommandCompletion("vertex|edge")
 	fun onTestMainMap(
 		sender: Player,
@@ -39,10 +39,30 @@ object WaypointCommand : SLCommand() {
 	) {
 		when (option) {
 			"vertex" -> {
-				WaypointManager.printMainGraphVertices(sender)
+				WaypointManager.printGraphVertices(WaypointManager.mainGraph, sender)
 			}
 			"edge" -> {
-				WaypointManager.printMainGraphEdges(sender)
+				WaypointManager.printGraphEdges(WaypointManager.mainGraph, sender)
+			}
+			else -> {
+				throw InvalidCommandArgument("Invalid choice; select vertex/edge")
+			}
+		}
+	}
+
+	@Suppress("unused")
+	@Subcommand("player")
+	@CommandCompletion("vertex|edge")
+	fun onTestPlayerMap(
+		sender: Player,
+		option: String
+	) {
+		when (option) {
+			"vertex" -> {
+				WaypointManager.printGraphVertices(WaypointManager.playerGraphs[sender.uniqueId], sender)
+			}
+			"edge" -> {
+				WaypointManager.printGraphEdges(WaypointManager.playerGraphs[sender.uniqueId], sender)
 			}
 			else -> {
 				throw InvalidCommandArgument("Invalid choice; select vertex/edge")
