@@ -23,6 +23,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.StarshipType.CORVETTE
 import net.horizonsend.ion.server.features.starship.StarshipType.DESTROYER
 import net.horizonsend.ion.server.features.starship.StarshipType.FRIGATE
@@ -218,7 +219,47 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
+							.append(text("m"))
+							.append(
+								text(repeatString(" ", 4 - distance.toString().length))
+									.font(key("horizonsend:sidebar"))
+							)
+							.color(color),
+						distanceInt = distance,
+						padding = empty()
+					)
+				)
+			}
+
+			val lastStarship = LastPilotedStarship.map[player.uniqueId]
+
+			if (lastStarship != null) {
+				val vector = lastStarship.toVector()
+				val distance = vector.distance(playerVector).toInt()
+				val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+				val height = vector.y.toInt()
+				val color = distanceColor(distance)
+
+				contactsList.add(
+					ContactsData(
+						name = text("Last Piloted Starship").color(color),
+						prefix = text("\uE032").font(key("horizonsend:sidebar")).color(YELLOW) as TextComponent,
+						suffix = empty(),
+						heading = text(direction)
+							.append(
+								text(repeatString(" ", 2 - direction.length))
+									.font(key("horizonsend:sidebar"))
+							)
+							.color(color),
+						height = text("$height")
+							.append(text("y"))
+							.append(
+								text(repeatString(" ", 3 - height.toString().length))
+									.font(key("horizonsend:sidebar"))
+							)
+							.color(color),
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
@@ -260,7 +301,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
@@ -302,7 +343,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
@@ -342,7 +383,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))

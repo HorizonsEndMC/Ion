@@ -126,6 +126,7 @@ val components: List<IonComponent> = listOf(
 	ShipKillXP,
 	Decomposers,
 	ChannelSelections,
+	LastPilotedStarship,
 
 	DutyModeMonitor,
 
