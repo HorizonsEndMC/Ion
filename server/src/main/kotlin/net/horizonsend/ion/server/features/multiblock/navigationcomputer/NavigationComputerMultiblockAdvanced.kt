@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.navigationcomputer
 
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 
-object NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
+sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
 	override val signText = createSignText(
 		line1 = "&6Advanced",
 		line2 = "&8Navigation",
@@ -11,7 +11,9 @@ object NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
 	)
 
 	override val baseRange: Int = 20000
+}
 
+object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
@@ -60,6 +62,66 @@ object NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock() {
 				x(+0).sponge()
 				x(+1).sponge()
 				x(+2).ironBlock()
+			}
+		}
+	}
+}
+
+object HorizontalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
+	override fun MultiblockShape.buildStructure() {
+		z(0) {
+			y(0) {
+				x(-1).anyStairs()
+				x(+0).ironBlock()
+				x(+1).anyStairs()
+			}
+			y(1) {
+				x(-1).anyStairs()
+				x(+0).anyGlassPane()
+				x(+1).anyStairs()
+			}
+			y(2) {
+				x(-1).ironBlock()
+				x(+0).anyGlassPane()
+				x(+1).ironBlock()
+			}
+			y(3) {
+				x(-1).anyStairs()
+				x(+0).anyGlassPane()
+				x(+1).anyStairs()
+			}
+			y(4) {
+				x(-1).anyStairs()
+				x(+0).ironBlock()
+				x(+1).anyStairs()
+			}
+		}
+
+		z(+1) {
+			y(0) {
+				x(-1).ironBlock()
+				x(+0).ironBlock()
+				x(+1).ironBlock()
+			}
+			y(1) {
+				x(-1).sponge()
+				x(+0).sponge()
+				x(+1).sponge()
+			}
+			y(2) {
+				x(-1).sponge()
+				x(+0).diamondBlock()
+				x(+1).sponge()
+			}
+			y(3) {
+				x(-1).sponge()
+				x(+0).sponge()
+				x(+1).sponge()
+			}
+			y(4) {
+				x(-1).ironBlock()
+				x(+0).ironBlock()
+				x(+1).ironBlock()
 			}
 		}
 	}
