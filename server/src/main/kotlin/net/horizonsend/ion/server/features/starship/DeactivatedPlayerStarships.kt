@@ -3,18 +3,18 @@ package net.horizonsend.ion.server.features.starship
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.objId
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
@@ -71,7 +71,8 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				serverName = IonServer.configuration.serverName,
 				levelName = worldName,
 				blockKey = blockKey,
-				name = name
+				name = name,
+				isLockEnabled = true
 			)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)

@@ -7,7 +7,11 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.action
+import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.isPilot
+import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -118,6 +122,8 @@ object ProtectionListener : SLEventListener() {
 		val z = location.blockZ
 		val data = DeactivatedPlayerStarships.getLockedContaining(world, x, y, z)
 			?: return false
+
+		if (!data.isLockActive()) return false
 
 		return !data.isPilot(player)
 	}
