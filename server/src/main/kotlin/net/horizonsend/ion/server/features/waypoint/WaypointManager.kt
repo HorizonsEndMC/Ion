@@ -198,6 +198,22 @@ object WaypointManager : IonServerComponent() {
     /**
      * playerGraph-specific functions
      */
+
+    fun updatePlayerGraph(player: Player) {
+        if (playerGraphs[player.uniqueId] != null) {
+            playerGraphs[player.uniqueId]?.let { playerGraph ->
+                clonePlayerGraphFromMain(playerGraph)
+                updatePlayerPositionVertex(playerGraph, player)
+            }
+        } else {
+            // add player's graph to the map
+            val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+            clonePlayerGraphFromMain(playerGraph)
+            updatePlayerPositionVertex(playerGraph, player)
+            playerGraphs[player.uniqueId] = playerGraph
+        }
+    }
+
     private fun clonePlayerGraphFromMain(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
         Graphs.addGraph(graph, mainGraph)
     }
@@ -215,10 +231,10 @@ object WaypointManager : IonServerComponent() {
                 linkedWaypoint = null
             )
             graph.addVertex(newVertex)
-            updateEdgeWeights(graph, newVertex)
+            //updateEdgeWeights(graph, newVertex)
         } else {
             locVertex.loc = player.location
-            updateEdgeWeights(graph, locVertex)
+            //updateEdgeWeights(graph, locVertex)
         }
     }
 
