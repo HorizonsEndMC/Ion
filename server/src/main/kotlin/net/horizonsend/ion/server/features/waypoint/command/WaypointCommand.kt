@@ -23,11 +23,21 @@ object WaypointCommand : SLCommand() {
 
 	@Suppress("unused")
 	@Subcommand("reload")
+	@CommandCompletion("main|player")
 	fun onReloadMainMap(
-		sender: Player
+		sender: Player,
+		mapType: String
 	) {
-		WaypointManager.reloadMainGraph()
-		sender.success("Main map reloaded")
+		when (mapType) {
+			"main" -> {
+				WaypointManager.reloadMainGraph()
+				sender.success("Main map reloaded")
+			}
+			"player" -> {
+				WaypointManager.updatePlayerGraph(sender)
+				sender.success("Player map reloaded")
+			}
+		}
 	}
 
 	@Suppress("unused")
