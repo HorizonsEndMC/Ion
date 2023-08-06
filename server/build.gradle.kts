@@ -34,7 +34,7 @@ dependencies {
 
 	// Other Plugins
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("org.bukkit") /* Old Version */ }
-	compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0")
+	compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
 	compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT")
 	compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
