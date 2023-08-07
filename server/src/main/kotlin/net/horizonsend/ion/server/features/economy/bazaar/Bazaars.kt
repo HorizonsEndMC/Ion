@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.mongodb.client.FindIterable
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
+import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
@@ -25,6 +27,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -40,6 +43,11 @@ import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
 object Bazaars : IonServerComponent() {
+	val strings = mutableListOf<String>().apply {
+		addAll(Material.values().filter { it.isItem && !it.isLegacy }.map { it.name })
+		addAll(CustomItems.all().map { it.id })
+		addAll(net.horizonsend.ion.server.features.customitems.CustomItems.identifiers)
+	}
 
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
 		val territoryId: Oid<Territory> = city.territoryId
@@ -47,35 +55,71 @@ object Bazaars : IonServerComponent() {
 		openMainMenu(territoryId, player, false)
 	}
 
-	fun openMainMenu(territoryId: Oid<Territory>, player: Player, remote: Boolean) = Tasks.async {
+	fun openMainMenu(territoryId: Oid<Territory>, player: Player, remote: Boolean): Unit = Tasks.async {
 		MenuHelper.run {
-			val titleButtons: List<GuiItem> = listOf(
-				guiButton(Material.REDSTONE_BLOCK) {
-					Tasks.sync {
-						BazaarCommand.onBrowse(player)
-					}
+			val backButton = guiButton(Material.REDSTONE_BLOCK) {
+				Tasks.sync {
+					BazaarCommand.onBrowse(player)
 				}
+			}.setName(text("Go Back to City Selection"))
+
+			val searchButton = guiButton(Material.NAME_TAG) {
+				Tasks.sync {
+					player.input("Enter Item Name") { _, input ->
+						val searchBackButton = guiButton(Material.REDSTONE_BLOCK) {
+							Tasks.sync {
+								openMainMenu(territoryId, player, remote)
+							}
+						}.setName(text("Go Back to City"))
+
+						Tasks.async {
+							val items: List<GuiItem> = getGuiItems(territoryId, remote, search(territoryId, input))
+
+							Tasks.sync {
+								player.openPaginatedMenu("Search Query : $input", items, listOf(searchBackButton))
+							}
+						}
+
+						null
+					}
+
+				}
+			}.setName(text("Search"))
+
+			val titleButtons: List<GuiItem> = listOf(
+				backButton,
+				searchButton
 			)
 
-			val items: List<GuiItem> = BazaarItem
-				.find(and(BazaarItem::cityTerritory eq territoryId, BazaarItem::stock gt 0))
-				.descendingSort(BazaarItem::stock)
-				.map(BazaarItem::itemString)
-				// only one per item string
-				.distinct()
-				// convert to GuiItem
-				.map { itemString ->
-					val item: ItemStack = fromItemString(itemString)
-					return@map guiButton(item) {
-						openItemMenu(playerClicker, territoryId, itemString, SortingBy.STOCK, true, remote)
-					}
-				}
+			val items: List<GuiItem> = getGuiItems(territoryId, remote, getCityItems(territoryId))
+
+			val cityName = Territory.findPropById(territoryId, Territory::name)
 
 			Tasks.sync {
-				player.openPaginatedMenu("Select An Item", items, titleButtons)
+				player.openPaginatedMenu("City: $cityName", items, titleButtons)
 			}
 		}
 	}
+
+	fun getGuiItems(territoryId: Oid<Territory>, remote: Boolean, bazaarItems: FindIterable<BazaarItem>): List<GuiItem> = getGuiItems(
+		territoryId, remote, bazaarItems.descendingSort(BazaarItem::stock).toList()
+	)
+
+	fun getGuiItems(territoryId: Oid<Territory>, remote: Boolean, bazaarItems: List<BazaarItem>): List<GuiItem> =
+		bazaarItems
+			.map(BazaarItem::itemString)
+			// only one per item string
+			.distinct()
+			// convert to GuiItem
+			.map { itemString ->
+				val item: ItemStack = fromItemString(itemString)
+				return@map MenuHelper.guiButton(item) {
+					openItemMenu(playerClicker, territoryId, itemString, SortingBy.STOCK, true, remote)
+				}
+			}
+
+	private fun getCityItems(territoryId: Oid<Territory>): FindIterable<BazaarItem> = BazaarItem
+		.find(and(BazaarItem::cityTerritory eq territoryId, BazaarItem::stock gt 0))
 
 	enum class SortingBy(val property: KProperty<*>, val displayType: Material) {
 		PRICE(BazaarItem::price, Material.GOLD_INGOT),
@@ -199,6 +243,9 @@ object Bazaars : IonServerComponent() {
 			gui(1, "$currentAmount/${item.stock} $sellerName's $name").withPane(pane).show(player)
 		}
 	}
+
+	private fun search(territoryId: Oid<Territory>, search: String): List<BazaarItem> =
+		getCityItems(territoryId).filter { it.itemString.contains(search, true) }
 
 	private fun tryBuy(player: Player, item: BazaarItem, amount: Int, remote: Boolean) {
 		val price: Double = item.price
