@@ -34,7 +34,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.roundToHundredth
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
-import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
@@ -112,9 +112,29 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 		)
 	}
 
+	@Subcommand("create")
+	@Description("Create a new listing at this city")
+	fun onCreate(sender: Player, pricePerItem: Double) = asyncCommand(sender) {
+		val item = requireItemInHand(sender)
+		val itemString = Bazaars.toItemString(item)
+
+		onCreate(sender, itemString, pricePerItem)
+	}
+
 	private fun requireSelling(territory: RegionTerritory, sender: Player, itemString: String) =
 		BazaarItem.findOne(BazaarItem.matchQuery(territory.id, sender.slPlayerId, itemString))
 			?: fail { "You're not selling $itemString at ${cityName(territory)}" }
+
+	@Suppress("Unused")
+	@Subcommand("deposit")
+	@Description("Deposit all matching items in your inventory")
+	@CommandCompletion("@bazaarItemStrings")
+	fun onDeposit(sender: Player) = asyncCommand(sender) {
+		val item = requireItemInHand(sender)
+		val itemString = Bazaars.toItemString(item)
+
+		onDeposit(sender, itemString)
+	}
 
 	@Suppress("Unused")
 	@Subcommand("deposit")
@@ -230,18 +250,18 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 			val price = item.price.toCreditsString()
 
 			sender.sendMessage(
-				Component.text()
+				text()
 					.append(itemDisplayName)
-					.append(Component.text(" @ ").color(NamedTextColor.DARK_PURPLE))
-					.append(Component.text(city).color(NamedTextColor.LIGHT_PURPLE))
-					.append(Component.text(" [").color(NamedTextColor.DARK_GRAY))
-					.append(Component.text("stock: ").color(NamedTextColor.GRAY))
-					.append(Component.text(stock).color(NamedTextColor.GRAY))
-					.append(Component.text(", balance: ").color(NamedTextColor.GRAY))
-					.append(Component.text(uncollected).color(NamedTextColor.GOLD))
-					.append(Component.text(", price: ").color(NamedTextColor.GRAY))
-					.append(Component.text(price).color(NamedTextColor.YELLOW))
-					.append(Component.text("]").color(NamedTextColor.DARK_GRAY))
+					.append(text(" @ ").color(NamedTextColor.DARK_PURPLE))
+					.append(text(city).color(NamedTextColor.LIGHT_PURPLE))
+					.append(text(" [").color(NamedTextColor.DARK_GRAY))
+					.append(text("stock: ").color(NamedTextColor.GRAY))
+					.append(text(stock).color(NamedTextColor.GRAY))
+					.append(text(", balance: ").color(NamedTextColor.GRAY))
+					.append(text(uncollected).color(NamedTextColor.GOLD))
+					.append(text(", price: ").color(NamedTextColor.GRAY))
+					.append(text(price).color(NamedTextColor.YELLOW))
+					.append(text("]").color(NamedTextColor.DARK_GRAY))
 			)
 		}
 	}
@@ -317,15 +337,15 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Bazaars.dropItems(item, amount, sender)
 
 		sender.sendMessage(
-			Component.text("Bought ").color(NamedTextColor.GREEN)
-				.append(Component.text(amount).color(NamedTextColor.WHITE))
-				.append(Component.text(" of "))
+			text("Bought ").color(NamedTextColor.GREEN)
+				.append(text(amount).color(NamedTextColor.WHITE))
+				.append(text(" of "))
 				.append(item.displayNameComponent)
-				.append(Component.text(" for "))
-				.append(Component.text(price.toCreditsString()).color(NamedTextColor.GOLD))
-				.append(Component.text(" (+ "))
-				.append(Component.text(tax.toCreditsString()).color(NamedTextColor.GOLD))
-				.append(Component.text(" tax"))
+				.append(text(" for "))
+				.append(text(price.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(text(" (+ "))
+				.append(text(tax.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(text(" tax"))
 		)
 
 		if (city.type == TradeCityType.SETTLEMENT) {
