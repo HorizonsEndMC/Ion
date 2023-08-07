@@ -2,29 +2,30 @@ package net.horizonsend.ion.server.features.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.economy.BazaarCommand
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -48,6 +49,14 @@ object Bazaars : IonServerComponent() {
 
 	fun openMainMenu(territoryId: Oid<Territory>, player: Player, remote: Boolean) = Tasks.async {
 		MenuHelper.run {
+			val titleButtons: List<GuiItem> = listOf(
+				guiButton(Material.REDSTONE_BLOCK) {
+					Tasks.sync {
+						BazaarCommand.onBrowse(player)
+					}
+				}
+			)
+
 			val items: List<GuiItem> = BazaarItem
 				.find(and(BazaarItem::cityTerritory eq territoryId, BazaarItem::stock gt 0))
 				.descendingSort(BazaarItem::stock)
@@ -63,7 +72,7 @@ object Bazaars : IonServerComponent() {
 				}
 
 			Tasks.sync {
-				player.openPaginatedMenu("Select An Item", items)
+				player.openPaginatedMenu("Select An Item", items, titleButtons)
 			}
 		}
 	}

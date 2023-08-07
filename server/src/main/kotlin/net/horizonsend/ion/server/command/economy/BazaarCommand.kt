@@ -5,36 +5,37 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.space.Sector
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.roundToHundredth
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -273,6 +274,7 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("browse")
+	@Default
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
 		val sector = Sector.getSector(sender.world)
