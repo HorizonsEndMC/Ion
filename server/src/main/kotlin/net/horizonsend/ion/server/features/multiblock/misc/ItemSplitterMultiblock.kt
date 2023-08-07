@@ -25,8 +25,8 @@ import org.bukkit.inventory.ItemStack
 object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMultiblock {
 	override val name: String = "splitter"
 
-	val BLACKLIST = text("BLACKLIST", NamedTextColor.BLACK)
-	val WHITELIST = text("WHITELIST", NamedTextColor.WHITE)
+	val RIGHT = text("<-----", NamedTextColor.AQUA)
+	val LEFT = text("----->", NamedTextColor.AQUA)
 
 	val BLACKLIST_OLD = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
 	val WHITELIST_OLD = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
@@ -35,7 +35,7 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		text("Item Splitter", NamedTextColor.GOLD),
 		null,
 		null,
-		BLACKLIST
+		RIGHT
 	)
 
 	override fun MultiblockShape.buildStructure() {
@@ -86,10 +86,10 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 
 		if (isBlacklist(sign)) {
 			player.success("Switched sorter to whitelist!")
-			sign.line(3, WHITELIST)
+			sign.line(3, LEFT)
 		} else {
 			player.success("Switched sorter to blacklist!")
-			sign.line(3, BLACKLIST)
+			sign.line(3, RIGHT)
 		}
 
 		sign.update()
@@ -99,12 +99,12 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		val line = sign.line(3)
 
 		if (line == BLACKLIST_OLD) {
-			sign.line(3, BLACKLIST)
+			sign.line(3, RIGHT)
 			sign.update()
 		}
 
 		if (line == WHITELIST_OLD) {
-			sign.line(3, WHITELIST)
+			sign.line(3, LEFT)
 			sign.update()
 		}
 	}
@@ -192,6 +192,6 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	private val filteredInventory: Vec3i = Vec3i(2, 1, -2)
 
 	private fun isBlacklist(sign: Sign): Boolean {
-		return sign.line(3) == BLACKLIST
+		return sign.line(3) == RIGHT
 	}
 }
