@@ -12,18 +12,11 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
-import java.util.*
-import kotlin.collections.set
-import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.minecraft.world.level.block.BaseEntityBlock
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.*
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -35,19 +28,19 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
-import net.horizonsend.ion.server.miscellaneous.utils.Notify
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.isAlphanumeric
-import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
-import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
+import net.horizonsend.ion.server.miscellaneous.*
+import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
+import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.minecraft.world.level.block.BaseEntityBlock
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
+import java.util.*
+import kotlin.collections.set
 
 @CommandAlias("blueprint")
 object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -287,7 +280,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			Tasks.async {
 				try {
 					DeactivatedPlayerStarships.updateType(data, type)
-					val state = StarshipDetection.detectNewState(data)
+					val state = StarshipDetection.detectNewState(data, sender)
 					DeactivatedPlayerStarships.updateState(data, state)
 					Tasks.sync {
 						PilotedStarships.tryPilot(sender, data) {

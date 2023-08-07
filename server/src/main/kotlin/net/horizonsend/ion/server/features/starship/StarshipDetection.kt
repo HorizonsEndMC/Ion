@@ -2,9 +2,24 @@ package net.horizonsend.ion.server.features.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
+import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
+import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
@@ -43,7 +58,7 @@ object StarshipDetection : IonServerComponent() {
 	}
 	//endregion
 
-	fun detectNewState(data: PlayerStarshipData): PlayerStarshipState {
+	fun detectNewState(data: PlayerStarshipData, detector: Audience? = null): PlayerStarshipState {
 		val world = data.bukkitWorld()
 		/*
 						val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
@@ -67,6 +82,7 @@ object StarshipDetection : IonServerComponent() {
 		var concrete = 0
 		var containers = 0
 		var stickyPistons = 0
+		var cargoCrates = 0
 
 		// Jumpstart the queue by adding the origin block
 		val computerKey = computerLocation.toBlockKey()
@@ -133,6 +149,7 @@ object StarshipDetection : IonServerComponent() {
 				material.isConcrete -> concrete++
 				isInventory(material) -> containers++
 				material == Material.STICKY_PISTON -> stickyPistons++
+				material.isShulkerBox -> cargoCrates++
 			}
 
 			if (material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.BARREL) {
@@ -203,11 +220,23 @@ object StarshipDetection : IonServerComponent() {
 			)
 		}
 
-		val maxStickyPistons: Int = (min(0.015 * size, sqrt(size.toDouble())) * type.crateLimitMultiplier).toInt()
-		if (stickyPistons > maxStickyPistons) {
+		val maxCrates: Int = (min(0.015 * size, sqrt(size.toDouble())) * type.crateLimitMultiplier).toInt()
+
+		if (cargoCrates > maxCrates) {
 			throw DetectionFailedException(
-				"Your ship can only fit $maxStickyPistons sticky pistons but it has $stickyPistons"
+				"Your ship can only fit $maxCrates sticky pistons but it has $cargoCrates"
 			)
+		}
+
+		if (stickyPistons > maxCrates) {
+			val message = text()
+				.append(text("WARNING: ", NamedTextColor.DARK_RED, TextDecoration.BOLD))
+				.append(text("This starship can only carry $maxCrates cargo crates, but it has $stickyPistons " +
+					"sticky pistons.\n"))
+				.append(text("If you are using sticky pistons outside of crates, you can ignore this message.", NamedTextColor.GRAY))
+				.build()
+
+			detector?.sendMessage(message)
 		}
 
 		/*// Allow listeners to cancel the detection

@@ -209,7 +209,7 @@ object StarshipComputers : IonServerComponent() {
 		Tasks.async {
 			synchronized(getLock(data._id)) {
 				val state = try {
-					StarshipDetection.detectNewState(data)
+					StarshipDetection.detectNewState(data, player)
 				} catch (e: StarshipDetection.DetectionFailedException) {
 					player.serverErrorActionMessage("${e.message} Detection failed!")
 					player.hint("Is it touching another structure?")
