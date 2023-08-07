@@ -6,15 +6,12 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.jgrapht.GraphTests
 import org.jgrapht.Graphs
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
@@ -74,13 +71,33 @@ object WaypointManager : IonServerComponent() {
         graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
         vertex: WaypointVertex
     ) {
-        graph.removeAllEdges(graph.edgesOf(vertex))
-        val verticesSameWorld = graph.vertexSet()
+        // find edges that span different worlds and remove them
+        graph.edgesOf(vertex)
+            .filter { edge -> edge.target.loc.world != vertex.loc.world && edge.target.loc.world != vertex.loc.world }
+            .forEach { edge -> graph.removeEdge(edge) }
+        // find vertices that are in the same world as the current vertex; create them
+        graph.vertexSet()
             .filter { otherVertex -> otherVertex.loc.world == vertex.loc.world && vertex != otherVertex }
-        for (otherVertex in verticesSameWorld) {
-            val edge = graph.addEdge(vertex, otherVertex)
-            graph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
-        }
+            .forEach { otherVertex ->
+                val outEdge = WaypointEdge(
+                    source = vertex,
+                    target = otherVertex,
+                    hyperspaceEdge = false
+                )
+                val inEdge = WaypointEdge(
+                    source = otherVertex,
+                    target = vertex,
+                    hyperspaceEdge = false
+                )
+                if (!graph.addEdge(vertex, otherVertex, outEdge)) {
+                    println("EDGE BETWEEN $vertex AND $otherVertex FAILED TO GENERATE")
+                }
+                graph.setEdgeWeight(outEdge, vertex.loc.distance(otherVertex.loc))
+                if (!graph.addEdge(otherVertex, vertex, inEdge)) {
+                    println("EDGE BETWEEN $otherVertex AND $vertex FAILED TO GENERATE")
+                }
+                graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
+            }
     }
 
     fun printGraphVertices(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?, player: Player) {
@@ -182,7 +199,7 @@ object WaypointManager : IonServerComponent() {
                     hyperspaceEdge = true
                 )
                 if (!mainGraph.addEdge(vertex, otherVertex, edge)) {
-                    println("EDGE BETWEEN $vertex AND ${vertex.linkedWaypoint} FAILED TO GENERATE")
+                    println("EDGE BETWEEN $vertex AND $otherVertex FAILED TO GENERATE")
                 }
                 edge.hyperspaceEdge = true
                 mainGraph.setEdgeWeight(edge, Hyperspace.INTER_SYSTEM_DISTANCE.toDouble())
@@ -231,10 +248,10 @@ object WaypointManager : IonServerComponent() {
                 linkedWaypoint = null
             )
             graph.addVertex(newVertex)
-            //updateEdgeWeights(graph, newVertex)
+            updateEdgeWeights(graph, newVertex)
         } else {
             locVertex.loc = player.location
-            //updateEdgeWeights(graph, locVertex)
+            updateEdgeWeights(graph, locVertex)
         }
     }
 
