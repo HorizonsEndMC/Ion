@@ -26,7 +26,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -236,7 +235,7 @@ object Bazaars : IonServerComponent() {
 					guiButton(Material.HOPPER) {
 						playerClicker.closeInventory()
 						tryBuy(playerClicker, item, currentAmount, remote)
-					}.setName(Component.text("Purchase").color(NamedTextColor.GREEN)).setLore(lore)
+					}.setName(text("Purchase").color(NamedTextColor.GREEN)).setLore(lore)
 				)
 			}
 
@@ -285,36 +284,36 @@ object Bazaars : IonServerComponent() {
 				VAULT_ECO.withdrawPlayer(player, cost)
 				val (fullStacks, remainder) = dropItems(itemStack, amount, player)
 
-				val buyMessage = Component.text().color(NamedTextColor.GREEN)
-					.append(Component.text("Bought "))
-					.append(Component.text(fullStacks).color(NamedTextColor.WHITE))
+				val buyMessage = text().color(NamedTextColor.GREEN)
+					.append(text("Bought "))
+					.append(text(fullStacks).color(NamedTextColor.WHITE))
 
 				if (itemStack.maxStackSize == 1) {
 					buyMessage
-						.append(Component.text(" "))
+						.append(text(" "))
 						.append(
 							itemStack.displayNameComponent.append(
-								if (fullStacks == 1) Component.text("") else Component.text("s")
+								if (fullStacks == 1) text("") else text("s")
 							)
 						)
 				} else {
 					buyMessage
-						.append(if (fullStacks == 1) Component.text(" stack and ") else Component.text(" stacks and "))
-						.append(Component.text(remainder).color(NamedTextColor.WHITE))
-						.append(if (remainder == 1) Component.text(" item") else Component.text(" items"))
-						.append(Component.text(" of "))
+						.append(if (fullStacks == 1) text(" stack and ") else text(" stacks and "))
+						.append(text(remainder).color(NamedTextColor.WHITE))
+						.append(if (remainder == 1) text(" item") else text(" items"))
+						.append(text(" of "))
 						.append(itemStack.displayNameComponent)
 				}
 
 				buyMessage
-					.append(Component.text(" for "))
-					.append(Component.text(cost.toCreditsString()).color(NamedTextColor.GOLD))
+					.append(text(" for "))
+					.append(text(cost.toCreditsString()).color(NamedTextColor.GOLD))
 
 				if (priceMult > 1) {
 					buyMessage
-						.append(Component.text(" (Price multiplied by ").color(NamedTextColor.YELLOW))
-						.append(Component.text(priceMult).color(NamedTextColor.WHITE))
-						.append(Component.text(" due to browsing remotely)").color(NamedTextColor.YELLOW))
+						.append(text(" (Price multiplied by ").color(NamedTextColor.YELLOW))
+						.append(text(priceMult).color(NamedTextColor.WHITE))
+						.append(text(" due to browsing remotely)").color(NamedTextColor.YELLOW))
 				}
 
 				player.sendMessage(
