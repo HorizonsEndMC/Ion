@@ -7,6 +7,8 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
@@ -14,13 +16,12 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
+import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
-import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -36,10 +37,11 @@ import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
-import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
@@ -508,6 +510,26 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			ship.beacon = null
 		} else {
 			sender.userError("Starship is not near beacon!")
+		}
+	}
+
+	@Suppress("unused")
+	@CommandAlias("drills")
+	@CommandCompletion("true|false")
+	@Description("Enable or disable all drills on your active starship")
+	fun onToggleDrills(sender: Player, enabled: Boolean) {
+		val starship = getStarshipPiloting(sender)
+
+		val signs = starship.drills.mapNotNull {
+			val (x, y, z) = it.pos
+
+			starship.serverLevel.world.getBlockAt(x, y, z).state as? Sign
+		}
+
+		val user = if (enabled) sender.name else null
+
+		for (sign in signs) {
+			DrillMultiblock.setUser(sign, user)
 		}
 	}
 }

@@ -6,20 +6,17 @@ import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.starship.Starship
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.audience.ForwardingAudience
-import net.minecraft.core.BlockPos
-import net.minecraft.server.level.ServerLevel
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
@@ -27,7 +24,23 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustDat
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.d
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.squared
+import net.horizonsend.ion.server.miscellaneous.utils.title
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.ForwardingAudience
+import net.minecraft.core.BlockPos
+import net.minecraft.server.level.ServerLevel
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
@@ -37,7 +50,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
-import java.util.*
+import java.util.LinkedList
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
@@ -100,6 +114,7 @@ abstract class ActiveStarship(
 	val thrusters = LinkedList<ThrusterSubsystem>()
 	val magazines = LinkedList<MagazineSubsystem>()
 	val gravityWells = LinkedList<GravityWellSubsystem>()
+	val drills = LinkedList<PlanetDrillSubsystem>()
 
 	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
