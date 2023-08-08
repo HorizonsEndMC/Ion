@@ -56,7 +56,7 @@ object Bazaars : IonServerComponent() {
 
 	fun openMainMenu(territoryId: Oid<Territory>, player: Player, remote: Boolean): Unit = Tasks.async {
 		MenuHelper.run {
-			val backButton = guiButton(Material.REDSTONE_BLOCK) {
+			val backButton = guiButton(Material.IRON_DOOR) {
 				Tasks.sync {
 					BazaarCommand.onBrowse(player)
 				}
@@ -65,7 +65,7 @@ object Bazaars : IonServerComponent() {
 			val searchButton = guiButton(Material.NAME_TAG) {
 				Tasks.sync {
 					player.input("Enter Item Name") { _, input ->
-						val searchBackButton = guiButton(Material.REDSTONE_BLOCK) {
+						val searchBackButton = guiButton(Material.IRON_DOOR) {
 							Tasks.sync {
 								openMainMenu(territoryId, player, remote)
 							}
