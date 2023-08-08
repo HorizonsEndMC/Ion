@@ -236,7 +236,10 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 			val lastStarship = LastPilotedStarship.map[player.uniqueId]
 
-			if (lastStarship != null) {
+			if (lastStarship != null &&
+				lastStarship.world == player.world &&
+				lastStarship.toVector().distanceSquared(playerVector) <= CONTACTS_SQRANGE) {
+
 				val vector = lastStarship.toVector()
 				val distance = vector.distance(playerVector).toInt()
 				val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
