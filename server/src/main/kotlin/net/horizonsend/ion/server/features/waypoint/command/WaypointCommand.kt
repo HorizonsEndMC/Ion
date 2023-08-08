@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
 object WaypointCommand : SLCommand() {
     @Default
     @Suppress("unused")
-    @CommandCompletion("@planets|@hyperspaceGates")
+    @CommandCompletion("@planetsInWorld|@hyperspaceGatesInWorld")
     fun onSetWaypoint(
         sender: Player,
         option: String
