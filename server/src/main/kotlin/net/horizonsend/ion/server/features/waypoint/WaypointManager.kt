@@ -187,9 +187,7 @@ object WaypointManager : IonServerComponent() {
                     target = otherVertex,
                     hyperspaceEdge = false
                 )
-                if (!mainGraph.addEdge(vertex, otherVertex, edge)) {
-                    println("EDGE BETWEEN $vertex AND $otherVertex FAILED TO GENERATE")
-                }
+                mainGraph.addEdge(vertex, otherVertex, edge)
                 mainGraph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
             }
 
@@ -201,9 +199,7 @@ object WaypointManager : IonServerComponent() {
                     target = otherVertex,
                     hyperspaceEdge = true
                 )
-                if (!mainGraph.addEdge(vertex, otherVertex, edge)) {
-                    println("EDGE BETWEEN $vertex AND $otherVertex FAILED TO GENERATE")
-                }
+                mainGraph.addEdge(vertex, otherVertex, edge)
                 edge.hyperspaceEdge = true
                 mainGraph.setEdgeWeight(edge, Hyperspace.INTER_SYSTEM_DISTANCE.toDouble())
             }
