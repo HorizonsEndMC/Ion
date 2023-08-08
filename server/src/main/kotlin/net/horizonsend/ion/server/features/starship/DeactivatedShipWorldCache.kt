@@ -8,8 +8,8 @@ import com.google.common.collect.Multimap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import org.bukkit.Chunk
@@ -130,15 +130,11 @@ class DeactivatedShipWorldCache(world: World) {
 		return chunkKeyMap[chunkKey].toList()
 	}
 
-	fun getLockedContaining(x: Int, y: Int, z: Int): PlayerStarshipData? {
+	fun getContaining(x: Int, y: Int, z: Int): PlayerStarshipData? {
 		val blockKey = blockKey(x, y, z)
 		val chunkKey = chunkKey(x shr 4, z shr 4)
 
 		for (data: PlayerStarshipData in chunkKeyMap.get(chunkKey)) {
-			if (!data.isLockActive()) {
-				continue
-			}
-
 			val state = savedStateCache[data].orNull() ?: continue
 
 			if (!state.blockMap.containsKey(blockKey)) {
@@ -149,5 +145,15 @@ class DeactivatedShipWorldCache(world: World) {
 		}
 
 		return null
+	}
+
+	fun getLockedContaining(x: Int, y: Int, z: Int): PlayerStarshipData? {
+		val data = getContaining(x, y, z)
+
+		if (data?.isLockActive() == false) {
+			return null
+		}
+
+		return data
 	}
 }

@@ -42,6 +42,12 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 	}
 
+	fun getContaining(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
+		synchronized(lock) {
+			return getCache(world).getContaining(x, y, z)
+		}
+	}
+
 	fun getLockedContaining(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
 		synchronized(lock) {
 			return getCache(world).getLockedContaining(x, y, z)

@@ -10,6 +10,10 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.component1
+import net.horizonsend.ion.server.miscellaneous.utils.component2
+import net.horizonsend.ion.server.miscellaneous.utils.component3
+import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
@@ -37,9 +41,19 @@ object ProtectionListener : SLEventListener() {
 		val block: Block? = event.clickedBlock
 
 		// Only interacting with inventory blocks counts as editing blocks
-		if (event.action == Action.RIGHT_CLICK_BLOCK && block?.state is InventoryHolder) {
-			onBlockEdit(event, block.location, event.player)
-		}
+		if (event.action != Action.RIGHT_CLICK_BLOCK) return
+
+		if (block?.state !is InventoryHolder) return
+
+		val (world, x, y, z) = block.location
+
+		if (world == null) return // This should never happen
+
+		val shipContaining = DeactivatedPlayerStarships.getContaining(world, x.toInt(), y.toInt(), z.toInt())
+
+		if (shipContaining?.isPilot(event.player) == true) return
+
+		onBlockEdit(event, block.location, event.player)
 	}
 
 	@EventHandler
