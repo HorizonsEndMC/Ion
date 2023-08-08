@@ -67,17 +67,10 @@ object WaypointManager : IonServerComponent() {
         return graph.vertexSet().find { it.name == name }
     }
 
-    private fun updateEdgeWeights(
+    private fun connectVerticesInSameWorld(
         graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
         vertex: WaypointVertex
     ) {
-        // find edges that span different worlds and remove them
-        val edgesDifferentWorld = graph.edgesOf(vertex)
-            .filter { edge -> edge.target.loc.world != vertex.loc.world && edge.target.loc.world != vertex.loc.world }
-        for (edge in edgesDifferentWorld) {
-            graph.removeEdge(edge)
-        }
-
         // find vertices that are in the same world as the current vertex; create them
         val verticesSameWorld = graph.vertexSet()
             .filter { otherVertex -> otherVertex.loc.world == vertex.loc.world && vertex != otherVertex }
@@ -92,13 +85,9 @@ object WaypointManager : IonServerComponent() {
                 target = vertex,
                 hyperspaceEdge = false
             )
-            if (!graph.addEdge(vertex, otherVertex, outEdge)) {
-                println("EDGE BETWEEN $vertex AND $otherVertex FAILED TO GENERATE")
-            }
+            graph.addEdge(vertex, otherVertex, outEdge)
             graph.setEdgeWeight(outEdge, vertex.loc.distance(otherVertex.loc))
-            if (!graph.addEdge(otherVertex, vertex, inEdge)) {
-                println("EDGE BETWEEN $otherVertex AND $vertex FAILED TO GENERATE")
-            }
+            graph.addEdge(otherVertex, vertex, inEdge)
             graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
         }
     }
@@ -178,6 +167,8 @@ object WaypointManager : IonServerComponent() {
     private fun populateMainGraphEdges() {
         // add edges for each vertex
         for (vertex in mainGraph.vertexSet()) {
+            connectVerticesInSameWorld(mainGraph, vertex)
+            /*
             // connect vertices that are in the same space world (and not itself) (celestials in the same world)
             val verticesSameWorld = mainGraph.vertexSet()
                 .filter { otherVertex -> otherVertex.loc.world == vertex.loc.world && otherVertex != vertex }
@@ -190,6 +181,7 @@ object WaypointManager : IonServerComponent() {
                 mainGraph.addEdge(vertex, otherVertex, edge)
                 mainGraph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
             }
+             */
 
             // add edges between vertices linked to another (i.e. beacons)
             if (vertex.linkedWaypoint != null) {
@@ -239,18 +231,14 @@ object WaypointManager : IonServerComponent() {
     ) {
         // get the vertex representing the player's position, or create one
         val locVertex = getVertex(graph, "Current Location")
-        if (locVertex == null) {
-            val newVertex = WaypointVertex(
-                name = "Current Location",
-                loc = player.location,
-                linkedWaypoint = null
-            )
-            graph.addVertex(newVertex)
-            updateEdgeWeights(graph, newVertex)
-        } else {
-            locVertex.loc = player.location
-            updateEdgeWeights(graph, locVertex)
-        }
+        graph.removeVertex(locVertex)
+        val newVertex = WaypointVertex(
+            name = "Current Location",
+            loc = player.location,
+            linkedWaypoint = null
+        )
+        graph.addVertex(newVertex)
+        connectVerticesInSameWorld(graph, newVertex)
     }
 
     /**
