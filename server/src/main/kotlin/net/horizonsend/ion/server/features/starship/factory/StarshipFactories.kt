@@ -34,7 +34,7 @@ import kotlin.collections.set
 import kotlin.math.roundToInt
 
 object StarshipFactories : IonServerComponent() {
-	val connectedChests = ConcurrentHashMap<Vec3i, MutableList<Location>>()
+	val connectedChests = ConcurrentHashMap<Vec3i, MutableSet<Location>>()
 
 	override fun onEnable() {
 		listen<PlayerInteractEvent> { event ->
@@ -57,8 +57,10 @@ object StarshipFactories : IonServerComponent() {
 	private fun process(player: Player, sign: Sign, creditPrint: Boolean) {
 		Tasks.sync {
 			val loc = Vec3i(ShipFactoryMultiblock.getStorage(sign).location!!)
-			if (connectedChests.none { it.key == loc })
-				connectedChests[loc] = mutableListOf()
+			if (connectedChests.none { it.key == loc }) {
+				connectedChests[loc] = mutableSetOf()
+				player.information("Initializing piping... please wait for 10-20 seconds for all the pipes connected to this printer to register.")
+			}
 		}
 
 		val blueprintOwner = UUID.fromString(sign.getLine(1)).slPlayerId

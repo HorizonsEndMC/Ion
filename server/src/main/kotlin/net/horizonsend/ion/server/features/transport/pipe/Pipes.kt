@@ -8,21 +8,7 @@ import net.horizonsend.ion.server.features.transport.pipe.filter.FilterData
 import net.horizonsend.ion.server.features.transport.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.transport.transportConfig
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.isGlass
-import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
-import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -185,6 +171,9 @@ object Pipes : IonServerComponent() {
 			val nz = data.z + data.direction.modZ
 
 			val nextType: Material = getBlockTypeSafe(data.world, nx, ny, nz) ?: return
+
+			debugHighlightBlock(data.x, data.y, data.z)
+			debugHighlightBlock(nx, ny, nz)
 
 			// if the next type is not even a pipe, end the chain
 			if (!isAnyPipe(nextType)) {
@@ -391,13 +380,14 @@ object Pipes : IonServerComponent() {
 					continue@destinationLoop
 				}
 
-				for ((loc, invs) in StarshipFactories.connectedChests) {
-					if (loc != Vec3i(dest.location)) continue@destinationLoop
+				loopy@ for ((printerChest, invs) in StarshipFactories.connectedChests) {
+					if (printerChest != Vec3i(dest.location)) continue@loopy
+					areaDebugMessage(printerChest.x, printerChest.y, printerChest.z, "Found pipe running to printer.")
 
-					if (invs.none { it.x == sourceInventory.location!!.x && it.y == sourceInventory.location!!.y && it.z == sourceInventory.location!!.z })
+					if (invs.none { Vec3i(it) == Vec3i(sourceInventoryBlock.location)}) {
 						invs.add(sourceInventory.location!!)
-
-					continue@destinationLoop
+						areaDebugMessage(printerChest.x, printerChest.y, printerChest.z, "adding inv")
+					}
 				}
 
 				var remainingItemStacks = 0
