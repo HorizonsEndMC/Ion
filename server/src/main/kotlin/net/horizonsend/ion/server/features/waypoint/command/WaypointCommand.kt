@@ -42,6 +42,37 @@ object WaypointCommand : SLCommand() {
     }
 
     @Suppress("unused")
+    @CommandAlias("clear")
+    fun onClearWaypoint(
+        sender: Player
+    ) {
+        if (!WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
+            WaypointManager.playerDestinations[sender.uniqueId]?.clear()
+            sender.success("All waypoints cleared")
+            return
+        } else {
+            sender.userError("No waypoints to remove")
+            return
+        }
+    }
+
+    @Suppress("unused")
+    @CommandAlias("undo")
+    fun onUndoWaypoint(
+        sender: Player
+    ) {
+        if (!WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
+            val vertex = WaypointManager.playerDestinations[sender.uniqueId]?.last()
+            WaypointManager.playerDestinations[sender.uniqueId]?.removeLast()
+            sender.success("Last waypoint ${vertex?.name} removed")
+            return
+        } else {
+            sender.userError("No waypoints to remove")
+            return
+        }
+    }
+
+    @Suppress("unused")
     @Subcommand("reload")
     @CommandCompletion("main|player")
     fun onReloadMainMap(
