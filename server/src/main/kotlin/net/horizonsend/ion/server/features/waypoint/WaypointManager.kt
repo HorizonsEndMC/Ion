@@ -23,6 +23,7 @@ object WaypointManager : IonServerComponent() {
 
     // playerGraphs hold copies of mainGraph, with add'l vertices per player (for shortest path calculation)
     val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
+    val playerDestinations: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
 
     /**
      * server component handlers
@@ -60,7 +61,7 @@ object WaypointManager : IonServerComponent() {
     /**
      * helper functions
      */
-    private fun getVertex(
+    fun getVertex(
         graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
         name: String
     ): WaypointVertex? {
@@ -251,14 +252,15 @@ object WaypointManager : IonServerComponent() {
         val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
         clonePlayerGraphFromMain(playerGraph)
         playerGraphs[event.player.uniqueId] = playerGraph
+        playerDestinations[event.player.uniqueId] = mutableListOf()
     }
 
     @Suppress("unused")
     @EventHandler
     fun onPlayerLeave(event: PlayerQuitEvent) {
         // remove player's graph from the map (maybe keep it)
-        val playerGraph = playerGraphs[event.player.uniqueId] ?: return
         playerGraphs.remove(event.player.uniqueId)
+        playerDestinations.remove(event.player.uniqueId)
     }
 
     @Suppress("unused")
