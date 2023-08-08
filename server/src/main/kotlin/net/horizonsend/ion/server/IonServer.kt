@@ -7,20 +7,21 @@ import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.utils.getUpdateMessage
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.IonWorld
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
-import net.horizonsend.ion.server.miscellaneous.LegacyConfig
-import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -28,7 +29,6 @@ import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import net.horizonsend.ion.server.command.SLCommand
 
 val LegacySettings get() = IonServer.legacySettings
 val BalancingConfiguration get() = IonServer.balancing
@@ -48,7 +48,7 @@ object IonServer : JavaPlugin() {
 				slF4JLogger.info(message)
 
 				try {
-					Notify.eventsChannel("${configuration.serverName} $message")
+					Notify.changelogChannel("${configuration.serverName} $message")
 				} catch (_: Exception) {
 				}
 			},

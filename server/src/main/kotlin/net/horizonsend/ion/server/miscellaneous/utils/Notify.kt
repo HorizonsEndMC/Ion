@@ -3,17 +3,17 @@ package net.horizonsend.ion.server.miscellaneous.utils
 import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.database.Oid
-import java.util.UUID
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.schema.nations.Settlement
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
 import org.litote.kmongo.id.WrappedObjectId
+import java.util.UUID
 
 object Notify : IonServerComponent() {
 	infix fun online(message: Component) {
@@ -60,34 +60,26 @@ object Notify : IonServerComponent() {
 			.forEach { it.sendMessage(MiniMessage.miniMessage().deserialize(message)) }
 	}.registerRedisAction("notify-nation", runSync = false)
 
-	infix fun eventsChannel(message: String) {
-		if (getPluginManager().isPluginEnabled("DiscordSRV")) {
-			Tasks.async {
-				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("events")
+	/** Must be registered in the CiscordSRV config **/
+	fun getChannel(name: String) = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("name")
 
-				if (channel == null) {
-					System.err.println("ERROR: No events channel found!")
-					return@async
-				}
+	fun sendDiscord(channel: TextChannel?, message: String) {
+		if (channel == null) {
+			System.err.println("ERROR: No events channel found!")
+			return
+		}
 
-				channel.sendMessage(message).queue()
-			}
+		if (!getPluginManager().isPluginEnabled("DiscordSRV")) return
+
+		Tasks.async {
+			channel.sendMessage(message).queue()
 		}
 	}
 
-	infix fun globalChannel(message: String) {
-		if (getPluginManager().isPluginEnabled("DiscordSRV")) {
-			Tasks.async {
-				val channel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("global")
+	infix fun eventsChannel(message: String) = sendDiscord(getChannel("events"), message)
 
-				if (channel == null) {
-					System.err.println("ERROR: No events channel found!")
-					return@async
-				}
+	infix fun globalChannel(message: String) = sendDiscord(getChannel("global"), message)
 
-				channel.sendMessage(message).queue()
-			}
-		}
-	}
+	infix fun changelogChannel(message: String) = sendDiscord(getChannel("changelog"), message)
 
 }
