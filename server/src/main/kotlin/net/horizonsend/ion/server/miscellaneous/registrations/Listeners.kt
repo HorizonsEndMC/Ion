@@ -86,5 +86,6 @@ val listeners: List<Listener> = listOf(
 	TractorBeamMultiblock,
 
 	// Achievement Listeners
-	AchievementListeners()
+	AchievementListeners(),
+	WaypointListeners()
 )
