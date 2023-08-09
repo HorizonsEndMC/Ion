@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.waypoint
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.Space
@@ -22,9 +21,12 @@ object WaypointManager : IonServerComponent() {
     // mainGraph holds the server graph
     val mainGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
 
-    // playerGraphs hold copies of mainGraph, with add'l vertices per player (for shortest path calculation)
+    // playerGraphs hold copies of mainGraph, with additional vertices per player (for shortest path calculation)
     val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
     val playerDestinations: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
+    val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
+
+    const val MAX_DESTINATIONS = 5
 
     /**
      * server component handlers
@@ -33,7 +35,8 @@ object WaypointManager : IonServerComponent() {
         // disabled for now as this crashes the server on startup
         //reloadMainGraph()
 
-        // update all playergraphs every five seconds if they have a destination saved
+        // update all player graphs every five seconds if they have a destination saved
+        // JGraphT is not thread safe; this cannot be async
         Tasks.syncRepeat(0L, 100L) {
             Bukkit.getOnlinePlayers().forEach { player ->
                 if (playerDestinations.isNotEmpty()) {
@@ -44,9 +47,8 @@ object WaypointManager : IonServerComponent() {
     }
 
     override fun onDisable() {
-        for (player in playerGraphs.keys) {
-            playerGraphs.remove(player)
-        }
+        playerGraphs.clear()
+        playerDestinations.clear()
     }
 
     /**
@@ -183,6 +185,7 @@ object WaypointManager : IonServerComponent() {
     }
 
     fun reloadMainGraph() {
+        // may break if celestial objects are removed after the graph is initially created
         populateMainGraphVertices()
         populateMainGraphEdges()
     }
@@ -227,19 +230,33 @@ object WaypointManager : IonServerComponent() {
         connectVerticesInSameWorld(graph, newVertex)
     }
 
+    /**
+     * destination and path functions
+     */
+    fun addDestination(player: Player, vertex: WaypointVertex): Boolean {
+        return if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
+            // list not created
+            playerDestinations[player.uniqueId] = mutableListOf(vertex)
+            true
+        } else if (playerDestinations[player.uniqueId]!!.size >= MAX_DESTINATIONS) {
+            // list is full
+            false
+        } else {
+            // list exists
+            playerDestinations[player.uniqueId]!!.add(vertex)
+            true
+        }
+    }
+
     fun findShortestPath(player: Player): List<GraphPath<WaypointVertex, WaypointEdge>> {
         // check if player has destination(s) set
         if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
-            player.userError("No waypoints set")
             return listOf()
         } else {
             // iterate through destinations and get the shortest path for each leg
             val shortestPaths: MutableList<GraphPath<WaypointVertex, WaypointEdge>> = mutableListOf()
-            var currentVertex = playerGraphs[player.uniqueId]?.let { getVertex(it, "Current Location") }
-            if (currentVertex == null) {
-                player.serverError("Player graph not generated")
-                return listOf()
-            }
+            var currentVertex: WaypointVertex? =
+                playerGraphs[player.uniqueId]?.let { getVertex(it, "Current Location") } ?: return listOf()
 
             for (destinationVertex in playerDestinations[player.uniqueId]!!) {
                 shortestPaths.add(
