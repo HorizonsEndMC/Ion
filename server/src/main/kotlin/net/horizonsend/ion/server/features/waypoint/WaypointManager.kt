@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.waypoint
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.Space
@@ -12,7 +13,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.jgrapht.GraphPath
 import org.jgrapht.Graphs
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
 import java.util.*
@@ -169,20 +172,6 @@ object WaypointManager : IonServerComponent() {
         // add edges for each vertex
         for (vertex in mainGraph.vertexSet()) {
             connectVerticesInSameWorld(mainGraph, vertex)
-            /*
-            // connect vertices that are in the same space world (and not itself) (celestials in the same world)
-            val verticesSameWorld = mainGraph.vertexSet()
-                .filter { otherVertex -> otherVertex.loc.world == vertex.loc.world && otherVertex != vertex }
-            for (otherVertex in verticesSameWorld) {
-                val edge = WaypointEdge(
-                    source = vertex,
-                    target = otherVertex,
-                    hyperspaceEdge = false
-                )
-                mainGraph.addEdge(vertex, otherVertex, edge)
-                mainGraph.setEdgeWeight(edge, vertex.loc.distance(otherVertex.loc))
-            }
-             */
 
             // add edges between vertices linked to another (i.e. beacons)
             if (vertex.linkedWaypoint != null) {
@@ -240,6 +229,33 @@ object WaypointManager : IonServerComponent() {
         )
         graph.addVertex(newVertex)
         connectVerticesInSameWorld(graph, newVertex)
+    }
+
+    fun findShortestPath(player: Player): List<GraphPath<WaypointVertex, WaypointEdge>> {
+        if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
+            player.userError("No waypoints set")
+            return listOf()
+        } else {
+            val shortestPaths: MutableList<GraphPath<WaypointVertex, WaypointEdge>> = mutableListOf()
+            var currentVertex = playerGraphs[player.uniqueId]?.let { getVertex(it, "Current Location") }
+            if (currentVertex == null) {
+                player.serverError("Player graph not generated")
+                return listOf()
+            }
+
+            for (destinationVertex in playerDestinations[player.uniqueId]!!) {
+                shortestPaths.add(
+                    DijkstraShortestPath.findPathBetween(
+                        playerGraphs[player.uniqueId],
+                        currentVertex,
+                        destinationVertex
+                    )
+                )
+                currentVertex = destinationVertex
+            }
+
+            return shortestPaths
+        }
     }
 
     /**
