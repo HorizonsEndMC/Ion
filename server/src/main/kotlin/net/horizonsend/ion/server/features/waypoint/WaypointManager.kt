@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.jgrapht.GraphPath
@@ -28,27 +30,17 @@ object WaypointManager : IonServerComponent() {
      * server component handlers
      */
     override fun onEnable() {
+        // disabled for now as this crashes the server on startup
         //reloadMainGraph()
 
-        // update all graphs every five seconds
-        /*
+        // update all playergraphs every five seconds if they have a destination saved
         Tasks.syncRepeat(0L, 100L) {
             Bukkit.getOnlinePlayers().forEach { player ->
-                if (playerGraphs[player.uniqueId] != null) {
-                    playerGraphs[player.uniqueId]?.let { playerGraph ->
-                        updatePlayerPositionVertex(playerGraph, player)
-                    }
-                } else {
-                    // add player's graph to the map
-                    val playerGraph =
-                        SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
-                    clonePlayerGraphFromMain(playerGraph)
-                    updatePlayerPositionVertex(playerGraph, player)
-                    playerGraphs[player.uniqueId] = playerGraph
+                if (playerDestinations.isNotEmpty()) {
+                    updatePlayerGraph(player)
                 }
             }
         }
-         */
     }
 
     override fun onDisable() {
@@ -58,39 +50,8 @@ object WaypointManager : IonServerComponent() {
     }
 
     /**
-     * helper functions
+     * print/debug functions
      */
-    fun getVertex(
-        graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
-        name: String
-    ): WaypointVertex? {
-        return graph.vertexSet().find { it.name == name }
-    }
-
-    private fun connectVerticesInSameWorld(
-        graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
-        vertex: WaypointVertex
-    ) {
-        // find vertices that are in the same world as the current vertex; create them
-        val verticesSameWorld = graph.vertexSet()
-            .filter { otherVertex -> otherVertex.loc.world == vertex.loc.world && vertex != otherVertex }
-        for (otherVertex in verticesSameWorld) {
-            val outEdge = WaypointEdge(
-                source = vertex,
-                target = otherVertex,
-                hyperspaceEdge = false
-            )
-            val inEdge = WaypointEdge(
-                source = otherVertex,
-                target = vertex,
-                hyperspaceEdge = false
-            )
-            graph.addEdge(vertex, otherVertex, outEdge)
-            graph.setEdgeWeight(outEdge, vertex.loc.distance(otherVertex.loc))
-            graph.addEdge(otherVertex, vertex, inEdge)
-            graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
-        }
-    }
 
     fun printGraphVertices(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?, player: Player) {
         if (graph == null) {
@@ -130,6 +91,43 @@ object WaypointManager : IonServerComponent() {
                     .append(" with weight $weight")
                     .toString()
             )
+        }
+    }
+
+    /**
+     * helper functions
+     */
+    fun getVertex(
+        graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
+        name: String
+    ): WaypointVertex? {
+        return graph.vertexSet().find { it.name == name }
+    }
+
+    private fun connectVerticesInSameWorld(
+        graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
+        vertex: WaypointVertex
+    ) {
+        // find vertices that are in the same world as the current vertex
+        val verticesSameWorld = graph.vertexSet()
+            .filter { otherVertex -> otherVertex.loc.world == vertex.loc.world && vertex != otherVertex }
+        // create edges
+        for (otherVertex in verticesSameWorld) {
+            val outEdge = WaypointEdge(
+                source = vertex,
+                target = otherVertex,
+                hyperspaceEdge = false
+            )
+            val inEdge = WaypointEdge(
+                source = otherVertex,
+                target = vertex,
+                hyperspaceEdge = false
+            )
+            // add edges to graph and set edge weights (returns false if already exists)
+            graph.addEdge(vertex, otherVertex, outEdge)
+            graph.setEdgeWeight(outEdge, vertex.loc.distance(otherVertex.loc))
+            graph.addEdge(otherVertex, vertex, inEdge)
+            graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
         }
     }
 
@@ -194,6 +192,7 @@ object WaypointManager : IonServerComponent() {
      */
     fun updatePlayerGraph(player: Player) {
         if (playerGraphs[player.uniqueId] != null) {
+            // player already has a graph; update
             playerGraphs[player.uniqueId]?.let { playerGraph ->
                 clonePlayerGraphFromMain(playerGraph)
                 updatePlayerPositionVertex(playerGraph, player)
@@ -207,16 +206,17 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
-    fun clonePlayerGraphFromMain(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
+    private fun clonePlayerGraphFromMain(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
         Graphs.addGraph(graph, mainGraph)
     }
 
-    fun updatePlayerPositionVertex(
+    private fun updatePlayerPositionVertex(
         graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
         player: Player
     ) {
         // get the vertex representing the player's position, or create one
         val locVertex = getVertex(graph, "Current Location")
+        // removeVertex also removes all edges touching the vertex
         graph.removeVertex(locVertex)
         val newVertex = WaypointVertex(
             name = "Current Location",
@@ -228,10 +228,12 @@ object WaypointManager : IonServerComponent() {
     }
 
     fun findShortestPath(player: Player): List<GraphPath<WaypointVertex, WaypointEdge>> {
+        // check if player has destination(s) set
         if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
             player.userError("No waypoints set")
             return listOf()
         } else {
+            // iterate through destinations and get the shortest path for each leg
             val shortestPaths: MutableList<GraphPath<WaypointVertex, WaypointEdge>> = mutableListOf()
             var currentVertex = playerGraphs[player.uniqueId]?.let { getVertex(it, "Current Location") }
             if (currentVertex == null) {

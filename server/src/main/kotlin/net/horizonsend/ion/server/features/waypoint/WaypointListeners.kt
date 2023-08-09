@@ -5,16 +5,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.jgrapht.graph.SimpleDirectedWeightedGraph
 
 class WaypointListeners : SLEventListener() {
     @Suppress("unused")
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         // add player's graph to the map
-        val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
-        WaypointManager.clonePlayerGraphFromMain(playerGraph)
-        WaypointManager.playerGraphs[event.player.uniqueId] = playerGraph
+        WaypointManager.updatePlayerGraph(event.player)
         WaypointManager.playerDestinations[event.player.uniqueId] = mutableListOf()
     }
 
@@ -30,8 +27,6 @@ class WaypointListeners : SLEventListener() {
     @EventHandler
     fun onPlayerTeleport(event: PlayerChangedWorldEvent) {
         // update the player's map upon a world change
-        WaypointManager.playerGraphs[event.player.uniqueId]?.let { playerGraph ->
-            WaypointManager.updatePlayerPositionVertex(playerGraph, event.player)
-        }
+        WaypointManager.updatePlayerGraph(event.player)
     }
 }
