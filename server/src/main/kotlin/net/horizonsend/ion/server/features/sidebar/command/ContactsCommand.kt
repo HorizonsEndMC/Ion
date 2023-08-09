@@ -36,6 +36,17 @@ object ContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
+	@Subcommand("lastStarship")
+	fun onToggleLastStarship(
+		sender: Player,
+		@Optional toggle: Boolean?
+	) {
+		val contactsLastStarship = toggle ?: !PlayerCache[sender].lastStarshipEnabled
+		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::lastStarshipEnabled setTo contactsLastStarship))
+		sender.success("Changed last starship visibility to $contactsLastStarship")
+	}
+
+	@Suppress("unused")
 	@Subcommand("planet")
 	fun onTogglePlanets(
 		sender: Player,

@@ -59,6 +59,7 @@ data class SLPlayer(
     var achievements: Set<String> = setOf(),
 
 	var contactsStarships: Boolean = true,
+	var lastStarshipEnabled: Boolean = true,
 	var planetsEnabled: Boolean = true,
 	var starsEnabled: Boolean = true,
 	var beaconsEnabled: Boolean = true,

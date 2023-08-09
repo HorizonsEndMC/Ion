@@ -21,6 +21,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var nationTag: String?,
 
 		var contactsStarships: Boolean = true,
+		var lastStarshipEnabled: Boolean = true,
 		var planetsEnabled: Boolean = true,
 		var starsEnabled: Boolean = true,
 		var beaconsEnabled: Boolean = true,
@@ -107,6 +108,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val contactsStarships = it.boolean()
 					data.contactsStarships = contactsStarships
+				}
+			}
+
+			change[SLPlayer::lastStarshipEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val lastStarshipEnabled = it.boolean()
+					data.lastStarshipEnabled = lastStarshipEnabled
 				}
 			}
 
