@@ -9,10 +9,6 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.player.PlayerChangedWorldEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import org.jgrapht.GraphPath
 import org.jgrapht.Graphs
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath
@@ -211,11 +207,11 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
-    private fun clonePlayerGraphFromMain(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
+    fun clonePlayerGraphFromMain(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>) {
         Graphs.addGraph(graph, mainGraph)
     }
 
-    private fun updatePlayerPositionVertex(
+    fun updatePlayerPositionVertex(
         graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
         player: Player
     ) {
@@ -255,36 +251,6 @@ object WaypointManager : IonServerComponent() {
             }
 
             return shortestPaths
-        }
-    }
-
-    /**
-     * listeners
-     */
-    @Suppress("unused")
-    @EventHandler
-    fun onPlayerJoin(event: PlayerJoinEvent) {
-        // add player's graph to the map
-        val playerGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
-        clonePlayerGraphFromMain(playerGraph)
-        playerGraphs[event.player.uniqueId] = playerGraph
-        playerDestinations[event.player.uniqueId] = mutableListOf()
-    }
-
-    @Suppress("unused")
-    @EventHandler
-    fun onPlayerLeave(event: PlayerQuitEvent) {
-        // remove player's graph from the map (maybe keep it)
-        playerGraphs.remove(event.player.uniqueId)
-        playerDestinations.remove(event.player.uniqueId)
-    }
-
-    @Suppress("unused")
-    @EventHandler
-    fun onPlayerTeleport(event: PlayerChangedWorldEvent) {
-        // update the player's map upon a world change
-        playerGraphs[event.player.uniqueId]?.let { playerGraph ->
-            updatePlayerPositionVertex(playerGraph, event.player)
         }
     }
 }
