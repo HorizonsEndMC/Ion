@@ -13,8 +13,9 @@ import org.bukkit.entity.Player
 
 @CommandAlias("waypoint")
 object WaypointCommand : SLCommand() {
+    // add vertex as destination
     @Suppress("unused")
-    @CommandAlias("set")
+    @CommandAlias("add")
     @CommandCompletion("@planets|@hyperspaceGates")
     fun onSetWaypoint(
         sender: Player,
@@ -25,21 +26,14 @@ object WaypointCommand : SLCommand() {
             sender.userError("Vertex not found")
             return
         }
-
-        if (WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
-            WaypointManager.playerDestinations[sender.uniqueId] = mutableListOf(vertex)
-            sender.success("Waypoint to ${vertex.name} set")
-            return
-        } else if (WaypointManager.playerDestinations[sender.uniqueId]!!.size >= 5) {
-            sender.userError(("Too many waypoints set"))
-            return
+        if (WaypointManager.addDestination(sender, vertex)) {
+            sender.success("Vertex ${vertex.name} added")
         } else {
-            WaypointManager.playerDestinations[sender.uniqueId]!!.add(vertex)
-            sender.success("Waypoint to ${vertex.name} set")
-            return
+            sender.userError("Too many destinations added (maximum of ${WaypointManager.MAX_DESTINATIONS})")
         }
     }
 
+    // clear all vertices from destinations
     @Suppress("unused")
     @CommandAlias("clear")
     fun onClearWaypoint(
@@ -55,6 +49,7 @@ object WaypointCommand : SLCommand() {
         }
     }
 
+    // pop last vertex from destinations
     @Suppress("unused")
     @CommandAlias("undo")
     fun onUndoWaypoint(
@@ -71,6 +66,7 @@ object WaypointCommand : SLCommand() {
         }
     }
 
+    // reload graphs with new vertices
     @Suppress("unused")
     @Subcommand("reload")
     @CommandCompletion("main|player")
@@ -91,6 +87,7 @@ object WaypointCommand : SLCommand() {
         }
     }
 
+    // print status of main graph
     @Suppress("unused")
     @Subcommand("main")
     @CommandCompletion("vertex|edge")
@@ -113,6 +110,7 @@ object WaypointCommand : SLCommand() {
         }
     }
 
+    // print status of player's own graph
     @Suppress("unused")
     @Subcommand("player")
     @CommandCompletion("vertex|edge")
@@ -135,6 +133,7 @@ object WaypointCommand : SLCommand() {
         }
     }
 
+    // gets a celestial object and outputs waypoint data
     @Suppress("unused")
     @Subcommand("get")
     @CommandCompletion("@planets|@hyperspaceGates")
@@ -153,19 +152,36 @@ object WaypointCommand : SLCommand() {
         }
     }
 
+    // calculates shortest path with a player's destinations
     @Suppress("unused")
-    @Subcommand("path")
-    fun onGetVertex(
+    @Subcommand("path get")
+    fun onGetPath(
         sender: Player
     ) {
         val paths = WaypointManager.findShortestPath(sender)
         if (paths.isEmpty()) {
+            sender.userError("No waypoints set")
+            return
+        }
+        WaypointManager.playerPaths[sender.uniqueId] = paths
+    }
+
+    @Suppress("unused")
+    @Subcommand("path print")
+    fun onPrintPath(
+        sender: Player
+    ) {
+        val paths = WaypointManager.playerPaths[sender.uniqueId]
+        if (paths.isNullOrEmpty()) {
+            sender.userError("Route is empty")
             return
         }
         for (path in paths) {
             sender.information("${path.startVertex.name} to ${path.endVertex.name} with total weight ${path.weight}")
             for (edge in path.edgeList) {
-                sender.information("  ${edge.source.name} to ${edge.target.name} with weight ${WaypointManager.playerGraphs[sender.uniqueId]!!.getEdgeWeight(edge)}")
+                sender.information("  ${edge.source.name} to ${edge.target.name} " +
+                        "with weight ${WaypointManager.playerGraphs[sender.uniqueId]!!.getEdgeWeight(edge)}"
+                )
             }
         }
     }
