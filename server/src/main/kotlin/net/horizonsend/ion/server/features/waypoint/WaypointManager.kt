@@ -151,11 +151,11 @@ object WaypointManager : IonServerComponent() {
         for (beacon in IonServer.configuration.beacons) {
             // 2 vertices for each beacon's entry and exit point
             val vertexEntry = WaypointVertex(
-                name = beacon.name,
+                name = beacon.name.replace(" ", "_"),
                 loc = beacon.spaceLocation.toLocation()
             )
             val vertexExit = WaypointVertex(
-                name = StringBuilder(beacon.name).append(" Exit").toString(),
+                name = StringBuilder(beacon.name.replace(" ", "_")).append("_Exit").toString(),
                 loc = beacon.destination.toLocation()
             )
             // link edge vertex with exit vertex (for edge connections later)

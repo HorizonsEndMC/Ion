@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.waypoint.command
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
-import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -14,9 +13,9 @@ import org.bukkit.entity.Player
 
 @CommandAlias("waypoint")
 object WaypointCommand : SLCommand() {
-    @Default
     @Suppress("unused")
-    @CommandCompletion("@planetsInWorld|@hyperspaceGatesInWorld")
+    @CommandAlias("set")
+    @CommandCompletion("@planets|@hyperspaceGates")
     fun onSetWaypoint(
         sender: Player,
         option: String
@@ -31,7 +30,7 @@ object WaypointCommand : SLCommand() {
             WaypointManager.playerDestinations[sender.uniqueId] = mutableListOf(vertex)
             sender.success("Waypoint to ${vertex.name} set")
             return
-        } else if (WaypointManager.playerDestinations[sender.uniqueId]!!.size > 5) {
+        } else if (WaypointManager.playerDestinations[sender.uniqueId]!!.size >= 5) {
             sender.userError(("Too many waypoints set"))
             return
         } else {
