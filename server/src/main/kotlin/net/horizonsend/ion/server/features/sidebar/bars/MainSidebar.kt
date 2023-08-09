@@ -134,6 +134,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		val playerVector = player.location.toVector()
 
 		val starshipsEnabled = PlayerCache[player].contactsStarships
+		val lastStarshipEnabled = PlayerCache[player].lastStarshipEnabled
 		val planetsEnabled = PlayerCache[player].planetsEnabled
 		val starsEnabled = PlayerCache[player].starsEnabled
 		val beaconsEnabled = PlayerCache[player].beaconsEnabled
@@ -233,7 +234,9 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 					)
 				)
 			}
+		}
 
+		if (lastStarshipEnabled) {
 			val lastStarship = LastPilotedStarship.map[player.uniqueId]
 
 			if (lastStarship != null &&

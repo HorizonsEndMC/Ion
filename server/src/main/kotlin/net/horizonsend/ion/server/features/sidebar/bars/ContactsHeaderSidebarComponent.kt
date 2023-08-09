@@ -16,6 +16,7 @@ import org.bukkit.entity.Player
 
 class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
     private val starshipsEnabled = PlayerCache[player].contactsStarships
+    private val lastStarshipEnabled = PlayerCache[player].lastStarshipEnabled
 	private val planetsEnabled = PlayerCache[player].planetsEnabled
 	private val starsEnabled = PlayerCache[player].starsEnabled
 	private val beaconsEnabled = PlayerCache[player].beaconsEnabled
@@ -29,6 +30,8 @@ class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
         line.append(text("Contacts").style(style(BOLD).color(YELLOW)))
         line.append(text(" | ").color(DARK_GRAY))
         line.append(text("\uE001").font(key("horizonsend:sidebar")).color(getColor(starshipsEnabled)))
+        line.appendSpace()
+        line.append(text("\uE032").font(key("horizonsend:sidebar")).color(getColor(lastStarshipEnabled)))
         line.appendSpace()
         line.append(text("\uE020").font(key("horizonsend:sidebar")).color(getColor(planetsEnabled)))
         line.appendSpace()
