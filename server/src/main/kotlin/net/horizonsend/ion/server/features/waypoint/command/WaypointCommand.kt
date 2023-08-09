@@ -152,4 +152,21 @@ object WaypointCommand : SLCommand() {
             )
         }
     }
+
+    @Suppress("unused")
+    @Subcommand("path")
+    fun onGetVertex(
+        sender: Player
+    ) {
+        val paths = WaypointManager.findShortestPath(sender)
+        if (paths.isEmpty()) {
+            return
+        }
+        for (path in paths) {
+            sender.information("${path.startVertex.name} to ${path.endVertex.name} with total weight ${path.weight}")
+            for (edge in path.edgeList) {
+                sender.information("  ${edge.source.name} to ${edge.target.name} with weight ${WaypointManager.playerGraphs[sender.uniqueId]!!.getEdgeWeight(edge)}")
+            }
+        }
+    }
 }
