@@ -41,6 +41,7 @@ object WaypointManager : IonServerComponent() {
             Bukkit.getOnlinePlayers().forEach { player ->
                 if (playerDestinations.isNotEmpty()) {
                     updatePlayerGraph(player)
+                    playerPaths[player.uniqueId] = findShortestPath(player)
                 }
             }
         }
