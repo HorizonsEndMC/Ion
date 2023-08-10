@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.waypoint.command
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -71,6 +72,7 @@ object WaypointCommand : SLCommand() {
     @Suppress("unused")
     @Subcommand("reload")
     @CommandCompletion("main|player")
+    @CommandPermission("waypoint.reload")
     fun onReloadMainMap(
         sender: Player,
         mapType: String
@@ -92,6 +94,7 @@ object WaypointCommand : SLCommand() {
     @Suppress("unused")
     @Subcommand("main")
     @CommandCompletion("vertex|edge")
+    @CommandPermission("waypoint.print")
     fun onTestMainMap(
         sender: Player,
         option: String
@@ -115,6 +118,7 @@ object WaypointCommand : SLCommand() {
     @Suppress("unused")
     @Subcommand("player")
     @CommandCompletion("vertex|edge")
+    @CommandPermission("waypoint.print")
     fun onTestPlayerMap(
         sender: Player,
         option: String
@@ -138,6 +142,7 @@ object WaypointCommand : SLCommand() {
     @Suppress("unused")
     @Subcommand("get")
     @CommandCompletion("@planets|@hyperspaceGates")
+    @CommandPermission("waypoint.print")
     fun onGetVertex(
         sender: Player,
         option: String
@@ -156,6 +161,7 @@ object WaypointCommand : SLCommand() {
     // calculates shortest path with a player's destinations
     @Suppress("unused")
     @Subcommand("path get")
+    @CommandPermission("waypoint.reload")
     fun onGetPath(
         sender: Player
     ) {
@@ -163,18 +169,17 @@ object WaypointCommand : SLCommand() {
         if (paths == null) {
             // path could not be calculated (a vertex is completely separated from the graph)
             sender.userError("No connections can be found to get to the destination")
+            return
         } else if (paths.isEmpty()) {
             // paths exists but is empty; implies that prerequisite conditions were not met
             sender.userError("No waypoints set")
-            return
-        } else {
-            // update paths
-            WaypointManager.playerPaths[sender.uniqueId] = paths
         }
+        // update path list
+        WaypointManager.playerPaths[sender.uniqueId] = paths
     }
 
     @Suppress("unused")
-    @Subcommand("path print")
+    @Subcommand("path")
     fun onPrintPath(
         sender: Player
     ) {
@@ -183,11 +188,13 @@ object WaypointCommand : SLCommand() {
             sender.userError("Route is empty")
             return
         }
-        for (path in paths) {
-            sender.information("${path.startVertex.name} to ${path.endVertex.name} with total weight ${path.weight}")
-            for (edge in path.edgeList) {
-                sender.information("  ${edge.source.name} to ${edge.target.name} " +
-                        "with weight ${WaypointManager.playerGraphs[sender.uniqueId]!!.getEdgeWeight(edge)}"
+        for ((i, path) in paths.withIndex()) {
+            sender.information("$i: ${path.startVertex.name} to ${path.endVertex.name} " +
+                    "with total distance ${path.weight}"
+            )
+            for ((j, edge) in path.edgeList.withIndex()) {
+                sender.information("  $i.$j: ${edge.source.name} to ${edge.target.name} " +
+                        "with distance ${WaypointManager.playerGraphs[sender.uniqueId]!!.getEdgeWeight(edge)}"
                 )
             }
         }

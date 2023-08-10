@@ -28,5 +28,10 @@ class WaypointListeners : SLEventListener() {
     fun onPlayerTeleport(event: PlayerChangedWorldEvent) {
         // update the player's map upon a world change
         WaypointManager.updatePlayerGraph(event.player)
+        WaypointManager.checkWaypointReached(event.player)
+        val pathList = WaypointManager.findShortestPath(event.player)
+        if (pathList != null) {
+            WaypointManager.playerPaths[event.player.uniqueId] = pathList
+        }
     }
 }
