@@ -1,5 +1,6 @@
-package net.horizonsend.ion.server.features.sidebar.bars
+package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

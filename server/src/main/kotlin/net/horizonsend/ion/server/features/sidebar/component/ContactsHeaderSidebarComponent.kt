@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.sidebar.bars
+package net.horizonsend.ion.server.features.sidebar.component
 
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.kyori.adventure.key.Key.key

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.sidebar
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.sidebar.bars.MainSidebar
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary
 import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException
 import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary
@@ -35,6 +34,7 @@ object Sidebar : IonServerComponent() {
 		scoreboardLibrary.close()
 	}
 
+	@Suppress("unused")
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
 		val sidebar = scoreboardLibrary.createSidebar()
@@ -42,6 +42,7 @@ object Sidebar : IonServerComponent() {
 		playerSidebars[event.player.uniqueId] = MainSidebar(event.player, sidebar)
 	}
 
+	@Suppress("unused")
 	@EventHandler
 	fun onPlayerLeave(event: PlayerQuitEvent) {
 		val sidebar = playerSidebars[event.player.uniqueId] ?: return

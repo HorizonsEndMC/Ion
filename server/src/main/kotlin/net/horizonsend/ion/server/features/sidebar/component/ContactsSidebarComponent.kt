@@ -1,5 +1,6 @@
-package net.horizonsend.ion.server.features.sidebar.bars
+package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.server.features.sidebar.ContactsData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 //import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY

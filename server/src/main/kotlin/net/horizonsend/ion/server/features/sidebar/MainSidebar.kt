@@ -1,9 +1,12 @@
-package net.horizonsend.ion.server.features.sidebar.bars
+package net.horizonsend.ion.server.features.sidebar
 
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
 import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.text.Component.empty
@@ -241,8 +244,8 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 			if (lastStarship != null &&
 				lastStarship.world == player.world &&
-				lastStarship.toVector().distanceSquared(playerVector) <= CONTACTS_SQRANGE) {
-
+				lastStarship.toVector().distanceSquared(playerVector) <= CONTACTS_SQRANGE
+			) {
 				val vector = lastStarship.toVector()
 				val distance = vector.distance(playerVector).toInt()
 				val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
