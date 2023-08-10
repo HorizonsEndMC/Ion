@@ -36,6 +36,10 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		registerAsyncCompletion(manager, "stars") { _ -> Space.getStars().map(CachedStar::name) }
 		registerAsyncCompletion(manager, "planets") { _ -> Space.getPlanets().map(CachedPlanet::name) }
+		registerAsyncCompletion(manager, "planetsInWorld") { e -> Space.getPlanets()
+			.filter { planet -> planet.spaceWorldName == e.player.world.name }
+			.map(CachedPlanet::name)
+		}
 	}
 
 	@Subcommand("create")
