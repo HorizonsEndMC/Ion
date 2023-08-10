@@ -164,6 +164,8 @@ class StarshipExplosion(
 		) : StarshipExplosion {
 			val (world, x, y, z) = location
 
+			world!!
+
 			val explosion = StarshipExplosion(
 				world,
 				x,

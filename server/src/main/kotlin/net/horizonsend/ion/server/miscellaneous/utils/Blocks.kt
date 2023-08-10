@@ -19,7 +19,7 @@ fun getBlockTypeSafe(world: World, x: Int, y: Int, z: Int): Material? {
 }
 
 fun getBlockTypeSafe(world: ServerLevel, x: Int, y: Int, z: Int): Material? {
-	return getNMSBlockDataSafe(world, x, y, z)?.bukkitMaterial
+	return getNMSBlockDataSafe(world.world, x, y, z)?.bukkitMaterial
 }
 
 /**
