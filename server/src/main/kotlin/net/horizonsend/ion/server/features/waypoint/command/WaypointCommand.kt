@@ -160,11 +160,17 @@ object WaypointCommand : SLCommand() {
         sender: Player
     ) {
         val paths = WaypointManager.findShortestPath(sender)
-        if (paths.isEmpty()) {
+        if (paths == null) {
+            // path could not be calculated (a vertex is completely separated from the graph)
+            sender.userError("No connections can be found to get to the destination")
+        } else if (paths.isEmpty()) {
+            // paths exists but is empty; implies that prerequisite conditions were not met
             sender.userError("No waypoints set")
             return
+        } else {
+            // update paths
+            WaypointManager.playerPaths[sender.uniqueId] = paths
         }
-        WaypointManager.playerPaths[sender.uniqueId] = paths
     }
 
     @Suppress("unused")
