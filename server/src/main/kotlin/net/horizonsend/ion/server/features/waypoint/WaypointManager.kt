@@ -27,6 +27,7 @@ object WaypointManager : IonServerComponent() {
     val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
 
     const val MAX_DESTINATIONS = 5
+    const val WAYPOINT_REACHED_DISTANCE = 500
 
     /**
      * server component handlers
@@ -41,6 +42,7 @@ object WaypointManager : IonServerComponent() {
             Bukkit.getOnlinePlayers().forEach { player ->
                 if (playerDestinations.isNotEmpty()) {
                     updatePlayerGraph(player)
+                    checkWaypointReached(player)
                     val pathList = findShortestPath(player)
                     // null pathList implies destinations exist but route cannot be found; save the current path
                     // e.g. if the player is on a planet or in hyperspace
@@ -60,7 +62,6 @@ object WaypointManager : IonServerComponent() {
     /**
      * print/debug functions
      */
-
     fun printGraphVertices(graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>?, player: Player) {
         if (graph == null) {
             player.serverError("Graph does not exist")
@@ -278,6 +279,18 @@ object WaypointManager : IonServerComponent() {
             // return listOf() if prerequisites cannot be met
             // return null if path cannot be found (do not overwrite
             return shortestPaths
+        }
+    }
+
+    fun checkWaypointReached(player: Player) {
+        // check if player has destination(s) set
+        if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
+            return
+        } else {
+            val firstVertex = playerDestinations[player.uniqueId]?.first() ?: return
+            if (player.location.distance(firstVertex.loc) <= WAYPOINT_REACHED_DISTANCE) {
+                playerDestinations[player.uniqueId]?.removeFirstOrNull()
+            }
         }
     }
 }
