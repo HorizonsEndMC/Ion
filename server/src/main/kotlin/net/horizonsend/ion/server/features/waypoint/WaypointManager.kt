@@ -41,7 +41,12 @@ object WaypointManager : IonServerComponent() {
             Bukkit.getOnlinePlayers().forEach { player ->
                 if (playerDestinations.isNotEmpty()) {
                     updatePlayerGraph(player)
-                    playerPaths[player.uniqueId] = findShortestPath(player)
+                    val pathList = findShortestPath(player)
+                    // null pathList implies destinations exist but route cannot be found; save the current path
+                    // e.g. if the player is on a planet or in hyperspace
+                    if (pathList != null) {
+                        playerPaths[player.uniqueId] = pathList
+                    }
                 }
             }
         }
@@ -249,7 +254,7 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
-    fun findShortestPath(player: Player): List<GraphPath<WaypointVertex, WaypointEdge>> {
+    fun findShortestPath(player: Player): List<GraphPath<WaypointVertex, WaypointEdge>>? {
         // check if player has destination(s) set
         if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
             return listOf()
@@ -260,16 +265,18 @@ object WaypointManager : IonServerComponent() {
                 playerGraphs[player.uniqueId]?.let { getVertex(it, "Current Location") } ?: return listOf()
 
             for (destinationVertex in playerDestinations[player.uniqueId]!!) {
-                shortestPaths.add(
-                    DijkstraShortestPath.findPathBetween(
-                        playerGraphs[player.uniqueId],
-                        currentVertex,
-                        destinationVertex
-                    )
-                )
+                val path = DijkstraShortestPath.findPathBetween(
+                    playerGraphs[player.uniqueId],
+                    currentVertex,
+                    destinationVertex
+                ) ?: return null
+                shortestPaths.add(path)
                 currentVertex = destinationVertex
             }
 
+            // return path if it can be found
+            // return listOf() if prerequisites cannot be met
+            // return null if path cannot be found (do not overwrite
             return shortestPaths
         }
     }
