@@ -13,11 +13,13 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.level.ExplosionDamageCalculator
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.FluidState
+import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
 import java.util.Optional
+import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -32,7 +34,7 @@ class StarshipExplosion(
 	val y: Double,
 	val z: Double,
 	val power: Float,
-	val originator: Controller,
+	val controller: Controller,
 	val blocks: MutableList<Block> = mutableListOf(),
 ) {
 	private val toExplode = mutableSetOf<BlockPos>()
@@ -47,7 +49,7 @@ class StarshipExplosion(
 		if (useRays) getRayBlocksAsync()
 
 		val event = StarshipCauseExplosionEvent(
-			originator,
+			controller,
 			this
 		)
 
@@ -66,10 +68,27 @@ class StarshipExplosion(
 
 	/** populates the blocks list **/
 	private fun getBlocksAsync() {
-		val maxRadius = getMaxRadius()
+		val maxRadius = getMaxRadius() * 2
 
-		for (x in 0..maxRadius) for (y in 0..maxRadius) for (z in 0..maxRadius) {
-			//TODO
+		val coveredChunks = mutableSetOf<CompletableFuture<Chunk>>()
+
+		val originX = this.x.toInt()
+		val originY = this.y.toInt()
+		val originZ = this.z.toInt()
+
+		val xRange = IntRange(-maxRadius + originX, maxRadius + originX)
+		val yRange = IntRange(-maxRadius + originY, maxRadius + originY)
+		val zRange = IntRange(-maxRadius + originZ, maxRadius + originZ)
+
+		for (x in xRange) for (z in zRange) {
+			val chunkX = x.shr(4)
+			val chunkZ = z.shr(4)
+
+			coveredChunks += world.getChunkAtAsync(chunkX, chunkZ)
+		}
+
+		for (x in xRange) for (y in yRange) for (z in zRange) {
+
 		}
 	}
 
