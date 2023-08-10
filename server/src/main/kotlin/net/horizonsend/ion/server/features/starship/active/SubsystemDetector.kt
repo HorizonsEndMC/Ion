@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
-import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsyst
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
@@ -127,6 +128,7 @@ object SubsystemDetector {
 
 			is DrillMultiblock -> {
 				starship.drillCount++
+				starship.subsystems += PlanetDrillSubsystem(starship, sign, multiblock)
 			}
 
 			is CryoPodMultiblock -> {
@@ -209,5 +211,6 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.thrusters)
 		starship.subsystems.filterIsInstanceTo(starship.magazines)
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
+		starship.subsystems.filterIsInstanceTo(starship.drills)
 	}
 }

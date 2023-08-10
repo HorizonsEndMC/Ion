@@ -1,20 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Bottom
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Top
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Bottom
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Top
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Bottom
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Top
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.MiniPhaserStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.SonicMissileWeaponMultiblock
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.ammopress.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield20
@@ -37,21 +28,23 @@ import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMulti
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass2
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass3
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblockClass4
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier1Top
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier2Top
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Bottom
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Top
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
-import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
-import net.kyori.adventure.text.Component.newline
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
-import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblockAdvanced
+import net.horizonsend.ion.server.features.multiblock.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblockBasic
+import net.horizonsend.ion.server.features.multiblock.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblockClass08Left
@@ -74,8 +67,10 @@ import net.horizonsend.ion.server.features.multiblock.printer.CarbonProcessorMul
 import net.horizonsend.ion.server.features.multiblock.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HorizontalRocketStarshipWeaponMultiblock
@@ -91,6 +86,12 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.Bott
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopTriTurretMultiblock
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Location
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -130,7 +131,8 @@ object Multiblocks : IonServerComponent() {
 			HyperdriveMultiblockClass4,
 
 			NavigationComputerMultiblockBasic,
-			NavigationComputerMultiblockAdvanced,
+			VerticalNavigationComputerMultiblockAdvanced,
+			HorizontalNavigationComputerMultiblockAdvanced,
 
 			ShieldMultiblockClass08Right,
 			ShieldMultiblockClass08Left,

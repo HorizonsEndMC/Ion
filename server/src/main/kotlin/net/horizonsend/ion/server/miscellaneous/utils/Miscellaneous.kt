@@ -4,6 +4,7 @@ import dev.cubxity.plugins.metrics.api.UnifiedMetricsProvider
 import net.horizonsend.ion.common.utils.DoubleLocation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
+import net.horizonsend.ion.server.command.admin.debug
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
@@ -99,6 +100,22 @@ fun debugHighlightBlock(x: Number, y: Number, z: Number) {
 		) return@forEach
 
 		highlightBlock(it, BlockPos(x.toInt(), y.toInt(), z.toInt()), 5L)
+	}
+}
+
+fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
+	IonCommand.debugEnabledPlayers.mapNotNull { Bukkit.getPlayer(it) }.forEach {
+		if (it.location.distanceSquared(
+				Location(
+					it.world,
+					x.toDouble(),
+					y.toDouble(),
+					z.toDouble()
+				)
+			) > 30 * 30
+		) return@forEach
+
+		it.debug(msg)
 	}
 }
 

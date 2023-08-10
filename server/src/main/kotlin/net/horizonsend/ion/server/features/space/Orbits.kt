@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.space
 
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.space.Planet
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import java.util.concurrent.TimeUnit
@@ -10,11 +10,11 @@ import kotlin.system.measureNanoTime
 object Orbits : IonServerComponent() {
 	// schedule orbiting all the planets every midnight
 	override fun onEnable() {
-// 		Tasks.sync {
-// 			orbitPlanets()
-// 		}
+ 		Tasks.sync {
+ 			orbitPlanets(true)
+ 		}
 
-//        schedule()
+        schedule()
 	}
 
 	private fun schedule() {
@@ -62,5 +62,4 @@ object Orbits : IonServerComponent() {
 			log.info("  -> $elapsedMillis milliseconds elapsed")
 		}
 	}
-
 }

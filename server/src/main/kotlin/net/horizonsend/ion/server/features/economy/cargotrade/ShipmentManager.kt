@@ -2,22 +2,21 @@ package net.horizonsend.ion.server.features.economy.cargotrade
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -25,9 +24,28 @@ import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.action
+import net.horizonsend.ion.server.miscellaneous.utils.aqua
+import net.horizonsend.ion.server.miscellaneous.utils.bold
+import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.getNBTInt
+import net.horizonsend.ion.server.miscellaneous.utils.getNBTString
+import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.orNull
+import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
+import net.horizonsend.ion.server.miscellaneous.utils.red
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.horizonsend.ion.server.miscellaneous.utils.withNBTString
+import net.horizonsend.ion.server.miscellaneous.utils.yellow
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -44,7 +62,9 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
 import java.time.Instant
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
@@ -187,6 +207,11 @@ object ShipmentManager : IonServerComponent() {
 				player msg red("You already bought crates from this territory within the past $TIME_LIMIT hours")
 				return@async
 			}
+
+			if (!shipment.isAvailable) { // someone else might've got it in the process
+				return@async player msg red("Shipment is not available")
+			}
+
 			val item = makeShipmentAndItem(playerId, shipment, count)
 			Tasks.sync {
 				if (!shipment.isAvailable) { // someone else might've got it in the process

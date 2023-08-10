@@ -1,30 +1,33 @@
 package net.horizonsend.ion.server.features.economy.bazaar
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.mongodb.client.FindIterable
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.economy.BazaarCommand
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -39,6 +42,11 @@ import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
 object Bazaars : IonServerComponent() {
+	val strings = mutableListOf<String>().apply {
+		addAll(Material.values().filter { it.isItem && !it.isLegacy }.map { it.name })
+		addAll(CustomItems.all().map { it.id })
+		addAll(net.horizonsend.ion.server.features.customitems.CustomItems.identifiers)
+	}
 
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
 		val territoryId: Oid<Territory> = city.territoryId
@@ -46,27 +54,71 @@ object Bazaars : IonServerComponent() {
 		openMainMenu(territoryId, player, false)
 	}
 
-	fun openMainMenu(territoryId: Oid<Territory>, player: Player, remote: Boolean) = Tasks.async {
+	fun openMainMenu(territoryId: Oid<Territory>, player: Player, remote: Boolean): Unit = Tasks.async {
 		MenuHelper.run {
-			val items: List<GuiItem> = BazaarItem
-				.find(and(BazaarItem::cityTerritory eq territoryId, BazaarItem::stock gt 0))
-				.descendingSort(BazaarItem::stock)
-				.map(BazaarItem::itemString)
-				// only one per item string
-				.distinct()
-				// convert to GuiItem
-				.map { itemString ->
-					val item: ItemStack = fromItemString(itemString)
-					return@map guiButton(item) {
-						openItemMenu(playerClicker, territoryId, itemString, SortingBy.STOCK, true, remote)
-					}
+			val backButton = guiButton(Material.IRON_DOOR) {
+				Tasks.sync {
+					BazaarCommand.onBrowse(player)
 				}
+			}.setName(text("Go Back to City Selection"))
+
+			val searchButton = guiButton(Material.NAME_TAG) {
+				Tasks.sync {
+					player.input("Enter Item Name") { _, input ->
+						val searchBackButton = guiButton(Material.IRON_DOOR) {
+							Tasks.sync {
+								openMainMenu(territoryId, player, remote)
+							}
+						}.setName(text("Go Back to City"))
+
+						Tasks.async {
+							val items: List<GuiItem> = getGuiItems(territoryId, remote, search(territoryId, input))
+
+							Tasks.sync {
+								player.openPaginatedMenu("Search Query : $input", items, listOf(searchBackButton))
+							}
+						}
+
+						null
+					}
+
+				}
+			}.setName(text("Search"))
+
+			val titleButtons: List<GuiItem> = listOf(
+				backButton,
+				searchButton
+			)
+
+			val items: List<GuiItem> = getGuiItems(territoryId, remote, getCityItems(territoryId))
+
+			val cityName = Territory.findPropById(territoryId, Territory::name)
 
 			Tasks.sync {
-				player.openPaginatedMenu("Select An Item", items)
+				player.openPaginatedMenu("City: $cityName", items, titleButtons)
 			}
 		}
 	}
+
+	fun getGuiItems(territoryId: Oid<Territory>, remote: Boolean, bazaarItems: FindIterable<BazaarItem>): List<GuiItem> = getGuiItems(
+		territoryId, remote, bazaarItems.descendingSort(BazaarItem::stock).toList()
+	)
+
+	fun getGuiItems(territoryId: Oid<Territory>, remote: Boolean, bazaarItems: List<BazaarItem>): List<GuiItem> =
+		bazaarItems
+			.map(BazaarItem::itemString)
+			// only one per item string
+			.distinct()
+			// convert to GuiItem
+			.map { itemString ->
+				val item: ItemStack = fromItemString(itemString)
+				return@map MenuHelper.guiButton(item) {
+					openItemMenu(playerClicker, territoryId, itemString, SortingBy.STOCK, true, remote)
+				}
+			}
+
+	private fun getCityItems(territoryId: Oid<Territory>): FindIterable<BazaarItem> = BazaarItem
+		.find(and(BazaarItem::cityTerritory eq territoryId, BazaarItem::stock gt 0))
 
 	enum class SortingBy(val property: KProperty<*>, val displayType: Material) {
 		PRICE(BazaarItem::price, Material.GOLD_INGOT),
@@ -183,13 +235,16 @@ object Bazaars : IonServerComponent() {
 					guiButton(Material.HOPPER) {
 						playerClicker.closeInventory()
 						tryBuy(playerClicker, item, currentAmount, remote)
-					}.setName(Component.text("Purchase").color(NamedTextColor.GREEN)).setLore(lore)
+					}.setName(text("Purchase").color(NamedTextColor.GREEN)).setLore(lore)
 				)
 			}
 
 			gui(1, "$currentAmount/${item.stock} $sellerName's $name").withPane(pane).show(player)
 		}
 	}
+
+	private fun search(territoryId: Oid<Territory>, search: String): List<BazaarItem> =
+		getCityItems(territoryId).filter { it.itemString.contains(search, true) }
 
 	private fun tryBuy(player: Player, item: BazaarItem, amount: Int, remote: Boolean) {
 		val price: Double = item.price
@@ -229,36 +284,36 @@ object Bazaars : IonServerComponent() {
 				VAULT_ECO.withdrawPlayer(player, cost)
 				val (fullStacks, remainder) = dropItems(itemStack, amount, player)
 
-				val buyMessage = Component.text().color(NamedTextColor.GREEN)
-					.append(Component.text("Bought "))
-					.append(Component.text(fullStacks).color(NamedTextColor.WHITE))
+				val buyMessage = text().color(NamedTextColor.GREEN)
+					.append(text("Bought "))
+					.append(text(fullStacks).color(NamedTextColor.WHITE))
 
 				if (itemStack.maxStackSize == 1) {
 					buyMessage
-						.append(Component.text(" "))
+						.append(text(" "))
 						.append(
 							itemStack.displayNameComponent.append(
-								if (fullStacks == 1) Component.text("") else Component.text("s")
+								if (fullStacks == 1) text("") else text("s")
 							)
 						)
 				} else {
 					buyMessage
-						.append(if (fullStacks == 1) Component.text(" stack and ") else Component.text(" stacks and "))
-						.append(Component.text(remainder).color(NamedTextColor.WHITE))
-						.append(if (remainder == 1) Component.text(" item") else Component.text(" items"))
-						.append(Component.text(" of "))
+						.append(if (fullStacks == 1) text(" stack and ") else text(" stacks and "))
+						.append(text(remainder).color(NamedTextColor.WHITE))
+						.append(if (remainder == 1) text(" item") else text(" items"))
+						.append(text(" of "))
 						.append(itemStack.displayNameComponent)
 				}
 
 				buyMessage
-					.append(Component.text(" for "))
-					.append(Component.text(cost.toCreditsString()).color(NamedTextColor.GOLD))
+					.append(text(" for "))
+					.append(text(cost.toCreditsString()).color(NamedTextColor.GOLD))
 
 				if (priceMult > 1) {
 					buyMessage
-						.append(Component.text(" (Price multiplied by ").color(NamedTextColor.YELLOW))
-						.append(Component.text(priceMult).color(NamedTextColor.WHITE))
-						.append(Component.text(" due to browsing remotely)").color(NamedTextColor.YELLOW))
+						.append(text(" (Price multiplied by ").color(NamedTextColor.YELLOW))
+						.append(text(priceMult).color(NamedTextColor.WHITE))
+						.append(text(" due to browsing remotely)").color(NamedTextColor.YELLOW))
 				}
 
 				player.sendMessage(

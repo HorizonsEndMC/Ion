@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar.bars
 
-import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -23,6 +23,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.StarshipType.CORVETTE
 import net.horizonsend.ion.server.features.starship.StarshipType.DESTROYER
 import net.horizonsend.ion.server.features.starship.StarshipType.FRIGATE
@@ -38,6 +39,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.toVector
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -193,11 +196,11 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 							HEAVY_FREIGHTER -> text("\uE014").font(key("horizonsend:sidebar"))
 							else -> text("\uE032").font(key("horizonsend:sidebar"))
 						}.run {
-							val viewerNation = PlayerCache[player].nationOid ?: return@run this
+							val viewerNation = PlayerCache[player].nationOid ?: return@run this.color(GRAY)
 							val pilotNation =
-								PlayerCache[starship.pilot ?: return@run this].nationOid ?: return@run this
+								PlayerCache[starship.pilot ?: return@run this.color(DARK_GRAY)].nationOid ?: return@run this.color(GRAY)
 
-							return@run color(RelationCache[viewerNation, pilotNation].color)
+							return@run this.color(NationRelation.getRelationActual(viewerNation, pilotNation).color)
 						} as TextComponent,
 
 						suffix = if (starship.isInterdicting && distance <= starship.type.interdictionRange) {
@@ -218,7 +221,47 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
+							.append(text("m"))
+							.append(
+								text(repeatString(" ", 4 - distance.toString().length))
+									.font(key("horizonsend:sidebar"))
+							)
+							.color(color),
+						distanceInt = distance,
+						padding = empty()
+					)
+				)
+			}
+
+			val lastStarship = LastPilotedStarship.map[player.uniqueId]
+
+			if (lastStarship != null) {
+				val vector = lastStarship.toVector()
+				val distance = vector.distance(playerVector).toInt()
+				val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
+				val height = vector.y.toInt()
+				val color = distanceColor(distance)
+
+				contactsList.add(
+					ContactsData(
+						name = text("Last Piloted Starship").color(color),
+						prefix = text("\uE032").font(key("horizonsend:sidebar")).color(YELLOW) as TextComponent,
+						suffix = empty(),
+						heading = text(direction)
+							.append(
+								text(repeatString(" ", 2 - direction.length))
+									.font(key("horizonsend:sidebar"))
+							)
+							.color(color),
+						height = text("$height")
+							.append(text("y"))
+							.append(
+								text(repeatString(" ", 3 - height.toString().length))
+									.font(key("horizonsend:sidebar"))
+							)
+							.color(color),
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
@@ -260,7 +303,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
@@ -302,7 +345,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))
@@ -342,7 +385,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 									.font(key("horizonsend:sidebar"))
 							)
 							.color(color),
-						distance = text("${distance}")
+						distance = text("$distance")
 							.append(text("m"))
 							.append(
 								text(repeatString(" ", 4 - distance.toString().length))

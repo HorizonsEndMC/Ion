@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.hyperspace
+package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent

@@ -1,8 +1,5 @@
 package net.horizonsend.ion.server.features.space
 
-import com.mongodb.client.result.UpdateResult
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Planet.Companion.setX
@@ -14,20 +11,22 @@ import net.horizonsend.ion.server.miscellaneous.utils.d
 import net.horizonsend.ion.server.miscellaneous.utils.getSphereBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.i
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.util.noise.SimplexNoiseGenerator
-import java.util.*
+import java.util.Locale
 
 class CachedPlanet(
     val databaseId: Oid<Planet>,
     override val name: String,
     sun: CachedStar,
     val planetWorldName: String,
-    val rogue: Boolean,
-    val x: Int,
-    val z: Int,
+    var rogue: Boolean,
+    var x: Int,
+    var z: Int,
     val size: Double,
     orbitDistance: Int,
     private val orbitSpeed: Double,
@@ -90,7 +89,11 @@ class CachedPlanet(
 		Planet.setSun(databaseId, newSun.databaseId)
 	}
 
-	fun toggleRogue(rogue: Boolean): UpdateResult = Planet.setRogue(databaseId, rogue)
+	fun toggleRogue(rogue: Boolean) {
+		this.rogue = rogue
+
+		Planet.setRogue(databaseId, rogue)
+	}
 
 	fun setOrbitProgress(progress: Double) {
 		val newLocation = calculateOrbitLocation(sun, orbitDistance, progress)
@@ -100,9 +103,17 @@ class CachedPlanet(
 		Planet.setOrbitProgress(databaseId, progress)
 	}
 
-	fun changeX(x: Int): UpdateResult = setX(databaseId, x)
+	fun changeX(x: Int) {
+		this.x = x
+		setX(databaseId, x)
+		setLocation(true)
+	}
 
-	fun changeZ(z: Int): UpdateResult = setZ(databaseId, z)
+	fun changeZ(z: Int) {
+		this.z = z
+		setZ(databaseId, z)
+		setLocation(true)
+	}
 
 	fun changeOrbitDistance(newDistance: Int) {
 		val newLocation = calculateOrbitLocation(sun, newDistance, orbitProgress)

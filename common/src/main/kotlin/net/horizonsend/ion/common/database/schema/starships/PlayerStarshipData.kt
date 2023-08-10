@@ -1,6 +1,9 @@
 package net.horizonsend.ion.common.database.schema.starships
 
-import net.horizonsend.ion.common.database.*
+import net.horizonsend.ion.common.database.DbObject
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.OidDbObjectCompanion
+import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
@@ -34,7 +37,7 @@ data class PlayerStarshipData(
 	var containedChunks: Set<Long>? = null,
 
     var lastUsed: Long = System.currentTimeMillis(),
-    var isLockEnabled: Boolean = true
+    var isLockEnabled: Boolean = false
 ) : DbObject {
 	companion object : OidDbObjectCompanion<PlayerStarshipData>(PlayerStarshipData::class, setup = {
 		ensureIndex(PlayerStarshipData::captain)
@@ -44,7 +47,7 @@ data class PlayerStarshipData(
 		ensureIndex(PlayerStarshipData::levelName)
 		ensureUniqueIndex(PlayerStarshipData::levelName, PlayerStarshipData::blockKey)
 	}) {
-		const val LOCK_TIME_MS = 1_000 * 300
+		const val LOCK_TIME_MS = 1_000 * 60 * 5
 
 		fun add(data: PlayerStarshipData) {
 			col.insertOne(data)

@@ -161,7 +161,7 @@ object CustomItems {
 
 	//region Batteries
 	enum class BatteryType(val itemId: String, val maxPower: Int) {
-		SMALL("battery_a", 500), MEDIUM("battery_m", 1000), LARGE("battery_g", 2000);
+		SMALL("battery_a", 1000), MEDIUM("battery_m", 2500), LARGE("battery_g", 7500);
 
 		fun getItem(): CustomItem = CustomItems[itemId] ?: error("No custom item for battery type $name!")
 	}

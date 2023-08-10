@@ -1,18 +1,18 @@
 package net.horizonsend.ion.server.features.multiblock.misc
 
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.Container
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -25,14 +25,17 @@ import org.bukkit.inventory.ItemStack
 object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMultiblock {
 	override val name: String = "splitter"
 
-	val BLACKLIST = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
-	val WHITELIST = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
+	val RIGHT = text("<-----", NamedTextColor.AQUA)
+	val LEFT = text("----->", NamedTextColor.AQUA)
+
+	val BLACKLIST_OLD = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
+	val WHITELIST_OLD = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
 
 	override val signText: Array<Component?> = arrayOf(
 		text("Item Splitter", NamedTextColor.GOLD),
 		null,
 		null,
-		BLACKLIST
+		RIGHT
 	)
 
 	override fun MultiblockShape.buildStructure() {
@@ -79,15 +82,31 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		migrateFrom(sign)
+
 		if (isBlacklist(sign)) {
 			player.success("Switched sorter to whitelist!")
-			sign.line(3, WHITELIST)
+			sign.line(3, LEFT)
 		} else {
 			player.success("Switched sorter to blacklist!")
-			sign.line(3, BLACKLIST)
+			sign.line(3, RIGHT)
 		}
 
 		sign.update()
+	}
+
+	private fun migrateFrom(sign: Sign) {
+		val line = sign.line(3)
+
+		if (line == BLACKLIST_OLD) {
+			sign.line(3, RIGHT)
+			sign.update()
+		}
+
+		if (line == WHITELIST_OLD) {
+			sign.line(3, LEFT)
+			sign.update()
+		}
 	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
@@ -173,6 +192,6 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	private val filteredInventory: Vec3i = Vec3i(2, 1, -2)
 
 	private fun isBlacklist(sign: Sign): Boolean {
-		return sign.line(3) == BLACKLIST
+		return sign.line(3) == RIGHT
 	}
 }

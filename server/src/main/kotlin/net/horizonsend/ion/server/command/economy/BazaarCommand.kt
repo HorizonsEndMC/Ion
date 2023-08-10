@@ -5,36 +5,38 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.space.Sector
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.roundToHundredth
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -44,7 +46,7 @@ import org.litote.kmongo.eq
 import kotlin.math.ceil
 
 @CommandAlias("bazaar")
-object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
+object BazaarCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "bazaarItemStrings") { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
@@ -56,6 +58,8 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 				BazaarItem::itemString
 			).toList()
 		}
+
+		registerAsyncCompletion(manager, "possibleBazaarItemStrings") { Bazaars.strings }
 	}
 
 	private fun validateItemString(itemString: String): ItemStack {
@@ -89,6 +93,7 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("create")
 	@Description("Create a new listing at this city")
+	@CommandCompletion("@possibleBazaarItemStrings")
 	fun onCreate(sender: Player, itemString: String, pricePerItem: Double) = asyncCommand(sender) {
 		val territory: RegionTerritory = requireTerritoryIn(sender)
 		failIf(!TradeCities.isCity(territory)) { "Territory is not a trade city" }
@@ -111,9 +116,29 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 		)
 	}
 
+	@Subcommand("create")
+	@Description("Create a new listing at this city")
+	fun onCreate(sender: Player, pricePerItem: Double) = asyncCommand(sender) {
+		val item = requireItemInHand(sender)
+		val itemString = Bazaars.toItemString(item)
+
+		onCreate(sender, itemString, pricePerItem)
+	}
+
 	private fun requireSelling(territory: RegionTerritory, sender: Player, itemString: String) =
 		BazaarItem.findOne(BazaarItem.matchQuery(territory.id, sender.slPlayerId, itemString))
 			?: fail { "You're not selling $itemString at ${cityName(territory)}" }
+
+	@Suppress("Unused")
+	@Subcommand("deposit")
+	@Description("Deposit all matching items in your inventory")
+	@CommandCompletion("@bazaarItemStrings")
+	fun onDeposit(sender: Player) = asyncCommand(sender) {
+		val item = requireItemInHand(sender)
+		val itemString = Bazaars.toItemString(item)
+
+		onDeposit(sender, itemString)
+	}
 
 	@Suppress("Unused")
 	@Subcommand("deposit")
@@ -229,18 +254,18 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 			val price = item.price.toCreditsString()
 
 			sender.sendMessage(
-				Component.text()
+				text()
 					.append(itemDisplayName)
-					.append(Component.text(" @ ").color(NamedTextColor.DARK_PURPLE))
-					.append(Component.text(city).color(NamedTextColor.LIGHT_PURPLE))
-					.append(Component.text(" [").color(NamedTextColor.DARK_GRAY))
-					.append(Component.text("stock: ").color(NamedTextColor.GRAY))
-					.append(Component.text(stock).color(NamedTextColor.GRAY))
-					.append(Component.text(", balance: ").color(NamedTextColor.GRAY))
-					.append(Component.text(uncollected).color(NamedTextColor.GOLD))
-					.append(Component.text(", price: ").color(NamedTextColor.GRAY))
-					.append(Component.text(price).color(NamedTextColor.YELLOW))
-					.append(Component.text("]").color(NamedTextColor.DARK_GRAY))
+					.append(text(" @ ").color(NamedTextColor.DARK_PURPLE))
+					.append(text(city).color(NamedTextColor.LIGHT_PURPLE))
+					.append(text(" [").color(NamedTextColor.DARK_GRAY))
+					.append(text("stock: ").color(NamedTextColor.GRAY))
+					.append(text(stock).color(NamedTextColor.GRAY))
+					.append(text(", balance: ").color(NamedTextColor.GRAY))
+					.append(text(uncollected).color(NamedTextColor.GOLD))
+					.append(text(", price: ").color(NamedTextColor.GRAY))
+					.append(text(price).color(NamedTextColor.YELLOW))
+					.append(text("]").color(NamedTextColor.DARK_GRAY))
 			)
 		}
 	}
@@ -273,6 +298,7 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("browse")
+	@Default
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
 		val sector = Sector.getSector(sender.world)
@@ -315,15 +341,15 @@ object BazaarCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Bazaars.dropItems(item, amount, sender)
 
 		sender.sendMessage(
-			Component.text("Bought ").color(NamedTextColor.GREEN)
-				.append(Component.text(amount).color(NamedTextColor.WHITE))
-				.append(Component.text(" of "))
+			text("Bought ").color(NamedTextColor.GREEN)
+				.append(text(amount).color(NamedTextColor.WHITE))
+				.append(text(" of "))
 				.append(item.displayNameComponent)
-				.append(Component.text(" for "))
-				.append(Component.text(price.toCreditsString()).color(NamedTextColor.GOLD))
-				.append(Component.text(" (+ "))
-				.append(Component.text(tax.toCreditsString()).color(NamedTextColor.GOLD))
-				.append(Component.text(" tax"))
+				.append(text(" for "))
+				.append(text(price.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(text(" (+ "))
+				.append(text(tax.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(text(" tax"))
 		)
 
 		if (city.type == TradeCityType.SETTLEMENT) {
