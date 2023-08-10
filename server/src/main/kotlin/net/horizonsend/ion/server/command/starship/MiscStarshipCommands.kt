@@ -59,6 +59,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		manager.commandCompletions.registerCompletion("hyperspaceGates") {
 			IonServer.configuration.beacons.map { it.name.replace(" ", "_") }
 		}
+		manager.commandCompletions.registerCompletion("hyperspaceGatesInWorld") { e ->
+			IonServer.configuration.beacons
+				.filter { beacon -> beacon.spaceLocation.world == e.player.world.name }
+				.map { it.name.replace(" ", "_") }
+		}
 	}
 
 	@Suppress("unused")
@@ -145,7 +150,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("jump")
-	@CommandCompletion("@planets|@hyperspaceGates")
+	@CommandCompletion("@planetsInWorld|@hyperspaceGatesInWorld")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
