@@ -41,6 +41,7 @@ object WaypointCommand : SLCommand() {
     ) {
         if (!WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
             WaypointManager.playerDestinations[sender.uniqueId]?.clear()
+            WaypointManager.playerPaths.remove(sender.uniqueId)
             sender.success("All waypoints cleared")
             return
         } else {
