@@ -11,7 +11,7 @@ object Orbits : IonServerComponent() {
 	// schedule orbiting all the planets every midnight
 	override fun onEnable() {
  		Tasks.sync {
- 			orbitPlanets()
+ 			orbitPlanets(true)
  		}
 
         schedule()
@@ -62,5 +62,4 @@ object Orbits : IonServerComponent() {
 			log.info("  -> $elapsedMillis milliseconds elapsed")
 		}
 	}
-
 }
