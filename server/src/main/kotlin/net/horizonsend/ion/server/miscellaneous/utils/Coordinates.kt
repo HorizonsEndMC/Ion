@@ -269,15 +269,6 @@ fun BlockPos.toLocation(world: World?) = Location(world, this.x.toDouble(), this
 
 fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
-operator fun Location.component1(): World = this.world
-
-operator fun Location.component2(): Double = this.x
-
-operator fun Location.component3(): Double = this.y
-
-operator fun Location.component4(): Double = this.z
-
-
 operator fun BlockPos.component1(): Int = this.x
 
 operator fun BlockPos.component2(): Int = this.y
