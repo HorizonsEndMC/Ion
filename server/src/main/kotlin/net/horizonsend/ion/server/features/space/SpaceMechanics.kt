@@ -5,12 +5,13 @@ import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorModule
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.isInside
+import net.horizonsend.ion.server.miscellaneous.utils.isWater
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.squared
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -19,6 +20,7 @@ import org.bukkit.World
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.ItemSpawnEvent
@@ -138,6 +140,12 @@ object SpaceMechanics : IonServerComponent() {
 					return@listen
 				}
 			}
+		}
+
+		listen<BlockFadeEvent> { event ->
+			if (!SpaceWorlds.contains(event.block.world)) return@listen
+
+			if (event.newState.type.isWater) event.isCancelled = true
 		}
 	}
 
