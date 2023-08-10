@@ -263,7 +263,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 		val toDestroy = getBlocksToDestroy(sign)
 
-		val maxBroken = max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
+		val maxBroken = 2
 
 		val broken = breakBlocks(sign, maxBroken, toDestroy, getOutput(sign.block), player)
 
