@@ -27,14 +27,16 @@ object WaypointManager : IonServerComponent() {
     val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
 
     const val MAX_DESTINATIONS = 5
-    const val WAYPOINT_REACHED_DISTANCE = 500
+    private const val WAYPOINT_REACHED_DISTANCE = 500
 
     /**
      * server component handlers
      */
     override fun onEnable() {
         // disabled for now as this crashes the server on startup
-        //reloadMainGraph()
+        Tasks.sync {
+            reloadMainGraph()
+        }
 
         // update all player graphs every five seconds if they have a destination saved
         // JGraphT is not thread safe; this cannot be async
