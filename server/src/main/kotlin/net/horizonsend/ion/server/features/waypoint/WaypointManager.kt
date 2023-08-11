@@ -5,8 +5,10 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -16,6 +18,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
 import java.util.*
+import kotlin.math.ceil
 
 object WaypointManager : IonServerComponent() {
     // mainGraph holds the server graph
@@ -295,6 +298,31 @@ object WaypointManager : IonServerComponent() {
                 playerDestinations[player.uniqueId]?.removeFirstOrNull()
             }
         }
+    }
+
+    fun getNumJumps(player: Player): Int {
+        // if not piloting or no waypoints are set, no need to display
+        val starship = PilotedStarships[player] ?: return -1
+        val paths = playerPaths[player.uniqueId] ?: return -1
+        if (paths.isEmpty()) return -1
+
+        // if navcomp or hyperdrive are not present, jumps are impossible
+        val navComp = Hyperspace.findNavComp(starship) ?: return Int.MAX_VALUE
+        Hyperspace.findHyperdrive(starship) ?: return Int.MAX_VALUE
+
+        val maxRange = (navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier)
+
+        var numJumps = 0
+        for (path in paths) {
+            for (edge in path.edgeList) {
+                numJumps += if (edge.hyperspaceEdge) {
+                    1
+                } else {
+                    ceil(playerGraphs[player.uniqueId]!!.getEdgeWeight(edge) / maxRange).toInt()
+                }
+            }
+        }
+        return numJumps
     }
 }
 
