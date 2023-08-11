@@ -314,8 +314,8 @@ object PilotedStarships : IonServerComponent() {
 		    val pilotData = PlayerCache[player]
 		    val otherData = PlayerCache[nearbyPlayer]
 
-		    val pilotNation: Oid<Nation> = pilotData.nationOid
-		    val otherNation: Oid<Nation> = otherData.nationOid
+		    val pilotNation: Oid<Nation> = pilotData.nationOid ?: continue
+		    val otherNation: Oid<Nation> = otherData.nationOid ?: continue
 
 		    //if relation to the other person is less than neutral, unpilot instead
 		    if (NationRelation.getRelationActual(pilotNation, otherNation).ordinal < 4){
