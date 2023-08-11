@@ -4,7 +4,6 @@ services:
   redis:
     container_name: "redis"
     image: redis
-
   mongo:
     image: "mongo:4.2"
     container_name: "mongo"
