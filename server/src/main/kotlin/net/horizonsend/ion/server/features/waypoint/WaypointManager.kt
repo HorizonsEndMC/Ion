@@ -300,7 +300,22 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
-    fun getNumJumps(player: Player): Int {
+    private fun getNumJumps(
+        numJumps: Int,
+        edge: WaypointEdge,
+        player: Player,
+        maxRange: Double
+    ): Int {
+        var numJumps1 = numJumps
+        numJumps1 += if (edge.hyperspaceEdge) {
+            1
+        } else {
+            ceil(playerGraphs[player.uniqueId]!!.getEdgeWeight(edge) / maxRange).toInt()
+        }
+        return numJumps1
+    }
+
+    fun getTotalNumJumps(player: Player): Int {
         // if not piloting or no waypoints are set, no need to display
         val starship = PilotedStarships[player] ?: return -1
         val paths = playerPaths[player.uniqueId] ?: return -1
@@ -315,14 +330,16 @@ object WaypointManager : IonServerComponent() {
         var numJumps = 0
         for (path in paths) {
             for (edge in path.edgeList) {
-                numJumps += if (edge.hyperspaceEdge) {
-                    1
-                } else {
-                    ceil(playerGraphs[player.uniqueId]!!.getEdgeWeight(edge) / maxRange).toInt()
-                }
+                numJumps = getNumJumps(numJumps, edge, player, maxRange)
             }
         }
         return numJumps
+    }
+
+    fun getRouteString(player: Player): String {
+        val numJumps = getTotalNumJumps(player)
+        if (numJumps == -1) return ""
+        if (numJumps == Int.MAX_VALUE) return "X"
     }
 }
 
