@@ -205,7 +205,7 @@ object WaypointCommand : SLCommand() {
     fun onGetNumJumps(
         sender: Player
     ) {
-        val jumps = WaypointManager.getNumJumps(sender)
+        val jumps = WaypointManager.getTotalNumJumps(sender)
         sender.information("Number of jumps: $jumps")
     }
 }
