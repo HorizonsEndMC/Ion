@@ -318,7 +318,7 @@ object PilotedStarships : IonServerComponent() {
 		    val otherNation: Oid<Nation> = otherData.nationOid ?: continue
 
 		    //if relation to the other person is less than neutral, unpilot instead
-		    if (NationRelation.getRelationActual(pilotNation, otherNation).ordinal < 4){
+		    if (NationRelation.getRelationActual(pilotNation, otherNation).ordinal < 3){
 			    starship.controller?.information("Enemy Nearby: Cannot release, un-piloting instead")
             		    unpilot(starship)
 			    return false
