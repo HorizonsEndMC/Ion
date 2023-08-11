@@ -26,6 +26,9 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShi
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -302,6 +305,25 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 		if (starship.serverLevel.world.name.contains("Hyperspace")) return false
+
+		//for all players within 1k
+	    for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 1000.0)) {
+
+		    //gathering data for nation stuff
+		    val pilotData = PlayerCache[player]
+		    val otherData = PlayerCache[nearbyPlayer]
+
+		    val pilotNation: Oid<Nation> = pilotData.nationOid
+		    val otherNation: Oid<Nation> = otherData.nationOid
+
+		    //if relation to the other person is less than neutral, unpilot instead
+		    if (NationRelation.getRelationActual(pilotNation, otherNation).ordinal < 4){
+			    starship.controller?.information("Enemy Nearby: Cannot release, un-piloting instead")
+            		    unpilot(starship)
+			    return false
+		    }
+		}
+        }
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
