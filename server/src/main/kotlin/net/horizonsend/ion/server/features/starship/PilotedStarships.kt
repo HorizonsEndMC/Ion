@@ -323,7 +323,6 @@ object PilotedStarships : IonServerComponent() {
 			    return false
 		    }
 		}
-        }
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
