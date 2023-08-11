@@ -290,7 +290,8 @@ object WaypointManager : IonServerComponent() {
             return
         } else {
             val firstVertex = playerDestinations[player.uniqueId]?.first() ?: return
-            if (player.location.distance(firstVertex.loc) <= WAYPOINT_REACHED_DISTANCE) {
+            if (player.location.world == firstVertex.loc.world &&
+                player.location.distance(firstVertex.loc) <= WAYPOINT_REACHED_DISTANCE) {
                 playerDestinations[player.uniqueId]?.removeFirstOrNull()
             }
         }

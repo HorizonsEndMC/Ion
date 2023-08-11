@@ -189,11 +189,11 @@ object WaypointCommand : SLCommand() {
             return
         }
         for ((i, path) in paths.withIndex()) {
-            sender.information("$i: ${path.startVertex.name} to ${path.endVertex.name} " +
+            sender.information("${i + 1}: ${path.startVertex.name} to ${path.endVertex.name} " +
                     "with total distance ${path.weight}"
             )
             for ((j, edge) in path.edgeList.withIndex()) {
-                sender.information("  $i.$j: ${edge.source.name} to ${edge.target.name} " +
+                sender.information("    ${i + 1}.$j: ${edge.source.name} to ${edge.target.name} " +
                         "with distance ${WaypointManager.playerGraphs[sender.uniqueId]!!.getEdgeWeight(edge)}"
                 )
             }
