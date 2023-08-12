@@ -10,6 +10,8 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 @CommandAlias("waypoint")
@@ -207,5 +209,15 @@ object WaypointCommand : SLCommand() {
     ) {
         val jumps = WaypointManager.getTotalNumJumps(sender)
         sender.information("Number of jumps: $jumps")
+    }
+
+    @Suppress("unused")
+    @Subcommand("string")
+    fun onGetRouteString(
+        sender: Player
+    ) {
+        sender.sendMessage(Component.text(WaypointManager.getRouteString(sender))
+            .font(Key.key("horizonsend:sidebar"))
+        )
     }
 }

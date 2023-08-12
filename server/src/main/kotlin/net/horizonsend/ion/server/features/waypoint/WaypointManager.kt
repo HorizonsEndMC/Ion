@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -153,6 +154,7 @@ object WaypointManager : IonServerComponent() {
         for (planet in Space.getPlanets()) {
             val vertex = WaypointVertex(
                 name = planet.name,
+                icon = '\uE020',
                 loc = planet.location.toLocation(planet.spaceWorld)
             )
             mainGraph.addVertex(vertex)
@@ -163,10 +165,12 @@ object WaypointManager : IonServerComponent() {
             // 2 vertices for each beacon's entry and exit point
             val vertexEntry = WaypointVertex(
                 name = beacon.name.replace(" ", "_"),
+                icon = '\uE022',
                 loc = beacon.spaceLocation.toLocation()
             )
             val vertexExit = WaypointVertex(
                 name = StringBuilder(beacon.name.replace(" ", "_")).append("_Exit").toString(),
+                icon = '\uE034',
                 loc = beacon.destination.toLocation()
             )
             // link edge vertex with exit vertex (for edge connections later)
@@ -235,6 +239,7 @@ object WaypointManager : IonServerComponent() {
         graph.removeVertex(locVertex)
         val newVertex = WaypointVertex(
             name = "Current Location",
+            icon = '\uE035',
             loc = player.location,
             linkedWaypoint = null
         )
@@ -300,46 +305,47 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
-    private fun getNumJumps(
-        numJumps: Int,
-        edge: WaypointEdge,
-        player: Player,
-        maxRange: Double
-    ): Int {
-        var numJumps1 = numJumps
-        numJumps1 += if (edge.hyperspaceEdge) {
-            1
-        } else {
-            ceil(playerGraphs[player.uniqueId]!!.getEdgeWeight(edge) / maxRange).toInt()
-        }
-        return numJumps1
+    fun getNumJumps(player: Player, edge: WaypointEdge): Int {
+        // if not piloting or no waypoints are set, no need to display
+        val starship = PilotedStarships[player] ?: return -1
+
+        // if navcomp or hyperdrive are not present, jumps are impossible
+        val navComp = Hyperspace.findNavComp(starship) ?: return -1
+        Hyperspace.findHyperdrive(starship) ?: return -1
+
+        val maxRange = (navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier)
+
+        return if (edge.hyperspaceEdge) 1
+        else ceil(playerGraphs[player.uniqueId]!!.getEdgeWeight(edge) / maxRange).toInt()
     }
 
     fun getTotalNumJumps(player: Player): Int {
-        // if not piloting or no waypoints are set, no need to display
-        val starship = PilotedStarships[player] ?: return -1
         val paths = playerPaths[player.uniqueId] ?: return -1
-        if (paths.isEmpty()) return -1
-
-        // if navcomp or hyperdrive are not present, jumps are impossible
-        val navComp = Hyperspace.findNavComp(starship) ?: return Int.MAX_VALUE
-        Hyperspace.findHyperdrive(starship) ?: return Int.MAX_VALUE
-
-        val maxRange = (navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier)
 
         var numJumps = 0
         for (path in paths) {
             for (edge in path.edgeList) {
-                numJumps = getNumJumps(numJumps, edge, player, maxRange)
+                val jumps = getNumJumps(player, edge)
+                // no path set, or not piloting
+                if (jumps == -1) return -1
+                numJumps += jumps
             }
         }
         return numJumps
     }
 
     fun getRouteString(player: Player): String {
-        val numJumps = getTotalNumJumps(player)
-        if (numJumps == -1) return ""
-        if (numJumps == Int.MAX_VALUE) return "X"
+        val paths = playerPaths[player.uniqueId] ?: return "X"
+        val str = StringBuilder()
+        for (path in paths) {
+            for (edge in path.edgeList) {
+                val jumps = getNumJumps(player, edge)
+                if (jumps == -1) return "X"
+                str.append(repeatString("\uE036", jumps - 1))
+                str.append(edge.target.icon)
+            }
+        }
+        return str.toString()
     }
 }
 
@@ -348,6 +354,7 @@ object WaypointManager : IonServerComponent() {
  */
 data class WaypointVertex(
     val name: String,
+    val icon: Char,
     var loc: Location,
     var linkedWaypoint: String? = null
 )
