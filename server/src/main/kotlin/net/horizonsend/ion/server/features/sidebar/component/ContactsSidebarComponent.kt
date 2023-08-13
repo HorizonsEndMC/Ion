@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
-import net.horizonsend.ion.server.features.sidebar.tasks.Contacts
+import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import java.util.function.Supplier
 
-class ContactsSidebarComponent(private val valueSupplier: Supplier<Contacts.ContactsData>) : SidebarComponent {
+class ContactsSidebarComponent(private val valueSupplier: Supplier<ContactsSidebar.ContactsData>) : SidebarComponent {
 
     override fun draw(drawable: LineDrawable) {
         val value = valueSupplier.get()
