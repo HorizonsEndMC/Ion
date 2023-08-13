@@ -19,8 +19,8 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
-import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
-import net.horizonsend.ion.server.features.spacestations.SpaceStations
+import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStations
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import org.bukkit.World

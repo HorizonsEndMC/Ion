@@ -41,7 +41,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceMap
 import net.horizonsend.ion.server.features.space.SpaceMechanics
 import net.horizonsend.ion.server.features.space.SpaceWorlds
-import net.horizonsend.ion.server.features.spacestations.SpaceStations
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStations
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.Interdiction

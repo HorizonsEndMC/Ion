@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
-import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock

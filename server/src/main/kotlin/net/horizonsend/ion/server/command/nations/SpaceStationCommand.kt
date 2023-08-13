@@ -9,11 +9,11 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.DbObject
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
@@ -21,12 +21,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.Settlemen
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation
-import net.horizonsend.ion.server.features.spacestations.CachedSpaceStation.Companion.calculateCost
-import net.horizonsend.ion.server.features.spacestations.SpaceStations
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
@@ -34,7 +29,11 @@ import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
-
+import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStations
+import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.litote.kmongo.Id
@@ -223,9 +222,9 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	private fun requirePermission(
-		player: SLPlayerId,
-		station: CachedSpaceStation<*, *, *>,
-		permission: SpaceStations.SpaceStationPermission
+        player: SLPlayerId,
+        station: CachedSpaceStation<*, *, *>,
+        permission: SpaceStations.SpaceStationPermission
 	) {
 		if (!station.hasPermission(player, permission)) fail { "You don't have permission $permission" }
 	}

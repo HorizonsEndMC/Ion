@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock.ammopress
 
-import net.horizonsend.ion.server.features.blasters.objects.AmmunitionHoldingItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.blasters.objects.AmmunitionHoldingItem
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.Material

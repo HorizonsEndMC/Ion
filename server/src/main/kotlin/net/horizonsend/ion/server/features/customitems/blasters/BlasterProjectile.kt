@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.blasters
+package net.horizonsend.ion.server.features.customitems.blasters
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation

@@ -1,19 +1,17 @@
-package net.horizonsend.ion.server.features.blasters
+package net.horizonsend.ion.server.features.customitems.blasters
 
-import kotlin.math.roundToInt
-import net.horizonsend.ion.server.features.blasters.objects.Blaster
-import net.horizonsend.ion.server.features.blasters.objects.Magazine
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
+import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
@@ -21,6 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import kotlin.math.roundToInt
 
 class BlasterListeners : SLEventListener() {
 	@Suppress("Unused")

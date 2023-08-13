@@ -1,11 +1,11 @@
-package net.horizonsend.ion.server.features.cryopods
+package net.horizonsend.ion.server.features.multiblock.misc
 
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.Multiblock
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 

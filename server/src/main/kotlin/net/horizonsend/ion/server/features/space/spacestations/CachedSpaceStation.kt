@@ -1,9 +1,10 @@
-package net.horizonsend.ion.server.features.spacestations
+package net.horizonsend.ion.server.features.space.spacestations
 
 import com.mongodb.client.result.UpdateResult
-import net.horizonsend.ion.server.features.spacestations.SpaceStations.SpaceStationPermission
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
@@ -13,13 +14,12 @@ import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
-import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStations.SpaceStationPermission
 import net.horizonsend.ion.server.miscellaneous.utils.squared
 import org.bukkit.Bukkit
 import org.bukkit.Color
@@ -86,7 +86,7 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 	fun invalidate(recreate: Boolean = true) {
 		val database = companion.findById(databaseId) ?: return
 
-		SpaceStations.invalidate(database)
+        SpaceStations.invalidate(database)
 
 		if (recreate) SpaceStations.createCached(database)
 	}

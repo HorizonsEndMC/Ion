@@ -1,11 +1,15 @@
-package net.horizonsend.ion.server.features.blasters.objects
+package net.horizonsend.ion.server.features.customitems.blasters.objects
 
-import java.util.Locale
-import java.util.function.Supplier
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.blasters.RayTracedParticleProjectile
+import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source.PLAYER
@@ -13,12 +17,6 @@ import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.features.blasters.RayTracedParticleProjectile
-import net.horizonsend.ion.server.features.space.SpaceWorlds
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
 import org.bukkit.Color
 import org.bukkit.Color.RED
 import org.bukkit.Color.fromRGB
@@ -33,24 +31,26 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import java.util.Locale
+import java.util.function.Supplier
 
 abstract class Blaster<T : Balancing>(
-	identifier: String,
+    identifier: String,
 
-	material: Material,
-	customModelData: Int,
-	displayName: Component,
-	val magazineType: Magazine<*>,
-	val particleSize: Float,
-	val soundRange: Double,
-	val soundFire: String,
-	val soundWhizz: String,
-	val soundShell: String,
-	val soundReloadStart: String,
-	val soundReloadFinish: String,
-	val explosiveShot: Boolean,
+    material: Material,
+    customModelData: Int,
+    displayName: Component,
+    val magazineType: Magazine<*>,
+    val particleSize: Float,
+    val soundRange: Double,
+    val soundFire: String,
+    val soundWhizz: String,
+    val soundShell: String,
+    val soundReloadStart: String,
+    val soundReloadFinish: String,
+    val explosiveShot: Boolean,
 
-	private val balancingSupplier: Supplier<T>
+    private val balancingSupplier: Supplier<T>
 ) : AmmunitionHoldingItem(identifier, material, customModelData, displayName) {
 	val balancing get() = balancingSupplier.get()
 

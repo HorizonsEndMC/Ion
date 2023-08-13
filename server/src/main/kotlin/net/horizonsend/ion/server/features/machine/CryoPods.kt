@@ -1,17 +1,18 @@
-package net.horizonsend.ion.server.features.cryopods
+package net.horizonsend.ion.server.features.machine
 
+import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.database.schema.Cryopod
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.trx
+import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitLocation
 import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.event.EventHandler
@@ -46,7 +47,7 @@ object CryoPods: SLEventListener() {
 		val multiblock = Multiblocks[sign] as? CryoPodMultiblock ?: return
 		val player = event.player
 		val pos = Vec3i(sign.location)
-		if (!multiblock.isOwner(sign, player)) {
+		if (!CryoPodMultiblock.isOwner(sign, player)) {
 			player.userError("You aren't the owner of this cryo pod!")
 			return
 		}

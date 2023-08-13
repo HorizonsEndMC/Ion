@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.spacestations
+package net.horizonsend.ion.server.features.space.spacestations
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader

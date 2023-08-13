@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.blasters.objects
+package net.horizonsend.ion.server.features.customitems.blasters.objects
 
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.kyori.adventure.text.Component

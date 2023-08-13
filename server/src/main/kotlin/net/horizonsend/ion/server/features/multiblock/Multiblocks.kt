@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.cryopods.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.ammopress.StandardAmmoPressMultiblock
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield20
@@ -35,6 +34,7 @@ import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMu
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Bottom
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblockTier3Top
 import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultiblock
