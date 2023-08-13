@@ -1,16 +1,17 @@
 package net.horizonsend.ion.server.features.misc
 
-import net.minecraft.world.level.block.state.BlockBehaviour
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.Mass
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.SLAB_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.minecraft.world.level.block.state.BlockBehaviour
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -107,6 +108,12 @@ object GameplayTweaks : IonServerComponent() {
 		STAIR_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 5.0f) }
 		TRAPDOOR_TYPES.forEach { setBlastResistance(it, 6.0f)}
+		WALL_TYPES.forEach { setBlastResistance(it, 6.0f)}
+		setBlastResistance(Material.ANCIENT_DEBRIS, 6.0f)
+		setBlastResistance(Material.ANVIL, 6.0f)
+		setBlastResistance(Material.NETHERITE_BLOCK, 6.0f)
+		setBlastResistance(Material.RESPAWN_ANCHOR, 6.0f)
+		setBlastResistance(Material.ENCHANTING_TABLE, 6.0f)
 
 		// allow underwater explosions, cancel the liquid from actually exploding
 		setBlastResistance(Material.WATER, 0.0f)
