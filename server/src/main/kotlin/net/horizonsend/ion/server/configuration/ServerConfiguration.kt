@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
-import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
-import net.minecraft.core.BlockPos
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
+import net.minecraft.core.BlockPos
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -23,7 +23,8 @@ data class ServerConfiguration(
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
-	val soldShips: List<Ship> = listOf()
+	val soldShips: List<Ship> = listOf(),
+	val gasses: List<ConfigurationGas>
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -213,5 +214,14 @@ data class ServerConfiguration(
 		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
+	}
+
+	@Serializable
+	data class ConfigurationGas(
+		val name: String,
+		val itemId: String,
+		val factors: List<String>
+	) {
+
 	}
 }
