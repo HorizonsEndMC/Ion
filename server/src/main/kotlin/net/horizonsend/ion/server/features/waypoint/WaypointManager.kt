@@ -29,6 +29,7 @@ object WaypointManager : IonServerComponent() {
     val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
     val playerDestinations: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
     val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
+    val playerNumJumps: MutableMap<UUID, Int> = mutableMapOf()
 
     const val MAX_DESTINATIONS = 5
     private const val WAYPOINT_REACHED_DISTANCE = 500
@@ -55,6 +56,7 @@ object WaypointManager : IonServerComponent() {
                     if (pathList != null) {
                         playerPaths[player.uniqueId] = pathList
                     }
+                    updateNumJumps(player)
                 }
             }
         }
@@ -305,7 +307,7 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
-    fun getNumJumps(player: Player, edge: WaypointEdge): Int {
+    private fun getNumJumps(player: Player, edge: WaypointEdge): Int {
         // if not piloting or no waypoints are set, no need to display
         val starship = PilotedStarships[player] ?: return -1
 
@@ -319,8 +321,9 @@ object WaypointManager : IonServerComponent() {
         else ceil(playerGraphs[player.uniqueId]!!.getEdgeWeight(edge) / maxRange).toInt()
     }
 
-    fun getTotalNumJumps(player: Player): Int {
+    private fun getTotalNumJumps(player: Player): Int {
         val paths = playerPaths[player.uniqueId] ?: return -1
+        if (paths.isEmpty()) return -1
 
         var numJumps = 0
         for (path in paths) {
@@ -332,6 +335,10 @@ object WaypointManager : IonServerComponent() {
             }
         }
         return numJumps
+    }
+
+    private fun updateNumJumps(player: Player) {
+        playerNumJumps[player.uniqueId] = getTotalNumJumps(player)
     }
 
     fun getRouteString(player: Player): String {

@@ -3,8 +3,9 @@ package net.horizonsend.ion.server.features.sidebar
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
-import net.horizonsend.ion.server.features.sidebar.tasks.Contacts
-import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocation
+import net.horizonsend.ion.server.features.sidebar.component.WaypointsHeaderSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
+import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocationSidebar
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -26,7 +27,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		val title = SidebarComponent.dynamicLine {
 			val worldName = player.world.name
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-			val direction = PlayerLocation.getPlayerDirection(player)
+			val direction = PlayerLocationSidebar.getPlayerDirection(player)
 
 			text()
 				.append(text(worldName).color(DARK_GREEN))
@@ -34,23 +35,27 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 				.build()
 		}
 
+		val lines = SidebarComponent.builder()
+
 		// Location
 		val locationComponent: SidebarComponent = LocationSidebarComponent(player)
+		lines.addComponent(locationComponent)
 
 		// Contacts
 		val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
-		val contacts = Contacts.getPlayerContacts(player)
+		val contacts = ContactsSidebar.getPlayerContacts(player)
 		val contactsComponents: MutableList<SidebarComponent> = mutableListOf()
 		for (contact in contacts) {
 			contactsComponents.add(ContactsSidebarComponent { contact })
 		}
-
-		// Build components
-		val lines = SidebarComponent.builder()
-		lines.addComponent(locationComponent)
 		lines.addComponent(contactsHeaderComponent)
 		for (component in contactsComponents) lines.addComponent(component)
 
+		// Waypoints
+		val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
+		lines.addComponent(waypointsHeaderComponent)
+
+		// Assemble title and components
 		val componentSidebar = ComponentSidebarLayout(title, lines.build())
 		componentSidebar.apply(backingSidebar)
 	}

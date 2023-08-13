@@ -42,6 +42,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var planetsEnabled: Boolean = true,
 		var starsEnabled: Boolean = true,
 		var beaconsEnabled: Boolean = true,
+		var compactWaypoints: Boolean = true,
 	)
 
 	val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()
@@ -161,6 +162,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val beaconsEnabled = it.boolean()
 					data.beaconsEnabled = beaconsEnabled
+				}
+			}
+
+			change[SLPlayer::compactWaypoints]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val compactWaypoints = it.boolean()
+					data.compactWaypoints = compactWaypoints
 				}
 			}
 

@@ -64,6 +64,7 @@ data class SLPlayer(
 	var planetsEnabled: Boolean = true,
 	var starsEnabled: Boolean = true,
 	var beaconsEnabled: Boolean = true,
+	var compactWaypoints: Boolean = true,
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {
