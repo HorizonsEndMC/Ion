@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.GasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
@@ -206,7 +207,8 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier3Top,
 			MiningLaserMultiblockTier3Bottom,
 
-			ItemSplitterMultiblock
+			ItemSplitterMultiblock,
+			GasCollectorMultiblock
 		)
 	}
 
