@@ -4,6 +4,6 @@ import org.bukkit.Location
 
 class HyperspaceOnlyFactor : CollectionFactor() {
     override fun factor(location: Location): Boolean {
-        return location.world.name.contains("Hyperspace")
+        return location.world.name.contains("Hyperspace", ignoreCase = true)
     }
 }

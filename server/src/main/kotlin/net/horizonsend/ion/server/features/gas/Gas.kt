@@ -5,7 +5,12 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.Location
 
-class Gas(val name: String, val itemId: String, val factors: List<List<CollectionFactor>>) {
+class Gas(
+	val name: String,
+	val itemId: String,
+	val factors: List<List<CollectionFactor>>,
+	val burnProperties: List<BurnProperty>
+	) {
 
     fun isAvailable(location: Location?): Boolean {
         return factors.stream().anyMatch { f: List<CollectionFactor> ->
@@ -18,4 +23,14 @@ class Gas(val name: String, val itemId: String, val factors: List<List<Collectio
     }
 
     val item: CustomItem get() = CustomItems[itemId]!!
+
+	fun burnsWith(otherId: String): Boolean = burnProperties.any { it.otherId == otherId }
+	fun getPower(otherId: String) = burnProperties.first { it.otherId == otherId }.power
+	fun getBurnTime(otherId: String) = burnProperties.first { it.otherId == otherId }.burnTime
+
+	data class BurnProperty(
+		val otherId: String,
+		val burnTime: Long,
+		val power: Int
+	)
 }

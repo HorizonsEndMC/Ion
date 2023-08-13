@@ -2,13 +2,10 @@ package net.horizonsend.ion.server.features.multiblock.generator
 
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Effect
 import org.bukkit.Material
 import org.bukkit.block.Furnace
@@ -39,17 +36,9 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 			event.isBurning = true
 			event.burnTime = (fuel.cooldown / speed).toInt()
 			furnace.cookTime = (-1000).toShort()
-			val customItem = CustomItems[fuelItem]
-			if (customItem is CustomItems.GasItem) {
-				val emptyCanister = CustomItems.GAS_CANISTER_EMPTY.itemStack(1)
 
-				val location = sign.block
-					.getRelative(sign.getFacing().rightFace)
-					.location.toCenterLocation()
-
-				furnace.world.dropItem(location, emptyCanister)
-			}
 			PowerMachines.addPower(sign, fuel.power)
+
 			return
 		} else {
 			furnace.world.playEffect(furnace.location.add(0.5, 0.5, 0.5), Effect.SMOKE, 4)

@@ -1,15 +1,19 @@
 package net.horizonsend.ion.server.features.multiblock.misc
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
+import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.event.player.PlayerInteractEvent
 
-object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock {
+object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMultiblock {
 	override val name = "gascollector"
 
 	override val signText = createSignText(
@@ -48,5 +52,11 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock {
 		event.isCancelled = false
 
 		Gasses.tickCollectorAsync(sign)
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		val available = Gasses.findGas(sign.location).joinToString { it.name }
+
+		player.information("Available gasses: $available")
 	}
 }

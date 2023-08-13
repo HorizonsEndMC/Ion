@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
+import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -156,5 +157,7 @@ val components: List<IonComponent> = listOf(
 	Collectors,
 	CityNPCs,
 	AreaShields,
-	NationsMasterTasks
+	NationsMasterTasks,
+
+	Gasses
 )
