@@ -20,7 +20,7 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
 import org.bukkit.inventory.ItemStack
 
-object Gasses : IonServerComponent(true) {
+object Gasses : IonServerComponent(false) {
 	private val gasses = mutableMapOf<String, Gas>()
 
 	override fun onEnable() {
@@ -33,11 +33,10 @@ object Gasses : IonServerComponent(true) {
 	}
 
 	fun loadFromConfig() {
-		for ((name, itemId, factorsNames, burnProperties) in IonServer.configuration.gasses) {
+		for ((name, itemId, factorsNames) in IonServer.configuration.gasses) {
 			val factors = factorsNames.map(CollectionFactor::collectionSetFromString)
-			val burnsWith = burnProperties.map { (name, time, power) -> Gas.BurnProperty(name, time, power) }
 
-			gasses[itemId] = Gas(name, itemId, factors, burnsWith)
+			gasses[itemId] = Gas(name, itemId, factors)
 		}
 	}
 
@@ -111,9 +110,23 @@ object Gasses : IonServerComponent(true) {
 		return true
 	}
 
-	operator fun get(id: String) = gasses[id]
+	fun getPower(oxidizer: Gas, fuel: Gas) {
 
-	fun all() = gasses
+	}
 
 	fun findGas(location: Location) = gasses.values.filter { it.isAvailable(location) }
+
+	operator fun get(id: String) = gasses[id]
+
+	operator fun get(itemStack: ItemStack?): Gas? {
+		if (itemStack == null) return null
+
+		val customItem = CustomItems[itemStack]
+
+		if (customItem !is CustomItems.GasItem) return null
+
+		return gasses[customItem.id]!!
+	}
+
+	fun all() = gasses
 }

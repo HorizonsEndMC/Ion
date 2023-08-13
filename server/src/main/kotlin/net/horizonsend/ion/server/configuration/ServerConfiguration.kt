@@ -220,14 +220,6 @@ data class ServerConfiguration(
 	data class ConfigurationGas(
 		val name: String,
 		val itemId: String,
-		val factors: List<String>,
-		val burnProperties: List<BurnProperties>
-	) {
-		@Serializable
-		data class BurnProperties(
-			val reagent: String,
-			val burnTime: Long,
-			val power: Int
-		)
-	}
+		val factors: List<String>
+	)
 }
