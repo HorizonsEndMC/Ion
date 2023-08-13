@@ -18,25 +18,16 @@ import org.bukkit.block.Furnace
 import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
-import java.io.File
 
 object Gasses : IonServerComponent() {
-	private var gasses = mutableMapOf<String, Gas>()
+	private val gasses = mutableMapOf<String, Gas>()
 
 	override fun onEnable() {
-		val file = File(IonServer.dataFolder, "gasses.yml")
-		file.createNewFile()
-		val configuration = YamlConfiguration.loadConfiguration(file)
+		for ((name, itemId, factorsNames) in IonServer.configuration.gasses) {
+			val factors = factorsNames.map(CollectionFactor::collectionSetFromString)
 
-		gasses = HashMap()
-
-		for (id in configuration.getKeys(false)) {
-			val item = CustomItems[id] ?: return
-			val name = configuration.getString("$id.name")!!
-			val factors = configuration.getStringList("$id.factors").map(CollectionFactor::collectionSetFromString)
-			gasses[item.id] = Gas(name, id, factors)
+			gasses[itemId] = Gas(name, itemId, factors)
 		}
 	}
 
@@ -46,7 +37,7 @@ object Gasses : IonServerComponent() {
 		}
 	}
 
-	fun tickCollector(collector: Sign) {
+	private fun tickCollector(collector: Sign) {
 		val attachedFace = collector.getFacing().oppositeFace
 		val world = collector.world
 		if (!world.isChunkLoaded((collector.x + attachedFace.modX) shr 4, (collector.z + attachedFace.modZ) shr 4)) {
