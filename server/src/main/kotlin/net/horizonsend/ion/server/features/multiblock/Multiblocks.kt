@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.dockingtube.DisconnectedDo
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.generator.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier3
@@ -208,7 +209,8 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier3Bottom,
 
 			ItemSplitterMultiblock,
-			GasCollectorMultiblock
+			GasCollectorMultiblock,
+			GasPowerPlantMultiblock
 		)
 	}
 

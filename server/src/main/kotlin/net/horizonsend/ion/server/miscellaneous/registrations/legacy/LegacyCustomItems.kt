@@ -2,9 +2,13 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
+import net.horizonsend.ion.server.features.gas.Gas.GasType
 import net.horizonsend.ion.server.features.misc.ITEM_POWER_PREFIX
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.AQUA
 import org.bukkit.ChatColor.BLUE
@@ -144,21 +148,38 @@ object CustomItems {
 	//endregion Misc
 
 	//region Gas Canisters
-	private fun registerGas(id: String, name: String, model: Int) = register(
-		GasItem(id, displayName = "$name$GRAY Gas Canister", material = SNOWBALL, model = model)
+	private fun registerGas(id: String, name: String, type: GasType?, model: Int) = register(
+		GasItem(id, displayName = "$name$GRAY Gas Canister", material = SNOWBALL, type = type, model = model)
 	)
 
-	class GasItem(id: String, displayName: String, material: Material, model: Int) :
-		CustomItem(id, displayName, material, model, false)
+	class GasItem(id: String, displayName: String, material: Material, val type: GasType?, model: Int) :
+		CustomItem(id, displayName, material, model, false) {
+			var basePower: Int = 0
+			var powerMultiplier: Double = 0.0
 
-	val GAS_CANISTER_EMPTY = registerGas(id = "empty_canister", name = "${WHITE}Empty", model = 1)
-	val GAS_CANISTER_HELIUM = registerGas(id = "gas_helium", name = "${YELLOW}Helium", model = 2)
-	val GAS_CANISTER_OXYGEN = registerGas(id = "gas_oxygen", name = "${AQUA}Oxygen", model = 3)
-	val GAS_CANISTER_HYDROGEN = registerGas(id = "gas_hydrogen", name = "${GREEN}Hydrogen", model = 4)
-	val GAS_CANISTER_NITROGEN = registerGas(id = "gas_nitrogen", name = "${DARK_PURPLE}Nitrogen", model = 5)
-	val GAS_CANISTER_CARBON_DIOXIDE = registerGas(id = "gas_carbon_dioxide", name = "${RED}Carbon Dioxide", model = 6)
-	val GAS_CANISTER_METHANE = registerGas(id = "gas_methane", name = "${BLUE}METHANE", model = 7)
-	val GAS_CANISTER_CARBON_CHLORINE = registerGas(id = "gas_chlorine", name = "${YELLOW}Chlorine", model = 8)
+			constructor(id: String, displayName: String, material: Material, type: GasType?, model: Int, power: Int)
+				: this(id, displayName, material, type, model) { basePower = power }
+			constructor(id: String, displayName: String, material: Material, type: GasType?, model: Int, powerMultiplier: Double)
+				: this(id, displayName, material, type, model) { this.powerMultiplier = powerMultiplier }
+
+			override fun itemStack(amount: Int): ItemStack {
+				val item = super.itemStack(amount)
+
+				type?.let { item.lore(listOf(text(type.name, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))) }
+
+				return item
+			}
+		}
+
+	val GAS_CANISTER_EMPTY = registerGas(id = "empty_canister", name = "${WHITE}Empty", null ,model = 1)
+	val GAS_CANISTER_HELIUM = registerGas(id = "gas_helium", name = "${YELLOW}Helium", GasType.NOBLE ,model = 2)
+	val GAS_CANISTER_OXYGEN = registerGas(id = "gas_oxygen", name = "${AQUA}Oxygen", GasType.OXIDIZER ,model = 3)
+	val GAS_CANISTER_HYDROGEN = registerGas(id = "gas_hydrogen", name = "${GREEN}Hydrogen", GasType.FLAMMABLE ,model = 4)
+	val GAS_CANISTER_NITROGEN = registerGas(id = "gas_nitrogen", name = "${DARK_PURPLE}Nitrogen", GasType.FLAMMABLE ,model = 5)
+	val GAS_CANISTER_CARBON_DIOXIDE = registerGas(id = "gas_carbon_dioxide", name = "${RED}Carbon Dioxide", GasType.OTHER ,model = 6)
+	val GAS_CANISTER_METHANE = registerGas(id = "gas_methane", name = "${BLUE}METHANE", GasType.FLAMMABLE ,model = 7)
+	val GAS_CANISTER_CHLORINE = registerGas(id = "gas_chlorine", name = "${YELLOW}Chlorine", GasType.OXIDIZER ,model = 8)
+	val GAS_CANISTER_FLUORINE = registerGas(id = "gas_fluorine", name = "${YELLOW}Fluorine", GasType.OXIDIZER ,model = 9)
 	//endregion Gas Canisters
 
 	//region Batteries
