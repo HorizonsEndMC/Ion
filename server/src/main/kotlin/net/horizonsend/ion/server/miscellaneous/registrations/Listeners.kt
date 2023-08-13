@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListen
 import net.horizonsend.ion.server.features.screens.listeners.InventoryMoveItemListener
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
+import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.listener.fixers.BiomeFixer9001
 import net.horizonsend.ion.server.listener.fixers.CancelListeners
 import net.horizonsend.ion.server.listener.fixers.EdenFixer9000
