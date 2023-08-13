@@ -20,14 +20,24 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
 import org.bukkit.inventory.ItemStack
 
-object Gasses : IonServerComponent() {
+object Gasses : IonServerComponent(true) {
 	private val gasses = mutableMapOf<String, Gas>()
 
 	override fun onEnable() {
-		for ((name, itemId, factorsNames) in IonServer.configuration.gasses) {
-			val factors = factorsNames.map(CollectionFactor::collectionSetFromString)
+		loadFromConfig()
+	}
 
-			gasses[itemId] = Gas(name, itemId, factors)
+	fun reload() {
+		gasses.clear()
+		loadFromConfig()
+	}
+
+	fun loadFromConfig() {
+		for ((name, itemId, factorsNames, burnProperties) in IonServer.configuration.gasses) {
+			val factors = factorsNames.map(CollectionFactor::collectionSetFromString)
+			val burnsWith = burnProperties.map { (name, time, power) -> Gas.BurnProperty(name, time, power) }
+
+			gasses[itemId] = Gas(name, itemId, factors, burnsWith)
 		}
 	}
 
@@ -51,31 +61,31 @@ object Gasses : IonServerComponent() {
 			BlockFace.UP,
 			BlockFace.DOWN
 		)) {
-			val endRod = furnace.getRelativeIfLoaded(face) ?: continue
-			if (endRod.type != Material.END_ROD) {
+			val lightningRod = furnace.getRelativeIfLoaded(face) ?: continue
+			if (lightningRod.type != Material.LIGHTNING_ROD) {
 				continue
 			}
-			val blockFace = (endRod.blockData as Directional).facing
+			val blockFace = (lightningRod.blockData as Directional).facing
 			if (blockFace != face && blockFace != face.oppositeFace) {
 				continue
 			}
-			val location = endRod.getRelativeIfLoaded(face)?.location ?: continue
+			val location = lightningRod.getRelativeIfLoaded(face)?.location ?: continue
 			val availableGas = findGas(location)
 			Tasks.sync {
-				harvestGasses(availableGas, furnace, hopper, endRod)
+				harvestGasses(availableGas, furnace, hopper, lightningRod)
 			}
 		}
 	}
 
-	private fun harvestGasses(availableGas: List<Gas>, furnace: Block, hopper: Block, endRod: Block) {
-		if (!furnace.location.isChunkLoaded || !hopper.location.isChunkLoaded || !endRod.location.isChunkLoaded) {
+	private fun harvestGasses(availableGas: List<Gas>, furnace: Block, hopper: Block, rod: Block) {
+		if (!furnace.location.isChunkLoaded || !hopper.location.isChunkLoaded || !rod.location.isChunkLoaded) {
 			return
 		}
 
 		for (gas in availableGas) {
 			val result = tryHarvestGas(furnace, hopper, gas)
 			val sound = if (result) Sound.ITEM_BOTTLE_FILL_DRAGONBREATH else Sound.ITEM_BOTTLE_FILL
-			endRod.world.playSound(endRod.location, sound, 10.0f, 0.5f)
+			rod.world.playSound(rod.location, sound, 10.0f, 0.5f)
 		}
 	}
 
@@ -86,16 +96,24 @@ object Gasses : IonServerComponent() {
 	private fun tryHarvestGas(furnaceBlock: Block, hopperBlock: Block, gas: Gas): Boolean {
 		val furnace = furnaceBlock.getState(false) as Furnace
 		val hopper = hopperBlock.getState(false) as Hopper
+
 		val canisterItem = furnace.inventory.smelting ?: return false
 		val gasItem = gas.item.itemStack(1)
+
 		if (!isEmptyCanister(canisterItem)) {
 			return false
 		}
+
 		canisterItem.amount = canisterItem.amount - 1
 		furnace.inventory.smelting = canisterItem
 		hopper.inventory.addItem(gasItem)
+
 		return true
 	}
 
-	private fun findGas(location: Location) = gasses.values.filter { it.isAvailable(location) }
+	operator fun get(id: String) = gasses[id]
+
+	fun all() = gasses
+
+	fun findGas(location: Location) = gasses.values.filter { it.isAvailable(location) }
 }

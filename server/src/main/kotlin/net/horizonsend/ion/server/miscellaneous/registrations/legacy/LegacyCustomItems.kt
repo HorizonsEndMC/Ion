@@ -157,6 +157,8 @@ object CustomItems {
 	val GAS_CANISTER_HYDROGEN = registerGas(id = "gas_hydrogen", name = "${GREEN}Hydrogen", model = 4)
 	val GAS_CANISTER_NITROGEN = registerGas(id = "gas_nitrogen", name = "${DARK_PURPLE}Nitrogen", model = 5)
 	val GAS_CANISTER_CARBON_DIOXIDE = registerGas(id = "gas_carbon_dioxide", name = "${RED}Carbon Dioxide", model = 6)
+	val GAS_CANISTER_METHANE = registerGas(id = "gas_methane", name = "${BLUE}METHANE", model = 7)
+	val GAS_CANISTER_CARBON_CHLORINE = registerGas(id = "gas_chlorine", name = "${YELLOW}Chlorine", model = 8)
 	//endregion Gas Canisters
 
 	//region Batteries

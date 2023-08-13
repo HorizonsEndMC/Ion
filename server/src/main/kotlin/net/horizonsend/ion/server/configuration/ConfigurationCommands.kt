@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.gas.Gasses
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createType
@@ -121,6 +122,13 @@ object ConfigurationCommands : SLCommand() {
 	fun onConfigReload(sender: CommandSender) {
 		IonServer.configuration = Configuration.load(IonServer.dataFolder, "server.json")
 		IonServer.balancing = Configuration.load(IonServer.dataFolder, "balancing.json")
+
+		reloadOthers()
+
 		sender.success("Reloaded configs.")
+	}
+
+	private fun reloadOthers() {
+		Gasses.reload()
 	}
 }
