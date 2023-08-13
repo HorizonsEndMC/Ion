@@ -40,6 +40,8 @@ import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -302,30 +304,31 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun tryRelease(starship: ActivePlayerStarship, player: Player): Boolean {
+		if (starship.serverLevel.world.name.contains("Hyperspace")) return false
 		if (!StarshipUnpilotEvent(starship, player).callEvent()) {
 			return false
 		}
-		if (starship.serverLevel.world.name.contains("Hyperspace")) return false
-
-		//for all players within 1k
-	    for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 1000.0)) {
-
-		    //gathering data for nation stuff
-		    val pilotData = PlayerCache[player]
-		    val otherData = PlayerCache[nearbyPlayer]
-
-		    val pilotNation: Oid<Nation> = pilotData.nationOid ?: continue
-		    val otherNation: Oid<Nation> = otherData.nationOid ?: continue
-
-		    //if relation to the other person is less than neutral, unpilot instead
-		    if (NationRelation.getRelationActual(pilotNation, otherNation).ordinal < 3){
-			    starship.controller?.information("Enemy Nearby: Cannot release, un-piloting instead")
-            		    unpilot(starship)
-			    return false
-		    }
-		}
-
 		unpilot(starship)
+
+		//check safezones
+		val isProtected = Regions.find(player.location)
+				.filterIsInstance<RegionTerritory>()
+				.find { it.isProtected } != null
+
+		val pilotNation: Oid<Nation>? = PlayerCache[player].nationOid
+
+	    if(!isProtected && pilotNation !=null){
+			for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 1000.0)) {
+
+				val otherNation: Oid<Nation> = PlayerCache[nearbyPlayer].nationOid ?: continue
+
+				//if relation to the other person is less than none, unpilot instead
+				if (NationRelation.getRelationActual(pilotNation, otherNation).ordinal <= NationRelation.Level.UNFRIENDLY.ordinal){
+					starship.controller?.information("Possible Enemy Nearby: Cannot release, un-piloting instead")
+					return false
+				}
+			}
+		}
 		DeactivatedPlayerStarships.deactivateAsync(starship)
 		for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
 			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
