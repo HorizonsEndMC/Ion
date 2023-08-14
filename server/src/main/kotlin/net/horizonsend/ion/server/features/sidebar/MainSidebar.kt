@@ -4,8 +4,10 @@ import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSideb
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsHeaderSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.WaypointsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocationSidebar
+import net.horizonsend.ion.server.features.sidebar.tasks.WaypointsSidebar
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -18,6 +20,7 @@ import java.util.Locale
 class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 	companion object {
 		const val MIN_LENGTH = 40
+		const val WAYPOINT_MAX_LENGTH = 30
 		private const val CONTACTS_RANGE = 6000
 		const val CONTACTS_SQRANGE = CONTACTS_RANGE * CONTACTS_RANGE
 	}
@@ -53,7 +56,13 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 		// Waypoints
 		val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
+		val route = WaypointsSidebar.splitRouteString(player)
+		val routeComponents: MutableList<SidebarComponent> = mutableListOf()
+		for (routePart in route) {
+			routeComponents.add(WaypointsSidebarComponent { routePart })
+		}
 		lines.addComponent(waypointsHeaderComponent)
+		for (component in routeComponents) lines.addComponent(component)
 
 		// Assemble title and components
 		val componentSidebar = ComponentSidebarLayout(title, lines.build())
