@@ -4,15 +4,21 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import org.litote.kmongo.set
+import org.litote.kmongo.setTo
 
 @CommandAlias("waypoint")
 object WaypointCommand : SLCommand() {
@@ -30,6 +36,9 @@ object WaypointCommand : SLCommand() {
             return
         }
         if (WaypointManager.addDestination(sender, vertex)) {
+            WaypointManager.updatePlayerGraph(sender)
+            WaypointManager.updatePlayerPaths(sender)
+            WaypointManager.updateNumJumps(sender)
             sender.success("Vertex ${vertex.name} added")
         } else {
             sender.userError("Too many destinations added (maximum of ${WaypointManager.MAX_DESTINATIONS})")
@@ -45,6 +54,7 @@ object WaypointCommand : SLCommand() {
         if (!WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
             WaypointManager.playerDestinations[sender.uniqueId]?.clear()
             WaypointManager.playerPaths.remove(sender.uniqueId)
+            WaypointManager.playerNumJumps.remove(sender.uniqueId)
             sender.success("All waypoints cleared")
             return
         } else {
@@ -62,6 +72,9 @@ object WaypointCommand : SLCommand() {
         if (!WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
             val vertex = WaypointManager.playerDestinations[sender.uniqueId]?.last()
             WaypointManager.playerDestinations[sender.uniqueId]?.removeLast()
+            WaypointManager.updatePlayerGraph(sender)
+            WaypointManager.updatePlayerPaths(sender)
+            WaypointManager.updateNumJumps(sender)
             sender.success("Last waypoint ${vertex?.name} removed")
             return
         } else {
@@ -200,6 +213,17 @@ object WaypointCommand : SLCommand() {
                 )
             }
         }
+    }
+
+    @Suppress("unused")
+    @Subcommand("compactWaypoints")
+    fun onToggleCompactWaypoints(
+        sender: Player,
+        @Optional toggle: Boolean?
+    ) {
+        val waypointsCompactWaypoints = toggle ?: !PlayerCache[sender].compactWaypoints
+        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::compactWaypoints setTo waypointsCompactWaypoints))
+        sender.success("Changed compact waypoints visibility to $waypointsCompactWaypoints")
     }
 
     @Suppress("unused")

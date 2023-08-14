@@ -4,11 +4,15 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -50,15 +54,22 @@ object WaypointManager : IonServerComponent() {
                 if (playerDestinations.isNotEmpty()) {
                     updatePlayerGraph(player)
                     checkWaypointReached(player)
-                    val pathList = findShortestPath(player)
-                    // null pathList implies destinations exist but route cannot be found; save the current path
-                    // e.g. if the player is on a planet or in hyperspace
-                    if (pathList != null) {
-                        playerPaths[player.uniqueId] = pathList
-                    }
+                    updatePlayerPaths(player)
                     updateNumJumps(player)
                 }
             }
+        }
+
+        listen<StarshipPilotedEvent> { event ->
+            updatePlayerGraph(event.player)
+            updatePlayerPaths(event.player)
+            updateNumJumps(event.player)
+        }
+
+        listen<StarshipUnpilotedEvent> { event ->
+            updatePlayerGraph(event.player)
+            updatePlayerPaths(event.player)
+            updateNumJumps(event.player)
         }
     }
 
@@ -294,6 +305,15 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
+    fun updatePlayerPaths(player: Player) {
+        val pathList = findShortestPath(player)
+        // null pathList implies destinations exist but route cannot be found; save the current path
+        // e.g. if the player is on a planet or in hyperspace
+        if (pathList != null) {
+            playerPaths[player.uniqueId] = pathList
+        }
+    }
+
     fun checkWaypointReached(player: Player) {
         // check if player has destination(s) set
         if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
@@ -337,18 +357,21 @@ object WaypointManager : IonServerComponent() {
         return numJumps
     }
 
-    private fun updateNumJumps(player: Player) {
+    fun updateNumJumps(player: Player) {
         playerNumJumps[player.uniqueId] = getTotalNumJumps(player)
     }
 
     fun getRouteString(player: Player): String {
-        val paths = playerPaths[player.uniqueId] ?: return "X"
+        val paths = playerPaths[player.uniqueId] ?: return ""
+        val compactWaypoints = PlayerCache[player].compactWaypoints
         val str = StringBuilder()
+
         for (path in paths) {
             for (edge in path.edgeList) {
                 val jumps = getNumJumps(player, edge)
-                if (jumps == -1) return "X"
-                str.append(repeatString("\uE036", jumps - 1))
+                if (compactWaypoints && jumps != -1) {
+                    str.append(repeatString("\uE036", jumps - 1))
+                }
                 str.append(edge.target.icon)
             }
         }
