@@ -317,6 +317,7 @@ object ShipFactoryMaterialCosts {
 		MAGENTA_CONCRETE_POWDER to 0.1,
 		PINK_CONCRETE_POWDER to 0.1,
 		BROWN_CONCRETE_POWDER to 0.1
+
 	)
 
 	fun getPrice(data: BlockData): Double {
