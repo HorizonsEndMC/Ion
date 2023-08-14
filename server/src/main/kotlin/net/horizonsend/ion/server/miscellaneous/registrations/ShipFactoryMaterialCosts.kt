@@ -129,6 +129,36 @@ import org.bukkit.Material.PURPLE_CONCRETE_POWDER
 import org.bukkit.Material.MAGENTA_CONCRETE_POWDER
 import org.bukkit.Material.PINK_CONCRETE_POWDER
 import org.bukkit.Material.BROWN_CONCRETE_POWDER
+import org.bukkit.Material.PODZOL
+import org.bukkit.Material.MYCELIUM
+import org.bukkit.Material.COARSE_DIRT
+import org.bukkit.Material.ROOTED_DIRT
+import org.bukkit.Material.MUD
+import org.bukkit.Material.CLAY
+import org.bukkit.Material.GRAVEL
+import org.bukkit.Material.SAND
+import org.bukkit.Material.ICE
+import org.bukkit.Material.PACKED_ICE
+import org.bukkit.Material.BLUE_ICE
+import org.bukkit.Material.SNOW_BLOCK
+import org.bukkit.Material.MOSS_BLOCK
+import org.bukkit.Material.TUFF
+import org.bukkit.Material.DRIPSTONE_BLOCK
+import org.bukkit.Material.OBSIDIAN
+import org.bukkit.Material.CRYING_OBSIDIAN
+import org.bukkit.Material.CRIMSON_NYLIUM
+import org.bukkit.Material.WARPED_NYLIUM
+import org.bukkit.Material.SOUL_SAND
+import org.bukkit.Material.SOUL_SOIL
+import org.bukkit.Material.BONE_BLOCK
+import org.bukkit.Material.BASALT
+import org.bukkit.Material.SMOOTH_BASALT
+import org.bukkit.Material.END_STONE
+import org.bukkit.Material.POLISHED_BASALT
+import org.bukkit.Material.AMETHYST_BLOCK
+import org.bukkit.Material.OCHRE_FROGLIGHT
+import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.block.data.BlockData
 
 object ShipFactoryMaterialCosts {
@@ -154,7 +184,6 @@ object ShipFactoryMaterialCosts {
 		PISTON to 20.0,
 		STICKY_PISTON to 50.0,
 		REDSTONE to 1.0,
-		REDSTONE_LAMP to 25.0,
 		JUKEBOX to 50.0,
 		CRAFTING_TABLE to 30.0,
 		DROPPER to 15.0,
@@ -163,8 +192,12 @@ object ShipFactoryMaterialCosts {
 		CHEST to 5.0,
 		FURNACE to 15.0,
 		DISPENSER to 25.0,
-		MAGMA_BLOCK to 35.0,
+		MAGMA_BLOCK to 25.0,
 		SEA_LANTERN to 25.0,
+		REDSTONE_LAMP to 25.0,
+		OCHRE_FROGLIGHT to 25.0,
+		VERDANT_FROGLIGHT to 25.0,
+		PEARLESCENT_FROGLIGHT to 25.0,
 		IRON_TRAPDOOR to 50.0,
 		NOTE_BLOCK to 20.0,
 		IRON_BARS to 10.0,
@@ -239,6 +272,34 @@ object ShipFactoryMaterialCosts {
 		GRASS_BLOCK to 0.1,
 		GRASS to 0.1,
 		CALCITE to 0.1,
+		PODZOL to 0.1,
+		MYCELIUM to 0.1,
+		COARSE_DIRT to 0.1,
+		ROOTED_DIRT to 0.1,
+		MUD to 0.1,
+		CLAY to 0.1,
+		GRAVEL to 0.1,
+		SAND to 0.1,
+		ICE to 0.1,
+		PACKED_ICE to 0.1,
+		BLUE_ICE to 0.1,
+		SNOW_BLOCK to 0.1,
+		MOSS_BLOCK to 0.1,
+		TUFF to 0.1,
+		DRIPSTONE_BLOCK to 0.1,
+		OBSIDIAN to 0.1,
+		CRYING_OBSIDIAN to 0.1,
+		CRIMSON_NYLIUM to 0.1,
+		WARPED_NYLIUM to 0.1,
+		SOUL_SAND to 0.1,
+		SOUL_SOIL to 0.1,
+		BONE_BLOCK to 0.1,
+		BASALT to 0.1,
+		SMOOTH_BASALT to 0.1,
+		END_STONE to 0.1,
+		POLISHED_BASALT to 0.1,
+		AMETHYST_BLOCK to 0.1,
+
 
 		WHITE_CONCRETE_POWDER to 0.1,
 		LIGHT_GRAY_CONCRETE_POWDER to 0.1,
@@ -290,7 +351,7 @@ object ShipFactoryMaterialCosts {
 				} else if (blockprice.containsKey(data.material)) {
 					blockprice[data.material]!!.toDouble()
 				} else {
-					3.0
+					1.0
 				}
 		}
 	}
