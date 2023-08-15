@@ -18,6 +18,8 @@ import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.util.noise.SimplexNoiseGenerator
 import java.util.Locale
+import kotlin.math.cos
+import kotlin.math.sin
 
 class CachedPlanet(
     val databaseId: Oid<Planet>,
@@ -55,13 +57,15 @@ class CachedPlanet(
 			)
 		}
 
-		fun calculateLocation(sun: CachedStar, x: Int, z: Int): Vec3i {
-			val (_, y, _) = sun.location
+		fun calculateLocation(sun: CachedStar, orbitDistance: Int, orbitProgress: Double): Vec3i {
+			val (x, y, z) = sun.location
+
+			val radians = Math.toRadians(orbitProgress)
 
 			return Vec3i(
-				x = x,
+				x = x + (cos(radians) * orbitDistance.d()).i(),
 				y = y,
-				z = z
+				z = z + (sin(radians) * orbitDistance.d()).i()
 			)
 		}
 	}
@@ -124,12 +128,13 @@ class CachedPlanet(
 		Planet.setOrbitDistance(databaseId, newDistance)
 	}
 
-	fun orbit(urgent: Boolean = false): Unit = orbit(urgent, updateDb = true)
 
-	fun orbit(urgent: Boolean = false, updateDb: Boolean = true) {
+	fun orbit(): Unit = orbit(updateDb = true)
+
+	fun orbit(updateDb: Boolean = true) {
 		val newProgress = (orbitProgress + orbitSpeed) % 360
-		val newLocation = calculateOrbitLocation(sun, orbitDistance, newProgress)
-		move(newLocation, urgent = urgent)
+		val newLocation = calculateLocation(sun, orbitDistance, newProgress)
+		move(newLocation)
 
 		orbitProgress = newProgress
 
@@ -141,9 +146,7 @@ class CachedPlanet(
 	fun setLocation(urgent: Boolean = false): Unit = setLocation(urgent, updateDb = true)
 
 	fun setLocation(urgent: Boolean = false, updateDb: Boolean = true) {
-		val newLocation = calculateLocation(sun, x, z)
-
-		move(newLocation, urgent = urgent)
+		move(Vec3i(x, sun.location.y, z), urgent = urgent)
 
 		if (updateDb) {
 			setX(databaseId, x)
