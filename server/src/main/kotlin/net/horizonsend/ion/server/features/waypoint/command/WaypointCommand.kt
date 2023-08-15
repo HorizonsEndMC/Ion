@@ -4,6 +4,7 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -12,10 +13,12 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
@@ -26,6 +29,7 @@ object WaypointCommand : SLCommand() {
     @Suppress("unused")
     @CommandAlias("add")
     @CommandCompletion("@planets|@hyperspaceGates")
+    @Description("Add a waypoint to the route navigation")
     fun onSetWaypoint(
         sender: Player,
         option: String
@@ -45,9 +49,31 @@ object WaypointCommand : SLCommand() {
         }
     }
 
+    @Suppress("unused")
+    @CommandAlias("add")
+    @CommandCompletion("world|x|z")
+    @Description("Add a waypoint to the route navigation")
+    fun onSetWaypoint(
+        sender: Player,
+        world: String,
+        xCoordinate: String,
+        zCoordinate: String
+    ) {
+        val getWorld = Bukkit.getWorld(world)
+        if (getWorld == null) {
+            sender.userError("Entered world does not exist")
+            return
+        }
+        if (!SpaceWorlds.contains(getWorld)) {
+            sender.userError("World is not a space world")
+            return
+        }
+    }
+
     // clear all vertices from destinations
     @Suppress("unused")
     @CommandAlias("clear")
+    @Description("Remove all waypoints from the route navigation")
     fun onClearWaypoint(
         sender: Player
     ) {
@@ -66,6 +92,7 @@ object WaypointCommand : SLCommand() {
     // pop last vertex from destinations
     @Suppress("unused")
     @CommandAlias("undo")
+    @Description("Remove the last waypoint added to the route navigation")
     fun onUndoWaypoint(
         sender: Player
     ) {
@@ -88,6 +115,7 @@ object WaypointCommand : SLCommand() {
     @Subcommand("reload")
     @CommandCompletion("main|player")
     @CommandPermission("waypoint.reload")
+    @Description("DEBUG: Reloads the main map's vertices and edges")
     fun onReloadMainMap(
         sender: Player,
         mapType: String
@@ -110,6 +138,7 @@ object WaypointCommand : SLCommand() {
     @Subcommand("main")
     @CommandCompletion("vertex|edge")
     @CommandPermission("waypoint.print")
+    @Description("DEBUG: Prints the vertices or edges of the main map")
     fun onTestMainMap(
         sender: Player,
         option: String
@@ -134,6 +163,7 @@ object WaypointCommand : SLCommand() {
     @Subcommand("player")
     @CommandCompletion("vertex|edge")
     @CommandPermission("waypoint.print")
+    @Description("DEBUG: Prints the vertices or edges of the player's own map")
     fun onTestPlayerMap(
         sender: Player,
         option: String
@@ -158,6 +188,7 @@ object WaypointCommand : SLCommand() {
     @Subcommand("get")
     @CommandCompletion("@planets|@hyperspaceGates")
     @CommandPermission("waypoint.print")
+    @Description("DEBUG: Prints information of a vertex")
     fun onGetVertex(
         sender: Player,
         option: String
@@ -177,6 +208,7 @@ object WaypointCommand : SLCommand() {
     @Suppress("unused")
     @Subcommand("path get")
     @CommandPermission("waypoint.reload")
+    @Description("DEBUG: Calculates the shortest path of a route manually")
     fun onGetPath(
         sender: Player
     ) {
@@ -195,6 +227,7 @@ object WaypointCommand : SLCommand() {
 
     @Suppress("unused")
     @Subcommand("path")
+    @Description("Prints detailed information of all waypoints on a navigation route")
     fun onPrintPath(
         sender: Player
     ) {
@@ -217,6 +250,7 @@ object WaypointCommand : SLCommand() {
 
     @Suppress("unused")
     @Subcommand("compactWaypoints")
+    @Description("Toggles compact waypoints; intermediate jumps are not displayed during navigation")
     fun onToggleCompactWaypoints(
         sender: Player,
         @Optional toggle: Boolean?
@@ -228,6 +262,8 @@ object WaypointCommand : SLCommand() {
 
     @Suppress("unused")
     @Subcommand("jumps")
+    @CommandPermission("waypoint.print")
+    @Description("DEBUG: Gets number of jumps manually")
     fun onGetNumJumps(
         sender: Player
     ) {
@@ -237,6 +273,8 @@ object WaypointCommand : SLCommand() {
 
     @Suppress("unused")
     @Subcommand("string")
+    @CommandPermission("waypoint.print")
+    @Description("DEBUG: Gets the route string manually")
     fun onGetRouteString(
         sender: Player
     ) {
