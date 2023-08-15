@@ -33,6 +33,7 @@ object WaypointManager : IonServerComponent() {
     val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
     val playerDestinations: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
     val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
+    val playerTempWaypoints: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
     val playerNumJumps: MutableMap<UUID, Int> = mutableMapOf()
 
     const val MAX_DESTINATIONS = 5
@@ -256,6 +257,24 @@ object WaypointManager : IonServerComponent() {
             loc = player.location,
             linkedWaypoint = null
         )
+        graph.addVertex(newVertex)
+        connectVerticesInSameWorld(graph, newVertex)
+    }
+
+    fun addTempVertex(player: Player, loc: Location) {
+        val graph = playerGraphs[player.uniqueId] ?: return
+        val newVertex = WaypointVertex(
+            name = "Empty Space",
+            icon = '\uE035',
+            loc = loc,
+            linkedWaypoint = null
+        )
+        if (playerTempWaypoints[player.uniqueId].isNullOrEmpty()) {
+            playerTempWaypoints[player.uniqueId] = mutableListOf(newVertex)
+        } else {
+            playerTempWaypoints[player.uniqueId]!!.add(newVertex)
+        }
+
         graph.addVertex(newVertex)
         connectVerticesInSameWorld(graph, newVertex)
     }
