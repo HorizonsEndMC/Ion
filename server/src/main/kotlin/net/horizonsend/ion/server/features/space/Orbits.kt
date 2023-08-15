@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacem
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureNanoTime
 
-object Orbits : IonServerComponent() {
+object Orbits : IonServerComponent(true) {
 	// schedule orbiting all the planets every midnight
 	override fun onEnable() {
  		Tasks.sync {
