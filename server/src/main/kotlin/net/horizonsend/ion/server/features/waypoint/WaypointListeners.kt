@@ -13,6 +13,8 @@ class WaypointListeners : SLEventListener() {
         // add player's graph to the map
         WaypointManager.updatePlayerGraph(event.player)
         WaypointManager.playerDestinations[event.player.uniqueId] = mutableListOf()
+        WaypointManager.playerPaths[event.player.uniqueId] = mutableListOf()
+        WaypointManager.playerTempWaypoints[event.player.uniqueId] = mutableMapOf()
     }
 
     @Suppress("unused")
@@ -21,6 +23,8 @@ class WaypointListeners : SLEventListener() {
         // remove player's graph from the map (maybe keep it)
         WaypointManager.playerGraphs.remove(event.player.uniqueId)
         WaypointManager.playerDestinations.remove(event.player.uniqueId)
+        WaypointManager.playerPaths.remove(event.player.uniqueId)
+        WaypointManager.playerTempWaypoints.remove(event.player.uniqueId)
     }
 
     @Suppress("unused")
@@ -29,9 +33,7 @@ class WaypointListeners : SLEventListener() {
         // update the player's map upon a world change
         WaypointManager.updatePlayerGraph(event.player)
         WaypointManager.checkWaypointReached(event.player)
-        val pathList = WaypointManager.findShortestPath(event.player)
-        if (pathList != null) {
-            WaypointManager.playerPaths[event.player.uniqueId] = pathList
-        }
+        WaypointManager.updatePlayerPaths(event.player)
+        WaypointManager.updateNumJumps(event.player)
     }
 }

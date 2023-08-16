@@ -33,7 +33,7 @@ object WaypointManager : IonServerComponent() {
     val playerGraphs: MutableMap<UUID, SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>> = mutableMapOf()
     val playerDestinations: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
     val playerPaths: MutableMap<UUID, List<GraphPath<WaypointVertex, WaypointEdge>>> = mutableMapOf()
-    val playerTempWaypoints: MutableMap<UUID, MutableList<WaypointVertex>> = mutableMapOf()
+    val playerTempWaypoints: MutableMap<UUID, MutableMap<WaypointVertex, Boolean>> = mutableMapOf()
     val playerNumJumps: MutableMap<UUID, Int> = mutableMapOf()
 
     const val MAX_DESTINATIONS = 5
@@ -261,22 +261,37 @@ object WaypointManager : IonServerComponent() {
         connectVerticesInSameWorld(graph, newVertex)
     }
 
-    fun addTempVertex(player: Player, loc: Location) {
-        val graph = playerGraphs[player.uniqueId] ?: return
+    fun addTempVertex(player: Player, loc: Location): WaypointVertex? {
+        val graph = playerGraphs[player.uniqueId] ?: return null
         val newVertex = WaypointVertex(
-            name = "Empty Space",
+            name = "Waypoint @ ${loc.world.name} (${loc.x.toInt()}, ${loc.z.toInt()})",
             icon = '\uE035',
             loc = loc,
             linkedWaypoint = null
         )
         if (playerTempWaypoints[player.uniqueId].isNullOrEmpty()) {
-            playerTempWaypoints[player.uniqueId] = mutableListOf(newVertex)
+            playerTempWaypoints[player.uniqueId] = mutableMapOf()
+            playerTempWaypoints[player.uniqueId]!![newVertex] = false
         } else {
-            playerTempWaypoints[player.uniqueId]!!.add(newVertex)
+            playerTempWaypoints[player.uniqueId]!![newVertex] = false
         }
 
         graph.addVertex(newVertex)
         connectVerticesInSameWorld(graph, newVertex)
+        return newVertex
+    }
+
+    fun checkTempVertex(player: Player) {
+        val tempWaypoints = playerTempWaypoints[player.uniqueId]
+        if (tempWaypoints.isNullOrEmpty()) return
+
+        for (waypoint in tempWaypoints) {
+            if (waypoint.value) {
+                // waypoint marked for deletion
+                playerGraphs[player.uniqueId]!!.removeVertex(waypoint.key)
+                playerTempWaypoints[player.uniqueId]!!.remove(waypoint.key)
+            }
+        }
     }
 
     /**
@@ -338,10 +353,14 @@ object WaypointManager : IonServerComponent() {
         if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
             return
         } else {
-            val firstVertex = playerDestinations[player.uniqueId]?.first() ?: return
-            if (player.location.world == firstVertex.loc.world &&
-                player.location.distance(firstVertex.loc) <= WAYPOINT_REACHED_DISTANCE) {
+            val vertex = playerDestinations[player.uniqueId]?.first() ?: return
+            if (player.location.world == vertex.loc.world &&
+                player.location.distance(vertex.loc) <= WAYPOINT_REACHED_DISTANCE) {
                 playerDestinations[player.uniqueId]?.removeFirstOrNull()
+
+                if (playerTempWaypoints[player.uniqueId]!!.containsKey(vertex)) {
+                    playerTempWaypoints[player.uniqueId]!![vertex] = true
+                }
             }
         }
     }

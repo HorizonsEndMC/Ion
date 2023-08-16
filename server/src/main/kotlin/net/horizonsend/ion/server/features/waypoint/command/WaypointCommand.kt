@@ -9,9 +9,11 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
@@ -19,6 +21,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
@@ -68,6 +71,22 @@ object WaypointCommand : SLCommand() {
             sender.userError("World is not a space world")
             return
         }
+
+        val x = MiscStarshipCommands.parseNumber(xCoordinate, sender.location.x.toInt()).toDouble()
+        val z = MiscStarshipCommands.parseNumber(zCoordinate, sender.location.z.toInt()).toDouble()
+        val vertex = WaypointManager.addTempVertex(sender, Location(getWorld, x, 128.0, z))
+        if (vertex == null) {
+            sender.serverError("Failed to generate waypoint in empty space")
+        }
+
+        if (WaypointManager.addDestination(sender, vertex!!)) {
+            WaypointManager.updatePlayerGraph(sender)
+            WaypointManager.updatePlayerPaths(sender)
+            WaypointManager.updateNumJumps(sender)
+            sender.success("Vertex ${vertex.name} added")
+        } else {
+            sender.userError("Too many destinations added (maximum of ${WaypointManager.MAX_DESTINATIONS})")
+        }
     }
 
     // clear all vertices from destinations
@@ -80,6 +99,7 @@ object WaypointCommand : SLCommand() {
         if (!WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
             WaypointManager.playerDestinations[sender.uniqueId]?.clear()
             WaypointManager.playerPaths.remove(sender.uniqueId)
+            WaypointManager.playerTempWaypoints.remove(sender.uniqueId)
             WaypointManager.playerNumJumps.remove(sender.uniqueId)
             sender.success("All waypoints cleared")
             return
