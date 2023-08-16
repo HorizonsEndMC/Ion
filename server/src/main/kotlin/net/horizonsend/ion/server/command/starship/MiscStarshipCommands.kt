@@ -142,7 +142,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
 	}
 
-	private fun parseNumber(string: String, originCoord: Int): Int = when {
+	fun parseNumber(string: String, originCoord: Int): Int = when {
 		string == "~" -> originCoord
 
 		string.startsWith("~") -> parseNumber(string.removePrefix("~"), 0) + originCoord
