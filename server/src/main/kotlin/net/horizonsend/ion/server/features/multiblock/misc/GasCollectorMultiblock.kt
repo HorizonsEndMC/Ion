@@ -55,7 +55,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val available = Gasses.findGas(sign.location).joinToString { it.name }
+		val available = Gasses.findGas(sign.location).joinToString { it.identifier }
 
 		player.information("Available gasses: $available")
 	}

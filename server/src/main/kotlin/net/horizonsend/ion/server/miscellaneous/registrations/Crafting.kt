@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
+import net.horizonsend.ion.server.features.customitems.CustomItems.EMPTY_GAS_CANISTER
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL_RECEIVER
@@ -32,6 +33,7 @@ import org.bukkit.Material.CYAN_WOOL
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.GLASS
+import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
 import org.bukkit.Material.GRAY_WOOL
@@ -345,6 +347,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
 			setIngredient('e', EMERALD_BLOCK)
 			setIngredient('r', REDSTONE)
+			setIngredient('x', AIR)
+		}
+
+		itemStackShapeRecipe("empty_gas_canister", EMPTY_GAS_CANISTER.constructItemStack()) {
+			shape("xix", "igi", "xix")
+
+			setIngredient('i', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('g', GLASS_PANE)
 			setIngredient('x', AIR)
 		}
 	}

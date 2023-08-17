@@ -2,13 +2,20 @@ package net.horizonsend.ion.server.features.gas
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.gas.collectionfactors.CollectionFactor
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.EMPTY_GAS_CANISTER
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.GasCanister
+import net.horizonsend.ion.server.features.gas.type.Gas
+import net.horizonsend.ion.server.features.gas.type.GasFuel
+import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -23,21 +30,88 @@ import org.bukkit.inventory.ItemStack
 object Gasses : IonServerComponent(false) {
 	private val gasses = mutableMapOf<String, Gas>()
 
-	override fun onEnable() {
-		loadFromConfig()
-	}
+	// Fuels
+	val HYDROGEN = registerGas(
+		object : GasFuel(
+			identifier = "HYDROGEN",
+			displayName = text("Hydrogen", NamedTextColor.RED),
+			containerIdentifier = "HYDROGEN_GAS_CANISTER",
+			powerPerUnit = 2,
+			cooldown = 150,
+			factorSupplier = IonServer.gasConfiguration.hydrogen::formattedFactors
+		) {}
+	)
+	val NITROGEN = registerGas(
+		object : GasFuel(
+			identifier = "NITROGEN",
+			displayName = text("Nitrogen", NamedTextColor.RED),
+			containerIdentifier = "NITROGEN_GAS_CANISTER",
+			powerPerUnit = 1,
+			cooldown = 100,
+			factorSupplier = IonServer.gasConfiguration.nitrogen::formattedFactors
+		) {}
+	)
+	val METHANE = registerGas(
+		object : GasFuel(
+			identifier = "METHANE",
+			displayName = text("Methane", NamedTextColor.RED),
+			containerIdentifier = "METHANE_GAS_CANISTER",
+			powerPerUnit = 3,
+			cooldown = 200,
+			factorSupplier = IonServer.gasConfiguration.methane::formattedFactors
+		) {}
+	)
 
-	fun reload() {
-		gasses.clear()
-		loadFromConfig()
-	}
+	// Oxidizers
+	val OXYGEN = registerGas(
+		object : GasOxidizer(
+			identifier = "OXYGEN",
+			displayName = text("Oxygen", NamedTextColor.YELLOW),
+			containerIdentifier = "OXYGEN_GAS_CANISTER",
+			powerMultipler = 1.0,
+			factorSupplier = IonServer.gasConfiguration.oxygen::formattedFactors
+		) {}
+	)
+	val CHLORINE = registerGas(
+		object : GasOxidizer(
+			identifier = "CHLORINE",
+			displayName = text("Chlorine", NamedTextColor.YELLOW),
+			containerIdentifier = "CHLORINE_GAS_CANISTER",
+			powerMultipler = 1.5,
+			factorSupplier = IonServer.gasConfiguration.chlorine::formattedFactors
+		) {}
+	)
+	val FLUORINE = registerGas(
+		object : GasOxidizer(
+			identifier = "FLUORINE",
+			displayName = text("Fluorine", NamedTextColor.YELLOW),
+			containerIdentifier = "FLUORINE_GAS_CANISTER",
+			powerMultipler = 2.0,
+			factorSupplier = IonServer.gasConfiguration.fluorine::formattedFactors
+		) {}
+	)
 
-	fun loadFromConfig() {
-		for ((name, itemId, factorsNames) in IonServer.configuration.gasses) {
-			val factors = factorsNames.map(CollectionFactor::collectionSetFromString)
+	// Other
+	val HELIUM = registerGas(
+		object : Gas(
+			identifier = "HELIUM",
+			displayName = text("Helium", NamedTextColor.BLUE),
+			containerIdentifier = "HELIUM_GAS_CANISTER",
+			factorSupplier = IonServer.gasConfiguration.chlorine::formattedFactors
+		) {}
+	)
+	val CARBON_DIOXIDE = registerGas(
+		object : Gas(
+			identifier = "CARBON_DIOXIDE",
+			displayName = text("Carbon Dioxide", NamedTextColor.BLUE),
+			containerIdentifier = "CARBON_DIOXIDE_GAS_CANISTER",
+			factorSupplier = IonServer.gasConfiguration.fluorine::formattedFactors
+		) {}
+	)
 
-			gasses[itemId] = Gas(name, itemId, factors)
-		}
+	private fun <T: Gas> registerGas(gas: T): T {
+		gasses[gas.identifier] = gas
+		return gas
 	}
 
 	fun tickCollectorAsync(collector: Sign) {
@@ -89,7 +163,7 @@ object Gasses : IonServerComponent(false) {
 	}
 
 	fun isEmptyCanister(itemStack: ItemStack?): Boolean {
-		return itemStack != null && CustomItems[itemStack] === CustomItems.GAS_CANISTER_EMPTY
+		return itemStack != null && itemStack.customItem === CustomItems.EMPTY_GAS_CANISTER
 	}
 
 	private fun tryHarvestGas(furnaceBlock: Block, hopperBlock: Block, gas: Gas): Boolean {
@@ -97,35 +171,68 @@ object Gasses : IonServerComponent(false) {
 		val hopper = hopperBlock.getState(false) as Hopper
 
 		val canisterItem = furnace.inventory.smelting ?: return false
-		val gasItem = gas.item.itemStack(1)
+		val customItem = canisterItem.customItem ?: return false
 
-		if (!isEmptyCanister(canisterItem)) {
-			return false
+		return when (customItem) {
+			EMPTY_GAS_CANISTER -> fillEmptyCanister(canisterItem, furnace, gas)
+
+			is GasCanister -> fillGasCanister(canisterItem, furnace, hopper, gas)
+
+			else -> false
 		}
+	}
 
-		canisterItem.amount = canisterItem.amount - 1
-		furnace.inventory.smelting = canisterItem
-		hopper.inventory.addItem(gasItem)
+	private const val FILL_PER_COLLECTION = 30
+
+	private fun fillEmptyCanister(canisterItem: ItemStack, furnace: Furnace, gas: Gas): Boolean {
+		val newType = CustomItems.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
+		val newCanister = newType.constructItemStack()
+
+		furnace.inventory.smelting = newCanister
+
+		newType.setFill(newCanister, furnace.inventory, FILL_PER_COLLECTION)
 
 		return true
 	}
 
-	fun getPower(oxidizer: Gas, fuel: Gas) {
+	private fun fillGasCanister(canisterItem: ItemStack, furnace: Furnace, hopper: Hopper, gas: Gas): Boolean {
+		val type = canisterItem.customItem ?: return false
+		if (type !is GasCanister) return  false
 
+		val currentFill = type.getFill(canisterItem)
+		val newFill = currentFill + FILL_PER_COLLECTION
+
+		return if (newFill >= type.maximumFill) {
+			val canAdd = hopper.inventory.addItem(type.constructItemStack())
+
+			if (canAdd.isNotEmpty()) {
+				furnace.inventory.smelting = null
+			} else {
+				furnace.inventory.smelting = type.constructItemStack()
+
+				return false
+			}
+
+			true
+		} else {
+			type.setFill(canisterItem, furnace.inventory, newFill)
+
+			true
+		}
 	}
 
 	fun findGas(location: Location) = gasses.values.filter { it.isAvailable(location) }
 
-	operator fun get(id: String) = gasses[id]
+	operator fun get(identifier: String) = gasses[identifier]
 
 	operator fun get(itemStack: ItemStack?): Gas? {
 		if (itemStack == null) return null
 
-		val customItem = CustomItems[itemStack]
+		val customItem = itemStack.customItem ?: return  null
 
-		if (customItem !is CustomItems.GasItem) return null
+		if (customItem !is GasCanister) return null
 
-		return gasses[customItem.id]!!
+		return gasses[customItem.gasIdentifier]!!
 	}
 
 	fun all() = gasses

@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import java.util.function.Supplier
 
-abstract class Magazine<T : BalancingConfiguration.EnergyWeapon.AmmoStorageBalancing>(
+abstract class Magazine<T : BalancingConfiguration.EnergyWeapons.AmmoStorageBalancing>(
 	identifier: String,
 
 	material: Material,

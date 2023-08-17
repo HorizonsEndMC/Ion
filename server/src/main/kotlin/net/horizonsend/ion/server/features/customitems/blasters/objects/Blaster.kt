@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.customitems.blasters.objects
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Balancing
+import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Balancing
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.blasters.RayTracedParticleProjectile
@@ -135,25 +135,12 @@ abstract class Blaster<T : Balancing>(
 		super.setAmmunition(itemStack, inventory, ammunition)
 
 		if (getAmmunition(itemStack) == 0) {
-			(inventory.holder as? Player)?.playSound(
-				sound(
-					key("minecraft:block.iron_door.open"),
-					PLAYER,
-					5f,
-					2.00f
-				)
-			)
+			(inventory.holder as? Player)?.playSound(sound(key("minecraft:block.iron_door.open"), PLAYER, 5f, 2.00f))
 		}
 
 		(inventory.holder as? Audience)?.sendActionBar(
-			text(
-				"Ammo: ${
-					ammunition.coerceIn(
-						0,
-						balancing.magazineSize
-					)
-				} / ${balancing.magazineSize}", NamedTextColor.RED
-			)
+			text("Ammo: ${ammunition.coerceIn(0, balancing.magazineSize)} / " +
+					"${balancing.magazineSize}", NamedTextColor.RED)
 		)
 	}
 
