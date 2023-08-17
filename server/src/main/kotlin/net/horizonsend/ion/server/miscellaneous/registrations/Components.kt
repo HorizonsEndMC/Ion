@@ -119,6 +119,8 @@ val components: List<IonComponent> = listOf(
 	ShipmentGenerator,
 	ShipmentManager,
 
+	Gasses,
+
 	Bazaars,
 	Merchants,
 
@@ -157,7 +159,5 @@ val components: List<IonComponent> = listOf(
 	Collectors,
 	CityNPCs,
 	AreaShields,
-	NationsMasterTasks,
-
-	Gasses
+	NationsMasterTasks
 )

@@ -36,6 +36,7 @@ object NamespacedKeys {
 	val LOCKED = key("locked")
 
 	val AMMO = key("Ammo")
+	val GAS = key("Gas")
 	val CUSTOM_ITEM = key("CustomItem")
 	val EDEN_FIX = key("EdenFix")
 	val BIOME_FIX = key("BiomeFix")

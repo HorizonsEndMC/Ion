@@ -4,11 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BalancingConfiguration(
-	val energyWeapons: EnergyWeapon = EnergyWeapon(),
+	val energyWeapons: EnergyWeapons = EnergyWeapons(),
 	val starshipWeapons: StarshipWeapons = StarshipWeapons()
 ) {
 	@Serializable
-	data class EnergyWeapon(
+	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(
 			damage = 3.0,
 			damageFalloffMultiplier = 0.0,

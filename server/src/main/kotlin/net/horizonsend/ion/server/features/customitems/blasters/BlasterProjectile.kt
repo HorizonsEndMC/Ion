@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.ProjectileBalancing
+import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.ProjectileBalancing
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks

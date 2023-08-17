@@ -17,7 +17,7 @@ abstract class CollectionFactor {
             return collectionFactors
         }
 
-        private fun valueOf(text: String): CollectionFactor {
+        fun valueOf(text: String): CollectionFactor {
             val params = text.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             when (params[0].lowercase(Locale.getDefault())) {
                 "atmosphereheight" -> return AtmosphereHeightFactor(

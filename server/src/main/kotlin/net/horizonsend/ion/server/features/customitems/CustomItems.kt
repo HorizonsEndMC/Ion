@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Multishot
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapon.Singleshot
+import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Multishot
+import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
@@ -11,7 +11,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material.DIAMOND_HOE
@@ -29,9 +31,11 @@ object CustomItems {
 	val ALL get() = customItems.values
 	private val customItems: MutableMap<String, CustomItem> = mutableMapOf()
 
+	// Magazines Start
+
 	val STANDARD_MAGAZINE =
 		register(
-			object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>(
+			object : Magazine<BalancingConfiguration.EnergyWeapons.AmmoStorage>(
 				identifier = "STANDARD_MAGAZINE",
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 1,
@@ -42,7 +46,7 @@ object CustomItems {
 
 	val SPECIAL_MAGAZINE =
 		register(
-			object : Magazine<BalancingConfiguration.EnergyWeapon.AmmoStorage>(
+			object : Magazine<BalancingConfiguration.EnergyWeapons.AmmoStorage>(
 				identifier = "SPECIAL_MAGAZINE",
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 2,
@@ -50,6 +54,9 @@ object CustomItems {
 				balancingSupplier = IonServer.balancing.energyWeapons::specialMagazine
 			) {}
 		)
+
+	// Magazines End
+	// Guns Start
 
 	val PISTOL =
 		register(
@@ -196,6 +203,9 @@ object CustomItems {
 			) {}
 		)
 
+	// Guns End
+	// Gun Parts Start
+
 	val GUN_BARREL = register("GUN_BARREL", 500, text("Gun Barrel"))
 	val CIRCUITRY = register("CIRCUITRY", 501, text("Circuitry"))
 
@@ -205,6 +215,90 @@ object CustomItems {
 	val SNIPER_RECEIVER = register("SNIPER_RECEIVER", 505, text("Sniper Receiver"))
 	val SHOTGUN_RECEIVER = register("SHOTGUN_RECEIVER", 506, text("Shotgun Receiver"))
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", 507, text("Cannon Receiver"))
+
+	// Gun Parts End
+	// Gas Canisters Start
+
+	val EMPTY_GAS_CANISTER = register("EMPTY_GAS_CANISTER", 1000, text("Empty Gas Canister"))
+	// Fuels
+	val HYDROGEN_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "HYDROGEN_GAS_CANISTER",
+			maximumFill = 300,
+			customModelData = 1001,
+			gasIdentifier = "HYDROGEN",
+			displayName = text("Hydrogen Gas Canister", RED)
+		) {}
+	)
+	val NITROGEN_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "NITROGEN_GAS_CANISTER",
+			maximumFill = 100,
+			customModelData = 1002,
+			gasIdentifier = "NITROGEN",
+			displayName = text("Nitrogen Gas Canister", RED)
+		) {}
+	)
+	val METHANE_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "METHANE_GAS_CANISTER",
+			maximumFill = 150,
+			customModelData = 1003,
+			gasIdentifier = "METHANE",
+			displayName = text("Methane Gas Canister", RED)
+		) {}
+	)
+
+	// Oxidizers
+	val OXYGEN_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "OXYGEN_GAS_CANISTER",
+			maximumFill = 300,
+			customModelData = 1010,
+			gasIdentifier = "OXYGEN",
+			displayName = text("Oxygen Gas Canister", YELLOW)
+		) {}
+	)
+	val CHLORINE_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "CHLORINE_GAS_CANISTER",
+			maximumFill = 100,
+			customModelData = 1011,
+			gasIdentifier = "CHLORINE",
+			displayName = text("Chlorine Gas Canister", YELLOW)
+		) {}
+	)
+	val FLUORINE_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "FLUORINE_GAS_CANISTER",
+			maximumFill = 150,
+			customModelData = 1012,
+			gasIdentifier = "FLUORINE",
+			displayName = text("Fluorine Gas Canister", YELLOW)
+		) {}
+	)
+
+	// Other
+	val HELIUM_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "HELIUM_GAS_CANISTER",
+			maximumFill = 300,
+			customModelData = 1020,
+			gasIdentifier = "HELIUM",
+			displayName = text("Helium Gas Canister", GRAY)
+		) {}
+	)
+	val CARBON_DIOXIDE_GAS_CANISTER = register(
+		object : GasCanister(
+			identifier = "CARBON_DIOXIDE_GAS_CANISTER",
+			maximumFill = 100,
+			customModelData = 1021,
+			gasIdentifier = "CARBON_DIOXIDE",
+			displayName = text("Carbon Dioxide Gas Canister", GRAY)
+		) {}
+	)
+
+	// Gas Canisters End
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
 	private fun register(identifier: String, customModelData: Int, component: Component): CustomItem {
