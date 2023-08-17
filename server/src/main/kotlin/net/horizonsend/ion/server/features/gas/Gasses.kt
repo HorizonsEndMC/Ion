@@ -122,12 +122,8 @@ object Gasses : IonServerComponent(false) {
 		val world = collector.world
 		if (!world.isChunkLoaded((collector.x + attachedFace.modX) shr 4, (collector.z + attachedFace.modZ) shr 4)) return
 
-		println("Collector 1")
-
 		val furnace = collector.block.getRelativeIfLoaded(attachedFace) ?: return
 		val hopper = furnace.getRelativeIfLoaded(attachedFace) ?: return
-
-		println("Collector 2")
 
 		for (face in arrayOf(
 			attachedFace.rightFace,
@@ -136,18 +132,12 @@ object Gasses : IonServerComponent(false) {
 			BlockFace.DOWN
 		)) {
 			val lightningRod = furnace.getRelativeIfLoaded(face) ?: continue
-			println("Collector 3 $face")
 			if (lightningRod.type != Material.LIGHTNING_ROD) continue
-			println("Collector 4 $face")
 			val blockFace = (lightningRod.blockData as Directional).facing
-			println("Collector 5 $face")
 			if (blockFace != face && blockFace != face.oppositeFace) continue
-			println("Collector 6 $face")
 
 			val location = lightningRod.getRelativeIfLoaded(face)?.location ?: continue
 			val availableGasses = findGas(location)
-
-			println("Collector 7 $availableGasses")
 
 			Tasks.sync {
 				val gas = availableGasses.firstOrNull { it.tryCollect(location) } ?: return@sync
@@ -163,19 +153,17 @@ object Gasses : IonServerComponent(false) {
 		return itemStack?.customItem?.identifier == EMPTY_GAS_CANISTER.identifier
 	}
 
+	fun isCanister(itemStack: ItemStack?): Boolean = isEmptyCanister(itemStack) || itemStack?.customItem is GasCanister
+
 	private fun tryHarvestGas(furnaceBlock: Block, hopperBlock: Block, gas: Gas): Boolean {
 		val furnace = furnaceBlock.getState(false) as Furnace
 		val hopper = hopperBlock.getState(false) as Hopper
 
-		println("tryHarvest 1")
-
 		val canisterItem = furnace.inventory.fuel ?: return false
-		println("tryHarvest 2")
 		val customItem = canisterItem.customItem ?: return false
-		println("tryHarvest 3")
 
 		return when (customItem) {
-			EMPTY_GAS_CANISTER -> fillEmptyCanister(canisterItem, furnace, gas)
+			EMPTY_GAS_CANISTER -> fillEmptyCanister(furnace, gas)
 
 			is GasCanister -> fillGasCanister(canisterItem, furnace, hopper, gas)
 
@@ -185,23 +173,18 @@ object Gasses : IonServerComponent(false) {
 
 	private const val FILL_PER_COLLECTION = 30
 
-	private fun fillEmptyCanister(canisterItem: ItemStack, furnace: Furnace, gas: Gas): Boolean {
-		println("fillEmpty 1")
+	private fun fillEmptyCanister(furnace: Furnace, gas: Gas): Boolean {
 		val newType = CustomItems.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
 		val newCanister = newType.createWithFill(FILL_PER_COLLECTION)
-		println("fillEmpty 2")
 
 		furnace.inventory.fuel = newCanister
 
-		println("fillEmpty 3")
 		return true
 	}
 
 	private fun fillGasCanister(canisterItem: ItemStack, furnace: Furnace, hopper: Hopper, gas: Gas): Boolean {
 		val type = canisterItem.customItem ?: return false
-		println("fillCan 1")
 		if (type !is GasCanister) return  false
-		println("fillCan 2")
 
 		val currentFill = type.getFill(canisterItem)
 		val newFill = currentFill + FILL_PER_COLLECTION

@@ -33,29 +33,19 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		furnace: Furnace,
 		sign: Sign
 	) {
-		println("Collector 0.0")
-
 		event.isBurning = false
 		event.burnTime = 0
 		event.isCancelled = true
 		val smelting = furnace.inventory.smelting
 
-		println("Collector 0.1")
-
 		if (smelting == null || smelting.type != Material.PRISMARINE_CRYSTALS) return
 
-		println("Collector 0.2")
-
-		if (!Gasses.isEmptyCanister(furnace.inventory.fuel)) return
-
-		println("Collector 0.3")
+		if (!Gasses.isCanister(furnace.inventory.fuel)) return
 
 		event.isBurning = false
 		event.burnTime = (750 + Math.random() * 500).toInt()
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
-
-		println("Collector 0.4")
 
 		Gasses.tickCollectorAsync(sign)
 	}
