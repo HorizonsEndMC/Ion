@@ -33,29 +33,35 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		furnace: Furnace,
 		sign: Sign
 	) {
+		println("Collector 0.0")
+
 		event.isBurning = false
 		event.burnTime = 0
 		event.isCancelled = true
-		val fuel = furnace.inventory.fuel
+		val smelting = furnace.inventory.smelting
 
-		if (fuel == null || fuel.type != Material.PRISMARINE_CRYSTALS) {
-			return
-		}
+		println("Collector 0.1")
 
-		if (!Gasses.isEmptyCanister(furnace.inventory.smelting)) {
-			return
-		}
+		if (smelting == null || smelting.type != Material.PRISMARINE_CRYSTALS) return
+
+		println("Collector 0.2")
+
+		if (!Gasses.isEmptyCanister(furnace.inventory.fuel)) return
+
+		println("Collector 0.3")
 
 		event.isBurning = false
 		event.burnTime = (750 + Math.random() * 500).toInt()
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
+		println("Collector 0.4")
+
 		Gasses.tickCollectorAsync(sign)
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val available = Gasses.findGas(sign.location).joinToString { it.identifier }
+		val available = Gasses.findAvailableGasses(sign.location).joinToString { it.identifier }
 
 		player.information("Available gasses: $available")
 	}

@@ -14,7 +14,11 @@ abstract class Gas(
 	) {
 	val factors get(): List<CollectionFactor> = factorSupplier.get()
 
-    fun isAvailable(location: Location): Boolean {
+    fun tryCollect(location: Location): Boolean {
         return factors.stream().allMatch { factor: CollectionFactor -> factor.factor(location) }
     }
+
+	fun canBeFound(location: Location): Boolean {
+		return factors.stream().allMatch { factor: CollectionFactor -> factor.canBeFound(location) }
+	}
 }

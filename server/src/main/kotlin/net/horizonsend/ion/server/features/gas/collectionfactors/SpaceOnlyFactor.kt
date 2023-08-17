@@ -7,4 +7,6 @@ class SpaceOnlyFactor : CollectionFactor() {
     override fun factor(location: Location): Boolean {
         return SpaceWorlds.contains(location.world)
     }
+
+	override fun canBeFound(location: Location): Boolean = factor(location)
 }

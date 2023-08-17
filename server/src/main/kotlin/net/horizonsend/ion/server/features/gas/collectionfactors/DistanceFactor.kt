@@ -10,4 +10,6 @@ class DistanceFactor(private val origin: Location, private val maxDistance: Doub
         if (distance < 1) return true
         return if (distance > maxDistance) false else RandomFactor(multiplier / distance.toFloat()).factor(location)
     }
+
+	override fun canBeFound(location: Location): Boolean = factor(location)
 }
