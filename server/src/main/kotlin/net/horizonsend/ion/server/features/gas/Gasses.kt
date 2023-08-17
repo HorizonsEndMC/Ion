@@ -155,19 +155,7 @@ object Gasses : IonServerComponent(false) {
 				val result = tryHarvestGas(furnace, hopper, gas)
 				val sound = if (result) Sound.ITEM_BOTTLE_FILL_DRAGONBREATH else Sound.ITEM_BOTTLE_FILL
 				lightningRod.world.playSound(lightningRod.location, sound, 10.0f, 0.5f)
-
-//				harvestGasses(availableGasses, furnace, hopper, lightningRod)
 			}
-		}
-	}
-
-	private fun harvestGasses(availableGas: List<Gas>, furnace: Block, hopper: Block, rod: Block) {
-		if (!furnace.location.isChunkLoaded || !hopper.location.isChunkLoaded || !rod.location.isChunkLoaded) return
-
-		for (gas in availableGas) {
-			val result = tryHarvestGas(furnace, hopper, gas)
-			val sound = if (result) Sound.ITEM_BOTTLE_FILL_DRAGONBREATH else Sound.ITEM_BOTTLE_FILL
-			rod.world.playSound(rod.location, sound, 10.0f, 0.5f)
 		}
 	}
 
