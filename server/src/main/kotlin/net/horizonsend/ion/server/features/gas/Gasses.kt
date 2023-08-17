@@ -188,12 +188,10 @@ object Gasses : IonServerComponent(false) {
 	private fun fillEmptyCanister(canisterItem: ItemStack, furnace: Furnace, gas: Gas): Boolean {
 		println("fillEmpty 1")
 		val newType = CustomItems.getByIdentifier(gas.containerIdentifier) as? GasCanister ?: return false
-		val newCanister = newType.constructItemStack()
+		val newCanister = newType.createWithFill(FILL_PER_COLLECTION)
 		println("fillEmpty 2")
 
 		furnace.inventory.fuel = newCanister
-
-		newType.setFill(newCanister, furnace.inventory, FILL_PER_COLLECTION)
 
 		println("fillEmpty 3")
 		return true
