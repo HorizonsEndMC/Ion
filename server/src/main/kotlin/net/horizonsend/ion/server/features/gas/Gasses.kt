@@ -165,7 +165,7 @@ object Gasses : IonServerComponent(false) {
 		return when (customItem) {
 			EMPTY_GAS_CANISTER -> fillEmptyCanister(furnace, gas)
 
-			is GasCanister -> fillGasCanister(canisterItem, furnace, hopper, gas)
+			is GasCanister -> fillGasCanister(canisterItem, furnace, hopper) // Don't even bother with the gas
 
 			else -> false
 		}
@@ -182,7 +182,7 @@ object Gasses : IonServerComponent(false) {
 		return true
 	}
 
-	private fun fillGasCanister(canisterItem: ItemStack, furnace: Furnace, hopper: Hopper, gas: Gas): Boolean {
+	private fun fillGasCanister(canisterItem: ItemStack, furnace: Furnace, hopper: Hopper): Boolean {
 		val type = canisterItem.customItem ?: return false
 		if (type !is GasCanister) return  false
 
@@ -192,7 +192,7 @@ object Gasses : IonServerComponent(false) {
 		return if (newFill >= type.maximumFill) {
 			val canAdd = hopper.inventory.addItem(type.constructItemStack())
 
-			if (canAdd.isNotEmpty()) {
+			if (canAdd.isEmpty()) {
 				furnace.inventory.fuel = null
 			} else {
 				furnace.inventory.fuel = type.constructItemStack()
