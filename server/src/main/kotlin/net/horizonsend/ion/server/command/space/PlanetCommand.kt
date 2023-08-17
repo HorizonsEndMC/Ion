@@ -280,7 +280,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 		planet.changeX(x)
 		planet.changeZ(z)
 		sender.success("Moved ${planet.name} to $x, $z")
-		planet.setLocation(urgent = true, updateDb = true)
+		planet.setLocation(updateDb = true)
 		spaceWorld.save()
 		SpaceMap.refresh()
 	}

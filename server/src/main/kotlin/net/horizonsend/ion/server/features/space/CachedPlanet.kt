@@ -143,10 +143,8 @@ class CachedPlanet(
 		}
 	}
 
-	fun setLocation(urgent: Boolean = false): Unit = setLocation(urgent, updateDb = true)
-
-	fun setLocation(urgent: Boolean = false, updateDb: Boolean = true) {
-		move(Vec3i(x, sun.location.y, z), urgent = urgent)
+	fun setLocation(updateDb: Boolean = true) {
+		move(Vec3i(x, sun.location.y, z))
 
 		if (updateDb) {
 			setX(databaseId, x)
