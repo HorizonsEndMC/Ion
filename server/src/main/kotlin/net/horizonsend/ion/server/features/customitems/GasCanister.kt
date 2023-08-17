@@ -35,7 +35,7 @@ abstract class GasCanister(
 			it.displayName(displayName)
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
 			it.persistentDataContainer.set(NamespacedKeys.GAS, PersistentDataType.INTEGER, value)
-			it.lore(listOf(lore(maximumFill, value)))
+			it.lore(listOf(lore(value, maximumFill)))
 		}
 	}
 
@@ -71,9 +71,9 @@ abstract class GasCanister(
 		private fun lore(maximum: Int, fill: Int) = text()
 			.decoration(TextDecoration.ITALIC, false)
 			.append(text("Gas: ", NamedTextColor.GRAY))
-			.append(text(maximum, NamedTextColor.AQUA))
-			.append(text(" / ", NamedTextColor.GRAY))
 			.append(text(fill, NamedTextColor.AQUA))
+			.append(text(" / ", NamedTextColor.GRAY))
+			.append(text(maximum, NamedTextColor.AQUA))
 			.build()
 	}
 }

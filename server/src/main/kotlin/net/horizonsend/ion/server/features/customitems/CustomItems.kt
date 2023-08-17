@@ -227,7 +227,7 @@ object CustomItems {
 			maximumFill = 300,
 			customModelData = 1001,
 			gasIdentifier = "HYDROGEN",
-			displayName = text("Hydrogen Gas Canister", RED)
+			displayName = text("Hydrogen Gas Canister", RED).decoration(ITALIC, false)
 		) {}
 	)
 	val NITROGEN_GAS_CANISTER = register(
@@ -236,7 +236,7 @@ object CustomItems {
 			maximumFill = 100,
 			customModelData = 1002,
 			gasIdentifier = "NITROGEN",
-			displayName = text("Nitrogen Gas Canister", RED)
+			displayName = text("Nitrogen Gas Canister", RED).decoration(ITALIC, false)
 		) {}
 	)
 	val METHANE_GAS_CANISTER = register(
@@ -245,7 +245,7 @@ object CustomItems {
 			maximumFill = 150,
 			customModelData = 1003,
 			gasIdentifier = "METHANE",
-			displayName = text("Methane Gas Canister", RED)
+			displayName = text("Methane Gas Canister", RED).decoration(ITALIC, false)
 		) {}
 	)
 
@@ -256,7 +256,7 @@ object CustomItems {
 			maximumFill = 300,
 			customModelData = 1010,
 			gasIdentifier = "OXYGEN",
-			displayName = text("Oxygen Gas Canister", YELLOW)
+			displayName = text("Oxygen Gas Canister", YELLOW).decoration(ITALIC, false)
 		) {}
 	)
 	val CHLORINE_GAS_CANISTER = register(
@@ -265,7 +265,7 @@ object CustomItems {
 			maximumFill = 100,
 			customModelData = 1011,
 			gasIdentifier = "CHLORINE",
-			displayName = text("Chlorine Gas Canister", YELLOW)
+			displayName = text("Chlorine Gas Canister", YELLOW).decoration(ITALIC, false)
 		) {}
 	)
 	val FLUORINE_GAS_CANISTER = register(
@@ -274,7 +274,7 @@ object CustomItems {
 			maximumFill = 150,
 			customModelData = 1012,
 			gasIdentifier = "FLUORINE",
-			displayName = text("Fluorine Gas Canister", YELLOW)
+			displayName = text("Fluorine Gas Canister", YELLOW).decoration(ITALIC, false)
 		) {}
 	)
 
@@ -285,7 +285,7 @@ object CustomItems {
 			maximumFill = 300,
 			customModelData = 1020,
 			gasIdentifier = "HELIUM",
-			displayName = text("Helium Gas Canister", GRAY)
+			displayName = text("Helium Gas Canister", GRAY).decoration(ITALIC, false)
 		) {}
 	)
 	val CARBON_DIOXIDE_GAS_CANISTER = register(
@@ -294,7 +294,7 @@ object CustomItems {
 			maximumFill = 100,
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
-			displayName = text("Carbon Dioxide Gas Canister", GRAY)
+			displayName = text("Carbon Dioxide Gas Canister", GRAY).decoration(ITALIC, false)
 		) {}
 	)
 
