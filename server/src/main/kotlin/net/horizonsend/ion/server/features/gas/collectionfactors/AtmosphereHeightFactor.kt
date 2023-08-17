@@ -7,4 +7,6 @@ class AtmosphereHeightFactor(private val minAtmosphereHeight: Double, private va
     override fun factor(location: Location): Boolean {
         return !SpaceOnlyFactor().factor(location) && location.y >= minAtmosphereHeight && location.y <= maxAtmosphereHeight
     }
+
+	override fun canBeFound(location: Location): Boolean = factor(location)
 }

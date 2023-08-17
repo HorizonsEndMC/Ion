@@ -8,4 +8,6 @@ class WorldLimitFactor(private val enabledWorlds: Array<String>) : CollectionFac
         return Arrays.stream(enabledWorlds)
             .anyMatch { anotherString: String? -> location.world.name.equals(anotherString, ignoreCase = true) }
     }
+
+	override fun canBeFound(location: Location): Boolean = factor(location)
 }

@@ -7,4 +7,6 @@ class OutdoorsFactor : CollectionFactor() {
     override fun factor(location: Location): Boolean {
         return !LegacyBlockUtils.isInside(location, 2)
     }
+
+	override fun canBeFound(location: Location): Boolean = factor(location)
 }

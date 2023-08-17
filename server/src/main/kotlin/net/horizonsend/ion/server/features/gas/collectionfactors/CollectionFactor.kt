@@ -7,16 +7,9 @@ import java.util.Locale
 abstract class CollectionFactor {
     abstract fun factor(location: Location): Boolean
 
-    companion object {
-        fun collectionSetFromString(string: String): List<CollectionFactor> {
-            val collectionFactors: MutableList<CollectionFactor> = ArrayList()
-            for (text in string.split(";".toRegex()).dropLastWhile { it.isEmpty() }
-                .toTypedArray()) collectionFactors.add(
-                valueOf(text)
-            )
-            return collectionFactors
-        }
+	abstract fun canBeFound(location: Location): Boolean
 
+    companion object {
         fun valueOf(text: String): CollectionFactor {
             val params = text.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             when (params[0].lowercase(Locale.getDefault())) {
@@ -43,6 +36,7 @@ abstract class CollectionFactor {
                 "worldchance" -> return WorldChanceFactor(params[1].toFloat(), params[2])
                 "skylight", "outdoors" -> return OutdoorsFactor()
             }
+
             return RandomFactor(1.0f)
         }
     }
