@@ -1,12 +1,11 @@
 package net.horizonsend.ion.server.features.space
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement.placeImmediate
-import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement.queue
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.World
 
@@ -48,7 +47,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 		)
 	}
 
-	fun move(newLoc: Vec3i, urgent: Boolean = false) {
+	fun move(newLoc: Vec3i) {
 		val spaceWorld = this.spaceWorld ?: return
 
 		val structure = createStructure()
@@ -59,7 +58,7 @@ abstract class CelestialBody(spaceWorldName: String, location: Vec3i) {
 			blockKey(intTrio.x + newLoc.x, intTrio.y + newLoc.y, intTrio.z + newLoc.z)
 		}
 
-		queue(spaceWorld, blocks)
+		placeImmediate(spaceWorld, blocks)
 
 		blocks.clear()
 
