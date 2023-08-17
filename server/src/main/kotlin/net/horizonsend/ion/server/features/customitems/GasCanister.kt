@@ -25,13 +25,17 @@ abstract class GasCanister(
 ) : CustomItem(identifier) {
 	val gas = Gasses[gasIdentifier]!!
 
-	override fun constructItemStack(): ItemStack {
+	override fun constructItemStack(): ItemStack = createWithFill(maximumFill)
+
+	fun createWithFill(fill: Int): ItemStack {
+		val value = fill.coerceIn(0..maximumFill)
+
 		return ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).updateMeta {
 			it.setCustomModelData(customModelData)
 			it.displayName(displayName)
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
-			it.persistentDataContainer.set(NamespacedKeys.GAS, PersistentDataType.INTEGER, maximumFill)
-			it.lore(listOf(lore(maximumFill, maximumFill)))
+			it.persistentDataContainer.set(NamespacedKeys.GAS, PersistentDataType.INTEGER, value)
+			it.lore(listOf(lore(maximumFill, value)))
 		}
 	}
 
