@@ -213,7 +213,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 		Notify.all(MiniMessage.miniMessage().deserialize(
-			"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>established space station <aqua>$name")
+			"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>established space station <aqua>$name <gray>in ${world.name}")
 		)
 	}
 
