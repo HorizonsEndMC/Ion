@@ -42,9 +42,9 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 			}
 			y(-1) {
 				x(-2).copperBlock()
-				x(-1).anyWall()
-				x(+0).sponge()
-				x(+1).anyWall()
+				x(-1).extractor()
+				x(+0).wireInputComputer()
+				x(+1).extractor()
 				x(+2).copperBlock()
 			}
 		}
@@ -152,9 +152,6 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		val inventory = furnace.inventory
 
 		println(0)
-
-		val smelting = inventory.smelting ?: return
-		val fuelItem = inventory.fuel ?: return
 
 		val fuel = (inventory.smelting?.customItem as? GasCanister) ?: return
 		val oxidizer = (inventory.fuel?.customItem as? GasCanister) ?: return
