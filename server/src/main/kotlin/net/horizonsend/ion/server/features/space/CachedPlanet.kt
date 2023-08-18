@@ -43,7 +43,7 @@ class CachedPlanet(
     val cloudNoise: Double
 ) : CelestialBody(sun.spaceWorldName, calculateOrbitLocation(sun, orbitDistance, orbitProgress)), NamedCelestialBody {
 	companion object {
-		private const val CRUST_RADIUS_MAX = 300
+		private const val CRUST_RADIUS_MAX = 180
 
 		fun calculateOrbitLocation(sun: CachedStar, orbitDistance: Int, orbitProgress: Double): Vec3i {
 			val (x, y, z) = sun.location
