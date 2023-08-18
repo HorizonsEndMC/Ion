@@ -66,7 +66,7 @@ object Space : IonServerComponent() {
 			val starName: String = mongoStar.name
 			val spaceWorldName: String = mongoStar.spaceWorld
 			val starX: Int = mongoStar.x
-			val starY: Int = mongoStar.y
+			val starY: Int = 192 // mongoStar.y
 			val starZ: Int = mongoStar.z
 			val starMaterial: Material = Material.valueOf(mongoStar.material)
 			val starSize: Double = mongoStar.size
@@ -75,7 +75,7 @@ object Space : IonServerComponent() {
 				databaseId = starId,
 				name = starName,
 				spaceWorldName = spaceWorldName,
-				location = Vec3i(starX, 192, starZ),
+				location = Vec3i(starX, starY, starZ),
 				material = starMaterial,
 				size = starSize
 			)
