@@ -3,12 +3,12 @@ package net.horizonsend.ion.server.features.space
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Star
-import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.optional
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -75,7 +75,7 @@ object Space : IonServerComponent() {
 				databaseId = starId,
 				name = starName,
 				spaceWorldName = spaceWorldName,
-				location = Vec3i(starX, starY, starZ),
+				location = Vec3i(starX, 192, starZ),
 				material = starMaterial,
 				size = starSize
 			)
