@@ -6,35 +6,23 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import java.util.Date
-import java.util.UUID
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.newline
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.md_5.bungee.api.chat.TextComponent
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -45,15 +33,29 @@ import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
 import org.litote.kmongo.updateOneById
+import java.util.Date
+import java.util.UUID
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 @Suppress("unused")
 @CommandAlias("settlement|s")
-internal object SettlementCommand : net.horizonsend.ion.server.command.SLCommand() {
+internal object SettlementCommand : SLCommand() {
 	private fun validateName(name: String, settlementId: Oid<Settlement>?) {
 		if (!"\\w*".toRegex().matches(name)) {
 			throw InvalidCommandArgument("Name must be alphanumeric")
@@ -641,5 +643,173 @@ internal object SettlementCommand : net.horizonsend.ion.server.command.SLCommand
 			Settlement.setNeedsRefund(settlementId)
 			sender.depositMoney(territory.oldCost - territory.cost)
 		}
+	}
+
+	@Subcommand("trusted list")
+	@Suppress("unused")
+	fun onTrustedList(sender: Player) {
+		val settlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		val cached = SettlementCache[settlementId]
+		val settlementName = cached.name
+
+		val trustedPlayers: String = cached.trustedPlayers.map(::getPlayerName).sorted().joinToString()
+		sender.sendRichMessage("<Gold>Trusted players in $settlementName: <aqua>$trustedPlayers")
+
+		val trustedSettlements: String = cached.trustedSettlements.map(::getSettlementName).sorted().joinToString()
+		sender.sendRichMessage("<Gold>Trusted settlements in $settlementName: <aqua>$trustedSettlements")
+
+		val trustedNations: String = cached.trustedNations.map(::getNationName).sorted().joinToString()
+		sender.sendRichMessage("<Gold>Trusted nations in $settlementName: <aqua>$trustedNations")
+	}
+
+	@Subcommand("trusted add player")
+	@Description("Give a player build access to the settlement")
+	@CommandCompletion("@players")
+	@Suppress("unused")
+	fun onTrustedAddPlayer(sender: Player, player: String) = asyncCommand(sender) {
+		val settlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		val cached = SettlementCache[settlementId]
+		val settlementName = cached.name
+
+		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
+		val playerName: String = getPlayerName(playerId)
+
+		failIf(cached.trustedPlayers.contains(playerId)) {
+			"$playerName is already trusted in $settlementName"
+		}
+
+		Settlement.trustPlayer(settlementId, playerId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$playerName<gray> to <aqua>$settlementName")
+		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted add settlement")
+	@Description("Give a settlement build access to the settlement")
+	@CommandCompletion("@settlements")
+	@Suppress("unused")
+	fun onTrustedAddSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
+		val ownerSettlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		val cached = SettlementCache[ownerSettlementId]
+		val settlementName = cached.name
+
+		val settlementId: Oid<Settlement> = SettlementCache.getByName(settlement) ?: fail {
+			"Settlement $settlement not found"
+		}
+
+		failIf(cached.trustedSettlements.contains(settlementId)) {
+			"$settlement is already trusted in $settlementName"
+		}
+
+		Settlement.trustSettlement(ownerSettlementId, settlementId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$settlement<gray> to <aqua>$settlementName")
+		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted add nation")
+	@Description("Give a nation build access to the settlement")
+	@CommandCompletion("@nations")
+	@Suppress("unused")
+	fun onTrustedAddNation(sender: Player, nation: String) = asyncCommand(sender) {
+		val ownerSettlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		val cached = SettlementCache[ownerSettlementId]
+		val settlementName = cached.name
+
+		val nationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
+			"Nation $nation not found"
+		}
+
+		failIf(cached.trustedNations.contains(nationId)) {
+			"$nation is already trusted in $settlementName"
+		}
+
+		Settlement.trustNation(ownerSettlementId, nationId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$settlementName")
+		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted remove player")
+	@Description("Revoke a player's build access to the settlement")
+	@CommandCompletion("@players")
+	@Suppress("unused")
+	fun onTrustedRemovePlayer(sender: Player, player: String) = asyncCommand(sender) {
+		val ownerSettlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		val cached = SettlementCache[ownerSettlementId]
+		val settlementName = cached.name
+
+		val playerId: SLPlayerId = resolveOfflinePlayer(player).slPlayerId
+		val playerName: String = getPlayerName(playerId)
+
+		failIf(!cached.trustedPlayers.contains(playerId)) {
+			"$player isn't trusted in $settlementName"
+		}
+
+		Settlement.unTrustPlayer(ownerSettlementId, playerId)
+
+		sender.sendRichMessage("<gray> Removed <aqua>$playerName<gray> from <aqua>$settlementName")
+		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+	}
+
+
+	@Subcommand("trusted remove settlement")
+	@Description("Give a settlement build access to the settlement")
+	@CommandCompletion("@settlements")
+	@Suppress("unused")
+	fun onTrustedRemoveSettlement(sender: Player, settlement: String) = asyncCommand(sender) {
+		val ownerSettlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		val cached = SettlementCache[ownerSettlementId]
+		val settlementName = cached.name
+
+		val settlementId: Oid<Settlement> = SettlementCache.getByName(settlement) ?: fail {
+			"Settlement $settlement not found"
+		}
+
+		failIf(!cached.trustedSettlements.contains(settlementId)) {
+			"$settlement isn't trusted in $settlementName"
+		}
+
+		Settlement.unTrustSettlement(ownerSettlementId, settlementId)
+
+		sender.sendRichMessage("<gray> Removed <aqua>$settlement<gray> from <aqua>$settlementName")
+		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("trusted remove nation")
+	@Description("Give a nation build access to the settlement")
+	@CommandCompletion("@nations")
+	@Suppress("unused")
+	fun onTrustedRemoveNation(sender: Player, nation: String) = asyncCommand(sender) {
+		val ownerSettlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		val cached = SettlementCache[ownerSettlementId]
+		val settlementName = cached.name
+
+		val nationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
+			"Nation $nation not found"
+		}
+
+		failIf(!cached.trustedNations.contains(nationId)) {
+			"$nation isn't trusted in $settlementName"
+		}
+
+		Settlement.unTrustNation(ownerSettlementId, nationId)
+
+		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$settlementName")
+		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
 	}
 }

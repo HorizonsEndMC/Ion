@@ -1,18 +1,11 @@
 package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import java.awt.Polygon
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.abs
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
-import net.horizonsend.ion.server.LegacySettings
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.binary
 import net.horizonsend.ion.common.database.boolean
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
@@ -23,10 +16,17 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.string
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.unpackTerritoryPolygon
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
+import java.awt.Polygon
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class RegionTerritory(territory: Territory) :
 	Region<Territory>(territory),
@@ -113,13 +113,16 @@ class RegionTerritory(territory: Territory) :
 			settlement != null -> {
 				val playerSettlement: Oid<Settlement>? = playerData.settlementOid
 
-				val minBuildAccess = SettlementCache[settlement].minBuildAccess
-					?: Settlement.ForeignRelation.SETTLEMENT_MEMBER
+				val cachedSettlement = SettlementCache[settlement]
+
+				val minBuildAccess = cachedSettlement.minBuildAccess ?: Settlement.ForeignRelation.SETTLEMENT_MEMBER
 
 				// anyone can build o_o
 				if (minBuildAccess == Settlement.ForeignRelation.NONE) {
 					return null
 				}
+
+				if (cachedSettlement.trustedPlayers.contains(player.slPlayerId)) return null
 
 				// other than that ^, building in a settlement requires being in a settlement
 				if (playerSettlement != null) {
@@ -141,11 +144,15 @@ class RegionTerritory(territory: Territory) :
 						return "You don't have the BUILD permission and minbuildaccess is STRICT!"
 					}
 
+					if (cachedSettlement.trustedSettlements.contains(playerSettlement)) return null
+
 					val playerNation: Oid<Nation>? = playerData.nationOid
 
 					// if they're in a nation, and min build access is nation member or ally there's a chance they can build
 					if (playerNation != null && minBuildAccess <= Settlement.ForeignRelation.NATION_MEMBER) {
 						val settlementNation = SettlementCache[settlement].nation
+
+						if (cachedSettlement.trustedNations.contains(playerNation)) return null
 
 						// if it's nation access, they can build if they're the same nation
 						if (minBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {

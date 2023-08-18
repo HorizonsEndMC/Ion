@@ -370,7 +370,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val stationName = station.name
 
 		val nationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
-			"Settlement $nation not found"
+			"Nation $nation not found"
 		}
 
 		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
@@ -399,8 +399,8 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
 
-		failIf(station.trustedPlayers.contains(playerId)) {
-			"$playerName is already trusted in $stationName"
+		failIf(!station.trustedPlayers.contains(playerId)) {
+			"$playerName isn't trusted in $stationName"
 		}
 
 		station.unTrustPlayer(playerId)
