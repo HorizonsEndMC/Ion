@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Effect
+import org.bukkit.Material
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
@@ -31,10 +32,118 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		at(x = -1, y = -1, z = +0).extractor()
-		at(x = +0, y = -1, z = +0).wireInputComputer()
-		at(x = +1, y = -1, z = +0).extractor()
-		at(x = +0, y = +0, z = +0).machineFurnace()
+		z(+0) {
+			y(+0) {
+				x(-2).anyGlassPane()
+				x(-1).anyGlassPane()
+				x(+0).machineFurnace()
+				x(+1).anyGlassPane()
+				x(+2).anyGlassPane()
+			}
+			y(-1) {
+				x(-2).copperBlock()
+				x(-1).anyWall()
+				x(+0).sponge()
+				x(+1).anyWall()
+				x(+2).copperBlock()
+			}
+		}
+		z(+1) {
+			y(+0) {
+				x(-2).copperBlock()
+				x(-1).type(Material.LIGHTNING_ROD)
+				x(+0).sponge()
+				x(+1).type(Material.LIGHTNING_ROD)
+				x(+2).copperBlock()
+			}
+			y(-1) {
+				x(-2).copperBlock()
+				x(-1).anyWall()
+				x(+0).redstoneBlock()
+				x(+1).anyWall()
+				x(+2).copperBlock()
+			}
+		}
+		z(+2) {
+			y(+0) {
+				x(-2).anyGlass()
+				x(-1).type(Material.LIGHTNING_ROD)
+				x(+0).sponge()
+				x(+1).type(Material.LIGHTNING_ROD)
+				x(+2).anyGlass()
+			}
+			y(-1) {
+				x(-2).copperBlock()
+				x(-1).anyWall()
+				x(+0).redstoneBlock()
+				x(+1).anyWall()
+				x(+2).copperBlock()
+			}
+		}
+		z(+3) {
+			y(+0) {
+				x(-2).anyGlass()
+				x(-1).type(Material.LIGHTNING_ROD)
+				x(+0).sponge()
+				x(+1).type(Material.LIGHTNING_ROD)
+				x(+2).anyGlass()
+			}
+			y(-1) {
+				x(-2).anyGlass()
+				x(-1).anyWall()
+				x(+0).redstoneBlock()
+				x(+1).anyWall()
+				x(+2).anyGlass()
+			}
+		}
+		z(+4) {
+			y(+0) {
+				x(-2).anyGlass()
+				x(-1).type(Material.LIGHTNING_ROD)
+				x(+0).sponge()
+				x(+1).type(Material.LIGHTNING_ROD)
+				x(+2).anyGlass()
+			}
+			y(-1) {
+				x(-2).copperBlock()
+				x(-1).anyWall()
+				x(+0).redstoneBlock()
+				x(+1).anyWall()
+				x(+2).copperBlock()
+			}
+		}
+		z(+5) {
+			y(+0) {
+				x(-2).copperBlock()
+				x(-1).type(Material.LIGHTNING_ROD)
+				x(+0).sponge()
+				x(+1).type(Material.LIGHTNING_ROD)
+				x(+2).copperBlock()
+			}
+			y(-1) {
+				x(-2).copperBlock()
+				x(-1).anyWall()
+				x(+0).redstoneBlock()
+				x(+1).anyWall()
+				x(+2).copperBlock()
+			}
+		}
+		z(+6) {
+			y(+0) {
+				x(-2).anyGlassPane()
+				x(-1).anyGlassPane()
+				x(+0).anyPipedInventory()
+				x(+1).anyGlassPane()
+				x(+2).anyGlassPane()
+			}
+			y(-1) {
+				x(-2).copperBlock()
+				x(-1).ironBlock()
+				x(+0).extractor()
+				x(+1).ironBlock()
+				x(+2).copperBlock()
+			}
+		}
 	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
