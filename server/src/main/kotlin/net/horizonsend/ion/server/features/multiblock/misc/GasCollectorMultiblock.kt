@@ -17,7 +17,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	override val name = "gascollector"
 
 	override val signText = createSignText(
-		line1 = "&3Gas &7Collector",
+		line1 = "&cGas &6Collector",
 		line2 = null,
 		line3 = null,
 		line4 = null
