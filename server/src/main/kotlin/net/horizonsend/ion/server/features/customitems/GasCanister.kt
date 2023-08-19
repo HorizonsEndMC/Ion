@@ -35,7 +35,7 @@ abstract class GasCanister(
 			it.displayName(displayName)
 			it.persistentDataContainer.set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
 			it.persistentDataContainer.set(NamespacedKeys.GAS, PersistentDataType.INTEGER, value)
-			it.lore(listOf(lore(value, maximumFill)))
+			it.lore(listOf(lore(maximumFill, value)))
 		}
 	}
 
@@ -58,7 +58,7 @@ abstract class GasCanister(
 
 	/** Replaces the gas canister with an empty one **/
 	fun empty(itemStack: ItemStack, inventory: Inventory) {
-		val empty = CustomItems.EMPTY_GAS_CANISTER.constructItemStack()
+		val empty = CustomItems.GAS_CANISTER_EMPTY.constructItemStack()
 
 		val firstMatching = inventory.all(itemStack).keys.firstOrNull() ?: return // Shouldn't happen
 

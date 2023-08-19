@@ -219,29 +219,29 @@ object CustomItems {
 	// Gun Parts End
 	// Gas Canisters Start
 
-	val EMPTY_GAS_CANISTER = register("EMPTY_GAS_CANISTER", 1000, text("Empty Gas Canister"))
+	val GAS_CANISTER_EMPTY = register("GAS_CANISTER_EMPTY", 1000, text("Empty Gas Canister"))
 	// Fuels
-	val HYDROGEN_GAS_CANISTER = register(
+	val GAS_CANISTER_HYDROGEN = register(
 		object : GasCanister(
-			identifier = "HYDROGEN_GAS_CANISTER",
+			identifier = "GAS_CANISTER_HYDROGEN",
 			maximumFill = 300,
 			customModelData = 1001,
 			gasIdentifier = "HYDROGEN",
 			displayName = text("Hydrogen Gas Canister", RED).decoration(ITALIC, false)
 		) {}
 	)
-	val NITROGEN_GAS_CANISTER = register(
+	val GAS_CANISTER_NITROGEN = register(
 		object : GasCanister(
-			identifier = "NITROGEN_GAS_CANISTER",
+			identifier = "GAS_CANISTER_NITROGEN",
 			maximumFill = 100,
 			customModelData = 1002,
 			gasIdentifier = "NITROGEN",
 			displayName = text("Nitrogen Gas Canister", RED).decoration(ITALIC, false)
 		) {}
 	)
-	val METHANE_GAS_CANISTER = register(
+	val GAS_CANISTER_METHANE = register(
 		object : GasCanister(
-			identifier = "METHANE_GAS_CANISTER",
+			identifier = "GAS_CANISTER_METHANE",
 			maximumFill = 150,
 			customModelData = 1003,
 			gasIdentifier = "METHANE",
@@ -250,27 +250,27 @@ object CustomItems {
 	)
 
 	// Oxidizers
-	val OXYGEN_GAS_CANISTER = register(
+	val GAS_CANISTER_OXYGEN = register(
 		object : GasCanister(
-			identifier = "OXYGEN_GAS_CANISTER",
+			identifier = "GAS_CANISTER_OXYGEN",
 			maximumFill = 300,
 			customModelData = 1010,
 			gasIdentifier = "OXYGEN",
 			displayName = text("Oxygen Gas Canister", YELLOW).decoration(ITALIC, false)
 		) {}
 	)
-	val CHLORINE_GAS_CANISTER = register(
+	val GAS_CANISTER_CHLORINE = register(
 		object : GasCanister(
-			identifier = "CHLORINE_GAS_CANISTER",
+			identifier = "GAS_CANISTER_CHLORINE",
 			maximumFill = 100,
 			customModelData = 1011,
 			gasIdentifier = "CHLORINE",
 			displayName = text("Chlorine Gas Canister", YELLOW).decoration(ITALIC, false)
 		) {}
 	)
-	val FLUORINE_GAS_CANISTER = register(
+	val GAS_CANISTER_FLUORINE = register(
 		object : GasCanister(
-			identifier = "FLUORINE_GAS_CANISTER",
+			identifier = "GAS_CANISTER_FLUORINE",
 			maximumFill = 150,
 			customModelData = 1012,
 			gasIdentifier = "FLUORINE",
@@ -279,18 +279,18 @@ object CustomItems {
 	)
 
 	// Other
-	val HELIUM_GAS_CANISTER = register(
+	val GAS_CANISTER_HELIUM = register(
 		object : GasCanister(
-			identifier = "HELIUM_GAS_CANISTER",
+			identifier = "GAS_CANISTER_HELIUM",
 			maximumFill = 300,
 			customModelData = 1020,
 			gasIdentifier = "HELIUM",
 			displayName = text("Helium Gas Canister", GRAY).decoration(ITALIC, false)
 		) {}
 	)
-	val CARBON_DIOXIDE_GAS_CANISTER = register(
+	val GAS_CANISTER_CARBON_DIOXIDE = register(
 		object : GasCanister(
-			identifier = "CARBON_DIOXIDE_GAS_CANISTER",
+			identifier = "GAS_CANISTER_CARBON_DIOXIDE",
 			maximumFill = 100,
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
