@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -227,7 +228,7 @@ object CustomItems {
 			maximumFill = 300,
 			customModelData = 1001,
 			gasIdentifier = "HYDROGEN",
-			displayName = text("Hydrogen Gas Canister", RED).decoration(ITALIC, false)
+			displayName = canisterName(text("Hydrogen", RED))
 		) {}
 	)
 	val GAS_CANISTER_NITROGEN = register(
@@ -236,7 +237,7 @@ object CustomItems {
 			maximumFill = 100,
 			customModelData = 1002,
 			gasIdentifier = "NITROGEN",
-			displayName = text("Nitrogen Gas Canister", RED).decoration(ITALIC, false)
+			displayName = canisterName(text("Nitrogen", RED))
 		) {}
 	)
 	val GAS_CANISTER_METHANE = register(
@@ -245,7 +246,7 @@ object CustomItems {
 			maximumFill = 150,
 			customModelData = 1003,
 			gasIdentifier = "METHANE",
-			displayName = text("Methane Gas Canister", RED).decoration(ITALIC, false)
+			displayName = canisterName(text("Methane", RED))
 		) {}
 	)
 
@@ -256,7 +257,7 @@ object CustomItems {
 			maximumFill = 300,
 			customModelData = 1010,
 			gasIdentifier = "OXYGEN",
-			displayName = text("Oxygen Gas Canister", YELLOW).decoration(ITALIC, false)
+			displayName = canisterName(text("Oxygen", YELLOW))
 		) {}
 	)
 	val GAS_CANISTER_CHLORINE = register(
@@ -265,7 +266,7 @@ object CustomItems {
 			maximumFill = 100,
 			customModelData = 1011,
 			gasIdentifier = "CHLORINE",
-			displayName = text("Chlorine Gas Canister", YELLOW).decoration(ITALIC, false)
+			displayName = canisterName(text("Chlorine", YELLOW))
 		) {}
 	)
 	val GAS_CANISTER_FLUORINE = register(
@@ -274,7 +275,7 @@ object CustomItems {
 			maximumFill = 150,
 			customModelData = 1012,
 			gasIdentifier = "FLUORINE",
-			displayName = text("Fluorine Gas Canister", YELLOW).decoration(ITALIC, false)
+			displayName = canisterName(text("Fluorine", YELLOW))
 		) {}
 	)
 
@@ -285,7 +286,7 @@ object CustomItems {
 			maximumFill = 300,
 			customModelData = 1020,
 			gasIdentifier = "HELIUM",
-			displayName = text("Helium Gas Canister", GRAY).decoration(ITALIC, false)
+			displayName = canisterName(text("Helium", DARK_GRAY))
 		) {}
 	)
 	val GAS_CANISTER_CARBON_DIOXIDE = register(
@@ -294,9 +295,15 @@ object CustomItems {
 			maximumFill = 100,
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
-			displayName = text("Carbon Dioxide Gas Canister", GRAY).decoration(ITALIC, false)
+			displayName = canisterName(text("Carbon Dioxide", DARK_GRAY))
 		) {}
 	)
+
+	fun canisterName(gasName: Component): Component = text()
+		.append(gasName)
+		.append(text(" Gas Canister", GRAY))
+		.build()
+		.decoration(ITALIC, false)
 
 	// Gas Canisters End
 
