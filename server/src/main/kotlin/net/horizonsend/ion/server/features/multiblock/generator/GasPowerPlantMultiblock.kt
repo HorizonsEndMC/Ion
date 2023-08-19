@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.generator
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
+import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -32,7 +33,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 	override val name: String = "gaspowerplant"
 
 	override val signText: Array<Component?> = arrayOf(
-		text("Gas Power Plant", NamedTextColor.RED),
+		text().append(text("Gas", NamedTextColor.RED), text(" Power Plant", NamedTextColor.RED)).build(),
 		null,
 		null,
 		null
@@ -162,18 +163,18 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		val inventory = furnace.inventory
 
-		val fuelItem = inventory.smelting ?: return println(1)
-		val oxidizerItem = inventory.fuel ?: return println(2)
+		val fuelItem = inventory.smelting ?: return
+		val oxidizerItem = inventory.fuel ?: return
 
-		val fuel = (fuelItem.customItem as? GasCanister) ?: return println(3)
-		val oxidizer = (oxidizerItem.customItem as? GasCanister) ?: return println(4)
+		val fuel = (fuelItem.customItem as? GasCanister) ?: return
+		val oxidizer = (oxidizerItem.customItem as? GasCanister) ?: return
 
 		val fuelType = fuel.gas
 		val oxidizerType = oxidizer.gas
 
-		if (fuelType !is GasFuel || oxidizerType !is GasOxidizer) return println(5)
+		if (fuelType !is GasFuel || oxidizerType !is GasOxidizer) return
 
-		val consumed = checkCanisters(sign, furnace, fuelItem, fuel, oxidizerItem, oxidizer) ?: return println(6)
+		val consumed = checkCanisters(sign, furnace, fuelItem, fuel, oxidizerItem, oxidizer) ?: return
 
 		if (PowerMachines.getPower(sign) <= this.maxPower) {
 			event.isBurning = true
@@ -198,41 +199,31 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		val fuelFill = fuelType.getFill(fuelItem)
 		val oxidizerFill = oxidizerType.getFill(oxidizerItem)
 
-		// God forbid it goes negative
-		if (fuelFill <= 0) {
-			println("empty fuel")
-			clearEmpty(sign, furnace.inventory, fuelItem)
-			return null
-		}
-
-		if (oxidizerFill <= 0) {
-			println("empty oxidizer")
-			clearEmpty(sign, furnace.inventory, oxidizerItem)
-			return null
-		}
-
 		// Burn fuel and oxidizer at 1:1
 		// Cap consumption at 30 units
 		val consumed = minOf(GAS_CONSUMED, fuelFill, oxidizerFill)
 
-		fuelType.setFill(fuelItem, furnace.inventory, fuelFill - consumed)
-		oxidizerType.setFill(oxidizerItem, furnace.inventory, oxidizerFill - consumed)
+		// God forbid it goes negative
+		if (fuelFill <= 0 || (fuelFill - consumed <= 0)) {
+			clearEmpty(sign, furnace.inventory, fuelItem)
+			return null
+		}
+
+		if (oxidizerFill <= 0 || (oxidizerFill - consumed <= 0)) {
+			clearEmpty(sign, furnace.inventory, oxidizerItem)
+			return null
+		}
+
+		fuelType.setFill(fuelItem, fuelFill - consumed)
+		oxidizerType.setFill(oxidizerItem, oxidizerFill - consumed)
 
 		return consumed
 	}
 
 	private fun clearEmpty(sign: Sign, furnaceInventory: Inventory, itemStack: ItemStack) {
-		println("""
-			clearing empty
-			$furnaceInventory
-			$itemStack
-		""".trimIndent())
+		val discardChest = getStorage(sign, outputInventory) ?: return
 
-		val discardChest = getStorage(sign, outputInventory) ?: return println("DISCARD CHEST NOT FOUND")
-
-		val noFit = discardChest.inventory.addItem(itemStack).values.isNotEmpty()
-
-		println(noFit)
+		val noFit = discardChest.inventory.addItem(EMPTY_CANISTER).values.isNotEmpty()
 
 		if (noFit) return
 

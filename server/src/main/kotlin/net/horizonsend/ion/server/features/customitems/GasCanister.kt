@@ -39,16 +39,12 @@ abstract class GasCanister(
 		}
 	}
 
-	fun setFill(itemStack: ItemStack, inventory: Inventory, newValue: Int) {
+	fun setFill(itemStack: ItemStack, newValue: Int) {
 		itemStack.editMeta {
 			it.persistentDataContainer.set(NamespacedKeys.GAS, PersistentDataType.INTEGER, newValue)
 			it.lore(listOf(lore(maximumFill, newValue)))
 			it.isUnbreakable = false
 			(it as Damageable).damage = (itemStack.type.maxDurability - newValue.toDouble() / maximumFill * itemStack.type.maxDurability).roundToInt()
-		}
-
-		if (newValue <= 0) {
-			inventory.removeItemAnySlot(itemStack)
 		}
 	}
 
