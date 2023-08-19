@@ -33,7 +33,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 	override val name: String = "gaspowerplant"
 
 	override val signText: Array<Component?> = arrayOf(
-		text().append(text("Gas", NamedTextColor.RED), text(" Power Plant", NamedTextColor.RED)).build(),
+		text().append(text("Gas", NamedTextColor.RED)).append(text(" Power Plant", NamedTextColor.RED)).build(),
 		null,
 		null,
 		null
@@ -204,14 +204,24 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		val consumed = minOf(GAS_CONSUMED, fuelFill, oxidizerFill)
 
 		// God forbid it goes negative
-		if (fuelFill <= 0 || (fuelFill - consumed <= 0)) {
+		if (fuelFill <= 0) {
 			clearEmpty(sign, furnace.inventory, fuelItem)
 			return null
 		}
 
-		if (oxidizerFill <= 0 || (oxidizerFill - consumed <= 0)) {
+		if (oxidizerFill <= 0) {
 			clearEmpty(sign, furnace.inventory, oxidizerItem)
 			return null
+		}
+
+		if (fuelFill - consumed <= 0) {
+			clearEmpty(sign, furnace.inventory, fuelItem)
+			return consumed
+		}
+
+		if (oxidizerFill - consumed <= 0) {
+			clearEmpty(sign, furnace.inventory, oxidizerItem)
+			return consumed
 		}
 
 		fuelType.setFill(fuelItem, fuelFill - consumed)

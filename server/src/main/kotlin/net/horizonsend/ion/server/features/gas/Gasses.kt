@@ -37,8 +37,8 @@ object Gasses : IonServerComponent(false) {
 			identifier = "HYDROGEN",
 			displayName = text("Hydrogen", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_HYDROGEN",
-			powerPerUnit = 2,
-			cooldown = 150,
+			powerPerUnit = IonServer.gasConfiguration.hydrogen.powerPerUnit,
+			cooldown = IonServer.gasConfiguration.hydrogen.cooldown,
 			factorSupplier = IonServer.gasConfiguration.hydrogen::formattedFactors
 		) {}
 	)
@@ -47,8 +47,8 @@ object Gasses : IonServerComponent(false) {
 			identifier = "NITROGEN",
 			displayName = text("Nitrogen", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_NITROGEN",
-			powerPerUnit = 1,
-			cooldown = 100,
+			powerPerUnit = IonServer.gasConfiguration.nitrogen.powerPerUnit,
+			cooldown = IonServer.gasConfiguration.nitrogen.cooldown,
 			factorSupplier = IonServer.gasConfiguration.nitrogen::formattedFactors
 		) {}
 	)
@@ -57,8 +57,8 @@ object Gasses : IonServerComponent(false) {
 			identifier = "METHANE",
 			displayName = text("Methane", NamedTextColor.RED),
 			containerIdentifier = "GAS_CANISTER_METHANE",
-			powerPerUnit = 3,
-			cooldown = 200,
+			powerPerUnit = IonServer.gasConfiguration.methane.powerPerUnit,
+			cooldown = IonServer.gasConfiguration.methane.cooldown,
 			factorSupplier = IonServer.gasConfiguration.methane::formattedFactors
 		) {}
 	)
@@ -69,7 +69,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "OXYGEN",
 			displayName = text("Oxygen", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_OXYGEN",
-			powerMultipler = 1.0,
+			powerMultipler = IonServer.gasConfiguration.oxygen.powerMultiplier,
 			factorSupplier = IonServer.gasConfiguration.oxygen::formattedFactors
 		) {}
 	)
@@ -78,7 +78,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CHLORINE",
 			displayName = text("Chlorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_CHLORINE",
-			powerMultipler = 1.5,
+			powerMultipler = IonServer.gasConfiguration.chlorine.powerMultiplier,
 			factorSupplier = IonServer.gasConfiguration.chlorine::formattedFactors
 		) {}
 	)
@@ -87,7 +87,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "FLUORINE",
 			displayName = text("Fluorine", NamedTextColor.YELLOW),
 			containerIdentifier = "GAS_CANISTER_FLUORINE",
-			powerMultipler = 2.0,
+			powerMultipler = IonServer.gasConfiguration.fluorine.powerMultiplier,
 			factorSupplier = IonServer.gasConfiguration.fluorine::formattedFactors
 		) {}
 	)
