@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.gas
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.EMPTY_GAS_CANISTER
+import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.gas.type.Gas
@@ -27,6 +27,7 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
 import org.bukkit.inventory.ItemStack
 
+@Suppress("UNUSED")
 object Gasses : IonServerComponent(false) {
 	private val gasses = mutableMapOf<String, Gas>()
 
@@ -150,7 +151,7 @@ object Gasses : IonServerComponent(false) {
 	}
 
 	fun isEmptyCanister(itemStack: ItemStack?): Boolean {
-		return itemStack?.customItem?.identifier == EMPTY_GAS_CANISTER.identifier
+		return itemStack?.customItem?.identifier == GAS_CANISTER_EMPTY.identifier
 	}
 
 	fun isCanister(itemStack: ItemStack?): Boolean = isEmptyCanister(itemStack) || itemStack?.customItem is GasCanister
@@ -163,7 +164,7 @@ object Gasses : IonServerComponent(false) {
 		val customItem = canisterItem.customItem ?: return false
 
 		return when (customItem) {
-			EMPTY_GAS_CANISTER -> fillEmptyCanister(furnace, gas)
+			GAS_CANISTER_EMPTY -> fillEmptyCanister(furnace, gas)
 
 			is GasCanister -> fillGasCanister(canisterItem, furnace, hopper) // Don't even bother with the gas
 

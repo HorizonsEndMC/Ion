@@ -167,7 +167,7 @@ object CustomRecipes : IonServerComponent() {
 		CustomItems.POWER_MODULE_ROCKET_BOOSTING to materialChoice(Material.FIREWORK_ROCKET),
 		CustomItems.POWER_MODULE_NIGHT_VISION to materialChoice(Material.SPIDER_EYE),
 		CustomItems.POWER_MODULE_ENVIRONMENT to materialChoice(Material.CHAINMAIL_HELMET),
-		CustomItems.POWER_MODULE_PRESSURE_FIELD to RecipeChoice.ExactChoice(net.horizonsend.ion.server.features.customitems.CustomItems.EMPTY_GAS_CANISTER.constructItemStack())
+		CustomItems.POWER_MODULE_PRESSURE_FIELD to RecipeChoice.ExactChoice(net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY.constructItemStack())
 	).forEach { (piece, center) ->
 		createRecipe(
 			piece, "aga", "g*g", "aga",

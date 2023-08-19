@@ -9,14 +9,21 @@ import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Effect
 import org.bukkit.Material
+import org.bukkit.block.Container
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
 object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
@@ -30,6 +37,8 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		null,
 		null
 	)
+
+	const val GAS_CONSUMED: Int = 30
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -149,35 +158,104 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
 		event.isBurning = false
 		event.burnTime = 0
+		event.isCancelled = true
+
 		val inventory = furnace.inventory
 
-		println(0)
+		val fuelItem = inventory.smelting ?: return println(1)
+		val oxidizerItem = inventory.fuel ?: return println(2)
 
-		val fuel = (inventory.smelting?.customItem as? GasCanister) ?: return
-		val oxidizer = (inventory.fuel?.customItem as? GasCanister) ?: return
+		val fuel = (fuelItem.customItem as? GasCanister) ?: return println(3)
+		val oxidizer = (oxidizerItem.customItem as? GasCanister) ?: return println(4)
 
 		val fuelType = fuel.gas
 		val oxidizerType = oxidizer.gas
 
-			println(1)
+		if (fuelType !is GasFuel || oxidizerType !is GasOxidizer) return println(5)
 
-		if (fuelType !is GasFuel || oxidizerType !is GasOxidizer) return
+		val consumed = checkCanisters(sign, furnace, fuelItem, fuel, oxidizerItem, oxidizer) ?: return println(6)
 
-		println(4)
-
-		if (PowerMachines.getPower(sign) < this.maxPower) {
+		if (PowerMachines.getPower(sign) <= this.maxPower) {
 			event.isBurning = true
-			event.burnTime = fuelType.cooldown
+			furnace.burnTime = fuelType.cooldown.toShort()
 			furnace.cookTime = (-1000).toShort()
 
-			val power = fuelType.powerPerUnit * oxidizerType.powerMultipler
-
+			val power = (fuelType.powerPerUnit * oxidizerType.powerMultipler) * consumed
 			PowerMachines.addPower(sign, power.roundToInt())
-
-			return
 		} else {
 			furnace.world.playEffect(furnace.location.add(0.5, 0.5, 0.5), Effect.SMOKE, 4)
 		}
-		event.isCancelled = true
 	}
+
+	private fun checkCanisters(
+		sign: Sign,
+		furnace: Furnace,
+		fuelItem: ItemStack,
+		fuelType: GasCanister,
+		oxidizerItem: ItemStack,
+		oxidizerType: GasCanister
+	): Int? {
+		val fuelFill = fuelType.getFill(fuelItem)
+		val oxidizerFill = oxidizerType.getFill(oxidizerItem)
+
+		// God forbid it goes negative
+		if (fuelFill <= 0) {
+			println("empty fuel")
+			clearEmpty(sign, furnace.inventory, fuelItem)
+			return null
+		}
+
+		if (oxidizerFill <= 0) {
+			println("empty oxidizer")
+			clearEmpty(sign, furnace.inventory, oxidizerItem)
+			return null
+		}
+
+		// Burn fuel and oxidizer at 1:1
+		// Cap consumption at 30 units
+		val consumed = minOf(GAS_CONSUMED, fuelFill, oxidizerFill)
+
+		fuelType.setFill(fuelItem, furnace.inventory, fuelFill - consumed)
+		oxidizerType.setFill(oxidizerItem, furnace.inventory, oxidizerFill - consumed)
+
+		return consumed
+	}
+
+	private fun clearEmpty(sign: Sign, furnaceInventory: Inventory, itemStack: ItemStack) {
+		println("""
+			clearing empty
+			$furnaceInventory
+			$itemStack
+		""".trimIndent())
+
+		val discardChest = getStorage(sign, outputInventory) ?: return println("DISCARD CHEST NOT FOUND")
+
+		val noFit = discardChest.inventory.addItem(itemStack).values.isNotEmpty()
+
+		println(noFit)
+
+		if (noFit) return
+
+		furnaceInventory.remove(itemStack)
+	}
+
+	private fun getStorage(sign: Sign, offset: Vec3i): Container? {
+		val (x, y, z) = offset
+		val facing = sign.getFacing()
+		val right = facing.rightFace
+
+		val absoluteOffset = Vec3i(
+			x = (right.modX * x) + (facing.modX * z),
+			y = y,
+			z = (right.modZ * x) + (facing.modZ * z)
+		)
+
+		val absolute = absoluteOffset + Vec3i(sign.location)
+
+		val (absoluteX, absoluteY, absoluteZ) = absolute
+
+		return getStateIfLoaded(sign.world, absoluteX, absoluteY, absoluteZ) as? Container
+	}
+
+	private val outputInventory: Vec3i = Vec3i(0, 0, -8)
 }

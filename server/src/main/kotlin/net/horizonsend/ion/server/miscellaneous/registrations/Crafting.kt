@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
-import net.horizonsend.ion.server.features.customitems.CustomItems.EMPTY_GAS_CANISTER
+import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL_RECEIVER
@@ -350,7 +350,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', AIR)
 		}
 
-		itemStackShapeRecipe("empty_gas_canister", EMPTY_GAS_CANISTER.constructItemStack()) {
+		itemStackShapeRecipe("empty_gas_canister", GAS_CANISTER_EMPTY.constructItemStack()) {
 			shape("xix", "igi", "xix")
 
 			setIngredient('i', ExactChoice(MINERAL_TITANIUM.singleItem()))
