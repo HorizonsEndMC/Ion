@@ -150,6 +150,8 @@ object Gasses : IonServerComponent(false) {
 		}
 	}
 
+	val EMPTY_CANISTER: ItemStack = GAS_CANISTER_EMPTY.constructItemStack()
+
 	fun isEmptyCanister(itemStack: ItemStack?): Boolean {
 		return itemStack?.customItem?.identifier == GAS_CANISTER_EMPTY.identifier
 	}
@@ -190,12 +192,17 @@ object Gasses : IonServerComponent(false) {
 		val currentFill = type.getFill(canisterItem)
 		val newFill = currentFill + FILL_PER_COLLECTION
 
+		// If the canister would be filled
 		return if (newFill >= type.maximumFill) {
+			// Try to add a full canister to the hopper
 			val canAdd = hopper.inventory.addItem(type.constructItemStack())
 
+			// If it can be added
 			if (canAdd.isEmpty()) {
+				// Clear it from the furnace
 				furnace.inventory.fuel = null
 			} else {
+				// Put a full one in its spot
 				furnace.inventory.fuel = type.constructItemStack()
 
 				return false
@@ -203,7 +210,8 @@ object Gasses : IonServerComponent(false) {
 
 			true
 		} else {
-			type.setFill(canisterItem, furnace.inventory, newFill)
+			// If it's completely not filled, just fill it to the new level
+			type.setFill(canisterItem, newFill)
 
 			true
 		}
