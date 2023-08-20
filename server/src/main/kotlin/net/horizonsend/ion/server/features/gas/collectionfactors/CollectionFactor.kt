@@ -19,7 +19,7 @@ abstract class CollectionFactor {
                     return DistanceFactor(
                         Location(
                             Bukkit.getWorld(locationParams[0]), locationParams[1].toInt()
-                                .toDouble(), locationParams[2].toInt().toDouble(), locationParams[3].toInt().toDouble()
+                                .toDouble(), locationParams[2].toDouble(), locationParams[3].toDouble()
                         ), params[2].toInt().toDouble(), params[3].toFloat()
                     )
                 }
@@ -29,7 +29,7 @@ abstract class CollectionFactor {
                 "worldlimit" -> return WorldLimitFactor(params[1].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
                 "worldchance" -> return WorldChanceFactor(params[1].toFloat(), params[2])
                 "skylight", "outdoors" -> return OutdoorsFactor()
-				"randomheight" -> return RandomByHeightFactor(params[1].toInt().toDouble(), params[2].toInt().toDouble(), params[3].toInt().toDouble(), params[4].toInt().toDouble())
+				"randomheight" -> return RandomByHeightFactor(params[1].toDouble(), params[2].toDouble(), params[3].toDouble(), params[4].toDouble())
             }
 
             return RandomFactor(1.0f)

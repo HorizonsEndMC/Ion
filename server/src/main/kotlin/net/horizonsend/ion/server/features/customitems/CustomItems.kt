@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -286,7 +286,7 @@ object CustomItems {
 			maximumFill = 300,
 			customModelData = 1020,
 			gasIdentifier = "HELIUM",
-			displayName = canisterName(text("Helium", DARK_GRAY))
+			displayName = canisterName(text("Helium", BLUE))
 		) {}
 	)
 	val GAS_CANISTER_CARBON_DIOXIDE = register(
@@ -295,7 +295,7 @@ object CustomItems {
 			maximumFill = 100,
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
-			displayName = canisterName(text("Carbon Dioxide", DARK_GRAY))
+			displayName = canisterName(text("Carbon Dioxide", BLUE))
 		) {}
 	)
 

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.misc
+package net.horizonsend.ion.server.features.multiblock.gas
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer

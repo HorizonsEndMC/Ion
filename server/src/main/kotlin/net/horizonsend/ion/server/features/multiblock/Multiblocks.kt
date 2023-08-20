@@ -18,7 +18,9 @@ import net.horizonsend.ion.server.features.multiblock.dockingtube.DisconnectedDo
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.generator.GasPowerPlantMultiblock
+import net.horizonsend.ion.server.features.multiblock.gas.GasCollectorMultiblock
+import net.horizonsend.ion.server.features.multiblock.gas.GasPowerPlantMultiblock
+import net.horizonsend.ion.server.features.multiblock.gas.VentMultiblock
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier3
@@ -38,7 +40,6 @@ import net.horizonsend.ion.server.features.multiblock.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
-import net.horizonsend.ion.server.features.multiblock.misc.GasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
@@ -210,7 +211,8 @@ object Multiblocks : IonServerComponent() {
 
 			ItemSplitterMultiblock,
 			GasCollectorMultiblock,
-			GasPowerPlantMultiblock
+			GasPowerPlantMultiblock,
+			VentMultiblock
 		)
 	}
 
