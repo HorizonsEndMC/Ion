@@ -91,8 +91,8 @@ class IonProxy : Plugin() {
 
 		discord?.let {
 			JDACommandManager(discord, configuration).apply {
-				registerGlobalCommand(DiscordInfoCommand())
-				registerGlobalCommand(PlayerListCommand(getProxy()))
+				registerGuildCommand(DiscordInfoCommand())
+				registerGuildCommand(PlayerListCommand(getProxy()))
 
 				build()
 			}
