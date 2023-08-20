@@ -33,7 +33,10 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 	override val name: String = "gaspowerplant"
 
 	override val signText: Array<Component?> = arrayOf(
-		text().append(text("Gas", NamedTextColor.RED)).append(text(" Power Plant", NamedTextColor.RED)).build(),
+		text()
+			.append(text("Gas", NamedTextColor.RED))
+			.append(text(" Power Plant", NamedTextColor.GOLD))
+			.build(),
 		null,
 		null,
 		null

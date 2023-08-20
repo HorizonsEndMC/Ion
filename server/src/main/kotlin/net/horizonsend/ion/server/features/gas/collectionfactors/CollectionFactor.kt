@@ -13,10 +13,7 @@ abstract class CollectionFactor {
         fun valueOf(text: String): CollectionFactor {
             val params = text.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             when (params[0].lowercase(Locale.getDefault())) {
-                "atmosphereheight" -> return AtmosphereHeightFactor(
-                    params[1].toInt().toDouble(), params[2].toInt().toDouble()
-                )
-
+                "atmosphereheight" -> return AtmosphereHeightFactor(params[1].toInt().toDouble(), params[2].toInt().toDouble())
                 "distance" -> {
                     val locationParams = params[1].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                     return DistanceFactor(
@@ -26,15 +23,13 @@ abstract class CollectionFactor {
                         ), params[2].toInt().toDouble(), params[3].toFloat()
                     )
                 }
-
                 "random" -> return RandomFactor(params[1].toFloat())
                 "hyperspaceonly" -> return HyperspaceOnlyFactor()
                 "spaceonly" -> return SpaceOnlyFactor()
-                "worldlimit" -> return WorldLimitFactor(params[1].split(",".toRegex()).dropLastWhile { it.isEmpty() }
-                    .toTypedArray())
-
+                "worldlimit" -> return WorldLimitFactor(params[1].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
                 "worldchance" -> return WorldChanceFactor(params[1].toFloat(), params[2])
                 "skylight", "outdoors" -> return OutdoorsFactor()
+				"randomheight" -> return RandomByHeightFactor(params[1].toInt().toDouble(), params[2].toInt().toDouble(), params[3].toInt().toDouble(), params[4].toInt().toDouble())
             }
 
             return RandomFactor(1.0f)
