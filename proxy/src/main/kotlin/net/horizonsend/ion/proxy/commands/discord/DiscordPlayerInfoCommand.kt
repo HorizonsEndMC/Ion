@@ -21,8 +21,8 @@ import net.horizonsend.ion.proxy.messageEmbed
 object DiscordPlayerInfoCommand {
 	@Default
 	@Suppress("Unused")
-	fun onPlayerInfo(event: SlashCommandInteractionEvent, @Description("Player's Name") name: String) {
-		val slPlayer = SLPlayer[name] ?: throw InvalidCommandArgument("Player $name not found!")
+	fun onPlayerInfo(event: SlashCommandInteractionEvent, @Description("Player's Name") player: String) {
+		val slPlayer = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found!")
 
 		val settlementId: Oid<Settlement>? = slPlayer.settlement
 		val settlementInfo = settlementId?.let {
@@ -78,7 +78,7 @@ object DiscordPlayerInfoCommand {
 
 		event.replyEmbeds(
 			messageEmbed(
-				title = "Player: $name",
+				title = "Player: $player",
 				fields = fields
 			)
 		).setEphemeral(true).queue()
