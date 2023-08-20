@@ -353,7 +353,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("empty_gas_canister", GAS_CANISTER_EMPTY.constructItemStack()) {
 			shape("xix", "igi", "xix")
 
-			setIngredient('i', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('i', ExactChoice(MINERAL_ALUMINUM.singleItem()))
 			setIngredient('g', GLASS_PANE)
 			setIngredient('x', AIR)
 		}
