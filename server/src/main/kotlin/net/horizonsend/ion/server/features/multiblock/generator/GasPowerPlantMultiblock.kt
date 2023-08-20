@@ -215,17 +215,18 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		}
 
 		if (fuelFill - consumed <= 0) {
+			// Replaces with empty, no need to set fill to zero
 			clearEmpty(sign, furnace.inventory, fuelItem)
-			return consumed
+		} else {
+			fuelType.setFill(fuelItem, fuelFill - consumed)
 		}
 
 		if (oxidizerFill - consumed <= 0) {
+			// Replaces with empty, no need to set fill to zero
 			clearEmpty(sign, furnace.inventory, oxidizerItem)
-			return consumed
+		} else {
+			oxidizerType.setFill(oxidizerItem, oxidizerFill - consumed)
 		}
-
-		fuelType.setFill(fuelItem, fuelFill - consumed)
-		oxidizerType.setFill(oxidizerItem, oxidizerFill - consumed)
 
 		return consumed
 	}

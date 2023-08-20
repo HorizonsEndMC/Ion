@@ -6,14 +6,14 @@ import net.horizonsend.ion.server.features.gas.collectionfactors.CollectionFacto
 
 @Serializable
 data class GasConfiguration(
-	val hydrogen: Fuel = Fuel(2, 150, listOf()),
-	val nitrogen: Fuel = Fuel(1, 100, listOf()),
-	val methane: Fuel = Fuel(3, 200, listOf()),
-	val oxygen: Oxidizer = Oxidizer(1.0, listOf()),
-	val chlorine: Oxidizer = Oxidizer(1.5, listOf()),
-	val fluorine: Oxidizer = Oxidizer(2.0, listOf()),
-	val carbonDioxide: Gas = InertGas(listOf()),
-	val helium: Gas = InertGas(listOf())
+	val hydrogen: Fuel = Fuel(2, 150, listOf("")),
+	val nitrogen: Fuel = Fuel(1, 100, listOf("")),
+	val methane: Fuel = Fuel(3, 200, listOf("")),
+	val oxygen: Oxidizer = Oxidizer(1.0, listOf("")),
+	val chlorine: Oxidizer = Oxidizer(1.5, listOf("")),
+	val fluorine: Oxidizer = Oxidizer(2.0, listOf("")),
+	val carbonDioxide: Gas = InertGas(listOf("")),
+	val helium: Gas = InertGas(listOf("")),
 ) {
 	@Serializable
 	data class InertGas(
@@ -33,7 +33,8 @@ data class GasConfiguration(
 		override val factors: List<String>,
 	) : Gas
 
-	interface Gas {
+	@Serializable
+	sealed interface Gas {
 		val factors: List<String>
 
 		@Transient
