@@ -68,7 +68,7 @@ object Notify : IonServerComponent() {
 			return null
 		}
 
-		return DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("name")
+		return DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(name)
 	}
 
 	fun sendDiscord(channel: TextChannel?, message: String) {
