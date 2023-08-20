@@ -39,14 +39,6 @@ object VentMultiblock : Multiblock(), FurnaceMultiblock {
 				x(+1).lightningRod()
 			}
 		}
-		z(+1) {
-			y(-1) {
-				x(0).lightningRod()
-			}
-			y(+0) {
-				x(0).lightningRod()
-			}
-		}
 	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
