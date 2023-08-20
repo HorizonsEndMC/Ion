@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -10,7 +11,11 @@ import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.actionAndMsg
+import net.horizonsend.ion.server.miscellaneous.utils.isInRange
+import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Location
@@ -23,6 +28,13 @@ import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import kotlin.collections.MutableSet
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.forEach
+import kotlin.collections.iterator
+import kotlin.collections.mutableSetOf
+import kotlin.collections.random
 
 object ActiveStarshipMechanics : IonServerComponent() {
 	override fun onEnable() {

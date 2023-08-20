@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.utils
 import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
 import com.google.common.collect.Table
+import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import java.util.concurrent.ThreadLocalRandom
 
 fun <T> List<T>.randomEntry(): T = when {
