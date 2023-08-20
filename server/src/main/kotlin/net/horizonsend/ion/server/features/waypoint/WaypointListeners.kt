@@ -14,7 +14,6 @@ class WaypointListeners : SLEventListener() {
         WaypointManager.updatePlayerGraph(event.player)
         WaypointManager.playerDestinations[event.player.uniqueId] = mutableListOf()
         WaypointManager.playerPaths[event.player.uniqueId] = mutableListOf()
-        WaypointManager.playerTempWaypoints[event.player.uniqueId] = mutableMapOf()
     }
 
     @Suppress("unused")
@@ -24,7 +23,6 @@ class WaypointListeners : SLEventListener() {
         WaypointManager.playerGraphs.remove(event.player.uniqueId)
         WaypointManager.playerDestinations.remove(event.player.uniqueId)
         WaypointManager.playerPaths.remove(event.player.uniqueId)
-        WaypointManager.playerTempWaypoints.remove(event.player.uniqueId)
     }
 
     @Suppress("unused")
