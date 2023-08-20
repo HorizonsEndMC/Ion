@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server.features.transport.pipe
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.GasCanister
+import net.horizonsend.ion.server.features.gas.type.GasFuel
+import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.transport.Extractors
@@ -8,7 +12,23 @@ import net.horizonsend.ion.server.features.transport.pipe.filter.FilterData
 import net.horizonsend.ion.server.features.transport.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.transport.transportConfig
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.areaDebugMessage
+import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.debugHighlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.isGlass
+import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
+import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
+import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
+import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -521,6 +541,8 @@ object Pipes : IonServerComponent() {
 			destination.smelting?.type == Material.PRISMARINE_CRYSTALS -> 1 // Smelting has crystals, put it in fuel
 			destination.fuel?.type == Material.PRISMARINE_CRYSTALS -> 0 // Fuel has crystals, put it in smelting
 			itemStack.type.isFuel || GeneratorFuel.getFuel(itemStack) != null -> 1 // slot 1 - fuel
+			(itemStack.customItem as? GasCanister)?.gas is GasFuel -> 0 // slot 0 - smelting
+			(itemStack.customItem as? GasCanister)?.gas is GasOxidizer -> 1 // slot 1- fuel
 			else -> 0 // slot 0 - smelting
 		}
 

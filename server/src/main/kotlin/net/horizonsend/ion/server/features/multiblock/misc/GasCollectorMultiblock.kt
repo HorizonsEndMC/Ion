@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.misc
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
@@ -52,6 +53,9 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val available = Gasses.findAvailableGasses(sign.location).joinToString { it.identifier }
+
+		println(IonServer.gasConfiguration)
+		println(Gasses.all().map { it.value.factors })
 
 		player.information("Available gasses: $available")
 	}
