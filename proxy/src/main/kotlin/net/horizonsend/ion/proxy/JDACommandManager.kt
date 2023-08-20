@@ -3,7 +3,6 @@ package net.horizonsend.ion.proxy
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
-import co.aikar.commands.annotation.Name
 import co.aikar.commands.annotation.Subcommand
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -126,19 +125,33 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 	}
 
 	private fun invokeCommand(event: SlashCommandInteractionEvent, commandClass: Any, commandMethod: KFunction<*>) {
-		commandMethod.javaMethod!!.invoke(
-			commandClass,
+		println(commandMethod.parameters.joinToString { it.type.toString() })
+		println(event.options.map { b -> b.toString() })
+		println("running command")
+
+		val params = listOf(
+			commandClass::class.java,
 			*commandMethod.parameters.map {
 				if (it.type == SlashCommandInteractionEvent::class.createType()) return@map event
+				println(it.kind)
+				println(KParameter.Kind.VALUE)
 				if (it.kind != KParameter.Kind.VALUE) return@map null
 
-				val option = event.getOption(it.findAnnotation<Name>()?.value ?: return@map null)!!
+				val option = event.getOption(it.name ?: return@map null)!!
+				println(option)
 
 				when (it.type) {
 					String::class.createType() -> option.asString
 					else -> throw NotImplementedError("$it")
 				}
 			}.filterNotNull().toTypedArray()
+		)
+
+		println(params)
+
+		commandMethod.javaMethod!!.invoke(
+			commandClass,
+			params
 		)
 	}
 
