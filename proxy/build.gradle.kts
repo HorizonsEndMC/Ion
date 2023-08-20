@@ -1,5 +1,3 @@
-import java.io.ByteArrayOutputStream
-
 plugins {
 	id("com.github.johnrengelman.shadow")
 
@@ -20,15 +18,15 @@ dependencies {
 	implementation(project(":common"))
 
 	// Platform
-	compileOnly("com.velocitypowered:velocity-api:3.1.1")
-	compileOnly("com.gitlab.ruany", "LiteBansAPI", "0.3.5")
+	compileOnly("io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT")
 
 	// Other Plugins
 	compileOnly("net.luckperms:api:5.4")
 
 	// Included Dependencies
+	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")
 	implementation("net.dv8tion:JDA:5.0.0-beta.13")
-	implementation("com.github.minndevelopment:jda-ktx:0.10.0-beta.1")
+	implementation("net.kyori:adventure-platform-bungeecord:4.3.0")
 	implementation("net.kyori:adventure-text-logger-slf4j:4.14.0")
 	implementation("net.kyori:adventure-text-minimessage:4.14.0")
 }
