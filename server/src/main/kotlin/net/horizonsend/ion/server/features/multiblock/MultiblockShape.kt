@@ -1,16 +1,16 @@
 package net.horizonsend.ion.server.features.multiblock
 
-import net.minecraft.world.level.block.AbstractFurnaceBlock
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlock
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10.buildStructure
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.Wires
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlock
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -29,13 +29,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.minecraft.world.level.block.AbstractFurnaceBlock
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
-import java.util.*
+import java.util.EnumSet
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -340,6 +341,8 @@ class MultiblockShape {
 			Material.MAGMA_BLOCK,
 			Material.SEA_LANTERN
 		)
+
+		fun lightningRod() = type(Material.LIGHTNING_ROD)
 
 		fun machineFurnace() = complete(Material.FURNACE.createBlockData()) { block, inward ->
 			val blockData = block.getNMSBlockData()

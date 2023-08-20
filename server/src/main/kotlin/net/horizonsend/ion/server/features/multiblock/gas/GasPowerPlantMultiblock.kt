@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.generator
+package net.horizonsend.ion.server.features.multiblock.gas
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
@@ -18,7 +18,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Effect
-import org.bukkit.Material
 import org.bukkit.block.Container
 import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
@@ -64,9 +63,9 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		z(+1) {
 			y(+0) {
 				x(-2).copperBlock()
-				x(-1).type(Material.LIGHTNING_ROD)
+				x(-1).lightningRod()
 				x(+0).sponge()
-				x(+1).type(Material.LIGHTNING_ROD)
+				x(+1).lightningRod()
 				x(+2).copperBlock()
 			}
 			y(-1) {
@@ -80,9 +79,9 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		z(+2) {
 			y(+0) {
 				x(-2).anyGlass()
-				x(-1).type(Material.LIGHTNING_ROD)
+				x(-1).lightningRod()
 				x(+0).sponge()
-				x(+1).type(Material.LIGHTNING_ROD)
+				x(+1).lightningRod()
 				x(+2).anyGlass()
 			}
 			y(-1) {
@@ -96,9 +95,9 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		z(+3) {
 			y(+0) {
 				x(-2).anyGlass()
-				x(-1).type(Material.LIGHTNING_ROD)
+				x(-1).lightningRod()
 				x(+0).sponge()
-				x(+1).type(Material.LIGHTNING_ROD)
+				x(+1).lightningRod()
 				x(+2).anyGlass()
 			}
 			y(-1) {
@@ -112,9 +111,9 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		z(+4) {
 			y(+0) {
 				x(-2).anyGlass()
-				x(-1).type(Material.LIGHTNING_ROD)
+				x(-1).lightningRod()
 				x(+0).sponge()
-				x(+1).type(Material.LIGHTNING_ROD)
+				x(+1).lightningRod()
 				x(+2).anyGlass()
 			}
 			y(-1) {
@@ -128,9 +127,9 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		z(+5) {
 			y(+0) {
 				x(-2).copperBlock()
-				x(-1).type(Material.LIGHTNING_ROD)
+				x(-1).lightningRod()
 				x(+0).sponge()
-				x(+1).type(Material.LIGHTNING_ROD)
+				x(+1).lightningRod()
 				x(+2).copperBlock()
 			}
 			y(-1) {
@@ -179,7 +178,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		val consumed = checkCanisters(sign, furnace, fuelItem, fuel, oxidizerItem, oxidizer) ?: return
 
-		if (PowerMachines.getPower(sign) <= this.maxPower) {
+		if (PowerMachines.getPower(sign) <= maxPower) {
 			event.isBurning = true
 			furnace.burnTime = fuelType.cooldown.toShort()
 			furnace.cookTime = (-1000).toShort()
