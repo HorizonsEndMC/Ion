@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
@@ -74,12 +73,9 @@ object WaypointCommand : SLCommand() {
 
         val x = MiscStarshipCommands.parseNumber(xCoordinate, sender.location.x.toInt()).toDouble()
         val z = MiscStarshipCommands.parseNumber(zCoordinate, sender.location.z.toInt()).toDouble()
-        val vertex = WaypointManager.addTempVertex(sender, Location(getWorld, x, 128.0, z))
-        if (vertex == null) {
-            sender.serverError("Failed to generate waypoint in empty space")
-        }
+        val vertex = WaypointManager.addTempVertex(Location(getWorld, x, 128.0, z))
 
-        if (WaypointManager.addDestination(sender, vertex!!)) {
+        if (WaypointManager.addDestination(sender, vertex)) {
             WaypointManager.updatePlayerGraph(sender)
             WaypointManager.updatePlayerPaths(sender)
             WaypointManager.updateNumJumps(sender)
@@ -99,7 +95,6 @@ object WaypointCommand : SLCommand() {
         if (!WaypointManager.playerDestinations[sender.uniqueId].isNullOrEmpty()) {
             WaypointManager.playerDestinations[sender.uniqueId]?.clear()
             WaypointManager.playerPaths.remove(sender.uniqueId)
-            WaypointManager.playerTempWaypoints.remove(sender.uniqueId)
             WaypointManager.playerNumJumps.remove(sender.uniqueId)
             sender.success("All waypoints cleared")
             return
