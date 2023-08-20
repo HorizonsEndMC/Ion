@@ -10,7 +10,7 @@ import net.md_5.bungee.api.plugin.Listener
 
 object Caches : IonComponent() {
 	private val caches: List<Cache> = listOf(
-		PlayerCache,
+//		PlayerCache,
 		SettlementCache,
 		NationCache,
 		RelationCache
