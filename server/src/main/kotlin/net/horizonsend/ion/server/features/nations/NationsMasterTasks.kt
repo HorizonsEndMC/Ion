@@ -1,19 +1,18 @@
 package net.horizonsend.ion.server.features.nations
 
 import com.mongodb.client.MongoIterable
-import java.lang.Integer.min
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.ProjectedResults
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -24,12 +23,13 @@ import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
+import java.lang.Integer.min
 
 object NationsMasterTasks : IonServerComponent() {
 	override fun onEnable() {

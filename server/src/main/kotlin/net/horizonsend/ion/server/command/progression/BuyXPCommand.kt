@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.command.progression
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Optional
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.features.progression.LEVEL_BALANCING
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import org.bukkit.entity.Player
 
 @Suppress("Unused")

@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.ChunkPos
 import org.bukkit.Bukkit

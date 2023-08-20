@@ -12,10 +12,10 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.horizonsend.ion.server.miscellaneous.utils.getDurationBreakdown
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit

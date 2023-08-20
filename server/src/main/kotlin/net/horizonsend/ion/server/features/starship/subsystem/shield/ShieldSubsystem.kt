@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.shield
 
+import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.features.multiblock.particleshield.ShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.d
 import net.horizonsend.ion.server.miscellaneous.utils.stripColor
 import org.bukkit.block.Block
 import org.bukkit.block.Sign

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -13,7 +14,6 @@ import net.horizonsend.ion.server.features.starship.event.StarshipStopCruisingEv
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.roundToHundredth
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.abs

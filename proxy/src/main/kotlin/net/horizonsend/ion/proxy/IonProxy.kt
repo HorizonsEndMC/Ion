@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
@@ -90,11 +91,11 @@ class IonProxy : Plugin() {
 			registerCommand(ReplyCommand())
 		}
 
-
 		discord?.let {
 			JDACommandManager(discord, configuration).apply {
 				registerGuildCommand(DiscordInfoCommand())
 				registerGuildCommand(PlayerListCommand(getProxy()))
+				registerGuildCommand(DiscordPlayerInfoCommand)
 
 				build()
 			}

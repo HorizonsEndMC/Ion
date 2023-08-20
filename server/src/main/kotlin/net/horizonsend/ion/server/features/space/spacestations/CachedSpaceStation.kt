@@ -17,10 +17,10 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.Settlemen
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationInterface
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStations.SpaceStationPermission
-import net.horizonsend.ion.server.miscellaneous.utils.squared
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.litote.kmongo.Id

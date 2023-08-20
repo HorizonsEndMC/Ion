@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.miscellaneous.utils
+package net.horizonsend.ion.common.utils.miscellaneous
 
 import java.text.NumberFormat
 import java.util.Locale

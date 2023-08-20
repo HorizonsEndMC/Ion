@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.command.nations.money
 
 import co.aikar.commands.annotation.Optional
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.MoneyHolder
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.msg
-import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import org.bukkit.entity.Player
 
 internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion.server.command.SLCommand() {
