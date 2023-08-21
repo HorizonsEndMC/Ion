@@ -31,7 +31,6 @@ abstract class CollectionFactor {
 
                 "worldchance" -> return WorldChanceFactor(
 					params[1].split(",".toRegex()).dropLastWhile { it.isEmpty() }.associate {
-						println(it)
 						val pair = it.split("=".toRegex())
 
 						pair[0] to pair[1].toDouble()

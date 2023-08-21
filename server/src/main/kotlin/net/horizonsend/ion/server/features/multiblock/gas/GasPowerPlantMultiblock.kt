@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.gas
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
@@ -40,8 +41,6 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		null,
 		null
 	)
-
-	const val GAS_CONSUMED: Int = 30
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -203,7 +202,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		// Burn fuel and oxidizer at 1:1
 		// Cap consumption at 30 units
-		val consumed = minOf(GAS_CONSUMED, fuelFill, oxidizerFill)
+		val consumed = minOf(IonServer.gasConfiguration.powerPlantConsumption, fuelFill, oxidizerFill)
 
 		// God forbid it goes negative
 		if (fuelFill <= 0) {
