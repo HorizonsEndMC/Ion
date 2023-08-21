@@ -98,7 +98,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "HELIUM",
 			displayName = text("Helium", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_HELIUM",
-			factorSupplier = IonServer.gasConfiguration.gasses.chlorine::formattedFactors
+			factorSupplier = IonServer.gasConfiguration.gasses.helium::formattedFactors
 		) {}
 	)
 	val CARBON_DIOXIDE = registerGas(
@@ -106,7 +106,7 @@ object Gasses : IonServerComponent(false) {
 			identifier = "CARBON_DIOXIDE",
 			displayName = text("Carbon Dioxide", NamedTextColor.BLUE),
 			containerIdentifier = "GAS_CANISTER_CARBON_DIOXIDE",
-			factorSupplier = IonServer.gasConfiguration.gasses.fluorine::formattedFactors
+			factorSupplier = IonServer.gasConfiguration.gasses.carbonDioxide::formattedFactors
 		) {}
 	)
 
