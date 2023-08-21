@@ -217,14 +217,14 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		if (fuelFill - consumed <= 0) {
 			// Replaces with empty, no need to set fill to zero
-			clearEmpty(sign, furnace.inventory, fuelItem)
+			if (clearEmpty(sign, furnace.inventory, fuelItem)) return null
 		} else {
 			fuelType.setFill(fuelItem, fuelFill - consumed)
 		}
 
 		if (oxidizerFill - consumed <= 0) {
 			// Replaces with empty, no need to set fill to zero
-			clearEmpty(sign, furnace.inventory, oxidizerItem)
+			if (clearEmpty(sign, furnace.inventory, oxidizerItem)) return null
 		} else {
 			oxidizerType.setFill(oxidizerItem, oxidizerFill - consumed)
 		}
@@ -232,14 +232,15 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		return consumed
 	}
 
-	private fun clearEmpty(sign: Sign, furnaceInventory: Inventory, itemStack: ItemStack) {
-		val discardChest = getStorage(sign, outputInventory) ?: return
-
+	/** Returns whether the process should be aborted due to a problem **/
+	private fun clearEmpty(sign: Sign, furnaceInventory: Inventory, itemStack: ItemStack): Boolean {
+		val discardChest = getStorage(sign, outputInventory) ?: return true
 		val noFit = discardChest.inventory.addItem(EMPTY_CANISTER).values.isNotEmpty()
 
-		if (noFit) return
+		if (noFit) return true
 
 		furnaceInventory.remove(itemStack)
+		return false
 	}
 
 	private fun getStorage(sign: Sign, offset: Vec3i): Container? {
@@ -254,11 +255,10 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 		)
 
 		val absolute = absoluteOffset + Vec3i(sign.location)
-
 		val (absoluteX, absoluteY, absoluteZ) = absolute
 
 		return getStateIfLoaded(sign.world, absoluteX, absoluteY, absoluteZ) as? Container
 	}
 
-	private val outputInventory: Vec3i = Vec3i(0, 0, -8)
+	private val outputInventory: Vec3i = Vec3i(0, 0, -7)
 }
