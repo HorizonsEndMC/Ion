@@ -63,8 +63,7 @@ object RegenerateCommand : SLCommand() {
 
 		for ((regionFile, chunks) in regionsToChunksMap) {
 			scope.launch {
-				val region = getRegion(sender.world, regionFile) ?:
-				return@launch sender.serverError(
+				val region = getRegion(sender.world, regionFile) ?: return@launch sender.serverError(
 					"Region file ${chunks.first().x.shr(5)}, ${chunks.first().z.shr(5)} doesn't exist!"
 				)
 

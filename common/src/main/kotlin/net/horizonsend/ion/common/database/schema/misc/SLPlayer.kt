@@ -4,16 +4,13 @@ import com.mongodb.client.ClientSession
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.result.UpdateResult
-import net.horizonsend.ion.common.database.schema.Cryopod
-import java.time.Instant
-import java.util.Date
-import java.util.UUID
-import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.DbObjectCompanion
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.ProjectedResults
 import net.horizonsend.ion.common.database.projected
+import net.horizonsend.ion.common.database.schema.Cryopod
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
@@ -34,6 +31,9 @@ import org.litote.kmongo.ne
 import org.litote.kmongo.projection
 import org.litote.kmongo.pull
 import org.litote.kmongo.withDocumentClass
+import java.time.Instant
+import java.util.Date
+import java.util.UUID
 
 typealias SLPlayerId = StringId<SLPlayer>
 /**
@@ -57,6 +57,7 @@ data class SLPlayer(
     var cryopods: Set<Oid<Cryopod>> = setOf(),
     var selectedCryopod: Oid<Cryopod>? = null,
     var achievements: Set<String> = setOf(),
+	var bounty: Double = 0.0,
 
 	var contactsStarships: Boolean = true,
 	var lastStarshipEnabled: Boolean = true,

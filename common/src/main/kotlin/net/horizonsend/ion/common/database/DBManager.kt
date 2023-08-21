@@ -9,14 +9,13 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
-import java.util.concurrent.Executors
-import kotlin.reflect.KClass
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
@@ -28,8 +27,8 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
-import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.schema.space.Planet
@@ -49,7 +48,9 @@ import org.litote.kmongo.util.KMongoUtil
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Protocol
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
+import kotlin.reflect.KClass
 
 object DBManager : IonComponent() {
 	var INITIALIZATION_COMPLETE: Boolean = false
@@ -132,6 +133,7 @@ object DBManager : IonComponent() {
 		Blueprint.init()
 
 		Cryopod.init()
+		ClaimedBounty.init()
 	}
 
 	override fun onDisable() {
