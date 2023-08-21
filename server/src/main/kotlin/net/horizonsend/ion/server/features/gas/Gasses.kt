@@ -217,8 +217,10 @@ object Gasses : IonServerComponent(false) {
 		}
 	}
 
-	fun findGas(location: Location) = gasses.values.filter { it.tryCollect(location) }
-	fun findAvailableGasses(location: Location) = gasses.values.filter { it.canBeFound(location) }
+	private fun findGas(location: Location) = gasses.values.filter { it.tryCollect(location) }
+	fun findAvailableGasses(location: Location) = gasses.values.filter {
+		it.canBeFound(location)
+	}
 
 	operator fun get(identifier: String) = gasses[identifier]
 
