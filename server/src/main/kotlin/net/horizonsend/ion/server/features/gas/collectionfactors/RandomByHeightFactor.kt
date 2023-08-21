@@ -12,8 +12,7 @@ class RandomByHeightFactor(
 	override fun factor(location: Location): Boolean {
 		if (!canBeFound(location)) return false // Quickly check if out of collection area
 
-		val slope = (maxChance - minChance) / (maxAtmosphereHeight-minAtmosphereHeight)
-
+		val slope = (maxChance - minChance) / (maxAtmosphereHeight - minAtmosphereHeight)
 		val ramp = (location.y - minAtmosphereHeight) * slope
 
 		return Random.nextDouble() >= ramp

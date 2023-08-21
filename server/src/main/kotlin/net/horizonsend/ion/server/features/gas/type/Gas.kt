@@ -17,12 +17,14 @@ abstract class Gas(
     fun tryCollect(location: Location): Boolean {
 		if (factors.isEmpty()) return false
 
-        return factors.stream().allMatch { factor: CollectionFactor -> factor.factor(location) }
+        return factors.stream().allMatch { factor: CollectionFactor ->
+			return@allMatch factor.factor(location)
+		}
     }
 
 	fun canBeFound(location: Location): Boolean {
 		if (factors.isEmpty()) return false
 
-		return factors.stream().allMatch { factor: CollectionFactor -> factor.canBeFound(location) }
+		return factors.all { factor: CollectionFactor -> factor.canBeFound(location) }
 	}
 }
