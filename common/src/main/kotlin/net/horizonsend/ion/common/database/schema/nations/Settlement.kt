@@ -163,6 +163,8 @@ data class Settlement(
 					pull(SettlementZone::trustedSettlements, settlementId)
 				)
 
+				SettlementSpaceStation.col.deleteMany(sess,SettlementSpaceStation::owner eq settlementId)
+
 				// remove invite from nations
 				Nation.col.updateAll(sess, pull(Nation::invites, settlementId))
 
