@@ -175,7 +175,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		if (fuelType !is GasFuel || oxidizerType !is GasOxidizer) return
 
-		val consumed = checkCanisters(sign, furnace, fuel, oxidizer) ?: return
+		val consumed = checkCanisters(sign, furnace, fuelItem, fuel, oxidizerItem, oxidizer) ?: return
 
 		if (PowerMachines.getPower(sign) <= maxPower) {
 			event.isBurning = true
@@ -192,11 +192,13 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 	private fun checkCanisters(
 		sign: Sign,
 		furnace: Furnace,
+		fuelItem: ItemStack,
 		fuelType: GasCanister,
+		oxidizerItem: ItemStack,
 		oxidizerType: GasCanister
 	): Int? {
-		val fuelFill = fuelType.getFill(furnace.inventory.smelting ?: return null)
-		val oxidizerFill = oxidizerType.getFill(furnace.inventory.fuel ?: return null)
+		val fuelFill = fuelType.getFill(fuelItem)
+		val oxidizerFill = oxidizerType.getFill(oxidizerItem)
 
 		// Burn fuel and oxidizer at 1:1
 		// Cap consumption at 30 units
@@ -204,27 +206,27 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		// God forbid it goes negative
 		if (fuelFill <= 0) {
-			clearEmpty(sign, furnace.inventory, furnace.inventory.smelting ?: return null)
+			clearEmpty(sign, furnace.inventory, fuelItem)
 			return null
 		}
 
 		if (oxidizerFill <= 0) {
-			clearEmpty(sign, furnace.inventory, furnace.inventory.fuel ?: return null)
+			clearEmpty(sign, furnace.inventory, oxidizerItem)
 			return null
 		}
 
 		if (fuelFill - consumed <= 0) {
 			// Replaces with empty, no need to set fill to zero
-			clearEmpty(sign, furnace.inventory, furnace.inventory.smelting ?: return null)
+			clearEmpty(sign, furnace.inventory, fuelItem)
 		} else {
-			fuelType.setFill(furnace.inventory.smelting ?: return null, fuelFill - consumed)
+			fuelType.setFill(fuelItem, fuelFill - consumed)
 		}
 
 		if (oxidizerFill - consumed <= 0) {
 			// Replaces with empty, no need to set fill to zero
-			clearEmpty(sign, furnace.inventory, furnace.inventory.fuel ?: return null)
+			clearEmpty(sign, furnace.inventory, oxidizerItem)
 		} else {
-			oxidizerType.setFill(furnace.inventory.fuel ?: return null, oxidizerFill - consumed)
+			oxidizerType.setFill(oxidizerItem, oxidizerFill - consumed)
 		}
 
 		return consumed
