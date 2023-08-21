@@ -218,7 +218,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	private fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
-		if (!station.hasOwnershipContext(player)) fail { "Your ${station.ownershipType} doesn't own $name" }
+		if (!station.hasOwnershipContext(player)) fail { "Your ${station.ownershipType} doesn't own ${station.name}" }
 	}
 
 	private fun requirePermission(
