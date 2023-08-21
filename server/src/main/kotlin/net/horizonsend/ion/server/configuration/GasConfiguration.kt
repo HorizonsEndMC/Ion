@@ -6,6 +6,13 @@ import net.horizonsend.ion.server.features.gas.collectionfactors.CollectionFacto
 
 @Serializable
 data class GasConfiguration(
+	val collectorAmount: Int = 30,
+	val powerPlantConsumption: Int = 30,
+	val gasses: Gasses = Gasses()
+)
+
+@Serializable
+data class Gasses(
 	val hydrogen: Fuel = Fuel(2, 150, listOf("")),
 	val nitrogen: Fuel = Fuel(1, 100, listOf("")),
 	val methane: Fuel = Fuel(3, 200, listOf("")),
