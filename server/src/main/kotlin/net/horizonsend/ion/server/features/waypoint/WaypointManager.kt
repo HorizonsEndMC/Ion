@@ -395,6 +395,18 @@ object WaypointManager : IonServerComponent() {
         }
         return str.toString()
     }
+
+    fun getNextWaypoint(player: Player): String? {
+        val playerPath = playerPaths[player.uniqueId] ?: return null
+        if (playerPath.isEmpty()) return null
+        return playerPath.first().endVertex.name
+    }
+
+    fun getLastWaypoint(player: Player): String? {
+        val playerPath = playerPaths[player.uniqueId] ?: return null
+        if (playerPath.isEmpty()) return null
+        return playerPath.last().endVertex.name
+    }
 }
 
 /**

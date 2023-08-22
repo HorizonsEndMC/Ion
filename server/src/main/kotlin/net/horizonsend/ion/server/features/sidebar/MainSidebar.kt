@@ -4,10 +4,12 @@ import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSideb
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsHeaderSidebarComponent
+import net.horizonsend.ion.server.features.sidebar.component.WaypointsNameSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.WaypointsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.PlayerLocationSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.WaypointsSidebar
+import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -56,13 +58,29 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 		// Waypoints
 		val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
+		lines.addComponent(waypointsHeaderComponent)
+
+		// next waypoint (first waypoint in route)
+		val nextWaypoint = WaypointManager.getNextWaypoint(player)
+		if (!nextWaypoint.isNullOrEmpty()) {
+			val nextWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ nextWaypoint }, false)
+			lines.addComponent(nextWaypointComponent)
+		}
+
+		// route string
 		val route = WaypointsSidebar.splitRouteString(player)
 		val routeComponents: MutableList<SidebarComponent> = mutableListOf()
 		for (routePart in route) {
 			routeComponents.add(WaypointsSidebarComponent { routePart })
 		}
-		lines.addComponent(waypointsHeaderComponent)
 		for (component in routeComponents) lines.addComponent(component)
+
+		// last waypoint (final destination)
+		val lastWaypoint = WaypointManager.getLastWaypoint(player)
+		if (!lastWaypoint.isNullOrEmpty()) {
+			val lastWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ lastWaypoint }, true)
+			lines.addComponent(lastWaypointComponent)
+		}
 
 		// Assemble title and components
 		val componentSidebar = ComponentSidebarLayout(title, lines.build())
