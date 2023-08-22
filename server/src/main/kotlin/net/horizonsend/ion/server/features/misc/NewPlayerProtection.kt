@@ -7,24 +7,28 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.luckperms.api.LuckPermsProvider
-import net.luckperms.api.node.types.PermissionNode
-import net.luckperms.api.node.types.SuffixNode
+import net.horizonsend.ion.server.features.nations.utils.findOfflinePlayer
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.luckperms.api.node.types.PermissionNode
+import net.luckperms.api.node.types.SuffixNode
 import org.bukkit.Bukkit
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
 import kotlin.math.pow
 
 @CommandAlias("removeprotection")
@@ -92,6 +96,43 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		if (hasPermission("ion.core.protection.removed")) return false // If protection has been removed by staff.
 		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns
 		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+	}
+
+	fun UUID.hasProtection(): CompletableFuture<Boolean?> {
+		val future = CompletableFuture<Boolean?>()
+
+		Tasks.async {
+			val player = SLPlayer[this]
+
+			if (player == null) {
+				future.complete(null)
+				return@async
+			}
+
+			val playerLevel = player.level
+
+			luckPerms.userManager.loadUser(this).get().distinctNodes.filterIsInstance<PermissionNode>().any {
+				it.permission == "ion.core.protection.removed"
+			}
+
+			if (player.nation?.let { SettlementCache[NationCache[it].capital].leader == this.slPlayerId } == true) {
+				future.complete(false)
+				return@async
+			}
+
+			val offlinePlayer = findOfflinePlayer(this)
+
+			if (offlinePlayer == null) {
+				future.complete(null)
+				return@async
+			}
+
+			val playTime = offlinePlayer.getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+
+			future.complete(playTime)
+		}
+
+		return future
 	}
 
 	@EventHandler

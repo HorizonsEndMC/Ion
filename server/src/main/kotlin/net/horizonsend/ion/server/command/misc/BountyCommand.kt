@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.bounties.BountiesMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -38,10 +39,13 @@ object BountyCommand : SLCommand() {
 	@Subcommand("put")
 	@Description("Put a bounty on a player")
 	@CommandCompletion("@players")
+	@Default
 	@Suppress("unused")
 	fun put(sender: Player, targetName: String, amount: Double) = asyncCommand(sender) {
 		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
+		if (target._id == sender.slPlayerId) fail { "You can't place a bounty on yourself!" }
+
 		val bounty = target.bounty
 
 		Tasks.sync {
@@ -72,6 +76,7 @@ object BountyCommand : SLCommand() {
 	fun claim(sender: Player, targetName: String, @Optional amount: Double? = null) = asyncCommand(sender) {
 		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
+		if (target._id == sender.slPlayerId) fail { "You can't claim a bounty on yourself!" }
 
 		if (target.bounty == 0.0) fail { "$targetName doesn't have a bounty!" }
 
@@ -94,6 +99,7 @@ object BountyCommand : SLCommand() {
 	@Subcommand("get")
 	@Description("Get a player's bounty")
 	@CommandCompletion("@players")
+	@Default
 	@Suppress("unused")
 	fun get(sender: Player, targetName: String) = asyncCommand(sender) {
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
