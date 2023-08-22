@@ -5,15 +5,15 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.trx
-import org.litote.kmongo.Id
 import org.litote.kmongo.ensureIndex
 import java.util.Date
 
 data class ClaimedBounty(
-	override val _id: Id<ClaimedBounty>,
+	override val _id: Oid<ClaimedBounty>,
 	val hunter: SLPlayerId,
 	val target: SLPlayerId,
-	val claimTime: Date
+	val claimTime: Date,
+	val completed: Boolean
 ) : DbObject {
 	companion object : OidDbObjectCompanion<ClaimedBounty>(
 		ClaimedBounty::class,
@@ -31,7 +31,8 @@ data class ClaimedBounty(
 					id,
 					hunter,
 					target,
-					Date(System.currentTimeMillis())
+					Date(System.currentTimeMillis()),
+					false
 				)
 			)
 

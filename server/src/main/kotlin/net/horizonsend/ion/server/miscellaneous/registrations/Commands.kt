@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.command.economy.CollectedItemCommand
 import net.horizonsend.ion.server.command.economy.CollectorCommand
 import net.horizonsend.ion.server.command.economy.EcoStationCommand
 import net.horizonsend.ion.server.command.economy.TradeDebugCommand
+import net.horizonsend.ion.server.command.misc.BountyCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
@@ -137,5 +138,6 @@ val commands: List<SLCommand> = listOf(
 
 	AchievementsCommand,
 	BlastResistanceCommand,
-	ContactsCommand
+	ContactsCommand,
+	BountyCommand
 )

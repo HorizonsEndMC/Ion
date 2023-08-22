@@ -1,65 +1,64 @@
 package net.horizonsend.ion.server.features.bounties
 
-import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.features.nations.gui.openPaginatedMenu
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.bounties.Bounties.BountyPlayer
+import net.horizonsend.ion.server.features.bounties.Bounties.coolDown
+import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper.setLore
+import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.litote.kmongo.gte
-import java.util.Date
-import java.util.UUID
-import java.util.concurrent.TimeUnit
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
+import org.litote.kmongo.lte
 
 object BountiesMenu {
-	val activeClaimable get() = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1))
-
-	private fun getBounties(): List<BountyPlayer> {
+	private fun getBounties(sender: SLPlayerId): List<BountyPlayer> {
 		val bounties = mutableListOf<BountyPlayer>()
 
 		for (id: SLPlayerId in SLPlayer.allIds()) {
-			if (SLPlayer.matches(id, SLPlayer::lastSeen gte activeClaimable)) {
-				val player = SLPlayer.findById(id) ?: continue
+			// Has been on in the past 2 days, has a bounty, and isn't the person opening the menu
+			val query = and(SLPlayer::lastSeen lte coolDown, SLPlayer::bounty lte 0.0, SLPlayer::_id eq sender)
+			if (SLPlayer.matches(id, query)) continue
 
-				bounties.add(
-					BountyPlayer(
-						player.lastKnownName,
-						player._id.uuid,
-						skullItem(player._id.uuid, player.lastKnownName),
-						player.bounty
-					)
+			val player = SLPlayer.findById(id) ?: continue
+
+			bounties.add(
+				BountyPlayer(
+					player.lastKnownName,
+					player._id.uuid,
+					skullItem(player._id.uuid, player.lastKnownName),
+					player.bounty
 				)
-			}
+			)
 		}
 
 		return bounties
 	}
 
 	fun openMenuAsync(player: Player) = Tasks.async {
-		val bounties = getBounties().map {
-			val guiItem = GuiItem(it.skull) {
+		MenuHelper.run {
+			val bounties = getBounties(player.slPlayerId).map {
+				val guiItem = guiButton(it.skull) {
+					if (Bounties.isNotSurvival()) return@guiButton playerClicker.userError("You can only do that on the Survival server!")
+					Bounties.claimBounty(player, it)
+				}.apply {
+					this.setLore("Bounty: ${it.bounty}")
+				}
 
-			}.apply {
-				this.setLore("Bounty: ${it.bounty}")
+				return@map guiItem
 			}
 
-			return@map guiItem
+			Tasks.sync {
+				player.openPaginatedMenu(
+					title = "Claim a Bounty",
+					items = bounties
+				)
+			}
 		}
-
-		player.openPaginatedMenu(
-			title = "Claim a Bounty",
-			items = bounties
-		)
 	}
-
-	private data class BountyPlayer(
-		val name: String,
-		val uniqueId: UUID,
-		val skull: ItemStack,
-		val bounty: Double
-	)
 }
