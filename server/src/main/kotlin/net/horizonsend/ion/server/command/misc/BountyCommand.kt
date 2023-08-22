@@ -118,7 +118,7 @@ object BountyCommand : SLCommand() {
 		}
 	}
 
-	@Subcommand("put")
+	@Subcommand("set")
 	@CommandPermission("ion.bounty.modify")
 	@CommandCompletion("@players")
 	@Suppress("unused")
