@@ -10,7 +10,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import java.util.function.Supplier
 
-class WaypointsSidebarComponent(supplier: Supplier<String>) : SidebarComponent{
+class WaypointsSidebarComponent(supplier: Supplier<String>) : SidebarComponent {
     val string = supplier.get()
 
     private fun getRouteComponent(): TextComponent {
@@ -27,6 +27,7 @@ class WaypointsSidebarComponent(supplier: Supplier<String>) : SidebarComponent{
 
     override fun draw(drawable: LineDrawable) {
         val line = text()
+        line.appendSpace()
         line.append(text(">  ").color(DARK_GRAY))
         line.append(getRouteComponent())
 
