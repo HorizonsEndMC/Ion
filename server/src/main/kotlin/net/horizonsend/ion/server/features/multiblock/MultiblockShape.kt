@@ -192,6 +192,8 @@ class MultiblockShape {
 				origin.getRelativeIfLoaded(x, y, z) ?: return@all false
 			}
 
+			println(relative)
+
 			val requirementMet = requirement(relative, face)
 
 			if (!requirementMet && particles) {

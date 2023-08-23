@@ -231,15 +231,19 @@ object Multiblocks : IonServerComponent() {
 	operator fun get(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true): Multiblock?  {
 		val location: Location = sign.location
 
+		println("loadChunks: $loadChunks")
+
 		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)
 
 		val cached: Multiblock? = multiblockCache[location]
+
+		println("cached: $cached")
 		if (cached != null) {
 			val matchesSign =
 				if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
 
 			// one was already cached before
-			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
+			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks = loadChunks))) {
 				if (pdc == null) {
 					sign.persistentDataContainer.set(
 						NamespacedKeys.MULTIBLOCK,
@@ -260,7 +264,7 @@ object Multiblocks : IonServerComponent() {
 		for (multiblock in multiblocks) {
 			val matchesSign =
 				if (pdc != null) pdc == multiblock::class.simpleName else multiblock.matchesSign(sign.lines().toTypedArray())
-			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
+			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks = loadChunks))) {
 				if (pdc == null) {
 					sign.persistentDataContainer.set(
 						NamespacedKeys.MULTIBLOCK,
