@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
+import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.client.whereisit.mod.ModNetworking
@@ -159,5 +160,7 @@ val components: List<IonComponent> = listOf(
 	Collectors,
 	CityNPCs,
 	AreaShields,
-	NationsMasterTasks
+	NationsMasterTasks,
+
+	Bounties
 )

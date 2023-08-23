@@ -6,16 +6,12 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.bounties.Bounties.BountyPlayer
 import net.horizonsend.ion.server.features.bounties.Bounties.coolDown
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
-import org.litote.kmongo.eq
-import org.litote.kmongo.lte
-import org.litote.kmongo.or
 
 object BountiesMenu {
 	/** Only use this function async **/
@@ -23,20 +19,14 @@ object BountiesMenu {
 		val bounties = mutableListOf<BountyPlayer>()
 
 		for (id: SLPlayerId in SLPlayer.allIds()) {
+			val player = SLPlayer.findById(id) ?: continue
 			// Has been on in the past 2 days, has a bounty, and isn't the person opening the menu
 			// If they were last on more than 2 days ago,
 			// Or their bounty is zero
 			// Or they are the sender
 			// Skip them
-			println(SLPlayer[id]!!._id)
-			println(sender)
-			val query = or(SLPlayer::lastSeen lte coolDown, SLPlayer::bounty lte 0.0, SLPlayer::_id eq sender)
-			if (SLPlayer.matches(id, query)) continue
-
-			if (id.uuid.hasProtection().get() == true) continue
-
-			val player = SLPlayer.findById(id) ?: continue
-			println(player.lastKnownName)
+			if (player.lastSeen <= coolDown || player.bounty <= 0 || player._id == sender) continue
+			if (!Bounties.canClaim(sender, id)) continue
 
 			bounties.add(
 				BountyPlayer(
