@@ -103,7 +103,7 @@ object Bounties : IonServerComponent() {
 		if (hasActive(killer.slPlayerId, victim.slPlayerId).get()) {
 			collectBounty(killer, victim)
 		} else {
-			val amount = 5000.0
+			val amount = 2500.0
 
 			val killerBounty = PlayerCache[killer].bounty
 
@@ -126,8 +126,8 @@ object Bounties : IonServerComponent() {
 	fun onShipSink(event: StarshipExplodeEvent) {
 		if (isNotSurvival()) return
 		val victim = (event.starship.controller as? PlayerController)?.player ?: return
+		if (event.starship.type.isWarship) return
 
-		val isCargoShip = !event.starship.type.isWarship
 		val blockCountMultipler = 1.5
 
 		val damagers = event.starship.damagers.filterKeys { damager ->
@@ -137,7 +137,7 @@ object Bounties : IonServerComponent() {
 		}.mapValues { it.value.get() }
 
 		val sum = damagers.values.sum().toDouble()
-		val totalMoney = event.starship.initialBlockCount.toDouble() * blockCountMultipler * if (isCargoShip) 2.0 else 1.0
+		val totalMoney = event.starship.initialBlockCount.toDouble() * blockCountMultipler
 
 		for ((damager, points) in damagers) {
 			val killer = Bukkit.getPlayer(damager.id) ?: continue
