@@ -9,12 +9,14 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.bounties.BountiesMenu
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -75,6 +77,14 @@ object BountyCommand : SLCommand() {
 		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 		if (target._id == sender.slPlayerId) fail { "You can't place a bounty on yourself!" }
+
+		val hasProtection = Bukkit.getPlayer(target._id.uuid)?.hasProtection()
+		if (hasProtection == true) fail { "You cannot place a bounty on a player with new player protection!" }
+
+		// If they're offline do the more slow check
+//		if (hasProtection == null) {
+//			if (target._id.uuid.hasProtection().get() == true) fail { "You cannot place a bounty on a player with new player protection!" }
+//		}
 
 		val bounty = target.bounty
 
