@@ -11,16 +11,22 @@ import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.bounties.BountiesMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
@@ -35,6 +41,30 @@ object BountyCommand : SLCommand() {
 	@Description("Open the bounty menu")
 	@Suppress("unused")
 	fun menu(sender: Player) = BountiesMenu.openMenuAsync(sender)
+
+	@Subcommand("list")
+	@Description("List your active bounties")
+	@Suppress("unused")
+	fun list(sender: Player) = asyncCommand(sender) {
+		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
+
+		val bountiesText = text()
+
+		val bounties = ClaimedBounty.find(and(ClaimedBounty::hunter eq sender.slPlayerId, ClaimedBounty::completed eq false)).toList().map {  bounty ->
+			text()
+				.append(text("Bounty for ", NamedTextColor.RED))
+				.append(text(SLPlayer.getName(bounty.target)!!, NamedTextColor.DARK_RED))
+				.append(text(" acquired on ", NamedTextColor.RED))
+				.append(text(bounty.claimTime.toString(), NamedTextColor.GOLD))
+				.append(newline())
+				.build()
+		}.toTypedArray()
+
+		if (bounties.isEmpty()) sender.sendMessage(text("You don't have any bounties!", NamedTextColor.RED))
+
+		bountiesText.append(*bounties)
+		sender.sendMessage(bountiesText.build())
+	}
 
 	@Subcommand("put")
 	@Description("Put a bounty on a player")
@@ -94,6 +124,71 @@ object BountyCommand : SLCommand() {
 		}
 
 		Bounties.claimBounty(sender, target._id, targetName, target.bounty)
+	}
+
+	@Subcommand("top")
+	@Description("List your active bounties")
+	@Suppress("unused")
+	fun top(sender: Player, @Optional page: Int? = null) = asyncCommand(sender) {
+		if ((page ?: 1) <= 0) return@asyncCommand sender.userError("Page must not be less than or equal to zero!")
+
+		val lineBreak = text(repeatString("=", 25)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
+
+		val bountiesText = text()
+			.append(text("The Galaxy's Most Wanted:", NamedTextColor.RED).decorate(TextDecoration.BOLD))
+			.append(newline())
+			.append(lineBreak)
+			.append(newline())
+
+		val bounties = SLPlayer.all()
+			.toList()
+			.sortedByDescending { it.bounty }
+			.map { player ->
+			text()
+				.append(text(player.lastKnownName, NamedTextColor.DARK_RED))
+				.append(text(": ", NamedTextColor.RED))
+				.append(text(player.bounty.toCreditsString(), NamedTextColor.GOLD))
+				.append(newline())
+				.build()
+		}
+
+		val min = minOf(bounties.size, 0 + (10 * ((page ?: 1) - 1)))
+		val max = minOf(bounties.size, 10 + (10 * ((page ?: 1) - 1)))
+
+		val sublist = bounties
+			.subList(min, max)
+			.toTypedArray()
+
+		val entriesText = text()
+			.append(text("Showing Entries ", NamedTextColor.RED))
+			.append(text(min, NamedTextColor.GOLD))
+			.append(text(" through ", NamedTextColor.RED))
+			.append(text(max, NamedTextColor.GOLD))
+			.append(text(".", NamedTextColor.RED))
+			.build()
+
+		val pageText = text()
+			.append(lineBreak)
+			.append(newline())
+			.append(entriesText)
+			.append(newline())
+			.append(
+				text("Previous", NamedTextColor.RED)
+					.clickEvent(ClickEvent.runCommand("/bounty top ${maxOf(1, (page ?: 1) - 1)}"))
+					.hoverEvent(text("/bounty top ${maxOf(1, (page ?: 1) - 1)}"))
+			)
+			.append(text("  |  ", NamedTextColor.DARK_GRAY))
+			.append(
+				text("Next", NamedTextColor.RED)
+					.clickEvent(ClickEvent.runCommand("/bounty top ${(page ?: 1) + 1}"))
+					.hoverEvent(text("/bounty top ${(page ?: 1) + 1}"))
+			)
+
+
+		bountiesText.append(*sublist) // Every one has a newline at the end
+		bountiesText.append(pageText.build())
+
+		sender.sendMessage(bountiesText.build())
 	}
 
 	@Subcommand("get")
@@ -173,6 +268,19 @@ object BountyCommand : SLCommand() {
 			"Bounty claimed by $hunterName on $targetName not found!"
 		}
 
-		ClaimedBounty.col.deleteOneById(claimedBounty._id)
+		val result = ClaimedBounty.col.deleteOneById(claimedBounty._id)
+		sender.success("Deleted ${result.deletedCount} bounty(ies)")
+	}
+
+	@Subcommand("collect")
+	@CommandPermission("ion.bounty.modify")
+	@Description("Force a bounty to be rewarded")
+	@CommandCompletion("@players @players")
+	@Suppress("unused")
+	fun collect(sender: Player, hunterName: String, targetName: String) = asyncCommand(sender) {
+		val hunter = Bukkit.getPlayer(hunterName) ?: fail { "Player $hunterName not found!" }
+		val target = Bukkit.getPlayer(targetName) ?: fail { "Player $targetName not found!" }
+
+		Bounties.collectBounty(hunter, target)
 	}
 }

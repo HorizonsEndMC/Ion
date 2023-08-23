@@ -111,8 +111,13 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 
 			val playerLevel = player.level
 
-			luckPerms.userManager.loadUser(this).get().distinctNodes.filterIsInstance<PermissionNode>().any {
+			val protectionRemoved = luckPerms.userManager.loadUser(this).get().distinctNodes.filterIsInstance<PermissionNode>().any {
 				it.permission == "ion.core.protection.removed"
+			}
+
+			if (protectionRemoved) {
+				future.complete(false)
+				return@async
 			}
 
 			if (player.nation?.let { SettlementCache[NationCache[it].capital].leader == this.slPlayerId } == true) {
@@ -128,7 +133,6 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 			}
 
 			val playTime = offlinePlayer.getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
-
 			future.complete(playTime)
 		}
 

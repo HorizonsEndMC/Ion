@@ -13,9 +13,6 @@ import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.client.model.changestream.OperationType
 import com.mongodb.client.result.UpdateResult
 import net.horizonsend.ion.common.database.DBManager.INITIALIZATION_COMPLETE
-import java.io.Closeable
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 import net.horizonsend.ion.common.database.DBManager.getCollection
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
@@ -32,6 +29,9 @@ import org.litote.kmongo.match
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.slf4j.LoggerFactory
+import java.io.Closeable
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 interface DbObject {
 	@Suppress("PropertyName")
@@ -119,6 +119,10 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 	fun none(query: Bson) = count(query) == 0L
 
 	fun none(sess: ClientSession, query: Bson) = count(sess, query) == 0L
+
+	fun any(query: Bson) = !none(query)
+
+	fun any(sess: ClientSession, query: Bson) = !none(sess, query)
 
 	internal fun exists(id: ID): Boolean = count(idFilterQuery(id)) == 1L
 
