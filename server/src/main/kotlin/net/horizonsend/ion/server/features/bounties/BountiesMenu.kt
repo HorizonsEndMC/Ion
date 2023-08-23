@@ -11,6 +11,10 @@ import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 
 object BountiesMenu {
@@ -48,7 +52,14 @@ object BountiesMenu {
 					if (Bounties.isNotSurvival()) return@guiButton playerClicker.userError("You can only do that on the Survival server!")
 					Bounties.claimBounty(player, it)
 				}.apply {
-					this.setLore("Bounty: ${it.bounty}")
+					this.setLoreComponent(
+						listOf(
+							text().decoration(TextDecoration.ITALIC, false)
+								.append(text("Bounty: ", NamedTextColor.RED))
+								.append(text(it.bounty.toCreditsString(), NamedTextColor.GOLD))
+								.build()
+						)
+					)
 				}
 
 				return@map guiItem
