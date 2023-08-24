@@ -43,7 +43,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		if (!Gasses.isCanister(furnace.inventory.fuel)) return
 
 		event.isBurning = false
-		event.burnTime = (750 + Math.random() * 500).toInt()
+		event.burnTime = (500 + Math.random() * 250).toInt()
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 
