@@ -1,9 +1,15 @@
 package net.horizonsend.ion.server.features.explosion.reversal
 
+import com.google.common.io.ByteStreams
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.explosion.reversal.Regeneration.pulse
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.minecraft.core.BlockPos
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtAccounter
+import net.minecraft.nbt.NbtIo
+import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -13,6 +19,7 @@ import org.bukkit.block.BlockState
 import org.bukkit.block.Chest
 import org.bukkit.block.DoubleChest
 import org.bukkit.block.data.BlockData
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.world.WorldSaveEvent
@@ -44,8 +51,8 @@ object ExplosionReversal : IonServerComponent() {
 	private fun scheduleRegen() = Tasks.syncRepeat(5L, 5L) {
 		try {
 			pulse()
-		} catch (e: IOException) {
-			e.printStackTrace()
+		} catch (exception: IOException) {
+			exception.printStackTrace()
 		}
 	}
 
@@ -71,10 +78,13 @@ object ExplosionReversal : IonServerComponent() {
 		blockX: Int, blockY: Int, blockZ: Int,
 	): Long {
 		val now = System.currentTimeMillis()
+
 		val distance = abs(explosionX - blockX) + abs(explosionY - blockY) + abs(explosionZ - blockZ)
-		val distanceDelayMs = settings!!.distanceDelay * 1000
-		val cap = settings!!.getDistanceDelayCap()
-		val offset: Long = (cap.coerceAtMost(cap - distance) * distanceDelayMs).roundToLong()
+		val distanceDelayMs = settings.distanceDelay * 1000
+		val cap = settings.distanceDelayCap.toLong()
+
+		val offset: Long = (cap.coerceAtMost(cap - distance.roundToLong()) * distanceDelayMs).roundToLong()
+
 		return now + offset
 	}
 
@@ -86,7 +96,7 @@ object ExplosionReversal : IonServerComponent() {
 	}
 
 	private fun processExplosion(world: World, explosionLocation: Location, list: MutableList<Block>) {
-		if (settings.getIgnoredWorlds().contains(world.name)) return
+		if (settings.ignoredWorlds.contains(world.name)) return
 		if (list.isEmpty()) return
 
 		val explodedBlockDataList: MutableList<ExplodedBlockData> = LinkedList()
@@ -111,15 +121,14 @@ object ExplosionReversal : IonServerComponent() {
 	) {
 		val block: Block = iterator.next()
 		val blockData: BlockData = block.blockData
-		if (ignoreMaterial(blockData.material)) {
-			return
-		}
-		val x: Int = block.getX()
-		val y: Int = block.getY()
-		val z: Int = block.getZ()
+
+		val x: Int = block.x
+		val y: Int = block.y
+		val z: Int = block.z
+
 		val explodedTime: Long = getExplodedTime(eX, eY, eZ, x, y, z)
 
-		@Nullable val tileEntity: ByteArray = NMSUtils.getTileEntity(block)
+		val tileEntity: ByteArray? = getTileEntity(block)
 
 		if (tileEntity != null) {
 			processTileEntity(explodedBlockDataList, block, explodedTime)
@@ -131,14 +140,6 @@ object ExplosionReversal : IonServerComponent() {
 		// break the block manually
 		iterator.remove()
 		block.setType(Material.AIR, false)
-	}
-
-	private fun ignoreMaterial(material: Material): Boolean {
-		val includedMaterials: Set<Material> = settings.getIncludedMaterials()
-
-		return material === Material.AIR
-			|| settings.getIgnoredMaterials().contains(material)
-			|| (includedMaterials.isNotEmpty() && !includedMaterials.contains(material))
 	}
 
 	private fun processTileEntity(
@@ -174,10 +175,50 @@ object ExplosionReversal : IonServerComponent() {
 		val otherZ: Int = other.z
 
 		val otherBlockData: BlockData = other.blockData
-		val otherTile: ByteArray = NMSUtils.getTileEntity(other)
+		val otherTile: ByteArray? = getTileEntity(other)
 
 		explodedBlockDataList.add(ExplodedBlockData(otherX, otherY, otherZ, explodedTime, otherBlockData, otherTile))
 		otherInventory.clear()
 		other.setType(Material.AIR, false)
+	}
+
+	fun getTileEntity(block: Block): ByteArray? {
+		val worldServer = (block.world as CraftWorld).handle
+		val blockPosition = BlockPos(block.x, block.y, block.z)
+		val tileEntity = worldServer.getBlockEntity(blockPosition) ?: return null
+
+		val nbt: CompoundTag = tileEntity.saveWithFullMetadata()
+
+		return serialize(nbt)
+	}
+
+	fun setTileEntity(block: Block, bytes: ByteArray?) {
+		val worldServer = (block.world as CraftWorld).handle
+		val blockPosition = BlockPos(block.x, block.y, block.z)
+
+		val nbt = try {
+			deserialize(bytes ?: return)
+		} catch (e: Exception) {
+			IonServer.logger.warning("Error placing tile entity during explosion regeneration: $e")
+			return
+		}
+
+		val blockData: net.minecraft.world.level.block.state.BlockState = worldServer.getBlockState(blockPosition)
+		val tileEntity = BlockEntity.loadStatic(blockPosition, blockData, nbt) ?: return IonServer.logger.warning("Error loading tile entity during explosion regeneration")
+
+		worldServer.removeBlockEntity(blockPosition)
+		worldServer.setBlockEntity(tileEntity)
+	}
+
+	private fun serialize(nbt: CompoundTag): ByteArray? {
+		val output = ByteStreams.newDataOutput()
+		NbtIo.write(nbt, output)
+		return output.toByteArray()
+	}
+
+	private fun deserialize(bytes: ByteArray): CompoundTag {
+		val input = ByteStreams.newDataInput(bytes)
+		val readLimiter = NbtAccounter(bytes.size * 10L)
+		return NbtIo.read(input, readLimiter)
 	}
 }
