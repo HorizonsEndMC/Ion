@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.explosion.reversal
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.explosion.reversal.ExplosionReversal.setTileEntity
 import org.bukkit.Bukkit
 import org.bukkit.World
 
@@ -51,7 +52,7 @@ object Regeneration {
 		val tileData = data.tileData
 
 		if (tileData != null) {
-			NMSUtils.setTileEntity(block, tileData)
+			setTileEntity(block, tileData)
 		}
 	}
 }
