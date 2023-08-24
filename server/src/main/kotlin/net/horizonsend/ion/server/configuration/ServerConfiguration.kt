@@ -26,8 +26,8 @@ data class ServerConfiguration(
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
 	val soldShips: List<Ship> = listOf(),
+	val explosionRegenConfig: ExplosionRegenerationConfig = ExplosionRegenerationConfig(),
 	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
-	val explosionRegenConfig: ExplosionRegenConfig
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -252,6 +252,6 @@ data class ServerConfiguration(
 		val distanceDelay: Double = 2.0,
 		val distanceDelayCap: Int = 6,
 		val placementIntensity: Double = 5.0,
-		val ignoredWorlds: List<String>
+		val ignoredWorlds: List<String> = listOf()
 	)
 }
