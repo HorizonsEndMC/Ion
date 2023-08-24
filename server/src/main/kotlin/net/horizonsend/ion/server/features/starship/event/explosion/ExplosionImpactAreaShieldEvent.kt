@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.starship.event.explosion
 
-import net.horizonsend.ion.server.features.explosion.StarshipExplosion
+import net.horizonsend.ion.server.features.explosion.Explosion
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import org.bukkit.block.Sign
 import org.bukkit.event.HandlerList
 
 class ExplosionImpactAreaShieldEvent(
-	controller: Controller,
-	explosion: StarshipExplosion,
-	val areaShield: Sign
+    controller: Controller,
+    explosion: Explosion,
+    val areaShield: Sign
 ) : StarshipCauseExplosionEvent(controller, explosion) {
 	private var isCancelled: Boolean = false
 
