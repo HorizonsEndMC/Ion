@@ -8,9 +8,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.minecraft.core.BlockPos
-import net.minecraft.world.level.ExplosionDamageCalculator
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.FluidState
 import org.bukkit.Chunk
@@ -18,35 +20,38 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
+import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
+import kotlin.random.asJavaRandom
 
 /**
  * Mostly async starship explosion, supporting the controller API
  * @see Controller
  **/
-class StarshipExplosion(
+class Explosion(
 	val world: World,
 	val x: Double,
 	val y: Double,
 	val z: Double,
 	val power: Float,
-	val controller: Controller,
-	val blocks: MutableList<Block> = mutableListOf(),
+	val controller: Controller
 ) {
+	private var fireType = Material.FIRE
 	private val toExplode = mutableSetOf<BlockPos>()
 	var useRays = false
 	var useFire = false
 
-	val random = Random.Default
-	private val damageCalculator = ExplosionDamageCalculator()
+	val random = Random.asJavaRandom()
+	val noise = SimplexOctaveGenerator(random, 3)
+	val blocks: MutableList<Block> = mutableListOf()
 
-	fun explode(applyPhysics: Boolean = true, callback: (StarshipExplosion) -> Unit = {}) {
-		getBlocksAsync()
-		if (useRays) getRayBlocksAsync()
+	fun explode(applyPhysics: Boolean = true, callback: (Explosion) -> Unit = {}) {
+		if (useRays) getRayBlocksAsync() else getBlocksAsync()
 
 		val event = StarshipCauseExplosionEvent(
 			controller,
@@ -68,28 +73,62 @@ class StarshipExplosion(
 
 	/** populates the blocks list **/
 	private fun getBlocksAsync() {
-		val maxRadius = getMaxRadius() * 2
+		val collected = mutableSetOf<BlockPos>()
 
-		val coveredChunks = mutableSetOf<CompletableFuture<Chunk>>()
+		Tasks.async {
+			val maxRadius = getMaxRadius()
 
-		val originX = this.x.toInt()
-		val originY = this.y.toInt()
-		val originZ = this.z.toInt()
+			val coveredChunks = mutableSetOf<CompletableFuture<Chunk>>()
 
-		val xRange = IntRange(-maxRadius + originX, maxRadius + originX)
-		val yRange = IntRange(-maxRadius + originY, maxRadius + originY)
-		val zRange = IntRange(-maxRadius + originZ, maxRadius + originZ)
+			val originX = this.x.toInt()
+			val originY = this.y.toInt()
+			val originZ = this.z.toInt()
 
-		for (x in xRange) for (z in zRange) {
-			val chunkX = x.shr(4)
-			val chunkZ = z.shr(4)
+			val xRange = IntRange(-maxRadius, maxRadius).associateWith { it + originX }
+			val yRange = IntRange(-maxRadius, maxRadius).associateWith { it + originY }
+			val zRange = IntRange(-maxRadius, maxRadius).associateWith { it + originZ }
 
-			coveredChunks += world.getChunkAtAsync(chunkX, chunkZ)
+			for ((_, absoluteX) in xRange) for ((_, absoluteZ) in zRange) {
+				val chunkX = absoluteX.shr(4)
+				val chunkZ = absoluteZ.shr(4)
+
+				coveredChunks += world.getChunkAtAsync(chunkX, chunkZ)
+			}
+
+			val completedChunks = mutableMapOf<ChunkPos, Chunk>()
+
+			// Get the chunks async
+			CompletableFuture.allOf(*coveredChunks.toTypedArray()).thenAccept {
+				coveredChunks.associateTo(completedChunks) {
+					val chunk = it.get()
+
+					return@associateTo ChunkPos(chunk.x, chunk.z) to chunk
+				}
+			}
+
+			for ((localX, absoluteX) in xRange) {
+				val xSquared = localX * localX
+				val absoluteXDouble = absoluteX.toDouble()
+
+				for ((localY, absoluteY) in yRange) {
+					val ySquared = localY * localY
+					val absoluteYDouble = absoluteY.toDouble()
+
+					for ((localZ, absoluteZ) in zRange) {
+						val zSquared = localZ * localZ
+						val absoluteZDouble = absoluteZ.toDouble()
+
+						val radius = noise.noise(absoluteXDouble, absoluteYDouble, absoluteZDouble, true) * (maxRadius / 4)
+
+						if ((xSquared + ySquared + zSquared) >= maxRadius + radius) continue
+
+						toExplode.add(BlockPos(absoluteX, absoluteY, absoluteZ))
+					}
+				}
+			}
 		}
 
-		for (x in xRange) for (y in yRange) for (z in zRange) {
-
-		}
+		toExplode.addAll(collected)
 	}
 
 	/** If specified for the explosion to use rays, it additionally populates the blocks list **/
@@ -149,18 +188,42 @@ class StarshipExplosion(
 
 	/** Applies fire to the explosion after blocks have been removed **/
 	private fun applyFire() {
-		// TODO
+		val supported = CompletableFuture<Set<BlockPos>>()
+
+		Tasks.async {
+			val supportedBlocks = mutableSetOf<BlockPos>()
+
+			for (block in blocks) {
+				val relative = block.getRelativeIfLoaded(BlockFace.DOWN) ?: continue
+
+				if (relative.type.isAir) continue
+
+				supportedBlocks.add(relative.location.toBlockPos())
+			}
+
+			supported.complete(supportedBlocks)
+		}
+
+		supported.thenAccept {
+			Tasks.sync {
+				for (pos in it) {
+					val (x, y, z) = pos
+
+					world.setType(x, y, z, fireType)
+				}
+			}
+		}
 	}
 
 	/** removes blocks specified in the blocks list **/
-	private fun removeBlocks(applyPhysics: Boolean) {
+	private fun removeBlocks(applyPhysics: Boolean) = Tasks.sync {
 		for (block in blocks) {
 			block.setType(Material.AIR, applyPhysics)
 		}
 	}
 
 	/** Max radius for the crater **/
-	private fun getMaxRadius(): Int = sqrt(power).roundToInt()
+	private fun getMaxRadius(): Int = sqrt(power).roundToInt() * 2
 
 	private fun getBlockExplosionResistance(
 		blockState: BlockState,
@@ -179,20 +242,21 @@ class StarshipExplosion(
 			useRays:
 			Boolean = false,
 			applyPhysics: Boolean = true,
-			callback: (StarshipExplosion) -> Unit,
-		) : StarshipExplosion {
-			val (world, x, y, z) = location
+			fireType: Material = Material.FIRE,
+			callback: (Explosion) -> Unit,
+		) : Explosion {
+			val (_, x, y, z) = location
 
-			world!!
-
-			val explosion = StarshipExplosion(
-				world,
+			val explosion = Explosion(
+				this,
 				x,
 				y,
 				z,
 				power,
 				source
 			)
+
+			explosion.fireType = fireType
 
 			explosion.useFire = useFire
 
