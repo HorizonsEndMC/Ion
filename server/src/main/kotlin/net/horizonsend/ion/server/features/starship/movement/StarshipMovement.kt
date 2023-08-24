@@ -9,11 +9,13 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -249,7 +251,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		val spaceWorld = planet.spaceWorld
 		if (spaceWorld == null) {
-			starship.sendMessage("&cWorld ${planet.spaceWorldName} not found")
+			starship.serverError("World ${planet.spaceWorldName} not found")
 			return false
 		}
 
