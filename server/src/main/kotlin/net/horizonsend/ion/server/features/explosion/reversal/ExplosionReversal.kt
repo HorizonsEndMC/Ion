@@ -16,9 +16,9 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
-import org.bukkit.block.Chest
 import org.bukkit.block.DoubleChest
 import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.type.Chest
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockExplodeEvent
@@ -153,7 +153,8 @@ object ExplosionReversal : IonServerComponent() {
 			// Double chests are weird so you have to get the state (as a holder)'s inventory's holder to cast to DoubleChest
 			val inventoryHolder: InventoryHolder? = inventory.holder
 			if (inventoryHolder is DoubleChest) {
-				val isRight = (block.getBlockData() as Chest).getType() === Chest.Type.RIGHT
+				val isRight = (block.blockData as Chest).type === Chest.Type.RIGHT
+
 				processDoubleChest(explodedBlockDataList, isRight, inventoryHolder, explodedTime)
 			}
 			inventory.clear()
