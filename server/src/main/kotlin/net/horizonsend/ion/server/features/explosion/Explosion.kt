@@ -13,19 +13,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.minecraft.core.BlockPos
-import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.FluidState
-import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.util.noise.SimplexOctaveGenerator
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
@@ -44,165 +40,109 @@ class Explosion(
 ) {
 	private var fireType = Material.FIRE
 	private val toExplode = mutableSetOf<BlockPos>()
-	var useRays = false
 	var useFire = false
+	var firePercent = 0.05
 
 	val random = Random.asJavaRandom()
-	val noise = SimplexOctaveGenerator(random, 3)
-	val blocks: MutableList<Block> = mutableListOf()
+	val blocks: MutableSet<Block> = mutableSetOf()
 
-	fun explode(applyPhysics: Boolean = true, callback: (Explosion) -> Unit = {}) {
-		println(5)
-		if (useRays) getRayBlockPositionsAsync() else getBlockPositionsAsync()
-		println(6)
+	fun explode(applyPhysics: Boolean = true, callback: (Explosion) -> Unit = {}) = Tasks.async {
+		val blockPositions = getRayBlockPositionsAsync()
 
-		val event = StarshipCauseExplosionEvent(
-			controller,
-			this
-		)
+		blockPositions.thenAccept {
+			toExplode.addAll(it)
 
-		val isCancelled = event.callEvent()
-		println(7)
-
-		if (!isCancelled) return
-		println(8)
-
-		Tasks.sync {
 			populateBlocks()
-			println(9)
-			removeBlocks(applyPhysics)
-			println(10)
 
-			if (useFire) applyFire()
+			val event = StarshipCauseExplosionEvent(
+				controller,
+				this@Explosion,
+				blocks,
+			)
 
-			callback(this)
+			val isCancelled = event.callEvent()
+
+			if (!isCancelled) return@thenAccept
+
+			Tasks.sync {
+				removeBlocks(applyPhysics)
+
+				if (useFire) applyFire()
+
+				callback(this)
+			}
 		}
 	}
 
-	/** populates the blocks list **/
-	private fun getBlockPositionsAsync() {
-		val collected = mutableSetOf<BlockPos>()
-
-		Tasks.async {
-			val maxRadius = getMaxRadius()
-			println("getting blocks 1")
-
-			val coveredChunks = mutableSetOf<CompletableFuture<Chunk>>()
-			println("getting blocks 2")
-
-			val originX = this.x.toInt()
-			val originY = this.y.toInt()
-			val originZ = this.z.toInt()
-
-			val xRange = IntRange(-maxRadius, maxRadius).associateWith { it + originX }
-			val yRange = IntRange(-maxRadius, maxRadius).associateWith { it + originY }
-			val zRange = IntRange(-maxRadius, maxRadius).associateWith { it + originZ }
-			println("getting blocks 3")
-
-			for ((_, absoluteX) in xRange) for ((_, absoluteZ) in zRange) {
-				val chunkX = absoluteX.shr(4)
-				val chunkZ = absoluteZ.shr(4)
-
-				coveredChunks += world.getChunkAtAsync(chunkX, chunkZ)
-			}
-
-			val completedChunks = mutableMapOf<ChunkPos, Chunk>()
-
-			// Get the chunks async
-			CompletableFuture.allOf(*coveredChunks.toTypedArray()).thenAccept {
-				coveredChunks.associateTo(completedChunks) {
-					val chunk = it.get()
-
-					return@associateTo ChunkPos(chunk.x, chunk.z) to chunk
-				}
-			}
-
-			for ((localX, absoluteX) in xRange) {
-				val xSquared = localX * localX
-				val absoluteXDouble = absoluteX.toDouble()
-
-				for ((localY, absoluteY) in yRange) {
-					val ySquared = localY * localY
-					val absoluteYDouble = absoluteY.toDouble()
-
-					for ((localZ, absoluteZ) in zRange) {
-						val zSquared = localZ * localZ
-						val absoluteZDouble = absoluteZ.toDouble()
-
-						val radius = noise.noise(absoluteXDouble, absoluteYDouble, absoluteZDouble, true) * (maxRadius / 4)
-
-						if ((xSquared + ySquared + zSquared) >= maxRadius + radius) continue
-
-						toExplode.add(BlockPos(absoluteX, absoluteY, absoluteZ))
-					}
-				}
-			}
-		}
-
-		toExplode.addAll(collected)
-	}
-
-	fun populateBlocks() {
+	/** Get the blocks in the positions specified **/
+	private fun populateBlocks() {
 		for (block in toExplode) {
 			val (x, y, z) = block
 
+			// Thread safe
 			blocks.add(getBlockIfLoaded(world, x, y, z) ?: continue)
 		}
 	}
 
 	/** If specified for the explosion to use rays, it additionally populates the blocks list **/
-	private fun getRayBlockPositionsAsync() {
-		val positions = mutableSetOf<BlockPos>()
+	private fun getRayBlockPositionsAsync(): CompletableFuture<Set<BlockPos>> {
+		val complete = CompletableFuture<Set<BlockPos>>()
 
-		val radius = power.toDouble().coerceAtLeast(0.0).toFloat()
+		Tasks.async {
+			val positions = mutableSetOf<BlockPos>()
 
-		// I'm not even gonna try to understand how this works
-		for (x in 0 until 16) for (y in 0 until 16) for (z in 0 until 16) {
-			if (x == 0 || x == 15 || y == 0 || y == 15 || z == 0 || z == 15) {
-				var d0: Double = (x.toFloat() / 15.0f * 2.0f - 1.0f).toDouble()
-				var d1: Double = (y.toFloat() / 15.0f * 2.0f - 1.0f).toDouble()
-				var d2: Double = (z.toFloat() / 15.0f * 2.0f - 1.0f).toDouble()
+			val radius = power.toDouble().coerceAtLeast(0.0).toFloat()
 
-				val d3 = sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+			// TODO Variable names
+			for (x in 0 until 16) for (y in 0 until 16) for (z in 0 until 16) {
+				if (x == 0 || x == 15 || y == 0 || y == 15 || z == 0 || z == 15) {
+					var d0: Double = (x.toFloat() / 15.0f * 2.0f - 1.0f).toDouble()
+					var d1: Double = (y.toFloat() / 15.0f * 2.0f - 1.0f).toDouble()
+					var d2: Double = (z.toFloat() / 15.0f * 2.0f - 1.0f).toDouble()
 
-				d0 /= d3
-				d1 /= d3
-				d2 /= d3
+					val d3 = sqrt(d0 * d0 + d1 * d1 + d2 * d2)
 
-				var f: Float = radius * (0.7f + random.nextFloat() * 0.6f)
+					d0 /= d3
+					d1 /= d3
+					d2 /= d3
 
-				var d4 = this.x
-				var d5 = this.y
-				var d6 = this.z
+					var f: Float = radius * (0.7f + random.nextFloat() * 0.6f)
 
-				while (f > 0.0f) {
-					val blockPos = BlockPos.containing(d4, d5, d6)
-					val blockState: BlockState = getNMSBlockDataSafe(world, blockPos) ?: continue
+					var d4 = this.x
+					var d5 = this.y
+					var d6 = this.z
 
-					if (!blockState.isDestroyable) {
+					while (f > 0.0f) {
+						val blockPos = BlockPos.containing(d4, d5, d6)
+						val blockState: BlockState = getNMSBlockDataSafe(world, blockPos) ?: continue
+
+						if (!blockState.isDestroyable) {
+							f -= 0.22500001f
+							continue
+						}
+
+						val fluid = blockState.fluidState
+
+						if (!this.world.minecraft.isInWorldBounds(blockPos)) break
+
+						val optional: Optional<Float> = getBlockExplosionResistance(blockState, fluid)
+
+						if (optional.isPresent) f -= (optional.get() + 0.3f) * 0.3f
+
+						if (f > 0.0f) positions.add(blockPos)
+
+						d4 += d0 * 0.30000001192092896
+						d5 += d1 * 0.30000001192092896
+						d6 += d2 * 0.30000001192092896
 						f -= 0.22500001f
-						continue
 					}
-
-					val fluid = blockState.fluidState
-
-					if (!this.world.minecraft.isInWorldBounds(blockPos)) break
-
-					val optional: Optional<Float> = getBlockExplosionResistance(blockState, fluid)
-
-					if (optional.isPresent) f -= (optional.get() + 0.3f) * 0.3f
-
-					if (f > 0.0f) { positions.add(blockPos) }
-
-					d4 += d0 * 0.30000001192092896
-					d5 += d1 * 0.30000001192092896
-					d6 += d2 * 0.30000001192092896
-					f -= 0.22500001f
 				}
 			}
+
+			complete.complete(positions)
 		}
 
-		toExplode.addAll(positions)
+		return complete
 	}
 
 	/** Applies fire to the explosion after blocks have been removed **/
@@ -210,6 +150,8 @@ class Explosion(
 		val supported = CompletableFuture<Set<BlockPos>>()
 
 		Tasks.async {
+			val random = Random(world.seed)
+
 			val supportedBlocks = mutableSetOf<BlockPos>()
 
 			for (block in blocks) {
@@ -217,7 +159,9 @@ class Explosion(
 
 				if (relative.type.isAir) continue
 
-				supportedBlocks.add(relative.location.toBlockPos())
+				if (random.nextDouble() <= 1.0 - firePercent) continue
+
+				supportedBlocks.add(block.location.toBlockPos())
 			}
 
 			supported.complete(supportedBlocks)
@@ -236,15 +180,10 @@ class Explosion(
 
 	/** removes blocks specified in the blocks list **/
 	private fun removeBlocks(applyPhysics: Boolean) = Tasks.sync {
-		println(12)
 		for (block in blocks) {
-			println(block)
 			block.setType(Material.AIR, applyPhysics)
 		}
 	}
-
-	/** Max radius for the crater **/
-	private fun getMaxRadius(): Int = sqrt(power).roundToInt() * 2
 
 	private fun getBlockExplosionResistance(
 		blockState: BlockState,
@@ -256,19 +195,22 @@ class Explosion(
 	}
 
 	companion object {
+		/**
+		 * @param modification Modify any additional explosion params using this function
+		 *
+		 *
+		 *
+		 **/
 		fun World.explode(
 			location: Location,
 			power: Float, source: Controller,
+			modification: (Explosion) -> Unit = {},
 			useFire: Boolean = false,
-			useRays:
-			Boolean = false,
 			applyPhysics: Boolean = true,
 			fireType: Material = Material.FIRE,
 			callback: (Explosion) -> Unit = {},
 		) : Explosion {
-			println(1)
 			val (_, x, y, z) = location
-			println(2)
 
 			val explosion = Explosion(
 				this,
@@ -279,13 +221,12 @@ class Explosion(
 				source
 			)
 
+			modification(explosion)
+
 			explosion.fireType = fireType
 
 			explosion.useFire = useFire
 
-			explosion.useRays = useRays
-
-			println(3)
 			explosion.explode(applyPhysics, callback)
 
 			return explosion
