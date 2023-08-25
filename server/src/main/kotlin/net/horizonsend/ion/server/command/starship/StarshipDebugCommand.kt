@@ -46,21 +46,4 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 			fireType = Material.SOUL_FIRE
 		)
 	}
-
-	@Suppress("Unused")
-	@Subcommand("explosionrays")
-	fun explosionRays(sender: Player) {
-		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
-		val controller = starship.controller ?: return sender.userError("NO CONTROLLER")
-
-		sender.world.explode(
-			sender.location,
-			10f,
-			controller,
-			useFire = true,
-			applyPhysics = false,
-			useRays = true,
-			fireType = Material.SOUL_FIRE
-		)
-	}
 }
