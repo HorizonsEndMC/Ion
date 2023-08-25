@@ -74,6 +74,7 @@ object BountyCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun put(sender: Player, targetName: String, amount: Double) = asyncCommand(sender) {
+		if (amount <= 0) fail { "Amount must be positive" }
 		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 		if (target._id == sender.slPlayerId) fail { "You can't place a bounty on yourself!" }
@@ -174,6 +175,8 @@ object BountyCommand : SLCommand() {
 			.append(text(min, NamedTextColor.GOLD))
 			.append(text(" through ", NamedTextColor.RED))
 			.append(text(max, NamedTextColor.GOLD))
+			.append(text(" of ", NamedTextColor.RED))
+			.append(text(bounties.size, NamedTextColor.GOLD))
 			.append(text(".", NamedTextColor.RED))
 			.build()
 
