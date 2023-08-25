@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
+import net.horizonsend.ion.server.miscellaneous.utils.isAnvil
 import org.bukkit.Material
 import java.util.EnumMap
 import kotlin.math.max
