@@ -3,9 +3,13 @@ package net.horizonsend.ion.server.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.explosion.Explosion.Companion.explode
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.entity.Player
 
 @CommandPermission("starlegacy.starshipdebug")
@@ -25,5 +29,38 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 		for (dir in CARDINAL_BLOCK_FACES) {
 			sender.sendRichMessage(starship.thrusterMap[dir].toString())
 		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("explosion")
+	fun explosion(sender: Player) {
+		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
+		val controller = starship.controller ?: return sender.userError("NO CONTROLLER")
+
+		sender.world.explode(
+			sender.location,
+			10f,
+			controller,
+			useFire = true,
+			applyPhysics = false,
+			fireType = Material.SOUL_FIRE
+		)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("explosionrays")
+	fun explosionRays(sender: Player) {
+		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
+		val controller = starship.controller ?: return sender.userError("NO CONTROLLER")
+
+		sender.world.explode(
+			sender.location,
+			10f,
+			controller,
+			useFire = true,
+			applyPhysics = false,
+			useRays = true,
+			fireType = Material.SOUL_FIRE
+		)
 	}
 }
