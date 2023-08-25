@@ -230,14 +230,9 @@ object Multiblocks : IonServerComponent() {
 	@JvmOverloads
 	operator fun get(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true): Multiblock?  {
 		val location: Location = sign.location
-
-		println("loadChunks: $loadChunks")
-
 		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)
 
 		val cached: Multiblock? = multiblockCache[location]
-
-		println("cached: $cached")
 		if (cached != null) {
 			val matchesSign =
 				if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())

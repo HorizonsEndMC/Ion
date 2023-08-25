@@ -6,26 +6,15 @@ import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
-import java.time.Instant
-import java.util.Locale
-import java.util.UUID
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.pow
-import kotlin.math.sqrt
 import net.horizonsend.ion.common.Colors
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.misc.CombatNPCKillEvent
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayNameComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getRawDisplayName
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -35,6 +24,11 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.get
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getOfflinePlayer
 import org.bukkit.Bukkit.getPlayer
@@ -44,6 +38,13 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import java.time.Instant
+import java.util.Locale
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 object ShipKillXP : IonServerComponent() {
 	data class Damager(val id: UUID, val size: Int)
@@ -108,7 +109,8 @@ object ShipKillXP : IonServerComponent() {
 	}
 
 	private fun onShipKill(starship: ActiveStarship) {
-		println("ship killed at ${starship.centerOfMass.x} ${starship.centerOfMass.y} ${starship.centerOfMass.z}")
+		IonServer.slF4JLogger.info("ship killed at ${starship.centerOfMass.x} ${starship.centerOfMass.y} ${starship.centerOfMass.z}")
+
 		val data = data(starship)
 		for (id in starship.passengerIDs) {
 			val killedName = getPlayer(id)?.name ?: "UNKNOWN"

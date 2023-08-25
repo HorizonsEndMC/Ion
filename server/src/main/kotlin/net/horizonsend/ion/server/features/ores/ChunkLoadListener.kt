@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.ores
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.OrePlacementConfig
 import net.horizonsend.ion.server.miscellaneous.utils.Position
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
@@ -96,7 +96,7 @@ class ChunkLoadListener(private val plugin: IonServer) : SLEventListener() {
 							event.chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 						}
 
-						println("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
+						IonServer.slF4JLogger.info("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
 
 						event.chunk.persistentDataContainer.set(
 							NamespacedKeys.ORE_CHECK,

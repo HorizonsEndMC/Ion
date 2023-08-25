@@ -86,7 +86,7 @@ object RegenerateCommand : SLCommand() {
 
 						val dataResult = blockStateCodec.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
 						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).getOrThrow(false) {
-							IonServer.logger.warning(it)
+							IonServer.slF4JLogger.warn(it)
 						}
 
 						regenerateSection(sectionY, chunkPos, sectionBlocks, deferred, selection)

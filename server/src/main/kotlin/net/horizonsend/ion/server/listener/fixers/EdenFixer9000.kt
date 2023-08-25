@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.listener.fixers
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.minecraft.core.BlockPos
-import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -49,7 +49,9 @@ class EdenFixer9000 : SLEventListener() {
 							event.chunk.getBlock(position.x, position.y, position.z).setBlockData(airBlockData, false)
 						}
 
-						println("Removed ${removedBlocks.size} evil blocks form chunk (${event.chunk.x},${event.chunk.z}) on Eden for a total of $runningTotal this session.")
+						IonServer.slF4JLogger.info(
+							"Removed ${removedBlocks.size} evil blocks form chunk (${event.chunk.x},${event.chunk.z}) on Eden for a total of $runningTotal this session."
+						)
 
 						event.chunk.persistentDataContainer.set(
 							NamespacedKeys.EDEN_FIX,

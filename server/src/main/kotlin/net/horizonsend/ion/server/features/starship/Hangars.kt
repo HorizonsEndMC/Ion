@@ -3,9 +3,8 @@ package net.horizonsend.ion.server.features.starship
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.minecraft.world.level.block.state.BlockState
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.PerWorld
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -13,7 +12,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -27,7 +28,7 @@ import java.io.DataOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
+import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -130,7 +131,7 @@ object Hangars : IonServerComponent() {
 				}
 			}
 		} catch (e: Exception) {
-			println("Failed to load hangar data for world ${world.name}")
+			IonServer.slF4JLogger.warn("Failed to load hangar data for world ${world.name}")
 			e.printStackTrace()
 		}
 		return map

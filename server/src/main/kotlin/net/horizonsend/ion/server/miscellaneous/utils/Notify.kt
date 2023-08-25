@@ -64,7 +64,7 @@ object Notify : IonServerComponent() {
 	/** Must be registered in the CiscordSRV config **/
 	fun getChannel(name: String): TextChannel? {
 		if (!getPluginManager().isPluginEnabled("DiscordSRV")) {
-			IonServer.logger.warning("DiscordSRV not enabled! Ignoring message.")
+			IonServer.slF4JLogger.warn("DiscordSRV not enabled! Ignoring message.")
 			return null
 		}
 

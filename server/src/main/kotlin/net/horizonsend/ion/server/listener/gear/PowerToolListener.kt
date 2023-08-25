@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.listener.gear
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.gear.TreeCutter
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.removePower
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Effect
@@ -87,7 +87,7 @@ object PowerToolListener : SLEventListener() {
 				return
 			}
 
-			else -> println("Unhandled power tool $type")
+			else -> IonServer.slF4JLogger.warn("Unhandled power tool $type")
 		}
 	}
 }

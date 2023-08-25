@@ -32,7 +32,6 @@ abstract class Multiblock {
 
 	fun signMatchesStructure(sign: Sign, loadChunks: Boolean = true, particles: Boolean = false): Boolean {
 		val inward = sign.getFacing().oppositeFace
-		println("signMatchesStructure")
 		return signMatchesStructure(sign.location, inward, loadChunks, particles)
 	}
 
@@ -51,7 +50,6 @@ abstract class Multiblock {
 
 		val originBlock: Block = if (loadChunks) {
 			val block = signLocation.world.getBlockAt(x, y, z)
-			println(block)
 			block
 		} else {
 			getBlockIfLoaded(signLocation.world, x, y, z) ?: return false

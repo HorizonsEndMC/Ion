@@ -37,7 +37,7 @@ data class Sector(val angle: Int, val distance: Int) {
 			}
 
 			if (string != "Andromeda") {
-				IonServer.logger.warning("Invalid sector $worldName, defaulting to 7b")
+				IonServer.slF4JLogger.warn("Invalid sector $worldName, defaulting to 7b")
 			}
 
 			return Sector(7, getDistance('b'))

@@ -57,7 +57,7 @@ object Tasks {
 		val delay = (time.toEpochSecond() * 1000L) - System.currentTimeMillis()
 		check(delay > 0)
 
-		println("SCHEDULED TASK FOR $time, SUPPLIED HOUR OF DAY $hour, ACTUAL HOUR OF DAY ${time.hour}")
+		IonServer.slF4JLogger.info("SCHEDULED TASK FOR $time, SUPPLIED HOUR OF DAY $hour, ACTUAL HOUR OF DAY ${time.hour}")
 
 		asyncDelay(delay / 50L, block)
 	}
