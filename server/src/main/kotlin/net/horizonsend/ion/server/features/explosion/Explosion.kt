@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -51,7 +52,9 @@ class Explosion(
 	val blocks: MutableList<Block> = mutableListOf()
 
 	fun explode(applyPhysics: Boolean = true, callback: (Explosion) -> Unit = {}) {
-		if (useRays) getRayBlocksAsync() else getBlocksAsync()
+		println(5)
+		if (useRays) getRayBlockPositionsAsync() else getBlockPositionsAsync()
+		println(6)
 
 		val event = StarshipCauseExplosionEvent(
 			controller,
@@ -59,11 +62,16 @@ class Explosion(
 		)
 
 		val isCancelled = event.callEvent()
+		println(7)
 
-		if (isCancelled) return
+		if (!isCancelled) return
+		println(8)
 
 		Tasks.sync {
+			populateBlocks()
+			println(9)
 			removeBlocks(applyPhysics)
+			println(10)
 
 			if (useFire) applyFire()
 
@@ -72,13 +80,15 @@ class Explosion(
 	}
 
 	/** populates the blocks list **/
-	private fun getBlocksAsync() {
+	private fun getBlockPositionsAsync() {
 		val collected = mutableSetOf<BlockPos>()
 
 		Tasks.async {
 			val maxRadius = getMaxRadius()
+			println("getting blocks 1")
 
 			val coveredChunks = mutableSetOf<CompletableFuture<Chunk>>()
+			println("getting blocks 2")
 
 			val originX = this.x.toInt()
 			val originY = this.y.toInt()
@@ -87,6 +97,7 @@ class Explosion(
 			val xRange = IntRange(-maxRadius, maxRadius).associateWith { it + originX }
 			val yRange = IntRange(-maxRadius, maxRadius).associateWith { it + originY }
 			val zRange = IntRange(-maxRadius, maxRadius).associateWith { it + originZ }
+			println("getting blocks 3")
 
 			for ((_, absoluteX) in xRange) for ((_, absoluteZ) in zRange) {
 				val chunkX = absoluteX.shr(4)
@@ -131,8 +142,16 @@ class Explosion(
 		toExplode.addAll(collected)
 	}
 
+	fun populateBlocks() {
+		for (block in toExplode) {
+			val (x, y, z) = block
+
+			blocks.add(getBlockIfLoaded(world, x, y, z) ?: continue)
+		}
+	}
+
 	/** If specified for the explosion to use rays, it additionally populates the blocks list **/
-	private fun getRayBlocksAsync() {
+	private fun getRayBlockPositionsAsync() {
 		val positions = mutableSetOf<BlockPos>()
 
 		val radius = power.toDouble().coerceAtLeast(0.0).toFloat()
@@ -217,7 +236,9 @@ class Explosion(
 
 	/** removes blocks specified in the blocks list **/
 	private fun removeBlocks(applyPhysics: Boolean) = Tasks.sync {
+		println(12)
 		for (block in blocks) {
+			println(block)
 			block.setType(Material.AIR, applyPhysics)
 		}
 	}
@@ -243,9 +264,11 @@ class Explosion(
 			Boolean = false,
 			applyPhysics: Boolean = true,
 			fireType: Material = Material.FIRE,
-			callback: (Explosion) -> Unit,
+			callback: (Explosion) -> Unit = {},
 		) : Explosion {
+			println(1)
 			val (_, x, y, z) = location
+			println(2)
 
 			val explosion = Explosion(
 				this,
@@ -262,6 +285,7 @@ class Explosion(
 
 			explosion.useRays = useRays
 
+			println(3)
 			explosion.explode(applyPhysics, callback)
 
 			return explosion
