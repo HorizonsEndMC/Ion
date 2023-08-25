@@ -78,6 +78,7 @@ object BountyCommand : SLCommand() {
 		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 		if (target._id == sender.slPlayerId) fail { "You can't place a bounty on yourself!" }
+		requireMoney(sender, amount)
 
 		val hasProtection = Bukkit.getPlayer(target._id.uuid)?.hasProtection()
 		if (hasProtection == true) fail { "You cannot place a bounty on a player with new player protection!" }
@@ -90,8 +91,6 @@ object BountyCommand : SLCommand() {
 		val bounty = target.bounty
 
 		Tasks.sync {
-			if (VAULT_ECO.getBalance(sender) < amount) fail { "Insufficient funds." }
-
 			VAULT_ECO.withdrawPlayer(sender, amount)
 
 			Notify.online(
@@ -105,9 +104,9 @@ object BountyCommand : SLCommand() {
 					.append(text((bounty + amount).toCreditsString(), NamedTextColor.GOLD))
 					.build()
 			)
-		}
 
-		SLPlayer.updateById(target._id, inc(SLPlayer::bounty, amount))
+			SLPlayer.updateById(target._id, inc(SLPlayer::bounty, amount))
+		}
 	}
 
 	@Subcommand("claim")
