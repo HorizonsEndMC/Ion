@@ -5,28 +5,31 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
-import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import org.litote.kmongo.set
-import org.litote.kmongo.setTo
 
 @CommandAlias("waypoint")
 object WaypointCommand : SLCommand() {
+    @Suppress("unused")
+    @CommandAlias("add")
+    @Description("Add a waypoint to the route navigation")
+    fun onSetWaypoint(
+        sender: Player
+    ) {
+        sender.userError("Usage: /waypoint add <planet/hyperspaceBeacon> or /waypoint add <spaceWorld> <x> <z>")
+    }
+
     // add vertex as destination
     @Suppress("unused")
     @CommandAlias("add")
@@ -219,27 +222,6 @@ object WaypointCommand : SLCommand() {
         }
     }
 
-    // calculates shortest path with a player's destinations
-    @Suppress("unused")
-    @Subcommand("path get")
-    @CommandPermission("waypoint.reload")
-    @Description("DEBUG: Calculates the shortest path of a route manually")
-    fun onGetPath(
-        sender: Player
-    ) {
-        val paths = WaypointManager.findShortestPath(sender)
-        if (paths == null) {
-            // path could not be calculated (a vertex is completely separated from the graph)
-            sender.userError("No connections can be found to get to the destination")
-            return
-        } else if (paths.isEmpty()) {
-            // paths exists but is empty; implies that prerequisite conditions were not met
-            sender.userError("No waypoints set")
-        }
-        // update path list
-        WaypointManager.playerPaths[sender.uniqueId] = paths
-    }
-
     @Suppress("unused")
     @Subcommand("path")
     @Description("Prints detailed information of all waypoints on a navigation route")
@@ -256,23 +238,11 @@ object WaypointCommand : SLCommand() {
                     "with total distance ${path.weight}"
             )
             for ((j, edge) in path.edgeList.withIndex()) {
-                sender.information("    ${i + 1}.$j: ${edge.source.name} to ${edge.target.name} " +
+                sender.information("    ${i + 1}.${j + 1}: ${edge.source.name} to ${edge.target.name} " +
                         "with distance ${WaypointManager.playerGraphs[sender.uniqueId]!!.getEdgeWeight(edge)}"
                 )
             }
         }
-    }
-
-    @Suppress("unused")
-    @Subcommand("compactWaypoints")
-    @Description("Toggles compact waypoints; intermediate jumps are not displayed during navigation")
-    fun onToggleCompactWaypoints(
-        sender: Player,
-        @Optional toggle: Boolean?
-    ) {
-        val waypointsCompactWaypoints = toggle ?: !PlayerCache[sender].compactWaypoints
-        SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::compactWaypoints setTo waypointsCompactWaypoints))
-        sender.success("Changed compact waypoints visibility to $waypointsCompactWaypoints")
     }
 
     @Suppress("unused")

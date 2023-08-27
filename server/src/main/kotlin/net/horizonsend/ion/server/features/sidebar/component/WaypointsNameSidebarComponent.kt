@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sidebar.component
 
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
@@ -18,9 +19,9 @@ class WaypointsNameSidebarComponent(supplier: Supplier<String>, val destination:
     override fun draw(drawable: LineDrawable) {
         val line = text()
         if (destination) {
-            line.append(text("Final: ").color(GREEN))
+            line.append(text("Final: ").color(GRAY))
         } else {
-            line.append(text("Next: ").color(GREEN))
+            line.append(text("Next: ").color(GRAY))
         }
         line.append(text(string).color(getDestinationColor(destination)))
         drawable.drawLine(line.build())

@@ -399,7 +399,7 @@ object WaypointManager : IonServerComponent() {
     fun getNextWaypoint(player: Player): String? {
         val playerPath = playerPaths[player.uniqueId] ?: return null
         if (playerPath.isEmpty()) return null
-        return playerPath.first().endVertex.name
+        return playerPath.first().edgeList.first().target.name.replace('_', ' ')
     }
 
     fun getLastWaypoint(player: Player): String? {
