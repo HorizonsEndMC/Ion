@@ -15,7 +15,7 @@ import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 
 @CommandAlias("sidebar contacts")
-object ContactsCommand : SLCommand() {
+object SidebarContactsCommand : SLCommand() {
 	@Default
 	@Suppress("unused")
 	fun defaultCase(
