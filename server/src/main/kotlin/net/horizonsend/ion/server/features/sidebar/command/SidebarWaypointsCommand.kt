@@ -14,7 +14,7 @@ import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 
 @CommandAlias("sidebar waypoints")
-object WaypointsCommand : SLCommand() {
+object SidebarWaypointsCommand : SLCommand() {
     @Suppress("unused")
     @Subcommand("compactWaypoints")
     @Description("Toggles compact waypoints; intermediate jumps are not displayed during navigation")
