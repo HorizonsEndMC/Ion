@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 
-@CommandAlias("contacts")
+@CommandAlias("sidebar contacts")
 object ContactsCommand : SLCommand() {
 	@Default
 	@Suppress("unused")

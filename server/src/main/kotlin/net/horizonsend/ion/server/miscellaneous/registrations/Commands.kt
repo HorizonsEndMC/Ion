@@ -61,6 +61,7 @@ import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection
 import net.horizonsend.ion.server.features.sidebar.command.ContactsCommand
+import net.horizonsend.ion.server.features.sidebar.command.WaypointsCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
@@ -140,6 +141,7 @@ val commands: List<SLCommand> = listOf(
 	AchievementsCommand,
 	BlastResistanceCommand,
 	ContactsCommand,
+    WaypointsCommand,
     WaypointCommand,
 	BountyCommand
 )
