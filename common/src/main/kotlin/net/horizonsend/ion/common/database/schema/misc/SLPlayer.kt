@@ -59,11 +59,14 @@ data class SLPlayer(
     var achievements: Set<String> = setOf(),
 	var bounty: Double = 0.0,
 
+	var contactsEnabled: Boolean = true,
 	var contactsStarships: Boolean = true,
 	var lastStarshipEnabled: Boolean = true,
 	var planetsEnabled: Boolean = true,
 	var starsEnabled: Boolean = true,
 	var beaconsEnabled: Boolean = true,
+
+	var waypointsEnabled: Boolean = true,
 	var compactWaypoints: Boolean = true,
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(

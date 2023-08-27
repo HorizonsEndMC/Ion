@@ -37,11 +37,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var nationTag: String?,
 		var bounty: Double,
 
+		var contactsEnabled: Boolean = true,
 		var contactsStarships: Boolean = true,
 		var lastStarshipEnabled: Boolean = true,
 		var planetsEnabled: Boolean = true,
 		var starsEnabled: Boolean = true,
 		var beaconsEnabled: Boolean = true,
+
+		var waypointsEnabled: Boolean = true,
 		var compactWaypoints: Boolean = true,
 	)
 
@@ -120,6 +123,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::contactsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val contactsEnabled = it.boolean()
+					data.contactsEnabled = contactsEnabled
+				}
+			}
+
 			change[SLPlayer::contactsStarships]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -162,6 +174,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val beaconsEnabled = it.boolean()
 					data.beaconsEnabled = beaconsEnabled
+				}
+			}
+
+			change[SLPlayer::waypointsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val waypointsEnabled = it.boolean()
+					data.waypointsEnabled = waypointsEnabled
 				}
 			}
 
