@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar
 
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.LocationSidebarComponent
@@ -47,39 +48,45 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		lines.addComponent(locationComponent)
 
 		// Contacts
-		val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
-		val contacts = ContactsSidebar.getPlayerContacts(player)
-		val contactsComponents: MutableList<SidebarComponent> = mutableListOf()
-		for (contact in contacts) {
-			contactsComponents.add(ContactsSidebarComponent { contact })
+		val contactsEnabled = PlayerCache[player.uniqueId].contactsEnabled
+		if (contactsEnabled) {
+			val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
+			val contacts = ContactsSidebar.getPlayerContacts(player)
+			val contactsComponents: MutableList<SidebarComponent> = mutableListOf()
+			for (contact in contacts) {
+				contactsComponents.add(ContactsSidebarComponent { contact })
+			}
+			lines.addComponent(contactsHeaderComponent)
+			for (component in contactsComponents) lines.addComponent(component)
 		}
-		lines.addComponent(contactsHeaderComponent)
-		for (component in contactsComponents) lines.addComponent(component)
 
 		// Waypoints
-		val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
-		lines.addComponent(waypointsHeaderComponent)
+		val waypointsEnabled = PlayerCache[player.uniqueId].waypointsEnabled
+		if (waypointsEnabled) {
+			val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
+			lines.addComponent(waypointsHeaderComponent)
 
-		// next waypoint (first waypoint in route)
-		val nextWaypoint = WaypointManager.getNextWaypoint(player)
-		if (!nextWaypoint.isNullOrEmpty()) {
-			val nextWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ nextWaypoint }, false)
-			lines.addComponent(nextWaypointComponent)
-		}
+			// next waypoint (first waypoint in route)
+			val nextWaypoint = WaypointManager.getNextWaypoint(player)
+			if (!nextWaypoint.isNullOrEmpty()) {
+				val nextWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ nextWaypoint }, false)
+				lines.addComponent(nextWaypointComponent)
+			}
 
-		// route string
-		val route = WaypointsSidebar.splitRouteString(player)
-		val routeComponents: MutableList<SidebarComponent> = mutableListOf()
-		for (routePart in route) {
-			routeComponents.add(WaypointsSidebarComponent { routePart })
-		}
-		for (component in routeComponents) lines.addComponent(component)
+			// route string
+			val route = WaypointsSidebar.splitRouteString(player)
+			val routeComponents: MutableList<SidebarComponent> = mutableListOf()
+			for (routePart in route) {
+				routeComponents.add(WaypointsSidebarComponent { routePart })
+			}
+			for (component in routeComponents) lines.addComponent(component)
 
-		// last waypoint (final destination)
-		val lastWaypoint = WaypointManager.getLastWaypoint(player)
-		if (!lastWaypoint.isNullOrEmpty()) {
-			val lastWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ lastWaypoint }, true)
-			lines.addComponent(lastWaypointComponent)
+			// last waypoint (final destination)
+			val lastWaypoint = WaypointManager.getLastWaypoint(player)
+			if (!lastWaypoint.isNullOrEmpty()) {
+				val lastWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ lastWaypoint }, true)
+				lines.addComponent(lastWaypointComponent)
+			}
 		}
 
 		// Assemble title and components
