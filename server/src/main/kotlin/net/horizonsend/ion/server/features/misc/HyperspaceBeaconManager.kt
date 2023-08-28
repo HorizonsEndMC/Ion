@@ -2,10 +2,11 @@ package net.horizonsend.ion.server.features.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import org.bukkit.event.EventHandler
@@ -29,7 +30,8 @@ object HyperspaceBeaconManager : SLEventListener() {
 	@Suppress("unused")
 	@EventHandler
 	fun onStarshipUnpilot(event: StarshipUnpilotedEvent) {
-		activeRequests.remove(event.player.uniqueId)
+		val player = (event.starship.controller as? PlayerController)?.player ?: return
+		activeRequests.remove(player.uniqueId)
 	}
 
 	@Suppress("unused")
@@ -47,8 +49,8 @@ object HyperspaceBeaconManager : SLEventListener() {
 		}
 	}
 
-	private fun detectNearbyBeacons(starship: ActivePlayerStarship, x: Int, z: Int) {
-		val pilot = starship.pilot ?: return
+	private fun detectNearbyBeacons(starship: ActiveControlledStarship, x: Int, z: Int) {
+		val pilot = starship.playerPilot ?: return
 		if (starship.hyperdrives.isEmpty()) return
 
 		val worldBeacons = beaconWorlds[starship.serverLevel.world] ?: return

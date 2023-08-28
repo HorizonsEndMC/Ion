@@ -3,37 +3,41 @@ package net.horizonsend.ion.server.features.starship.active
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
-import java.lang.Math.cbrt
-import java.util.UUID
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
-import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.starship.controllers.LegacyController
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.minecraft.core.BlockPos
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.leftFace
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.lang.Math.cbrt
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 
-class ActivePlayerStarship(
+class ActiveControlledStarship(
 	val data: PlayerStarshipData,
 	blocks: LongOpenHashSet,
 	mass: Double,
@@ -54,15 +58,9 @@ class ActivePlayerStarship(
 
 	var lastUnpilotTime: Long = 0
 
-	var pilot: Player?
-		get() = (controller as? PlayerController)?.playerPilot
-		set(value) {
-			controller = if (value == null) null else LegacyController(value, this)
-		}
-
 	var oldpilot: Player? = null
 
-	val minutesUnpiloted = if (pilot != null) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
+	val minutesUnpiloted = if (controller is ActivePlayerController) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 
 	var speedLimit = -1
 
@@ -93,7 +91,7 @@ class ActivePlayerStarship(
 	private fun scheduleRotation() {
 		val rotationTimeTicks = TimeUnit.NANOSECONDS.toMillis(rotationTime) / 50L
 		Tasks.sync {
-			pilot?.setCooldown(StarshipControl.CONTROLLER_TYPE, rotationTimeTicks.toInt())
+			(controller as? ActivePlayerController)?.player?.setCooldown(StarshipControl.CONTROLLER_TYPE, rotationTimeTicks.toInt())
 		}
 		Tasks.syncDelay(rotationTimeTicks) {
 			if (pendingRotations.none()) {
@@ -115,7 +113,7 @@ class ActivePlayerStarship(
 			return CompletableFuture.completedFuture(false)
 		}
 
-		val pilot = this.pilot
+		val pilot = this.controller
 		if (pilot != null) {
 			val event: StarshipMoveEvent = when (movement) {
 				is TranslateMovement -> StarshipTranslateEvent(this, pilot, movement)
@@ -138,11 +136,12 @@ class ActivePlayerStarship(
 	}
 
 	@Synchronized
-	private fun executeMovement(movement: StarshipMovement, pilot: Player?): Boolean {
+	private fun executeMovement(movement: StarshipMovement, controller: Controller?): Boolean {
 		try {
 			movement.execute()
 		} catch (e: ConditionFailedException) {
-			pilot?.msg("&c" + (e.message ?: "Starship could not move for an unspecified reason!"))
+			controller?.serverError(e.message ?: "Starship could not move for an unspecified reason!")
+
 			sneakMovements = 0
 			return false
 		}
@@ -163,10 +162,8 @@ class ActivePlayerStarship(
 
 	var cruiseData = StarshipCruising.CruiseData(this)
 
-	override val weaponColor: Color
-		get() = pilot?.let { PlayerCache[it].nationOid }?.let { Color.fromRGB( NationCache[it].color ) } ?: Color.RED
-
-	fun requirePilot(): Player = requireNotNull(pilot) { "Starship must be piloted!" }
+	fun requireController(): Controller = requireNotNull(controller) { "Starship must be piloted!" }
+	fun requirePlayerController(): Player = requireNotNull((controller as? PlayerController)?.player) { "Starship must be piloted!" }
 
 	var isDirectControlEnabled: Boolean = false
 		private set
@@ -179,17 +176,18 @@ class ActivePlayerStarship(
 		if (enabled) {
 			sendMessage("&7Direct Control: &aON &e[Use /dc to turn it off - scroll or use hotbar keys to adjust speed - use W/A/S/D to maneuver - hold sneak (Lshift) for a boost]")
 
-			val pilot = this.pilot ?: return
-			pilot.walkSpeed = 0.009f
-			directControlCenter = pilot.location.toBlockLocation().add(0.5, 0.0, 0.5)
+			val player: Player = (controller as? PlayerController)?.player ?: return
+
+			player.walkSpeed = 0.009f
+			directControlCenter = player.location.toBlockLocation().add(0.5, 0.0, 0.5)
 		} else {
 			sendMessage("&7Direct Control: &cOFF &e[Use /dc to turn it on]")
 			directControlVector.x = 0.0
 			directControlVector.y = 0.0
 			directControlVector.z = 0.0
 
-			val pilot = this.pilot ?: return
-			pilot.walkSpeed = 0.2f // default
+			val player: Player = (controller as? PlayerController)?.player ?: return
+			player.walkSpeed = 0.2f // default
 		}
 	}
 

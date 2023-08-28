@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.distance
@@ -38,7 +38,7 @@ class HyperspaceMovement(
 	}
 
 	init {
-		(ship as? ActivePlayerStarship)?.pilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
+		(ship as? ActiveControlledStarship)?.playerPilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
 	override fun run() {

@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.event
 
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
-import org.bukkit.entity.Player
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import org.bukkit.event.HandlerList
 
 class StarshipUnpilotedEvent(
-	ship: ActivePlayerStarship,
-	val player: Player
-) : PlayerStarshipEvent(ship) {
+	ship: ActiveControlledStarship,
+	val controller: Controller
+) : ControlledStarshipEvent(ship) {
 	override fun getHandlers(): HandlerList {
 		return handlerList
 	}

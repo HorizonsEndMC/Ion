@@ -31,10 +31,11 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
@@ -93,7 +94,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onStopRiding(sender: Player) {
 		val starship = getStarshipRiding(sender)
 
-		failIf(starship is ActivePlayerStarship && starship.pilot == sender) {
+		failIf(starship is ActiveControlledStarship && starship.playerPilot == sender) {
 			"You can't stop riding if you're the pilot. Use /release or /unpilot."
 		}
 
@@ -134,7 +135,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("x|z")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player, xCoordinate: String, zCoordinate: String, @Optional hyperdriveTier: Int?) {
-		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
+		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
@@ -159,7 +160,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
-		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
+		val starship: ActiveControlledStarship = getStarshipPiloting(sender)
 
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
@@ -212,7 +213,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	private fun tryJump(
-		starship: ActivePlayerStarship,
+		starship: ActiveControlledStarship,
 		x: Int,
 		z: Int,
 		destinationWorld: World,
@@ -283,7 +284,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
 			sender.userError("Starship is cruising; jump aborted. Try again when the starship fully stops moving.")
-			StarshipCruising.stopCruising(sender, starship)
+			StarshipCruising.stopCruising(starship.controller ?: return, starship)
 			return
 		}
 
@@ -420,7 +421,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("nukeship")
 	@CommandPermission("starships.nukeship")
 	fun onNukeShip(sender: Player) {
-		val ship = getStarshipRiding(sender) as? ActivePlayerStarship ?: return
+		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return
 		StarshipDestruction.vanish(ship)
 	}
 
@@ -445,10 +446,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("cruise")
 	fun onCruise(sender: Player) {
 		val ship = getStarshipPiloting(sender)
+		val controller = ActivePlayerController[sender] ?: return
+
 		if (!StarshipCruising.isCruising(ship)) {
-			StarshipCruising.startCruising(sender, ship)
+			StarshipCruising.startCruising(controller, ship)
 		} else {
-			StarshipCruising.stopCruising(sender, ship)
+			StarshipCruising.stopCruising(controller, ship)
 		}
 	}
 
@@ -499,13 +502,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		var totalBlocks = 0
 
 		for (starship in ActiveStarships.all()) {
-			val pilot: Player? = (starship as? ActivePlayerStarship)?.pilot
+			val pilot: Player? = starship.playerPilot
 			totalShips++
 
 			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
-			val name = (starship as? ActivePlayerStarship)?.data?.let { getDisplayName(it) } ?: starship.type.formatted
+			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayName(it) } ?: starship.type.formatted
 			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.formatted).asHoverEvent()
 
 			val pilotName = pilot?.name ?: "none"
@@ -550,7 +553,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("usebeacon")
 	fun onUseBeacon(sender: Player) {
-		val ship = getStarshipRiding(sender) as? ActivePlayerStarship ?: return
+		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return
 
 		if (ship.beacon != null) {
 			val other = ship.beacon!!.exits?.randomOrNull() ?: ship.beacon!!.destination

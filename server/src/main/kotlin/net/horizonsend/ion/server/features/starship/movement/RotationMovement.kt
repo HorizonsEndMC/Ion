@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
-import net.minecraft.world.level.block.Rotation
-import net.minecraft.world.level.block.state.BlockState
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
+import net.minecraft.world.level.block.Rotation
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
@@ -110,7 +110,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 
 		starship.forward = rotateBlockFace(starship.forward)
 
-		if (starship is ActivePlayerStarship) {
+		if (starship is ActiveControlledStarship) {
 			val dir = starship.cruiseData.targetDir
 			if (dir != null) {
 				val newX = dir.x * cosTheta - dir.z * sinTheta
