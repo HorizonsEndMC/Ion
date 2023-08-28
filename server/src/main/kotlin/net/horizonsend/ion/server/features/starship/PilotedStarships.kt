@@ -61,7 +61,7 @@ object PilotedStarships : IonServerComponent() {
 		listen<PlayerQuitEvent> { event ->
 			val controller = ActivePlayerController[event.player] ?: return@listen
 
-			map[controller]?.let { unpilot(it, true) } // release the player's starship if they are piloting one
+			map[controller]?.let { unpilot(it) } // release the player's starship if they are piloting one
 		}
 	}
 
@@ -89,7 +89,6 @@ object PilotedStarships : IonServerComponent() {
 		removeExtractors(starship)
 
 		StarshipPilotedEvent(starship, player).callEvent()
-		starship.oldpilot = null
 	}
 
 	private fun removeFromCurrentlyRidingShip(player: Player) {
@@ -149,19 +148,9 @@ object PilotedStarships : IonServerComponent() {
 		return starship.controller != null
 	}
 
-	fun unpilot(starship: ActiveControlledStarship, normal: Boolean = false) {
+	fun unpilot(starship: ActiveControlledStarship) {
 		Tasks.checkMainThread()
 		val controller = starship.controller ?: error("Starship $starship is not piloted")
-		if (normal) {
-			ActiveStarships.allPlayerShips().filter { it.oldpilot == controller }.forEach {
-				controller.information(
-					"You already have a ship unpiloted, on ${it.serverLevel.world.name} at " +
-						"${it.centerOfMass.x} ${it.centerOfMass.y} ${it.centerOfMass.z}, " +
-						"that ship will now be released."
-				)
-				DeactivatedPlayerStarships.deactivateAsync(it)
-			}
-		}
 
 		map.remove(starship.controller)
 
