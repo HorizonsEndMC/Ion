@@ -181,7 +181,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.sync {
 			if (!starship.isWithinHitbox(player)) {
 				if (PilotedStarships[player] == starship) {
-					PilotedStarships.unpilot(starship, true)
+					PilotedStarships.unpilot(starship)
 					player.userError("You got outside of the ship, so it was unpiloted!")
 				} else {
 					starship.removePassenger(player.uniqueId)
