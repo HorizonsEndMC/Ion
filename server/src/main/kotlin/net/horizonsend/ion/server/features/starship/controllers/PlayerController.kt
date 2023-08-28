@@ -21,11 +21,8 @@ open class PlayerController(val player: Player, starship: Starship, name: String
 
 	override fun canDestroyBlock(block: Block): Boolean = BlockBreakEvent(block, player).callEvent()
 
-	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean {
-		val event = BlockPlaceEvent(block, block.state, placedAgainst, player.activeItem, player, true, EquipmentSlot.HAND)
-
-		return event.callEvent()
-	}
+	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block) =
+		BlockPlaceEvent(block, block.state, placedAgainst, player.activeItem, player, true, EquipmentSlot.HAND).callEvent()
 
 	override fun audience(): Audience = player
 }

@@ -28,13 +28,8 @@ import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import kotlin.collections.MutableSet
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.forEach
-import kotlin.collections.iterator
-import kotlin.collections.mutableSetOf
-import kotlin.collections.random
 
 object ActiveStarshipMechanics : IonServerComponent() {
 	override fun onEnable() {
@@ -218,7 +213,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		Tasks.sync {
 			if (!starship.isWithinHitbox(player)) {
 				if (PilotedStarships[player] == starship) {
-					PilotedStarships.unpilot(starship, true)
+					PilotedStarships.unpilot(starship)
 					player.userError("You got outside of the ship, so it was unpiloted!")
 				} else {
 					starship.removePassenger(player.uniqueId)
