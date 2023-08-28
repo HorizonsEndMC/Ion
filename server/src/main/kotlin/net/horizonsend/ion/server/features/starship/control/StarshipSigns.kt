@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.starship.control
 
 import net.horizonsend.ion.server.features.starship.BoardingRamps
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Bukkit
@@ -15,11 +16,12 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 	CRUISE("[cruise]", arrayOf("&3Cruise".colorize(), "&8Control".colorize(), "&c- Look Direction".colorize(), "&c- /cruise ".colorize())) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPilotedPlayerStarship(player) ?: return
+			val controller = ActivePlayerController[player] ?: return
 
 			if (rightClick) {
-				StarshipCruising.startCruising(player, starship)
+				StarshipCruising.startCruising(controller, starship)
 			} else {
-				StarshipCruising.stopCruising(player, starship)
+				StarshipCruising.stopCruising(controller, starship)
 			}
 		}
 	},
@@ -121,8 +123,8 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 
 	open fun onClick(player: Player, sign: Sign, rightClick: Boolean) {}
 
-	protected fun findPlayerStarship(player: Player): ActivePlayerStarship? {
-		val activeStarship = ActiveStarships.findByPassenger(player) as? ActivePlayerStarship
+	protected fun findPlayerStarship(player: Player): ActiveControlledStarship? {
+		val activeStarship = ActiveStarships.findByPassenger(player) as? ActiveControlledStarship
 
 		if (activeStarship == null) {
 			player msg "&cYou can only use this in an active player starship"
@@ -132,15 +134,15 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 		return activeStarship
 	}
 
-	protected fun findPilotedPlayerStarship(player: Player): ActivePlayerStarship? {
-		val starship = ActiveStarships.findByPassenger(player) as? ActivePlayerStarship
+	protected fun findPilotedPlayerStarship(player: Player): ActiveControlledStarship? {
+		val starship = ActiveStarships.findByPassenger(player) as? ActiveControlledStarship
 
 		if (starship == null) {
 			player msg "&cYou can only use this in an active player starship"
 			return null
 		}
 
-		if (starship.pilot != player) {
+		if (starship.playerPilot != player) {
 			player msg "&cYou must be the pilot of the starship to do this!"
 			return null
 		}
@@ -149,7 +151,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 	}
 
 	companion object {
-		fun informOfSteal(current: UUID, starship: ActivePlayerStarship, player: Player, set: String) {
+		fun informOfSteal(current: UUID, starship: ActiveControlledStarship, player: Player, set: String) {
 			// only message if the player is still online
 			val currentPlayer = Bukkit.getPlayer(current)
 			if (currentPlayer != null && starship.isPassenger(current)) {

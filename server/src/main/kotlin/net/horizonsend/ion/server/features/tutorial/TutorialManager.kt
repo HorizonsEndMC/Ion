@@ -6,11 +6,22 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
-import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.execConsoleCmd
+import net.horizonsend.ion.server.miscellaneous.utils.gray
+import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.paste
+import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
+import net.horizonsend.ion.server.miscellaneous.utils.red
+import net.horizonsend.ion.server.miscellaneous.utils.title
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -61,21 +72,24 @@ object TutorialManager : IonServerComponent() {
 		}
 
 		listen<StarshipRotateEvent> { event ->
-			val player = event.player
+			val player = (event.starship.controller as? PlayerController)?.player ?: return@listen
+
 			if (isWorld(player.world) && (getPhase(player) ?: TutorialPhase.LAST) < TutorialPhase.TURN_RIGHT) {
 				event.isCancelled = true
 			}
 		}
 
 		listen<StarshipStartCruisingEvent> { event ->
-			val player = event.player
+			val player = (event.starship.controller as? PlayerController)?.player ?: return@listen
+
 			if (isWorld(player.world) && (getPhase(player) ?: TutorialPhase.LAST) < TutorialPhase.CRUISE_START) {
 				event.isCancelled = true
 			}
 		}
 
 		listen<StarshipTranslateEvent> { event ->
-			val player = event.player
+			val player = (event.starship.controller as? PlayerController)?.player ?: return@listen
+
 			if (isWorld(player.world) && (getPhase(player) ?: TutorialPhase.LAST) < TutorialPhase.SHIFT_FLY_FORWARD
 			) {
 				event.isCancelled = true

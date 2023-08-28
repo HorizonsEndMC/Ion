@@ -1,15 +1,15 @@
 package net.horizonsend.ion.server.features.starship.event.movement
 
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
-import net.horizonsend.ion.server.features.starship.event.PlayerStarshipEvent
-import org.bukkit.entity.Player
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.event.ControlledStarshipEvent
 import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
 
 class StarshipStartCruisingEvent(
-	ship: ActivePlayerStarship,
-	val player: Player
-) : PlayerStarshipEvent(ship), Cancellable {
+    ship: ActiveControlledStarship,
+    val controller: Controller
+) : ControlledStarshipEvent(ship), Cancellable {
 	private var cancelled: Boolean = false
 
 	override fun getHandlers(): HandlerList {

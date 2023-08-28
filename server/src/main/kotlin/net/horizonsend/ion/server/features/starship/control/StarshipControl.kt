@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.controllers.Controller
@@ -120,9 +120,9 @@ object StarshipControl : IonServerComponent() {
 		}
 	}
 
-	private fun processManualFlight(starship: ActivePlayerStarship) {
+	private fun processManualFlight(starship: ActiveControlledStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot?.userErrorAction("This ship type is not capable of moving.")
+			starship.controller?.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -130,18 +130,18 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		val pilot = starship.pilot ?: return
+		val playerPilot = starship.playerPilot ?: return
 
 		if (starship.isDirectControlEnabled) {
 			processDirectControl(starship)
-		} else if (pilot.isSneaking) {
-			processSneakFlight(pilot, starship)
+		} else if (playerPilot.isSneaking) {
+			processSneakFlight(playerPilot, starship)
 		}
 	}
 
-	private fun processDirectControl(starship: ActivePlayerStarship) {
+	private fun processDirectControl(starship: ActiveControlledStarship) {
 		if (starship.type == PLATFORM) {
-			starship.pilot!!.userErrorAction("This ship type is not capable of moving.")
+			starship.controller!!.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -150,11 +150,11 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		val pilot = starship.pilot ?: return
-		val ping = getPing(pilot)
+		val playerPilot = starship.playerPilot ?: return
+		val ping = getPing(playerPilot)
 		val movementCooldown = starship.directControlCooldown
 		val speedFac = if (ping > movementCooldown) 2 else 1
-		val heldItemSlot = pilot.inventory.heldItemSlot
+		val heldItemSlot = playerPilot.inventory.heldItemSlot
 		val cooldown = calculateCooldown(movementCooldown, heldItemSlot) * speedFac
 		val currentTime = System.currentTimeMillis()
 		val lastManualMove = starship.lastManualMove
@@ -171,16 +171,16 @@ object StarshipControl : IonServerComponent() {
 		val targetSpeed = calculateSpeed(heldItemSlot)
 		dx += (targetSpeed * direction.modX)
 		dz += (targetSpeed * direction.modZ)
-		if (pilot.isSneaking) {
+		if (playerPilot.isSneaking) {
 			dx *= 2
 			dz *= 2
 		}
 		var center = starship.directControlCenter
 		if (center == null) {
-			center = pilot.location.toBlockLocation().add(0.5, 0.0, 0.5)
+			center = playerPilot.location.toBlockLocation().add(0.5, 0.0, 0.5)
 			starship.directControlCenter = center
 		}
-		var vector = pilot.location.toVector().subtract(center.toVector())
+		var vector = playerPilot.location.toVector().subtract(center.toVector())
 		vector.setY(0)
 		vector.normalize()
 
@@ -188,7 +188,7 @@ object StarshipControl : IonServerComponent() {
 		directionWrapper.direction = Vector(direction.modX, direction.modY, direction.modZ)
 
 		val playerDirectionWrapper = center.clone()
-		playerDirectionWrapper.direction = pilot.location.direction
+		playerDirectionWrapper.direction = playerPilot.location.direction
 
 		val vectorWrapper = center.clone()
 		vectorWrapper.direction = vector
@@ -208,9 +208,9 @@ object StarshipControl : IonServerComponent() {
 
 		if (vector.x != 0.0 || vector.z != 0.0) {
 			val newLoc = center.clone()
-			newLoc.pitch = pilot.location.pitch
-			newLoc.yaw = pilot.location.yaw
-			pilot.teleport(
+			newLoc.pitch = playerPilot.location.pitch
+			newLoc.yaw = playerPilot.location.yaw
+			playerPilot.teleport(
 				newLoc,
 				PlayerTeleportEvent.TeleportCause.PLUGIN,
 				*TeleportFlag.Relative.values(),
@@ -270,18 +270,18 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		pilot.walkSpeed = 0.009f
+		playerPilot.walkSpeed = 0.009f
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
-	private fun processSneakFlight(pilot: Player, starship: ActivePlayerStarship) {
+	private fun processSneakFlight(pilot: Player, starship: ActiveControlledStarship) {
 		if (starship.type == PLATFORM) {
 			pilot.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
 		if (Hyperspace.isWarmingUp(starship)) {
-			starship.pilot?.userErrorAction("Cannot move while in hyperspace warmup.")
+			starship.controller?.userErrorAction("Cannot move while in hyperspace warmup.")
 			return
 		}
 
@@ -318,7 +318,7 @@ object StarshipControl : IonServerComponent() {
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
-	fun locationCheck(starship: ActivePlayerStarship, dx: Int, dy: Int, dz: Int): Boolean {
+	fun locationCheck(starship: ActiveControlledStarship, dx: Int, dy: Int, dz: Int): Boolean {
 		val world = starship.serverLevel.world
 		val newCenter = starship.centerOfMassVec3i.toLocation(world).add(dx.d(), dy.d(), dz.d())
 

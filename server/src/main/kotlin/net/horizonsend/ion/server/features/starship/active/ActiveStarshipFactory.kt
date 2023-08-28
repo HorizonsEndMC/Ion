@@ -21,7 +21,7 @@ object ActiveStarshipFactory {
 		data: PlayerStarshipData,
 		blockCol: Collection<Long>,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
-	): ActivePlayerStarship? {
+	): ActiveControlledStarship? {
 		Tasks.checkMainThread()
 
 		val blocks = LongOpenHashSet(blockCol)
@@ -38,7 +38,7 @@ object ActiveStarshipFactory {
 		data: PlayerStarshipData,
 		blocks: LongOpenHashSet,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
-	): ActivePlayerStarship {
+	): ActiveControlledStarship {
 		val world = checkNotNull(Bukkit.getWorld(data.levelName))
 
 		val first = blocks.first()
@@ -87,10 +87,10 @@ object ActiveStarshipFactory {
 
 		val hitbox = ActiveStarshipHitbox(blocks)
 
-		return ActivePlayerStarship(data, blocks, mass, centerOfMass, hitbox, carriedShips)
+		return ActiveControlledStarship(data, blocks, mass, centerOfMass, hitbox, carriedShips)
 	}
 
-	private fun initSubsystems(feedbackDestination: Audience, starship: ActivePlayerStarship) {
+	private fun initSubsystems(feedbackDestination: Audience, starship: ActiveControlledStarship) {
 		SubsystemDetector.detectSubsystems(starship)
 		prepareShields(starship)
 		starship.generateThrusterMap()
@@ -105,11 +105,11 @@ object ActiveStarshipFactory {
 			?: starship.forward
 	}
 
-	private fun prepareShields(starship: ActivePlayerStarship) {
+	private fun prepareShields(starship: ActiveControlledStarship) {
 		limitReinforcedShields(starship)
 	}
 
-	private fun limitReinforcedShields(starship: ActivePlayerStarship) {
+	private fun limitReinforcedShields(starship: ActiveControlledStarship) {
 		val reinforcedCount = starship.shields.count { it.isReinforcementEnabled }
 		val maxReinforced = min(3, starship.initialBlockCount / 7500)
 
@@ -127,7 +127,7 @@ object ActiveStarshipFactory {
 		}
 	}
 
-	private fun fixForwardOnlySubsystems(feedbackDestination: Audience, starship: ActivePlayerStarship) {
+	private fun fixForwardOnlySubsystems(feedbackDestination: Audience, starship: ActiveControlledStarship) {
 		for (weapon in starship.weapons.reversed()) {
 			if (weapon !is DirectionalSubsystem) {
 				continue
