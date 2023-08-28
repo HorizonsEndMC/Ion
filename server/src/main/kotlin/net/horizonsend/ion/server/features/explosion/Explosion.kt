@@ -12,16 +12,22 @@ import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
+import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.sound.Sound.Source.MASTER
+import net.kyori.adventure.sound.Sound.sound
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.FluidState
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
+import kotlin.math.max
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
@@ -40,11 +46,15 @@ class Explosion(
 ) {
 	private var fireType = Material.FIRE
 	private val toExplode = mutableSetOf<BlockPos>()
+
 	var useFire = false
 	var firePercent = 0.05
 
 	val random = Random.asJavaRandom()
 	val blocks: MutableSet<Block> = mutableSetOf()
+
+	private var particle: Particle? = null
+	private var sound: Sound? = null
 
 	fun explode(applyPhysics: Boolean = true, callback: (Explosion) -> Unit = {}) = Tasks.async {
 		val blockPositions = getRayBlockPositionsAsync()
@@ -69,6 +79,17 @@ class Explosion(
 
 				if (useFire) applyFire()
 
+				particle?.let { particle ->
+					val particles = max(1, sqrt(power).toInt())
+					val offset = sqrt(power) * 2.0
+
+					world.spawnParticle(particle, x, y ,z, particles, offset, offset, offset)
+				}
+
+				sound?.let { sound ->
+					world.playSound(sound, x, y, z)
+				}
+
 				callback(this)
 			}
 		}
@@ -85,6 +106,7 @@ class Explosion(
 	}
 
 	/** If specified for the explosion to use rays, it additionally populates the blocks list **/
+	// This is the NMS explosion code
 	private fun getRayBlockPositionsAsync(): CompletableFuture<Set<BlockPos>> {
 		val complete = CompletableFuture<Set<BlockPos>>()
 
@@ -208,6 +230,8 @@ class Explosion(
 			useFire: Boolean = false,
 			applyPhysics: Boolean = true,
 			fireType: Material = Material.FIRE,
+			particle: Particle = Particle.EXPLOSION_HUGE,
+			sound: Sound? = sound(key("entity.generic.explode"), MASTER, 1.0f, 1.0f),
 			callback: (Explosion) -> Unit = {},
 		) : Explosion {
 			val (_, x, y, z) = location
@@ -226,6 +250,10 @@ class Explosion(
 			explosion.fireType = fireType
 
 			explosion.useFire = useFire
+
+			explosion.particle = particle
+
+			explosion.sound = sound
 
 			explosion.explode(applyPhysics, callback)
 
