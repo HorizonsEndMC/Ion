@@ -16,6 +16,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -48,10 +49,10 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 		if (event.clickedBlock?.type?.isWallSign != true) return
 
-		tryDescend(player)
+		tryDescend(player, event)
 	}
 
-	private fun tryDescend(player: Player) {
+	private fun <T: Cancellable> tryDescend(player: Player, event: T) {
 		val below = player.location.block.getRelative(BlockFace.DOWN)
 
 		if (below.type != Material.GLASS && !below.type.isStainedGlass) return
@@ -75,6 +76,8 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 
 		if (!checkMultiblock(block)) return
 
+		event.isCancelled = true
+
 		player.teleport(
 			block.location.add(0.5, 1.5, 0.5),
 			TeleportCause.PLUGIN,
@@ -82,7 +85,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		)
 	}
 
-	private fun tryAscend(player: Player) {
+	private fun <T: Cancellable> tryAscend(player: Player, event: T) {
 		val blockStandingIn = player.location.block
 
 		for (i in player.world.minHeight..(player.world.maxHeight - blockStandingIn.y)) {
@@ -92,6 +95,8 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 			if (!block.type.isGlass) continue
 
 			if (!checkMultiblock(block)) continue
+
+			event.isCancelled = true
 
 			player.teleport(
 				block.location.add(0.5, 1.5, 0.5),
@@ -123,15 +128,14 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 		if (event.player.location.pitch > -60) return
 
-		tryAscend(event.player)
+		tryAscend(event.player, event)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerJumpEvent(event: PlayerJumpEvent) {
 		if (event.player.inventory.itemInMainHand.type != Material.CLOCK) return
 
-		event.isCancelled = true
-		tryAscend(event.player)
+		tryAscend(event.player, event)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -140,6 +144,6 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		if (ActiveStarships.findByPilot(event.player) != null) return
 		if (event.player.inventory.itemInMainHand.type != Material.CLOCK) return
 
-		tryDescend(event.player)
+		tryDescend(event.player, event)
 	}
 }
