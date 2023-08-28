@@ -34,10 +34,10 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 
 class MiningLaserSubsystem(
-	override val starship: ActivePlayerStarship,
-	pos: Vec3i,
-	private val face: BlockFace,
-	val multiblock: MiningLaserMultiblock,
+    override val starship: ActiveControlledStarship,
+    pos: Vec3i,
+    private val face: BlockFace,
+    val multiblock: MiningLaserMultiblock,
 ) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
 	private val firingTasks = mutableListOf<BukkitTask>()
 	private var isFiring = false

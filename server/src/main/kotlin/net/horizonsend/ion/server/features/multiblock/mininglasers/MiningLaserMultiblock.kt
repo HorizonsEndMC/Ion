@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.mininglasers
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -38,7 +38,7 @@ abstract class MiningLaserMultiblock : Multiblock(), SubsystemMultiblock<MiningL
 	}
 
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): MiningLaserSubsystem {
-		if (starship is ActivePlayerStarship) {
+		if (starship is ActiveControlledStarship) {
 			return MiningLaserSubsystem(starship, pos, face, this)
 		} else {
 			throw IllegalStateException("Mining lasers can be only used on Player starships")

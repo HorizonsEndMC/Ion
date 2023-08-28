@@ -42,7 +42,6 @@ import net.kyori.adventure.audience.ForwardingAudience
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import org.bukkit.Bukkit
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -160,8 +159,6 @@ abstract class ActiveStarship(
 	}
 
 	abstract val interdictionRange: Int
-
-	abstract val weaponColor: Color
 
 	var forward: BlockFace = BlockFace.NORTH
 	var isExploding = false

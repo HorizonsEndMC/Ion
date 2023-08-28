@@ -25,7 +25,7 @@ import net.horizonsend.ion.server.features.starship.StarshipComputers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.*
@@ -267,7 +267,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		origin: Vec3i,
 		type: StarshipType,
 		name: String,
-		callback: (ActivePlayerStarship) -> Unit = {}
+		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 
