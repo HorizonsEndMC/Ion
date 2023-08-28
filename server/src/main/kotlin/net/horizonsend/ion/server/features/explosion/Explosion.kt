@@ -81,7 +81,7 @@ class Explosion(
 
 				particle?.let { particle ->
 					val particles = max(1, sqrt(power).toInt())
-					val offset = sqrt(power) * 2.0
+					val offset = sqrt(power).toDouble()
 
 					world.spawnParticle(particle, x, y ,z, particles, offset, offset, offset)
 				}

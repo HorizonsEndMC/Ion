@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship
 
+import com.sk89q.worldedit.world.World as WEWorld
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.extent.clipboard.Clipboard
@@ -7,12 +8,11 @@ import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import com.sk89q.worldedit.world.World as WEWorld
 
 object StarshipSchematic {
 	fun createSchematic(starship: ActiveStarship): Clipboard {
@@ -23,7 +23,7 @@ object StarshipSchematic {
 		val region = CuboidRegion(min, max)
 		val clipboard = BlockArrayClipboard(region)
 
-		val origin = if (starship is ActivePlayerStarship) Vec3i(starship.data.blockKey) else starship.centerOfMassVec3i
+		val origin = if (starship is ActiveControlledStarship) Vec3i(starship.data.blockKey) else starship.centerOfMassVec3i
 		clipboard.origin = BlockVector3.at(origin.x, origin.y, origin.z)
 		val weWorld: WEWorld = BukkitAdapter.adapt(starship.serverLevel.world)
 		starship.iterateBlocks { x, y, z ->

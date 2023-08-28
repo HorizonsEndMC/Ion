@@ -32,7 +32,7 @@ import kotlin.collections.set
 
 object ActiveStarships : IonServerComponent() {
 	private val set = ObjectOpenHashSet<ActiveStarship>()
-	private val playerShipIdMap = Object2ObjectOpenHashMap<Oid<PlayerStarshipData>, ActivePlayerStarship>()
+	private val playerShipIdMap = Object2ObjectOpenHashMap<Oid<PlayerStarshipData>, ActiveControlledStarship>()
 	private val playerShipLocationMap: LoadingCache<World, Long2ObjectOpenHashMap<PlayerStarshipData>> = CacheBuilder
 		.newBuilder()
 		.weakKeys()
@@ -44,22 +44,22 @@ object ActiveStarships : IonServerComponent() {
 
 	fun all(): List<ActiveStarship> = set.toList()
 
-	fun allPlayerShips(): List<ActivePlayerStarship> = playerShipIdMap.values.toList()
+	fun allPlayerShips(): List<ActiveControlledStarship> = playerShipIdMap.values.toList()
 
 	fun add(starship: ActiveStarship) {
 		Tasks.checkMainThread()
 		val world = starship.serverLevel.world
 
-		require(starship !is ActivePlayerStarship || !playerShipIdMap.containsKey(starship.dataId)) {
+		require(starship !is ActiveControlledStarship || !playerShipIdMap.containsKey(starship.dataId)) {
 			"Starship is already in the active id map"
 		}
-		require(starship !is ActivePlayerStarship || !playerShipLocationMap[world].containsKey(starship.data.blockKey)) {
+		require(starship !is ActiveControlledStarship || !playerShipLocationMap[world].containsKey(starship.data.blockKey)) {
 			"Another starship is already at that location"
 		}
 
 		set.add(starship)
 
-		if (starship is ActivePlayerStarship) {
+		if (starship is ActiveControlledStarship) {
 			playerShipIdMap[starship.dataId] = starship
 			playerShipLocationMap[world][starship.data.blockKey] = starship.data
 		}
@@ -84,7 +84,7 @@ object ActiveStarships : IonServerComponent() {
 
 		set.remove(starship)
 
-		if (starship is ActivePlayerStarship) {
+		if (starship is ActiveControlledStarship) {
 			playerShipIdMap.remove(starship.dataId)
 			val blockKey: Long = starship.data.blockKey
 			val data: PlayerStarshipData = starship.data
@@ -144,7 +144,7 @@ object ActiveStarships : IonServerComponent() {
 
 	fun findByPassenger(player: Player): ActiveStarship? = set.firstOrNull { it.isPassenger(player.uniqueId) }
 
-	fun findByPilot(player: Player): ActivePlayerStarship? = PilotedStarships[player]
+	fun findByPilot(player: Player): ActiveControlledStarship? = PilotedStarships[player]
 
 	fun findByBlock(block: Block): ActiveStarship? {
 		return findByBlock(block.world, block.x, block.y, block.z)

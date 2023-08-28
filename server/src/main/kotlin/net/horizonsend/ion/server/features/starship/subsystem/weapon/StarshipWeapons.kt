@@ -6,9 +6,8 @@ import net.horizonsend.ion.common.extensions.alertActionMessage
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -50,8 +49,7 @@ object StarshipWeapons {
 
 	fun fireQueuedShots(queuedShots: List<QueuedShot>, ship: ActiveStarship) {
 		val boostPower = AtomicDouble(0.0)
-		val pilot =
-			if (ship.controller is PlayerController) (ship.controller as PlayerController).playerPilot else null
+		val pilot = ship.playerPilot
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
 			pilot?.debug("we have heavy weapons")

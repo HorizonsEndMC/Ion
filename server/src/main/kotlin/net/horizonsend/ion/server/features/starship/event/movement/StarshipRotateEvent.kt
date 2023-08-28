@@ -1,16 +1,16 @@
 package net.horizonsend.ion.server.features.starship.event.movement
 
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
-import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
 
 class StarshipRotateEvent(
-	ship: ActivePlayerStarship,
-	player: Player,
+	ship: ActiveControlledStarship,
+	controller: Controller,
 	override val movement: RotationMovement
-) : StarshipMoveEvent(ship, player, movement), Cancellable {
+) : StarshipMoveEvent(ship, controller, movement), Cancellable {
 	val clockwise = movement.clockwise
 
 	private var cancelled: Boolean = false

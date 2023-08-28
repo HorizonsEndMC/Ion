@@ -39,7 +39,7 @@ import java.util.LinkedList
 import java.util.Locale
 
 object SubsystemDetector {
-	fun detectSubsystems(starship: ActivePlayerStarship) {
+	fun detectSubsystems(starship: ActiveControlledStarship) {
 		// these has to be queued for after the loop so things like the bounds are detected first,
 		// and so they are detected in the right order, e.g. weapons before weapon sets/signs
 		val potentialThrusterBlocks = LinkedList<Block>()
@@ -87,7 +87,7 @@ object SubsystemDetector {
 		filterSubsystems(starship)
 	}
 
-	private fun detectSign(starship: ActivePlayerStarship, block: Block) {
+	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
 
 		if (sign.type.isWallSign && sign.getLine(0).lowercase(Locale.getDefault()).contains("node")) {
@@ -113,7 +113,7 @@ object SubsystemDetector {
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
-				if (multiblock is EventShieldMultiblock && starship.pilot?.hasPermission("ion.core.eventship") == false) return
+				if (multiblock is EventShieldMultiblock && starship.lastPilot?.hasPermission("ion.core.eventship") == false) return
 				starship.subsystems += SphereShieldSubsystem(starship, sign, multiblock)
 			}
 
@@ -145,7 +145,7 @@ object SubsystemDetector {
 		}
 	}
 
-	private fun detectThruster(starship: ActivePlayerStarship, block: Block) {
+	private fun detectThruster(starship: ActiveControlledStarship, block: Block) {
 		for (face in CARDINAL_BLOCK_FACES) {
 			val thrusterType: ThrusterType = ThrusterType.values()
 				.firstOrNull { it.matchesStructure(starship, block.x, block.y, block.z, face) }
@@ -155,7 +155,7 @@ object SubsystemDetector {
 		}
 	}
 
-	private fun detectWeapon(starship: ActivePlayerStarship, block: Block) {
+	private fun detectWeapon(starship: ActiveControlledStarship, block: Block) {
 		for (face: BlockFace in CARDINAL_BLOCK_FACES) {
 			val multiblock = getWeaponMultiblock(block, face) ?: continue
 
@@ -171,7 +171,7 @@ object SubsystemDetector {
 		}
 	}
 
-	fun detectLandingGear(starship: ActivePlayerStarship, block: Block) {
+	fun detectLandingGear(starship: ActiveControlledStarship, block: Block) {
 		val matches = LandingGearMultiblock.blockMatchesStructure(block, BlockFace.NORTH)
 
 		if (!matches) return
@@ -179,7 +179,7 @@ object SubsystemDetector {
 		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), BlockFace.NORTH)
 	}
 
-	private fun isDuplicate(starship: ActivePlayerStarship, subsystem: StarshipSubsystem): Boolean {
+	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: WeaponSubsystem): Boolean {
 		return subsystem is DirectionalSubsystem && starship.subsystems
 			.filterIsInstance<WeaponSubsystem>()
 			.filter { it.pos == subsystem.pos }
@@ -217,7 +217,7 @@ object SubsystemDetector {
 			.firstOrNull { it.blockMatchesStructure(block, face) }
 	}
 
-	private fun filterSubsystems(starship: ActivePlayerStarship) {
+	private fun filterSubsystems(starship: ActiveControlledStarship) {
 		starship.subsystems.filterIsInstanceTo(starship.shields)
 		starship.subsystems.filterIsInstanceTo(starship.weapons)
 		starship.subsystems.filterIsInstanceTo(starship.turrets)

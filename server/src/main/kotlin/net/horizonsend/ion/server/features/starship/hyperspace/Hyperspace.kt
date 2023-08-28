@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
@@ -96,7 +96,7 @@ object Hyperspace : IonServerComponent() {
 			HyperspaceMap.addMarker(starship, marker)
 		}
 
-		(starship as? ActivePlayerStarship)?.pilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
+		starship.playerPilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
@@ -121,7 +121,9 @@ object Hyperspace : IonServerComponent() {
 		val y = starship.centerOfMass.y.toDouble()
 		val z = starship.centerOfMass.z.toDouble()
 		val loc = Location(world, x, y, z)
+
 		starship.playSound(starshipEnterHyperspaceSound())
+
 		StarshipTeleportation.teleportStarship(starship, loc) {
 			// Happens after the teleport finishes
 			Tasks.syncDelay(2L) {
@@ -314,7 +316,7 @@ object Hyperspace : IonServerComponent() {
 			}
 	}
 
-	fun getHyperspaceMovement(ship: ActivePlayerStarship): HyperspaceMovement? {
+	fun getHyperspaceMovement(ship: ActiveControlledStarship): HyperspaceMovement? {
 		return movementTasks[ship]
 	}
 

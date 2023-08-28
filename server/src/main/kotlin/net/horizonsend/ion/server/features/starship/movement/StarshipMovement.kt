@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
@@ -39,7 +39,7 @@ import kotlin.math.sqrt
 
 abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
 	// null if the ship is not a player ship
-	private val playerShip: ActivePlayerStarship? = starship as? ActivePlayerStarship
+	private val playerShip: ActiveControlledStarship? = starship as? ActiveControlledStarship
 
 	protected abstract fun displaceX(oldX: Int, oldZ: Int): Int
 	protected abstract fun displaceY(oldY: Int): Int
@@ -239,9 +239,9 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 	}
 
-	private fun exitPlanet(world: World, starship: ActivePlayerStarship): Boolean {
+	private fun exitPlanet(world: World, starship: ActiveControlledStarship): Boolean {
 		val planet: CachedPlanet = Space.getPlanet(world) ?: return false
-		val pilot: Player = starship.pilot ?: return false
+		val pilot: Player = starship.playerPilot ?: return false
 		val direction: Vector = pilot.location.direction
 		direction.setY(0)
 		direction.normalize()

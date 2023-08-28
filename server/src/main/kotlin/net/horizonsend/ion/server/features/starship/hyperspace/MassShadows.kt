@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import org.bukkit.World
@@ -58,9 +58,9 @@ object MassShadows {
 				continue
 			}
 			dist = sqrt(dist)
-			val interdictingShip = otherShip as? ActivePlayerStarship
+			val interdictingShip = otherShip as? ActiveControlledStarship
 			val interdictingShipName = interdictingShip?.data?.name ?: otherShip.type
-			val interdictingShipPilot = interdictingShip?.pilot?.name ?: "none"
+			val interdictingShipPilot = interdictingShip?.playerPilot?.name ?: "none"
 			return MassShadowInfo(
 				"$interdictingShipName <white>piloted by $interdictingShipPilot",
 				otherX,
