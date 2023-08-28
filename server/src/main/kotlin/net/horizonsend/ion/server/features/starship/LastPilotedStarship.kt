@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -13,7 +14,8 @@ object LastPilotedStarship : IonServerComponent() {
 
     override fun onEnable() {
         listen<StarshipUnpilotedEvent> { event ->
-            map[event.player.uniqueId] = event.starship.centerOfMass.toLocation(event.player.world)
+			val player = (event.starship.controller as? PlayerController)?.player ?: return@listen
+            map[player.uniqueId] = event.starship.centerOfMass.toLocation(player.world)
         }
 
         listen<StarshipPilotedEvent> { event ->

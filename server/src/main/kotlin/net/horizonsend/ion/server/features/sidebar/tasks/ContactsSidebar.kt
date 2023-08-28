@@ -19,9 +19,11 @@ import net.horizonsend.ion.server.features.starship.StarshipType.MEDIUM_FREIGHTE
 import net.horizonsend.ion.server.features.starship.StarshipType.SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.STARFIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.TRANSPORT
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.horizonsend.ion.server.miscellaneous.utils.toVector
@@ -84,8 +86,8 @@ object ContactsSidebar {
             ActiveStarships.all().filter {
                 it.serverLevel.world == player.world &&
                         it.centerOfMass.toVector().distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE &&
-                        (it as ActivePlayerStarship).pilot !== player &&
-                        (it as ActivePlayerStarship).pilot?.gameMode != GameMode.SPECTATOR
+                        (it.controller as? PlayerController)?.player !== player &&
+                        (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
         } else listOf()
 
@@ -148,7 +150,7 @@ object ContactsSidebar {
     ) {
         for (starship in starships) {
             val vector = when (starship) {
-                is ActivePlayerStarship -> starship.controller?.playerPilot?.location?.toVector()
+                is ActiveControlledStarship -> starship.playerPilot?.location?.toVector()
                     ?: starship.centerOfMass.toVector()
 
                 else -> starship.centerOfMass.toVector()
@@ -160,8 +162,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = text((starship as ActivePlayerStarship).pilot?.name ?: "Unpiloted Ship")
-                        .color(color),
+                    name = (starship.controller?.pilotName ?: Component.text("Unpiloted Ship")).color(color),
                     prefix = when (starship.type) {
                         STARFIGHTER -> text("\uE000").font(key("horizonsend:sidebar"))
                         GUNSHIP -> text("\uE001").font(key("horizonsend:sidebar"))
@@ -177,8 +178,8 @@ object ContactsSidebar {
                     }.run {
                         val viewerNation = PlayerCache[player].nationOid ?: return@run this.color(GRAY)
                         val pilotNation =
-                            PlayerCache[starship.pilot ?: return@run this.color(DARK_GRAY)].nationOid
-                                ?: return@run this.color(GRAY)
+                            PlayerCache[starship.playerPilot ?: return@run this.color(NamedTextColor.DARK_GRAY)].nationOid
+                                ?: return@run this.color(NamedTextColor.GRAY)
                         return@run this.color(RelationCache[viewerNation, pilotNation].color)
                     } as TextComponent,
 
@@ -409,7 +410,7 @@ object ContactsSidebar {
     }
 
     data class ContactsData(
-        val name: TextComponent,
+        val name: Component,
         val prefix: TextComponent,
         val suffix: TextComponent,
         val heading: TextComponent,
