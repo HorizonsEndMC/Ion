@@ -36,10 +36,10 @@ open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
 	 *
 	 * Try not to use, most starship code should not rely on players.
 	 **/
-	val playerPilot: Player? = (controller as? ActivePlayerController)?.player
+	val playerPilot: Player? get() = (controller as? ActivePlayerController)?.player
 
 	/** Similar to playerPilot, gets the last player if unpiloted or active **/
-	val lastPilot: Player? = (controller as? PlayerController)?.player
+	val lastPilot: Player? get() = (controller as? PlayerController)?.player
 
 	/** Called on each server tick. */
 	fun tick() {

@@ -57,9 +57,6 @@ class ActiveControlledStarship(
 	override val interdictionRange: Int = type.interdictionRange
 
 	var lastUnpilotTime: Long = 0
-
-	var oldpilot: Player? = null
-
 	val minutesUnpiloted = if (controller is ActivePlayerController) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 
 	var speedLimit = -1
