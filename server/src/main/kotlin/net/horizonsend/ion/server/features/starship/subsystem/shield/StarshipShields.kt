@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
@@ -126,14 +126,14 @@ object StarshipShields : IonServerComponent() {
 		val iterator = updatedStarships.iterator()
 		while (iterator.hasNext()) {
 			val ship = iterator.next()
-			if (ship is ActivePlayerStarship) {
+			if (ship is ActiveControlledStarship) {
 				updateShieldBars(ship)
 			}
 		}
 	}
 
 	@Synchronized
-	fun updateShieldBars(ship: ActivePlayerStarship) {
+	fun updateShieldBars(ship: ActiveControlledStarship) {
 		for ((name, bossBar) in ship.shieldBars) {
 			var amount = 0
 			var isReinforced = false
@@ -326,7 +326,7 @@ object StarshipShields : IonServerComponent() {
 			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsLevel)
 		}
 
-		starship.controller?.playerPilot?.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
+		starship.playerPilot?.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power = shield.power - usage
 
 		if (usage > 0) {

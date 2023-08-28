@@ -5,14 +5,17 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
-import org.bukkit.entity.Player
 
 abstract class Controller(val starship: Starship, val name: String) : ForwardingAudience.Single, Damager {
 	abstract val pilotName: Component
 
 	override fun audience(): Audience = Audience.empty()
+
+	/** The color used for this controller. Currently, applies weapon color **/
+	open val color = Color.fromRGB(Integer.parseInt("ffffff", 16))
 
 	/** Called on each server tick. */
 	open fun tick() {}
@@ -26,6 +29,4 @@ abstract class Controller(val starship: Starship, val name: String) : Forwarding
 
 	/** Checks weather or not the controller can place a specific block **/
 	abstract fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean
-
-	val playerPilot: Player? get() = (this as? PlayerController)?.player
 }

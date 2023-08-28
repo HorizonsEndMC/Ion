@@ -18,7 +18,7 @@ import net.horizonsend.ion.server.features.misc.CombatNPCKillEvent
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayNameComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getRawDisplayName
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
@@ -61,7 +61,7 @@ object ShipKillXP : IonServerComponent() {
 		val map = starship.damagers
 		val size = starship.initialBlockCount
 		val type = starship.type
-		val name = (starship as ActivePlayerStarship).data.name
+		val name = (starship as ActiveControlledStarship).data.name
 		return ShipDamageData(map, size, type, name)
 	}
 
@@ -198,7 +198,7 @@ object ShipKillXP : IonServerComponent() {
 		val killerShip = ActiveStarships.findByPassenger(getPlayer(killer.id)!!)!!
 
 		val killerShipName =
-			(killerShip as? ActivePlayerStarship)?.let { getDisplayNameComponent(it.data) }
+			(killerShip as? ActiveControlledStarship)?.let { getDisplayNameComponent(it.data) }
 				?: Component.text("a ").color(alertFeedbackColor).append(killerShip.type.component)
 
 		val killerNationColor = SLPlayer[getPlayer(killer.id)!!].nation?.let {
@@ -283,7 +283,7 @@ object ShipKillXP : IonServerComponent() {
 
 				// Formatting the messages
 				val killedShipDiscordName = data.name?.let { it.replace("<[^>]*>".toRegex(), "") + ", a" } ?: " a"
-				val killerShipDiscordName = (killerShip as? ActivePlayerStarship)?.data?.name?.let {
+				val killerShipDiscordName = (killerShip as? ActiveControlledStarship)?.data?.name?.let {
 					it.replace("<[^>]*>".toRegex(), "") + ", a"
 				} ?: " a"
 

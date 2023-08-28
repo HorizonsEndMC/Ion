@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
@@ -120,7 +120,7 @@ object Interdiction : IonServerComponent() {
 		}
 
 		for (cruisingShip in ActiveStarships.getInWorld(world)) {
-			if (cruisingShip !is ActivePlayerStarship) {
+			if (cruisingShip !is ActiveControlledStarship) {
 				continue
 			}
 
@@ -132,7 +132,7 @@ object Interdiction : IonServerComponent() {
 				continue
 			}
 
-			val pilot = cruisingShip.pilot ?: continue
+			val pilot = cruisingShip.playerPilot ?: continue
 
 			if (pilot.world != sign.world) continue
 			if (pilot.location.distance(sign.location) > starship.type.interdictionRange) {

@@ -7,13 +7,16 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.roundToHundredth
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.abs
@@ -24,7 +27,7 @@ object StarshipCruising : IonServerComponent() {
 	const val SECONDS_PER_CRUISE = 2.0
 
 	class CruiseData(
-		starship: ActivePlayerStarship,
+		starship: ActiveControlledStarship,
 		var velocity: Vector = Vector(),
 		var targetSpeed: Int = 0,
 		var targetDir: Vector? = null,
@@ -66,7 +69,7 @@ object StarshipCruising : IonServerComponent() {
 					continue
 				}
 
-				val player = starship.requirePilot()
+				val player = starship.requireController()
 
 				if (shouldStopCruising(starship)) {
 					stopCruising(player, starship)
@@ -77,7 +80,7 @@ object StarshipCruising : IonServerComponent() {
 		}
 	}
 
-	private fun updateCruisingShip(starship: ActivePlayerStarship) {
+	private fun updateCruisingShip(starship: ActiveControlledStarship) {
 		processUpdatedHullIntegrity(starship)
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
@@ -121,7 +124,7 @@ object StarshipCruising : IonServerComponent() {
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
-	private fun processUpdatedHullIntegrity(starship: ActivePlayerStarship) {
+	private fun processUpdatedHullIntegrity(starship: ActiveControlledStarship) {
 		val oldBlockCount = starship.cruiseData.lastBlockCount
 		val newBlockCount = starship.initialBlockCount
 
@@ -132,7 +135,7 @@ object StarshipCruising : IonServerComponent() {
 		starship.generateThrusterMap()
 	}
 
-	private fun shouldStopCruising(starship: ActivePlayerStarship): Boolean {
+	private fun shouldStopCruising(starship: ActiveControlledStarship): Boolean {
 		if (starship.isDirectControlEnabled) {
 			return true
 		}
@@ -140,15 +143,17 @@ object StarshipCruising : IonServerComponent() {
 		return Hyperspace.isWarmingUp(starship)
 	}
 
-	fun startCruising(player: Player, starship: ActivePlayerStarship) {
+	fun startCruising(controller: Controller, starship: ActiveControlledStarship) {
 		if (starship.type == PLATFORM) {
-			player.userErrorAction("This ship type is not capable of moving.")
+			controller.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
-		if (!StarshipStartCruisingEvent(starship, player).callEvent()) {
+		if (!StarshipStartCruisingEvent(starship, controller).callEvent()) {
 			return
 		}
+
+		val player = (controller as? PlayerController)?.player ?: return
 
 		val dir = player.location.direction.setY(0).normalize()
 
@@ -156,7 +161,7 @@ object StarshipCruising : IonServerComponent() {
 		val dz = if (abs(dir.z) > 0.5) sign(dir.z).toInt() else 0
 
 		if (dx == 0 && dz == 0) {
-			player.userErrorAction("Can't go up or down")
+			controller.userErrorAction("Can't go up or down")
 
 			return
 		}
@@ -164,7 +169,7 @@ object StarshipCruising : IonServerComponent() {
 		// ThrustData is a binomial data class so we can just expand it like this
 		var (accel, maxSpeed) = starship.getThrustData(dx, dz)
 		if (maxSpeed == 0) {
-			player.userErrorAction("Can't cruise in that direction")
+			controller.userErrorAction("Can't cruise in that direction")
 
 			return
 		}
@@ -191,21 +196,21 @@ object StarshipCruising : IonServerComponent() {
 		}
 	}
 
-	fun stopCruising(player: Player, starship: ActivePlayerStarship) {
+	fun stopCruising(controller: Controller, starship: ActiveControlledStarship) {
 		if (starship.type == PLATFORM) {
-			player.userErrorAction("This ship type is not capable of moving.")
+			controller.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
-		if (!StarshipStopCruisingEvent(starship, player).callEvent()) {
+		if (!StarshipStopCruisingEvent(starship, controller).callEvent()) {
 			return
 		}
 
 		if (!isCruising(starship)) {
 			if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
-				player.userErrorAction("Starship is decelerating")
+				controller.userErrorAction("Starship is decelerating")
 			} else {
-				player.userErrorAction("Starship is not cruising")
+				controller.userErrorAction("Starship is not cruising")
 			}
 			return
 		}
@@ -219,9 +224,9 @@ object StarshipCruising : IonServerComponent() {
 		}
 	}
 
-	fun forceStopCruising(starship: ActivePlayerStarship) {
+	fun forceStopCruising(starship: ActiveControlledStarship) {
 		starship.cruiseData = CruiseData(starship)
 	}
 
-	fun isCruising(starship: ActivePlayerStarship) = starship.cruiseData.targetDir != null
+	fun isCruising(starship: ActiveControlledStarship) = starship.cruiseData.targetDir != null
 }
