@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -62,7 +62,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 	}
 
 	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
-		fire(getFireVec().toLocation(starship.serverLevel.world), dir, shooter, target)
+		fire(getFireVec().toLocation(starship.world), dir, shooter, target)
 	}
 
 	override fun isIntact(): Boolean {
@@ -70,7 +70,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 			val x = pos.x + face.modX * i
 			val y = pos.y + face.modY * i
 			val z = pos.z + face.modZ * i
-			if (starship.serverLevel.world.getBlockAt(x, y, z).type.isAir) {
+			if (starship.world.getBlockAt(x, y, z).type.isAir) {
 				return false
 			}
 		}

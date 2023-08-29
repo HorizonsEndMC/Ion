@@ -38,7 +38,7 @@ class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: Magazi
 			return null
 		}
 
-		val inventoryHolder = starship.serverLevel.world
+		val inventoryHolder = starship.world
 			.getBlockAtKey(pos.toBlockKey())
 			.getRelative(face)
 			.getRelative(face.rightFace)

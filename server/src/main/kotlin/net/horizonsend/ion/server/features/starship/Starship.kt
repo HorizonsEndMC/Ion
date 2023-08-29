@@ -5,19 +5,20 @@ import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerCont
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.miscellaneous.IonWorld
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
-import net.minecraft.core.BlockPos
-import net.minecraft.server.level.ServerLevel
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import org.bukkit.World
 import org.bukkit.entity.Player
 
-open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
-	open var serverLevel = serverLevel
+open class Starship(world: World, centerOfMass: Vec3i) {
+	open var world: World = world
 		set(value) {
 			mainThreadCheck()
 			field = value
 		}
 
-	open var centerOfMass = centerOfMass
+	open var centerOfMass: Vec3i = centerOfMass
 		set(value) {
 			mainThreadCheck()
 			field = value
@@ -48,12 +49,12 @@ open class Starship(serverLevel: ServerLevel, centerOfMass: BlockPos) {
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
 	fun destroy() {
-		IonWorld[serverLevel].starships.remove(this)
+		IonWorld[world.minecraft].starships.remove(this)
 		controller?.destroy()
 	}
 
 	init {
 		@Suppress("LeakingThis") // This is done right at the end of the class's initialization, it *should* be fine
-		IonWorld[serverLevel].starships.add(this)
+		IonWorld[world.minecraft].starships.add(this)
 	}
 }

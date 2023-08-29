@@ -39,10 +39,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.title
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
-import net.minecraft.core.BlockPos
-import net.minecraft.server.level.ServerLevel
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Entity
@@ -62,39 +61,31 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 abstract class ActiveStarship(
-	serverLevel: ServerLevel,
+	world: World,
 
 	var blocks: LongOpenHashSet,
 	val mass: Double,
-	centerOfMass: BlockPos,
+	centerOfMass: Vec3i,
 	private val hitbox: ActiveStarshipHitbox
-) : Starship(serverLevel, centerOfMass), ForwardingAudience {
+) : Starship(world, centerOfMass), ForwardingAudience {
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
 
-	private var _centerOfMassVec3i: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
+	private var _centerOfMass: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
 
-	override var serverLevel: ServerLevel
-		get() = super.serverLevel
+	override var world: World
+		get() = super.world
 		set(value) {
-			ActiveStarships.updateWorld(this, value.world, value.world)
-			super.serverLevel = value
+			ActiveStarships.updateWorld(this, world, world)
+			super.world = value
 		}
 
-	override var centerOfMass: BlockPos
+	override var centerOfMass: Vec3i
 		get() = super.centerOfMass
 		set(value) {
 			super.centerOfMass = value
-			_centerOfMassVec3i = Vec3i(value.x, value.y, value.z)
-		}
-
-	@Deprecated("Prefer Minecraft - `net.minecraft.core.BlockPos`")
-	var centerOfMassVec3i: Vec3i
-		get() = _centerOfMassVec3i
-		set(value) {
-			super.centerOfMass = BlockPos(value.x, value.y, value.z)
-			_centerOfMassVec3i = value
+			_centerOfMass = Vec3i(value.x, value.y, value.z)
 		}
 
 	var isTeleporting: Boolean = false
@@ -145,7 +136,7 @@ abstract class ActiveStarship(
 
 		gravityWells
 			.filter { it.isIntact() }
-			.map { it.pos.toLocation(serverLevel.world).block.state }
+			.map { it.pos.toLocation(world).block.state }
 			.filterIsInstance<Sign>()
 			.forEach { GravityWellMultiblock.setEnabled(it, value) }
 
@@ -226,7 +217,7 @@ abstract class ActiveStarship(
 	}
 
 	fun isWithinHitbox(loc: Location, tolerance: Int = 2): Boolean {
-		return serverLevel == loc.world.minecraft && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
+		return world == loc.world.minecraft && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
 	}
 
 	fun isWithinHitbox(entity: Entity, tolerance: Int = 2): Boolean {
@@ -333,7 +324,7 @@ abstract class ActiveStarship(
 
 	fun hullIntegrity(): Double {
 		val nonAirBlocks = blocks.count {
-			getBlockTypeSafe(serverLevel, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
+			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
 		return nonAirBlocks.toDouble() / initialBlockCount.toDouble()
 	}

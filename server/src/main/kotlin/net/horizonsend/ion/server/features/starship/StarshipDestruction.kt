@@ -55,7 +55,7 @@ object StarshipDestruction {
 		val air = Material.AIR.createBlockData().nms
 		val queue = Long2ObjectOpenHashMap<BlockState>(starship.initialBlockCount)
 		starship.blocks.associateWithTo(queue) { air }
-		BlockPlacement.placeImmediate(starship.serverLevel.world, queue)
+		BlockPlacement.placeImmediate(starship.world, queue)
 	}
 
 	fun destroy(starship: ActiveStarship) {
@@ -80,7 +80,7 @@ object StarshipDestruction {
 	}
 
 	private fun destroyShip(starship: ActiveStarship) {
-		val world = starship.serverLevel.world
+		val world = starship.world
 		val blocks = starship.blocks
 
 		if (SpaceWorlds.contains(world)) {

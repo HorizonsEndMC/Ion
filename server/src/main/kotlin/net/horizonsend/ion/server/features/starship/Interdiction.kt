@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.World
@@ -61,8 +60,8 @@ object Interdiction : IonServerComponent() {
 
 	fun toggleGravityWell(starship: ActiveStarship) {
 		when (starship.isInterdicting) {
-			true -> for (player in starship.serverLevel.world.getNearbyPlayers(
-				starship.centerOfMass.toLocation(starship.serverLevel.world),
+			true -> for (player in starship.world.getNearbyPlayers(
+				starship.centerOfMass.toLocation(starship.world),
 				starship.type.interdictionRange.toDouble()
 			)) {
 				player.playSound(
@@ -75,8 +74,8 @@ object Interdiction : IonServerComponent() {
 				)
 			}
 
-			false -> for (player in starship.serverLevel.world.getNearbyPlayers(
-				starship.centerOfMass.toLocation(starship.serverLevel.world),
+			false -> for (player in starship.world.getNearbyPlayers(
+				starship.centerOfMass.toLocation(starship.world),
 				starship.type.interdictionRange.toDouble()
 			)) {
 				player.playSound(
