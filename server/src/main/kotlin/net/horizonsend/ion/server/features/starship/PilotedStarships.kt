@@ -172,6 +172,7 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	operator fun get(player: Player): ActiveControlledStarship? = ActivePlayerController[player]?.let { map[it] }
+	operator fun get(controller: Controller) = map[controller]
 
 	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActiveControlledStarship) -> Unit = {}): Boolean {
 		if (!data.isPilot(player)) {
