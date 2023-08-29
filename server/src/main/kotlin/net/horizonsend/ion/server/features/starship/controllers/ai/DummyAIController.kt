@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.keysSortedByValue
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -17,13 +16,13 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Player
 
-class DummyAIController(starship: Starship) : Controller(starship, "AI") {
+class DummyAIController(starship: Starship) : AIController(starship, "AI") {
 	override val pilotName: Component = text("AI Pilot Matrix", NamedTextColor.RED, TextDecoration.BOLD)
 
 	override var yaw: Float = 0.0F
 	override var pitch: Float = 0.0F
 
-	override val selectedDirectControlSpeed: Int = 0
+	override var selectedDirectControlSpeed: Int = 0
 
 	override var isShiftFlying: Boolean = false
 
