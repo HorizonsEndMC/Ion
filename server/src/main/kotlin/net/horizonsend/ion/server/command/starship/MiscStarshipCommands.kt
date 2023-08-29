@@ -144,7 +144,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
 
-		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
+		tryJump(starship, x, z, starship.world, maxRange, sender, hyperdriveTier)
 	}
 
 	fun parseNumber(string: String, originCoord: Int): Int = when {
@@ -209,7 +209,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val x = destinationPos.x
 		val z = destinationPos.z
 
-		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
+		tryJump(starship, x, z, starship.world, maxRange, sender, hyperdriveTier)
 	}
 
 	private fun tryJump(
@@ -230,7 +230,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
 		}
 
-		val currentWorld = starship.serverLevel.world
+		val currentWorld = starship.world
 		failIf(!SpaceWorlds.contains(currentWorld)) {
 			"Not a space world!"
 		}
@@ -248,7 +248,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val massShadowInfo = MassShadows.find(
-			starship.serverLevel.world,
+			starship.world,
 			starship.centerOfMass.x.toDouble(),
 			starship.centerOfMass.z.toDouble()
 		)
@@ -531,11 +531,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					"<$pilotRelationColor>$pilotName</$pilotRelationColor>${if (pilot?.hasProtection() == true) " <gold>★</gold>" else ""}"
 				} ?: (pilotName + if (pilot?.hasProtection() == true) " <gold>★</gold>" else "")
 
-			var worldName = starship.serverLevel.world.key.toString().substringAfterLast(":")
+			var worldName = starship.world.key.toString().substringAfterLast(":")
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
 			if (worldName == "Overworld") {
-				worldName = starship.serverLevel.world.name
+				worldName = starship.world.name
 					.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 			}
 
@@ -582,7 +582,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val signs = starship.drills.mapNotNull {
 			val (x, y, z) = it.pos
 
-			starship.serverLevel.world.getBlockAt(x, y, z).state as? Sign
+			starship.world.getBlockAt(x, y, z).state as? Sign
 		}
 
 		val user = if (enabled) sender.name else null

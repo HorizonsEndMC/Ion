@@ -186,8 +186,8 @@ object StarshipControl : IonServerComponent() {
 				dy = -starship.min.y
 			}
 
-			dy > 0 && starship.max.y + dy > starship.serverLevel.world.maxHeight -> {
-				dy = starship.serverLevel.world.maxHeight - starship.max.y
+			dy > 0 && starship.max.y + dy > starship.world.maxHeight -> {
+				dy = starship.world.maxHeight - starship.max.y
 			}
 		}
 
@@ -248,8 +248,8 @@ object StarshipControl : IonServerComponent() {
 	}
 
 	fun locationCheck(starship: ActiveControlledStarship, dx: Int, dy: Int, dz: Int): Boolean {
-		val world = starship.serverLevel.world
-		val newCenter = starship.centerOfMassVec3i.toLocation(world).add(dx.d(), dy.d(), dz.d())
+		val world = starship.world
+		val newCenter = starship.centerOfMass.toLocation(world).add(dx.d(), dy.d(), dz.d())
 
 		val planet = Space.getPlanets().asSequence()
 			.filter { it.spaceWorld == world }
@@ -265,7 +265,7 @@ object StarshipControl : IonServerComponent() {
 		val centerX = border?.center?.x ?: halfLength
 		val centerZ = border?.center?.z ?: halfLength
 
-		val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.serverLevel.world.maxHeight)
+		val distance = (halfLength - 250) * max(0.15, newCenter.y / starship.world.maxHeight)
 		val offset = newCenter.toVector()
 			.subtract(planet.location.toVector())
 			.normalize().multiply(distance)

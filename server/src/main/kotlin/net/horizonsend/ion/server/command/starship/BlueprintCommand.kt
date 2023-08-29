@@ -220,7 +220,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name) { starship ->
 
 					starship.iterateBlocks { x, y, z ->
-						val block = starship.serverLevel.world.getBlockAt(x, y, z)
+						val block = starship.world.getBlockAt(x, y, z)
 						val blockData = block.blockData
 						if (blockData.nms.block is BaseEntityBlock) {
 							return@iterateBlocks

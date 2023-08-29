@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.FluidCollisionMode
@@ -84,7 +83,7 @@ class MiningLaserSubsystem(
 		)
 	}
 
-	private fun getSign() = starship.serverLevel.world.getBlockAt(pos.x, pos.y, pos.z).getState(false) as? Sign
+	private fun getSign() = starship.world.getBlockAt(pos.x, pos.y, pos.z).getState(false) as? Sign
 
 	override fun isIntact(): Boolean {
 		val sign = getSign() ?: return false
@@ -143,14 +142,14 @@ class MiningLaserSubsystem(
 				}
 			}.runTaskTimer(IonServer, 0L, 5L)
 
-		starship.serverLevel.world.players.forEach {
+		starship.world.players.forEach {
 			if (it.location.distance(
-					multiblock.getFirePointOffset().plus(pos).toLocation(starship.serverLevel.world)
+					multiblock.getFirePointOffset().plus(pos).toLocation(starship.world)
 				) < multiblock.range * 2
 			) {
 				it.stopSound(multiblock.sound)
 
-				starship.serverLevel.world.playSound(
+				starship.world.playSound(
 					it.location,
 					"starship.weapon.mining_laser.start",
 					SoundCategory.PLAYERS,
@@ -169,16 +168,16 @@ class MiningLaserSubsystem(
 		firingTasks.clear()
 
 		// Stop sound
-		for (player in starship.serverLevel.world.players) {
+		for (player in starship.world.players) {
 			if (
 				player.location.distance(
-					starship.centerOfMass.toLocation(starship.serverLevel.world)
+					starship.centerOfMass.toLocation(starship.world)
 				) > multiblock.range
 			) {
 				continue
 			}
 
-			starship.serverLevel.world.playSound(
+			starship.world.playSound(
 				player.location,
 				"starship.weapon.mining_laser.stop",
 				1.0f,
@@ -188,7 +187,7 @@ class MiningLaserSubsystem(
 	}
 
 	fun fire() {
-		val initialPos = getFirePos().toLocation(starship.serverLevel.world).toCenterLocation().add(pos.toVector())
+		val initialPos = getFirePos().toLocation(starship.world).toCenterLocation().add(pos.toVector())
 		val targetVector = targetedBlock.clone().subtract(initialPos.toVector())
 		// Cancel if
 		val sign = getSign() ?: return cancelTask()
@@ -199,9 +198,9 @@ class MiningLaserSubsystem(
 			return
 		}
 
-		val isPlots = starship.serverLevel.world.name.contains("plots", ignoreCase = true)
+		val isPlots = starship.world.name.contains("plots", ignoreCase = true)
 
-		if (!SpaceWorlds.contains(starship.serverLevel.world) && !isPlots) {
+		if (!SpaceWorlds.contains(starship.world) && !isPlots) {
 			starship.sendMessage(
 				text("The Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} wasn't able to initialize its gravitational collection beam and was disabled! (Move to a space world)")
 			)
@@ -218,7 +217,7 @@ class MiningLaserSubsystem(
 		}
 
 		// Ray trace to get the hit position
-		val raytrace = starship.serverLevel.world.rayTrace(
+		val raytrace = starship.world.rayTrace(
 			initialPos,
 			targetVector.clone(),
 			multiblock.range,
@@ -232,7 +231,7 @@ class MiningLaserSubsystem(
 		raytrace?.hitPosition?.let { targetedBlock = it }
 
 		// Create a laser to visualize the beam with a life of 5 ticks
-		val laserEnd = targetedBlock.toLocation(starship.serverLevel.world)
+		val laserEnd = targetedBlock.toLocation(starship.world)
 		CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks().apply { start(IonServer) }
 
 		val blocks = getBlocksToDestroy(laserEnd.block)
@@ -271,7 +270,7 @@ class MiningLaserSubsystem(
 
 		// Sound is 5 seconds, ticks every quarter second
 		if (tick % 20 == 0) {
-			val soundOrigin = getFirePos().plus(pos).toLocation(starship.serverLevel.world)
+			val soundOrigin = getFirePos().plus(pos).toLocation(starship.world)
 
 			soundOrigin.world.players.forEach {
 				if (it.location.distance(soundOrigin) < multiblock.range * 2) {

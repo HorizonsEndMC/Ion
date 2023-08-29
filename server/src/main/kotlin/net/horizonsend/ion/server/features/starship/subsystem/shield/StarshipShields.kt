@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.minecraft.world.level.Level
@@ -62,7 +61,7 @@ object StarshipShields : IonServerComponent() {
 	@EventHandler
 	fun onActivate(event: StarshipActivatedEvent) {
 		val starship = event.starship
-		val worldID = starship.serverLevel.world.uid
+		val worldID = starship.world.uid
 
 		for (shield in starship.shields) {
 			val shieldPos = ShieldPos(worldID, shield.pos)
@@ -73,7 +72,7 @@ object StarshipShields : IonServerComponent() {
 	@EventHandler
 	fun onDeactivate(event: StarshipDeactivatedEvent) {
 		val starship = event.starship
-		val worldID = starship.serverLevel.world.uid
+		val worldID = starship.world.uid
 
 		for (shield in starship.shields) {
 			val shieldPos = ShieldPos(worldID, shield.pos)

@@ -58,7 +58,7 @@ object Hyperspace : IonServerComponent() {
 		useFuel: Boolean
 	) {
 		if (MassShadows.find(
-				starship.serverLevel.world,
+				starship.world,
 				starship.centerOfMass.x.toDouble(),
 				starship.centerOfMass.z.toDouble()
 			) != null
@@ -77,7 +77,7 @@ object Hyperspace : IonServerComponent() {
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }
 		check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
 
-		val spaceWorld = starship.serverLevel.world
+		val spaceWorld = starship.world
 		check(SpaceWorlds.contains(spaceWorld)) { "${spaceWorld.name} is not a space world" }
 
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
@@ -91,8 +91,8 @@ object Hyperspace : IonServerComponent() {
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
 		// create a new marker and add it to the collection
-		if (starship.serverLevel.world == dest.world) {
-			val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.serverLevel.world), starship, dest)
+		if (starship.world == dest.world) {
+			val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.world), starship, dest)
 			HyperspaceMap.addMarker(starship, marker)
 		}
 
@@ -111,12 +111,12 @@ object Hyperspace : IonServerComponent() {
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
 		val starship = warmup.ship
-		val originWorld = starship.serverLevel.world
+		val originWorld = starship.world
 
 		check(warmupTasks.remove(starship, warmup)) { "Warmup wasn't in the map!" }
 		warmup.cancel()
 
-		val world = getHyperspaceWorld(starship.serverLevel.world)
+		val world = getHyperspaceWorld(starship.world)
 		val x = starship.centerOfMass.x.toDouble()
 		val y = starship.centerOfMass.y.toDouble()
 		val z = starship.centerOfMass.z.toDouble()
@@ -154,7 +154,7 @@ object Hyperspace : IonServerComponent() {
 			return
 		}
 
-		val world = getRealspaceWorld(starship.serverLevel.world)
+		val world = getRealspaceWorld(starship.world)
 
 		if (world == null) {
 			starship.serverError("Failed to exit hyperspace: Realspace world not found")
@@ -238,7 +238,7 @@ object Hyperspace : IonServerComponent() {
 	@EventHandler
 	fun onStarshipActivated(event: StarshipActivatedEvent) {
 		val starship = event.starship
-		val world = starship.serverLevel.world
+		val world = starship.world
 
 		if (!isHyperspaceWorld(world)) {
 			return
@@ -260,7 +260,7 @@ object Hyperspace : IonServerComponent() {
 
 	@EventHandler
 	fun onStarshipMove(event: StarshipMoveEvent) {
-		if (!isHyperspaceWorld(event.starship.serverLevel.world)) {
+		if (!isHyperspaceWorld(event.starship.world)) {
 			return
 		}
 
