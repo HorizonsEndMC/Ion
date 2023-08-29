@@ -32,7 +32,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.StarshipControl
+import net.horizonsend.ion.server.features.starship.control.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
 import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.StarshipSigns
@@ -43,6 +43,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.World
@@ -428,7 +429,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("directcontrol|dc")
 	fun onDirectControl(sender: Player) {
 		val starship = getStarshipPiloting(sender)
-		failIf(!starship.isDirectControlEnabled && !StarshipControl.isHoldingController(sender)) {
+		failIf(!starship.isDirectControlEnabled && !isHoldingController(sender)) {
 			"You need to hold a starship controller to enable direct control"
 		}
 		if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) {
@@ -510,7 +511,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayName(it) } ?: starship.type.formatted
 			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.formatted).asHoverEvent()
 
-			val pilotName = pilot?.name ?: "none"
+			val pilotName = (starship.controller?.pilotName as? TextComponent)?.content() ?: "none"
 
 			val pilotNationID = pilot?.let { PlayerCache[pilot].nationOid }
 

@@ -5,7 +5,10 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.explosion.Explosion.Companion.explode
+import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.DummyAIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import org.bukkit.Location
@@ -32,6 +35,12 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("releaseall")
+	fun onReleaseAll(sender: Player) {
+		ActiveStarships.allControlledStarships().forEach { DeactivatedPlayerStarships.deactivateNow(it) }
+	}
+
+	@Suppress("Unused")
 	@Subcommand("explosion")
 	fun explosion(sender: Player) {
 		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
@@ -45,5 +54,13 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 			applyPhysics = false,
 			fireType = Material.SOUL_FIRE
 		)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("ai")
+	fun onAI(sender: Player) {
+		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
+
+		starship.controller = DummyAIController(starship)
 	}
 }
