@@ -64,7 +64,7 @@ object StarshipCruising : IonServerComponent() {
 
 	override fun onEnable() {
 		Tasks.syncRepeat(0L, (20 * SECONDS_PER_CRUISE).toLong()) {
-			for (starship in ActiveStarships.allPlayerShips()) {
+			for (starship in ActiveStarships.allControlledStarships()) {
 				if (!PilotedStarships.isPiloted(starship)) {
 					continue
 				}
