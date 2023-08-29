@@ -3,12 +3,13 @@ package net.horizonsend.ion.server.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.explosion.Explosion.Companion.explode
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.controllers.DummyAIController
+import net.horizonsend.ion.server.features.starship.controllers.ai.DummyAIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
@@ -67,5 +68,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
 
 		starship.controller = DummyAIController(starship)
+		starship.clearPassengers()
+		sender.success("success")
 	}
 }
