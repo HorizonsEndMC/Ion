@@ -1,16 +1,13 @@
-package net.horizonsend.ion.server.features.starship.controllers
+package net.horizonsend.ion.server.features.starship.controllers.ai
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.keysSortedByValue
-import net.horizonsend.ion.server.miscellaneous.utils.leftFace
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -44,7 +41,6 @@ class DummyAIController(starship: Starship) : Controller(starship, "AI") {
 
 		AIControlUtils.shiftFlyTowardsPlayer(this, nearestPlayer)
 		setWeaponsToNearest(location, nearestPlayer)
-		faceNearest(location, nearestPlayer)
 	}
 
 	private fun getNearestPlayer(location: Location) = IonServer.server.onlinePlayers
@@ -63,13 +59,15 @@ class DummyAIController(starship: Starship) : Controller(starship, "AI") {
 			return
 		}
 
-		val dir = nearest.location.toVector().subtract(location.toVector()).normalize()
+		val nearestShip = ActiveStarships.findByPilot(nearest) ?: return
+		val projectedPosition = nearestShip.centerOfMass.toVector().add(nearestShip.velocity)
+		val dir = projectedPosition.subtract(location.toVector()).normalize()
 
-		for ((name, weapons) in starship.weaponSets.asMap()) {
-			if (weapons.all { it !is AutoWeaponSubsystem }) continue
-
-			starship.autoTurretTargets[name] = nearest.uniqueId
-		}
+//		for ((name, weapons) in starship.weaponSets.asMap()) {
+//			if (weapons.all { it !is AutoWeaponSubsystem }) continue
+//
+//			starship.autoTurretTargets[name] = nearest.uniqueId
+//		}
 
 		StarshipWeaponry.manualFire(
 			this,
@@ -77,28 +75,8 @@ class DummyAIController(starship: Starship) : Controller(starship, "AI") {
 			true,
 			starship.forward,
 			dir,
-			nearest.location.toVector(),
+			projectedPosition,
 			null
 		)
-	}
-
-	private fun faceNearest(location: Location, nearest: Player?) {
-		if (starship !is ActiveControlledStarship) return
-		if (starship.pendingRotations.isNotEmpty()) return
-
-		if (nearest == null) return
-		val dir = nearest.location.toVector().subtract(location.toVector()).normalize()
-
-		val facing = starship.forward
-
-		val right = when (vectorToBlockFace(dir)) {
-			facing -> return
-			facing.rightFace -> false
-			facing.leftFace -> true
-			facing.oppositeFace -> true
-			else -> return
-		}
-
-		starship.tryRotate(right)
 	}
 }
