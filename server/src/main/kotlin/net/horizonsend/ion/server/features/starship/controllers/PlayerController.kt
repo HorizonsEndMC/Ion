@@ -13,8 +13,11 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 
-open class PlayerController(val player: Player, starship: Starship, name: String) : Controller(starship, name) {
+abstract class PlayerController(val player: Player, starship: Starship, name: String) : Controller(starship, name) {
 	override val pilotName: Component = player.displayName()
+
+	override val yaw: Float get() = player.location.yaw
+	override val pitch: Float get() = player.location.pitch
 
 	override val color: Color
 		 get() = PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: super.color
