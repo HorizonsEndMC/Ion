@@ -60,9 +60,9 @@ class ActiveControlledStarship(
 
 	var speedLimit = -1
 
-	private data class PendingRotation(val clockwise: Boolean)
+	data class PendingRotation(val clockwise: Boolean)
 
-	private val pendingRotations = LinkedBlockingQueue<PendingRotation>()
+	val pendingRotations = LinkedBlockingQueue<PendingRotation>()
 	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(250L + initialBlockCount / 40L)
 
 	fun getTargetForward(): BlockFace {
