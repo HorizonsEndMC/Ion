@@ -17,6 +17,9 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportati
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -275,7 +278,14 @@ object StarshipControl : IonServerComponent() {
 		val z = centerZ + offset.z
 		val target = Location(planet.planetWorld, x, y, z).toBlockLocation()
 
-		starship.sendMessage("&7&oEntering &2&o${planet.name}&7&o...")
+		starship.sendMessage(
+			text()
+				.color(NamedTextColor.GRAY)
+				.decorate(TextDecoration.ITALIC)
+				.append(text("Entering "))
+				.append(text(planet.name, NamedTextColor.BLUE))
+				.append(text("..."))
+		)
 
 		StarshipTeleportation.teleportStarship(starship, target)
 		return true
