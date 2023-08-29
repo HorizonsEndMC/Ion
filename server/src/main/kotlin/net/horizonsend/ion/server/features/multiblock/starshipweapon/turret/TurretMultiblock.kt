@@ -143,7 +143,7 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	}
 
 	fun getFacing(signPos: Vec3i, starship: ActiveStarship): BlockFace {
-		val block = signPos.toLocation(starship.serverLevel.world).block
+		val block = signPos.toLocation(starship.world).block
 		val sign = block.state as Sign
 		return getFacing(sign)
 	}

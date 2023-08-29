@@ -20,7 +20,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun onExecute(sender: Player) {
 		val ship = getStarshipPiloting(sender)
 
-		val blocks = ship.blocks.map { Vec3i(it) }.associateWith { it.toLocation(ship.serverLevel.world).block.state }
+		val blocks = ship.blocks.map { Vec3i(it) }.associateWith { it.toLocation(ship.world).block.state }
 
 		val size = ship.initialBlockCount
 
@@ -28,7 +28,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 			"<aqua>${ship.data.name} <white>(${
 				ship.data.starshipType.actualType.displayName}) ($size blocks)\n" +
 				"   <gray>Mass:<white> ${ship.mass}\n" +
-				"   <gray>World:<white> ${ship.serverLevel.world.name}\n" +
+				"   <gray>World:<white> ${ship.world.name}\n" +
 				"   <gray>Pilot:<white> ${ship.controller?.name}"
 		)
 
@@ -96,7 +96,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		sender.sendRichMessage("   <gray>Hull Integrity: <white>${ship.hullIntegrity().times(100).roundToInt()}%")
-		sender.sendRichMessage("   <gray>Center of Mass: <white>${ship.centerOfMassVec3i}")
+		sender.sendRichMessage("   <gray>Center of Mass: <white>${ship.centerOfMass}")
 
 		val worth = blocks.values
 			.sumOf { StarshipFactories.getPrice(it.blockData) ?: 0.0 }
