@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -143,7 +142,7 @@ object StarshipCruising : IonServerComponent() {
 		return Hyperspace.isWarmingUp(starship)
 	}
 
-	fun startCruising(controller: Controller, starship: ActiveControlledStarship) {
+	fun startCruising(controller: Controller, starship: ActiveControlledStarship, dir: Vector) {
 		if (starship.type == PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
 			return
@@ -152,10 +151,6 @@ object StarshipCruising : IonServerComponent() {
 		if (!StarshipStartCruisingEvent(starship, controller).callEvent()) {
 			return
 		}
-
-		val player = (controller as? PlayerController)?.player ?: return
-
-		val dir = player.location.direction.setY(0).normalize()
 
 		val dx = if (abs(dir.x) >= 0.5) sign(dir.x).toInt() else 0
 		val dz = if (abs(dir.z) > 0.5) sign(dir.z).toInt() else 0
