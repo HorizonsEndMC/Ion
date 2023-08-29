@@ -26,7 +26,7 @@ object StarshipTeleportation {
 
 		starship.isTeleporting = true
 
-		val newWorld = if (destination.world != starship.serverLevel.world) destination.world else null
+		val newWorld = if (destination.world != starship.world) destination.world else null
 
 		return tryTeleport(starship, dx, dy, dz, newWorld).whenComplete { ok, ex ->
 			starship.isTeleporting = false
@@ -52,7 +52,7 @@ object StarshipTeleportation {
 			return CompletableFuture.completedFuture(false)
 		}
 
-		val world = newWorld ?: starship.serverLevel.world
+		val world = newWorld ?: starship.world
 
 		if (wouldBeOutOfWorldBorder(starship, world, previousDX, previousDZ)) {
 			starship.onlinePassengers.forEach { passenger ->

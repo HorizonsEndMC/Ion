@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.add
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.World
@@ -24,7 +24,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			dz: Int,
 			newWorld: World? = null
 		): CompletableFuture<Boolean> {
-			val world = newWorld ?: starship.serverLevel.world
+			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
 

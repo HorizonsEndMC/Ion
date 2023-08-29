@@ -6,11 +6,11 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.kyori.adventure.audience.Audience
-import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -83,7 +83,7 @@ object ActiveStarshipFactory {
 		val avgY = weightY / mass
 		val avgZ = weightZ / mass
 
-		val centerOfMass = BlockPos(avgX.roundToInt(), avgY.roundToInt(), avgZ.roundToInt())
+		val centerOfMass = Vec3i(avgX.roundToInt(), avgY.roundToInt(), avgZ.roundToInt())
 
 		val hitbox = ActiveStarshipHitbox(blocks)
 
