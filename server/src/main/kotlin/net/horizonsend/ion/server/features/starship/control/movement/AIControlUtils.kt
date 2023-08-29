@@ -17,7 +17,7 @@ object AIControlUtils {
 
 		controller.isShiftFlying = true
 
-		val dir = location.toVector().subtract(starshipLocation.toVector()).normalize()
+		val dir = starshipLocation.toVector().subtract(location.toVector()).normalize()
 
 		starshipLocation.direction = dir
 
