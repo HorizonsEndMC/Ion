@@ -10,6 +10,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 import kotlin.math.min
@@ -24,6 +25,8 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			dz: Int,
 			newWorld: World? = null
 		): CompletableFuture<Boolean> {
+			starship.velocity = Vector(dx.toDouble(), dy.toDouble(), dz.toDouble())
+
 			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)

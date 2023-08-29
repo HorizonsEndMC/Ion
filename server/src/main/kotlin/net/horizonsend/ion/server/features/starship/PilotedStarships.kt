@@ -91,6 +91,12 @@ object PilotedStarships : IonServerComponent() {
 		StarshipPilotedEvent(starship, player).callEvent()
 	}
 
+	fun changeController(starship: ActiveControlledStarship, newController: Controller) {
+		map.remove(starship.controller)
+
+		map[newController] = starship
+	}
+
 	private fun removeFromCurrentlyRidingShip(player: Player) {
 		ActiveStarships.findByPassenger(player)?.removePassenger(player.uniqueId)
 	}
