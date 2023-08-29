@@ -20,7 +20,9 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 			val controller = ActivePlayerController[player] ?: return
 
 			if (rightClick) {
-				StarshipCruising.startCruising(controller, starship)
+				val dir = player.location.direction.setY(0).normalize()
+
+				StarshipCruising.startCruising(controller, starship, dir)
 			} else {
 				StarshipCruising.stopCruising(controller, starship)
 			}
