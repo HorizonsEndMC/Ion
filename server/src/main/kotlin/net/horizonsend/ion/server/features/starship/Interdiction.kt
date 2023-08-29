@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -131,10 +131,10 @@ object Interdiction : IonServerComponent() {
 				continue
 			}
 
-			val pilot = cruisingShip.playerPilot ?: continue
+			val controlLoc = cruisingShip.playerPilot?.location ?: starship.centerOfMass.toLocation(starship.world)
 
-			if (pilot.world != sign.world) continue
-			if (pilot.location.distance(sign.location) > starship.type.interdictionRange) {
+			if (controlLoc.world != sign.world) continue
+			if (controlLoc.distance(sign.location) > starship.type.interdictionRange) {
 				continue
 			}
 

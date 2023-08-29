@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.control
+package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
