@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.control
+package net.horizonsend.ion.server.features.starship.control.movement
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.PlayerStarshipControl.isHoldingController
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -77,9 +77,9 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		val playerPilot = starship.playerPilot ?: return
+		val playerPilot = starship.playerPilot ?: return //TODO
 
-		val ping = getPing(playerPilot)
+		val ping = playerPilot?.let { getPing(playerPilot) } ?: 0
 		val movementCooldown = starship.directControlCooldown
 		val speedFac = if (ping > movementCooldown) 2 else 1
 
@@ -103,10 +103,12 @@ object StarshipControl : IonServerComponent() {
 
 		dx += (targetSpeed * direction.modX)
 		dz += (targetSpeed * direction.modZ)
-		if (playerPilot.isSneaking) {
+
+		if (controller.isShiftFlying) {
 			dx *= 2
 			dz *= 2
 		}
+
 		var center = starship.directControlCenter
 		if (center == null) {
 			center = playerPilot.location.toBlockLocation().add(0.5, 0.0, 0.5)
@@ -140,8 +142,10 @@ object StarshipControl : IonServerComponent() {
 
 		if (vector.x != 0.0 || vector.z != 0.0) {
 			val newLoc = center.clone()
+
 			newLoc.pitch = playerPilot.location.pitch
 			newLoc.yaw = playerPilot.location.yaw
+
 			playerPilot.teleport(
 				newLoc,
 				PlayerTeleportEvent.TeleportCause.PLUGIN,

@@ -24,8 +24,8 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.PlayerStarshipControl.isHoldingController
-import net.horizonsend.ion.server.features.starship.control.StarshipControl
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
