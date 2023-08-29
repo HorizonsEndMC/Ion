@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 class UnpilotedController(player: Player, starship: Starship) : PlayerController(player, starship, "Unpiloted") {
 	override val pilotName: Component = text("none")
 
-	override val isShiftFlying: Boolean = false
+	override var isShiftFlying: Boolean = false
 
 	override val selectedDirectControlSpeed: Int = 0
 }
