@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem.reactor
 
-import com.destroystokyo.paper.Title
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.kyori.adventure.title.Title.title
+import net.kyori.adventure.util.Ticks
 import java.util.Timer
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
@@ -59,14 +62,12 @@ class HeavyWeaponBooster(val subsystem: ReactorSubsystem) {
 	}
 
 	private fun sendMessage(message: String) {
-		subsystem.starship.sendTitle(
-			Title.builder()
-				.fadeIn(1)
-				.stay(8)
-				.fadeOut(1)
-				.title("")
-				.subtitle(message.colorize())
-				.build()
+		subsystem.starship.showTitle(
+			title(
+				text(""),
+				LegacyComponentSerializer.legacyAmpersand().deserialize(message.colorize()),
+				net.kyori.adventure.title.Title.Times.times(Ticks.duration(1), Ticks.duration(8), Ticks.duration(1))
+			)
 		)
 	}
 

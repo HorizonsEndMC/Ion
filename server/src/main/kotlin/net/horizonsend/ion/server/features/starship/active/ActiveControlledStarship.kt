@@ -24,6 +24,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
@@ -170,14 +173,29 @@ class ActiveControlledStarship(
 	fun setDirectControlEnabled(enabled: Boolean) {
 		isDirectControlEnabled = enabled
 		if (enabled) {
-			sendMessage("&7Direct Control: &aON &e[Use /dc to turn it off - scroll or use hotbar keys to adjust speed - use W/A/S/D to maneuver - hold sneak (Lshift) for a boost]")
+			val dcMessage = text()
+				.append(text("Direct Control: ", NamedTextColor.GRAY))
+				.append(text("ON ", NamedTextColor.GRAY))
+				.append(text("[Use /dc to turn it off - scroll or use hotbar keys to adjust speed - use W/A/S/D to maneuver - hold sneak (", NamedTextColor.YELLOW))
+				.append(Component.keybind("key.sneak", NamedTextColor.YELLOW))
+				.append(text(") for a boost]", NamedTextColor.YELLOW))
+				.build()
+
+			sendMessage(dcMessage)
 
 			val player: Player = (controller as? PlayerController)?.player ?: return
 
 			player.walkSpeed = 0.009f
 			directControlCenter = player.location.toBlockLocation().add(0.5, 0.0, 0.5)
 		} else {
-			sendMessage("&7Direct Control: &cOFF &e[Use /dc to turn it on]")
+			sendMessage(
+				text()
+					.append(text("Direct Control: ", NamedTextColor.GRAY))
+					.append(text("OFF ", NamedTextColor.RED))
+					.append(text("[Use /dc to turn it on]", NamedTextColor.YELLOW))
+					.build()
+			)
+
 			directControlVector.x = 0.0
 			directControlVector.y = 0.0
 			directControlVector.z = 0.0
