@@ -57,9 +57,9 @@ import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.PlayerStarshipControl
-import net.horizonsend.ion.server.features.starship.control.StarshipControl
-import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSignControl
 import net.horizonsend.ion.server.features.starship.control.weaponry.PlayerStarshipWeaponry
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry

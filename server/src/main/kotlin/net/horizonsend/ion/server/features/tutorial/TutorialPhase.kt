@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.tutorial
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
-import net.horizonsend.ion.server.features.starship.control.StarshipControl
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent

@@ -150,11 +150,11 @@ object ContactsSidebar {
     ) {
         for (starship in starships) {
             val vector = when (starship) {
-                is ActiveControlledStarship -> starship.playerPilot?.location?.toVector()
-                    ?: starship.centerOfMass.toVector()
+                is ActiveControlledStarship -> starship.playerPilot?.location?.toVector() ?: starship.centerOfMass.toVector()
 
                 else -> starship.centerOfMass.toVector()
             }
+
             val distance = vector.distance(playerVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
