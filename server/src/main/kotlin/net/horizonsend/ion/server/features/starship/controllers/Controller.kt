@@ -12,6 +12,13 @@ import org.bukkit.block.BlockState
 abstract class Controller(val starship: Starship, val name: String) : ForwardingAudience.Single, Damager {
 	abstract val pilotName: Component
 
+	abstract val isShiftFlying: Boolean
+
+	abstract val pitch: Float
+	abstract val yaw: Float
+
+	abstract val selectedDirectControlSpeed: Int
+
 	override fun audience(): Audience = Audience.empty()
 
 	/** The color used for this controller. Currently, applies weapon color **/
@@ -25,7 +32,6 @@ abstract class Controller(val starship: Starship, val name: String) : Forwarding
 
 	/** Checks weather or not the controller can break a specific block **/
 	abstract fun canDestroyBlock(block: Block): Boolean
-
 
 	/** Checks weather or not the controller can place a specific block **/
 	abstract fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean

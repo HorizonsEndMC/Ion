@@ -44,7 +44,7 @@ object ActiveStarships : IonServerComponent() {
 
 	fun all(): List<ActiveStarship> = set.toList()
 
-	fun allPlayerShips(): List<ActiveControlledStarship> = playerShipIdMap.values.toList()
+	fun allControlledStarships(): List<ActiveControlledStarship> = playerShipIdMap.values.toList()
 
 	fun add(starship: ActiveStarship) {
 		Tasks.checkMainThread()
