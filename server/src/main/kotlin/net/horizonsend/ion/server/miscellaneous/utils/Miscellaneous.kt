@@ -17,14 +17,18 @@ import net.minecraft.world.entity.monster.Shulker
 import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.level.chunk.ChunkStatus
 import net.minecraft.world.level.chunk.LevelChunk
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.Chunk
+import org.bukkit.Color
+import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.*
+import java.util.EnumSet
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -74,6 +78,7 @@ fun Location.triple() = DoubleLocation(x, y, z)
 
 fun <K> Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V> Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
+fun <K, V : Comparable<V>> Map<K, V>.keysSortedByValue(): List<K> = this.keys.sortedBy { this[it]!! }
 
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
