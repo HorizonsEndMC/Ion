@@ -12,10 +12,10 @@ import org.bukkit.block.BlockState
 abstract class Controller(val starship: Starship, val name: String) : ForwardingAudience.Single, Damager {
 	abstract val pilotName: Component
 
-	abstract val isShiftFlying: Boolean
+	abstract var isShiftFlying: Boolean
 
-	abstract val pitch: Float
-	abstract val yaw: Float
+	abstract var pitch: Float
+	abstract var yaw: Float
 
 	abstract val selectedDirectControlSpeed: Int
 

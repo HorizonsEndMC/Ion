@@ -4,9 +4,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.keysSortedByValue
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -42,7 +42,7 @@ class DummyAIController(starship: Starship) : Controller(starship, "AI") {
 		val location = starship.centerOfMass.toLocation(starship.world)
 		val nearestPlayer = getNearestPlayer(location)
 
-		followNearestPlayer(location, nearestPlayer)
+		AIControlUtils.shiftFlyTowardsPlayer(this, nearestPlayer)
 		setWeaponsToNearest(location, nearestPlayer)
 		faceNearest(location, nearestPlayer)
 	}
@@ -54,22 +54,6 @@ class DummyAIController(starship: Starship) : Controller(starship, "AI") {
 		.filter { it.value >= 50 }
 		.keysSortedByValue()
 		.firstOrNull()
-
-	private fun followNearestPlayer(location: Location, nearest: Player?) = Tasks.async {
-		if (nearest == null) {
-			isShiftFlying = false
-			return@async
-		}
-
-		isShiftFlying = true
-
-		val dir = nearest.location.toVector().subtract(location.toVector()).normalize()
-
-		location.direction = dir
-
-		pitch = location.pitch
-		yaw = location.yaw
-	}
 
 	private fun setWeaponsToNearest(location: Location, nearest: Player?) {
 		if (starship !is ActiveStarship) return
