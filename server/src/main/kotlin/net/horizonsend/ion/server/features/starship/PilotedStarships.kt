@@ -148,6 +148,10 @@ object PilotedStarships : IonServerComponent() {
 		return starship.controller != null
 	}
 
+	fun canTakeControl(starship: ActiveControlledStarship, player: Player): Boolean {
+		return starship.controller == null || (starship.controller as? PlayerController)?.player == player
+	}
+
 	fun unpilot(starship: ActiveControlledStarship) {
 		Tasks.checkMainThread()
 		val controller = starship.controller ?: error("Starship $starship is not piloted")
@@ -206,7 +210,7 @@ object PilotedStarships : IonServerComponent() {
 		val activeStarship = ActiveStarships[data._id]
 
 		if (activeStarship != null) {
-			if (isPiloted(activeStarship)) {
+			if (isPiloted(activeStarship) || !canTakeControl(activeStarship, player)) {
 				player.userErrorActionMessage("That starship is already being piloted!")
 				return false
 			}
