@@ -16,11 +16,8 @@ import org.bukkit.inventory.EquipmentSlot
 abstract class PlayerController(val player: Player, starship: Starship, name: String) : Controller(starship, name) {
 	override val pilotName: Component = player.displayName()
 
-	override var yaw: Float = 0F
-		get() = player.location.yaw
-
-	override var pitch: Float = 0F
-		get() = player.location.pitch
+	override val yaw: Float get() = player.location.yaw
+	override val pitch: Float get() = player.location.pitch
 
 	override val color: Color
 		 get() = PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: super.color
