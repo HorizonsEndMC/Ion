@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.control
+package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
@@ -68,10 +68,10 @@ object StarshipCruising : IonServerComponent() {
 					continue
 				}
 
-				val player = starship.requireController()
+				val controller = starship.requireController()
 
 				if (shouldStopCruising(starship)) {
-					stopCruising(player, starship)
+					stopCruising(controller, starship)
 				}
 
 				updateCruisingShip(starship)
