@@ -98,7 +98,7 @@ object PilotedStarships : IonServerComponent() {
 	private fun setupPassengers(starship: ActiveControlledStarship) {
 		starship.playerPilot?.let { starship.addPassenger(it.uniqueId) }
 
-		for (otherPlayer in starship.serverLevel.world.players) {
+		for (otherPlayer in starship.world.players) {
 			if (!starship.isWithinHitbox(otherPlayer)) {
 				continue
 			}
@@ -127,7 +127,7 @@ object PilotedStarships : IonServerComponent() {
 		val schematic = StarshipSchematic.createSchematic(starship)
 
 		val key =
-			"starships.lastpiloted.${player.uniqueId}.${starship.serverLevel.world.name.lowercase(Locale.getDefault())}"
+			"starships.lastpiloted.${player.uniqueId}.${starship.world.name.lowercase(Locale.getDefault())}"
 
 		Tasks.async {
 			redis {
@@ -138,8 +138,8 @@ object PilotedStarships : IonServerComponent() {
 
 	private fun removeExtractors(starship: ActiveControlledStarship) {
 		starship.iterateBlocks { x, y, z ->
-			if (starship.serverLevel.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.remove(starship.serverLevel.world, Vec3i(x, y, z))
+			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
+				Extractors.remove(starship.world, Vec3i(x, y, z))
 			}
 		}
 	}
@@ -163,8 +163,8 @@ object PilotedStarships : IonServerComponent() {
 		starship.shieldBars.clear()
 
 		starship.iterateBlocks { x, y, z ->
-			if (starship.serverLevel.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.add(starship.serverLevel.world, Vec3i(x, y, z))
+			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
+				Extractors.add(starship.world, Vec3i(x, y, z))
 			}
 		}
 
@@ -326,7 +326,7 @@ object PilotedStarships : IonServerComponent() {
 		if (!StarshipUnpilotEvent(starship, player).callEvent()) {
 			return false
 		}
-		if (starship.serverLevel.world.name.contains("hyperspace", ignoreCase=true)) return false
+		if (starship.world.name.contains("hyperspace", ignoreCase=true)) return false
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)

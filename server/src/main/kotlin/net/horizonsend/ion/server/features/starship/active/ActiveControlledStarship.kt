@@ -19,12 +19,11 @@ import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
@@ -41,12 +40,12 @@ class ActiveControlledStarship(
 	val data: PlayerStarshipData,
 	blocks: LongOpenHashSet,
 	mass: Double,
-	centerOfMass: BlockPos,
+	centerOfMass: Vec3i,
 	hitbox: ActiveStarshipHitbox,
 	// map of carried ship to its blocks
 	carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
 ) : ActiveStarship(
-	data.bukkitWorld().minecraft,
+	data.bukkitWorld(),
 	blocks,
 	mass,
 	centerOfMass,

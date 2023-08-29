@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.inventory.ItemStack
@@ -12,7 +12,7 @@ import kotlin.math.min
 class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: HyperdriveMultiblock) :
 	AbstractMultiblockSubsystem<HyperdriveMultiblock>(starship, sign, multiblock) {
 	private fun getHoppers(): Set<Hopper> {
-		return multiblock.getHoppers(starship.serverLevel.world.getBlockAtKey(pos.toBlockKey()).getState(false) as Sign)
+		return multiblock.getHoppers(starship.world.getBlockAtKey(pos.toBlockKey()).getState(false) as Sign)
 	}
 
 	fun hasFuel(): Boolean = getHoppers().all { hopper ->

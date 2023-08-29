@@ -84,7 +84,7 @@ object ContactsSidebar {
         // identify valid contacts
         val starships: List<ActiveStarship> = if (starshipsEnabled) {
             ActiveStarships.all().filter {
-                it.serverLevel.world == player.world &&
+                it.world == player.world &&
                         it.centerOfMass.toVector().distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE &&
                         (it.controller as? PlayerController)?.player !== player &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
