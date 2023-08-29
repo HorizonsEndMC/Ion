@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -15,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.gzip
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
 import net.horizonsend.ion.server.miscellaneous.utils.ungzip
 import org.bukkit.Bukkit.shutdown
