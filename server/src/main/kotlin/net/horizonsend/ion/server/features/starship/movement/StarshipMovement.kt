@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
@@ -58,7 +59,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
 		if (!ActiveStarships.isActive(starship)) {
-			starship.sendMessage("&cStarship not active, movement cancelled.")
+			starship.serverError("Starship not active, movement cancelled.")
 			return
 		}
 
@@ -68,7 +69,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		if (displaceY(starship.max.y) >= world1.maxHeight) {
 			if (playerShip != null && exitPlanet(world1, playerShip)) {
-				starship.sendMessage("&7Exiting planet")
+				starship.information("Exiting Planet")
 				return
 			}
 
