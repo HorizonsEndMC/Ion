@@ -24,7 +24,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			dz: Int,
 			newWorld: World? = null
 		): CompletableFuture<Boolean> {
-			val world = newWorld ?: starship.serverLevel.world
+			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
 

@@ -36,7 +36,7 @@ data class PlayerStarshipState(
 ) {
 	companion object {
 		fun createFromActiveShip(starship: ActiveStarship): PlayerStarshipState {
-			val world = starship.serverLevel.world
+			val world = starship.world
 			val blocks = starship.blocks
 			return createFromBlocks(world, blocks)
 		}

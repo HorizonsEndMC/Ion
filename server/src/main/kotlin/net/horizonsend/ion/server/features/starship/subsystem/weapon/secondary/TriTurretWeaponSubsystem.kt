@@ -26,6 +26,6 @@ class TriTurretWeaponSubsystem(
 	override val range: Double get() = multiblock.range
 
 	override fun autoFire(target: Player, dir: Vector) {
-		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, starship.controller)
+		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller)
 	}
 }
