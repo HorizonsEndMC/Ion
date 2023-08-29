@@ -234,7 +234,7 @@ object CrateRestrictions : IonServerComponent() {
 	}
 
 	fun dropPassengerCrates(starship: ActiveStarship) {
-		val world = starship.serverLevel.world
+		val world = starship.world
 
 		for (player in world.players) {
 			if (!starship.isWithinHitbox(player)) {

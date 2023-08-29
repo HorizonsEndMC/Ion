@@ -53,7 +53,7 @@ object HyperspaceBeaconManager : SLEventListener() {
 		val pilot = starship.playerPilot ?: return
 		if (starship.hyperdrives.isEmpty()) return
 
-		val worldBeacons = beaconWorlds[starship.serverLevel.world] ?: return
+		val worldBeacons = beaconWorlds[starship.world] ?: return
 
 		if (
 			worldBeacons.any { beacon ->

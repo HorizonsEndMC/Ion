@@ -9,7 +9,7 @@ import kotlin.math.roundToInt
 
 class ReactorSubsystem(
 	starship: ActiveStarship
-) : StarshipSubsystem(starship, starship.centerOfMassVec3i) {
+) : StarshipSubsystem(starship, starship.centerOfMass) {
 	val output: Double =
 		Math.cbrt(starship.initialBlockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.poweroverrider)
 	val powerDistributor = PowerDistributor()
