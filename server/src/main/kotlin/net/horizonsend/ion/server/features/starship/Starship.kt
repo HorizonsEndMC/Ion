@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.common.extensions.hint
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
@@ -26,6 +27,7 @@ open class Starship(world: World, centerOfMass: Vec3i) {
 
 	var controller: Controller? = null
 		set(value) {
+			if (this is ActiveControlledStarship && value != null) PilotedStarships.changeController(this, value)
 			(value ?: field)?.hint("Updated control mode to ${value?.name ?: "None"}.")
 			field?.destroy()
 			field = value
