@@ -9,9 +9,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
@@ -224,8 +222,7 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		val isFlying = if (controller is PlayerController) !isHoldingController(controller.player) else controller.isShiftFlying
-		if (!isFlying) return
+		if (!controller.isShiftFlying) return
 
 		val now = System.currentTimeMillis()
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
