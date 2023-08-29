@@ -34,7 +34,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.title
 import net.kyori.adventure.audience.Audience
@@ -217,7 +216,7 @@ abstract class ActiveStarship(
 	}
 
 	fun isWithinHitbox(loc: Location, tolerance: Int = 2): Boolean {
-		return world == loc.world.minecraft && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
+		return world == loc.world && isWithinHitbox(loc.blockX, loc.blockY, loc.blockZ, tolerance)
 	}
 
 	fun isWithinHitbox(entity: Entity, tolerance: Int = 2): Boolean {
