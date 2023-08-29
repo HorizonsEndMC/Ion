@@ -449,7 +449,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val controller = ActivePlayerController[sender] ?: return
 
 		if (!StarshipCruising.isCruising(ship)) {
-			StarshipCruising.startCruising(controller, ship)
+			val dir = sender.location.direction.setY(0).normalize()
+
+			StarshipCruising.startCruising(controller, ship, dir)
 		} else {
 			StarshipCruising.stopCruising(controller, ship)
 		}
