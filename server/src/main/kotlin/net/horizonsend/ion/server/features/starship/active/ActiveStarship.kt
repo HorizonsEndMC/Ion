@@ -108,6 +108,10 @@ abstract class ActiveStarship(
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
 	val autoTurretTargets = mutableMapOf<String, UUID>()
 
+	// Non-normalized vector containing the ships velocity
+	// Used for target lead / speed estimations
+	var velocity: Vector = Vector(0.0, 0.0, 0.0)
+
 	val shieldEfficiency: Double
 		get() = (shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7))
 			.coerceAtMost(1.0)
