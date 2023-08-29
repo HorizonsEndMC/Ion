@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.active
 
-import com.destroystokyo.paper.Title
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
@@ -278,16 +277,6 @@ abstract class ActiveStarship(
 	}
 
 	abstract fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean>
-
-	@Deprecated("Deprecated in favour of Adventure text components.")
-	fun sendTitle(title: Title) {
-		onlinePassengers.asSequence().forEach { it title title }
-	}
-
-	@Deprecated("Deprecated in favour of Adventure text components.")
-	fun sendMessage(message: String) {
-		onlinePassengers.asSequence().forEach { it msg message }
-	}
 
 	/** get the thruster data for this direction. if it's diagonal, it returns the faster side's speed. */
 	fun getThrustData(dx: Int, dz: Int): ThrustData {
