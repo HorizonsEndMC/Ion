@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
-import net.horizonsend.ion.server.features.starship.control.StarshipControl
+import net.horizonsend.ion.server.features.starship.control.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -44,7 +44,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	}
 
 	private fun deactivateUnpilotedPlayerStarships() {
-		for (ship in ActiveStarships.allPlayerShips()) {
+		for (ship in ActiveStarships.allControlledStarships()) {
 			val minutesUnpiloted = if (ship.controller != null) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - ship.lastUnpilotTime)
 
 			if (!PilotedStarships.isPiloted(ship) && minutesUnpiloted >= 10) {
@@ -228,7 +228,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		if (!getPluginManager().isPluginEnabled("dynmap")) return
 
 		val isNoStarship = starship == null
-		val isHoldingController = StarshipControl.isHoldingController(player)
+		val isHoldingController = isHoldingController(player)
 		val isInvisible = isNoStarship && !isHoldingController
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
@@ -242,6 +242,6 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	override fun onDisable() {
 		// release all ships on shutdown
-		ActiveStarships.allPlayerShips().forEach { DeactivatedPlayerStarships.deactivateNow(it) }
+		ActiveStarships.allControlledStarships().forEach { DeactivatedPlayerStarships.deactivateNow(it) }
 	}
 }

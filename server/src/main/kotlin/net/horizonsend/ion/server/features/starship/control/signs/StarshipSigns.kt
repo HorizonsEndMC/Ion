@@ -1,8 +1,9 @@
-package net.horizonsend.ion.server.features.starship.control
+package net.horizonsend.ion.server.features.starship.control.signs
 
 import net.horizonsend.ion.server.features.starship.BoardingRamps
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.StarshipCruising
 import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg

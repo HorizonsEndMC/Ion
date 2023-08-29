@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import net.horizonsend.ion.server.features.enviornment.mobs.CustomMobSpawning
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.explosion.reversal.ExplosionReversal
+import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -56,8 +57,11 @@ import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.control.signs.StarshipSignControl
+import net.horizonsend.ion.server.features.starship.control.weaponry.PlayerStarshipWeaponry
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeacons
@@ -136,7 +140,12 @@ val components: List<IonComponent> = listOf(
 	PilotedStarships,
 	StarshipDetection,
 	StarshipComputers,
+
+	PlayerStarshipControl,
+	PlayerStarshipWeaponry,
+	StarshipSignControl,
 	StarshipControl,
+
 	StarshipShields,
 	StarshipCruising,
 	Hangars,
