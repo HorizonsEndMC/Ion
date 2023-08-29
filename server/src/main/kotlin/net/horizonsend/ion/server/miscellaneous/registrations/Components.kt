@@ -62,6 +62,7 @@ import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSignControl
 import net.horizonsend.ion.server.features.starship.control.weaponry.PlayerStarshipWeaponry
+import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeacons
@@ -141,10 +142,11 @@ val components: List<IonComponent> = listOf(
 	StarshipDetection,
 	StarshipComputers,
 
+	StarshipControl,
 	PlayerStarshipControl,
+	StarshipWeaponry,
 	PlayerStarshipWeaponry,
 	StarshipSignControl,
-	StarshipControl,
 
 	StarshipShields,
 	StarshipCruising,
