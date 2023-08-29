@@ -82,6 +82,7 @@ fun Location.triple() = DoubleLocation(x, y, z)
 
 fun <K> Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V> Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
+fun <K, V : Comparable<V>> Map<K, V>.keysSortedByValue(): List<K> = this.keys.sortedBy { this[it]!! }
 
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
