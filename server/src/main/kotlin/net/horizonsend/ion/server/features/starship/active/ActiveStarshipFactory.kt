@@ -123,7 +123,7 @@ object ActiveStarshipFactory {
 
 		// do it after passengers are detected
 		Tasks.syncDelay(1L) {
-			starship.sendMessage("&cEnhanced shields enhancements deactivated, found $reinforcedCount but ship only sustains $maxReinforced")
+			starship.userError("Enhanced shields enhancements deactivated, found $reinforcedCount but ship only sustains $maxReinforced")
 		}
 	}
 
