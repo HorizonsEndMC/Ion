@@ -32,8 +32,8 @@ import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.PlayerStarshipControl.isHoldingController
-import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -43,7 +43,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.World
@@ -270,15 +273,27 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				directionString += if (escapeVector.z > 0) "west" else "east"
 			}
 
-			sender.userError(
-				"Starship is within a gravity well; jump aborted. Move away from the gravity well source:\n" +
-					"  <gray>Object: <white>${massShadowInfo.description}\n" +
-					"  <gray>Location: <white>${massShadowInfo.x}, ${massShadowInfo.z}\n" +
-					"  <gray>Gravity well radius: <white>${massShadowInfo.radius}\n" +
-					"  <gray>Current distance from center: <white>${massShadowInfo.distance}\n" +
-					"  <gray>Cruise direction to escape: " +
-					"<green>$directionString <white>(${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})"
-			)
+			val message = text()
+				.color(NamedTextColor.GRAY)
+				.append(text("Starship is within a gravity well; jump aborted. Move away from the gravity well source:", NamedTextColor.RED))
+				.append(newline())
+				.append(text("Object: "))
+				.append(massShadowInfo.description)
+				.append(newline())
+				.append(text("Location: "))
+				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", NamedTextColor.WHITE))
+				.append(newline())
+				.append(text("Gravity well radius: "))
+				.append(text(massShadowInfo.radius, NamedTextColor.WHITE))
+				.append(newline())
+				.append(text("Current distance from center: "))
+				.append(text(massShadowInfo.distance, NamedTextColor.WHITE))
+				.append(newline())
+				.append(text("Cruise direction to escape: "))
+				.append(text(directionString, NamedTextColor.GREEN))
+				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", NamedTextColor.WHITE))
+
+			starship.sendMessage(message)
 			return
 		}
 
