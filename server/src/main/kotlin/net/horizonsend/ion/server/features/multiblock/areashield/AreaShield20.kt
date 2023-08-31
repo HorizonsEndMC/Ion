@@ -51,9 +51,9 @@ object AreaShield20 : AreaShield(radius = 20) {
 		z(+2) {
 			y(-1) {
 				x(-2).anyStairs()
-				x(-1).stoneBrick()
+				x(-1).solidBlock()
 				x(+0).diamondBlock()
-				x(+1).stoneBrick()
+				x(+1).solidBlock()
 				x(+2).anyStairs()
 			}
 

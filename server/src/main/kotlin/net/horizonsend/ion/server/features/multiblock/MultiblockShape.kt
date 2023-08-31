@@ -350,5 +350,39 @@ class MultiblockShape {
 			val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
 			return@complete facing == inward.oppositeFace
 		}
+
+		fun solidBlock() = anyType(
+			Material.STONE_BRICKS,
+			Material.CHISELED_STONE_BRICKS,
+			Material.SMOOTH_STONE,
+			Material.POLISHED_GRANITE,
+			Material.POLISHED_DIORITE,
+			Material.POLISHED_ANDESITE,
+			Material.POLISHED_DEEPSLATE,
+			Material.DEEPSLATE_BRICKS,
+			Material.CHISELED_DEEPSLATE,
+			Material.DEEPSLATE_TILES,
+			Material.BRICKS,
+			Material.MUD_BRICKS,
+			Material.CHISELED_SANDSTONE,
+			Material.SMOOTH_SANDSTONE,
+			Material.CUT_SANDSTONE,
+			Material.CHISELED_RED_SANDSTONE,
+			Material.SMOOTH_RED_SANDSTONE,
+			Material.CUT_RED_SANDSTONE,
+			Material.PRISMARINE_BRICKS,
+			Material.DARK_PRISMARINE,
+			Material.NETHER_BRICKS,
+			Material.CHISELED_NETHER_BRICKS,
+			Material.RED_NETHER_BRICKS,
+			Material.POLISHED_BLACKSTONE,
+			Material.POLISHED_BLACKSTONE_BRICKS,
+			Material.CHISELED_POLISHED_BLACKSTONE,
+			Material.END_STONE_BRICKS,
+			Material.PURPUR_BLOCK,
+			Material.SMOOTH_QUARTZ,
+			Material.QUARTZ_BRICKS,
+			Material.QUARTZ_BLOCK,
+		)
 	}
 }
