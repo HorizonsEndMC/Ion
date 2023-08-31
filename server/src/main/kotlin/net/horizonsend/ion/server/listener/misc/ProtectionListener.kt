@@ -33,25 +33,14 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.InventoryHolder
 
 object ProtectionListener : SLEventListener() {
 	@EventHandler
-	fun onInventoryOpen(event: PlayerInteractEvent) {
-		val block: Block? = event.clickedBlock
+	fun onClickBlock(event: PlayerInteractEvent) {
+		val block: Block = event.clickedBlock ?: return
 
-		// Only interacting with inventory blocks counts as editing blocks
+		// Handle chests, doors, buttons, etc
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
-
-		if (block?.state !is InventoryHolder) return
-
-		val (world, x, y, z) = block.location
-
-		if (world == null) return // This should never happen
-
-		val shipContaining = DeactivatedPlayerStarships.getContaining(world, x.toInt(), y.toInt(), z.toInt())
-
-		if (shipContaining?.isPilot(event.player) == true) return
 
 		onBlockEdit(event, block.location, event.player)
 	}
@@ -79,11 +68,18 @@ object ProtectionListener : SLEventListener() {
 	 *  Loops through protected regions at location, checks each one for access message
 	 *  @return true if the event should be cancelled, false if it should stay the same. */
 	fun denyBlockAccess(player: Player, location: Location): Boolean {
-		if (isRegionDenied(player, location)) {
-			return true
-		}
+		var denied = false
 
-		return isLockedShipDenied(player, location)
+		if (isRegionDenied(player, location)) denied = true
+
+		val (world, x, y, z) = location
+		val shipContaining = DeactivatedPlayerStarships.getContaining(world!!, x.toInt(), y.toInt(), z.toInt())
+
+		if (shipContaining?.isPilot(player) == true) denied = false
+
+		if (isLockedShipDenied(player, location)) return true
+
+		return denied
 	}
 
 	fun isRegionDenied(player: Player, location: Location): Boolean {
