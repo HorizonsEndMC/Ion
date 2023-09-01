@@ -12,7 +12,7 @@ object Regeneration {
 		regenerateBlocks()
 	}
 
-	private fun regenerateBlocks(): Int {
+	fun regenerateBlocks(): Int {
 		val millisecondDelay: Long = settings.regenDelay.times( 60L * 1000L).toLong()
 		val maxNanos: Long = settings.placementIntensity.times( 1000000L).toLong()
 

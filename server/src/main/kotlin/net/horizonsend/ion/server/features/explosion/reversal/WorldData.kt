@@ -19,16 +19,10 @@ import java.util.stream.Collectors
 class WorldData {
 	private val explodedBlocks = CacheBuilder.newBuilder()
 		.weakKeys()
-		.build(
-			CacheLoader.from { world: World -> loadBlocks(world) }
-		)
+		.build(CacheLoader.from { world: World -> loadBlocks(world) })
 
 	private fun getBlocksFile(world: World): File {
 		return File(world.worldFolder, "data/explosion_regen_blocks.dat")
-	}
-
-	private fun getEntitiesFile(world: World): File {
-		return File(world.worldFolder, "data/explosion_regen_entities.dat")
 	}
 
 	fun getBlocks(world: World): MutableList<ExplodedBlockData> {
@@ -41,10 +35,10 @@ class WorldData {
 
 	private fun loadBlocks(world: World): MutableList<ExplodedBlockData> {
 		val file = getBlocksFile(world)
-		if (!file.exists()) {
-			return LinkedList()
-		}
+		if (!file.exists()) return LinkedList()
+
 		val blocks: MutableList<ExplodedBlockData> = LinkedList()
+
 		try {
 			DataInputStream(FileInputStream(file)).use { input ->
 				val palette = readPalette(input)
@@ -55,23 +49,30 @@ class WorldData {
 			file.renameTo(File(file.parentFile, file.name + "_broken_" + System.currentTimeMillis() % 1000))
 			saveBlocks(world)
 		}
+
 		return blocks
 	}
 
 	private fun readPalette(input: DataInputStream): List<BlockData> {
 		val paletteSize = input.readInt()
 		val palette: MutableList<BlockData> = ArrayList()
+
 		for (i in 0 until paletteSize) {
 			val blockDataBytes = ByteArray(input.readInt())
+
 			input.read(blockDataBytes)
+
 			val blockDataString = String(blockDataBytes)
+
 			palette.add(Bukkit.createBlockData(blockDataString))
 		}
+
 		return palette
 	}
 
 	private fun readBlocks(blocks: MutableList<ExplodedBlockData>, input: DataInputStream, palette: List<BlockData>) {
 		val blockCount = input.readInt()
+
 		for (i in 0 until blockCount) {
 			val x = input.readInt()
 			val y = input.readInt()
@@ -79,11 +80,13 @@ class WorldData {
 			val explodedTime = input.readLong()
 			val blockData = palette[input.readInt()]
 			var tileEntityData: ByteArray? = null
+
 			if (input.readBoolean()) {
 				val tileEntitySize = input.readInt()
 				tileEntityData = ByteArray(tileEntitySize)
 				input.read(tileEntityData)
 			}
+
 			blocks.add(ExplodedBlockData(x, y, z, explodedTime, blockData, tileEntityData))
 		}
 	}
@@ -92,6 +95,7 @@ class WorldData {
 		val file = getBlocksFile(world)
 		file.parentFile.mkdirs()
 		val tmpFile = File(file.parentFile, file.name + "_tmp")
+
 		try {
 			DataOutputStream(FileOutputStream(tmpFile)).use { output ->
 				val data: List<ExplodedBlockData> = getBlocks(world)
@@ -103,6 +107,7 @@ class WorldData {
 			tmpFile.delete()
 			return
 		}
+
 		try {
 			Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
 		} catch (e: IOException) {
@@ -110,7 +115,6 @@ class WorldData {
 		}
 	}
 
-	@Throws(IOException::class)
 	private fun writePalette(output: DataOutputStream, data: List<ExplodedBlockData>): Map<BlockData, Int> {
 		val palette =
 			data.stream().map { obj: ExplodedBlockData -> obj.blockData }.distinct().collect(Collectors.toList())
@@ -126,16 +130,18 @@ class WorldData {
 		return values
 	}
 
-	@Throws(IOException::class)
 	private fun writeBlocks(output: DataOutputStream, data: List<ExplodedBlockData>, palette: Map<BlockData, Int>) {
 		output.writeInt(data.size)
+
 		for (block in data) {
 			output.writeInt(block.x)
 			output.writeInt(block.y)
 			output.writeInt(block.z)
 			output.writeLong(block.explodedTime)
 			output.writeInt(palette[block.blockData]!!)
+
 			val tileData = block.tileData
+
 			if (tileData == null) {
 				output.writeBoolean(false)
 			} else {
