@@ -142,7 +142,7 @@ object Bounties : IonServerComponent() {
 		for ((damager, points) in damagers) {
 			val killer = Bukkit.getPlayer(damager.id) ?: continue
 			val percent = points / sum
-			val money = totalMoney / percent
+			val money = totalMoney * percent
 
 			val killerBounty = PlayerCache[killer].bounty
 
