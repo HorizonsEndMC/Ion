@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.kyori.adventure.text.Component
@@ -257,10 +258,10 @@ object ShipKillXP : IonServerComponent() {
 					.append(Component.text(" piloting ").color(alertFeedbackColor).hoverEvent(assistHoverEvent))
 
                 assistShipName.let {
-message
-.append(it)
-.append(Component.text(", a ").color(alertFeedbackColor))
-}
+					message
+						.append(it)
+						.append(Component.text(", a ").color(alertFeedbackColor))
+				}
 
 				message
 					.append(Component.text(assistShip.initialBlockCount).color(NamedTextColor.WHITE))
@@ -273,7 +274,8 @@ message
 			}
 		}
 
-		getServer().sendMessage(message.build())
+		// If its in space arena only notify creative, else notify survival
+		if (arena) getServer().sendMessage(message.build()) else Notify.online(message.build())
 
 		if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV") && !arena) {
 			Tasks.async {
