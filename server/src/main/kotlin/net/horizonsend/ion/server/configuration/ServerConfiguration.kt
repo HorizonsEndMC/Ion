@@ -16,6 +16,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.entity.EntityType
 
 @Serializable
 data class ServerConfiguration(
@@ -23,7 +24,8 @@ data class ServerConfiguration(
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
-	val soldShips: List<Ship> = listOf()
+	val soldShips: List<Ship> = listOf(),
+	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -216,9 +218,22 @@ data class ServerConfiguration(
 	}
 
 	@Serializable
-	data class ConfigurationGas(
-		val name: String,
-		val itemId: String,
-		val factors: List<String>
-	)
+	data class PlanetSpawnConfig(
+		val mobs: List<Mob>
+	) {
+		@Serializable
+		data class Mob(
+			val weight: Int,
+			val type: String,
+		)
+
+		fun weightedList(): WeightedRandomList<EntityType> {
+			val list = WeightedRandomList<EntityType>()
+			val transformed = mobs.map { (weight, type) -> EntityType.valueOf(type) to weight }
+
+			list.addMany(transformed)
+
+			return list
+		}
+	}
 }

@@ -45,6 +45,8 @@ object NamespacedKeys {
 
 	val MULTIBLOCK = key("multiblock")
 
+	val CUSTOM_ENTITY = key("custom_entity")
+
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
 
 	@Deprecated("") val POWER = key("power")

@@ -7,11 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.database.schema.Cryopod
-import net.horizonsend.ion.server.events.EnterPlanetEvent
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.minecraft.core.BlockPos
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.server.events.EnterPlanetEvent
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
@@ -24,11 +21,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.minecraft.core.BlockPos
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Animals
-import org.bukkit.entity.EnderCrystal
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -130,32 +129,18 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val passengerChunks = starship.blocks
 			.map { world1.getChunkAt(blockKeyX(it) shr 4, blockKeyZ(it) shr 4) }
 			.toSet()
+
 		val passengers = mutableSetOf<Entity>()
+
 		passengers.addAll(starship.onlinePassengers)
-		for (chunk in passengerChunks) {
-			for (entity in chunk.entities) {
-				if (passengers.contains(entity)) {
-					continue
-				}
-				when (entity) {
-					is Player -> {
-						if (starship.isWithinHitbox(entity) && ActiveStarships.findByPassenger(entity) == null) {
-							passengers.add(entity)
-						}
-					}
 
-					is Animals -> {
-						if (starship.isWithinHitbox(entity)) {
-							passengers.add(entity)
-						}
-					}
+		for (chunk in passengerChunks) for (entity in chunk.entities) {
+			if (passengers.contains(entity)) continue
 
-					is EnderCrystal -> {
-						if (starship.isWithinHitbox(entity)) {
-							passengers.add(entity)
-						}
-					}
-				}
+			when (entity) {
+				is Player -> if (starship.isWithinHitbox(entity) && ActiveStarships.findByPassenger(entity) == null) passengers.add(entity)
+
+				is Animals -> if (starship.isWithinHitbox(entity)) passengers.add(entity)
 			}
 		}
 
