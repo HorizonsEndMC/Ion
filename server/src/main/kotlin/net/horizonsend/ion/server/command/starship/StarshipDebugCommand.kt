@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import java.util.UUID
 
 @CommandPermission("starlegacy.starshipdebug")
 @CommandAlias("starshipdebug|sbug")
@@ -62,7 +63,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun onAI(sender: Player) {
 		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
 
-		starship.controller = DummyAIController(starship)
+		starship.controller = DummyAIController(starship, UUID.randomUUID())
 		starship.clearPassengers()
 		sender.success("success")
 	}
