@@ -56,11 +56,6 @@ object ExplosionReversal : IonServerComponent() {
 		}
 	}
 
-	@EventHandler
-	fun onWorldSave(event: WorldSaveEvent) {
-		worldData!!.save(event.world)
-	}
-
 	override fun onDisable() {
 		saveAll()
 	}
@@ -73,7 +68,30 @@ object ExplosionReversal : IonServerComponent() {
 		})
 	}
 
-	fun getExplodedTime(
+	@EventHandler
+	fun onWorldSave(event: WorldSaveEvent) {
+		worldData!!.save(event.world)
+	}
+
+	@EventHandler
+	fun onBlockExplode(event: BlockExplodeEvent) {
+		val world = event.block.world
+		val location: Location = event.block.location
+		val blockList: MutableList<Block> = event.blockList()
+
+		processExplosion(world, location, blockList)
+	}
+
+	@EventHandler
+	fun onCustomExplosion(event: BlockExplodeEvent) {
+		val world = event.block.world
+		val location: Location = event.block.location
+		val blockList: MutableList<Block> = event.blockList()
+
+		processExplosion(world, location, blockList)
+	}
+
+	private fun getExplodedTime(
 		explosionX: Double, explosionY: Double, explosionZ: Double,
 		blockX: Int, blockY: Int, blockZ: Int,
 	): Long {
@@ -86,13 +104,6 @@ object ExplosionReversal : IonServerComponent() {
 		val offset: Long = (cap.coerceAtMost(cap - distance.roundToLong()) * distanceDelayMs).roundToLong()
 
 		return now + offset
-	}
-
-	fun onBlockExplode(event: BlockExplodeEvent) {
-		val world = event.block.world
-		val location: Location = event.block.location
-		val blockList: MutableList<Block> = event.blockList()
-		processExplosion(world, location, blockList)
 	}
 
 	private fun processExplosion(world: World, explosionLocation: Location, list: MutableList<Block>) {
