@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.control.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
@@ -46,6 +47,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
 import java.util.Locale
+import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
 import kotlin.math.PI
@@ -348,6 +350,32 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 		starship.autoTurretTargets.forEach { starship.autoTurretTargets.remove(it.key, it.value) }
 		sender.successActionMessage("Unset target for all weaponsets.")
+	}
+
+	@CommandAlias("weaponset|ws")
+	@Suppress("unused")
+	fun onWeaponset(sender: Player, set: String) {
+		val starship = getStarshipPiloting(sender)
+
+		if (!starship.weaponSets.containsKey(set)) {
+			sender msg "&cNo nodes for $set"
+			return
+		}
+
+		val current: UUID? = starship.weaponSetSelections.inverse().remove(set)
+
+		if (current != null) {
+			if (current == sender.uniqueId) {
+				sender msg "&7Released weapon set &b$set"
+				return
+			}
+
+			StarshipSigns.informOfSteal(current, starship, sender, set)
+		}
+
+		starship.weaponSetSelections[sender.uniqueId] = set
+
+		sender msg "&7Took control of weapon set &b$set"
 	}
 
 	@Suppress("unused")
