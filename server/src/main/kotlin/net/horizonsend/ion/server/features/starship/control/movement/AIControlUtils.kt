@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.movement
 import net.horizonsend.ion.server.features.starship.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Location
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 
 object AIControlUtils {
@@ -30,5 +31,11 @@ object AIControlUtils {
 
 	fun shootAtPlayer() {
 
+	}
+
+	fun faceDirection(controller: AIController, direction: BlockFace) {
+		if (direction == BlockFace.UP || direction == BlockFace.DOWN) return
+
+		val isFacing = controller.starship.forward
 	}
 }

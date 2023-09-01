@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import net.horizonsend.ion.server.features.enviornment.mobs.CustomMobSpawning
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.explosion.reversal.ExplosionReversal
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gear.Gear
@@ -55,6 +54,7 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipComputers
 import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
+import net.horizonsend.ion.server.features.starship.active.AIStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
@@ -135,9 +135,12 @@ val components: List<IonComponent> = listOf(
 
 	Hyperspace,
 	HyperspaceBeacons,
+
 	DeactivatedPlayerStarships,
 	ActiveStarships,
 	ActiveStarshipMechanics,
+	AIStarships,
+
 	PilotedStarships,
 	StarshipDetection,
 	StarshipComputers,

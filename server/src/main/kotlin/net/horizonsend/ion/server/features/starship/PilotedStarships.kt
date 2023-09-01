@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.features.starship.controllers.UnpilotedController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
@@ -164,7 +163,7 @@ object PilotedStarships : IonServerComponent() {
 
 		map.remove(starship.controller)
 
-		starship.controller = if (controller is PlayerController) UnpilotedController(controller.player, starship) else null
+		starship.controller =  null
 		starship.lastUnpilotTime = System.nanoTime()
 
 		starship.clearPassengers()
@@ -216,7 +215,7 @@ object PilotedStarships : IonServerComponent() {
 		val activeStarship = ActiveStarships[data._id]
 
 		if (activeStarship != null) {
-			if (isPiloted(activeStarship) || !canTakeControl(activeStarship, player)) {
+			if (!canTakeControl(activeStarship, player)) {
 				player.userErrorActionMessage("That starship is already being piloted!")
 				return false
 			}

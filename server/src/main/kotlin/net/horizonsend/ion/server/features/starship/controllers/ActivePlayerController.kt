@@ -1,14 +1,11 @@
 package net.horizonsend.ion.server.features.starship.controllers
 
-import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.entity.Player
 
-class ActivePlayerController(player: Player, starship: Starship) : PlayerController(player, starship, "Player") {
-	override var isShiftFlying: Boolean = false
-		get() = player.isSneaking
-
-	override var selectedDirectControlSpeed: Int = 0
-		get() = player.inventory.heldItemSlot
+class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerController(player, starship, "Player") {
+	override val isShiftFlying: Boolean get() = player.isSneaking
+	override val selectedDirectControlSpeed: Int get() = player.inventory.heldItemSlot
 
 	init {
 		activePlayerControllers += this
