@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.controllers.ai
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -15,8 +14,9 @@ import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Player
+import java.util.UUID
 
-class DummyAIController(starship: Starship) : AIController(starship, "AI") {
+class DummyAIController(starship: ActiveStarship, uuid: UUID) : AIController(starship, "AI", uuid) {
 	override val pilotName: Component = text("AI Pilot Matrix", NamedTextColor.RED, TextDecoration.BOLD)
 
 	override var yaw: Float = 0.0F
