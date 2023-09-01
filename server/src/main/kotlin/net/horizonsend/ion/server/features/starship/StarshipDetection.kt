@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.miniMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -205,7 +206,14 @@ object StarshipDetection : IonServerComponent() {
 		}
 
 		val concretePercent: Double = concrete.toDouble() / size.toDouble()
+		val amountNeeded = (size * type.concretePercent).toInt()
+
 		if (concretePercent < type.concretePercent) {
+			detector?.sendMessage(
+				("<red>For a starship of <white>$size<red> blocks to detect, <white>$amountNeeded<red> blocks of concrete are required.\n " +
+					"Replace <white>${amountNeeded - concrete}<red> blocks with concrete for detection to succeed.").miniMessage()
+			)
+
 			throw DetectionFailedException(
 				"This ship requires at least ${type.concretePercent * 100}% concrete blocks in order to fly. Current %: ${concretePercent * 100}"
 			)
