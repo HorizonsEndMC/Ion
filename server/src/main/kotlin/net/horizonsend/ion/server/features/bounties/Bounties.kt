@@ -147,8 +147,10 @@ object Bounties : IonServerComponent() {
 			val killerBounty = PlayerCache[killer].bounty
 
 			val reason = text()
-				.append(text("For killing ", NamedTextColor.RED))
+				.append(text("For sinking ", NamedTextColor.RED))
 				.append(text(victim.name, NamedTextColor.DARK_RED))
+				.append(text("'s ", NamedTextColor.RED))
+				.append(event.starship.type.component)
 				.append(text(", ", NamedTextColor.RED))
 				.append(text(killer.name, NamedTextColor.DARK_RED))
 				.append(text("'s bounty was increased by $money! It is now ", NamedTextColor.RED))
