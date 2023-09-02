@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
@@ -49,6 +50,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Sign
@@ -74,6 +76,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			IonServer.configuration.beacons
 				.filter { beacon -> beacon.spaceLocation.world == e.player.world.name }
 				.map { it.name.replace(" ", "_") }
+		}
+		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
+			ActiveStarships.all().map { it.identifier }.toMutableList().apply {
+				remove(context.player.name)
+			}
+		}
+		manager.commandCompletions.registerAsyncCompletion("nodes") { context ->
+			ActiveStarships.findByPilot(context.player)?.weaponSets?.keys()
 		}
 	}
 
@@ -335,28 +345,29 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("settarget|starget|st")
-	fun onSetTarget(sender: Player, set: String, @Optional player: OnlinePlayer?) {
+	@CommandCompletion("@nodes @autoTurretTargets")
+	fun onSetTarget(sender: Player, set: String, @Optional target: String?) {
 		val starship = getStarshipRiding(sender)
 		val weaponSet = set.lowercase(Locale.getDefault())
-		failIf(!starship.weaponSets.containsKey(weaponSet)) {
-			"No such weapon set $weaponSet"
-		}
-		failIf(!starship.weaponSets[weaponSet].any { it is AutoWeaponSubsystem }) {
-			"No auto turrets on weapon set $weaponSet"
-		}
-		if (player == null) {
-			failIf(starship.autoTurretTargets.remove(weaponSet) == null) {
-				"No target set for $weaponSet"
-			}
+		failIf(!starship.weaponSets.containsKey(weaponSet)) { "No such weapon set $weaponSet" }
+		failIf(!starship.weaponSets[weaponSet].any { it is AutoWeaponSubsystem }) { "No auto turrets on weapon set $weaponSet" }
+
+		if (target == null) {
+			failIf(starship.autoTurretTargets.remove(weaponSet) == null) { "No target set for $weaponSet" }
 
 			sender.information("Unset target of <aqua>$weaponSet")
-		} else {
-			starship.autoTurretTargets[weaponSet] = player.getPlayer().uniqueId
-
-			sender.information(
-				"Set target of <aqua>$weaponSet</aqua> to <white>${player.getPlayer().name}"
-			)
+			return
 		}
+
+		val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
+		val targeted =
+			Bukkit.getPlayer(formatted)?.let { AutoTurretTargeting.target(it) } ?:
+			ActiveStarships[formatted]?.let { AutoTurretTargeting.target(it) } ?:
+			fail { "Target $target could not be found!" }
+
+		starship.autoTurretTargets[weaponSet] = targeted
+
+		sender.information("Set target of <aqua>$weaponSet</aqua> to <white>${targeted.identifier}")
 	}
 
 	@Suppress("unused")
@@ -388,12 +399,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			sender.userErrorActionMessage("Error no weaponsets with autoturret targets found")
 			return
 		}
-		starship.autoTurretTargets.forEach { starship.autoTurretTargets.remove(it.key, it.value) }
+		starship.autoTurretTargets.clear()
 		sender.successActionMessage("Unset target for all weaponsets.")
 	}
 
 	@CommandAlias("weaponset|ws")
 	@Suppress("unused")
+	@CommandCompletion("@nodes")
 	fun onWeaponset(sender: Player, set: String) {
 		val starship = getStarshipPiloting(sender)
 
