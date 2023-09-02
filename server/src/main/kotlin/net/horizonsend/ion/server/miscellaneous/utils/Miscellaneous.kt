@@ -29,6 +29,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.EnumSet
+import java.util.Random
+import kotlin.streams.asSequence
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -148,4 +150,16 @@ fun repeatString(string: String, count: Int): String {
 	}
 
 	return builder.toString()
+}
+
+val alphaNumericChars : List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+
+fun randomString(length: Long, inputRandom: Random? = null): String {
+	val random = inputRandom ?: Random()
+
+	return random
+		.ints(length, 0, alphaNumericChars.size)
+		.asSequence()
+		.map(alphaNumericChars::get)
+		.joinToString("")
 }

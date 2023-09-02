@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
@@ -55,10 +56,10 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 		return true
 	}
 
-	override fun autoFire(target: Player, dir: Vector) {
+	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {
 		lastFire = System.nanoTime()
 
-		val loc = getFirePos().toCenterVector().toLocation(target.world)
+		val loc = getFirePos().toCenterVector().toLocation(target.location()?.world ?: return)
 		PointDefenseLaserProjectile(starship, loc, dir, range, starship.controller).fire()
 	}
 

@@ -162,7 +162,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = (starship.controller?.pilotName ?: Component.text("Unpiloted Ship")).color(color),
+                    name = (Component.text(starship.identifier)).color(color),
                     prefix = when (starship.type) {
                         STARFIGHTER -> text("\uE000").font(key("horizonsend:sidebar"))
                         GUNSHIP -> text("\uE001").font(key("horizonsend:sidebar"))

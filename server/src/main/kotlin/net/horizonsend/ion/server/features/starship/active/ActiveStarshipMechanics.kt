@@ -16,7 +16,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actionAndMsg
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
-import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
@@ -24,7 +23,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -66,32 +64,25 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun fireAutoWeapons() {
 		for (ship in ActiveStarships.all()) {
-			val queuedShots = queueShots(ship)
+			val queuedShots = queueAutoShots(ship)
 			StarshipWeapons.fireQueuedShots(queuedShots, ship)
 		}
 	}
 
-	private fun queueShots(ship: ActiveStarship): LinkedList<StarshipWeapons.AutoQueuedShot> {
+	private fun queueAutoShots(ship: ActiveStarship): LinkedList<StarshipWeapons.AutoQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.AutoQueuedShot>()
 
-		for ((set: String, targetId: UUID) in ship.autoTurretTargets) {
-			val target = Bukkit.getPlayer(targetId) ?: continue
-			if (target.world != ship.world) continue
+		for ((node, target) in ship.autoTurretTargets) {
+			val targetLocation = target.type.get(target.identifier) ?: continue
+			if (targetLocation.world != ship.world) continue
 
-			val weapons = ship.weaponSets[set]
+			val weapons = ship.weaponSets[node]
 
 			for (weapon in weapons) {
 				if (weapon !is AutoWeaponSubsystem) continue
 				if (!weapon.isIntact()) continue
 
-				var targetLoc: Location = target.eyeLocation
-
-				val targetRiding = ActiveStarships.findByPassenger(target)
-				if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
-					targetLoc = Vec3i(targetRiding.blocks.random()).toLocation(ship.world).toCenterLocation()
-				}
-
-				val targetVec = targetLoc.toVector()
+				val targetVec = targetLocation.toVector()
 				val direct = targetVec.clone().subtract(ship.centerOfMass.toCenterVector()).normalize()
 
 				if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > weapon.range.squared()) continue

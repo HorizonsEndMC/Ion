@@ -6,13 +6,13 @@ import net.horizonsend.ion.common.extensions.alertActionMessage
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugRed
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 object StarshipWeapons {
@@ -37,11 +37,12 @@ object StarshipWeapons {
 
 	data class AutoQueuedShot(
 		override val weapon: WeaponSubsystem,
-		val target: Player,
+		val target: AutoTurretTargeting.AutoTurretTarget<*>,
 		val dir: Vector
 	) : QueuedShot {
 		override fun shoot() {
 			check(weapon is AutoWeaponSubsystem)
+
 			weapon.autoFire(target, dir)
 			weapon.postFire()
 		}
