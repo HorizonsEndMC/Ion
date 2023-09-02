@@ -74,108 +74,36 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun queueShots(ship: ActiveStarship): LinkedList<StarshipWeapons.AutoQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.AutoQueuedShot>()
-		if (!ship.randomTarget) {
-			for ((set: String, targetId: UUID) in ship.autoTurretTargets) {
-				val target = Bukkit.getPlayer(targetId) ?: continue
 
-				if (target.world != ship.world) {
-					continue
+		for ((set: String, targetId: UUID) in ship.autoTurretTargets) {
+			val target = Bukkit.getPlayer(targetId) ?: continue
+			if (target.world != ship.world) continue
+
+			val weapons = ship.weaponSets[set]
+
+			for (weapon in weapons) {
+				if (weapon !is AutoWeaponSubsystem) continue
+				if (!weapon.isIntact()) continue
+
+				var targetLoc: Location = target.eyeLocation
+
+				val targetRiding = ActiveStarships.findByPassenger(target)
+				if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
+					targetLoc = Vec3i(targetRiding.blocks.random()).toLocation(ship.world).toCenterLocation()
 				}
 
-				val weapons = ship.weaponSets[set]
-				for (weapon in weapons) {
-					if (weapon !is AutoWeaponSubsystem) {
-						continue
-					}
+				val targetVec = targetLoc.toVector()
+				val direct = targetVec.clone().subtract(ship.centerOfMass.toCenterVector()).normalize()
 
-					if (!weapon.isIntact()) {
-						continue
-					}
+				if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > weapon.range.squared()) continue
 
-					var targetLoc: Location = target.eyeLocation
+				val dir = weapon.getAdjustedDir(direct, targetVec)
 
-					val targetRiding = ActiveStarships.findByPassenger(target)
-					if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
-						targetLoc = Vec3i(targetRiding.blocks.random()).toLocation(ship.world).toCenterLocation()
-					}
+				if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(dir)) continue
+				if (!weapon.isCooledDown()) continue
+				if (!weapon.canFire(dir, targetVec)) continue
 
-					val targetVec = targetLoc.toVector()
-					val direct = targetVec.clone().subtract(ship.centerOfMass.toCenterVector()).normalize()
-
-					if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > weapon.range.squared()) {
-						continue
-					}
-
-					val dir = weapon.getAdjustedDir(direct, targetVec)
-
-					if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(dir)) {
-						continue
-					}
-
-					if (!weapon.isCooledDown()) {
-						continue
-					}
-
-					if (!weapon.canFire(dir, targetVec)) {
-						continue
-					}
-
-					queuedShots.add(StarshipWeapons.AutoQueuedShot(weapon, target, dir))
-				}
-			}
-		} else {
-			val weaponSets = ship.weaponSets.asMap()
-			for (set in weaponSets) {
-				val weapons = set.component2()
-
-				for (weapon in weapons) {
-					val validTargets: MutableSet<Player> = mutableSetOf()
-
-					if (weapon !is AutoWeaponSubsystem) {
-						continue
-					}
-
-					for (p: Player in ship.world.players) {
-						if (!p.location.isInRange(weapon.pos.toLocation(weapon.starship.world), weapon.range)) continue
-						if (p.world != ship.world) continue
-						if (ship.randomTargetBlacklist.contains(p.uniqueId)) continue
-						validTargets.add(p)
-					}
-					val target = validTargets.randomEntry()
-
-					if (!weapon.isIntact()) {
-						continue
-					}
-
-					var targetLoc: Location = target.eyeLocation
-
-					val targetRiding = ActiveStarships.findByPassenger(target)
-					if (targetRiding != null && weapon.shouldTargetRandomBlock(target)) {
-						targetLoc = Vec3i(targetRiding.blocks.randomEntry()).toLocation(ship.world).toCenterLocation()
-					}
-
-					val targetVec = targetLoc.toVector()
-					val direct = targetVec.clone().subtract(ship.centerOfMass.toCenterVector()).normalize()
-
-					if (targetVec.distanceSquared(weapon.pos.toCenterVector()) > weapon.range.squared()) {
-						continue
-					}
-
-					val dir = weapon.getAdjustedDir(direct, targetVec)
-
-					if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(dir)) {
-						continue
-					}
-
-					if (!weapon.isCooledDown()) {
-						continue
-					}
-
-					if (!weapon.canFire(dir, targetVec)) {
-						continue
-					}
-					queuedShots.add(StarshipWeapons.AutoQueuedShot(weapon, target, dir))
-				}
+				queuedShots.add(StarshipWeapons.AutoQueuedShot(weapon, target, dir))
 			}
 		}
 
