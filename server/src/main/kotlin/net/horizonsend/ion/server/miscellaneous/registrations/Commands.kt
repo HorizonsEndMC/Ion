@@ -51,7 +51,6 @@ import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.command.starship.RainbowProjectileCommand
-import net.horizonsend.ion.server.command.starship.RandomTargetCommand
 import net.horizonsend.ion.server.command.starship.StarshipDebugCommand
 import net.horizonsend.ion.server.command.starship.StarshipInfoCommand
 import net.horizonsend.ion.server.command.starship.Starships
@@ -78,7 +77,6 @@ val commands: List<SLCommand> = listOf(
 	ShuttleCommand,
 	BuyXPCommand,
 	RainbowProjectileCommand,
-	RandomTargetCommand,
 
 	SettlementCommand,
 	NationCommand,
