@@ -9,4 +9,6 @@ abstract class AIController(starship: ActiveStarship, name: String, val uuid: UU
 	override var pitch: Float = 0f
 	override var yaw: Float = 0f
 	override var selectedDirectControlSpeed: Int = 0
+
+	var lastRotation: Long = 0L
 }
