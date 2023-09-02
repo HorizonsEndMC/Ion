@@ -86,6 +86,8 @@ abstract class ActiveStarship(
 			_centerOfMass = Vec3i(value.x, value.y, value.z)
 		}
 
+	val identifier get() = getAutoTurretIdentifier()
+
 	var isTeleporting: Boolean = false
 
 	val initialBlockCount: Int = blocks.size
@@ -127,10 +129,6 @@ abstract class ActiveStarship(
 		private set
 
 	var rainbowToggle = false
-
-	var randomTarget = false
-
-	var randomTargetBlacklist: MutableSet<UUID> = mutableSetOf()
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -323,5 +321,21 @@ abstract class ActiveStarship(
 
 	fun getEntryRange(planet: CachedPlanet): Int {
 		return planet.atmosphereRadius + max(max.x - min.x, max.z - min.z) / 2 + 10
+	}
+
+	fun getAutoTurretIdentifier(): String = when (controller) {
+//		null -> {
+//
+//		}
+//
+//		is PlayerController -> {
+//
+//		}
+//
+//		is AIController -> {
+//
+//		}
+
+		else -> throw NotImplementedError()
 	}
 }
