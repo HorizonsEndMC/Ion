@@ -31,7 +31,7 @@ class WaypointsHeaderSidebarComponent(player: Player) : SidebarComponent {
 
     override fun draw(drawable: LineDrawable) {
         val line = text()
-        line.append(text("Waypoints").style(style(BOLD).color(YELLOW)))
+        line.append(text("Route").style(style(BOLD).color(YELLOW)))
         line.append(text(" | ").color(DARK_GRAY))
         line.append(text("\uE036").font(key("horizonsend:sidebar")).color(getColor(compactWaypoints)))
         line.append(text(" | ").color(DARK_GRAY))

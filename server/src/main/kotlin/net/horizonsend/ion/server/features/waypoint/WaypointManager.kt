@@ -291,7 +291,7 @@ object WaypointManager : IonServerComponent() {
         }
     }
 
-    fun findShortestPath(player: Player): List<GraphPath<WaypointVertex, WaypointEdge>>? {
+    private fun findShortestPath(player: Player): List<GraphPath<WaypointVertex, WaypointEdge>>? {
         // check if player has destination(s) set
         if (playerDestinations[player.uniqueId].isNullOrEmpty()) {
             return listOf()

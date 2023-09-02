@@ -62,7 +62,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 		// Waypoints
 		val waypointsEnabled = PlayerCache[player.uniqueId].waypointsEnabled
-		if (waypointsEnabled) {
+		if (waypointsEnabled && WaypointManager.getNextWaypoint(player) != null) {
 			val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
 			lines.addComponent(waypointsHeaderComponent)
 
