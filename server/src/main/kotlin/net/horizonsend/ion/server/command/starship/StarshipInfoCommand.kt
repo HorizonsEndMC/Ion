@@ -78,8 +78,8 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		if (ship.autoTurretTargets.isNotEmpty()) {
 			sender.sendRichMessage("   <gray>Auto Turret Targets:")
-			for ((set, targetId) in ship.autoTurretTargets) {
-				val targetName = Bukkit.getOfflinePlayer(targetId).name
+			for ((set, target) in ship.autoTurretTargets) {
+				val targetName = target.identifier
 				sender.sendRichMessage("      <gold>$set: <red>$targetName")
 			}
 		}
