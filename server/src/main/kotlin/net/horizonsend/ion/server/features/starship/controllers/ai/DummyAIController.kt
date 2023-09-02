@@ -16,7 +16,6 @@ import java.util.UUID
 
 class DummyAIController(starship: ActiveStarship, uuid: UUID) : AIController(starship, "AI", uuid) {
 	override val pilotName: Component = text("AI Pilot Matrix", NamedTextColor.RED, TextDecoration.BOLD)
-	var lifeTime = 0L
 
 	override var yaw: Float = 0.0F
 	override var pitch: Float = 0.0F
@@ -34,16 +33,19 @@ class DummyAIController(starship: ActiveStarship, uuid: UUID) : AIController(sta
 	}
 
 	override fun tick() {
-		lifeTime++
 		val location = starship.centerOfMass.toLocation(starship.world)
 		val nearestPlayer = getNearestPlayer(location)
 
 		val direction = nearestPlayer?.location?.toVector()?.subtract(starship.centerOfMass.toVector())
 
-		if (lifeTime % 30L == 0L) direction?.let { AIControlUtils.faceDirection(this, vectorToBlockFace(direction)) }
+		direction?.let { AIControlUtils.faceDirection(this, vectorToBlockFace(direction)) }
 
 		AIControlUtils.shiftFlyTowardsPlayer(this, nearestPlayer)
 
+		nearestPlayer?.let {
+			AIControlUtils.shootAtPlayer(this, nearestPlayer, true)
+			AIControlUtils.shootAtPlayer(this, nearestPlayer, false, weaponSet = "phasers")
+		}
 	}
 
 	private fun getNearestPlayer(location: Location) = IonServer.server.onlinePlayers

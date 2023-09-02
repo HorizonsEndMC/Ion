@@ -28,7 +28,7 @@ object ShipData : IonPacketHandler() {
 			val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.formatted)
 			val type = MiniMessage.miniMessage().deserialize(ship.type.formatted)
 			val pm = ship.reactor.powerDistributor
-			val targets = ship.autoTurretTargets.mapValues { Bukkit.getOfflinePlayer(it.value).name ?: "None" }
+			val targets = ship.autoTurretTargets.mapValues { it.value.identifier }
 			val hull = ship.hullIntegrity().times(100).roundToInt()
 			val gravwell = ship.isInterdicting
 			val weaponset = ship.weaponSetSelections[player.uniqueId] ?: "None"
