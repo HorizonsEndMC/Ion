@@ -10,8 +10,11 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.features.starship.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
@@ -33,8 +36,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.msg
-import net.horizonsend.ion.server.miscellaneous.utils.title
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import org.bukkit.Bukkit
@@ -86,6 +87,9 @@ abstract class ActiveStarship(
 			_centerOfMass = Vec3i(value.x, value.y, value.z)
 		}
 
+	// Created once
+	val charIdentifier = randomString(5L)
+	// used to identify the ship to auto turrets
 	val identifier get() = getAutoTurretIdentifier()
 
 	var isTeleporting: Boolean = false
@@ -108,7 +112,8 @@ abstract class ActiveStarship(
 
 	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
-	val autoTurretTargets = mutableMapOf<String, UUID>()
+
+	val autoTurretTargets = mutableMapOf<String, AutoTurretTargeting.AutoTurretTarget<*>>()
 
 	// Non-normalized vector containing the ships velocity
 	// Used for target lead / speed estimations
@@ -324,17 +329,11 @@ abstract class ActiveStarship(
 	}
 
 	fun getAutoTurretIdentifier(): String = when (controller) {
-//		null -> {
-//
-//		}
-//
-//		is PlayerController -> {
-//
-//		}
-//
-//		is AIController -> {
-//
-//		}
+		null -> "UnpilotedShip:$charIdentifier"
+
+		is PlayerController -> (controller as PlayerController).player.name
+
+		is AIController -> "AutonomousShip:$charIdentifier"
 
 		else -> throw NotImplementedError()
 	}
