@@ -27,25 +27,25 @@ object SidebarWaypointsCommand : SLCommand() {
     }
 
     @Suppress("unused")
-    @Subcommand("waypoints enable")
+    @Subcommand("route enable")
     fun onEnableWaypoints(
         sender: Player
     ) {
         SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::waypointsEnabled setTo true))
-        sender.success("Enabled waypoints on sidebar")
+        sender.success("Enabled route on sidebar")
     }
 
     @Suppress("unused")
-    @Subcommand("waypoints disable")
+    @Subcommand("route disable")
     fun onDisableWaypoints(
         sender: Player
     ) {
         SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::waypointsEnabled setTo false))
-        sender.success("Disabled waypoints on sidebar")
+        sender.success("Disabled route on sidebar")
     }
 
     @Suppress("unused")
-    @Subcommand("waypoints compactWaypoints")
+    @Subcommand("route compactWaypoints")
     @Description("Toggles compact waypoints; intermediate jumps are not displayed during navigation")
     fun onToggleCompactWaypoints(
         sender: Player,

@@ -19,7 +19,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-@CommandAlias("waypoint")
+@CommandAlias("route")
 object WaypointCommand : SLCommand() {
     @Suppress("unused")
     @CommandAlias("add")
@@ -223,7 +223,7 @@ object WaypointCommand : SLCommand() {
     }
 
     @Suppress("unused")
-    @Subcommand("path")
+    @Subcommand("list")
     @Description("Prints detailed information of all waypoints on a navigation route")
     fun onPrintPath(
         sender: Player
