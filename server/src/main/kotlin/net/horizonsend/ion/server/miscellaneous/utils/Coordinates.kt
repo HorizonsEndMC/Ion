@@ -311,6 +311,9 @@ fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFa
 		}
 	}
 
+//	val yaw = atan2(-x, z)
+//	val yawDegrees = Math.floorMod(Math.toDegrees(yaw).roundToInt(), 360)
+
 	val twoPi = 2 * Math.PI
 	val theta = atan2(-x, z)
 	val yawDegrees = Math.toDegrees((theta + twoPi) % twoPi).toInt()
@@ -325,6 +328,30 @@ fun yawToBlockFace(yawDegrees: Int): BlockFace = when (yawDegrees) {
 	in 225..315 -> BlockFace.EAST
 	in 315..360 -> BlockFace.SOUTH
 	else -> throw IllegalArgumentException()
+}
+
+fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {
+	val pitch: Float
+	val yaw: Float
+
+	val twoPi = 2 * Math.PI
+	val x = vector.x
+	val z = vector.z
+
+	if (x == 0.0 && z == 0.0) {
+		pitch = if (vector.y > 0) -90F else 90F
+		return pitch to 0F
+	}
+
+	val theta = atan2(-x, z)
+	yaw = Math.toDegrees((theta + twoPi) % twoPi).toFloat()
+
+	val x2 = NumberConversions.square(x)
+	val z2 = NumberConversions.square(z)
+	val xz = sqrt(x2 + z2)
+	pitch = Math.toDegrees(atan(-vector.y / xz)).toFloat()
+
+	return pitch to yaw
 }
 
 fun Vector.orthogonalVectors(): Pair<Vector, Vector> {
