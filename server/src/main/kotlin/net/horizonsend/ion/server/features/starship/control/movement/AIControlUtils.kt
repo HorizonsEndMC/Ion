@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
 
 object AIControlUtils {
 	/** Will stop moving if provided a null vector **/
-	fun moveInDirection(controller: AIController, direction: Vector?) {
+	fun shiftFlyInDirection(controller: AIController, direction: Vector?) {
 		if (direction == null) {
 			controller.isShiftFlying = false
 			return
@@ -31,7 +31,7 @@ object AIControlUtils {
 	}
 
 	/** Will stop moving if provided a null location **/
-	fun moveToLocation(controller: AIController, location: Location?) = Tasks.async {
+	fun shiftFlyToLocation(controller: AIController, location: Location?) = Tasks.async {
 		val starshipLocation = controller.starship.centerOfMass.toLocation(controller.starship.world)
 
 		if (location == null) {
@@ -41,11 +41,11 @@ object AIControlUtils {
 
 		val dir = location.toVector().subtract(starshipLocation.toVector())
 
-		moveInDirection(controller, dir)
+		shiftFlyInDirection(controller, dir)
 	}
 
 	/** Will stop moving if provided a null player **/
-	fun shiftFlyTowardsPlayer(controller: AIController, player: Player?) = moveToLocation(controller, player?.location)
+	fun shiftFlyTowardsPlayer(controller: AIController, player: Player?) = shiftFlyToLocation(controller, player?.location)
 
 	/** Will attempt to face in the specified direction **/
 	fun faceDirection(controller: AIController, direction: BlockFace) {
@@ -136,6 +136,6 @@ object AIControlUtils {
 	}
 
 	fun setAutoWeapons(controller: AIController, target: Player) {
-		
+
 	}
 }
