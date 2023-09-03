@@ -163,7 +163,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			(navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier).roundToInt()
 
 		if (destination == "auto") {
-			val playerPath = WaypointManager.playerPaths[sender.uniqueId] ?: fail {"No route set"}
+			val playerPath = WaypointManager.playerPaths[sender.uniqueId]
+			if (playerPath.isNullOrEmpty()) fail { "Route not set" }
 			if (starship.beacon != null &&
 				starship.beacon!!.name == WaypointManager.getNextWaypoint(sender)!!.replace("_", " ")
 				) {
