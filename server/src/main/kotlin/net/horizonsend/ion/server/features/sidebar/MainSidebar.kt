@@ -67,7 +67,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 			lines.addComponent(waypointsHeaderComponent)
 
 			// next waypoint (first waypoint in route)
-			val nextWaypoint = WaypointManager.getNextWaypoint(player)
+			val nextWaypoint = WaypointManager.getNextWaypoint(player)?.replace('_', ' ')
 			if (!nextWaypoint.isNullOrEmpty()) {
 				val nextWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ nextWaypoint }, false)
 				lines.addComponent(nextWaypointComponent)
@@ -82,7 +82,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 			for (component in routeComponents) lines.addComponent(component)
 
 			// last waypoint (final destination)
-			val lastWaypoint = WaypointManager.getLastWaypoint(player)
+			val lastWaypoint = WaypointManager.getLastWaypoint(player)?.replace('_', ' ')
 			if (!lastWaypoint.isNullOrEmpty()) {
 				val lastWaypointComponent: SidebarComponent = WaypointsNameSidebarComponent({ lastWaypoint }, true)
 				lines.addComponent(lastWaypointComponent)
