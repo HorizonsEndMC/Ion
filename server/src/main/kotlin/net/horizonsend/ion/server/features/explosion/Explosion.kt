@@ -216,6 +216,8 @@ class Explosion(
 		)
 	}
 
+	fun location() = Location(world, x, y, z)
+
 	companion object {
 		/**
 		 * @param modification Modify any additional explosion params using this function
