@@ -19,11 +19,11 @@ import org.litote.kmongo.setTo
 object SidebarWaypointsCommand : SLCommand() {
     @Default
     @Suppress("unused")
-    @Subcommand("waypoints")
+    @Subcommand("route")
     fun defaultCase(
         sender: Player
     ) {
-        sender.userError("Usage: /sidebar waypoints <option> [toggle]")
+        sender.userError("Usage: /sidebar route <option> [toggle]")
     }
 
     @Suppress("unused")
