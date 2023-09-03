@@ -4,6 +4,7 @@ import com.google.common.io.ByteStreams
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.explosion.reversal.Regeneration.pulse
+import net.horizonsend.ion.server.features.starship.event.explosion.StarshipCauseExplosionEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -83,10 +84,10 @@ object ExplosionReversal : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onCustomExplosion(event: BlockExplodeEvent) {
-		val world = event.block.world
-		val location: Location = event.block.location
-		val blockList: MutableList<Block> = event.blockList()
+	fun onCustomExplosion(event: StarshipCauseExplosionEvent) {
+		val world = event.explosion.world
+		val location: Location = event.explosion.location()
+		val blockList: MutableSet<Block> = event.blocks
 
 		processExplosion(world, location, blockList)
 	}
@@ -106,14 +107,14 @@ object ExplosionReversal : IonServerComponent() {
 		return now + offset
 	}
 
-	private fun processExplosion(world: World, explosionLocation: Location, list: MutableList<Block>) {
+	private fun processExplosion(world: World, explosionLocation: Location, list: MutableCollection<Block>) {
 		if (settings.ignoredWorlds.contains(world.name)) return
 		if (list.isEmpty()) return
 
 		val explodedBlockDataList: MutableList<ExplodedBlockData> = LinkedList()
-		val eX: Double = explosionLocation.getX()
-		val eY: Double = explosionLocation.getY()
-		val eZ: Double = explosionLocation.getZ()
+		val eX: Double = explosionLocation.x
+		val eY: Double = explosionLocation.y
+		val eZ: Double = explosionLocation.z
 		val iterator: MutableIterator<Block> = list.iterator()
 
 		while (iterator.hasNext()) {
