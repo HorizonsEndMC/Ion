@@ -38,6 +38,7 @@ import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
@@ -160,6 +161,20 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val navComp: NavCompSubsystem = Hyperspace.findNavComp(starship) ?: fail { "Intact nav computer not found!" }
 		val maxRange: Int =
 			(navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier).roundToInt()
+
+		if (destination == "auto") {
+			val playerPath = WaypointManager.playerPaths[sender.uniqueId] ?: fail {"No route set"}
+			if (starship.beacon != null &&
+				starship.beacon!!.name == WaypointManager.getNextWaypoint(sender)!!.replace("_", " ")
+				) {
+				onUseBeacon(sender)
+				return
+			}
+			val x = playerPath.first().edgeList.first().target.loc.x.toInt()
+			val z = playerPath.first().edgeList.first().target.loc.z.toInt()
+			tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
+			return
+		}
 
 		val destinationPos = Space.getPlanet(destination)?.let {
 			Pos(
