@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -77,6 +78,8 @@ class Vec3i: DBVec3i {
 	constructor(vector: Vector) : super(vector.blockX, vector.blockY, vector.blockZ)
 
 	constructor(location: Location) : super(location.blockX, location.blockY, location.blockZ)
+
+	constructor(blockPos: BlockPos) : super(blockPos.x, blockPos.y, blockPos.z)
 
 	override fun toString() = "$x,$y,$z"
 
