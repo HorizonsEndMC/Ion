@@ -39,6 +39,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsyste
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
@@ -194,7 +195,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		if (destinationPos.bukkitWorld() != sender.world) {
-			sender.userError("$destination is not in this space sector.")
+			sender.userError("$destination is not in this space sector. Attempting to create route...")
+			WaypointCommand.onSetWaypoint(sender, destination)
 			return
 		}
 

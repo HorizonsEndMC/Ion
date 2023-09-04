@@ -48,7 +48,8 @@ object WaypointCommand : SLCommand() {
             WaypointManager.updatePlayerGraph(sender)
             WaypointManager.updatePlayerPaths(sender)
             WaypointManager.updateNumJumps(sender)
-            sender.success("Vertex ${vertex.name} added")
+            sender.success("Vertex ${vertex.name} added to route. \"/jump auto\" to start jumping, " +
+                    "\"/route add\" to add more waypoints, or \"/route clear\" to clear all waypoints")
         } else {
             sender.userError("Too many destinations added (maximum of ${WaypointManager.MAX_DESTINATIONS})")
         }
@@ -82,7 +83,8 @@ object WaypointCommand : SLCommand() {
             WaypointManager.updatePlayerGraph(sender)
             WaypointManager.updatePlayerPaths(sender)
             WaypointManager.updateNumJumps(sender)
-            sender.success("Vertex ${vertex.name} added")
+            sender.success("Vertex ${vertex.name} added to route. \"/jump auto\" to start jumping, " +
+                    "\"/route add\" to add more waypoints, or \"/route clear\" to clear all waypoints")
         } else {
             sender.userError("Too many destinations added (maximum of ${WaypointManager.MAX_DESTINATIONS})")
         }
@@ -99,7 +101,7 @@ object WaypointCommand : SLCommand() {
             WaypointManager.playerDestinations[sender.uniqueId]?.clear()
             WaypointManager.playerPaths.remove(sender.uniqueId)
             WaypointManager.playerNumJumps.remove(sender.uniqueId)
-            sender.success("All waypoints cleared")
+            sender.success("All waypoints cleared from route")
             return
         } else {
             sender.userError("No waypoints to remove")
@@ -120,7 +122,7 @@ object WaypointCommand : SLCommand() {
             WaypointManager.updatePlayerGraph(sender)
             WaypointManager.updatePlayerPaths(sender)
             WaypointManager.updateNumJumps(sender)
-            sender.success("Last waypoint ${vertex?.name} removed")
+            sender.success("Last waypoint ${vertex?.name} removed from route")
             return
         } else {
             sender.userError("No waypoints to remove")
