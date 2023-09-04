@@ -12,7 +12,8 @@ object Regeneration {
 		regenerateBlocks()
 	}
 
-	fun regenerateBlocks(): Int {
+	fun regenerateBlocks(instant: Boolean = false): Int {
+		println("regenning")
 		val millisecondDelay: Long = settings.regenDelay.times( 60L * 1000L).toLong()
 		val maxNanos: Long = settings.placementIntensity.times( 1000000L).toLong()
 
@@ -23,15 +24,20 @@ object Regeneration {
 			val blocks = ExplosionReversal.worldData?.getBlocks(world) ?: return 0
 			val iterator = blocks.iterator()
 
+			println(blocks)
+
 			while (iterator.hasNext()) {
 				val data = iterator.next()
+				println(data)
 
-				if (System.nanoTime() - start > maxNanos) { // i.e. taking too long
-					return regenerated
-				}
+				if (!instant) {
+					if (System.nanoTime() - start > maxNanos) { // i.e. taking too long
+						return regenerated;
+					}
 
-				if (System.currentTimeMillis() - data.explodedTime < millisecondDelay) {
-					continue
+					if (System.currentTimeMillis() - data.explodedTime < millisecondDelay) {
+						continue
+					}
 				}
 
 				iterator.remove()

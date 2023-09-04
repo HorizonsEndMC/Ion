@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.explosion.reversal
 
 import com.google.common.io.ByteStreams
+import it.unimi.dsi.fastutil.objects.ObjectLists
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.explosion.reversal.Regeneration.pulse
@@ -22,13 +23,14 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Chest
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockExplodeEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.inventory.DoubleChestInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import java.io.IOException
-import java.util.LinkedList
 import java.util.function.Consumer
 import kotlin.math.abs
 import kotlin.math.roundToLong
@@ -69,12 +71,12 @@ object ExplosionReversal : IonServerComponent() {
 		})
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onWorldSave(event: WorldSaveEvent) {
 		worldData!!.save(event.world)
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onBlockExplode(event: BlockExplodeEvent) {
 		val world = event.block.world
 		val location: Location = event.block.location
@@ -83,7 +85,16 @@ object ExplosionReversal : IonServerComponent() {
 		processExplosion(world, location, blockList)
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	fun onEntityExplode(event: EntityExplodeEvent) {
+		val world = event.entity.world
+		val location = event.location
+		val blockList = event.blockList()
+
+		processExplosion(world, location, blockList)
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onCustomExplosion(event: StarshipCauseExplosionEvent) {
 		val world = event.explosion.world
 		val location: Location = event.explosion.location()
@@ -111,7 +122,7 @@ object ExplosionReversal : IonServerComponent() {
 		if (settings.ignoredWorlds.contains(world.name)) return
 		if (list.isEmpty()) return
 
-		val explodedBlockDataList: MutableList<ExplodedBlockData> = LinkedList()
+		val explodedBlockDataList: MutableList<ExplodedBlockData> = ObjectLists.emptyList()
 		val eX: Double = explosionLocation.x
 		val eY: Double = explosionLocation.y
 		val eZ: Double = explosionLocation.z
@@ -131,6 +142,7 @@ object ExplosionReversal : IonServerComponent() {
 		explodedBlockDataList: MutableList<ExplodedBlockData>, eX: Double, eY: Double, eZ: Double,
 		iterator: MutableIterator<Block>,
 	) {
+		println(3.1)
 		val block: Block = iterator.next()
 		val blockData: BlockData = block.blockData
 
