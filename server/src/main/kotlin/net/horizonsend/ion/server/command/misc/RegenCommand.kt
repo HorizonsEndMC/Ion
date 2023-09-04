@@ -21,7 +21,7 @@ object RegenCommand : SLCommand() {
 		var regeneratedBlocks = 0
 
 		try {
-			regeneratedBlocks = regenerateBlocks()
+			regeneratedBlocks = regenerateBlocks(true)
 		} catch (e: IOException) {
 			e.printStackTrace()
 		}
