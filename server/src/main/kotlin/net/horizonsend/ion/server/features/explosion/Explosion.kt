@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.explosion
 
+import it.unimi.dsi.fastutil.objects.ObjectSets
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.event.explosion.StarshipCauseExplosionEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
@@ -45,13 +47,13 @@ class Explosion(
 	val controller: Controller
 ) {
 	private var fireType = Material.FIRE
-	private val toExplode = mutableSetOf<BlockPos>()
+	private val toExplode = ObjectSets.emptySet<Vec3i>()
 
 	var useFire = false
 	var firePercent = 0.05
 
 	val random = Random.asJavaRandom()
-	val blocks: MutableSet<Block> = mutableSetOf()
+	val blocks: MutableSet<Block> = ObjectSets.emptySet()
 
 	private var particle: Particle? = null
 	private var sound: Sound? = null
@@ -107,11 +109,11 @@ class Explosion(
 
 	/** If specified for the explosion to use rays, it additionally populates the blocks list **/
 	// This is the NMS explosion code
-	private fun getRayBlockPositionsAsync(): CompletableFuture<Set<BlockPos>> {
-		val complete = CompletableFuture<Set<BlockPos>>()
+	private fun getRayBlockPositionsAsync(): CompletableFuture<Set<Vec3i>> {
+		val complete = CompletableFuture<Set<Vec3i>>()
 
 		Tasks.async {
-			val positions = mutableSetOf<BlockPos>()
+			val positions = mutableSetOf<Vec3i>()
 
 			val radius = power.toDouble().coerceAtLeast(0.0).toFloat()
 
@@ -151,7 +153,7 @@ class Explosion(
 
 						if (optional.isPresent) f -= (optional.get() + 0.3f) * 0.3f
 
-						if (f > 0.0f) positions.add(blockPos)
+						if (f > 0.0f) positions.add(Vec3i(blockPos))
 
 						d4 += d0 * 0.30000001192092896
 						d5 += d1 * 0.30000001192092896
