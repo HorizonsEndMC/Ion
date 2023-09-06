@@ -34,10 +34,10 @@ import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
-import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
@@ -541,7 +541,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayName(it) } ?: starship.type.formatted
 			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.formatted).asHoverEvent()
 
-			val pilotName = (starship.controller?.pilotName as? TextComponent)?.content() ?: "none"
+			val pilotName = (starship.controller.pilotName as? TextComponent)?.content() ?: "none"
 
 			val pilotNationID = pilot?.let { PlayerCache[pilot].nationOid }
 

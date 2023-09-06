@@ -1,5 +1,6 @@
-package net.horizonsend.ion.server.features.starship.controllers
+package net.horizonsend.ion.server.features.starship.control.controllers
 
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
@@ -8,7 +9,7 @@ import org.bukkit.Color
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
-abstract class Controller(val starship: ActiveStarship, val name: String) : ForwardingAudience.Single {
+abstract class Controller(override val starship: ActiveStarship, val name: String) : ForwardingAudience.Single, Damager {
 	abstract val pilotName: Component
 
 	abstract val isShiftFlying: Boolean
@@ -19,11 +20,10 @@ abstract class Controller(val starship: ActiveStarship, val name: String) : Forw
 	abstract val yaw: Float
 
 	abstract val selectedDirectControlSpeed: Int
-
 	override fun audience(): Audience = Audience.empty()
 
 	/** The color used for this controller. Currently, applies weapon color **/
-	open val color = Color.fromRGB(Integer.parseInt("ffffff", 16))
+	override val color = Color.fromRGB(Integer.parseInt("ffffff", 16))
 
 	/** Called on each server tick. */
 	open fun tick() {}

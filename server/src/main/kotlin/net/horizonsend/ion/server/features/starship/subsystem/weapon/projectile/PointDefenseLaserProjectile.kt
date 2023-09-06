@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class PointDefenseLaserProjectile(
@@ -13,7 +12,7 @@ class PointDefenseLaserProjectile(
 	loc: Location,
 	dir: Vector,
 	override val range: Double,
-	shooter: Controller?
+	shooter: Damager
 ) : LaserProjectile(starship, loc, dir, shooter) {
 	override val speed: Double = IonServer.balancing.starshipWeapons.pointDefence.speed
 	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pointDefence.shieldDamageMultiplier

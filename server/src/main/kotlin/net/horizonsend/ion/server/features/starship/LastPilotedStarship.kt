@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.starship
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import org.bukkit.Location
 import java.util.UUID
 

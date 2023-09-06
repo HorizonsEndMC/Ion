@@ -1,12 +1,12 @@
-package net.horizonsend.ion.server.features.starship.controllers.ai
+package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 
 object Criterias {
 	class Criteria(
-		val decision: (AIController) -> Boolean,
-		val action: (AIController) -> Unit
+        val decision: (AIController) -> Boolean,
+        val action: (AIController) -> Unit
 	)
 
 	val followAndShoot = registerCriteria({ true }) { controller ->
@@ -29,7 +29,7 @@ object Criterias {
 	}
 
 	fun registerCriteria(
-		decision: (AIController) -> Boolean,
-		action: (AIController) -> Unit
+        decision: (AIController) -> Boolean,
+        action: (AIController) -> Unit
 	) = Criteria(decision, action)
 }
