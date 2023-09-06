@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.controllers
 
-import net.horizonsend.ion.server.features.explosion.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
@@ -9,12 +8,14 @@ import org.bukkit.Color
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
-abstract class Controller(val starship: ActiveStarship, val name: String) : ForwardingAudience.Single, Damager {
+abstract class Controller(val starship: ActiveStarship, val name: String) : ForwardingAudience.Single {
 	abstract val pilotName: Component
 
 	abstract val isShiftFlying: Boolean
 
+	/** Current vertical direction **/
 	abstract val pitch: Float
+	/** Current horizontal direction **/
 	abstract val yaw: Float
 
 	abstract val selectedDirectControlSpeed: Int
