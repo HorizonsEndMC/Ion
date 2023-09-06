@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -61,7 +61,7 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return Vector(x, y, z)
 	}
 
-	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
+	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		fire(getFireVec().toLocation(starship.world), dir, shooter, target)
 	}
 
@@ -77,5 +77,5 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return true
 	}
 
-	protected abstract fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?)
+	protected abstract fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?)
 }

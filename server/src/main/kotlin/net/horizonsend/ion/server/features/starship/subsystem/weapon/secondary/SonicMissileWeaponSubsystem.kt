@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -39,7 +40,7 @@ class SonicMissileWeaponSubsystem(
 		return cantFire && super.canFire(dir, target)
 	}
 
-	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		SonicMissileProjectile(starship, loc, dir, shooter).fire()
 	}
 

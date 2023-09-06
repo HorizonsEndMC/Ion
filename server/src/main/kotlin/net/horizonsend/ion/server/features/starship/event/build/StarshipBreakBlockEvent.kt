@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.starship.event.build
 
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import org.bukkit.block.Block
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 class StarshipBreakBlockEvent(
-	val controller: Controller,
-	val block: Block
+    val controller: Controller,
+    val block: Block
 ) : Event(), Cancellable {
 	private var isCancelled: Boolean = false
 	private var dropItems: Boolean = true

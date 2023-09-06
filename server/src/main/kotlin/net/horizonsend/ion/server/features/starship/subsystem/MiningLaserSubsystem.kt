@@ -8,9 +8,10 @@ import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.Damager
+import net.horizonsend.ion.server.features.starship.PlayerDamager
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
@@ -90,7 +91,8 @@ class MiningLaserSubsystem(
 		return multiblock.signMatchesStructure(sign, loadChunks = true, particles = false)
 	}
 
-	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
+	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
+		if (shooter !is PlayerDamager) return //TODO
 		val sign = getSign() ?: return
 
 		// Calculate a vector in the direction from the fire point to the targeted block
@@ -104,7 +106,7 @@ class MiningLaserSubsystem(
 		// If it is within range, the raycast will move it forward.
 	}
 
-	private fun setFiring(firing: Boolean, sign: Sign, user: Controller? = null) {
+	private fun setFiring(firing: Boolean, sign: Sign, user: PlayerDamager? = null) {
 		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
 
 		when (firing) {
@@ -112,7 +114,7 @@ class MiningLaserSubsystem(
 				// Less than but not equal to because it will increase by 1
 				if (alreadyFiring < starship.type.maxMiningLasers) {
 					isFiring = true
-					setUser(sign, user!!.name)
+					setUser(sign, user!!.player.name)
 					starship.information("Enabled mining laser at $pos")
 					startFiringSequence()
 				} else {
@@ -193,7 +195,7 @@ class MiningLaserSubsystem(
 		val sign = getSign() ?: return cancelTask()
 		val controller = starship.controller
 
-		if (!ActiveStarships.isActive(starship) || controller == null) {
+		if (!ActiveStarships.isActive(starship)) {
 			setFiring(false, sign)
 			return
 		}
