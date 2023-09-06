@@ -37,6 +37,8 @@ operator fun Location.component2(): Double = this.x
 operator fun Location.component3(): Double = this.y
 operator fun Location.component4(): Double = this.z
 
+fun BlockPos.toVec3i() = Vec3i(this.x, this.y, this.z)
+
 fun isValidYLevel(y: Int) = y in 0..Bukkit.getServer().worlds[0].maxHeight
 
 @Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
