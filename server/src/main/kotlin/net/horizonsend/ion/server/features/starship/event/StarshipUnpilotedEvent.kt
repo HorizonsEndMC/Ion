@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.event
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import org.bukkit.event.HandlerList
 
 class StarshipUnpilotedEvent(

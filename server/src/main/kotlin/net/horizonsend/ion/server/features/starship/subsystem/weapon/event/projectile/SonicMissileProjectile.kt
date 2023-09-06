@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.Damager
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -12,7 +13,7 @@ class SonicMissileProjectile(
 	starship: ActiveStarship,
 	loc: Location,
 	dir: Vector,
-	shooter: Controller?
+	shooter: Damager
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.sonicMissile.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.sonicMissile.speed

@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.controllers.ai.AIControllers
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIControllers
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector

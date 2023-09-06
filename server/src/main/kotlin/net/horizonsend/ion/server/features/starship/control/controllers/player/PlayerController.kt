@@ -1,8 +1,10 @@
-package net.horizonsend.ion.server.features.starship.controllers
+package net.horizonsend.ion.server.features.starship.control.controllers.player
 
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.starship.PlayerDamager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
@@ -13,7 +15,10 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
 
-abstract class PlayerController(val player: Player, starship: ActiveStarship, name: String) : Controller(starship, name) {
+abstract class PlayerController(
+	final override val player: Player,
+	starship: ActiveStarship, name: String
+) : Controller(starship, name), PlayerDamager {
 	override val pilotName: Component = player.displayName()
 
 	override val yaw: Float get() = player.location.yaw

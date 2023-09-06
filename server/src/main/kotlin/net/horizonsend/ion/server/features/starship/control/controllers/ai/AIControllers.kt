@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.features.starship.controllers.ai
+package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.keysSortedByValue
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text

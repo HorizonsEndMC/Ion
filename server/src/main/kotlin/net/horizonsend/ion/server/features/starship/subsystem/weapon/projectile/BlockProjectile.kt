@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.Projectiles
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -22,7 +22,7 @@ abstract class BlockProjectile(
     starship: ActiveStarship?,
     loc: Location,
     dir: Vector,
-    shooter: Controller?
+    shooter: Damager
 ) : SimpleProjectile(starship, loc, dir, shooter) {
 	abstract val blockMap: Map<Vec3i, BlockData>
 	private val refreshedBlocks = LongOpenHashSet()

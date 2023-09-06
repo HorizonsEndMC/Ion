@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement

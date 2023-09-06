@@ -9,21 +9,18 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.minecraft.world.level.block.Rotation
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -247,14 +244,11 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	private fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
 		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 
-	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Controller?, isAuto: Boolean = true) {
-		val color: Color = getColor(starship, shooter, isAuto)
+	fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, isAuto: Boolean = true) {
 		val speed = projectileSpeed.toDouble()
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
-			if (starship.isInternallyObstructed(point, dir)) {
-				continue
-			}
+			if (starship.isInternallyObstructed(point, dir)) continue
 
 			val loc = point.toLocation(world).toCenterLocation()
 
@@ -263,7 +257,7 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 				loc,
 				dir,
 				speed,
-				color,
+				shooter.color,
 				range,
 				projectileParticleThickness,
 				projectileExplosionPower,
@@ -272,20 +266,5 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 				shooter
 			).fire()
 		}
-	}
-
-	private fun getColor(starship: ActiveStarship, shooter: Controller?, isAuto: Boolean): Color {
-		if (starship.rainbowToggle && !isAuto)
-			return gayColors.random()
-
-		if (shooter != null && shooter is PlayerController) {
-			val nation: Oid<Nation>? = PlayerCache[shooter.player].nationOid
-
-			if (nation != null) {
-				return Color.fromRGB(NationCache[nation].color)
-			}
-		}
-
-		return Color.FUCHSIA
 	}
 }
