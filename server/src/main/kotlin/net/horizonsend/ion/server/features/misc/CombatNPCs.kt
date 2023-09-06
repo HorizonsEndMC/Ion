@@ -194,8 +194,6 @@ object CombatNPCs : IonServerComponent(true) {
 
 		listen<PlayerJoinEvent> { event ->
 			npcToPlayer[event.player.uniqueId]?.let {
-				println("destroying")
-
 				it.second.chunk.removePluginChunkTicket(IonServer)
 				destroyNPC(it.first)
 			}

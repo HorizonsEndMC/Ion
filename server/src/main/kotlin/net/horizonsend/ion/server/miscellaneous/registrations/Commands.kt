@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
 import net.horizonsend.ion.server.command.misc.ListCommand
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.misc.PlayerInfoCommand
-import net.horizonsend.ion.server.command.misc.RegenCommand
 import net.horizonsend.ion.server.command.misc.RegenerateCommand
 import net.horizonsend.ion.server.command.misc.ShuttleCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
