@@ -1,21 +1,20 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class HeavyLaserProjectile(
-	starship: ActiveStarship?,
-	loc: Location,
-	dir: Vector,
-	shooter: Controller?,
-	originalTarget: Vector,
-	baseAimDistance: Int,
-	sound: String
+    starship: ActiveStarship?,
+    loc: Location,
+    dir: Vector,
+    shooter: Damager,
+    originalTarget: Vector,
+    baseAimDistance: Int,
+    sound: String
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
 	override val shieldDamageMultiplier = IonServer.balancing.starshipWeapons.heavyLaser.shieldDamageMultiplier
 	override val maxDegrees: Double = IonServer.balancing.starshipWeapons.heavyLaser.maxDegrees

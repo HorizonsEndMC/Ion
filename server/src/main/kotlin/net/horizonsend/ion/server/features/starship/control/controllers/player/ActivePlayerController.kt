@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.controllers
+package net.horizonsend.ion.server.features.starship.control.controllers.player
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.entity.Player
