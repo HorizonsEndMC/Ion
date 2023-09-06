@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.starship.control.signs
 import net.horizonsend.ion.server.features.starship.BoardingRamps
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Bukkit

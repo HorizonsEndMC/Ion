@@ -11,7 +11,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.features.starship.PlayerDamager
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -20,7 +21,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -119,17 +119,20 @@ object Bounties : IonServerComponent() {
 
 		val blockCountMultipler = 1.5
 
-		val damagers = event.starship.damagers.filterKeys { damager ->
+		val damagers = event.starship.damagers
+			.filterKeys { it is PlayerDamager }
+			.mapKeys { it as PlayerDamager }
+			.filterKeys { damager ->
 			// require they be online to get xp
 			// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
-			Bukkit.getPlayer(damager.id)?.hasPermission("starships.noxp") == false
+			!damager.player.hasPermission("starships.noxp")
 		}.mapValues { it.value.get() }
 
 		val sum = damagers.values.sum().toDouble()
 		val totalMoney = event.starship.initialBlockCount.toDouble() * blockCountMultipler
 
-		for ((damager, points) in damagers) {
-			val killer = Bukkit.getPlayer(damager.id) ?: continue
+		for ((damager : PlayerDamager, points) in damagers) {
+			val killer = damager.player
 			val percent = points / sum
 			val money = totalMoney * percent
 

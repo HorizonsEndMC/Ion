@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.event
 
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import org.bukkit.World
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList

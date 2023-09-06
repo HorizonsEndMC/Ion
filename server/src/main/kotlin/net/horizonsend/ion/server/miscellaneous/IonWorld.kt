@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.miscellaneous
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
-import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -16,7 +16,7 @@ import kotlin.DeprecationLevel.ERROR
 class IonWorld private constructor(
 	val serverLevel: ServerLevel,
 
-	val starships: MutableList<Starship> = mutableListOf()
+	val starships: MutableList<ActiveStarship> = mutableListOf()
 ) {
 	companion object : SLEventListener() {
 		private val ionWorlds = mutableMapOf<ServerLevel, IonWorld>()

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
@@ -16,7 +16,7 @@ class RocketProjectile(
 	starship: ActiveStarship,
 	loc: Location,
 	face: BlockFace,
-	shooter: Controller?
+	shooter: Damager
 ) : BlockProjectile(starship, loc, face.direction, shooter) {
 	companion object {
 		private fun getBlockData(

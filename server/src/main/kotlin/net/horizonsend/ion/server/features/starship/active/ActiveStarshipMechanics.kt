@@ -43,13 +43,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun deactivateUnpilotedPlayerStarships() {
 		for (ship in ActiveStarships.allControlledStarships()) {
-			val minutesUnpiloted = if (ship.controller != null) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - ship.lastUnpilotTime)
-
-			if (!PilotedStarships.isPiloted(ship) && minutesUnpiloted >= 10) {
-				if (ship.controller == null && ship.minutesUnpiloted >= 5) {
-					DeactivatedPlayerStarships.deactivateAsync(ship)
-				}
-			}
+			if (ship.minutesUnpiloted >= 5) DeactivatedPlayerStarships.deactivateAsync(ship)
 		}
 	}
 
@@ -113,7 +107,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	fun onBlockBreak(event: BlockBreakEvent) {
 		if (ActiveStarships.findByBlock(event.block) != null) {
 			event.isCancelled = true
-			event.player actionAndMsg "&cThat block is part of an active starship!"
+			event.player.userError("&cThat block is part of an active starship!")
 		}
 	}
 
