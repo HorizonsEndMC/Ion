@@ -1,7 +1,8 @@
-package net.horizonsend.ion.server.features.starship.controllers.ai
+package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.kyori.adventure.text.Component
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
@@ -27,4 +28,9 @@ abstract class AIController(
 
 		super.tick()
 	}
+
+	override fun getDisplayName(): Component = pilotName
+
+	override fun rewardXP(xp: Int) { }
+	override fun rewardMoney(credits: Double) { }
 }

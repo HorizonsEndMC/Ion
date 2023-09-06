@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CannonLaserProjectile
@@ -17,7 +17,7 @@ class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.laserCannon.angleRadians)
 	override val convergeDist: Double = IonServer.balancing.starshipWeapons.laserCannon.convergeDistance
 
-	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		CannonLaserProjectile(starship, loc, dir, shooter).fire()
 	}
 

@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -31,7 +31,7 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	override fun fire(
         loc: Location,
         dir: Vector,
-        shooter: Controller,
+        shooter: Damager,
         target: Vector?
 	) {
 		PlasmaLaserProjectile(starship, loc, dir, shooter).fire()

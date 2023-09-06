@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
@@ -33,7 +34,7 @@ class TorpedoWeaponSubsystem(
 		return this.face == starship.forward
 	}
 
-	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		TorpedoProjectile(starship, loc, dir, shooter, checkNotNull(target), aimDistance).fire()
 	}
 }

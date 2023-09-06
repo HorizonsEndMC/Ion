@@ -11,9 +11,11 @@ import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.controllers.ActivePlayerController
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
@@ -150,20 +152,26 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun isPiloted(starship: ActiveControlledStarship): Boolean {
-		return starship.controller != null
+		if (starship.controller is UnpilotedController) return true
+		return starship.controller is NoOpController
 	}
 
 	fun canTakeControl(starship: ActiveControlledStarship, player: Player): Boolean {
-		return starship.controller == null || (starship.controller as? PlayerController)?.player == player
+		return (starship.controller as? PlayerController)?.player == player
 	}
 
 	fun unpilot(starship: ActiveControlledStarship) {
 		Tasks.checkMainThread()
-		val controller = starship.controller ?: error("Starship $starship is not piloted")
+		val controller = starship.controller
 
 		map.remove(starship.controller)
 
-		starship.controller =  null
+		val unpilotedController = when (starship.controller) {
+			is PlayerController -> UnpilotedController(starship.controller as PlayerController)
+			else -> NoOpController(starship)
+		}
+
+		starship.controller = unpilotedController
 		starship.lastUnpilotTime = System.nanoTime()
 
 		starship.clearPassengers()
