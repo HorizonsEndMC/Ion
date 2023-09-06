@@ -139,7 +139,7 @@ abstract class SimpleProjectile(
 		val impactedBlastResist = CraftMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
 
-		starship?.controller?.debugRed(
+		starship?.debugRed(
 			"ship dmg: \n\n" +
 			"armorBlastResist = $armorBlastResist, \n" +
 			"impactedBlastResist = $impactedBlastResist, \n" +
