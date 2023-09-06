@@ -3,18 +3,22 @@ package net.horizonsend.ion.server.features.starship.active
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.HashMultimap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
-import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
-import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.Damager
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.features.starship.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
@@ -28,6 +32,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustDat
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.miscellaneous.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -36,6 +41,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.randomString
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import org.bukkit.Bukkit
@@ -59,33 +66,52 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-abstract class ActiveStarship(
-	world: World,
-
+abstract class ActiveStarship (
+	var world: World,
 	var blocks: LongOpenHashSet,
 	val mass: Double,
-	centerOfMass: Vec3i,
+	var centerOfMass: Vec3i,
 	private val hitbox: ActiveStarshipHitbox
-) : Starship(world, centerOfMass), ForwardingAudience {
+) : ForwardingAudience {
+
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
 
-	private var _centerOfMass: Vec3i = Vec3i(centerOfMass.x, centerOfMass.y, centerOfMass.z)
-
-	override var world: World
-		get() = super.world
+	var controller: Controller = NoOpController(this) // Only for initialization
 		set(value) {
-			ActiveStarships.updateWorld(this, world, world)
-			super.world = value
+			if (this is ActiveControlledStarship) PilotedStarships.changeController(this, value)
+			value.hint("Updated control mode to ${value.name}.")
+			field.destroy()
+			field = value
 		}
 
-	override var centerOfMass: Vec3i
-		get() = super.centerOfMass
-		set(value) {
-			super.centerOfMass = value
-			_centerOfMass = Vec3i(value.x, value.y, value.z)
-		}
+	/**
+	 * If the controller is an active player controller, get the player.
+	 * It just makes a lot of things less verbose.
+	 *
+	 * Try not to use, most starship code should not rely on players.
+	 **/
+	val playerPilot: Player? get() = (controller as? ActivePlayerController)?.player
+
+	/** Similar to playerPilot, gets the last player if unpiloted or active **/
+	val lastPilot: Player? get() = (controller as? PlayerController)?.player
+
+	/** Called on each server tick. */
+	fun tick() {
+		controller?.tick()
+	}
+
+	/** Called when a starship is removed. Any cleanup logic should be done here. */
+	fun destroy() {
+		IonWorld[world.minecraft].starships.remove(this)
+		controller?.destroy()
+	}
+
+	init {
+		@Suppress("LeakingThis") // This is done right at the end of the class's initialization, it *should* be fine
+		IonWorld[world.minecraft].starships.add(this)
+	}
 
 	// Created once
 	val charIdentifier = randomString(5L)
@@ -130,10 +156,16 @@ abstract class ActiveStarship(
 
 	var lastTick = System.nanoTime()
 
-	var isInterdicting = false
-		private set
-
+	/** Ignore weapon color, use rainbows for pride month **/
 	var rainbowToggle = false
+
+	var forward: BlockFace = BlockFace.NORTH
+	var isExploding = false
+
+	val damagers = mutableMapOf<Damager, AtomicInteger>()
+
+	var isInterdicting = false; private set
+	abstract val interdictionRange: Int
 
 	fun setIsInterdicting(value: Boolean) {
 		Tasks.checkMainThread()
@@ -153,13 +185,6 @@ abstract class ActiveStarship(
 
 		onlinePassengers.forEach { player -> player.success("Gravity well enabled") }
 	}
-
-	abstract val interdictionRange: Int
-
-	var forward: BlockFace = BlockFace.NORTH
-	var isExploding = false
-
-	val damagers = mutableMapOf<ShipKillXP.Damager, AtomicInteger>()
 
 	val min: Vec3i get() = hitbox.min
 	val max: Vec3i get() = hitbox.max

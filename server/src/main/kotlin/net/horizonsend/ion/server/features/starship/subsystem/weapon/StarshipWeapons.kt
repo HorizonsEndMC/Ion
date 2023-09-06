@@ -7,8 +7,8 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -24,7 +24,7 @@ object StarshipWeapons {
 
 	data class ManualQueuedShot(
 		override val weapon: WeaponSubsystem,
-		val shooter: Controller,
+		val shooter: Damager,
 		val direction: Vector,
 		val target: Vector
 	) : QueuedShot {

@@ -2,11 +2,10 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.progression.ShipKillXP
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -21,14 +20,13 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale
-import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class SimpleProjectile(
 	starship: ActiveStarship?,
 	var loc: Location,
 	var dir: Vector,
-	shooter: Controller?
+	shooter: Damager
 ) : Projectile(starship, shooter) {
 	abstract val range: Double
 	abstract val speed: Double
@@ -178,16 +176,13 @@ abstract class SimpleProjectile(
 				entity.damage(10.0)
 	}
 
-	private fun addToDamagers(world: World, block: Block, shooter: PlayerController) {
-		val damagerId: UUID = shooter.player.uniqueId
-		val damagerSize: Int = starship?.initialBlockCount ?: 0
-		val damager = ShipKillXP.Damager(damagerId, damagerSize)
+	private fun addToDamagers(world: World, block: Block, shooter: Damager) {
 		val x = block.x
 		val y = block.y
 		val z = block.z
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship != starship && otherStarship.contains(x, y, z)) {
-				otherStarship.damagers.getOrPut(damager) { AtomicInteger() }.incrementAndGet()
+				otherStarship.damagers.getOrPut(shooter) { AtomicInteger() }.incrementAndGet()
 				onImpactStarship(otherStarship)
 			}
 		}

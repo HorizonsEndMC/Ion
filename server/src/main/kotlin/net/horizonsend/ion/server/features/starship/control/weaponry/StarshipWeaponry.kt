@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.weaponry
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem

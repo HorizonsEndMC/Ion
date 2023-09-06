@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
-import net.horizonsend.ion.server.features.starship.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -52,9 +52,10 @@ object AIControlUtils {
 		if (controller.starship !is ActiveControlledStarship) return
 
 		if (direction == BlockFace.UP || direction == BlockFace.DOWN) return
+		val starship = (controller.starship as? ActiveControlledStarship) ?: return
 
 		val isFacing = controller.starship.forward
-		if (controller.starship.pendingRotations.isNotEmpty()) return
+		if (starship.pendingRotations.isNotEmpty()) return
 
 		// 1.5 sec turn delay
 		if (System.currentTimeMillis() - controller.lastRotation < 1500) return
@@ -64,13 +65,13 @@ object AIControlUtils {
 			isFacing -> return
 
 			// New direction is to the right
-			isFacing.rightFace -> controller.starship.tryRotate(true)
+			isFacing.rightFace -> starship.tryRotate(true)
 
 			// New direction is to the left
-			isFacing.leftFace -> controller.starship.tryRotate(false)
+			isFacing.leftFace -> starship.tryRotate(false)
 
 			// New direction is backwards, just rotate either way
-			isFacing.oppositeFace -> controller.starship.tryRotate(true)
+			isFacing.oppositeFace -> starship.tryRotate(true)
 
 			else -> return
 		}

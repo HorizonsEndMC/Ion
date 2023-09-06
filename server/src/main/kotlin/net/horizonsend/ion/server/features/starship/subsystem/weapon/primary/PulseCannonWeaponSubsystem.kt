@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PulseLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
@@ -43,7 +43,7 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	override fun fire(
         loc: Location,
         dir: Vector,
-        shooter: Controller,
+        shooter: Damager,
         target: Vector?
 	) {
 		if (starship.type != StarshipType.GUNSHIP || starship.initialBlockCount < 1000) {

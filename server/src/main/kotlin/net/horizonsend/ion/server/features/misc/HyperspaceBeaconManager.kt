@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.controllers.PlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.listener.SLEventListener
