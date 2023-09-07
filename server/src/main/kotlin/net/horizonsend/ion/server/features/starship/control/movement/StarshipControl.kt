@@ -44,7 +44,7 @@ object StarshipControl : IonServerComponent() {
 
 	private fun processManualFlight(starship: ActiveControlledStarship) {
 		if (starship.type == PLATFORM) {
-			starship.controller?.userErrorAction("This ship type is not capable of moving.")
+			starship.controller.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
 
@@ -218,7 +218,7 @@ object StarshipControl : IonServerComponent() {
 		}
 
 		if (Hyperspace.isWarmingUp(starship)) {
-			starship.controller?.userErrorAction("Cannot move while in hyperspace warmup.")
+			starship.controller.userErrorAction("Cannot move while in hyperspace warmup.")
 			return
 		}
 

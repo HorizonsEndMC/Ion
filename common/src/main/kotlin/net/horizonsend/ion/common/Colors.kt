@@ -1,6 +1,5 @@
 package net.horizonsend.ion.common
 
-import net.kyori.adventure.text.minimessage.MiniMessage
 import kotlin.math.pow
 
 object Colors {
@@ -47,7 +46,3 @@ object Colors {
 		return perceivedLightness / 100.0
 	}
 }
-
-fun String.miniMessage() =
-	MiniMessage.miniMessage()
-		.deserialize(this)
