@@ -184,7 +184,7 @@ object SubsystemDetector {
 		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), BlockFace.NORTH)
 	}
 
-	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: WeaponSubsystem): Boolean {
+	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {
 		return subsystem is DirectionalSubsystem && starship.subsystems
 			.filterIsInstance<WeaponSubsystem>()
 			.filter { it.pos == subsystem.pos }
