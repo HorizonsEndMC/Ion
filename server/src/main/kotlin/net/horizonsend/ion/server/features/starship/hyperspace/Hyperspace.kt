@@ -16,12 +16,15 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipEnterHyperspaceEvent
+import net.horizonsend.ion.server.features.starship.event.StarshipExitHyperspaceEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -110,32 +113,6 @@ object Hyperspace : IonServerComponent() {
 		val starship = warmup.ship
 		val originWorld = starship.serverLevel.world
 
-		val players = starship.serverLevel.world
-			.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)
-
-		for (player in players) {
-			player.playSound(
-				Sound.sound(
-					Key.key("minecraft:entity.elder_guardian.hurt"),
-					Sound.Source.AMBIENT,
-					5f,
-					0.05f
-				)
-			)
-		}
-		Space.getPlanets()
-			.filter { it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMass.toLocation(starship.serverLevel.world)) < 2500 }
-			.filter { it.spaceWorld == starship.serverLevel.world }
-			.forEach {
-				it.planetWorld?.playSound(
-					Sound.sound(
-						Key.key("minecraft:entity.elder_guardian.hurt"),
-						Sound.Source.AMBIENT,
-						5f,
-						0.05f
-					)
-				)
-			}
 		check(warmupTasks.remove(starship, warmup)) { "Warmup wasn't in the map!" }
 		warmup.cancel()
 
@@ -158,6 +135,7 @@ object Hyperspace : IonServerComponent() {
 			marker?.inHyperspace = true
 			marker?.movement = movementTasks[starship]!!
 		}
+		StarshipEnterHyperspaceEvent(starship).callEvent()
 	}
 
 	fun cancelJumpMovement(movement: HyperspaceMovement) {
@@ -184,22 +162,7 @@ object Hyperspace : IonServerComponent() {
 		dest.z = movement.z
 
 		StarshipTeleportation.teleportStarship(starship, dest)
-		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
-			player.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
-		}
-		Space.getPlanets().filter {
-			it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
-		}
-			.forEach {
-				it.planetWorld?.playSound(
-					Sound.sound(
-						Key.key("minecraft:entity.warden.sonic_boom"),
-						Sound.Source.AMBIENT,
-						1f,
-						0f
-					)
-				)
-			}
+		StarshipExitHyperspaceEvent(starship, movement).callEvent()
 	}
 
 	fun completeJumpMovement(movement: HyperspaceMovement) {
@@ -213,30 +176,7 @@ object Hyperspace : IonServerComponent() {
 		HyperspaceMap.deleteMarker(starship)
 
 		StarshipTeleportation.teleportStarship(starship, movement.dest)
-		starship.serverLevel.world.playSound(
-			Sound.sound(
-				Key.key("minecraft:entity.warden.sonic_boom"),
-				Sound.Source.AMBIENT,
-				1f,
-				0f
-			)
-		)
-		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
-			player.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
-		}
-		Space.getPlanets().filter {
-			it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
-		}
-			.forEach {
-				it.planetWorld?.playSound(
-					Sound.sound(
-						Key.key("minecraft:entity.warden.sonic_boom"),
-						Sound.Source.AMBIENT,
-						1f,
-						0f
-					)
-				)
-			}
+		StarshipExitHyperspaceEvent(starship, movement).callEvent()
 	}
 
 	private fun calculateSpeed(hyperdriveClass: Int, mass: Double) =
@@ -320,6 +260,87 @@ object Hyperspace : IonServerComponent() {
 	@EventHandler
 	fun onStarshipRotate(event: StarshipRotateEvent) {
 		onStarshipMove(event)
+	}
+
+	@EventHandler
+	fun onStarshipEnterHyperspace(event: StarshipEnterHyperspaceEvent) {
+		val starship = event.starship
+		val players = starship.serverLevel.world
+			.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)
+
+		for (player in players) {
+			player.playSound(
+				Sound.sound(
+					Key.key("minecraft:entity.elder_guardian.hurt"),
+					Sound.Source.AMBIENT,
+					5f,
+					0.05f
+				)
+			)
+		}
+		Space.getPlanets()
+			.filter { it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMass.toLocation(starship.serverLevel.world)) < 2500 }
+			.filter { it.spaceWorld == starship.serverLevel.world }
+			.forEach {
+				it.planetWorld?.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.elder_guardian.hurt"),
+						Sound.Source.AMBIENT,
+						5f,
+						0.05f
+					)
+				)
+			}
+		Tasks.syncDelay(10L) {
+			starship.playSound(
+				Sound.sound(
+					Key.key("minecraft:entity.elder_guardian.hurt"),
+					Sound.Source.AMBIENT,
+					1f,
+					0f
+				)
+			)
+		}
+	}
+
+	@EventHandler
+	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
+		val starship = event.starship
+		val movement = event.movement
+		starship.serverLevel.world.playSound(
+			Sound.sound(
+				Key.key("minecraft:entity.warden.sonic_boom"),
+				Sound.Source.AMBIENT,
+				1f,
+				0f
+			)
+		)
+		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
+			player.playSound(Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 1f, 0f))
+		}
+		Space.getPlanets().filter {
+			it.location.toLocation(movement.dest.world).distance(movement.dest) < 2500
+		}
+			.forEach {
+				it.planetWorld?.playSound(
+					Sound.sound(
+						Key.key("minecraft:entity.warden.sonic_boom"),
+						Sound.Source.AMBIENT,
+						1f,
+						0f
+					)
+				)
+			}
+		Tasks.syncDelay(10L) {
+			starship.playSound(
+				Sound.sound(
+					Key.key("minecraft:entity.warden.sonic_boom"),
+					Sound.Source.AMBIENT,
+					1f,
+					0f
+				)
+			)
+		}
 	}
 
 	fun getHyperspaceMovement(ship: ActivePlayerStarship): HyperspaceMovement? {
