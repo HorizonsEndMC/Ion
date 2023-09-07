@@ -2,32 +2,27 @@ package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.minecraft.world.level.block.Rotation
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.miscellaneous.utils.gayColors
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TurretLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.minecraft.world.level.block.Rotation
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
@@ -37,8 +32,14 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
-abstract class TurretMultiblock : StarshipWeaponMultiblock<TurretWeaponSubsystem>() {
+abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeaponSubsystem> {
 	init {
 		shape.signCentered()
 		shape.ignoreDirection()

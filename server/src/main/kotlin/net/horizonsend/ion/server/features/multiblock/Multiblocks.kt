@@ -41,6 +41,7 @@ import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.misc.ShipFactoryMultiblock
@@ -212,7 +213,9 @@ object Multiblocks : IonServerComponent() {
 			ItemSplitterMultiblock,
 			GasCollectorMultiblock,
 			GasPowerPlantMultiblock,
-			VentMultiblock
+			VentMultiblock,
+
+			LandingGearMultiblock
 		)
 	}
 

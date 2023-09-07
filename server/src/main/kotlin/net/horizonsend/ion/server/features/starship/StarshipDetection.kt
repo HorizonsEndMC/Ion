@@ -118,7 +118,7 @@ object StarshipDetection : IonServerComponent() {
 			val material = blockData.material
 
 			// Prevent landing gear extensions from connecting to the ground beneath the ship
-			if (material == Material.PISTON && (blockData as Directional).facing == BlockFace.DOWN && lowestY > y) {
+			if (material == Material.PISTON_HEAD && (blockData as Directional).facing == BlockFace.DOWN && lowestY > y) {
 				continue
 			}
 

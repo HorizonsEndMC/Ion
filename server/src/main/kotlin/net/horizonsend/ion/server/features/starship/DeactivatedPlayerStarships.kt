@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -236,6 +237,11 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		val state: PlayerStarshipState = Tasks.getSyncBlocking {
 			// this needs to be removed sync!
 			ActiveStarships.remove(starship)
+
+			val landingGear = starship.subsystems.filterIsInstance<LandingGearSubsystem>()
+			for (landingGearSubsystem in landingGear) {
+				landingGearSubsystem.setExtended(true)
+			}
 
 			for ((ship: PlayerStarshipData, blocks: Set<Long>) in starship.carriedShips) {
 				if (!blocks.isEmpty()) {

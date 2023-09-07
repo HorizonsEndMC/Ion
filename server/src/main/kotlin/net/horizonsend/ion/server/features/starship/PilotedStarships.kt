@@ -1,31 +1,41 @@
 package net.horizonsend.ion.server.features.starship
 
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
-import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
-import net.horizonsend.ion.common.redis
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.createData
+import net.horizonsend.ion.server.miscellaneous.utils.isPilot
+import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
@@ -35,7 +45,7 @@ import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.*
+import java.util.Locale
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -275,6 +285,11 @@ object PilotedStarships : IonServerComponent() {
 				player.userError("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
+			}
+
+			val landingGear = activePlayerStarship.subsystems.filterIsInstance<LandingGearSubsystem>()
+			for (landingGearSubsystem in landingGear) {
+				landingGearSubsystem.setExtended(false)
 			}
 
 			pilot(activePlayerStarship, player)

@@ -5,19 +5,21 @@ import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SignlessStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.StarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.CryoSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.PlanetDrillSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
@@ -43,13 +45,13 @@ object SubsystemDetector {
 		val potentialThrusterBlocks = LinkedList<Block>()
 		val potentialWeaponBlocks = LinkedList<Block>()
 		val potentialSignBlocks = LinkedList<Block>()
+		val potentialLandingGearBlocks = LinkedList<Block>()
+
 		starship.iterateBlocks { x, y, z ->
 			val block = starship.serverLevel.world.getBlockAt(x, y, z)
 			val type = block.type
 
-			if (type.isWallSign) {
-				potentialSignBlocks.add(block)
-			}
+			if (type.isWallSign) potentialSignBlocks.add(block)
 
 			potentialWeaponBlocks.add(block)
 
@@ -62,6 +64,8 @@ object SubsystemDetector {
 			) {
 				potentialThrusterBlocks += block
 			}
+
+			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
 		}
 
 		starship.reactor = ReactorSubsystem(starship)
@@ -72,6 +76,9 @@ object SubsystemDetector {
 		}
 		for (block in potentialWeaponBlocks) {
 			detectWeapon(starship, block)
+		}
+		for (block in potentialLandingGearBlocks) {
+			detectLandingGear(starship, block)
 		}
 		for (block in potentialSignBlocks) {
 			detectSign(starship, block)
@@ -164,7 +171,15 @@ object SubsystemDetector {
 		}
 	}
 
-	private fun isDuplicate(starship: ActivePlayerStarship, subsystem: WeaponSubsystem): Boolean {
+	fun detectLandingGear(starship: ActivePlayerStarship, block: Block) {
+		val matches = LandingGearMultiblock.blockMatchesStructure(block, BlockFace.NORTH)
+
+		if (!matches) return
+
+		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), BlockFace.NORTH)
+	}
+
+	private fun isDuplicate(starship: ActivePlayerStarship, subsystem: StarshipSubsystem): Boolean {
 		return subsystem is DirectionalSubsystem && starship.subsystems
 			.filterIsInstance<WeaponSubsystem>()
 			.filter { it.pos == subsystem.pos }
@@ -172,14 +187,14 @@ object SubsystemDetector {
 			.any { it.face == subsystem.face }
 	}
 
-	private fun getWeaponMultiblock(block: Block, face: BlockFace): StarshipWeaponMultiblock<*>? {
+	private fun getWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		return when {
 			block.state is Sign -> getSignWeaponMultiblock(block, face)
 			else -> getSignlessStarshipWeaponMultiblock(block, face)
 		}
 	}
 
-	private fun getSignWeaponMultiblock(block: Block, face: BlockFace): StarshipWeaponMultiblock<*>? {
+	private fun getSignWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		val sign = block.state as Sign
 
 		// avoid duplicates
@@ -189,14 +204,14 @@ object SubsystemDetector {
 
 		val multiblock = Multiblocks[sign]
 
-		if (multiblock !is StarshipWeaponMultiblock<*>) {
+		if (multiblock !is SubsystemMultiblock<*>) {
 			return null
 		}
 
 		return multiblock
 	}
 
-	private fun getSignlessStarshipWeaponMultiblock(block: Block, face: BlockFace): StarshipWeaponMultiblock<*>? {
+	private fun getSignlessStarshipWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		return Multiblocks.all()
 			.filterIsInstance<SignlessStarshipWeaponMultiblock<*>>()
 			.firstOrNull { it.blockMatchesStructure(block, face) }
