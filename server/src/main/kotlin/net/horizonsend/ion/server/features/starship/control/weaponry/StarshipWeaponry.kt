@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
@@ -19,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom
 
 object StarshipWeaponry : IonServerComponent() {
 	fun manualFire(
-		controller: Controller,
+		shooter: Damager,
 		starship: ActiveStarship,
 		leftClick: Boolean,
 		facing: BlockFace,
@@ -27,11 +26,9 @@ object StarshipWeaponry : IonServerComponent() {
 		target: Vector,
 		weaponSet: String?
 	) {
-		if (weaponSet == null && PilotedStarships[controller] != starship) return
-
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 
-		val queuedShots = queueShots(controller, weapons, leftClick, facing, dir, target)
+		val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
 		StarshipWeapons.fireQueuedShots(queuedShots, starship)
 	}
 
@@ -64,7 +61,7 @@ object StarshipWeaponry : IonServerComponent() {
 	}
 
 	fun queueShots(
-		controller: Controller,
+		shooter: Damager,
 		weapons: List<WeaponSubsystem>,
 		leftClick: Boolean,
 		facing: BlockFace,
@@ -90,7 +87,7 @@ object StarshipWeaponry : IonServerComponent() {
 
 			if (!weapon.canFire(targetedDir, target)) continue
 
-			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, controller, targetedDir, target))
+			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, shooter, targetedDir, target))
 		}
 
 		return queuedShots

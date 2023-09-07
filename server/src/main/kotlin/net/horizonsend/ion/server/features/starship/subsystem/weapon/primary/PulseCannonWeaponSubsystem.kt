@@ -47,7 +47,7 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
         target: Vector?
 	) {
 		if (starship.type != StarshipType.GUNSHIP || starship.initialBlockCount < 1000) {
-			starship.controller?.userError("You can only use Pulse Cannons above 1000 blocks on Gunships!")
+			starship.controller.userError("You can only use Pulse Cannons above 1000 blocks on Gunships!")
 			return
 		}
 
