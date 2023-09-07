@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
+import org.bukkit.World
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -42,6 +43,14 @@ object ActiveStarshipFactory {
 	): ActiveControlledStarship {
 		val world = checkNotNull(Bukkit.getWorld(data.levelName))
 
+		val (centerOfMass, mass) = calculateCenterOfMass(world, blocks)
+
+		val hitbox = ActiveStarshipHitbox(blocks)
+
+		return ActiveControlledStarship(data, blocks, mass, centerOfMass, hitbox, carriedShips)
+	}
+
+	private fun calculateCenterOfMass(world: World, blocks: LongOpenHashSet): Pair<Vec3i, Double> {
 		val first = blocks.first()
 		var minX = blockKeyX(first)
 		var minY = blockKeyY(first)
@@ -84,11 +93,7 @@ object ActiveStarshipFactory {
 		val avgY = weightY / mass
 		val avgZ = weightZ / mass
 
-		val centerOfMass = Vec3i(avgX.roundToInt(), avgY.roundToInt(), avgZ.roundToInt())
-
-		val hitbox = ActiveStarshipHitbox(blocks)
-
-		return ActiveControlledStarship(data, blocks, mass, centerOfMass, hitbox, carriedShips)
+		return Vec3i(avgX.roundToInt(), avgY.roundToInt(), avgZ.roundToInt()) to mass
 	}
 
 	private fun initSubsystems(feedbackDestination: Audience, starship: ActiveControlledStarship) {

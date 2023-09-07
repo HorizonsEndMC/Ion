@@ -32,7 +32,7 @@ import java.util.UUID
 
 object StarshipDealers : IonServerComponent() {
 	private val lastBuyTimes = mutableMapOf<ServerConfiguration.Ship, MutableMap<UUID, Long>>()
-	private val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
+	val schematicMap = IonServer.configuration.soldShips.associateWith { it.schematic() }
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onClickNPC(event: NPCRightClickEvent) {
@@ -116,7 +116,7 @@ object StarshipDealers : IonServerComponent() {
 		}
 	}
 
-	private fun resolveTarget(schematic: Clipboard, destination: Location): Location {
+	fun resolveTarget(schematic: Clipboard, destination: Location): Location {
 		val target = destination.clone()
 
 		var xOffset = listOf(-25, 25).random()
