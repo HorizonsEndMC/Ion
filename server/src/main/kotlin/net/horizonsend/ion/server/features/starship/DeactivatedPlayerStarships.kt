@@ -93,6 +93,16 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 	}
 
+	/** This method creates mostly meaningless data for AI ships **/
+	fun createAsync(
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		name: String? = null,
+		callback: (PlayerStarshipData) -> Unit
+	) = createAsync(world, x, y, z, UUID.randomUUID(), name, callback)
+
 	fun getSavedState(data: PlayerStarshipData): PlayerStarshipState? {
 		return getCache(data.bukkitWorld()).savedStateCache[data].orElse(null)
 	}

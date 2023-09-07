@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMateria
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
@@ -196,9 +197,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val pilotLoc = blueprint.pilotLoc
 
 		Tasks.syncBlocking {
-			checkObstruction(sender, schematic, Vec3i(pilotLoc))
+			checkObstruction(sender.location, schematic, Vec3i(pilotLoc))
 
-			loadSchematic(sender, schematic, Vec3i(pilotLoc)) { origin ->
+			loadSchematic(sender.location, schematic, Vec3i(pilotLoc)) { origin ->
 				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name)
 			}
 		}
@@ -214,9 +215,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val pilotLoc = blueprint.pilotLoc
 
 		Tasks.syncBlocking {
-			checkObstruction(sender, schematic, Vec3i(pilotLoc))
+			checkObstruction(sender.location, schematic, Vec3i(pilotLoc))
 
-			loadSchematic(sender, schematic, Vec3i(pilotLoc)) { origin ->
+			loadSchematic(sender.location, schematic, Vec3i(pilotLoc)) { origin ->
 				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name) { starship ->
 
 					starship.iterateBlocks { x, y, z ->
@@ -234,9 +235,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	fun checkObstruction(sender: Player, schematic: Clipboard, pilotLoc: Vec3i) {
-		val world = BukkitAdapter.adapt(sender.world)
-		val vec: BlockVector3 = getPasteVector(sender, pilotLoc)
+	fun checkObstruction(location: Location, schematic: Clipboard, pilotLoc: Vec3i) {
+		val world = BukkitAdapter.adapt(location.world)
+		val vec: BlockVector3 = getPasteVector(location, pilotLoc)
 		val region = schematic.region.clone()
 		val offset = vec.subtract(schematic.origin)
 		for (point in region) {
@@ -246,20 +247,17 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	fun loadSchematic(sender: Player, schematic: Clipboard, pilotLoc: Vec3i, callback: (Vec3i) -> Unit = {}) {
-		val vec: BlockVector3 = getPasteVector(sender, pilotLoc)
+	fun loadSchematic(location: Location, schematic: Clipboard, pilotLoc: Vec3i, callback: (Vec3i) -> Unit = {}) {
+		val vec: BlockVector3 = getPasteVector(location, pilotLoc)
 		val vec3i = Vec3i(vec.blockX, vec.blockY, vec.blockZ)
 
-		placeSchematicEfficiently(schematic, sender.world, vec3i, true) {
+		placeSchematicEfficiently(schematic, location.world, vec3i, true) {
 			callback(vec3i)
 		}
 	}
 
-	private fun getPasteVector(sender: Player, pilotLoc: Vec3i): BlockVector3 {
-		val playerLocation = sender.location
-
-		return BukkitAdapter.asVector(playerLocation).toBlockPoint()
-			.subtract(BlockVector3.at(pilotLoc.x, pilotLoc.y, pilotLoc.z))
+	private fun getPasteVector(origin: Location, pilotLoc: Vec3i): BlockVector3 {
+		return BukkitAdapter.asVector(origin).toBlockPoint().subtract(BlockVector3.at(pilotLoc.x, pilotLoc.y, pilotLoc.z))
 	}
 
 	fun tryPilot(

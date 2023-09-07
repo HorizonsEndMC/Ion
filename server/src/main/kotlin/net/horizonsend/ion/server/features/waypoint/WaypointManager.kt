@@ -22,7 +22,7 @@ import org.jgrapht.Graphs
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleDirectedWeightedGraph
-import java.util.*
+import java.util.UUID
 import kotlin.math.ceil
 
 object WaypointManager : IonServerComponent() {
@@ -67,9 +67,11 @@ object WaypointManager : IonServerComponent() {
         }
 
         listen<StarshipUnpilotedEvent> { event ->
-            updatePlayerGraph(event.player)
-            updatePlayerPaths(event.player)
-            updateNumJumps(event.player)
+			event.starship.playerPilot?.let {
+				updatePlayerGraph(it)
+				updatePlayerPaths(it)
+				updateNumJumps(it)
+			}
         }
     }
 
