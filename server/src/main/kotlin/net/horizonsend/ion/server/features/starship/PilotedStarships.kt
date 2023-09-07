@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.ai.AIUtils.warnDetectionFailure
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -67,18 +68,13 @@ object PilotedStarships : IonServerComponent() {
 		}
 	}
 
-	fun pilot(starship: ActiveControlledStarship, player: Player) {
+	fun pilot(starship: ActiveControlledStarship, controller: Controller, callback: (ActiveControlledStarship) -> Unit = {}) {
 		Tasks.checkMainThread()
 
 		check(!starship.isExploding)
-		ActivePlayerController[player]?.let { check(!map.containsKey(it)) { "${player.name} is already piloting a starship" } }
-		check(starship.isWithinHitbox(player)) { "${player.name} is not in their ship!" }
 
-		removeFromCurrentlyRidingShip(player)
-
-		val newController = ActivePlayerController(player, starship)
-		map[newController] = starship
-		starship.controller = newController
+		map[controller] = starship
+		starship.controller = controller
 
 		setupPassengers(starship)
 
@@ -86,11 +82,20 @@ object PilotedStarships : IonServerComponent() {
 
 		StarshipShields.updateShieldBars(starship)
 
-		saveLoadshipData(starship, player)
-
 		removeExtractors(starship)
 
-		StarshipPilotedEvent(starship, player).callEvent()
+		callback(starship)
+	}
+
+	fun pilot(starship: ActiveControlledStarship, player: Player) {
+		ActivePlayerController[player]?.let { check(!map.containsKey(it)) { "${player.name} is already piloting a starship" } }
+		check(starship.isWithinHitbox(player)) { "${player.name} is not in their ship!" }
+		removeFromCurrentlyRidingShip(player)
+
+		pilot(starship, ActivePlayerController(player, starship)) { ship ->
+			saveLoadshipData(ship, player)
+			StarshipPilotedEvent(ship, player).callEvent()
+		}
 	}
 
 	fun changeController(starship: ActiveControlledStarship, newController: Controller) {
@@ -134,8 +139,7 @@ object PilotedStarships : IonServerComponent() {
 	private fun saveLoadshipData(starship: ActiveControlledStarship, player: Player) {
 		val schematic = StarshipSchematic.createSchematic(starship)
 
-		val key =
-			"starships.lastpiloted.${player.uniqueId}.${starship.world.name.lowercase(Locale.getDefault())}"
+		val key = "starships.lastpiloted.${player.uniqueId}.${starship.world.name.lowercase(Locale.getDefault())}"
 
 		Tasks.async {
 			redis {
@@ -194,6 +198,57 @@ object PilotedStarships : IonServerComponent() {
 		(it.key as? PlayerController)?.player?.uniqueId == player
 	}.values.firstOrNull()
 	operator fun get(controller: Controller) = map[controller]
+
+	fun activateWithoutPilot(
+		data: PlayerStarshipData,
+		createController: (ActiveControlledStarship) -> Controller,
+		callback: (ActiveControlledStarship) -> Unit = {}
+	): Boolean {
+		val world: World = data.bukkitWorld()
+
+		val state: PlayerStarshipState? = DeactivatedPlayerStarships.getSavedState(data)
+
+		if (state == null) {
+			warnDetectionFailure("Not detected.", data.blockKey)
+			return false
+		}
+
+		for ((key: Long, blockData: BlockData) in state.blockMap) {
+			val x: Int = blockKeyX(key)
+			val y: Int = blockKeyY(key)
+			val z: Int = blockKeyZ(key)
+			val foundData: BlockData = world.getBlockAt(x, y, z).blockData
+
+			if (blockData.material != foundData.material) {
+				val expected: String = blockData.material.name
+				val found: String = foundData.material.name
+
+				warnDetectionFailure("Block at $x, $y, $z does not match! Expected $expected but found $found", data.blockKey)
+				return false
+			}
+
+			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
+				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
+					warnDetectionFailure("Block at $x, $y, $z is the computer of a piloted ship!", data.blockKey)
+					return false
+				}
+			}
+		}
+
+		DeactivatedPlayerStarships.activateAsync(data, state, listOf()) { activePlayerStarship ->
+			pilot(activePlayerStarship, createController(activePlayerStarship))
+
+			activePlayerStarship.sendMessage(
+				Component.text("Activated and piloted ").color(NamedTextColor.GREEN)
+					.append(getDisplayNameComponent(data))
+					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
+			)
+
+			callback(activePlayerStarship)
+		}
+
+		return true
+	}
 
 	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActiveControlledStarship) -> Unit = {}): Boolean {
 		if (!data.isPilot(player)) {

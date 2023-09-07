@@ -134,9 +134,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 			val pilotLoc = Vec3i(0, 0, 0)
 
-			BlueprintCommand.checkObstruction(sender, schematic, pilotLoc)
+			BlueprintCommand.checkObstruction(sender.location, schematic, pilotLoc)
 
-			BlueprintCommand.loadSchematic(sender, schematic, pilotLoc)
+			BlueprintCommand.loadSchematic(sender.location, schematic, pilotLoc)
 		}
 	}
 
@@ -194,7 +194,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			}
 			val x = playerPath.first().edgeList.first().target.loc.x.toInt()
 			val z = playerPath.first().edgeList.first().target.loc.z.toInt()
-			tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
+			tryJump(starship, x, z, starship.world, maxRange, sender, hyperdriveTier)
 			return
 		}
 
