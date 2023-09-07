@@ -29,7 +29,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 				ship.data.starshipType.actualType.displayName}) ($size blocks)\n" +
 				"   <gray>Mass:<white> ${ship.mass}\n" +
 				"   <gray>World:<white> ${ship.world.name}\n" +
-				"   <gray>Pilot:<white> ${ship.controller?.name}"
+				"   <gray>Pilot:<white> ${ship.controller.name}"
 		)
 
 		val passengers = ship.onlinePassengers.map { it.name }.joinToString()

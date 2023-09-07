@@ -33,4 +33,8 @@ abstract class PlayerController(
 		BlockPlaceEvent(block, block.state, placedAgainst, player.activeItem, player, true, EquipmentSlot.HAND).callEvent()
 
 	override fun audience(): Audience = player
+
+	override fun toString(): String {
+		return "PlayerController[${player.name}]"
+	}
 }
