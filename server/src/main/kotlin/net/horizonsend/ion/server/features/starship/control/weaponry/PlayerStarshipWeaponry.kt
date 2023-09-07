@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.PlayerDamagerWrapper
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -97,7 +98,8 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		leftClick: Boolean,
 		clock: ItemStack
 	) {
-		val controller = ActivePlayerController[player] ?: return
+		// Mantain multicrew capabilities by creating a player damager if they're not the pilot
+		val damager = ActivePlayerController[player] ?: PlayerDamagerWrapper(player, starship)
 
 		val loc = player.eyeLocation
 		val playerFacing = player.facing
@@ -113,7 +115,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		if (weaponSet == null && PilotedStarships[player] != starship) return
 
 		manualFire(
-			controller,
+			damager,
 			starship,
 			leftClick,
 			playerFacing,

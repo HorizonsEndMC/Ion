@@ -126,7 +126,7 @@ object Bounties : IonServerComponent() {
 			// require they be online to get xp
 			// if they have this perm, e.g. someone in dutymode or on creative, they don't get xp
 			!damager.player.hasPermission("starships.noxp")
-		}.mapValues { it.value.get() }
+		}.mapValues { it.value.points.get() }
 
 		val sum = damagers.values.sum().toDouble()
 		val totalMoney = event.starship.initialBlockCount.toDouble() * blockCountMultipler

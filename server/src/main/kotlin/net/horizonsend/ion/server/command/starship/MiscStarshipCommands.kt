@@ -29,7 +29,7 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
+import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayNameComponent
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -47,8 +47,8 @@ import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -78,9 +78,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				.map { it.name.replace(" ", "_") }
 		}
 		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
-			ActiveStarships.all().map { it.identifier }.toMutableList().apply {
-				remove(context.player.name)
-			}
+			val all = mutableListOf<String>()
+
+			ActiveStarships.all().mapTo(all) { it.identifier }
+			all.addAll(IonServer.server.onlinePlayers.map { it.name })
+			all.remove(context.player.name)
+			all
 		}
 		manager.commandCompletions.registerAsyncCompletion("nodes") { context ->
 			ActiveStarships.findByPilot(context.player)?.weaponSets?.keys()
@@ -345,7 +348,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("settarget|starget|st")
-	@CommandCompletion("@nodes @autoTurretTargets")
+	@CommandCompletion("@nodes @autoTurretTargets @nothing")
 	fun onSetTarget(sender: Player, set: String, @Optional target: String?) {
 		val starship = getStarshipRiding(sender)
 		val weaponSet = set.lowercase(Locale.getDefault())
@@ -538,10 +541,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
-			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayName(it) } ?: starship.type.formatted
+			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayNameComponent(it) } ?: starship.type.component
 			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.formatted).asHoverEvent()
 
-			val pilotName = (starship.controller.pilotName as? TextComponent)?.content() ?: "none"
+			val pilotName = starship.controller.pilotName
 
 			val pilotNationID = pilot?.let { PlayerCache[pilot].nationOid }
 
@@ -554,12 +557,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				}
 			}
 
-			val pilotRelationColor = pilotNationRelation?.actual?.textStyle
-
-			val formattedName =
-				pilotRelationColor?.let {
-					"<$pilotRelationColor>$pilotName</$pilotRelationColor>${if (pilot?.hasProtection() == true) " <gold>★</gold>" else ""}"
-				} ?: (pilotName + if (pilot?.hasProtection() == true) " <gold>★</gold>" else "")
+			val pilotRelationColor = (pilotNationRelation?.actual ?: NationRelation.Level.NONE).color
 
 			var worldName = starship.world.key.toString().substringAfterLast(":")
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
@@ -569,11 +567,23 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 			}
 
-			val message = MiniMessage.miniMessage().deserialize(
-				"$name<reset> piloted by $formattedName of size $size in $worldName"
-			).hoverEvent(hoverName)
+			val line = text()
+				.hoverEvent(hoverName)
+				.color(TextColor.fromHexString("#b8e0d4"))
+				.append(name)
+				.append(text(" piloted by "))
+				.append(pilotName.color(pilotRelationColor))
 
-			sender.sendMessage(message)
+			if (pilot?.hasProtection() == true) line
+				.append(text(" ★", NamedTextColor.GOLD))
+
+			line
+				.append(text(" of size "))
+				.append(text(size, NamedTextColor.WHITE))
+				.append(text(" in "))
+				.append(text(worldName, NamedTextColor.WHITE))
+
+			sender.sendMessage(line)
 		}
 
 		sender.sendRichMessage("<gray>Total Ships<dark_gray>:<aqua> $totalShips")

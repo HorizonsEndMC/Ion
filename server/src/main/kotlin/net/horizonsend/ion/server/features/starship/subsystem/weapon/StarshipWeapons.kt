@@ -132,7 +132,7 @@ object StarshipWeapons {
 		}
 
 		if (!isPowerAvailable(weapon, boostPower)) {
-			ship.controller?.debug("out of power")
+			ship.controller.debug("out of power")
 			return true
 		}
 
