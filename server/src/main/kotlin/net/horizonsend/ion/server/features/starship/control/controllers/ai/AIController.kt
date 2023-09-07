@@ -8,8 +8,7 @@ import org.bukkit.block.BlockState
 
 abstract class AIController(
 	starship: ActiveStarship,
-	name: String,
-	private val criteria: Array<out Criterias.Criteria>
+	name: String
 ) : Controller(starship, name) {
 	override var isShiftFlying: Boolean = false
 	override var pitch: Float = 0f
@@ -21,16 +20,8 @@ abstract class AIController(
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
 
-	override fun tick() {
-		val decision = criteria.associateWith { it.decision(this) }
-
-		decision.filter { it.value }.keys.forEach { it.action(this) }
-
-		super.tick()
-	}
-
 	override fun getDisplayName(): Component = pilotName
 
-	override fun rewardXP(xp: Int) { }
-	override fun rewardMoney(credits: Double) { }
+	override fun rewardXP(xp: Int) {}
+	override fun rewardMoney(credits: Double) {}
 }
