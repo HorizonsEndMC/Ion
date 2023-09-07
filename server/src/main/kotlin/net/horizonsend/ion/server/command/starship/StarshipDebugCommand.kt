@@ -15,7 +15,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("teleport")
 	fun onTeleport(sender: Player, x: Int, y: Int, z: Int) {
 		val riding = getStarshipRiding(sender)
-		StarshipTeleportation.teleportStarship(riding, Location(sender.world, x.toDouble(), y.toDouble(), z.toDouble()))
+		StarshipTeleportation.teleportStarship(riding, Location(sender.world, x.toDouble(), y.toDouble(), z.toDouble())) {}
 	}
 
 	@Suppress("Unused")
