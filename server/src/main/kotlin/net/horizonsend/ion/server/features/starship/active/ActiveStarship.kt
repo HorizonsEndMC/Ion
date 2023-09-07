@@ -45,6 +45,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.randomString
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
