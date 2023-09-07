@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.active;
+package net.starlegacy.feature.starship.active;
 
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i;
 import org.jetbrains.annotations.NotNull;
