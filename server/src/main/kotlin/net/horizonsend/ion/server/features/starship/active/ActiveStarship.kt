@@ -95,18 +95,15 @@ abstract class ActiveStarship (
 	 **/
 	val playerPilot: Player? get() = (controller as? ActivePlayerController)?.player
 
-	/** Similar to playerPilot, gets the last player if unpiloted or active **/
-	val lastPilot: Player? get() = (controller as? PlayerController)?.player
-
 	/** Called on each server tick. */
 	fun tick() {
-		controller?.tick()
+		controller.tick()
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
 	fun destroy() {
 		IonWorld[world.minecraft].starships.remove(this)
-		controller?.destroy()
+		controller.destroy()
 	}
 
 	init {
