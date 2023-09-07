@@ -22,6 +22,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
@@ -60,12 +61,13 @@ object StarshipDetection : IonServerComponent() {
 	}
 	//endregion
 
-	fun detectNewState(data: PlayerStarshipData, detector: Audience? = null): PlayerStarshipState {
-		val world = data.bukkitWorld()
+	fun detectNewState(data: PlayerStarshipData, detector: Audience? = null): PlayerStarshipState =
+		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType, detector)
+
+	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null): PlayerStarshipState {
 		/*
 						val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
 		*/
-		val computerLocation = Vec3i(data.blockKey)
 
 		// blocks that were accepted
 		val blocks = mutableListOf<Vec3i>()
@@ -186,8 +188,6 @@ object StarshipDetection : IonServerComponent() {
 			if (maxY == null || maxY < y) maxY = y
 			if (maxZ == null || maxZ < z) maxZ = z
 		}
-
-		val type = data.starshipType.actualType
 
 		// Validate the size
 		val size = blockTypes.size

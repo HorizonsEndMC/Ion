@@ -10,7 +10,7 @@ class LandingGearSubsystem(starship: ActiveStarship, pos: Vec3i) : StarshipSubsy
 	fun setExtended(extended: Boolean) {
 		val (x, y, z) = pos
 
-		val observer = starship.serverLevel.world.getBlockAt(x, y, z)
+		val observer = starship.world.getBlockAt(x, y, z)
 		if (observer.type != Material.OBSERVER) return
 
 		val piston = observer.getRelative(BlockFace.DOWN)
@@ -33,7 +33,7 @@ class LandingGearSubsystem(starship: ActiveStarship, pos: Vec3i) : StarshipSubsy
 	override fun isIntact(): Boolean {
 		val (x, y, z) = pos
 
-		val block = starship.serverLevel.world.getBlockAt(x, y, z)
+		val block = starship.world.getBlockAt(x, y, z)
 		val below = block.getRelative(BlockFace.DOWN)
 
 		return block.type == Material.OBSERVER && below.type == Material.PISTON

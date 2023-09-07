@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.features.starship.StarshipType.MEDIUM_FREIGHTE
 import net.horizonsend.ion.server.features.starship.StarshipType.SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.STARFIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.TRANSPORT
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -28,14 +27,11 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.horizonsend.ion.server.miscellaneous.utils.toVector
-import net.kyori.adventure.key.Key.key
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.BLUE
-import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
