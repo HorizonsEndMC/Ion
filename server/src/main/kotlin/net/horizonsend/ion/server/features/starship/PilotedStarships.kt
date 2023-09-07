@@ -51,6 +51,7 @@ import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.Locale
+import java.util.UUID
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -189,6 +190,9 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	operator fun get(player: Player): ActiveControlledStarship? = ActivePlayerController[player]?.let { map[it] }
+	operator fun get(player: UUID): ActiveControlledStarship? = map.filter {
+		(it.key as? PlayerController)?.player?.uniqueId == player
+	}.values.firstOrNull()
 	operator fun get(controller: Controller) = map[controller]
 
 	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActiveControlledStarship) -> Unit = {}): Boolean {

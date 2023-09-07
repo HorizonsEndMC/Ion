@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.Damager
@@ -19,6 +20,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.NoOpCont
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.subsystem.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
@@ -58,7 +60,6 @@ import org.bukkit.util.Vector
 import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
 import kotlin.math.ln
 import kotlin.math.max
@@ -160,7 +161,7 @@ abstract class ActiveStarship (
 	var forward: BlockFace = BlockFace.NORTH
 	var isExploding = false
 
-	val damagers = mutableMapOf<Damager, AtomicInteger>()
+	val damagers = mutableMapOf<Damager, ShipKillXP.ShipDamageData>()
 
 	var isInterdicting = false; private set
 	abstract val interdictionRange: Int
@@ -352,7 +353,7 @@ abstract class ActiveStarship (
 	}
 
 	fun getAutoTurretIdentifier(): String = when (controller) {
-		null -> "UnpilotedShip:$charIdentifier"
+		is UnpilotedController -> "UnpilotedShip:$charIdentifier"
 
 		is PlayerController -> (controller as PlayerController).player.name
 
