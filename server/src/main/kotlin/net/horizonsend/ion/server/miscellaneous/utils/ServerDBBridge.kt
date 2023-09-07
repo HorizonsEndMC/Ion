@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.math.BlockVector3
 import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.objId
@@ -80,6 +81,8 @@ class Vec3i: DBVec3i {
 	constructor(location: Location) : super(location.blockX, location.blockY, location.blockZ)
 
 	constructor(blockPos: BlockPos) : super(blockPos.x, blockPos.y, blockPos.z)
+
+	constructor(vector: BlockVector3) : super(vector.blockX, vector.blockY, vector.blockZ)
 
 	override fun toString() = "$x,$y,$z"
 
