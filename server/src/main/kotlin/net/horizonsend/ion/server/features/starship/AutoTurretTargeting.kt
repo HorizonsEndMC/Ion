@@ -27,7 +27,7 @@ object AutoTurretTargeting : IonServerComponent() {
 		fun location() = type.get(identifier)
 	}
 
-	fun target(starship: ActiveStarship): AutoTurretTarget<*> = AutoTurretTarget(TargetType.StarshipTarget, starship.identifier)
+	fun target(starship: ActiveStarship): AutoTurretTarget<*> = AutoTurretTarget(TargetType.StarshipTarget, starship.charIdentifier)
 	fun target(player: Player): AutoTurretTarget<*> = AutoTurretTarget(TargetType.PlayerTarget, player.name)
 
 }
