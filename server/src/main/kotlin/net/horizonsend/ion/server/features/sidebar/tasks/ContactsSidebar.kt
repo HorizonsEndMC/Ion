@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.repeatString
@@ -47,6 +48,8 @@ import org.bukkit.util.Vector
 import kotlin.math.abs
 
 object ContactsSidebar {
+	val fontKey = Key.key("horizonsend:sidebar")
+
     private fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
@@ -86,7 +89,7 @@ object ContactsSidebar {
             ActiveStarships.all().filter {
                 it.world == player.world &&
                         it.centerOfMass.toVector().distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE &&
-                        (it.controller as? PlayerController)?.player !== player &&
+                        it.controller !== ActivePlayerController[player] &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
         } else listOf()
@@ -162,19 +165,19 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = (Component.text(starship.identifier)).color(color),
+                    name = (text(starship.identifier)).color(color),
                     prefix = when (starship.type) {
-                        STARFIGHTER -> text("\uE000").font(key("horizonsend:sidebar"))
-                        GUNSHIP -> text("\uE001").font(key("horizonsend:sidebar"))
-                        CORVETTE -> text("\uE002").font(key("horizonsend:sidebar"))
-                        FRIGATE -> text("\uE003").font(key("horizonsend:sidebar"))
-                        DESTROYER -> text("\uE004").font(key("horizonsend:sidebar"))
-                        SHUTTLE -> text("\uE010").font(key("horizonsend:sidebar"))
-                        TRANSPORT -> text("\uE011").font(key("horizonsend:sidebar"))
-                        LIGHT_FREIGHTER -> text("\uE012").font(key("horizonsend:sidebar"))
-                        MEDIUM_FREIGHTER -> text("\uE013").font(key("horizonsend:sidebar"))
-                        HEAVY_FREIGHTER -> text("\uE014").font(key("horizonsend:sidebar"))
-                        else -> text("\uE032").font(key("horizonsend:sidebar"))
+                        STARFIGHTER -> text("\uE000").font(fontKey)
+                        GUNSHIP -> text("\uE001").font(fontKey)
+                        CORVETTE -> text("\uE002").font(fontKey)
+                        FRIGATE -> text("\uE003").font(fontKey)
+                        DESTROYER -> text("\uE004").font(fontKey)
+                        SHUTTLE -> text("\uE010").font(fontKey)
+                        TRANSPORT -> text("\uE011").font(fontKey)
+                        LIGHT_FREIGHTER -> text("\uE012").font(fontKey)
+                        MEDIUM_FREIGHTER -> text("\uE013").font(fontKey)
+                        HEAVY_FREIGHTER -> text("\uE014").font(fontKey)
+                        else -> text("\uE032").font(fontKey)
                     }.run {
                         val viewerNation = PlayerCache[player].nationOid ?: return@run this.color(GRAY)
                         val pilotNation =
@@ -185,31 +188,14 @@ object ContactsSidebar {
 
                     suffix = if (starship.isInterdicting && distance <= starship.type.interdictionRange) {
                         text("\uE033")
-                            .font(key("horizonsend:sidebar")).color(RED) as TextComponent
+                            .font(fontKey).color(NamedTextColor.RED) as TextComponent
                     } else if (starship.isInterdicting) {
                         text("\uE033")
-                            .font(key("horizonsend:sidebar")).color(GOLD) as TextComponent
+                            .font(fontKey).color(NamedTextColor.GOLD) as TextComponent
                     } else Component.empty(),
-                    heading = text(direction)
-                        .append(
-                            text(repeatString(" ", 2 - direction.length))
-                                .font(key("horizonsend:sidebar"))
-                        )
-                        .color(color),
-                    height = text("$height")
-                        .append(text("y"))
-                        .append(
-                            text(repeatString(" ", 3 - height.toString().length))
-                                .font(key("horizonsend:sidebar"))
-                        )
-                        .color(color),
-                    distance = text("$distance")
-                        .append(text("m"))
-                        .append(
-                            text(repeatString(" ", 4 - distance.toString().length))
-                                .font(key("horizonsend:sidebar"))
-                        )
-                        .color(color),
+                    heading = text(direction).append(text(repeatString(" ", 2 - direction.length)).font(fontKey)).color(color),
+                    height = text("$height").append(text("y")).append(text(repeatString(" ", 3 - height.toString().length)).font(fontKey)).color(color),
+                    distance = text("$distance").append(text("m")).append(text(repeatString(" ", 4 - distance.toString().length)).font(fontKey)).color(color),
                     distanceInt = distance,
                     padding = Component.empty()
                 )
@@ -238,26 +224,26 @@ object ContactsSidebar {
                 ContactsData(
                     name = text("Last Piloted Starship").color(color),
                     prefix = text("\uE032")
-                        .font(key("horizonsend:sidebar")).color(YELLOW) as TextComponent,
+                        .font(fontKey).color(NamedTextColor.YELLOW) as TextComponent,
                     suffix = Component.empty(),
                     heading = text(direction)
                         .append(
                             text(repeatString(" ", 2 - direction.length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     height = text("$height")
                         .append(text("y"))
                         .append(
                             text(repeatString(" ", 3 - height.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distance = text("$distance")
                         .append(text("m"))
                         .append(
                             text(repeatString(" ", 4 - distance.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distanceInt = distance,
@@ -283,29 +269,29 @@ object ContactsSidebar {
                 ContactsData(
                     name = text(planet.name).color(color),
                     prefix = text("\uE020")
-                        .font(key("horizonsend:sidebar")).color(DARK_AQUA) as TextComponent,
+                        .font(fontKey).color(NamedTextColor.DARK_AQUA) as TextComponent,
                     suffix = if (distance <= MassShadows.PLANET_RADIUS) {
                         text("\uE033")
-                            .font(key("horizonsend:sidebar")).color(RED) as TextComponent
+                            .font(fontKey).color(NamedTextColor.RED) as TextComponent
                     } else Component.empty(),
                     heading = text(direction)
                         .append(
                             text(repeatString(" ", 2 - direction.length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     height = text("$height")
                         .append(text("y"))
                         .append(
                             text(repeatString(" ", 3 - height.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distance = text("$distance")
                         .append(text("m"))
                         .append(
                             text(repeatString(" ", 4 - distance.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distanceInt = distance,
@@ -331,29 +317,29 @@ object ContactsSidebar {
                 ContactsData(
                     name = text(star.name).color(color),
                     prefix = text("\uE021")
-                        .font(key("horizonsend:sidebar")).color(YELLOW) as TextComponent,
+                        .font(fontKey).color(NamedTextColor.YELLOW) as TextComponent,
                     suffix = if (distance <= MassShadows.STAR_RADIUS) {
                         text("\uE033")
-                            .font(key("horizonsend:sidebar")).color(RED) as TextComponent
+                            .font(fontKey).color(NamedTextColor.RED) as TextComponent
                     } else Component.empty(),
                     heading = text(direction)
                         .append(
                             text(repeatString(" ", 2 - direction.length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     height = text("$height")
                         .append(text("y"))
                         .append(
                             text(repeatString(" ", 3 - height.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distance = text("$distance")
                         .append(text("m"))
                         .append(
                             text(repeatString(" ", 4 - distance.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distanceInt = distance,
@@ -379,27 +365,27 @@ object ContactsSidebar {
                 ContactsData(
                     name = text(beacon.name).color(color),
                     prefix = text("\uE022")
-                        .font(key("horizonsend:sidebar")).color(BLUE) as TextComponent,
+                        .font(fontKey).color(NamedTextColor.BLUE) as TextComponent,
                     suffix = if (beacon.prompt?.contains("⚠") == true) text("⚠")
-                        .color(RED) else Component.empty(),
+                        .color(NamedTextColor.RED) else Component.empty(),
                     heading = text(direction)
                         .append(
                             text(repeatString(" ", 2 - direction.length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     height = text("$height")
                         .append(text("y"))
                         .append(
                             text(repeatString(" ", 3 - height.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distance = text("$distance")
                         .append(text("m"))
                         .append(
                             text(repeatString(" ", 4 - distance.toString().length))
-                                .font(key("horizonsend:sidebar"))
+                                .font(fontKey)
                         )
                         .color(color),
                     distanceInt = distance,

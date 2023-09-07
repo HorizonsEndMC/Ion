@@ -28,6 +28,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
+import java.util.UUID
 import kotlin.collections.set
 
 object ActiveStarships : IonServerComponent() {
@@ -147,6 +148,7 @@ object ActiveStarships : IonServerComponent() {
 	fun findByPassenger(player: Player): ActiveStarship? = set.firstOrNull { it.isPassenger(player.uniqueId) }
 
 	fun findByPilot(player: Player): ActiveControlledStarship? = PilotedStarships[player]
+	fun findByPilot(player: UUID): ActiveControlledStarship? = PilotedStarships[player]
 
 	fun findByBlock(block: Block): ActiveStarship? {
 		return findByBlock(block.world, block.x, block.y, block.z)
