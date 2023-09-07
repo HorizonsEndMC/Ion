@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -28,15 +29,12 @@ class HyperspaceWarmup(
 ) : BukkitRunnable() {
 	init {
 		if (ship is ActiveControlledStarship) {
-			warmup -= (
-				max(
-					min(
-						CapturableStation.count(CapturableStation::nation eq PlayerCache[ship.playerPilot!!].nationOid).toInt(),
-						6
-					) - 2,
-					0
-				) * 1.5
-				).toInt()
+			(ship.controller as? PlayerController)?.player?.let {
+				val stationCount = CapturableStation.count(CapturableStation::nation eq PlayerCache[it].nationOid).toInt()
+
+				warmup -= (max(min(stationCount, 6) - 2, 0) * 1.5).toInt()
+			}
+
 			warmup = max(warmup, 0)
 		}
 

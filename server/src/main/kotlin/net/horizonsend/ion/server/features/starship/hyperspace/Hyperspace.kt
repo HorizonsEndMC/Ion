@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipEnterHyperspaceEvent
@@ -66,6 +67,7 @@ object Hyperspace : IonServerComponent() {
 			starship.userError("Ship is within Gravity Well, jump cancelled")
 			return
 		}
+
 		if (starship.type == PLATFORM) {
 			starship.onlinePassengers.forEach {
 				it.userErrorAction("This ship type is not capable of moving.")
@@ -96,15 +98,15 @@ object Hyperspace : IonServerComponent() {
 			HyperspaceMap.addMarker(starship, marker)
 		}
 
-		starship.playerPilot?.rewardAchievement(Achievement.USE_HYPERSPACE)
+		(starship.controller as? PlayerController)?.player?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
 		check(warmupTasks.remove(warmup.ship, warmup)) { "Warmup wasn't in the map!" }
+
 		val drive: HyperdriveSubsystem = warmup.drive
-		if (drive.isIntact()) {
-			drive.restoreFuel()
-		}
+		if (drive.isIntact()) drive.restoreFuel()
+
 		// remove hyperspace marker
 		HyperspaceMap.deleteMarker(warmup.ship)
 	}
