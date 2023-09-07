@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import kotlin.math.min
