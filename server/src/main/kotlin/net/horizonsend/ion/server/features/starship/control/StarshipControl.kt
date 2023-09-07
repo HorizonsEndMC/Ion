@@ -331,7 +331,7 @@ object StarshipControl : IonServerComponent() {
 
 		starship.sendMessage("&7&oEntering &2&o${planet.name}&7&o...")
 
-		StarshipTeleportation.teleportStarship(starship, target)
+		StarshipTeleportation.teleportStarship(starship, target) {}
 		return true
 	}
 
