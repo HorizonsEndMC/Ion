@@ -50,15 +50,14 @@ object StarshipWeapons {
 
 	fun fireQueuedShots(queuedShots: List<QueuedShot>, ship: ActiveStarship) {
 		val boostPower = AtomicDouble(0.0)
-		val pilot = ship.playerPilot
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
-			pilot?.debug("we have heavy weapons")
+			ship.debug("we have heavy weapons")
 
 			val heavyWeaponTypes =
 				queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
 
-			pilot?.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
+			ship.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
 
 			if (heavyWeaponTypes.count() > 1) {
 				ship.onlinePassengers.forEach { player ->
@@ -71,14 +70,14 @@ object StarshipWeapons {
 			}
 
 			val heavyWeaponType = heavyWeaponTypes.single()
-			pilot?.debug("heavyWeaponType = $heavyWeaponType")
+			ship.debug("heavyWeaponType = $heavyWeaponType")
 
 			val newWarmup = queuedShots
 				.filter { it.weapon is HeavyWeaponSubsystem }
 				.maxOf { (it.weapon as HeavyWeaponSubsystem).boostChargeNanos }
-			pilot?.debug("newWarmup = $newWarmup")
+			ship.debug("newWarmup = $newWarmup")
 			val output = ship.reactor.heavyWeaponBooster.boost(heavyWeaponType, newWarmup)
-			pilot?.debug("output = $output")
+			ship.debug("output = $output")
 			boostPower.set(output)
 		}
 
@@ -87,28 +86,28 @@ object StarshipWeapons {
 			val weapon = shot.weapon
 
 			val maxPerShot = weapon.getMaxPerShot()
-			pilot?.debug("iterating shots, $weapon, $maxPerShot")
+			ship.debug("iterating shots, $weapon, $maxPerShot")
 
 			val firedSet = firedCounts[weapon.name]
-			pilot?.debug("have we fired those already?")
+			ship.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
-				pilot?.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
+				ship.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
 				continue
 			}
 
-			pilot?.debug("is resource available?")
+			ship.debug("is resource available?")
 			if (resourcesUnavailable(weapon, ship, boostPower)) {
-				pilot?.debug("its not, goodbye")
+				ship.debug("its not, goodbye")
 				continue
 			}
 
-			pilot?.debugRed("shootings!!")
+			ship.debugRed("shootings!!")
 			shot.shoot()
 
-			pilot?.debug("taking resources")
+			ship.debug("taking resources")
 			consumeResources(weapon, boostPower, ship)
 
-			pilot?.debug("adding to fired")
+			ship.debug("adding to fired")
 			firedSet.add(weapon)
 		}
 

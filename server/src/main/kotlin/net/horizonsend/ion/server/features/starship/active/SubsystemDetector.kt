@@ -114,7 +114,7 @@ object SubsystemDetector {
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
-				if (multiblock is EventShieldMultiblock && starship.lastPilot?.hasPermission("ion.core.eventship") == false) return
+				if (multiblock is EventShieldMultiblock && starship.playerPilot?.hasPermission("ion.core.eventship") == false) return
 				starship.subsystems += SphereShieldSubsystem(starship, sign, multiblock)
 			}
 

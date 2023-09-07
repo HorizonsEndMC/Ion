@@ -325,7 +325,7 @@ object StarshipShields : IonServerComponent() {
 			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsLevel)
 		}
 
-		starship.playerPilot?.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
+		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power = shield.power - usage
 
 		if (usage > 0) {
