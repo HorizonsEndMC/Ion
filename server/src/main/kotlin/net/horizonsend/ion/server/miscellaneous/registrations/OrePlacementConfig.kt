@@ -102,6 +102,14 @@ enum class OrePlacementConfig(
 			Ore.Copper to 2
 		)
 	),
+	Vask(
+		enumSetOf(
+			Material.BIRCH_LEAVES
+		),
+		mapOf(
+			Material.ACACIA_LEAVES to 10000
+		)
+	),
 	Gahara(
 		enumSetOf(
 			Material.STONE,
