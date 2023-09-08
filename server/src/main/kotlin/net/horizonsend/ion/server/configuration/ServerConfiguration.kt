@@ -27,23 +27,7 @@ data class ServerConfiguration(
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
 	val soldShips: List<Ship> = listOf(),
-	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(
-		"world" to PlanetSpawnConfig(
-			listOf(
-				PlanetSpawnConfig.Mob(
-					2,
-					EntityType.WITHER_SKELETON.name,
-					mapOf("<gold><bold>Pumpkin Man" to 1),
-					onHand = PlanetSpawnConfig.Gear("energy_sword_orange", 0f),
-					offHand = null,
-					helmet = PlanetSpawnConfig.Gear("CARVED_PUMPKIN", 0.25f),
-					null,
-					null,
-					null,
-				)
-			)
-		)
-	),
+	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -232,7 +216,7 @@ data class ServerConfiguration(
 		val shipType: StarshipType = shipClass.actualType
 
 		@Transient
-		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
+		val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
 	}

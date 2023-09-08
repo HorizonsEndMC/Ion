@@ -56,6 +56,9 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.AIStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.ai.AIManager
+import net.horizonsend.ion.server.features.starship.ai.AISpawningManager
+import net.horizonsend.ion.server.features.starship.ai.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -181,5 +184,9 @@ val components: List<IonComponent> = listOf(
 
 	Bounties,
 
-	CustomMobSpawning
+	CustomMobSpawning,
+
+	AISpawningManager,
+	AIManager,
+	AIStarshipTemplates,
 )
