@@ -29,8 +29,7 @@ object AIControllers {
 				val location = starship.centerOfMass.toLocation(starship.world)
 				val nearestPlayer = getNearestPlayer(this, location)
 
-				val direction =
-					nearestPlayer?.location?.toVector()?.subtract(starship.centerOfMass.toVector())
+				val direction = nearestPlayer?.location?.toVector()?.subtract(starship.centerOfMass.toVector())
 
 				direction?.let { AIControlUtils.faceDirection(this, vectorToBlockFace(direction)) }
 
