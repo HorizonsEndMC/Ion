@@ -15,11 +15,9 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
-import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
-import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.event.EventHandler
@@ -39,15 +37,16 @@ object AIUtils : IonServerComponent() {
 		schematic: Clipboard,
 		type: StarshipType,
 		starshipName: String,
-		createController: (ActiveStarship) -> Controller
+		createController: (ActiveStarship) -> Controller,
+		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val target = resolveTarget(schematic, location)
 		val vec3i = Vec3i(target)
 
 		placeSchematicEfficiently(schematic, location.world, vec3i, true) {
-			tryPilot(location.world, vec3i, type, starshipName, createController)
-
-			Notify.online(Component.text("An AI ship has spawned at $vec3i in ${location.world.name}"))
+			tryPilot(location.world, vec3i, type, starshipName, createController) {
+				callback(it)
+			}
 		}
 	}
 
