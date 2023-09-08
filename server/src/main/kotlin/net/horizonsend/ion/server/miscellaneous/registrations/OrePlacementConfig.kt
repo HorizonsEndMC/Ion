@@ -107,6 +107,7 @@ enum class OrePlacementConfig(
 		mapOf(
 			Material.ACACIA_LEAVES to 10000
 		)
+	),
 	Gahara(
 		enumSetOf(
 			Material.STONE,
