@@ -64,8 +64,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 			schematic,
 			data.shipType,
 			data.displayName,
-		) { ship ->
-			AIControllers.dumbAI(ship)
-		}
+			{ ship -> AIControllers.dumbAI(ship) }
+		)
 	}
 }

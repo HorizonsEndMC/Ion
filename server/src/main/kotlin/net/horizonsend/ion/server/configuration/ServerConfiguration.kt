@@ -216,7 +216,7 @@ data class ServerConfiguration(
 		val shipType: StarshipType = shipClass.actualType
 
 		@kotlinx.serialization.Transient
-		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
+		val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
 	}

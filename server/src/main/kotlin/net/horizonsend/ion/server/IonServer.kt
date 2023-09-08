@@ -33,7 +33,7 @@ import java.io.File
 
 val LegacySettings get() = IonServer.legacySettings
 val BalancingConfiguration get() = IonServer.balancing
-val ServerConfiguration get() = IonServer.balancing
+val ServerConfiguration get() = IonServer.configuration
 
 val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
 
