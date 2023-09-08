@@ -398,3 +398,17 @@ fun helixAroundVector(
 
 	return  points
 }
+
+fun Vector.perpendicular(direction: Vector): Vector {
+	return this //TODO
+}
+
+/** Find the closest point along the vector to the location **/
+fun Location.nearestPointToVector(origin: Location, vector: Vector): Location {
+	return this //TODO
+}
+
+/** Find the distance to closest point along the vector to the location **/
+fun Location.distanceToVector(origin: Location, vector: Vector): Double =
+	this.nearestPointToVector(origin, vector).distance(this)
+
