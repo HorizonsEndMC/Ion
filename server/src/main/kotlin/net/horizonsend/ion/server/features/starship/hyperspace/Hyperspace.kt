@@ -121,9 +121,11 @@ object Hyperspace : IonServerComponent() {
 		val y = starship.centerOfMass.y.toDouble()
 		val z = starship.centerOfMass.z.toDouble()
 		val loc = Location(world, x, y, z)
+		starship.playSound(starshipEnterHyperspaceSound())
 		StarshipTeleportation.teleportStarship(starship, loc) {
-			Tasks.syncDelay(10L) {
-				starship.playSound(starshipEnterHyperspaceSound())
+			// Happens after the teleport finishes
+			Tasks.syncDelay(2L) {
+				StarshipEnterHyperspaceEvent(starship).callEvent()
 			}
 		}.thenAccept { success ->
 			if (!success) {
@@ -139,7 +141,6 @@ object Hyperspace : IonServerComponent() {
 			marker?.inHyperspace = true
 			marker?.movement = movementTasks[starship]!!
 		}
-		StarshipEnterHyperspaceEvent(starship).callEvent()
 	}
 
 	fun cancelJumpMovement(movement: HyperspaceMovement) {
@@ -165,12 +166,13 @@ object Hyperspace : IonServerComponent() {
 		dest.x = movement.x
 		dest.z = movement.z
 
+		starship.playSound(starshipExitHyperspaceSound())
 		StarshipTeleportation.teleportStarship(starship, dest) {
-			Tasks.syncDelay(10L) {
-				starship.playSound(starshipExitHyperspaceSound())
+			Tasks.syncDelay(2L) {
+				// Happens after the teleport finishes
+				StarshipExitHyperspaceEvent(starship, movement).callEvent()
 			}
 		}
-		StarshipExitHyperspaceEvent(starship, movement).callEvent()
 	}
 
 	fun completeJumpMovement(movement: HyperspaceMovement) {
@@ -183,12 +185,13 @@ object Hyperspace : IonServerComponent() {
 		// Remove the marker from the map
 		HyperspaceMap.deleteMarker(starship)
 
+		starship.playSound(starshipExitHyperspaceSound())
 		StarshipTeleportation.teleportStarship(starship, movement.dest) {
-			Tasks.syncDelay(10L) {
-				starship.playSound(starshipExitHyperspaceSound())
+			Tasks.syncDelay(2L) {
+				// Happens after the teleport finishes
+				StarshipExitHyperspaceEvent(starship, movement).callEvent()
 			}
 		}
-		StarshipExitHyperspaceEvent(starship, movement).callEvent()
 	}
 
 	private fun calculateSpeed(hyperdriveClass: Int, mass: Double) =
@@ -242,11 +245,7 @@ object Hyperspace : IonServerComponent() {
 		val realspaceWorld = getRealspaceWorld(world) ?: return
 
 		val dest = starship.centerOfMass.toLocation(realspaceWorld)
-		StarshipTeleportation.teleportStarship(starship, dest) {
-			Tasks.syncDelay(10L) {
-				starship.playSound(starshipExitHyperspaceSound())
-			}
-		}
+		StarshipTeleportation.teleportStarship(starship, dest) {}
 	}
 
 	@Suppress("unused")
@@ -303,9 +302,7 @@ object Hyperspace : IonServerComponent() {
 	@Suppress("unused")
 	@EventHandler
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
-		val starship = event.starship
 		val movement = event.movement
-		starship.serverLevel.world.playSound(starshipExitHyperspaceSound())
 		for (player in movement.dest.world.getNearbyPlayers(movement.dest, 2500.0)) {
 			player.playSound(starshipExitHyperspaceSound())
 		}
