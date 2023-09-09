@@ -1,6 +1,7 @@
 package net.horizonsend.ion.common.database
 
 import com.mongodb.ConnectionString
+import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
@@ -38,6 +39,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.Document
+import org.bson.UuidRepresentation
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.json.JsonReader
@@ -90,7 +92,14 @@ object DBManager : IonComponent() {
 		val port = CommonConfig.db.port
 		val authDb = CommonConfig.db.database
 		val connectionString = ConnectionString("mongodb://$username:$password@$host:$port/$authDb")
-		client = KMongo.createClient(connectionString)
+		client = KMongo.createClient(
+			MongoClientSettings
+				.builder()
+				.codecRegistry(KMongoUtil.defaultCodecRegistry)
+				.applyConnectionString(connectionString)
+				.uuidRepresentation(UuidRepresentation.JAVA_LEGACY)
+				.build()
+		)
 
 		database = client.getDatabase(CommonConfig.db.database)
 

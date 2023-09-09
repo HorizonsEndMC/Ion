@@ -6,3 +6,4 @@ pluginManagement.repositories {
 include("proxy")
 include("server")
 include("common")
+include("web")

@@ -36,6 +36,7 @@ import java.util.Date
 import java.util.UUID
 
 typealias SLPlayerId = StringId<SLPlayer>
+
 /**
  * @param _id The player's Minecraft UUID
  * @param lastKnownName The last username they logged on to the server with
@@ -45,18 +46,18 @@ typealias SLPlayerId = StringId<SLPlayer>
  * @param snowflake Their discord unique id
  **/
 data class SLPlayer(
-    override val _id: SLPlayerId,
-    var lastKnownName: String,
-    var lastSeen: Date = Date.from(Instant.now()),
-    var xp: Int = 0,
-    val level: Int = 1,
-    var settlement: Oid<Settlement>? = null,
-    var nation: Oid<Nation>? = null,
-    var snowflake: Long? = null,
-    var wasKilled: Boolean = false,
-    var cryopods: Set<Oid<Cryopod>> = setOf(),
-    var selectedCryopod: Oid<Cryopod>? = null,
-    var achievements: Set<String> = setOf(),
+	override val _id: SLPlayerId,
+	var lastKnownName: String,
+	var lastSeen: Date = Date.from(Instant.now()),
+	var xp: Int = 0,
+	val level: Int = 1,
+	var settlement: Oid<Settlement>? = null,
+	var nation: Oid<Nation>? = null,
+	var snowflake: Long? = null,
+	var wasKilled: Boolean = false,
+	var cryopods: Set<Oid<Cryopod>> = setOf(),
+	var selectedCryopod: Oid<Cryopod>? = null,
+	var achievements: Set<String> = setOf(),
 	var bounty: Double = 0.0,
 
 	var contactsEnabled: Boolean = true,
@@ -68,6 +69,8 @@ data class SLPlayer(
 
 	var waypointsEnabled: Boolean = true,
 	var compactWaypoints: Boolean = true,
+
+	var apiKey: UUID? = null
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {
@@ -76,6 +79,7 @@ data class SLPlayer(
 			ensureIndex(SLPlayer::nation)
 			ensureIndex(SLPlayer::snowflake)
 			ensureIndex(SLPlayer::cryopods)
+			ensureIndex(SLPlayer::apiKey)
 		}
 	) {
 		operator fun get(uuid: UUID): SLPlayer? = col.findOneById(uuid.slPlayerId.toString())
@@ -88,6 +92,8 @@ data class SLPlayer(
 			.find(getNamePattern(name))
 			.descendingSort(SLPlayer::lastSeen)
 			.first()
+
+		fun isApiKeyValid(uuid: UUID) = SLPlayer.find(SLPlayer::apiKey eq uuid).any()
 
 		fun findIdByName(name: String): SLPlayerId? = col.withDocumentClass<Document>()
 			.find(getNamePattern(name))
