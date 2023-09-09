@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -60,7 +61,13 @@ class BlasterListeners : SLEventListener() {
 			)
 			.append(blaster)
 
-		event.deathMessage(newMessage)
+		if (victim.world.name.contains("arena", ignoreCase = true)) {
+			event.deathMessage(newMessage)
+		} else {
+			event.deathMessage(null)
+
+			Notify.online(newMessage)
+		}
 	}
 
 	@EventHandler

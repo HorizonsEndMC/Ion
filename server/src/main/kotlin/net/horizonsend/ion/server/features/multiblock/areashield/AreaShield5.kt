@@ -20,7 +20,7 @@ object AreaShield5 : AreaShield(radius = 5) {
 
 		z(+1) {
 			y(-1) {
-				x(+0).stoneBrick()
+				x(+0).solidBlock()
 			}
 
 			y(+0) {

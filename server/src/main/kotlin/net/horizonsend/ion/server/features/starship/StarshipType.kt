@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextColor
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -23,7 +23,7 @@ enum class StarshipType(
 	val hyperspaceRangeMultiplier: Double,
 	menuItemMaterial: Material,
 	val isWarship: Boolean,
-	val colour: String,
+	val color: String,
 	val overridePermission: String,
 	val eventship: Boolean = false,
 	val poweroverrider: Double = 1.0,
@@ -35,16 +35,16 @@ enum class StarshipType(
 		minSize = 25,
 		maxSize = 100,
 		minLevel = 1,
-		containerPercent = 0.025,
+		containerPercent = 0.25,
 		concretePercent = 0.0,
-		crateLimitMultiplier = 0.25,
+		crateLimitMultiplier = 0.125,
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 10,
 		hyperspaceRangeMultiplier = 3.0,
 		menuItemMaterial = Material.DEAD_BUSH,
 		isWarship = false,
-		colour = "#ffff32",
+		color = "#ffff32",
 		overridePermission = "ion.ships.override.1",
 		poweroverrider = 0.0
 	),
@@ -61,7 +61,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.5,
 		menuItemMaterial = Material.IRON_NUGGET,
 		isWarship = true,
-		colour = "#ff8000",
+		color = "#ff8000",
 		overridePermission = "ion.ships.override.1"
 	),
 	GUNSHIP(
@@ -77,7 +77,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.6,
 		menuItemMaterial = Material.IRON_INGOT,
 		isWarship = true,
-		colour = "#ff4000",
+		color = "#ff4000",
 		overridePermission = "ion.ships.override.10"
 	),
 	CORVETTE(
@@ -93,7 +93,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.7,
 		menuItemMaterial = Material.IRON_BLOCK,
 		isWarship = true,
-		colour = "#ff0000",
+		color = "#ff0000",
 		overridePermission = "ion.ships.override.20"
 	),
 	FRIGATE(
@@ -109,7 +109,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.8,
 		menuItemMaterial = Material.LAPIS_BLOCK,
 		isWarship = true,
-		colour = "#c00000",
+		color = "#c00000",
 		overridePermission = "ion.ships.override.40"
 	),
 	DESTROYER(
@@ -125,7 +125,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.9,
 		menuItemMaterial = Material.GOLD_BLOCK,
 		isWarship = true,
-		colour = "#800000",
+		color = "#800000",
 		overridePermission = "ion.ships.override.60"
 	),
 	BATTLECRUISER(
@@ -141,7 +141,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.5,
 		menuItemMaterial = Material.DIAMOND_BLOCK,
 		isWarship = true,
-		colour = "#0c5ce8",
+		color = "#0c5ce8",
 		overridePermission = "ion.ships.override.battlecruiser"
 
 	),
@@ -158,7 +158,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.6,
 		menuItemMaterial = Material.MAGMA_BLOCK,
 		isWarship = true,
-		colour = "#0c5ce8",
+		color = "#0c5ce8",
 		overridePermission = "ion.ships.override.battleship"
 
 	),
@@ -175,7 +175,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 2.7,
 		menuItemMaterial = Material.EMERALD_BLOCK,
 		isWarship = true,
-		colour = "#320385",
+		color = "#320385",
 		overridePermission = "ion.ships.override.dreadnought"
 	),
 	SHUTTLE(
@@ -191,7 +191,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.2,
 		menuItemMaterial = Material.PRISMARINE_SHARD,
 		isWarship = false,
-		colour = "#008033",
+		color = "#008033",
 		overridePermission = "ion.ships.override.1",
 		poweroverrider = 0.7,
 		maxMiningLasers = 1,
@@ -210,7 +210,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.25,
 		menuItemMaterial = Material.PRISMARINE_CRYSTALS,
 		isWarship = false,
-		colour = "#008066",
+		color = "#008066",
 		overridePermission = "ion.ships.override.10",
 		poweroverrider = 0.7,
 		maxMiningLasers = 1,
@@ -229,7 +229,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.3,
 		menuItemMaterial = Material.PRISMARINE_SLAB,
 		isWarship = false,
-		colour = "#008099",
+		color = "#008099",
 		overridePermission = "ion.ships.override.20",
 		poweroverrider = 0.7,
 		maxMiningLasers = 2,
@@ -248,7 +248,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.35,
 		menuItemMaterial = Material.PRISMARINE_STAIRS,
 		isWarship = false,
-		colour = "#0080cc",
+		color = "#0080cc",
 		overridePermission = "ion.ships.override.40",
 		poweroverrider = 0.7,
 		maxMiningLasers = 4,
@@ -267,7 +267,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 1.4,
 		menuItemMaterial = Material.PRISMARINE,
 		isWarship = false,
-		colour = "#0080ff",
+		color = "#0080ff",
 		overridePermission = "ion.ships.override.60",
 		poweroverrider = 0.7,
 		maxMiningLasers = 6,
@@ -287,7 +287,7 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 0.0,
 		menuItemMaterial = Material.BEDROCK,
 		isWarship = false,
-		colour = "#ffffff",
+		color = "#ffffff",
 		overridePermission = "ion.ships.override.1",
 		poweroverrider = 0.0
 	),
@@ -305,14 +305,14 @@ enum class StarshipType(
 		hyperspaceRangeMultiplier = 10.0,
 		menuItemMaterial = Material.MUD_BRICKS,
 		isWarship = true,
-		colour = "#d0e39d",
+		color = "#d0e39d",
 		overridePermission = "ion.ships.eventship",
 		eventship = true,
 		poweroverrider = 2.0
 	);
 
-	val formatted: String get() = "<$colour>$displayName</$colour>"
-	val component: Component get() = Component.text(displayName).color(TextColor.fromHexString(colour))
+	val formatted: String get() = "<$color>$displayName</$color>"
+	val component: Component get() = Component.text(displayName).color(TextColor.fromHexString(color))
 
 	val menuItem: ItemStack = ItemStack(menuItemMaterial)
 		.setDisplayNameAndGet(displayName)

@@ -7,14 +7,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacem
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureNanoTime
 
-object Orbits : IonServerComponent() {
+object Orbits : IonServerComponent(true) {
 	// schedule orbiting all the planets every midnight
 	override fun onEnable() {
- 		Tasks.sync {
- 			orbitPlanets(true)
- 		}
-
-        schedule()
+// 		Tasks.sync {
+// 			orbitPlanets()
+// 		}
+//
+//        schedule()
 	}
 
 	private fun schedule() {
@@ -26,20 +26,14 @@ object Orbits : IonServerComponent() {
 		}
 	}
 
-	fun orbitPlanets(urgent: Boolean = false) {
+	fun orbitPlanets() {
 		// Orbit all the planets
 		log.info("Calculating planet orbits...")
 
 		val elapsedNanos = measureNanoTime {
 			Space.getPlanets().parallelStream()
-				.filter { it.spaceWorld != null }
-				.filter { !it.rogue }
-				.forEach { it.orbit(urgent = urgent, updateDb = false) }
-
-			Space.getPlanets().parallelStream()
-				.filter { it.spaceWorld != null }
-				.filter { it.rogue }
-				.forEach { it.setLocation(urgent = urgent, updateDb = false) }
+				.filter { it.spaceWorld != null && !it.rogue }
+				.forEach { it.orbit(updateDb = false) }
 
 			SpaceMap.refresh()
 		}

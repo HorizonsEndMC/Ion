@@ -11,8 +11,11 @@ import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.trx
+import net.horizonsend.ion.common.database.updateAll
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
 import org.litote.kmongo.contains
@@ -24,7 +27,6 @@ import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.pull
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
-import java.awt.Color
 
 /**
  * Referenced on:
@@ -127,9 +129,11 @@ data class Nation(
 				sess, SLPlayer::nation eq id, org.litote.kmongo.setValue(SLPlayer::nation, null)
 			)
 
-			NationSpaceStation.col.updateMany(
-				sess, NationSpaceStation::owner ne id, pull(NationSpaceStation::trustedNations, id)
-			)
+			NationSpaceStation.col.updateMany(sess, NationSpaceStation::owner ne id, pull(NationSpaceStation::trustedNations, id))
+			SettlementSpaceStation.col.updateAll(sess, pull(SettlementSpaceStation::trustedNations, id))
+			PlayerSpaceStation.col.updateAll(sess, pull(PlayerSpaceStation::trustedNations, id))
+
+			Settlement.col.updateAll(sess, pull(Settlement::trustedNations, id))
 
 			NationSpaceStation.col.deleteMany(sess, NationSpaceStation::owner eq id)
 

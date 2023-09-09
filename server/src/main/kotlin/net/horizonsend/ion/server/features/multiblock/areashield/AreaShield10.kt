@@ -33,7 +33,7 @@ object AreaShield10 : AreaShield(radius = 10) {
 		z(+2) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).stoneBrick()
+				x(+0).solidBlock()
 				x(+1).anyStairs()
 			}
 

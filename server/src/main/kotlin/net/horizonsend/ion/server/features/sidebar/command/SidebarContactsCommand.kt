@@ -14,18 +14,37 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 
-@CommandAlias("contacts")
-object ContactsCommand : SLCommand() {
+@CommandAlias("sidebar")
+object SidebarContactsCommand : SLCommand() {
 	@Default
+	@Subcommand("contacts")
 	@Suppress("unused")
 	fun defaultCase(
 		sender: Player
 	) {
-		sender.userError("Usage: /contacts <contact> [toggle]")
+		sender.userError("Usage: /sidebar contacts <option> [toggle]")
 	}
 
 	@Suppress("unused")
-	@Subcommand("starship")
+	@Subcommand("contacts enable")
+	fun onEnableContacts(
+		sender: Player
+	) {
+		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::contactsEnabled setTo true))
+		sender.success("Enabled contacts on sidebar")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts disable")
+	fun onDisableContacts(
+		sender: Player
+	) {
+		SLPlayer.updateById(sender.slPlayerId, set(SLPlayer::contactsEnabled setTo false))
+		sender.success("Disabled contacts on sidebar")
+	}
+
+	@Suppress("unused")
+	@Subcommand("contacts starship")
 	fun onToggleStarship(
 		sender: Player,
 		@Optional toggle: Boolean?
@@ -36,7 +55,7 @@ object ContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
-	@Subcommand("lastStarship")
+	@Subcommand("contacts lastStarship")
 	fun onToggleLastStarship(
 		sender: Player,
 		@Optional toggle: Boolean?
@@ -47,7 +66,7 @@ object ContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
-	@Subcommand("planet")
+	@Subcommand("contacts planet")
 	fun onTogglePlanets(
 		sender: Player,
 		@Optional toggle: Boolean?
@@ -58,7 +77,7 @@ object ContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
-	@Subcommand("star")
+	@Subcommand("contacts star")
 	fun onToggleStars(
 		sender: Player,
 		@Optional toggle: Boolean?
@@ -69,7 +88,7 @@ object ContactsCommand : SLCommand() {
 	}
 
 	@Suppress("unused")
-	@Subcommand("beacon")
+	@Subcommand("contacts beacon")
 	fun onToggleBeacons(
 		sender: Player,
 		@Optional toggle: Boolean?

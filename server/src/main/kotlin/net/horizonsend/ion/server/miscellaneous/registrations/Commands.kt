@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.command.economy.CollectedItemCommand
 import net.horizonsend.ion.server.command.economy.CollectorCommand
 import net.horizonsend.ion.server.command.economy.EcoStationCommand
 import net.horizonsend.ion.server.command.economy.TradeDebugCommand
+import net.horizonsend.ion.server.command.misc.BountyCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
@@ -59,8 +60,10 @@ import net.horizonsend.ion.server.features.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
 import net.horizonsend.ion.server.features.customitems.commands.ConvertCommand
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection
-import net.horizonsend.ion.server.features.sidebar.command.ContactsCommand
+import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
+import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
 import net.horizonsend.ion.server.features.space.generation.SpaceGenCommand
+import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
 val commands: List<SLCommand> = listOf(
 	GToggleCommand,
@@ -137,5 +140,8 @@ val commands: List<SLCommand> = listOf(
 
 	AchievementsCommand,
 	BlastResistanceCommand,
-	ContactsCommand
+	SidebarContactsCommand,
+	SidebarWaypointsCommand,
+    WaypointCommand,
+    BountyCommand
 )

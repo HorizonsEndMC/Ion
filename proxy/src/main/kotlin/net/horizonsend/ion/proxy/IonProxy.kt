@@ -1,119 +1,116 @@
 package net.horizonsend.ion.proxy
 
-import com.google.inject.Inject
-import com.velocitypowered.api.event.EventManager
-import com.velocitypowered.api.event.Subscribe
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
-import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
-import com.velocitypowered.api.plugin.Dependency
-import com.velocitypowered.api.plugin.Plugin
-import com.velocitypowered.api.plugin.annotation.DataDirectory
-import com.velocitypowered.api.proxy.Player
-import com.velocitypowered.api.proxy.ProxyServer
+import co.aikar.commands.BungeeCommandManager
+import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.OnlineStatus.ONLINE
+import net.dv8tion.jda.api.entities.Activity.playing
+import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.ChunkingFilter
+import net.dv8tion.jda.api.utils.MemberCachePolicy
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.CommonConfig
-import net.horizonsend.ion.common.database.DBManager
-import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.extensions.prefixProvider
-import net.horizonsend.ion.common.utils.luckPerms
-import net.horizonsend.ion.proxy.commands.proxy.VelocityInfoCommand
-import net.horizonsend.ion.proxy.commands.proxy.VelocityMessageCommand
-import net.horizonsend.ion.proxy.commands.proxy.VelocityReplyCommand
-import net.horizonsend.ion.proxy.listeners.PlayerListeners
-import net.horizonsend.ion.proxy.listeners.ProxyPingListener
+import net.horizonsend.ion.common.utils.Configuration
+import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
+import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
+import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
+import net.horizonsend.ion.proxy.commands.waterfall.ReplyCommand
+import net.horizonsend.ion.proxy.listeners.waterfall.PlayerDisconnectListener
+import net.horizonsend.ion.proxy.listeners.waterfall.ProxyPingListener
+import net.horizonsend.ion.proxy.listeners.waterfall.ServerConnectListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
-import org.slf4j.Logger
-import java.io.File
-import java.nio.file.Path
+import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
+import net.horizonsend.ion.proxy.wrappers.WrappedProxy
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences
+import net.md_5.bungee.api.config.ServerInfo
+import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.api.plugin.Listener
+import net.md_5.bungee.api.plugin.Plugin
+import java.util.concurrent.TimeUnit
 
-val IonProxy = IonProxyPlugin.INSTANCE
+lateinit var PLUGIN: IonProxy private set
 
-@Plugin(
-	id = "ion", name = "Ion", version = "0.1.0-SNAPSHOT",
-	url = "https://horizonsend.net", description = "Ion", authors = ["Rattlyy", "Astralchroma", "Gutin"],
-	dependencies = [
-		Dependency(id = "litebans", optional = true),
-		Dependency(id = "luckperms")
-	]
-)
-class IonProxyPlugin @Inject constructor(
-	val proxy: ProxyServer,
-	val logger: Logger,
-	val event: EventManager,
-	@DataDirectory val folder: Path
-) {
-	val dataFolder: File = folder.toFile()
+@Suppress("Unused")
+class IonProxy : Plugin() {
+	private val startTime = System.currentTimeMillis()
+
+	init { PLUGIN = this }
+
+	val adventure = BungeeAudiences.create(this)
+
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
 
-	@Subscribe
-	fun onInit(e: ProxyInitializeEvent) {
-		INSTANCE = this
+	val discord = try {
+		JDABuilder.createLight(configuration.discordBotToken)
+			.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
+			.setMemberCachePolicy(MemberCachePolicy.ALL)
+			.setChunkingFilter(ChunkingFilter.ALL)
+			.disableCache(CacheFlag.values().toList())
+			.setEnableShutdownHook(false)
+			.build()
+	} catch (exception: Exception) {
+		slF4JLogger.warn("Failed to start JDA", exception)
+		null
+	}
+
+	val playerServerMap = mutableMapOf<ProxiedPlayer, ServerInfo>()
+
+	val proxy = WrappedProxy(getProxy())
+
+	init {
 		prefixProvider = {
 			when (it) {
-				is ProxyServer -> ""
-				is Player -> "to ${it.gameProfile.name}: "
+				is WrappedProxy -> ""
+				is WrappedPlayer -> "to ${it.name}: "
 				else -> "to [Unknown]: "
 			}
 		}
 
-		CommonConfig.init(IonProxy.dataFolder)
-
-		for (component in components) {
-			IonProxy.proxy.eventManager.register(IonProxy, component)
-			component.onEnable()
-		}
-
-		proxy.commandManager.apply {
-			register(
-				metaBuilder("info")
-					.aliases("map", "wiki", "patreon", "rules")
-					.plugin(this)
-					.build(),
-
-				VelocityInfoCommand()
-			)
-
-			register(
-				metaBuilder("message")
-					.aliases("msg", "tell", "whisper", "w")
-					.plugin(this)
-					.build(),
-
-				VelocityMessageCommand()
-			)
-
-			register(
-				metaBuilder("reply")
-					.aliases("r")
-					.plugin(this)
-					.build(),
-
-				VelocityReplyCommand()
-			)
-		}
+		CommonConfig.init(dataFolder)
 
 		ReminderManager.scheduleReminders()
 
-		event.apply {
-			register(this@IonProxyPlugin, PlayerListeners())
-			register(this@IonProxyPlugin, ProxyPingListener())
-			register(this@IonProxyPlugin, VelocityMessageCommand)
+		proxy.pluginManager.apply {
+			for (component in components) {
+				if (component is Listener) registerListener(this@IonProxy, component)
+				component.onEnable()
+			}
+
+			registerListener(this@IonProxy, PlayerDisconnectListener())
+			registerListener(this@IonProxy, ProxyPingListener())
+			registerListener(this@IonProxy, ServerConnectListener())
 		}
 
-		if (configuration.discordEnabled) {
-			discord()
+
+		val commandManager = BungeeCommandManager(this).apply {
+			registerCommand(BungeeInfoCommand())
+			registerCommand(MessageCommand())
+			registerCommand(ReplyCommand())
 		}
 
-		DBManager.INITIALIZATION_COMPLETE = true
+		discord?.let {
+			JDACommandManager(discord, configuration).apply {
+				registerGuildCommand(DiscordInfoCommand())
+				registerGuildCommand(PlayerListCommand(getProxy()))
+
+				build()
+			}
+
+			proxy.scheduler.schedule(this, {
+				discord.presence.setPresence(ONLINE, playing("with ${proxy.onlineCount} players!"))
+			}, 0, 5, TimeUnit.SECONDS)
+		}
 	}
 
-	@Subscribe
-	fun onDisable(e: ProxyShutdownEvent) {
-		for (component in components.reversed()) {
-			component.onDisable()
-		}
-	}
+	private val endTime = System.currentTimeMillis()
 
-	companion object {
-		lateinit var INSTANCE: IonProxyPlugin
+	init { slF4JLogger.info("Loaded in %,3dms".format(endTime - startTime)) }
+
+	override fun onEnable() {}
+
+	override fun onDisable() {
+		adventure.close()
+		discord?.shutdown()
 	}
 }

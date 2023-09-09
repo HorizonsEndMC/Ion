@@ -3,12 +3,12 @@ package net.horizonsend.ion.server.features.space
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Star
-import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.optional
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -66,7 +66,7 @@ object Space : IonServerComponent() {
 			val starName: String = mongoStar.name
 			val spaceWorldName: String = mongoStar.spaceWorld
 			val starX: Int = mongoStar.x
-			val starY: Int = mongoStar.y
+			val starY: Int = 192 // mongoStar.y
 			val starZ: Int = mongoStar.z
 			val starMaterial: Material = Material.valueOf(mongoStar.material)
 			val starSize: Double = mongoStar.size

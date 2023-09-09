@@ -1,12 +1,28 @@
 package net.horizonsend.ion.common.database.cache.nations
 
-import net.horizonsend.ion.common.database.*
+import net.horizonsend.ion.common.database.DbObject
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.SLTextStyleDB
+import net.horizonsend.ion.common.database.boolean
+import net.horizonsend.ion.common.database.cache.ManualCache
+import net.horizonsend.ion.common.database.containsUpdated
+import net.horizonsend.ion.common.database.double
+import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.nullable
+import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.*
-import net.horizonsend.ion.common.database.cache.ManualCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.common.database.schema.nations.Role
+import net.horizonsend.ion.common.database.schema.nations.RoleCompanion
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.SettlementRole
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
 import org.litote.kmongo.`in`
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class AbstractPlayerCache : ManualCache() {
@@ -19,12 +35,17 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var nationOid: Oid<Nation>?,
 		var settlementTag: String?,
 		var nationTag: String?,
+		var bounty: Double,
 
+		var contactsEnabled: Boolean = true,
 		var contactsStarships: Boolean = true,
 		var lastStarshipEnabled: Boolean = true,
 		var planetsEnabled: Boolean = true,
 		var starsEnabled: Boolean = true,
 		var beaconsEnabled: Boolean = true,
+
+		var waypointsEnabled: Boolean = true,
+		var compactWaypoints: Boolean = true,
 	)
 
 	val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()
@@ -102,6 +123,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
+			change[SLPlayer::contactsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val contactsEnabled = it.boolean()
+					data.contactsEnabled = contactsEnabled
+				}
+			}
+
 			change[SLPlayer::contactsStarships]?.let {
 				synced {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
@@ -144,6 +174,32 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 					val beaconsEnabled = it.boolean()
 					data.beaconsEnabled = beaconsEnabled
+				}
+			}
+
+			change[SLPlayer::waypointsEnabled]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val waypointsEnabled = it.boolean()
+					data.waypointsEnabled = waypointsEnabled
+				}
+			}
+
+			change[SLPlayer::compactWaypoints]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val compactWaypoints = it.boolean()
+					data.compactWaypoints = compactWaypoints
+				}
+			}
+
+			change[SLPlayer::bounty]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.bounty = it.double()
 				}
 			}
 		}
@@ -191,7 +247,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			getColoredTag(NationRole.getTag(id))
 		}
 
-		PLAYER_DATA[id.uuid] = PlayerData(id, data.xp, data.level, settlement, nation, settlementTag, nationTag)
+		PLAYER_DATA[id.uuid] = PlayerData(id, data.xp, data.level, settlement, nation, settlementTag, nationTag, data.bounty)
 	}
 
 	abstract fun getColoredTag(nameColorPair: Pair<String, SLTextStyleDB>?): String?

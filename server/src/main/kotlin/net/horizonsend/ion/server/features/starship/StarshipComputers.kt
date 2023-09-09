@@ -206,6 +206,8 @@ object StarshipComputers : IonServerComponent() {
 	private fun getLock(dataId: Oid<PlayerStarshipData>): Any = lockMap.getOrPut(dataId) { Any() }
 
 	private fun tryReDetect(player: Player, data: PlayerStarshipData) {
+		if (ActiveStarships.findByPilot(player) != null) player.userError("WARNING: Redetecting while piloting will not succeed. You must release first, then redetect.")
+
 		Tasks.async {
 			synchronized(getLock(data._id)) {
 				val state = try {

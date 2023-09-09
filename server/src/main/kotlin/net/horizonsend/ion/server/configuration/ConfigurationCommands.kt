@@ -121,6 +121,12 @@ object ConfigurationCommands : SLCommand() {
 	fun onConfigReload(sender: CommandSender) {
 		IonServer.configuration = Configuration.load(IonServer.dataFolder, "server.json")
 		IonServer.balancing = Configuration.load(IonServer.dataFolder, "balancing.json")
+		IonServer.gasConfiguration = Configuration.load(IonServer.dataFolder, "gasses.json")
+
+		reloadOthers()
+
 		sender.success("Reloaded configs.")
 	}
+
+	private fun reloadOthers() {}
 }

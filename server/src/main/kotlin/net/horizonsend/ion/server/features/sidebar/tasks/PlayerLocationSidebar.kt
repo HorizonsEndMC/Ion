@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.abs
 
-object PlayerLocation {
+object PlayerLocationSidebar {
     fun getPlayerDirection(player: Player): String {
         val playerDirection: Vector = player.location.direction
         playerDirection.setY(0).normalize()

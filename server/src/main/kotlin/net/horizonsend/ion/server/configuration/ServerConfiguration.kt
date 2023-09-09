@@ -5,17 +5,18 @@ import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
-import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
-import net.minecraft.core.BlockPos
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
+import net.minecraft.core.BlockPos
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.entity.EntityType
 
 @Serializable
 data class ServerConfiguration(
@@ -23,7 +24,8 @@ data class ServerConfiguration(
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
-	val soldShips: List<Ship> = listOf()
+	val soldShips: List<Ship> = listOf(),
+	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -213,5 +215,25 @@ data class ServerConfiguration(
 		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
+	}
+
+	@Serializable
+	data class PlanetSpawnConfig(
+		val mobs: List<Mob>
+	) {
+		@Serializable
+		data class Mob(
+			val weight: Int,
+			val type: String,
+		)
+
+		fun weightedList(): WeightedRandomList<EntityType> {
+			val list = WeightedRandomList<EntityType>()
+			val transformed = mobs.map { (weight, type) -> EntityType.valueOf(type) to weight }
+
+			list.addMany(transformed)
+
+			return list
+		}
 	}
 }

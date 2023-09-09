@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.ANVIL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.minecraft.world.level.block.state.BlockBehaviour
 import org.bukkit.Bukkit
@@ -109,8 +110,8 @@ object GameplayTweaks : IonServerComponent() {
 		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 5.0f) }
 		TRAPDOOR_TYPES.forEach { setBlastResistance(it, 6.0f)}
 		WALL_TYPES.forEach { setBlastResistance(it, 6.0f)}
+		ANVIL_TYPES.forEach { setBlastResistance(it, 6.0f)}
 		setBlastResistance(Material.ANCIENT_DEBRIS, 6.0f)
-		setBlastResistance(Material.ANVIL, 6.0f)
 		setBlastResistance(Material.NETHERITE_BLOCK, 6.0f)
 		setBlastResistance(Material.RESPAWN_ANCHOR, 6.0f)
 		setBlastResistance(Material.ENCHANTING_TABLE, 6.0f)

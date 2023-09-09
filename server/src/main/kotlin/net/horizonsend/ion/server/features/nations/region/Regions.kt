@@ -2,20 +2,26 @@ package net.horizonsend.ion.server.features.nations.region
 
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
-import net.horizonsend.ion.common.database.*
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.DbObject
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.containsUpdated
+import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
-import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
@@ -24,8 +30,8 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionSettlement
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bson.types.ObjectId
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -130,7 +136,10 @@ object Regions : IonServerComponent() {
 				change.containsUpdated(Settlement::minimumBuildAccess) ||
 				change.containsUpdated(Settlement::cityState) ||
 				change.containsUpdated(Settlement::name) ||
-				change.containsUpdated(Settlement::nation)
+				change.containsUpdated(Settlement::nation) ||
+				change.containsUpdated(Settlement::trustedPlayers) ||
+				change.containsUpdated(Settlement::trustedSettlements) ||
+				change.containsUpdated(Settlement::trustedNations)
 			) {
 				updateRegionsAsync(change.oid)
 			}

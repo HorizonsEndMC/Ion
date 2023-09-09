@@ -13,12 +13,11 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.luckperms.api.LuckPermsProvider
-import net.luckperms.api.node.types.PermissionNode
-import net.luckperms.api.node.types.SuffixNode
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.luckperms.api.node.types.PermissionNode
+import net.luckperms.api.node.types.SuffixNode
 import org.bukkit.Bukkit
 import org.bukkit.Statistic.PLAY_ONE_MINUTE
 import org.bukkit.entity.Player
@@ -93,6 +92,47 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		if (player.nationOid?.let { SettlementCache[NationCache[it].capital].leader == slPlayerId } == true) return false // If owns
 		return getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel.level) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
 	}
+
+//	fun UUID.hasProtection(): CompletableFuture<Boolean?> {
+//		val future = CompletableFuture<Boolean?>()
+//
+//		Tasks.async {
+//			val player = SLPlayer[this]
+//
+//			if (player == null) {
+//				future.complete(null)
+//				return@async
+//			}
+//
+//			val playerLevel = player.level
+//
+//			val protectionRemoved = luckPerms.userManager.loadUser(this).get().distinctNodes.filterIsInstance<PermissionNode>().any {
+//				it.permission == "ion.core.protection.removed"
+//			}
+//
+//			if (protectionRemoved) {
+//				future.complete(false)
+//				return@async
+//			}
+//
+//			if (player.nation?.let { SettlementCache[NationCache[it].capital].leader == this.slPlayerId } == true) {
+//				future.complete(false)
+//				return@async
+//			}
+//
+//			val offlinePlayer = findOfflinePlayer(this)
+//
+//			if (offlinePlayer == null) {
+//				future.complete(null)
+//				return@async
+//			}
+//
+//			val playTime = offlinePlayer.getStatistic(PLAY_ONE_MINUTE) / 72000.0 <= 48.0.pow((100.0 - playerLevel) * 0.01) // If playtime is less then 48^((100-x)*0.001) hours
+//			future.complete(playTime)
+//		}
+//
+//		return future
+//	}
 
 	@EventHandler
 	fun onPlayerHurtNoob(event: EntityDamageByEntityEvent) {

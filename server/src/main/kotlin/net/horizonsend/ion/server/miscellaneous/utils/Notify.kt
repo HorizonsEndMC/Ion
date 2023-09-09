@@ -5,6 +5,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.kyori.adventure.text.Component
@@ -61,11 +62,18 @@ object Notify : IonServerComponent() {
 	}.registerRedisAction("notify-nation", runSync = false)
 
 	/** Must be registered in the CiscordSRV config **/
-	fun getChannel(name: String) = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("name")
+	fun getChannel(name: String): TextChannel? {
+		if (!getPluginManager().isPluginEnabled("DiscordSRV")) {
+			IonServer.slF4JLogger.warn("DiscordSRV not enabled! Ignoring message.")
+			return null
+		}
+
+		return DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(name)
+	}
 
 	fun sendDiscord(channel: TextChannel?, message: String) {
 		if (channel == null) {
-			System.err.println("ERROR: No events channel found!")
+			System.err.println("ERROR: No channel found!")
 			return
 		}
 

@@ -21,14 +21,14 @@ dependencies {
 	api(kotlin("reflect"))
 	api(kotlin("stdlib"))
 
-	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
 	api("org.litote.kmongo:kmongo:4.10.0")
 	api("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
-	api("redis.clients:jedis:4.4.3")
+	api("redis.clients:jedis:5.0.0")
 }
 
 kotlin.jvmToolchain(17)

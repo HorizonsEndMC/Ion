@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -23,6 +23,14 @@ object PowerMachines : IonServerComponent() {
 		if (Bukkit.getRecipesFor(deadBush).size == 0) {
 			val key = NamespacedKey(IonServer, "focusing_crystal")
 			val recipe = FurnaceRecipe(key, deadBush, Material.PRISMARINE_CRYSTALS, 0.0f, 200)
+			Bukkit.addRecipe(recipe)
+		}
+
+		// Another hacky fix that should be removed to make gas power plants work
+		val bone = ItemStack(Material.BONE)
+		if (Bukkit.getRecipesFor(bone).size == 0) {
+			val key = NamespacedKey(IonServer, "gas_canisters")
+			val recipe = FurnaceRecipe(key, deadBush, Material.WARPED_FUNGUS_ON_A_STICK, 0.0f, 200)
 			Bukkit.addRecipe(recipe)
 		}
 

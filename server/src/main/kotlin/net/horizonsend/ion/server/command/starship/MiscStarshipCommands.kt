@@ -32,11 +32,13 @@ import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
+import net.horizonsend.ion.server.features.starship.control.StarshipSigns
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
@@ -46,6 +48,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
 import java.util.Locale
+import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.set
 import kotlin.math.PI
@@ -140,8 +143,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
 	}
 
+	fun parseNumber(string: String, originCoord: Int): Int = when {
 
-	private fun parseNumber(string: String, originCoord: Int): Int = when {
 		string == "~" -> originCoord
 
 		string.startsWith("~") -> parseNumber(string.removePrefix("~"), 0) + originCoord
@@ -163,6 +166,21 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val maxRange: Int =
 			(navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier).roundToInt()
 
+		if (destination == "auto") {
+			val playerPath = WaypointManager.playerPaths[sender.uniqueId]
+			if (playerPath.isNullOrEmpty()) fail { "Route not set" }
+			if (starship.beacon != null &&
+				starship.beacon!!.name == WaypointManager.getNextWaypoint(sender)!!.replace("_", " ")
+				) {
+				onUseBeacon(sender)
+				return
+			}
+			val x = playerPath.first().edgeList.first().target.loc.x.toInt()
+			val z = playerPath.first().edgeList.first().target.loc.z.toInt()
+			tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
+			return
+		}
+
 		val destinationPos = Space.getPlanet(destination)?.let {
 			Pos(
 				it.spaceWorldName,
@@ -180,7 +198,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		if (destinationPos.bukkitWorld() != sender.world) {
-			sender.userError("$destination is not in this space sector.")
+			sender.sendRichMessage(
+				"<red>$destination is not in this space sector. Add <yellow>$destination <red>to your navigation route? " +
+						"<gold><italic><hover:show_text:'<gray>/route add $destination'>" +
+						"<click:run_command:/route add $destination>[Click to add waypoint to route]</click>"
+			)
 			return
 		}
 
@@ -352,6 +374,32 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 		starship.autoTurretTargets.forEach { starship.autoTurretTargets.remove(it.key, it.value) }
 		sender.successActionMessage("Unset target for all weaponsets.")
+	}
+
+	@CommandAlias("weaponset|ws")
+	@Suppress("unused")
+	fun onWeaponset(sender: Player, set: String) {
+		val starship = getStarshipPiloting(sender)
+
+		if (!starship.weaponSets.containsKey(set)) {
+			sender msg "&cNo nodes for $set"
+			return
+		}
+
+		val current: UUID? = starship.weaponSetSelections.inverse().remove(set)
+
+		if (current != null) {
+			if (current == sender.uniqueId) {
+				sender msg "&7Released weapon set &b$set"
+				return
+			}
+
+			StarshipSigns.informOfSteal(current, starship, sender, set)
+		}
+
+		starship.weaponSetSelections[sender.uniqueId] = set
+
+		sender msg "&7Took control of weapon set &b$set"
 	}
 
 	@Suppress("unused")

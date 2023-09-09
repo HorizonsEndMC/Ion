@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.space
 
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getSphereBlocks
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_19_R3.util.CraftMagicNumbers
 
@@ -18,7 +18,7 @@ class CachedStar(
 ) : CelestialBody(spaceWorldName, location),
 	NamedCelestialBody {
 	companion object {
-		private const val MAX_SIZE = 100
+		private const val MAX_SIZE = 190
 	}
 
 	init {

@@ -11,6 +11,9 @@ import net.horizonsend.ion.common.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.database.updateAll
 import org.bson.conversions.Bson
@@ -62,6 +65,11 @@ data class Settlement(
 	var cityState: CityState? = null,
     /** Lets settlement cities set tax percents on cargo trade and bazaars */
 	var tradeTax: Double? = null,
+
+	/** Trust individual nations, settlements, or players with build permission **/
+	var trustedNations: Set<Oid<Nation>> = mutableSetOf(),
+	var trustedSettlements: Set<Oid<Settlement>> = mutableSetOf(),
+	var trustedPlayers: Set<SLPlayerId> = mutableSetOf(),
 
     val needsRefund: Boolean = true
 ) : DbObject, MoneyHolder {
@@ -155,8 +163,16 @@ data class Settlement(
 					pull(SettlementZone::trustedSettlements, settlementId)
 				)
 
+				SettlementSpaceStation.col.deleteMany(sess,SettlementSpaceStation::owner eq settlementId)
+
 				// remove invite from nations
 				Nation.col.updateAll(sess, pull(Nation::invites, settlementId))
+
+				Settlement.col.updateAll(sess, pull(Settlement::trustedSettlements, settlementId))
+
+				PlayerSpaceStation.col.updateAll(sess, pull(PlayerSpaceStation::trustedSettlements, settlementId))
+				SettlementSpaceStation.col.updateAll(sess, pull(SettlementSpaceStation::trustedSettlements, settlementId))
+				NationSpaceStation.col.updateAll(sess, pull(NationSpaceStation::trustedSettlements, settlementId))
 
 				// remove the actual settlement
 				col.deleteOne(sess, idFilterQuery(settlementId))
@@ -231,6 +247,30 @@ data class Settlement(
 
 		fun setNeedsRefund(settlementId: Oid<Settlement>) {
 			updateById(settlementId, setValue(Settlement::needsRefund, false))
+		}
+
+		fun trustPlayer(settlementId: Oid<Settlement>, player: SLPlayerId) {
+			updateById(settlementId, addToSet(Settlement::trustedPlayers, player))
+		}
+
+		fun trustSettlement(settlementId: Oid<Settlement>, settlement: Oid<Settlement>) {
+			updateById(settlementId, addToSet(Settlement::trustedSettlements, settlement))
+		}
+
+		fun trustNation(settlementId: Oid<Settlement>, nation: Oid<Nation>) {
+			updateById(settlementId, addToSet(Settlement::trustedNations, nation))
+		}
+
+		fun unTrustPlayer(settlementId: Oid<Settlement>, player: SLPlayerId) {
+			updateById(settlementId, pull(Settlement::trustedPlayers, player))
+		}
+
+		fun unTrustSettlement(settlementId: Oid<Settlement>, settlement: Oid<Settlement>) {
+			updateById(settlementId, pull(Settlement::trustedSettlements, settlement))
+		}
+
+		fun unTrustNation(settlementId: Oid<Settlement>, nation: Oid<Nation>) {
+			updateById(settlementId, pull(Settlement::trustedNations, nation))
 		}
 	}
 

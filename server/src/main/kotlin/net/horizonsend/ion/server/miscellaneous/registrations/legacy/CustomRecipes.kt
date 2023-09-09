@@ -21,7 +21,6 @@ object CustomRecipes : IonServerComponent() {
 			registerModuleRecipes()
 			registerSwordRecipes()
 			registerPowerToolRecipes()
-			registerGasCanisterRecipe()
 			registerDetonatorRecipe()
 			registerWireRecipe()
 			registerSeaLanternRecipe()
@@ -168,7 +167,7 @@ object CustomRecipes : IonServerComponent() {
 		CustomItems.POWER_MODULE_ROCKET_BOOSTING to materialChoice(Material.FIREWORK_ROCKET),
 		CustomItems.POWER_MODULE_NIGHT_VISION to materialChoice(Material.SPIDER_EYE),
 		CustomItems.POWER_MODULE_ENVIRONMENT to materialChoice(Material.CHAINMAIL_HELMET),
-		CustomItems.POWER_MODULE_PRESSURE_FIELD to customItemChoice(CustomItems.GAS_CANISTER_EMPTY)
+		CustomItems.POWER_MODULE_PRESSURE_FIELD to RecipeChoice.ExactChoice(net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY.constructItemStack())
 	).forEach { (piece, center) ->
 		createRecipe(
 			piece, "aga", "g*g", "aga",
@@ -218,16 +217,6 @@ object CustomRecipes : IonServerComponent() {
 				'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
 				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
 				's' to materialChoice(Material.STICK)
-			)
-		)
-	}
-
-	private fun registerGasCanisterRecipe() {
-		createRecipe(
-			CustomItems.GAS_CANISTER_EMPTY, " i ", "igi", " i ",
-			ingredients = mapOf(
-				'i' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-				'g' to materialChoice(Material.GLASS_PANE)
 			)
 		)
 	}

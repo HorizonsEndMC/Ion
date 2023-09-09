@@ -1,12 +1,12 @@
 package net.horizonsend.ion.common.database.cache.nations
 
-import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
-import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.array
+import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
@@ -15,6 +15,8 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
+import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 
 object SettlementCache : ManualCache() {
 
@@ -26,7 +28,11 @@ object SettlementCache : ManualCache() {
 		var nation: Oid<Nation>?,
 		var cityState: Settlement.CityState?,
 		var minBuildAccess: Settlement.ForeignRelation?,
-		var tradeTax: Double? = null
+		var tradeTax: Double? = null,
+
+		var trustedNations: Set<Oid<Nation>>,
+		var trustedSettlements: Set<Oid<Settlement>>,
+		var trustedPlayers: Set<SLPlayerId>
 	)
 
 	val SETTLEMENT_DATA = ConcurrentHashMap<Oid<Settlement>, SettlementData>()
@@ -44,7 +50,24 @@ object SettlementCache : ManualCache() {
 			val cityState = settlement.cityState
 			val minBuild = settlement.minimumBuildAccess
 			val tax = settlement.tradeTax
-			val data = SettlementData(id, territory, name, leader, nation, cityState, minBuild, tax)
+			val trustedNations = settlement.trustedNations
+			val trustedSettlements = settlement.trustedSettlements
+			val trustedPlayers = settlement.trustedPlayers
+
+			val data = SettlementData(
+				id,
+				territory,
+				name,
+				leader,
+				nation,
+				cityState,
+				minBuild,
+				tax,
+				trustedNations,
+				trustedSettlements,
+				trustedPlayers
+			)
+
 			SETTLEMENT_DATA[id] = data
 			nameCache[data.name.lowercase(Locale.getDefault())] = id
 		}
@@ -93,6 +116,18 @@ object SettlementCache : ManualCache() {
 
 				change[Settlement::minimumBuildAccess]?.let {
 					data.minBuildAccess = it.nullable()?.enumValue<Settlement.ForeignRelation>()
+				}
+
+				change[Settlement::trustedPlayers]?.let { bson ->
+					data.trustedPlayers = bson.array().mappedSet { it.slPlayerId() }
+				}
+
+				change[Settlement::trustedSettlements]?.let { bson ->
+					data.trustedSettlements = bson.array().mappedSet { it.oid() }
+				}
+
+				change[Settlement::trustedNations]?.let { bson ->
+					data.trustedNations = bson.array().mappedSet { it.oid() }
 				}
 			}
 		}

@@ -213,12 +213,12 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 		Notify.all(MiniMessage.miniMessage().deserialize(
-			"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>established space station <aqua>$name")
+			"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>established space station <aqua>$name <gray>in ${world.name}")
 		)
 	}
 
 	private fun requireStationOwnership(player: SLPlayerId, station: CachedSpaceStation<*, *, *>) {
-		if (!station.hasOwnershipContext(player)) fail { "Your ${station.ownershipType} doesn't own $name" }
+		if (!station.hasOwnershipContext(player)) fail { "Your ${station.ownershipType} doesn't own ${station.name}" }
 	}
 
 	private fun requirePermission(
@@ -370,7 +370,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val stationName = station.name
 
 		val nationId: Oid<Nation> = NationCache.getByName(nation) ?: fail {
-			"Settlement $nation not found"
+			"Nation $nation not found"
 		}
 
 		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
@@ -399,8 +399,8 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		requirePermission(sender.slPlayerId, station, SpaceStations.SpaceStationPermission.MANAGE_STATION)
 
-		failIf(station.trustedPlayers.contains(playerId)) {
-			"$playerName is already trusted in $stationName"
+		failIf(!station.trustedPlayers.contains(playerId)) {
+			"$playerName isn't trusted in $stationName"
 		}
 
 		station.unTrustPlayer(playerId)

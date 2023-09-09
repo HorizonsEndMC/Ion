@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Bukkit
@@ -29,7 +29,7 @@ object MobDefender : Multiblock() {
 		z(-1) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).stoneBrick()
+				x(+0).solidBlock()
 				x(+1).anyStairs()
 			}
 
@@ -41,9 +41,9 @@ object MobDefender : Multiblock() {
 
 		z(+0) {
 			y(-1) {
-				x(-1).stoneBrick()
+				x(-1).solidBlock()
 				x(+0).diamondBlock()
-				x(+1).stoneBrick()
+				x(+1).solidBlock()
 			}
 
 			y(+0) {
@@ -56,7 +56,7 @@ object MobDefender : Multiblock() {
 		z(+1) {
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).stoneBrick()
+				x(+0).solidBlock()
 				x(+1).anyStairs()
 			}
 

@@ -5,22 +5,23 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.miscellaneous.utils.get
+import net.horizonsend.ion.server.miscellaneous.utils.getDurationBreakdown
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.horizonsend.ion.server.miscellaneous.utils.getDurationBreakdown
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-object PlayerInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
+object PlayerInfoCommand : SLCommand() {
 	@Suppress("Unused")
 	@Default
 	@CommandAlias("playerinfo|pinfo|pi")
@@ -82,7 +83,7 @@ object PlayerInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	private fun sendGracePeriodInfo(sender: CommandSender, slPlayer: SLPlayer) {
-		if (Bukkit.getPlayer(slPlayer._id.uuid)?.hasProtection() != false) {
+		if (Bukkit.getPlayer(slPlayer._id.uuid)?.hasProtection() == false) {
 			sender.sendRichMessage("<yellow>GracePeriod: <gold>True")
 		}
 	}

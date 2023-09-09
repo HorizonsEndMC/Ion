@@ -8,9 +8,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.server.features.space.CachedPlanet
 import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Orbits
@@ -280,7 +280,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 		planet.changeX(x)
 		planet.changeZ(z)
 		sender.success("Moved ${planet.name} to $x, $z")
-		planet.setLocation(urgent = true, updateDb = true)
+		planet.setLocation(updateDb = true)
 		spaceWorld.save()
 		SpaceMap.refresh()
 	}
@@ -353,7 +353,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("orbit all")
 	fun onOrbitAll(sender: CommandSender) {
 		val elapsedNanos = measureNanoTime {
-			Orbits.orbitPlanets(true)
+			Orbits.orbitPlanets()
 		}
 
 		val elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(elapsedNanos)

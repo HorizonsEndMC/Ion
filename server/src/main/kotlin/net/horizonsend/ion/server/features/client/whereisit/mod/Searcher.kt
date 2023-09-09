@@ -2,7 +2,10 @@ package net.horizonsend.ion.server.features.client.whereisit.mod
 
 import io.netty.buffer.Unpooled
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.FriendlyByteBuf
@@ -17,9 +20,6 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.LecternBlock
 import net.minecraft.world.level.block.entity.LecternBlockEntity
-import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 
@@ -121,7 +121,6 @@ object Searcher {
 			}
 		}
 
-		println("Checked $checkedBECount BlockEntities")
 		return positions
 	}
 

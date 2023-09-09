@@ -18,6 +18,9 @@ import net.horizonsend.ion.server.features.multiblock.dockingtube.DisconnectedDo
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.gas.GasCollectorMultiblock
+import net.horizonsend.ion.server.features.multiblock.gas.GasPowerPlantMultiblock
+import net.horizonsend.ion.server.features.multiblock.gas.VentMultiblock
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.generator.GeneratorMultiblockTier3
@@ -38,6 +41,7 @@ import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.ItemSplitterMultiblock
+import net.horizonsend.ion.server.features.multiblock.misc.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.misc.ShipFactoryMultiblock
@@ -206,7 +210,12 @@ object Multiblocks : IonServerComponent() {
 			MiningLaserMultiblockTier3Top,
 			MiningLaserMultiblockTier3Bottom,
 
-			ItemSplitterMultiblock
+			ItemSplitterMultiblock,
+			GasCollectorMultiblock,
+			GasPowerPlantMultiblock,
+			VentMultiblock,
+
+			LandingGearMultiblock
 		)
 	}
 
@@ -224,7 +233,6 @@ object Multiblocks : IonServerComponent() {
 	@JvmOverloads
 	operator fun get(sign: Sign, checkStructure: Boolean = true, loadChunks: Boolean = true): Multiblock?  {
 		val location: Location = sign.location
-
 		val pdc = sign.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK, PersistentDataType.STRING)
 
 		val cached: Multiblock? = multiblockCache[location]
@@ -233,7 +241,7 @@ object Multiblocks : IonServerComponent() {
 				if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
 
 			// one was already cached before
-			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks))) {
+			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks = loadChunks))) {
 				if (pdc == null) {
 					sign.persistentDataContainer.set(
 						NamespacedKeys.MULTIBLOCK,
@@ -254,7 +262,7 @@ object Multiblocks : IonServerComponent() {
 		for (multiblock in multiblocks) {
 			val matchesSign =
 				if (pdc != null) pdc == multiblock::class.simpleName else multiblock.matchesSign(sign.lines().toTypedArray())
-			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks))) {
+			if (matchesSign && (!checkStructure || multiblock.signMatchesStructure(sign, loadChunks = loadChunks))) {
 				if (pdc == null) {
 					sign.persistentDataContainer.set(
 						NamespacedKeys.MULTIBLOCK,

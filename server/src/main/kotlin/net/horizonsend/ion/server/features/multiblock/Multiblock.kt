@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.multiblock
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isValidYLevel
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -49,7 +49,8 @@ abstract class Multiblock {
 		if (!isValidYLevel(y)) return false
 
 		val originBlock: Block = if (loadChunks) {
-			signLocation.world.getBlockAt(x, y, z)
+			val block = signLocation.world.getBlockAt(x, y, z)
+			block
 		} else {
 			getBlockIfLoaded(signLocation.world, x, y, z) ?: return false
 		}

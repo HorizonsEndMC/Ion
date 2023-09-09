@@ -16,9 +16,7 @@ object HyperspaceMap : IonServerComponent(true) {
 
 	/** Draw the hyperspace markers on the dynmap*/
 	override fun onEnable() {
-		println("Starting to enable hyperspace markers")
 		if (!Bukkit.getPluginManager().isPluginEnabled("dynmap")) return
-		println("Hyperspacemap enabled")
 
 		markerAPI.getMarkerSet("hyperspace")?.deleteMarkerSet()
 

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
+import net.horizonsend.ion.server.miscellaneous.utils.isAnvil
 import org.bukkit.Material
 import java.util.EnumMap
 import kotlin.math.max
@@ -15,6 +16,7 @@ object Mass {
 			when {
 				it.isShulkerBox -> 1000.0
 				it.isConcrete -> 1.0
+				it.isAnvil -> 6000.0
 				else -> max(it.blastResistance * BLAST_RESIST_MASS_MULTIPLIER, 1.0)
 			}
 		}

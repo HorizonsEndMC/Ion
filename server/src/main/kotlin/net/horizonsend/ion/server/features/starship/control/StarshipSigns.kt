@@ -57,15 +57,6 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 
 			player msg "&7Took control of weapon set &b$set"
 		}
-
-		private fun informOfSteal(current: UUID, starship: ActivePlayerStarship, player: Player, set: String) {
-			// only message if the player is still online
-			val currentPlayer = Bukkit.getPlayer(current)
-			if (currentPlayer != null && starship.isPassenger(current)) {
-				currentPlayer msg "&e${player.name} took over weapon set $set from you"
-				player msg "&eTook weapon set $set from ${currentPlayer.name}"
-			}
-		}
 	},
 	POWER_MODE("[powermode]", arrayOf("&c<&a<&1<&dPower Mode&1>&a>&c>".colorize(), null, null, null)) {
 		private fun getPower(line: String): Int = line.split(" ")[1].toInt()
@@ -155,5 +146,16 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 		}
 
 		return starship
+	}
+
+	companion object {
+		fun informOfSteal(current: UUID, starship: ActivePlayerStarship, player: Player, set: String) {
+			// only message if the player is still online
+			val currentPlayer = Bukkit.getPlayer(current)
+			if (currentPlayer != null && starship.isPassenger(current)) {
+				currentPlayer msg "&e${player.name} took over weapon set $set from you"
+				player msg "&eTook weapon set $set from ${currentPlayer.name}"
+			}
+		}
 	}
 }
