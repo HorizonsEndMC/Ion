@@ -289,15 +289,15 @@ object Hyperspace : IonServerComponent() {
 	@EventHandler
 	fun onStarshipEnterHyperspace(event: StarshipEnterHyperspaceEvent) {
 		val starship = event.starship
-		val players = starship.serverLevel.world
-			.getNearbyPlayers(starship.centerOfMass.toLocation(starship.serverLevel.world), 2500.0)
+		val players = starship.world
+			.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 2500.0)
 
 		for (player in players) {
 			player.playSound(starshipEnterHyperspaceSound())
 		}
 		Space.getPlanets()
-			.filter { it.location.toLocation(starship.serverLevel.world).distance(starship.centerOfMass.toLocation(starship.serverLevel.world)) < 2500 }
-			.filter { it.spaceWorld == starship.serverLevel.world }
+			.filter { it.location.toLocation(starship.world).distance(starship.centerOfMass.toLocation(starship.world)) < 2500 }
+			.filter { it.spaceWorld == starship.world }
 			.forEach {
 				it.planetWorld?.playSound(starshipEnterHyperspaceSound())
 			}

@@ -3,11 +3,16 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.SLXP
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
+import org.bukkit.World
+import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 /** An object capable of damaging a starship **/
@@ -41,10 +46,32 @@ class PlayerDamagerWrapper(override val player: Player, override val starship: A
 
 val noOpDamager = NoOpDamager()
 
-class NoOpDamager : Damager {
+class EntityDamager(val entity: Entity) : NoOpDamager() {
+	override fun getDisplayName(): Component = entity.name()
+
+	companion object {
+		fun Entity.damager(starship: ActiveStarship? = null) : Damager {
+			if (this is Player) return PlayerDamagerWrapper(this, starship)
+			return EntityDamager(this)
+		}
+	}
+}
+
+open class NoOpDamager : Damager {
 	override val starship: ActiveStarship? = null
 	override val color: Color = Color.RED
 	override fun getDisplayName(): Component = Component.text("none")
 	override fun rewardMoney(credits: Double) { }
 	override fun rewardXP(xp: Int) { }
+}
+
+fun addToDamagers(world: World, block: Block, shooter: Damager) {
+	val x = block.x
+	val y = block.y
+	val z = block.z
+	for (otherStarship in ActiveStarships.getInWorld(world)) {
+		if (otherStarship == shooter.starship || !otherStarship.contains(x, y, z)) continue
+
+		otherStarship.damagers.getOrPut(shooter) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
+	}
 }
