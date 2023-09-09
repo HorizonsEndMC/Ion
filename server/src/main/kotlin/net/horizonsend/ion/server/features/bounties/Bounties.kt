@@ -100,6 +100,9 @@ object Bounties : IonServerComponent() {
 		val victim = event.player
 		val killer = event.entity.killer ?: return@async
 
+		// Check names because of combat NPCs
+		if (killer.name == victim.name) return@async
+
 		if (hasActive(killer.slPlayerId, victim.slPlayerId).get()) {
 			collectBounty(killer, victim)
 		} else {
