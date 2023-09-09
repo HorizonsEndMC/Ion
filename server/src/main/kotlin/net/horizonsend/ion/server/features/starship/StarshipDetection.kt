@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -206,7 +207,7 @@ object StarshipDetection : IonServerComponent() {
 		}
 
 		val concretePercent: Double = concrete.toDouble() / size.toDouble()
-		val amountNeeded = (size * type.concretePercent).toInt()
+		val amountNeeded = ceil(size * type.concretePercent).toInt()
 
 		if (concretePercent < type.concretePercent) {
 			detector?.sendMessage(
