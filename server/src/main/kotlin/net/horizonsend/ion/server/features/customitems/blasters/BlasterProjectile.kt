@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.ProjectileBalancing
 import net.horizonsend.ion.server.features.gear.powerarmor.PowerArmorManager
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.EntityDamager.Companion.damager
+import net.horizonsend.ion.server.features.starship.addToDamagers
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.get
@@ -91,6 +93,14 @@ class RayTracedParticleProjectile(
 			if (explosiveShot)	{
 				location.world.createExplosion(hitBlock.location, 4.0f)
 				location.world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, .5f, 1.4f)
+
+				if (shooter != null) {
+					addToDamagers(
+						location.world,
+						hitBlock,
+						shooter.damager()
+					)
+				}
 			}
 
 			return true
