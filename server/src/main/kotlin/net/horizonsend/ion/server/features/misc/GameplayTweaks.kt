@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.state.BlockBehaviour
@@ -138,14 +137,12 @@ object GameplayTweaks : IonServerComponent() {
 		field.set(block, durability)
 
 		// For some reason, stairs, and stairs only have a parent block, from which the blast resistance is referenced from.
-		if (material.isStairs) {
-			(block as? StairBlock)?.let {
-				val baseField = StairBlock::class.java.getDeclaredField("H") // Parent block
-				baseField.isAccessible = true
-				val baseBlock = baseField.get(block)
+		if (block is StairBlock) {
+			val baseField = StairBlock::class.java.getDeclaredField("H") // Parent block
+			baseField.isAccessible = true
+			val baseBlock = baseField.get(block)
 
-				field.set(baseBlock, durability)
-			}
+			field.set(baseBlock, durability)
 		}
 
 		// ignore if overridden
