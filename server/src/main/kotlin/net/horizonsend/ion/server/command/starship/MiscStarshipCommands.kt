@@ -140,10 +140,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		tryJump(starship, x, z, starship.serverLevel.world, maxRange, sender, hyperdriveTier)
 	}
 
+
 	private fun parseNumber(string: String, originCoord: Int): Int = when {
 		string == "~" -> originCoord
 
 		string.startsWith("~") -> parseNumber(string.removePrefix("~"), 0) + originCoord
+
+		string.endsWith("k") -> parseNumber(string.removeSuffix("k"),0)*1000 + originCoord
+		string.endsWith("K") -> parseNumber(string.removeSuffix("K"),0)*1000 + originCoord
 
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
