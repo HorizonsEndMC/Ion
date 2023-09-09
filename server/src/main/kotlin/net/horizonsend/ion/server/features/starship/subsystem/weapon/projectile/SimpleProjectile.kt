@@ -2,10 +2,9 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.addToDamagers
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
@@ -174,16 +173,5 @@ abstract class SimpleProjectile(
 				entity.damage(10.0, shooter.player)
 			else
 				entity.damage(10.0)
-	}
-
-	private fun addToDamagers(world: World, block: Block, shooter: Damager) {
-		val x = block.x
-		val y = block.y
-		val z = block.z
-		for (otherStarship in ActiveStarships.getInWorld(world)) {
-			if (otherStarship == starship || !otherStarship.contains(x, y, z)) continue
-
-			otherStarship.damagers.getOrPut(shooter) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
-		}
 	}
 }
