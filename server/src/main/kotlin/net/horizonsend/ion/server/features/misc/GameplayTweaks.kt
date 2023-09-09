@@ -137,6 +137,7 @@ object GameplayTweaks : IonServerComponent() {
 		field.isAccessible = true
 		field.set(block, durability)
 
+		// For some reason, stairs, and stairs only have a parent block, from which the blast resistance is referenced from.
 		if (material.isStairs) {
 			(block as? StairBlock)?.let {
 				val baseField = StairBlock::class.java.getDeclaredField("H") // Parent block
