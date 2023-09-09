@@ -1,13 +1,11 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
 
-import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -26,6 +24,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.HyperdriveSubsyste
 import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -245,7 +245,7 @@ object Hyperspace : IonServerComponent() {
 		val realspaceWorld = getRealspaceWorld(world) ?: return
 
 		val dest = starship.centerOfMass.toLocation(realspaceWorld)
-		StarshipTeleportation.teleportStarship(starship, dest) {}
+		StarshipTeleportation.teleportStarship(starship, dest)
 	}
 
 	@Suppress("unused")

@@ -257,7 +257,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			.toLocation(spaceWorld)
 			.add(direction.x * distance, 0.0, direction.z * distance)
 
-		StarshipTeleportation.teleportStarship(starship, exitPoint) {}
+		StarshipTeleportation.teleportStarship(starship, exitPoint)
 		return true
 	}
 
