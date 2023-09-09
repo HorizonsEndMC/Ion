@@ -68,6 +68,26 @@ fun distance(fromX: Int, fromZ: Int, toX: Int, toZ: Int): Double =
 
 fun magnitude(x: Double, y: Double, z: Double): Double = sqrt(x.squared() + y.squared() + z.squared())
 
+fun dot(x: Double, y: Double, z: Double,x1: Double, y1: Double, z1: Double): Double = x*x1+y*y1+z*z1
+
+fun dot(x: Int, y: Int, z: Int,x1: Int, y1: Int, z1: Int): Int = x*x1+y*y1+z*z1
+
+fun dot(x: Double, z: Double,x1: Double, z1: Double): Double = x*x1+z*z1
+
+fun dot(x: Int, z: Int,x1: Int, z1: Int): Int = x*x1+z*z1
+
+//checks the distance at closest approach from a line segment to a point
+fun closestDist(x: Double, y: Double, z: Double,x1: Double, y1: Double, z1: Double,a: Double, b: Double, c: Double): Double {
+	val dxa = x1-x
+	val dya = y1-y
+	val dza = z1-z
+	val dxb = a-x
+	val dyb = b-y
+	val dzb = c-z
+
+	return magnitude(dxb,dyb,dzb).pow(2.0) - dot(dxa,dya,dza,dxb,dyb,dzb).pow(2.0)
+}
+
 fun normalize(x: Double, y: Double, z: Double): Triple<Double, Double, Double> {
 	val magnitude = magnitude(x, y, z)
 	return when (magnitude) {
