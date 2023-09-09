@@ -45,6 +45,7 @@ object ProtectionListener : SLEventListener() {
 
 		// Allow crafting table use
 		if (block.type == Material.CRAFTING_TABLE) return
+		if (block.type == Material.ENDER_CHEST) return
 		// Allow eating
 		if (event.item?.type?.isEdible == true) return
 
