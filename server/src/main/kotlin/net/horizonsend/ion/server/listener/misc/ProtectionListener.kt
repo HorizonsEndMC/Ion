@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.EntityType
@@ -41,6 +42,11 @@ object ProtectionListener : SLEventListener() {
 
 		// Handle chests, doors, buttons, etc
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
+
+		// Allow crafting table use
+		if (block.type == Material.CRAFTING_TABLE) return
+		// Allow eating
+		if (event.item?.type?.isEdible == true) return
 
 		onBlockEdit(event, block.location, event.player)
 	}
