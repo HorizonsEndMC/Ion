@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.ai
+package net.horizonsend.ion.server.features.starship.active.ai
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServer
