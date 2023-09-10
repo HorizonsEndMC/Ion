@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.Damager
-import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector

@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i

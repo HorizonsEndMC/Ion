@@ -8,10 +8,10 @@ import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
-import net.horizonsend.ion.server.features.starship.Damager
-import net.horizonsend.ion.server.features.starship.PlayerDamager
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem

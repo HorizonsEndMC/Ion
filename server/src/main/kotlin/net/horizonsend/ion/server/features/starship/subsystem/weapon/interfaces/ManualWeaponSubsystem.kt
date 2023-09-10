@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces
 
-import net.horizonsend.ion.server.features.starship.Damager
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
