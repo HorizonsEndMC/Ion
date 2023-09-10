@@ -53,12 +53,11 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipComputers
 import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
-import net.horizonsend.ion.server.features.starship.active.AIStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.AIManager
-import net.horizonsend.ion.server.features.starship.ai.AISpawningManager
-import net.horizonsend.ion.server.features.starship.ai.AIStarshipTemplates
+import net.horizonsend.ion.server.features.starship.active.ai.AIManager
+import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager
+import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -141,7 +140,6 @@ val components: List<IonComponent> = listOf(
 	DeactivatedPlayerStarships,
 	ActiveStarships,
 	ActiveStarshipMechanics,
-	AIStarships,
 
 	PilotedStarships,
 	StarshipDetection,
