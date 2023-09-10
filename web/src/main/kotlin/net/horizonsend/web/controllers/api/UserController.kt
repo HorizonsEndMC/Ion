@@ -3,10 +3,12 @@ package net.horizonsend.web.controllers.api
 import io.jooby.annotation.GET
 import io.jooby.annotation.Path
 import io.jooby.annotation.PathParam
+import net.horizonsend.web.Secure
 import net.horizonsend.web.Register
 import net.horizonsend.web.pojo.User
 
 @Register
+@Secure
 @Path("/v1")
 class UserController {
 	@GET("/user/{username}")

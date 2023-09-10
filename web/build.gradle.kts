@@ -50,6 +50,7 @@ dependencies {
 	implementation("ch.qos.logback:logback-classic:1.4.11")
 	implementation("org.reflections:reflections:0.10.2")
 	implementation("io.swagger.core.v3:swagger-annotations:+")
+	implementation("com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0")
 
 	kotlin("kotlin-stdlib-jdk8")
 	kapt("io.jooby:jooby-apt")
