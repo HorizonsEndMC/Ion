@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.AIUtils.warnDetectionFailure
+import net.horizonsend.ion.server.features.starship.active.ai.AIUtils.warnDetectionFailure
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -21,8 +21,8 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
-import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.LandingGearSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors

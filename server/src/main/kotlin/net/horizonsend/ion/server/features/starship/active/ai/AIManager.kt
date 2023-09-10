@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.ai
+package net.horizonsend.ion.server.features.starship.active.ai
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
