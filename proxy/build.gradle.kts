@@ -19,9 +19,7 @@ dependencies {
 
 	// Platform
 	compileOnly("io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT")
-
-	// Other Plugins
-	compileOnly("net.luckperms:api:5.4")
+	compileOnly("com.gitlab.ruany:LiteBansAPI:0.4.1")
 
 	// Included Dependencies
 	implementation("co.aikar:acf-bungee:0.5.1-SNAPSHOT")

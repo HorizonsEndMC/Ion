@@ -1,17 +1,17 @@
-package net.horizonsend.ion.proxy.listeners.waterfall
+package net.horizonsend.ion.proxy.features.cache
 
+import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
 import net.md_5.bungee.api.Favicon
 import net.md_5.bungee.api.ServerPing
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.event.ProxyPingEvent
-import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 import java.net.URL
 import javax.imageio.ImageIO
 
-class ProxyPingListener : Listener {
+object ServerPresence : IonProxyComponent() {
 	val primaryVersion = 762
 	val primaryVersionName = "1.19.4"
 	val allowedVersions = intArrayOf(759, 760, 761, 762)

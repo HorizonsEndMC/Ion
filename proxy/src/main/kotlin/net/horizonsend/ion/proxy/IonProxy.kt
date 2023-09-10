@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.CommonConfig
+import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
@@ -16,17 +17,15 @@ import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
 import net.horizonsend.ion.proxy.commands.waterfall.ReplyCommand
-import net.horizonsend.ion.proxy.listeners.waterfall.PlayerDisconnectListener
-import net.horizonsend.ion.proxy.listeners.waterfall.ProxyPingListener
-import net.horizonsend.ion.proxy.listeners.waterfall.ServerConnectListener
 import net.horizonsend.ion.proxy.managers.ReminderManager
+import net.horizonsend.ion.proxy.utils.ProxyTask
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.horizonsend.ion.proxy.wrappers.WrappedProxy
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
 import net.md_5.bungee.api.config.ServerInfo
-import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.api.plugin.Plugin
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 lateinit var PLUGIN: IonProxy private set
@@ -54,7 +53,7 @@ class IonProxy : Plugin() {
 		null
 	}
 
-	val playerServerMap = mutableMapOf<ProxiedPlayer, ServerInfo>()
+	val playerServerMap = mutableMapOf<UUID, ServerInfo>()
 
 	val proxy = WrappedProxy(getProxy())
 
@@ -73,21 +72,24 @@ class IonProxy : Plugin() {
 
 		proxy.pluginManager.apply {
 			for (component in components) {
-				if (component is Listener) registerListener(this@IonProxy, component)
-				component.onEnable()
+				if (component is IonProxyComponent) {
+					registerListener(this@IonProxy, component)
+
+					if (component.runAfterTick) {
+						ProxyTask.sync { component.onEnable() }
+					} else component.onEnable()
+				} else {
+					component.onEnable()
+				}
 			}
-
-			registerListener(this@IonProxy, PlayerDisconnectListener())
-			registerListener(this@IonProxy, ProxyPingListener())
-			registerListener(this@IonProxy, ServerConnectListener())
 		}
-
 
 		val commandManager = BungeeCommandManager(this).apply {
 			registerCommand(BungeeInfoCommand())
 			registerCommand(MessageCommand())
 			registerCommand(ReplyCommand())
 		}
+
 
 		discord?.let {
 			JDACommandManager(discord, configuration).apply {
@@ -114,3 +116,7 @@ class IonProxy : Plugin() {
 		discord?.shutdown()
 	}
 }
+
+abstract class IonProxyComponent(
+	val runAfterTick: Boolean = false
+) : Listener, IonComponent()
