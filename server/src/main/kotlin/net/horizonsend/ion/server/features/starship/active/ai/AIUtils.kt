@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.ai
+package net.horizonsend.ion.server.features.starship.active.ai
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServer
@@ -44,13 +44,13 @@ object AIUtils : IonServerComponent() {
 		val vec3i = Vec3i(target)
 
 		placeSchematicEfficiently(schematic, location.world, vec3i, true) {
-			tryPilot(location.world, vec3i, type, starshipName, createController) {
+			tryPilotWithController(location.world, vec3i, type, starshipName, createController) {
 				callback(it)
 			}
 		}
 	}
 
-	fun tryPilot(
+	private fun tryPilotWithController(
 		world: World,
 		origin: Vec3i,
 		type: StarshipType,
