@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.screens.ScreenManager.closeScreen
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryCloseEvent
 
 class InventoryCloseListener : SLEventListener() {

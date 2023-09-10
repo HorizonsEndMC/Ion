@@ -23,7 +23,7 @@ object LegacyItemUtils {
 
 	fun getSpaceFor(inventory: Inventory, item: ItemStack): Int {
 		var space = 0
-		val maxStackSize = item.maxStackSize.toInt()
+		val maxStackSize = item.maxStackSize
 		if (inventory is FurnaceInventory) {
 			val furnaceInventory = inventory
 			val fuel = furnaceInventory.fuel

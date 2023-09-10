@@ -312,7 +312,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		if (starship.cruiseData.velocity.lengthSquared() != 0.0) {
 			sender.userError("Starship is cruising; jump aborted. Try again when the starship fully stops moving.")
-			StarshipCruising.stopCruising(starship.controller ?: return, starship)
+			StarshipCruising.stopCruising(starship.controller, starship)
 			return
 		}
 
