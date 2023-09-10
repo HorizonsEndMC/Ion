@@ -2,14 +2,10 @@ package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.SubsystemMultiblock
-import net.horizonsend.ion.server.features.starship.Damager
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem

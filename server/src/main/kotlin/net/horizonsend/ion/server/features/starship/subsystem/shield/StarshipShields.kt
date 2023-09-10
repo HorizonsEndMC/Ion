@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.PerWorld
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -30,6 +31,7 @@ import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.boss.BarColor
+import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockExplodeEvent
@@ -93,24 +95,24 @@ object StarshipShields : IonServerComponent() {
 	fun onBlockExplode(event: BlockExplodeEvent) {
 		val block = event.block
 
-		val blockList = event.blockList()
-		val power = explosionPowerOverride ?: getExplosionPower(block, blockList)
-		onShieldImpact(block.location.toCenterLocation(), blockList, power)
-		if (LAST_EXPLOSION_ABSORBED) {
-			event.isCancelled = true
-		}
+		handleExplosion(block, event.blockList(), event)
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	fun onEntityExplode(event: EntityExplodeEvent) {
 		val location = event.location
 		val block = location.block
-		val blockList = event.blockList()
+
+		handleExplosion(block, event.blockList(), event)
+	}
+
+	private fun handleExplosion(block: Block, blockList: MutableList<Block>, event: Cancellable) {
+		if (!ProtectionListener.isProtectedCity(block.location)) return
 		val power = explosionPowerOverride ?: getExplosionPower(block, blockList)
-		onShieldImpact(location.toCenterLocation(), blockList, power)
-		if (LAST_EXPLOSION_ABSORBED) {
-			event.isCancelled = true
-		}
+
+		onShieldImpact(block.location.toCenterLocation(), blockList, power)
+
+		if (LAST_EXPLOSION_ABSORBED) event.isCancelled = true
 	}
 
 	private fun getExplosionPower(center: Block, blockList: List<Block>): Double {

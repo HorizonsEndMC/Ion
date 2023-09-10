@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship
+package net.horizonsend.ion.server.features.starship.damager
 
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
@@ -71,6 +72,12 @@ fun addToDamagers(world: World, block: Block, shooter: Damager) {
 	val z = block.z
 	for (otherStarship in ActiveStarships.getInWorld(world)) {
 		if (otherStarship == shooter.starship || !otherStarship.contains(x, y, z)) continue
+
+		val event = ImpactStarshipEvent(shooter, otherStarship)
+
+		event.callEvent()
+
+		if (event.isCancelled) return
 
 		otherStarship.damagers.getOrPut(shooter) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
 	}
