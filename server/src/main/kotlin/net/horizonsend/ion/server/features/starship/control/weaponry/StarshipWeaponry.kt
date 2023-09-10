@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.starship.Damager
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -18,13 +18,13 @@ import java.util.concurrent.ThreadLocalRandom
 
 object StarshipWeaponry : IonServerComponent() {
 	fun manualFire(
-		shooter: Damager,
-		starship: ActiveStarship,
-		leftClick: Boolean,
-		facing: BlockFace,
-		dir: Vector,
-		target: Vector,
-		weaponSet: String?
+        shooter: Damager,
+        starship: ActiveStarship,
+        leftClick: Boolean,
+        facing: BlockFace,
+        dir: Vector,
+        target: Vector,
+        weaponSet: String?
 	) {
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 
@@ -61,12 +61,12 @@ object StarshipWeaponry : IonServerComponent() {
 	}
 
 	fun queueShots(
-		shooter: Damager,
-		weapons: List<WeaponSubsystem>,
-		leftClick: Boolean,
-		facing: BlockFace,
-		dir: Vector,
-		target: Vector
+        shooter: Damager,
+        weapons: List<WeaponSubsystem>,
+        leftClick: Boolean,
+        facing: BlockFace,
+        dir: Vector,
+        target: Vector
 	): LinkedList<StarshipWeapons.ManualQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
 
