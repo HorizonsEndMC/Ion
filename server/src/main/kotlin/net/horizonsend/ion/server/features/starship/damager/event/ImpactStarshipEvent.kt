@@ -10,7 +10,7 @@ class ImpactStarshipEvent(
 	val damager: Damager,
 	val starship: ActiveStarship
 ) : Event(), Cancellable {
-	var isCancelled = false
+	private var isCancelled = false
 
 	override fun isCancelled(): Boolean = isCancelled
 

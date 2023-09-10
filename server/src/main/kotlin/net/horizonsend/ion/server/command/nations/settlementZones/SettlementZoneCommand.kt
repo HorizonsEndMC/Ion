@@ -331,7 +331,6 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 				val price = zone.cachedPrice
 				val rent = zone.cachedRent
 
-				@Suppress("DEPRECATION")
 				val item: ItemStack = when {
 					owner != null -> {
 						skullItem(owner.uuid, getPlayerName(owner))

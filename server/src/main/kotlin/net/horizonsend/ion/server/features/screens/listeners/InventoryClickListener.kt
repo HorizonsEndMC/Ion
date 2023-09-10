@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.screens.ScreenManager.screen
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 
 class InventoryClickListener : SLEventListener() {

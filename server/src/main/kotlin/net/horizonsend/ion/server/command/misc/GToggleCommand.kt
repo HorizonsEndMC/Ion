@@ -3,11 +3,10 @@ package net.horizonsend.ion.server.command.misc
 import co.aikar.commands.annotation.CommandAlias
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.utils.luckPerms
-import net.luckperms.api.LuckPermsProvider
+import net.horizonsend.ion.server.command.SLCommand
 import net.luckperms.api.model.group.Group
 import net.luckperms.api.model.user.User
 import net.luckperms.api.node.NodeEqualityPredicate
-import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.entity.Player
 
 object GToggleCommand : SLCommand() {

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
-import org.bukkit.World
 import org.bukkit.event.player.PlayerInteractEvent
 
 /**
