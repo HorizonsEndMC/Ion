@@ -15,7 +15,7 @@ object AIControllers {
 	fun dumbAI(starship: ActiveStarship): AIController = createController(
 		starship,
 		"dumbAI",
-		displayName = text("eeeevil solesey ship", NamedTextColor.DARK_RED)
+		displayName = text("eeeevil ship", NamedTextColor.DARK_RED)
 	)
 
 	private fun createController(
