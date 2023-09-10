@@ -71,8 +71,7 @@ abstract class DbObjectCache<T : DbObject, ID : Id<T>>(private val companion: Oi
 		return FunctionalSimpleAttribute(
 			O::class.java,
 			A::class.java,
-			accessor.javaClass.simpleName,
-			SimpleFunction { accessor.get(it) }
-		)
+			accessor.javaClass.simpleName
+		) { accessor.get(it) }
 	}
 }

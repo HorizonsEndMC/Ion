@@ -2,13 +2,15 @@ package net.horizonsend.ion.common.database.schema.nations
 
 import com.mongodb.client.MongoIterable
 import com.mongodb.client.model.Filters
-import net.horizonsend.ion.common.database.*
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty1
+import net.horizonsend.ion.common.database.DbObject
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.OidDbObjectCompanion
+import net.horizonsend.ion.common.database.SLTextStyleDB
+import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.projected
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.kyori.adventure.text.format.NamedTextColor
+import net.horizonsend.ion.common.database.trx
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.addToSet
@@ -22,6 +24,9 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.litote.kmongo.withDocumentClass
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty1
 
 /**
  * @property parent The parent entity of this role
