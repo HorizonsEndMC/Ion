@@ -31,7 +31,7 @@ class HyperspaceMarker(val org: Location, var ship: ActiveStarship, val dest: Lo
 
 	/** Id of the marker to use in adding or removing markers in the render
 	 * currently player name*/
-	val id = (ship.controller?.pilotName as? TextComponent)?.content()
+	val id = (ship.controller.pilotName as? TextComponent)?.content()
 
 	private var seconds = 0
 

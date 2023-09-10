@@ -77,10 +77,10 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 			trustedPlayers = bson.nullable()?.mappedSet { it.slPlayerId() }
 		}
 		delta[SettlementZone::trustedNations]?.let { bson ->
-			trustedNations = bson.nullable()?.mappedSet { it.oid<Nation>() }
+			trustedNations = bson.nullable()?.mappedSet { it.oid() }
 		}
 		delta[SettlementZone::trustedSettlements]?.let { bson ->
-			trustedSettlements = bson.nullable()?.mappedSet { it.oid<Settlement>() }
+			trustedSettlements = bson.nullable()?.mappedSet { it.oid() }
 		}
 		delta[SettlementZone::minBuildAccess]?.let { bson ->
 			minBuildAccess = bson.nullable()?.enumValue<Settlement.ForeignRelation>()
