@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers
 
-import net.horizonsend.ion.server.features.starship.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
@@ -9,7 +9,8 @@ import org.bukkit.Color
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
-abstract class Controller(override val starship: ActiveStarship, val name: String) : ForwardingAudience.Single, Damager {
+abstract class Controller(override val starship: ActiveStarship, val name: String) : ForwardingAudience.Single,
+    Damager {
 	abstract val pilotName: Component
 
 	abstract val isShiftFlying: Boolean

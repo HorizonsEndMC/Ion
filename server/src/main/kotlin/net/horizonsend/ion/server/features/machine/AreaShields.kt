@@ -14,6 +14,7 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
@@ -108,39 +109,32 @@ object AreaShields : IonServerComponent(true) {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	fun onBlockExplode(event: BlockExplodeEvent) {
 		if (bypassShieldEvents.remove(event)) return
-		if (event.yield == 0.123f) return
-		var distance = 0.0
-		val location = event.block.location
 
-		for (block in event.blockList()) {
-			distance = max(distance, block.location.distanceSquared(location))
-		}
-
-		distance = ceil(sqrt(distance))
-		onShieldImpact(
-			location,
-			event.blockList(),
-			distance,
-			event.yield != 0.10203f
-		)
-		if (event.blockList().isEmpty()) event.isCancelled = true
+		handleExplosion(event.block.location, event.blockList(), event.yield, event)
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	fun onEntityExplode(event: EntityExplodeEvent) {
-		if (event.yield == 0.123f) return
+		handleExplosion(event.location, event.blockList(), event.yield, event)
+	}
+
+	private fun handleExplosion(location: Location, blockList: MutableList<Block>, yield: Float, event: Cancellable) {
+		if (yield == 0.123f) return
+
 		var distance = 0.0
-		val location = event.location
-		for (block in event.blockList())
-			distance = max(distance, block.location.distanceSquared(location))
+
+		for (block in blockList) distance = max(distance, block.location.distanceSquared(location))
+
 		distance = ceil(sqrt(distance))
+
 		onShieldImpact(
-			event.location,
-			event.blockList(),
+			location,
+			blockList,
 			distance,
-			event.yield != 0.10203f
+			yield != 0.10203f
 		)
-		if (event.blockList().isEmpty()) event.isCancelled = true
+
+		if (blockList.isEmpty()) event.isCancelled = true
 	}
 
 	private fun onShieldImpact(
