@@ -180,9 +180,7 @@ object ProtectionListener : SLEventListener() {
 	}
 
 	private fun onExplode(cancellable: Cancellable, location: Location, blocks: List<Block>) {
-		if (!isProtectedCity(location)) {
-			return
-		}
+		if (!isProtectedCity(location)) return
 
 		cancellable.isCancelled = true
 
