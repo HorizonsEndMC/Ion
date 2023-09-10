@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.specialAction
 import net.horizonsend.ion.server.listener.SLEventListener

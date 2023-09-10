@@ -13,7 +13,7 @@ sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock
 	override val baseRange: Int = 20000
 }
 
-object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
+data object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {
@@ -67,7 +67,7 @@ object VerticalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblo
 	}
 }
 
-object HorizontalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
+data object HorizontalNavigationComputerMultiblockAdvanced : NavigationComputerMultiblockAdvanced() {
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(0) {

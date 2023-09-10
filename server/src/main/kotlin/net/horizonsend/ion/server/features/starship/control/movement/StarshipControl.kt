@@ -50,7 +50,7 @@ object StarshipControl : IonServerComponent() {
 
 		if (starship.isTeleporting) return
 
-		val controller = starship.controller ?: return
+		val controller = starship.controller
 
 		if (starship.isDirectControlEnabled) {
 			processDirectControl(starship)
@@ -63,7 +63,7 @@ object StarshipControl : IonServerComponent() {
 	}
 
 	private fun processDirectControl(starship: ActiveControlledStarship) {
-		val controller = starship.controller ?: return
+		val controller = starship.controller
 
 		if (starship.type == PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
@@ -77,7 +77,7 @@ object StarshipControl : IonServerComponent() {
 
 		val playerPilot = starship.playerPilot ?: return //TODO
 
-		val ping = playerPilot?.let { getPing(playerPilot) } ?: 0
+		val ping = getPing(playerPilot)
 		val movementCooldown = starship.directControlCooldown
 		val speedFac = if (ping > movementCooldown) 2 else 1
 

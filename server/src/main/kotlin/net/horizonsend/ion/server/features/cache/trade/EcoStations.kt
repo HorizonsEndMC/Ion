@@ -36,7 +36,7 @@ object EcoStations : DbObjectCache<EcoStation, Oid<EcoStation>>(EcoStation.Compa
 			Collectors.synchronizeNPCsAsync()
 		}
 		change[EcoStation::collectedItems]?.let { bson ->
-			cached.collectedItems = bson.mappedSet { it.oid<CollectedItem>() }
+			cached.collectedItems = bson.mappedSet { it.oid() }
 		}
 	}
 
