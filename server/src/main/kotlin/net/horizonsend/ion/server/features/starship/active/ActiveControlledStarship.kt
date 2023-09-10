@@ -163,7 +163,6 @@ class ActiveControlledStarship(
 
 	var cruiseData = StarshipCruising.CruiseData(this)
 
-	fun requireController(): Controller = requireNotNull(controller) { "Starship must be piloted!" }
 	fun requirePlayerController(): Player = requireNotNull((controller as? PlayerController)?.player) { "Starship must be piloted!" }
 
 	var isDirectControlEnabled: Boolean = false

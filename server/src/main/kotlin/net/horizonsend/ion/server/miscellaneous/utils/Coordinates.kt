@@ -412,3 +412,10 @@ fun Location.nearestPointToVector(origin: Location, vector: Vector): Location {
 fun Location.distanceToVector(origin: Location, vector: Vector): Double =
 	this.nearestPointToVector(origin, vector).distance(this)
 
+fun cartesianProduct(a: Set<*>, b: Set<*>, vararg sets: Set<*>): Set<List<*>> =
+	(setOf(a, b).plus(sets))
+		.fold(listOf(listOf<Any?>())) { acc, set ->
+			acc.flatMap { list -> set.map { element -> list + element } }
+		}
+		.toSet()
+

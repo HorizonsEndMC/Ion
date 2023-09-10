@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
