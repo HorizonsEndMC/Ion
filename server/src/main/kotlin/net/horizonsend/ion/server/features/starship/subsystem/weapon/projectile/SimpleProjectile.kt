@@ -2,10 +2,13 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.starship.Damager
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.addToDamagers
+import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.damager.EntityDamager
+import net.horizonsend.ion.server.features.starship.damager.EntityDamager.Companion.damager
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -100,7 +103,7 @@ abstract class SimpleProjectile(
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		if (loc.world.name.lowercase(Locale.getDefault()).contains("hyperspace", ignoreCase=true)) return false
+		if (loc.world.name.lowercase(Locale.getDefault()).contains("hyperspace", ignoreCase = true)) return false
 		if (GracePeriod.isGracePeriod) return false
 
 		val block: Block? = result.hitBlock
@@ -148,6 +151,7 @@ abstract class SimpleProjectile(
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
 			if (!hasHit) {
 				world.createExplosion(newLoc, explosionPower)
+
 				world.spawnParticle(
 					Particle.FLASH,
 					newLoc.x,
@@ -165,13 +169,12 @@ abstract class SimpleProjectile(
 			}
 		}
 
-		if (block != null && shooter is PlayerController)
-			addToDamagers(world, block, shooter)
+		if (block != null) addToDamagers(world, block, shooter)
 
-		if (entity != null && entity is LivingEntity)
-			if (shooter is PlayerController)
-				entity.damage(10.0, shooter.player)
-			else
-				entity.damage(10.0)
+		if (entity != null && entity is LivingEntity) when (shooter) {
+			is PlayerDamager -> entity.damage(10.0, shooter.player)
+			is EntityDamager -> entity.damage(10.0, shooter.entity)
+			else -> entity.damage(10.0)
+		}
 	}
 }
