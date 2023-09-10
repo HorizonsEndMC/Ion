@@ -13,6 +13,7 @@ import io.jooby.kt.runApp
 import io.jooby.whoops.WhoopsModule
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.database.DBManager
+import net.horizonsend.ion.common.datasync.DataSync
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
 import net.horizonsend.web.utils.MUST_AUTHENTICATE
 import net.horizonsend.web.utils.validateApiKey
@@ -25,7 +26,7 @@ fun main(args: Array<String>) {
 	val reflections = Reflections("net.horizonsend.web")
 
 	CommonConfig.init(File("configs/"))
-	val components = listOf(DBManager, RedisActions)
+	val components = listOf(DBManager, RedisActions, DataSync(false, null))
 	components.forEach { it.onEnable() }
 
 	runApp(args, EVENT_LOOP) {

@@ -1,4 +1,4 @@
-package net.horizonsend.web.pojo
+package net.horizonsend.web.data
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import io.jooby.StatusCode

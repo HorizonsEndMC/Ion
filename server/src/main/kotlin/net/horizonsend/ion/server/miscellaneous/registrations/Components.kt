@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
+import net.horizonsend.ion.common.datasync.DataSync
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.cache.Caches
@@ -69,6 +70,7 @@ import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.TutorialManager
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.miscellaneous.provideData
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
@@ -166,5 +168,6 @@ val components: List<IonComponent> = listOf(
     WaypointManager,
 
 	Bounties,
-	CustomMobSpawning
+	CustomMobSpawning,
+	DataSync(true, ::provideData)
 )
