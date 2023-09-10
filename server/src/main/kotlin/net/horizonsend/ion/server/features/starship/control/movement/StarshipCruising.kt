@@ -10,6 +10,8 @@ import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStartCruisingEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -64,14 +66,10 @@ object StarshipCruising : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.syncRepeat(0L, (20 * SECONDS_PER_CRUISE).toLong()) {
 			for (starship in ActiveStarships.allControlledStarships()) {
-				if (!PilotedStarships.isPiloted(starship)) {
-					continue
-				}
-
-				val controller = starship.requireController()
+				if (!PilotedStarships.isPiloted(starship)) continue
 
 				if (shouldStopCruising(starship)) {
-					stopCruising(controller, starship)
+					stopCruising(starship.controller, starship)
 				}
 
 				updateCruisingShip(starship)
@@ -135,9 +133,9 @@ object StarshipCruising : IonServerComponent() {
 	}
 
 	private fun shouldStopCruising(starship: ActiveControlledStarship): Boolean {
-		if (starship.isDirectControlEnabled) {
-			return true
-		}
+		if (starship.isDirectControlEnabled) return true
+
+		if (starship.controller is NoOpController || starship.controller is UnpilotedController) return true
 
 		return Hyperspace.isWarmingUp(starship)
 	}

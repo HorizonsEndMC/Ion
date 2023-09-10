@@ -410,11 +410,4 @@ object StarshipShields : IonServerComponent() {
 			}
 		}
 	}
-
-	fun cartesianProduct(a: Set<*>, b: Set<*>, vararg sets: Set<*>): Set<List<*>> =
-		(setOf(a, b).plus(sets))
-			.fold(listOf(listOf<Any?>())) { acc, set ->
-				acc.flatMap { list -> set.map { element -> list + element } }
-			}
-			.toSet()
 }
