@@ -1,28 +1,29 @@
-package net.horizonsend.ion.server.features.starship.ai
+package net.horizonsend.ion.server.features.starship.active.ai
 
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import org.bukkit.Location
 import org.bukkit.World
 import kotlin.random.Random
 
-abstract class AISpawner(vararg val ships: AIStarshipTemplates.AIStarshipTemplate = AIStarshipTemplates.templates.toTypedArray()) {
+abstract class AISpawner(vararg val ships: AIStarshipTemplates.AIStarshipTemplate) {
 	abstract fun findLocation(world: World): Location
 
-	open fun spawn(location: Location): ActiveControlledStarship {
+	open fun spawn(location: Location): Deferred<ActiveControlledStarship> {
 		val ship = ships.randomOrNull() ?: throw NoSuchElementException()
+		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
 		val schematic = AIStarshipTemplates.loadedSchematics.getOrPut(ship.schematicFile) { ship.schematic() }
 		val type = ship.type
 		val name = ship.miniMessageName
 		val createController = ship.createController
 
-		lateinit var activeStarship: ActiveControlledStarship
+        AIUtils.createFromClipboard(location, schematic, type, name, createController) {
+            deferred.complete(it)
+        }
 
-		AIUtils.createFromClipboard(location, schematic, type, name, createController) {
-			activeStarship = it
-		}
-
-		return activeStarship
+		return deferred
 	}
 }
 
