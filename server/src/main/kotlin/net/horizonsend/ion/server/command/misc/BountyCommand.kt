@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.datasync.SurvivalEvents
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -17,6 +18,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.bounties.BountiesMenu
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.miscellaneous.sendApiEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -104,6 +106,12 @@ object BountyCommand : SLCommand() {
 					.append(text((bounty + amount).toCreditsString(), NamedTextColor.GOLD))
 					.build()
 			)
+
+			sendApiEvent(SurvivalEvents.BOUNTY_PLACED, object {
+				val author = sender.name
+				val target = targetName
+				val cost = (bounty + amount).toCreditsString()
+			})
 
 			SLPlayer.updateById(target._id, inc(SLPlayer::bounty, amount))
 		}

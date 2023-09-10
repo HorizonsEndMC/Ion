@@ -7,13 +7,21 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.utils.DBVec3i
 
+enum class SurvivalEvents {
+	BOUNTY_PLACED,
+	NEW_NATION
+}
+data class SurvivalEvent(val event: SurvivalEvents, val data: Any)
+
 data class Ship(val name: String, val pilot: String?, val type: String, val blocks: Int, val worldName: String)
 data class Station(val name: String, val location: DBVec3i, val world: String, val owner: String?, val time: Int)
+data class Bounty(val target: String, val bounty: Double)
 data class SyncData(
 	val listShips: List<Ship>,
 	val onlinePlayers: List<String>,
 	val currentStation: Station,
 	val allStations: List<Station>,
+	val bounties: List<Bounty>,
 	val tps: Double
 )
 
@@ -24,6 +32,7 @@ class DataSync(private val isSurvival: Boolean, private val supplier: (() -> Syn
 			emptyList(),
 			emptyList(),
 			Station("data-not-loaded", DBVec3i(0, 0, 0), "data-not-loaded", "data-not-loaded", -1),
+			emptyList(),
 			emptyList(),
 			-1.0
 		)

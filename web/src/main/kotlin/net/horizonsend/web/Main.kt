@@ -11,10 +11,13 @@ import io.jooby.handler.RateLimitHandler
 import io.jooby.jackson.JacksonModule
 import io.jooby.kt.runApp
 import io.jooby.whoops.WhoopsModule
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.datasync.DataSync
 import net.horizonsend.ion.common.utils.redisaction.RedisActions
+import net.horizonsend.web.controllers.SurvivalEvents
+import net.horizonsend.web.controllers.handleSse
 import net.horizonsend.web.utils.MUST_AUTHENTICATE
 import net.horizonsend.web.utils.validateApiKey
 import org.reflections.Reflections
@@ -22,11 +25,13 @@ import java.io.File
 import java.time.Duration
 import java.util.*
 
+// https://medium.com/@manoel.al.amaro/understand-kotlin-flow-coroutines-by-implementing-server-side-sent-sse-9e190ff5f24f
+// for later
 fun main(args: Array<String>) {
 	val reflections = Reflections("net.horizonsend.web")
 
 	CommonConfig.init(File("configs/"))
-	val components = listOf(DBManager, RedisActions, DataSync(false, null))
+	val components = listOf(DBManager, RedisActions, DataSync(false, null), SurvivalEvents)
 	components.forEach { it.onEnable() }
 
 	runApp(args, EVENT_LOOP) {
@@ -55,7 +60,10 @@ fun main(args: Array<String>) {
 			if (!ctx.requestPath.startsWith("/v1")) return@use next.apply(ctx)
 
 			val stringKey =
-				ctx.header("Authorization").valueOrNull() ?: throw StatusCodeException(StatusCode.UNAUTHORIZED, MUST_AUTHENTICATE)
+				ctx.header("Authorization").valueOrNull() ?: throw StatusCodeException(
+					StatusCode.UNAUTHORIZED,
+					MUST_AUTHENTICATE
+				)
 			val key = runCatching { UUID.fromString(stringKey) }.getOrNull()
 				?: throw StatusCodeException(StatusCode.BAD_REQUEST, MUST_AUTHENTICATE)
 
@@ -71,6 +79,14 @@ fun main(args: Array<String>) {
 
 		rateLimit.forEach {
 			mvc(it)
+		}
+
+		sse("/v1/events") {
+			coroutine {
+				coroutineScope.launch {
+					handleSse(this@sse)
+				}
+			}
 		}
 	}
 

@@ -33,6 +33,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.datasync.SurvivalEvents
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -41,6 +42,7 @@ import net.horizonsend.ion.server.features.nations.utils.hover
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
+import net.horizonsend.ion.server.miscellaneous.sendApiEvent
 import net.horizonsend.ion.server.miscellaneous.utils.*
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
@@ -148,6 +150,11 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
+
+		sendApiEvent(SurvivalEvents.NEW_NATION, object {
+			val name = name
+			val author = sender.name
+		})
 
 		Notify all MiniMessage.miniMessage().deserialize("<yellow>${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!")
 	}

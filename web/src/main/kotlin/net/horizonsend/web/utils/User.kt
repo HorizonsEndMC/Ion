@@ -1,10 +1,9 @@
-package net.horizonsend.web.data
+package net.horizonsend.web.utils
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import io.jooby.StatusCode
 import io.jooby.exception.StatusCodeException
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.web.utils.NOT_FOUND
 
 class User(username: String) {
 	@Transient
