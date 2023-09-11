@@ -11,15 +11,14 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 
 object AISpawningManager : IonServerComponent(true) {
-	val AIEncounterDelay = 15 * 60 * 20 //TODO switch this back before push
-
+	val config = IonServer.aiShipConfiguration
 	val spawners = listOf<AISpawner>(
 		VestaSpawner()
 	)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	override fun onEnable() {
-		Tasks.asyncRepeat(20 * 15, 20 * 15) {
+		Tasks.asyncRepeat(20 * 15, config.spawnRate) {
 			val spawner = spawners.shuffled().firstOrNull() ?: return@asyncRepeat
 
 			val loc = spawner.findLocation(Bukkit.getWorld("world")!!)
