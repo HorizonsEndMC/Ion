@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.active
 import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
@@ -41,14 +41,14 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
-class ActiveControlledStarship(
-	val data: PlayerStarshipData,
+class ActiveControlledStarship (
+	val data: StarshipData,
 	blocks: LongOpenHashSet,
 	mass: Double,
 	centerOfMass: Vec3i,
 	hitbox: ActiveStarshipHitbox,
 	// map of carried ship to its blocks
-	carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
+	carriedShips: Map<StarshipData, LongOpenHashSet>
 ) : ActiveStarship(
 	data.bukkitWorld(),
 	blocks,
@@ -56,7 +56,7 @@ class ActiveControlledStarship(
 	centerOfMass,
 	hitbox
 ) {
-	val carriedShips: MutableMap<PlayerStarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
+	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
 	override val type: StarshipType = data.starshipType.actualType
 	override val interdictionRange: Int = type.interdictionRange
 
@@ -150,7 +150,7 @@ class ActiveControlledStarship(
 		return true
 	}
 
-	val dataId: Oid<PlayerStarshipData> = data._id
+	val dataId: Oid<*> = data._id
 
 	// manual move is sneak/direct control
 	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
