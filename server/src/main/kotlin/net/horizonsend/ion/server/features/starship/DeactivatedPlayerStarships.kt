@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
@@ -25,7 +26,6 @@ import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.event.world.WorldUnloadEvent
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.eq
-import org.litote.kmongo.setValue
 import java.io.File
 import java.util.UUID
 
@@ -34,25 +34,25 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 
 	private fun getCache(world: World) = requireNotNull(DEACTIVATED_SHIP_WORLD_CACHES[world])
 
-	operator fun get(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
+	operator fun get(world: World, x: Int, y: Int, z: Int): StarshipData? {
 		synchronized(lock) {
 			return getCache(world)[x, y, z]
 		}
 	}
 
-	fun getInChunk(chunk: Chunk): List<PlayerStarshipData> {
+	fun getInChunk(chunk: Chunk): List<StarshipData> {
 		synchronized(lock) {
 			return getCache(chunk.world).getInChunk(chunk)
 		}
 	}
 
-	fun getContaining(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
+	fun getContaining(world: World, x: Int, y: Int, z: Int): StarshipData? {
 		synchronized(lock) {
 			return getCache(world).getContaining(x, y, z)
 		}
 	}
 
-	fun getLockedContaining(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
+	fun getLockedContaining(world: World, x: Int, y: Int, z: Int): StarshipData? {
 		synchronized(lock) {
 			return getCache(world).getLockedContaining(x, y, z)
 		}
@@ -100,49 +100,49 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		y: Int,
 		z: Int,
 		name: String? = null,
-		callback: (PlayerStarshipData) -> Unit
+		callback: (StarshipData) -> Unit
 	) = createAsync(world, x, y, z, UUID.randomUUID(), name, callback)
 
-	fun getSavedState(data: PlayerStarshipData): PlayerStarshipState? {
+	fun getSavedState(data: StarshipData): StarshipState? {
 		return getCache(data.bukkitWorld()).savedStateCache[data].orElse(null)
 	}
 
-	fun removeState(data: PlayerStarshipData) {
+	fun removeState(data: StarshipData) {
 		synchronized(lock) {
 			getCache(data.bukkitWorld()).removeState(data)
 		}
 	}
 
-	fun updateState(data: PlayerStarshipData, state: PlayerStarshipState) {
+	fun updateState(data: StarshipData, state: StarshipState) {
 		synchronized(lock) {
 			getCache(data.bukkitWorld()).updateState(data, state)
 		}
 	}
 
-	fun updateType(data: PlayerStarshipData, newType: StarshipType) {
+	fun updateType(data: StarshipData, newType: StarshipType) {
 		data.starshipType = newType.name
 
 		Tasks.async {
-			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::starshipType, newType.name))
+			data.companion().setType(data._id, newType.name)
 		}
 
 		// remove the current state in case the new type no longer matches the ship's state
 		removeState(data)
 	}
 
-	fun updateName(data: PlayerStarshipData, newName: String?) {
+	fun updateName(data: StarshipData, newName: String?) {
 		data.name = newName
 
 		Tasks.async {
-			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::name, newName))
+			data.companion().setName(data._id, newName)
 		}
 	}
 
-	fun updateLockEnabled(data: PlayerStarshipData, newValue: Boolean) {
+	fun updateLockEnabled(data: StarshipData, newValue: Boolean) {
 		data.isLockEnabled = newValue
 
 		Tasks.async {
-			PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::isLockEnabled, newValue))
+			data.companion().setLockEnabled(data._id, newValue)
 		}
 	}
 
@@ -174,7 +174,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		DEACTIVATED_SHIP_WORLD_CACHES[world] = cache
 	}
 
-	fun getSaveFile(world: World, data: PlayerStarshipData): File {
+	fun getSaveFile(world: World, data: StarshipData): File {
 		return File(getCache(world).dataFolder, "${data._id}.dat")
 	}
 
@@ -182,9 +182,9 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 
 	fun activateAsync(
 		feedbackDestination: Audience,
-		data: PlayerStarshipData,
-		state: PlayerStarshipState,
-		carriedShips: List<PlayerStarshipData>,
+		data: StarshipData,
+		state: StarshipState,
+		carriedShips: List<StarshipData>,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	): Unit = Tasks.async {
 		synchronized(lock) {
@@ -197,29 +197,38 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				return@async // probably already piloted bc they spam clicked
 			}
 
-			PlayerStarshipData.remove(data._id)
+			data.companion().remove(data._id)
 
 			cache.remove(data)
 
 			val carriedShipMap = captureCarriedShips(carriedShips, cache)
 
 			Tasks.sync {
-				val starship =
-					ActiveStarshipFactory.createPlayerStarship(feedbackDestination, data, state.blockMap.keys, carriedShipMap) ?: return@sync
+				val starship = ActiveStarshipFactory.createPlayerStarship(
+					feedbackDestination,
+					data,
+					state.blockMap.keys,
+					carriedShipMap
+				) ?: return@sync
+
 				ActiveStarships.add(starship)
 				callback.invoke(starship)
 			}
 		}
 	}
 
-	private fun captureCarriedShips(carriedShips: List<PlayerStarshipData>, cache: DeactivatedShipWorldCache): MutableMap<PlayerStarshipData, LongOpenHashSet> {
-		val carriedShipMap = mutableMapOf<PlayerStarshipData, LongOpenHashSet>()
+	private fun captureCarriedShips(carriedShips: List<StarshipData>, cache: DeactivatedShipWorldCache): MutableMap<StarshipData, LongOpenHashSet> {
+		val carriedShipMap = mutableMapOf<StarshipData, LongOpenHashSet>()
 
-		for (carried: PlayerStarshipData in carriedShips) {
-			PlayerStarshipData.remove(carried._id)
+		for (carried: StarshipData in carriedShips) {
+			carried.companion().remove(carried._id)
+
 			cache.remove(carried)
-			val state: PlayerStarshipState? = getSavedState(carried)
+
+			val state: StarshipState? = getSavedState(carried)
+
 			val blocks = if (state == null) LongOpenHashSet(0) else LongOpenHashSet(state.blockMap.keys)
+
 			carriedShipMap[carried] = blocks
 		}
 
@@ -248,9 +257,9 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 
 		val world: World = starship.world
 
-		val carriedShipStateMap = Object2ObjectOpenHashMap<PlayerStarshipData, PlayerStarshipState>()
+		val carriedShipStateMap = Object2ObjectOpenHashMap<StarshipData, StarshipState>()
 
-		val state: PlayerStarshipState = Tasks.getSyncBlocking {
+		val state: StarshipState = Tasks.getSyncBlocking {
 			// this needs to be removed sync!
 			ActiveStarships.remove(starship)
 
@@ -259,13 +268,13 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				landingGearSubsystem.setExtended(true)
 			}
 
-			for ((ship: PlayerStarshipData, blocks: Set<Long>) in starship.carriedShips) {
+			for ((ship: StarshipData, blocks: Set<Long>) in starship.carriedShips) {
 				if (!blocks.isEmpty()) {
-					carriedShipStateMap[ship] = PlayerStarshipState.createFromBlocks(world, blocks)
+					carriedShipStateMap[ship] = StarshipState.createFromBlocks(world, blocks)
 				}
 			}
 
-			return@getSyncBlocking PlayerStarshipState.createFromActiveShip(starship)
+			return@getSyncBlocking StarshipState.createFromActiveShip(starship)
 		}
 
 		saveDeactivatedData(world, starship, state, carriedShipStateMap)
@@ -274,36 +283,37 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 	private fun saveDeactivatedData(
 		world: World,
 		starship: ActiveControlledStarship,
-		state: PlayerStarshipState,
-		carriedShipStateMap: Object2ObjectOpenHashMap<PlayerStarshipData, PlayerStarshipState>
+		state: StarshipState,
+		carriedShipStateMap: Object2ObjectOpenHashMap<StarshipData, StarshipState>
 	) {
 		synchronized(lock) {
 			val cache: DeactivatedShipWorldCache = getCache(world)
 
-			val data: PlayerStarshipData = starship.data
+			val data = starship.data
 			data.lastUsed = System.currentTimeMillis()
 
 			// this prevents it from being added to the chunk->saved ship cache in worldCache.add
 			data.containedChunks = null
 			// add to the deactivated ship world cache
 			cache.add(data)
+
 			// this sets the contained chunks to those of the provided state, and saved the state to disk
 			cache.updateState(data, state)
+			data.companion().add(data)
 
-			PlayerStarshipData.add(data)
-
-			for (carriedData: PlayerStarshipData in starship.carriedShips.keys) {
+			for (carriedData: StarshipData in starship.carriedShips.keys) {
 				carriedData.containedChunks = null
 				cache.add(carriedData)
-				carriedShipStateMap[carriedData]?.let { carriedDataState: PlayerStarshipState ->
+				carriedShipStateMap[carriedData]?.let { carriedDataState: StarshipState ->
 					cache.updateState(carriedData, carriedDataState)
 				}
-				PlayerStarshipData.add(carriedData)
+
+				carriedData.companion().add(carriedData)
 			}
 		}
 	}
 
-	fun destroyAsync(data: PlayerStarshipData, callback: () -> Unit = {}): Unit = Tasks.async {
+	fun destroyAsync(data: StarshipData, callback: () -> Unit = {}): Unit = Tasks.async {
 		synchronized(lock) {
 			destroy(data)
 
@@ -311,7 +321,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 	}
 
-	fun destroyManyAsync(datas: List<PlayerStarshipData>, callback: () -> Unit = {}): Unit = Tasks.async {
+	fun destroyManyAsync(datas: List<StarshipData>, callback: () -> Unit = {}): Unit = Tasks.async {
 		synchronized(lock) {
 			for (data in datas) {
 				destroy(data)
@@ -321,13 +331,14 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 	}
 
-	private fun destroy(data: PlayerStarshipData) {
+	private fun destroy(data: StarshipData) {
 		require(ActiveStarships[data._id] == null) { "Can't delete an active starship, but tried deleting ${data._id}" }
 
 		val world: World = data.bukkitWorld()
 		val cache: DeactivatedShipWorldCache = getCache(world)
 		cache.remove(data)
 		getSaveFile(world, data).delete()
-		PlayerStarshipData.remove(data._id)
+
+		data.companion().remove(data._id)
 	}
 }

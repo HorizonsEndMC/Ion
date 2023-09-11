@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.database.schema.Cryopod
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.features.space.CachedPlanet
@@ -197,7 +197,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			return
 		}
 
-		for (data: PlayerStarshipData in playerShip.carriedShips.keys) {
+		for (data: StarshipData in playerShip.carriedShips.keys) {
 			data.blockKey = displacedKey(data.blockKey)
 			data.levelName = world2.name
 
