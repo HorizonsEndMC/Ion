@@ -20,6 +20,7 @@ import org.bukkit.entity.Player
 interface Damager : Audience {
 	val starship: ActiveStarship?
 	val color: Color
+
 	fun getDisplayName() : Component
 	fun rewardXP(xp: Int)
 	fun rewardMoney(credits: Double)

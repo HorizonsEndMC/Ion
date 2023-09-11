@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.GassesConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -41,6 +42,7 @@ object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
 	var gassesConfiguration: GassesConfiguration = Configuration.load(dataFolder, "gasses.json")
+	var aiShipConfiguration: AIShipConfiguration = Configuration.load(dataFolder, "aiships.json")
 	var legacySettings: LegacyConfig = loadConfig(IonServer.dataFolder, "config") // Setting
 
 	override fun onEnable(): Unit =

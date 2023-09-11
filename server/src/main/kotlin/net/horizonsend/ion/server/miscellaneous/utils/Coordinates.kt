@@ -347,18 +347,25 @@ fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {
 	return pitch to yaw
 }
 
-fun Vector.perpendicular(direction: Vector): Vector {
-	return this //TODO
-}
+/** Find the closest point along the vector to the vector **/
+fun nearestPointToVector(origin: Vector, direction: Vector, point: Vector): Vector {
+	val endPoint = origin.clone().add(direction)
 
-/** Find the closest point along the vector to the location **/
-fun Location.nearestPointToVector(origin: Location, vector: Vector): Location {
-	return this //TODO
+	val v = origin.clone().subtract(endPoint)
+	val u = endPoint.clone().subtract(point)
+
+	// The distance between the end and the origin as a fraction of the length of the line
+	val distance = -(v.clone().dot(u) / v.clone().dot(v))
+
+	return endPoint.clone().subtract(direction.clone().multiply(distance))
 }
 
 /** Find the distance to closest point along the vector to the location **/
-fun Location.distanceToVector(origin: Location, vector: Vector): Double =
-	this.nearestPointToVector(origin, vector).distance(this)
+fun distanceToVector(origin: Vector, direction: Vector, point: Vector): Double {
+	val closestPoint = nearestPointToVector(origin, direction, point)
+
+	return closestPoint.distance(point)
+}
 
 fun cartesianProduct(a: Set<*>, b: Set<*>, vararg sets: Set<*>): Set<List<*>> =
 	(setOf(a, b).plus(sets))
