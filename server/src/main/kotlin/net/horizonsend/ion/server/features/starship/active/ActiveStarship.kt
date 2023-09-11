@@ -109,7 +109,7 @@ abstract class ActiveStarship (
 
 	init {
 		@Suppress("LeakingThis") // This is done right at the end of the class's initialization, it *should* be fine
-		println(IonWorld[world.minecraft].starships.add(this))
+		IonWorld[world.minecraft].starships.add(this)
 	}
 
 	// Created once
