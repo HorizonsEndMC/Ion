@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.listener.fixers
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
-import net.horizonsend.ion.server.features.starship.PlayerStarshipState
+import net.horizonsend.ion.server.features.starship.StarshipState
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
@@ -23,7 +23,7 @@ class GameplayTweaksListeners : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun craftPilotEvent(event: StarshipPilotEvent) {
-		val state: PlayerStarshipState = DeactivatedPlayerStarships.getSavedState(event.data) ?: return
+		val state: StarshipState = DeactivatedPlayerStarships.getSavedState(event.data) ?: return
 
 		for ((blockKey: Long, block: BlockData) in state.blockMap) {
 			val vector = Location(

@@ -29,7 +29,7 @@ data class PlayerStarshipData(
 
 	/** UUIDs of players who have been added to the ship by the captain. Should never include the captain. */
 	val pilots: MutableSet<SLPlayerId> = mutableSetOf(),
-	var name: String? = null,
+	override var name: String? = null,
 	/** Chunk combined coordinates, of each chunk the detected blocks reside in */
 	override var containedChunks: Set<Long>? = null,
 
@@ -41,6 +41,10 @@ data class PlayerStarshipData(
 		PlayerStarshipData::serverName,
 		PlayerStarshipData::levelName,
 		PlayerStarshipData::blockKey,
+		PlayerStarshipData::containedChunks,
+		PlayerStarshipData::starshipType,
+		PlayerStarshipData::isLockEnabled,
+		PlayerStarshipData::name,
 		setup = {
 			ensureIndex(PlayerStarshipData::captain)
 			ensureIndex(PlayerStarshipData::pilots)
@@ -55,8 +59,6 @@ data class PlayerStarshipData(
 			find(or(PlayerStarshipData::captain eq playerId, PlayerStarshipData::pilots contains playerId))
 	}
 
-	/** assumes that it's also deactivated */
-	fun isLockActive(): Boolean {
-		return isLockEnabled && System.currentTimeMillis() - lastUsed >= LOCK_TIME_MS
-	}
+	@Suppress("UNCHECKED_CAST")
+	override fun companion(): StarshipDataCompanion<StarshipData> = Companion as StarshipDataCompanion<StarshipData>
 }

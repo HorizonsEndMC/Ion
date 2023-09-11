@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -34,7 +35,7 @@ val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
 operator fun SLPlayer.Companion.get(player: Player): SLPlayer = SLPlayer[player.uniqueId]
 	?: error("Missing SLPlayer for online player ${player.name}")
 
-fun PlayerStarshipData.bukkitWorld(): World = requireNotNull(Bukkit.getWorld(levelName)) {
+fun StarshipData.bukkitWorld(): World = requireNotNull(Bukkit.getWorld(levelName)) {
 	"World $levelName is not loaded, but tried getting it for computer $_id"
 }
 

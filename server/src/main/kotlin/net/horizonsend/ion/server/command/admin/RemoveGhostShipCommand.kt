@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.command.admin
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
@@ -22,7 +21,7 @@ object RemoveGhostShipCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val ship = DeactivatedPlayerStarships.getLockedContaining(sender.world, x, y, z)
 
 		ship?.let {
-			PlayerStarshipData.remove(it._id)
+			it.companion().remove(it._id)
 			DeactivatedPlayerStarships.removeState(ship)
 		}
 	}
