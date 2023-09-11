@@ -148,7 +148,7 @@ object ShipKillXP : IonServerComponent() {
 			val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005))) * percent).toInt()
 
 			if (xp > 0) {
-				SLXP.addAsync(player, xp)
+				damager.rewardXP(xp)
 				log.info("Gave ${player.name} $xp XP for ship-killing ${starship.controller.pilotName.plainText()}")
 			}
 
