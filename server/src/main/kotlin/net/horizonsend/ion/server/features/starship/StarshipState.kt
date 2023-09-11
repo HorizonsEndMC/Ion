@@ -26,7 +26,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-data class PlayerStarshipState(
+data class StarshipState(
     /** Set of chunks included in the saved ship */
 	val coveredChunks: LongOpenHashSet,
     /** Map of location to material type id */
@@ -35,13 +35,13 @@ data class PlayerStarshipState(
     val maxPoint: Vec3i
 ) {
 	companion object {
-		fun createFromActiveShip(starship: ActiveStarship): PlayerStarshipState {
+		fun createFromActiveShip(starship: ActiveStarship): StarshipState {
 			val world = starship.world
 			val blocks = starship.blocks
 			return createFromBlocks(world, blocks)
 		}
 
-		fun createFromBlocks(world: World, blocks: Iterable<Long>): PlayerStarshipState {
+		fun createFromBlocks(world: World, blocks: Iterable<Long>): StarshipState {
 			Tasks.checkMainThread()
 			val coveredChunks = LongOpenHashSet()
 			val blockMap = Long2ObjectOpenHashMap<BlockData>()
@@ -83,10 +83,10 @@ data class PlayerStarshipState(
 			checkNotNull(maxY)
 			checkNotNull(maxZ)
 
-			return PlayerStarshipState(coveredChunks, blockMap, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
+			return StarshipState(coveredChunks, blockMap, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
 		}
 
-		fun readFromStream(stream: InputStream): PlayerStarshipState {
+		fun readFromStream(stream: InputStream): StarshipState {
 			val clipboard = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getReader(stream).use { reader: ClipboardReader ->
 				reader.read()
 			}
@@ -106,7 +106,7 @@ data class PlayerStarshipState(
 
 			val chunks = clipboard.region.chunks
 			val coveredChunks = chunks.mapTo(LongOpenHashSet(chunks.size)) { chunkKey(it.x, it.z) }
-			return PlayerStarshipState(coveredChunks, blockMap, min, max)
+			return StarshipState(coveredChunks, blockMap, min, max)
 		}
 	}
 
