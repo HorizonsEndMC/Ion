@@ -56,9 +56,6 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun loadAI(sender: Player, name: String) {
 		val (data, schematic) = StarshipDealers.schematicMap.filter { it.key.schematicName == name }.firstNotNullOfOrNull { it } ?: fail { "Sold ship $name not found!" }
 
-		println(data)
-		println(schematic)
-
 		AIUtils.createFromClipboard(
 			sender.location,
 			schematic,
