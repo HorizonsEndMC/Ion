@@ -36,7 +36,7 @@ object IonCommand : SLCommand() {
 			world.viewDistance = renderDistance
 		}
 
-		sender.sendMessage("View distance set to $renderDistance.")
+		sender.success("View distance set to $renderDistance.")
 	}
 
 	@Suppress("Unused")
@@ -56,19 +56,19 @@ object IonCommand : SLCommand() {
 			world.viewDistance = simulationDistance
 		}
 
-		sender.sendMessage("Simulation distance set to $simulationDistance.")
+		sender.success("Simulation distance set to $simulationDistance.")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("view get")
 	fun getServerViewDistance(sender: CommandSender) {
-		sender.sendMessage("View distance is currently set to ${Bukkit.getWorlds()[0].viewDistance}.")
+		sender.information("View distance is currently set to ${Bukkit.getWorlds()[0].viewDistance}.")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("simulation get")
 	fun getServerSimulationDistance(sender: CommandSender) {
-		sender.sendMessage("Simulation distance is currently set to ${Bukkit.getWorlds()[0].simulationDistance}.")
+		sender.information("Simulation distance is currently set to ${Bukkit.getWorlds()[0].simulationDistance}.")
 	}
 
 	@Suppress("Unused")
@@ -84,7 +84,7 @@ object IonCommand : SLCommand() {
 	}
 }
 
-fun Player.debugBanner(message: String) = debug("------------------- $message -------------------")
+fun Audience.debugBanner(message: String) = debug("------------------- $message -------------------")
 fun Audience.debug(message: String) {
 	if (this !is Player) return
 
