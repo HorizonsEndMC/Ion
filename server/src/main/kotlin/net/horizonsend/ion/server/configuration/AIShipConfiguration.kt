@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 /** Registration and spawning parameters of AI ships **/
 @Serializable
 data class AIShipConfiguration(
-	val spawnRate: Int = 20 * 60 * 15
+	val spawnRate: Long = 20 * 60 * 15
 ) {
 }
