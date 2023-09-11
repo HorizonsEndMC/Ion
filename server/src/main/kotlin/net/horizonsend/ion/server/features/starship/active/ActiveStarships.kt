@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -33,8 +33,8 @@ import kotlin.collections.set
 
 object ActiveStarships : IonServerComponent() {
 	private val set = ObjectOpenHashSet<ActiveStarship>()
-	private val playerShipIdMap = Object2ObjectOpenHashMap<Oid<PlayerStarshipData>, ActiveControlledStarship>()
-	private val playerShipLocationMap: LoadingCache<World, Long2ObjectOpenHashMap<PlayerStarshipData>> = CacheBuilder
+	private val shipIdMap = Object2ObjectOpenHashMap<Oid<*>, ActiveControlledStarship>()
+	private val shipLocationMap: LoadingCache<World, Long2ObjectOpenHashMap<StarshipData>> = CacheBuilder
 		.newBuilder()
 		.weakKeys()
 		.build(CacheLoader.from { w -> Long2ObjectOpenHashMap() })
@@ -45,24 +45,24 @@ object ActiveStarships : IonServerComponent() {
 
 	fun all(): List<ActiveStarship> = set.toList()
 
-	fun allControlledStarships(): List<ActiveControlledStarship> = playerShipIdMap.values.toList()
+	fun allControlledStarships(): List<ActiveControlledStarship> = shipIdMap.values.toList()
 
 	fun add(starship: ActiveStarship) {
 		Tasks.checkMainThread()
 		val world = starship.world
 
-		require(starship !is ActiveControlledStarship || !playerShipIdMap.containsKey(starship.dataId)) {
+		require(starship !is ActiveControlledStarship || !shipIdMap.containsKey(starship.dataId)) {
 			"Starship is already in the active id map"
 		}
-		require(starship !is ActiveControlledStarship || !playerShipLocationMap[world].containsKey(starship.data.blockKey)) {
+		require(starship !is ActiveControlledStarship || !shipLocationMap[world].containsKey(starship.data.blockKey)) {
 			"Another starship is already at that location"
 		}
 
 		set.add(starship)
 
 		if (starship is ActiveControlledStarship) {
-			playerShipIdMap[starship.dataId] = starship
-			playerShipLocationMap[world][starship.data.blockKey] = starship.data
+			shipIdMap[starship.dataId] = starship
+			shipLocationMap[world][starship.data.blockKey] = starship.data
 		}
 
 		worldMap[world].add(starship)
@@ -86,10 +86,10 @@ object ActiveStarships : IonServerComponent() {
 		set.remove(starship)
 
 		if (starship is ActiveControlledStarship) {
-			playerShipIdMap.remove(starship.dataId)
+			shipIdMap.remove(starship.dataId)
 			val blockKey: Long = starship.data.blockKey
-			val data: PlayerStarshipData = starship.data
-			playerShipLocationMap[starship.world].remove(blockKey, data as Any)
+			val data: StarshipData = starship.data
+			shipLocationMap[starship.world].remove(blockKey, data as Any)
 		}
 
 		worldMap[starship.world].remove(starship)
@@ -103,7 +103,7 @@ object ActiveStarships : IonServerComponent() {
 		starship.destroy()
 	}
 
-	fun updateLocation(playerStarshipData: PlayerStarshipData, newWorld: World, newKey: Long) {
+	fun updateLocation(playerStarshipData: StarshipData, newWorld: World, newKey: Long) {
 		Tasks.checkMainThread()
 
 		val oldKey = playerStarshipData.blockKey
@@ -112,8 +112,8 @@ object ActiveStarships : IonServerComponent() {
 		}
 
 		val oldWorld: World = playerStarshipData.bukkitWorld()
-		val oldMap: Long2ObjectOpenHashMap<PlayerStarshipData> = playerShipLocationMap[oldWorld]
-		val newMap: Long2ObjectOpenHashMap<PlayerStarshipData> = playerShipLocationMap[newWorld]
+		val oldMap: Long2ObjectOpenHashMap<StarshipData> = shipLocationMap[oldWorld]
+		val newMap: Long2ObjectOpenHashMap<StarshipData> = shipLocationMap[newWorld]
 
 		val notYetInNewWorld = !newMap.containsKey(newKey)
 		val successfullyRemoved = oldMap.remove(oldKey, playerStarshipData as Any)
@@ -135,12 +135,12 @@ object ActiveStarships : IonServerComponent() {
 		if (starship.type == SPEEDER && SpaceWorlds.contains(newWorld)) StarshipDestruction.destroy(starship)
 	}
 
-	operator fun get(playerShipId: Oid<PlayerStarshipData>) = playerShipIdMap[playerShipId]
+	operator fun get(playerShipId: Oid<out StarshipData>) = shipIdMap[playerShipId]
 
 	operator fun get(charIdentifier: String) = set.firstOrNull { it.charIdentifier == charIdentifier }
 
-	fun getByComputerLocation(world: World, x: Int, y: Int, z: Int): PlayerStarshipData? {
-		return playerShipLocationMap[world][blockKey(x, y, z)]
+	fun getByComputerLocation(world: World, x: Int, y: Int, z: Int): StarshipData? {
+		return shipLocationMap[world][blockKey(x, y, z)]
 	}
 
 	fun getInWorld(world: World): Collection<ActiveStarship> = worldMap[world]

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -20,9 +20,9 @@ import kotlin.math.roundToInt
 object ActiveStarshipFactory {
 	fun createPlayerStarship(
 		feedbackDestination: Audience,
-		data: PlayerStarshipData,
+		data: StarshipData,
 		blockCol: Collection<Long>,
-		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
+		carriedShips: Map<StarshipData, LongOpenHashSet>
 	): ActiveControlledStarship? {
 		Tasks.checkMainThread()
 
@@ -37,9 +37,9 @@ object ActiveStarshipFactory {
 	}
 
 	private fun createStarship(
-		data: PlayerStarshipData,
+		data: StarshipData,
 		blocks: LongOpenHashSet,
-		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
+		carriedShips: Map<StarshipData, LongOpenHashSet>
 	): ActiveControlledStarship {
 		val world = checkNotNull(Bukkit.getWorld(data.levelName))
 
