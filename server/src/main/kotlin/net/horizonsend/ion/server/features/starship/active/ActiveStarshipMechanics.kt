@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
+import net.horizonsend.ion.server.features.starship.damager.EntityDamager.Companion.damager
+import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -21,6 +23,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
@@ -101,6 +104,14 @@ object ActiveStarshipMechanics : IonServerComponent() {
 				StarshipDestruction.destroy(ship)
 			}
 		}
+	}
+
+	@EventHandler
+	fun onEntityExplode(event: EntityExplodeEvent) {
+		val block = event.location.block
+		val world = block.world
+
+		addToDamagers(world, block, event.entity.damager())
 	}
 
 	@EventHandler
