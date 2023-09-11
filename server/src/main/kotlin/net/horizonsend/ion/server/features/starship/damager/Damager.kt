@@ -36,7 +36,7 @@ interface PlayerDamager : Damager {
 	}
 
 	override fun rewardXP(xp: Int) {
-		SLXP.addAsync(player.uniqueId, xp)
+		SLXP.addAsync(player, xp)
 	}
 }
 
