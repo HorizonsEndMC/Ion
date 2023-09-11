@@ -214,7 +214,6 @@ object ShipKillXP : IonServerComponent() {
 				.build()
 		} ?: killer.getDisplayName()
 
-
 		// Begin message
 		val message = text()
 

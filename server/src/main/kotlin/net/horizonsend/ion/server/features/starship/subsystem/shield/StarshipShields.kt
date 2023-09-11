@@ -105,7 +105,7 @@ object StarshipShields : IonServerComponent() {
 	}
 
 	private fun handleExplosion(block: Block, blockList: MutableList<Block>, event: Cancellable) {
-		if (!ProtectionListener.isProtectedCity(block.location)) return
+		if (ProtectionListener.isProtectedCity(block.location)) return
 		val power = explosionPowerOverride ?: getExplosionPower(block, blockList)
 
 		onShieldImpact(block.location.toCenterLocation(), blockList, power)
