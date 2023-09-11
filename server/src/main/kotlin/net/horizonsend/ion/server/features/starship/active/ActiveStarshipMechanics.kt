@@ -19,7 +19,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.actionAndMsg
 import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.entity.Projectile
+import org.bukkit.entity.TNTPrimed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
@@ -111,7 +114,13 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		val block = event.location.block
 		val world = block.world
 
-		addToDamagers(world, block, event.entity.damager())
+		val damager = when (val entity = event.entity) {
+			is Projectile ->  (entity.shooter as? LivingEntity)?.damager() ?: entity.damager()
+			is TNTPrimed -> entity.source?.damager() ?: entity.damager()
+			else -> entity.damager()
+		}
+
+		addToDamagers(world, block, damager)
 	}
 
 	@EventHandler
