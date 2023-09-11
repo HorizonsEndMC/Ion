@@ -94,7 +94,6 @@ object StarshipShields : IonServerComponent() {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	fun onBlockExplode(event: BlockExplodeEvent) {
 		val block = event.block
-
 		handleExplosion(block, event.blockList(), event)
 	}
 
@@ -102,7 +101,6 @@ object StarshipShields : IonServerComponent() {
 	fun onEntityExplode(event: EntityExplodeEvent) {
 		val location = event.location
 		val block = location.block
-
 		handleExplosion(block, event.blockList(), event)
 	}
 
