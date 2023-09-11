@@ -6,7 +6,7 @@ import com.google.common.cache.LoadingCache
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.litote.kmongo.json
-import org.litote.kmongo.setValue
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -29,12 +28,12 @@ class DeactivatedShipWorldCache(world: World) {
 	private val worldName = world.name
 	val dataFolder = File(world.worldFolder, "data/starlegacy/starship_saves").also { it.mkdirs() }
 
-	private val blockKeyMap: MutableMap<Long, PlayerStarshipData> = Long2ObjectOpenHashMap()
-	private val chunkKeyMap: Multimap<Long, PlayerStarshipData> = HashMultimap.create()
+	private val blockKeyMap: MutableMap<Long, StarshipData> = Long2ObjectOpenHashMap()
+	private val chunkKeyMap: Multimap<Long, StarshipData> = HashMultimap.create()
 
 	private val mutex = Any()
 
-	fun add(data: PlayerStarshipData): Unit = synchronized(mutex) {
+	fun add(data: StarshipData): Unit = synchronized(mutex) {
 		val blockKey: Long = data.blockKey
 
 		check(!blockKeyMap.containsKey(blockKey)) {
@@ -48,9 +47,9 @@ class DeactivatedShipWorldCache(world: World) {
 		}
 	}
 
-	fun remove(data: PlayerStarshipData): Unit = synchronized(mutex) {
+	fun remove(data: StarshipData): Unit = synchronized(mutex) {
 		val blockKey: Long = data.blockKey
-		val existing: PlayerStarshipData? = blockKeyMap[blockKey]
+		val existing: StarshipData? = blockKeyMap[blockKey]
 
 		requireNotNull(existing) {
 			"$worldName does not have starship data at ${Vec3i(blockKey)}, " +
@@ -73,16 +72,16 @@ class DeactivatedShipWorldCache(world: World) {
 		savedStateCache.invalidate(data)
 	}
 
-	val savedStateCache: LoadingCache<PlayerStarshipData, Optional<PlayerStarshipState>> = CacheBuilder.newBuilder()
+	val savedStateCache: LoadingCache<StarshipData, Optional<StarshipState>> = CacheBuilder.newBuilder()
 		.weakKeys()
 		.expireAfterAccess(1, TimeUnit.HOURS)
 		.build(
-			CacheLoader.from { data: PlayerStarshipData? ->
+			CacheLoader.from { data: StarshipData? ->
 				if (data != null) {
 					val saveFile = DeactivatedPlayerStarships.getSaveFile(world, data)
 					if (saveFile.exists()) {
 						val result = FileInputStream(saveFile).use {
-							PlayerStarshipState.readFromStream(it)
+							StarshipState.readFromStream(it)
 						}
 						Optional.of(result)
 					} else {
@@ -94,19 +93,21 @@ class DeactivatedShipWorldCache(world: World) {
 			}
 		)
 
-	fun removeState(data: PlayerStarshipData): Unit = synchronized(mutex) {
+	fun removeState(data: StarshipData): Unit = synchronized(mutex) {
 		data.containedChunks?.forEach { chunkKeyMap[it].remove(data) }
-		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::containedChunks, null))
+
+		data.companion().updateChunks(data._id, null)
+
 		DeactivatedPlayerStarships.getSaveFile(data.bukkitWorld(), data).delete()
 		savedStateCache.put(data, Optional.empty())
 	}
 
-	fun updateState(data: PlayerStarshipData, state: PlayerStarshipState): Unit = synchronized(mutex) {
+	fun updateState(data: StarshipData, state: StarshipState): Unit = synchronized(mutex) {
 		data.containedChunks?.forEach { chunkKeyMap[it].remove(data) }
 		data.containedChunks = state.coveredChunks
 		data.containedChunks?.forEach { chunkKeyMap[it].add(data) }
 
-		PlayerStarshipData.updateById(data._id, setValue(PlayerStarshipData::containedChunks, state.coveredChunks))
+		data.companion().updateChunks(data._id, state.coveredChunks)
 
 		val saveFile = DeactivatedPlayerStarships.getSaveFile(data.bukkitWorld(), data)
 		FileOutputStream(saveFile).use {
@@ -116,11 +117,11 @@ class DeactivatedShipWorldCache(world: World) {
 		savedStateCache.put(data, Optional.of(state))
 	}
 
-	operator fun get(blockKey: Long): PlayerStarshipData? = blockKeyMap[blockKey]
+	operator fun get(blockKey: Long): StarshipData? = blockKeyMap[blockKey]
 
-	operator fun get(x: Int, y: Int, z: Int): PlayerStarshipData? = this[blockKey(x, y, z)]
+	operator fun get(x: Int, y: Int, z: Int): StarshipData? = this[blockKey(x, y, z)]
 
-	fun getInChunk(chunk: Chunk): List<PlayerStarshipData> {
+	fun getInChunk(chunk: Chunk): List<StarshipData> {
 		val chunkKey = chunk.chunkKey
 
 		if (!chunkKeyMap.containsKey(chunkKey)) {
@@ -130,11 +131,11 @@ class DeactivatedShipWorldCache(world: World) {
 		return chunkKeyMap[chunkKey].toList()
 	}
 
-	fun getContaining(x: Int, y: Int, z: Int): PlayerStarshipData? {
+	fun getContaining(x: Int, y: Int, z: Int): StarshipData? {
 		val blockKey = blockKey(x, y, z)
 		val chunkKey = chunkKey(x shr 4, z shr 4)
 
-		for (data: PlayerStarshipData in chunkKeyMap.get(chunkKey)) {
+		for (data: StarshipData in chunkKeyMap.get(chunkKey)) {
 			val state = savedStateCache[data].orNull() ?: continue
 
 			if (!state.blockMap.containsKey(blockKey)) {
@@ -147,7 +148,7 @@ class DeactivatedShipWorldCache(world: World) {
 		return null
 	}
 
-	fun getLockedContaining(x: Int, y: Int, z: Int): PlayerStarshipData? {
+	fun getLockedContaining(x: Int, y: Int, z: Int): StarshipData? {
 		val data = getContaining(x, y, z)
 
 		if (data?.isLockActive() == false) {

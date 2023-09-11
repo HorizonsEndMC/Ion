@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
@@ -200,13 +201,13 @@ object PilotedStarships : IonServerComponent() {
 	operator fun get(controller: Controller) = map[controller]
 
 	fun activateWithoutPilot(
-		data: PlayerStarshipData,
+		data: StarshipData,
 		createController: (ActiveControlledStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	): Boolean {
 		val world: World = data.bukkitWorld()
 
-		val state: PlayerStarshipState? = DeactivatedPlayerStarships.getSavedState(data)
+		val state: StarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 
 		if (state == null) {
 			warnDetectionFailure("Not detected.", data.blockKey)
@@ -250,7 +251,13 @@ object PilotedStarships : IonServerComponent() {
 		return true
 	}
 
-	fun tryPilot(player: Player, data: PlayerStarshipData, callback: (ActiveControlledStarship) -> Unit = {}): Boolean {
+	fun tryPilot(player: Player, data: StarshipData, callback: (ActiveControlledStarship) -> Unit = {}): Boolean {
+		if (data !is PlayerStarshipData) {
+			player.userError("You cannot pilot a non-player starship!")
+
+			return false
+		}
+
 		if (!data.isPilot(player)) {
 			val captain = SLPlayer.getName(data.captain) ?: "null, <red>something's gone wrong, please contact staff"
 
@@ -299,7 +306,7 @@ object PilotedStarships : IonServerComponent() {
 
 		val world: World = data.bukkitWorld()
 
-		val state: PlayerStarshipState? = DeactivatedPlayerStarships.getSavedState(data)
+		val state: StarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 
 		if (state == null) {
 			player.userErrorActionMessage("Starship has not been detected")
@@ -310,7 +317,7 @@ object PilotedStarships : IonServerComponent() {
 			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.activate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
 
-		val carriedShips = mutableListOf<PlayerStarshipData>()
+		val carriedShips = mutableListOf<StarshipData>()
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
 			val x: Int = blockKeyX(key)
@@ -336,14 +343,20 @@ object PilotedStarships : IonServerComponent() {
 				}
 
 				DeactivatedPlayerStarships[world, x, y, z]?.takeIf { it._id != data._id }?.also { carried ->
-					if (!carried.isPilot(player)) {
-						player.userError(
-							"Block at $x $y $z is a ship computer which you are not a pilot of!"
-						)
+					if (carried is PlayerStarshipData) { //TODO access system for non-player ships
+						if (!carried.isPilot(player)) {
+							player.userError(
+								"Block at $x $y $z is a ship computer which you are not a pilot of!"
+							)
+							return false
+						}
+
+						carriedShips.add(carried)
+					} else {
+						player.userError("Block at $x, $y, $z is a non-player ship computer!")
+
 						return false
 					}
-
-					carriedShips.add(carried)
 				}
 			}
 		}
@@ -414,15 +427,15 @@ object PilotedStarships : IonServerComponent() {
 		return true
 	}
 
-	fun getDisplayName(data: PlayerStarshipData): String {
+	fun getDisplayName(data: StarshipData): String {
 		return data.name ?: data.starshipType.actualType.formatted
 	}
 
-	fun getDisplayNameComponent(data: PlayerStarshipData): Component = data.name?.let {
+	fun getDisplayNameComponent(data: StarshipData): Component = data.name?.let {
 		MiniMessage.miniMessage().deserialize(it)
 	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.actualType.formatted)
 
-	fun getRawDisplayName(data: PlayerStarshipData): String {
+	fun getRawDisplayName(data: StarshipData): String {
 		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()
 	}
 }

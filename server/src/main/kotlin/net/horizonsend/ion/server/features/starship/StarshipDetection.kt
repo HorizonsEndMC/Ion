@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -61,10 +61,10 @@ object StarshipDetection : IonServerComponent() {
 	}
 	//endregion
 
-	fun detectNewState(data: PlayerStarshipData, detector: Audience? = null): PlayerStarshipState =
+	fun detectNewState(data: StarshipData, detector: Audience? = null): StarshipState =
 		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType, detector)
 
-	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null): PlayerStarshipState {
+	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null): StarshipState {
 		/*
 						val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
 		*/
@@ -268,7 +268,7 @@ object StarshipDetection : IonServerComponent() {
 		checkNotNull(maxY)
 		checkNotNull(maxZ)
 
-		return PlayerStarshipState(coveredChunks, blockTypes, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
+		return StarshipState(coveredChunks, blockTypes, Vec3i(minX, minY, minZ), Vec3i(maxX, maxY, maxZ))
 	}
 
 	fun isInventory(material: Material): Boolean {
