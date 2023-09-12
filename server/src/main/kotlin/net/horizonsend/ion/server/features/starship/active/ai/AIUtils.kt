@@ -65,10 +65,9 @@ object AIUtils : IonServerComponent() {
 			return
 		}
 
-		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, name) { data ->
+		DeactivatedPlayerStarships.createAIShipAsync(block.world, block.x, block.y, block.z, type, name) { data ->
 			Tasks.async {
 				try {
-					DeactivatedPlayerStarships.updateType(data, type)
 					val state = StarshipDetection.detectNewState(data)
 
 					DeactivatedPlayerStarships.updateState(data, state)

@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
@@ -58,24 +59,25 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 	}
 
-	fun createAsync(
+	fun createPlayerShipAsync(
 		world: World,
 		x: Int,
 		y: Int,
 		z: Int,
 		playerId: UUID,
 		name: String? = null,
-		callback: (PlayerStarshipData) -> Unit
+		callback: (StarshipData) -> Unit
 	) = Tasks.async {
 		synchronized(lock) {
-			require(getCache(world)[x, y, z] == null)
 			val captain = playerId.slPlayerId
+
 			val type = StarshipType.SHUTTLE
-			val id = objId<PlayerStarshipData>()
+
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
 			val autoLock = Bukkit.getPlayer(playerId)?.hasProtection() == true
 
+			val id = objId<PlayerStarshipData>()
 			val data = PlayerStarshipData(
 				_id = id,
 				captain = captain,
@@ -86,22 +88,54 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				name = name,
 				isLockEnabled = autoLock
 			)
-			PlayerStarshipData.add(data)
-			getCache(world).add(data)
+
+			createPlayerShipAsync(world, x, y, z, data, callback)
+		}
+	}
+
+	fun createAIShipAsync(
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		type: StarshipType,
+		name: String?,
+		callback: (StarshipData) -> Unit
+	) = Tasks.async {
+		synchronized(lock) {
+			val blockKey = blockKey(x, y, z)
+
+			val id = objId<AIStarshipData>()
+			val data = AIStarshipData(
+				id,
+				type.name,
+				IonServer.configuration.serverName,
+				world.name,
+				blockKey,
+				name = name
+			)
 
 			Tasks.sync { callback(data) }
 		}
 	}
 
-	/** This method creates mostly meaningless data for AI ships **/
-	fun createAsync(
+	fun createPlayerShipAsync(
 		world: World,
 		x: Int,
 		y: Int,
 		z: Int,
-		name: String? = null,
+		data: StarshipData,
 		callback: (StarshipData) -> Unit
-	) = createAsync(world, x, y, z, UUID.randomUUID(), name, callback)
+	) = Tasks.async {
+		synchronized(lock) {
+			require(getCache(world)[x, y, z] == null)
+
+			data.companion().add(data)
+			getCache(world).add(data)
+
+			Tasks.sync { callback(data) }
+		}
+	}
 
 	fun getSavedState(data: StarshipData): StarshipState? {
 		return getCache(data.bukkitWorld()).savedStateCache[data].orElse(null)

@@ -17,12 +17,14 @@ object AIStarshipTemplates : IonServerComponent(true) {
 	override fun onEnable() {}
 
 	val VESTA: AIStarshipTemplate = register(
+		"VESTA",
 		IonServer.configuration.soldShips.first().schematicFile,
 		IonServer.configuration.soldShips.first().shipType,
 		IonServer.configuration.soldShips.first().displayName
 	) { ship -> AIControllers.dumbAI(ship) }
 
 	data class AIStarshipTemplate(
+		val identifier: String,
 		val schematicFile: File,
 		val type: StarshipType,
 		val miniMessageName: String,
@@ -32,12 +34,14 @@ object AIStarshipTemplates : IonServerComponent(true) {
 	}
 
 	fun register(
+		identifier: String,
 		schematicFile: File,
 		type: StarshipType,
 		miniMessageName: String,
 		createController: (ActiveStarship) -> AIController
 	) : AIStarshipTemplate {
 		val template = AIStarshipTemplate(
+			identifier,
 			schematicFile,
 			type,
 			miniMessageName,
