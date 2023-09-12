@@ -265,6 +265,7 @@ object PilotedStarships : IonServerComponent() {
 
 			return false
 		}
+
 		if (!data.starshipType.actualType.canUse(player)) {
 			player.userErrorActionMessage("You are not high enough level to pilot this!")
 			return false
