@@ -160,8 +160,21 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 			station.setLocation(x, z, world.name)
 			SpaceStations.reload()
 
-			sender.success("Set position of $station to $x, $z")
+			sender.success("Set position of ${station.name} to $x, $z")
 		}
+
+	@CommandPermission("nations.admin.movestation")
+	@Subcommand("spacestation set radius")
+	@Suppress("unused")
+	fun onStationSetRadius(sender: CommandSender, station: CachedSpaceStation<*, *, *>, radius: Int) =
+		asyncCommand(sender) {
+
+			station.changeRadius(radius)
+			SpaceStations.reload()
+
+			sender.success("Set radius of ${station.name} to $radius")
+		}
+
 
 	@Subcommand("spacestation reload")
 	@Suppress("unused")
