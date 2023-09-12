@@ -33,6 +33,10 @@ class BlasterListeners : SLEventListener() {
 
 		if (customItem !is Blaster<*>) return
 
+		val arena: String = if (event.player.world.name.contains("arena", ignoreCase = true))
+			"<#555555>[<#ffff66>Arena<#555555>]<reset> "
+		else ""
+
 		val blaster = customItem.displayName
 		val victimColor =
 			"<#" + Integer.toHexString((
@@ -58,7 +62,7 @@ class BlasterListeners : SLEventListener() {
 
 		val newMessage = MiniMessage.miniMessage()
 			.deserialize(
-				"$victimColor${victim.name}<reset> was $verb by $killerColor${killer.name}<reset> from ${distance.roundToInt()} blocks away, using "
+				"$arena$victimColor${victim.name}<reset> was $verb by $killerColor${killer.name}<reset> from ${distance.roundToInt()} blocks away, using "
 			)
 			.append(blaster)
 
