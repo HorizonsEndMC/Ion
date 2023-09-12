@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.customitems.blasters
 
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
@@ -66,7 +67,7 @@ class BlasterListeners : SLEventListener() {
 		} else {
 			event.deathMessage(null)
 
-			Notify.online(newMessage)
+			if (IonServer.configuration.serverName == "survival") Notify.online(newMessage) else IonServer.server.sendMessage(newMessage)
 		}
 	}
 
