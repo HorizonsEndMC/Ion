@@ -153,7 +153,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("jump")
-	@CommandCompletion("@planetsInWorld|@hyperspaceGatesInWorld")
+	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val starship: ActivePlayerStarship = getStarshipPiloting(sender)
