@@ -274,7 +274,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
-		DeactivatedPlayerStarships.createAsync(block.world, block.x, block.y, block.z, sender.uniqueId, name) { data ->
+		DeactivatedPlayerStarships.createPlayerShipAsync(block.world, block.x, block.y, block.z, sender.uniqueId, name) { data ->
 			Tasks.async {
 				try {
 					DeactivatedPlayerStarships.updateType(data, type)
