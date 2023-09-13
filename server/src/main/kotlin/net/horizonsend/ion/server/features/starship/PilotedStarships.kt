@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -201,6 +202,7 @@ object PilotedStarships : IonServerComponent() {
 	operator fun get(controller: Controller) = map[controller]
 
 	fun activateWithoutPilot(
+		feedbackDestination: Audience,
 		data: StarshipData,
 		createController: (ActiveControlledStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
@@ -236,7 +238,7 @@ object PilotedStarships : IonServerComponent() {
 			}
 		}
 
-		DeactivatedPlayerStarships.activateAsync(data, state, listOf()) { activePlayerStarship ->
+		DeactivatedPlayerStarships.activateAsync(feedbackDestination, data, state, listOf()) { activePlayerStarship ->
 			pilot(activePlayerStarship, createController(activePlayerStarship))
 
 			activePlayerStarship.sendMessage(
