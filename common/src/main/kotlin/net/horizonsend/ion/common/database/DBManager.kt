@@ -34,6 +34,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpa
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Star
+import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import org.bson.BsonDocument
@@ -132,6 +133,7 @@ object DBManager : IonComponent() {
 
 		// starships
 		PlayerStarshipData.init()
+		AIStarshipData.init()
 		Blueprint.init()
 
 		Cryopod.init()
