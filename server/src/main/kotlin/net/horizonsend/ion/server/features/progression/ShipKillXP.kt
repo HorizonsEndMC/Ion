@@ -58,7 +58,7 @@ object ShipKillXP : IonServerComponent() {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onStarshipExplode(event: StarshipExplodeEvent) {
-		val arena = event.starship.world.name.lowercase(Locale.getDefault()).contains("arena")
+		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true)
 
 		onShipKill(event.starship, event.starship.controller.getDisplayName().plainText(), arena)
 	}
