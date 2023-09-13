@@ -40,7 +40,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.time.Instant
-import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -82,7 +81,7 @@ object ShipKillXP : IonServerComponent() {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onCombatNPCKill(event: CombatNPCKillEvent) {
-		val arena = event.killer?.world?.name?.lowercase(Locale.getDefault())?.contains("arena") ?: true
+		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true)
 		onPlayerKilled(event.id, event.name, event.killer, arena)
 	}
 
@@ -90,7 +89,7 @@ object ShipKillXP : IonServerComponent() {
 	fun onPlayerDeath(event: PlayerDeathEvent) {
 		val player: Player = event.entity
 		val killer: Player? = player.killer
-		val arena = event.player.world.name.lowercase(Locale.getDefault()).contains("arena")
+		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true)
 		onPlayerKilled(player.uniqueId, player.name, killer, arena)
 	}
 
@@ -115,7 +114,7 @@ object ShipKillXP : IonServerComponent() {
 		val data = data(starship)
 		for (id in starship.passengerIDs) {
 			val killedName = getPlayer(id)?.name ?: "UNKNOWN"
-			val arena = starship.serverLevel.world.name.lowercase(Locale.getDefault()).contains("arena")
+			val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true)
 			onShipKill(id, killedName, data, arena)
 		}
 	}

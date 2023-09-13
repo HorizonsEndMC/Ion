@@ -33,7 +33,7 @@ class BlasterListeners : SLEventListener() {
 
 		if (customItem !is Blaster<*>) return
 
-		val arena: String = if (event.player.world.name.contains("arena", ignoreCase = true))
+		val arena: String = if (IonServer.configuration.serverName.equals("creative", ignoreCase = true))
 			"<#555555>[<#ffff66>Arena<#555555>]<reset> "
 		else ""
 
