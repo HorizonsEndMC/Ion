@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
+import net.kyori.adventure.audience.Audience
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.event.EventHandler
@@ -72,7 +73,7 @@ object AIUtils : IonServerComponent() {
 
 					DeactivatedPlayerStarships.updateState(data, state)
 
-					Tasks.sync { PilotedStarships.activateWithoutPilot(data, createController, callback) }
+					Tasks.sync { PilotedStarships.activateWithoutPilot(Audience.empty(), data, createController, callback) }
 				} catch (e: StarshipDetection.DetectionFailedException) {
 					warnDetectionFailure("Detection failed: ${e.message}", origin)
 				}
