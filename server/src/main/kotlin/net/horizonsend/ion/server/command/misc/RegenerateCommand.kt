@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.kyori.adventure.audience.Audience
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
 import net.minecraft.nbt.NbtOps
@@ -46,6 +47,9 @@ object RegenerateCommand : SLCommand() {
 		val session = WorldEdit.getInstance().sessionManager.findByName(sender.name) ?: return
 		val selection = session.getSelection(session.selectionWorld)
 
+		sender.information("Started regenerating ${sender.world.name} from ${selection.minimumPoint} to ${selection.maximumPoint}")
+		val time = System.currentTimeMillis()
+
 		val sections = mutableMapOf<Triple<Int, Int, Int>, CompletableDeferred<Pair<ChunkPos, CompletedSection>>>()
 		val sectionsHeight = IntRange(selection.minimumPoint.y.shr(4), selection.maximumPoint.y.shr(4))
 
@@ -68,36 +72,64 @@ object RegenerateCommand : SLCommand() {
 				)
 
 				for (chunk in chunks) scope.launch chunk@{
+					fun removeDeferredChunkSections() {
+						val chunkSections = sections.filterKeys { it.first == chunk.x && it.third == chunk.z }
+
+						for ((location, _) in chunkSections) {
+							sections.remove(location)
+						}
+					}
+
 					val chunkPos = ChunkPos(chunk.x, chunk.z)
 
-					if (!region.doesChunkExist(chunkPos)) return@chunk
+					if (!region.doesChunkExist(chunkPos)) {
+						removeDeferredChunkSections()
+						sender.serverError("Chunk [${chunk.x}, ${chunk.z}] was not in Region file ${chunks.first().x.shr(5)}! Skipping.")
+						return@chunk
+					}
 
-					val chunkData = region.getChunkDataInputStream(chunkPos)?.let { NbtIo.read(it) } ?: return@chunk
+					val chunkData = region.getChunkDataInputStream(chunkPos)?.let { NbtIo.read(it) }
+
+					if (chunkData == null) {
+						sender.serverError("Chunk [${chunk.x}, ${chunk.z}] could not be read from Region file ${chunks.first().x.shr(5)}! Skipping.")
+						removeDeferredChunkSections()
+						return@chunk
+					}
 
 					@Suppress("UNCHECKED_CAST")
 					val sectionsList = (chunkData.getList("sections", 10).toList() as List<CompoundTag>)
 						.associateBy { it.getByte("Y") }
 
 					for (sectionY in sectionsHeight) {
-						val storedSection = sectionsList[sectionY.toByte()] ?: continue
-
 						val sectionPos = Triple(chunk.x, sectionY, chunk.z)
-						val deferred = sections[sectionPos]!!
+						val storedSection = sectionsList[sectionY.toByte()]
+
+						if (storedSection == null) {
+							sender.serverError("Stored section for $sectionPos was not found. Skipping.")
+							sections.remove(sectionPos)
+							continue
+						}
+
+						val deferred = sections[sectionPos]!! // I hope not
 
 						val dataResult = blockStateCodec.parse(NbtOps.INSTANCE, storedSection.getCompound("block_states"))
+
 						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).getOrThrow(false) {
+							sender.serverError("Error reading section blocks: $it")
 							IonServer.slF4JLogger.warn(it)
 						}
 
-						regenerateSection(sectionY, chunkPos, sectionBlocks, deferred, selection)
+						regenerateSection(sender, sectionY, chunkPos, sectionBlocks, deferred, selection)
 					}
 				}
 			}
 		}
 
-		sender.information("Started regenerating ${sender.world.name} from ${selection.minimumPoint} to ${selection.maximumPoint}")
-
-		val time = System.currentTimeMillis()
+		IonServer.logger.info(
+			"""
+				Awaiting: ${sections.map { "${it.key}: ${it.value}" }}
+			""".trimIndent()
+		)
 
 		scope.launch { complete(sender.world, sections.values) }.invokeOnCompletion {
 			val diff = System.currentTimeMillis() - time
@@ -107,20 +139,24 @@ object RegenerateCommand : SLCommand() {
 	}
 
 	private suspend fun complete(world: World, deferredSections: Collection<CompletableDeferred<Pair<ChunkPos, CompletedSection>>>) {
-		val sections = deferredSections.awaitAll()
+		val newSections = deferredSections.toMutableSet()
+
+		val sections = newSections.awaitAll()
 
 		val chunkMap = sections.groupBy { it.first }.mapKeys { world.minecraft.getChunk(it.key.x, it.key.z) }
 
 		for ((levelChunk, groupedSections) in chunkMap) {
 			Tasks.sync {
-				for (section in groupedSections) {
-					section.second.place(levelChunk)
+				for ((_, section) in groupedSections) {
+
+					section.place(levelChunk)
 				}
 			}
 		}
 	}
 
 	private fun regenerateSection(
+		audience: Audience,
 		sectionY: Int,
 		chunkPos: ChunkPos,
 		palettedContainer: PalettedContainer<BlockState?>,
@@ -134,15 +170,23 @@ object RegenerateCommand : SLCommand() {
 			val realY = y + (sectionY.shl(4))
 			val realZ = z + (chunkPos.z.shl(4))
 
-			if (!selection.contains(BlockVector3.at(realX, realY, realZ))) continue
+			if (!selection.contains(BlockVector3.at(realX, realY, realZ))) {
+				continue
+			}
 
 			val index = PalettedContainer.Strategy.SECTION_STATES.getIndex(x, y, z)
 
-			val state = palettedContainer[index] ?: continue
+			val state: BlockState? = palettedContainer[index]
+
+			if (state == null) {
+				audience.serverError("Block at $realX, $realY, $realZ was null in the container!")
+				continue
+			}
 
 			newSection.setBlock(index, BlockData(state, null))
 		}
 
+		IonServer.logger.info("Completed section ${chunkPos.x}, $sectionY, ${chunkPos.z}")
 		deferred.complete(chunkPos to newSection)
 	}
 

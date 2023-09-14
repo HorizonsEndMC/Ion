@@ -3,11 +3,11 @@ package net.horizonsend.ion.server.features.space.data
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.BLOCKS
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.PALETTE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
+import net.horizonsend.ion.server.miscellaneous.utils.component1
+import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.LevelChunk
-import net.horizonsend.ion.server.miscellaneous.utils.component1
-import net.horizonsend.ion.server.miscellaneous.utils.component2
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -50,7 +50,8 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
     }
 
 	fun place(levelChunk: LevelChunk) {
-		val section = levelChunk.sections[y]
+		val worldMin = levelChunk.level.minBuildHeight.shr(4)
+		val section = levelChunk.sections[y - worldMin]
 
 		val (chunkX, chunkZ) = levelChunk.pos
 		val chunkAbsoluteX = chunkX.shl(4)
