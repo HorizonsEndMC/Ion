@@ -1,11 +1,18 @@
 package net.horizonsend.ion.server.features.ores
 
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.regions.Region
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.OrePlacementConfig
 import net.horizonsend.ion.server.miscellaneous.utils.Position
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
+import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
@@ -20,24 +27,28 @@ TODO: Ore logic should be separated from the Listener, and the Async code should
 */
 
 @Suppress("Unused")
-class ChunkLoadListener(private val plugin: IonServer) : SLEventListener() {
+object CustomOrePlacement : SLEventListener() {
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onChunkLoad(event: ChunkLoadEvent) {
+		placeOres(event.chunk)
+	}
+
+	fun placeOres(chunk: Chunk) {
 		val placementConfiguration = try {
-			OrePlacementConfig.valueOf(event.world.name)
+			OrePlacementConfig.valueOf(chunk.world.name)
 		} catch (_: IllegalArgumentException) {
 			return
 		}
 
-		val chunkOreVersion = event.chunk.persistentDataContainer.get(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER)
+		val chunkOreVersion = chunk.persistentDataContainer.get(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER)
 
 		if (chunkOreVersion == placementConfiguration.currentOreVersion) return
 
 		Bukkit.getScheduler().runTaskAsynchronously(
-			plugin,
+			IonServer,
 			Runnable {
-				val chunkSnapshot = event.chunk.getChunkSnapshot(true, false, false)
-				val random = Random(event.chunk.chunkKey)
+				val chunkSnapshot = chunk.getChunkSnapshot(true, false, false)
+				val random = Random(chunk.chunkKey)
 
 				// These are kept separate as ores need to be written to a file,
 				// reversing ores does not need to be written to a file.
@@ -45,7 +56,7 @@ class ChunkLoadListener(private val plugin: IonServer) : SLEventListener() {
 				val placedOres = mutableMapOf<Position<Int>, Ore>() // Everything that needs to be written to a file.
 
 				val file =
-					plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
+					IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 
 				if (file.exists()) {
 					file.readText().split("\n").forEach { oreLine ->
@@ -70,7 +81,7 @@ class ChunkLoadListener(private val plugin: IonServer) : SLEventListener() {
 				}
 
 				for (x in 0..15) for (z in 0..15) {
-					val minBlockY = event.chunk.world.minHeight
+					val minBlockY = chunk.world.minHeight
 					val maxBlockY = chunkSnapshot.getHighestBlockYAt(x, z)
 
 					for (y in minBlockY..maxBlockY) {
@@ -90,15 +101,15 @@ class ChunkLoadListener(private val plugin: IonServer) : SLEventListener() {
 				placedBlocks.putAll(placedOres.mapValues { it.value.blockData })
 
 				Bukkit.getScheduler().runTask(
-					plugin,
+					IonServer,
 					Runnable {
 						placedBlocks.forEach { (position, blockData) ->
-							event.chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
+							chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 						}
 
-						IonServer.slF4JLogger.info("Updated ores in ${event.chunk.x} ${event.chunk.z} @ ${event.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
+						IonServer.slF4JLogger.info("Updated ores in ${chunk.x} ${chunk.z} @ ${chunk.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
 
-						event.chunk.persistentDataContainer.set(
+						chunk.persistentDataContainer.set(
 							NamespacedKeys.ORE_CHECK,
 							PersistentDataType.INTEGER,
 							placementConfiguration.currentOreVersion
@@ -107,21 +118,60 @@ class ChunkLoadListener(private val plugin: IonServer) : SLEventListener() {
 				)
 
 				// TODO: I am disappointed with myself for writing this dumb file format.
-				plugin.dataFolder.resolve("ores/${chunkSnapshot.worldName}")
+				IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}")
 					.apply { mkdirs() }
 					.resolve("${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
 					.writeText(
 						placedOres.map {
 							"${it.key.x},${it.key.y},${it.key.z},${
-							chunkSnapshot.getBlockType(
-								it.key.x,
-								it.key.y,
-								it.key.z
-							)
+								chunkSnapshot.getBlockType(
+									it.key.x,
+									it.key.y,
+									it.key.z
+								)
 							},${it.value}"
 						}.joinToString("\n", "", "")
 					)
 			}
 		)
+	}
+
+	fun placeOresFromStored(audience: Audience?, chunk: Chunk, region: Region? = null) = Tasks.async {
+		val chunkSnapshot = chunk.getChunkSnapshot(true, false, false)
+		val file = IonServer.dataFolder.resolve("ores/${chunkSnapshot.worldName}/${chunkSnapshot.x}_${chunkSnapshot.z}.ores.csv")
+		val chunkStartX = chunk.x.shl(4)
+		val chunkStartZ = chunk.z.shl(4)
+
+		val toPlace = mutableMapOf<Vec3i, Ore>()
+
+		file.readText().split("\n").forEach { oreLine ->
+			if (oreLine.isEmpty()) return@forEach
+
+			val oreData = oreLine.split(",")
+
+			if (oreData.size != 5) {
+				throw IllegalArgumentException("${file.absolutePath} ore data line $oreLine is not valid.")
+			}
+
+			val x = oreData[0].toInt()
+			val y = oreData[1].toInt()
+			val z = oreData[2].toInt()
+
+			if (region?.contains(BlockVector3.at(x + chunkStartX, y, z + chunkStartZ)) == false) return@async
+
+			val placedOre = Ore.valueOf(oreData[4])
+
+			toPlace[Vec3i(x + chunkStartX, y, z + chunkStartZ)] = placedOre
+		}
+
+		Tasks.sync {
+			for ((location, ore) in toPlace) {
+				val (x, y, z) = location
+
+				chunk.world.setBlockData(x, y, z, ore.blockData)
+			}
+
+			audience?.information("Placed ${toPlace.size} ore blocks for chunk ${chunk.x} ${chunk.z}.")
+		}
 	}
 }

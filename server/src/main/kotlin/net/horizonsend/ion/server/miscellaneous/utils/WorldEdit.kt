@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
+import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 import com.sk89q.jnbt.CompoundTag
 import com.sk89q.jnbt.NBTUtils
 import com.sk89q.jnbt.Tag
@@ -12,8 +14,10 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.function.operation.Operation
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.minecraft.nbt.ByteArrayTag
 import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.DoubleTag
@@ -26,15 +30,13 @@ import net.minecraft.nbt.LongArrayTag
 import net.minecraft.nbt.LongTag
 import net.minecraft.nbt.ShortTag
 import net.minecraft.nbt.StringTag
-import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
+import org.bukkit.entity.Player
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
-import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
 
 fun readSchematic(file: File): Clipboard? {
 	val format = ClipboardFormats.findByFile(file) ?: return null
@@ -150,4 +152,9 @@ fun Tag.nms(): net.minecraft.nbt.Tag {
 		12 -> LongArrayTag((this as com.sk89q.jnbt.LongArrayTag).value)
 		else -> throw IllegalArgumentException()
 	}
+}
+
+fun Player.getSelection(): Region? {
+	val session = WorldEdit.getInstance().sessionManager.findByName(name) ?: return null
+	return session.getSelection(session.selectionWorld)
 }

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.customitems.CustomItemListeners
@@ -8,7 +7,7 @@ import net.horizonsend.ion.server.features.customitems.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
-import net.horizonsend.ion.server.features.ores.ChunkLoadListener
+import net.horizonsend.ion.server.features.ores.CustomOrePlacement
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
@@ -66,7 +65,7 @@ val listeners: List<Listener> = listOf(
 	// Ion
 	BlasterListeners(),
 	CancelListeners(),
-	ChunkLoadListener(IonServer),
+	CustomOrePlacement,
 	CustomItemListeners(),
 	EdenFixer9000(),
 	GameplayTweaksListeners(),

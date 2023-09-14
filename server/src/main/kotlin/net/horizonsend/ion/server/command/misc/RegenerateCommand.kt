@@ -2,23 +2,26 @@ package net.horizonsend.ion.server.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Subcommand
 import com.mojang.serialization.DataResult
-import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.ores.CustomOrePlacement
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
 import net.minecraft.nbt.CompoundTag
@@ -41,13 +44,16 @@ object RegenerateCommand : SLCommand() {
 	private val scope = CoroutineScope(Dispatchers.Default)
 	private val blockStateCodec = ChunkSerializer.BLOCK_STATE_CODEC
 
-	@Default
+	@Subcommand("terrain")
 	@Suppress("unused")
-	fun onRegenerate(sender: Player) {
-		val session = WorldEdit.getInstance().sessionManager.findByName(sender.name) ?: return
-		val selection = session.getSelection(session.selectionWorld)
+	fun onRegenerateTerrain(sender: Player) {
+		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
 
-		sender.information("Started regenerating ${sender.world.name} from ${selection.minimumPoint} to ${selection.maximumPoint}")
+		regenerateSelection(sender, selection, sender.world)
+	}
+
+	fun regenerateSelection(sender: Audience, selection: Region, world: World): Deferred<Boolean> {
+		sender.information("Started regenerating ${world.name} from ${selection.minimumPoint} to ${selection.maximumPoint}")
 		val time = System.currentTimeMillis()
 
 		val sections = mutableMapOf<Triple<Int, Int, Int>, CompletableDeferred<Pair<ChunkPos, CompletedSection>>>()
@@ -67,7 +73,7 @@ object RegenerateCommand : SLCommand() {
 
 		for ((regionFile, chunks) in regionsToChunksMap) {
 			scope.launch {
-				val region = getRegion(sender.world, regionFile) ?: return@launch sender.serverError(
+				val region = getRegion(world, regionFile) ?: return@launch sender.serverError(
 					"Region file ${chunks.first().x.shr(5)}, ${chunks.first().z.shr(5)} doesn't exist!"
 				)
 
@@ -125,17 +131,16 @@ object RegenerateCommand : SLCommand() {
 			}
 		}
 
-		IonServer.logger.info(
-			"""
-				Awaiting: ${sections.map { "${it.key}: ${it.value}" }}
-			""".trimIndent()
-		)
+		val deferred = CompletableDeferred<Boolean>()
 
-		scope.launch { complete(sender.world, sections.values) }.invokeOnCompletion {
+		scope.launch { complete(world, sections.values) }.invokeOnCompletion {
 			val diff = System.currentTimeMillis() - time
 
+			deferred.complete(true)
 			sender.information("Took $diff ms")
 		}
+
+		return deferred
 	}
 
 	private suspend fun complete(world: World, deferredSections: Collection<CompletableDeferred<Pair<ChunkPos, CompletedSection>>>) {
@@ -148,7 +153,6 @@ object RegenerateCommand : SLCommand() {
 		for ((levelChunk, groupedSections) in chunkMap) {
 			Tasks.sync {
 				for ((_, section) in groupedSections) {
-
 					section.place(levelChunk)
 				}
 			}
@@ -199,6 +203,42 @@ object RegenerateCommand : SLCommand() {
 			return RegionFile(region.resolve(regionFileName).toPath(), region.toPath(), false)
 		} catch (error: Error) {
 			throw error
+		}
+	}
+
+	@Subcommand("ores")
+	@Suppress("unused")
+	fun onRegenerateOres(sender: Player) {
+		val selection = sender.getSelection() ?: fail { "You must make a selection!" }
+
+		regenerateOresInSelection(sender, selection, sender.world)
+	}
+
+	fun regenerateOresInSelection(feedback: Audience, region: Region, world: World) {
+		val chunks = region.chunks
+		val deferredChunks = chunks.map { pos ->
+			val x = pos.x
+			val z = pos.z
+
+			world.getChunkAtAsync(x, z)
+		}
+
+		for (chunk in deferredChunks) {
+			chunk.thenAccept {
+				CustomOrePlacement.placeOresFromStored(feedback, it, region)
+			}
+		}
+	}
+
+	@Subcommand("all")
+	@Suppress("unused")
+	fun onRegenerateAll(sender: Player) {
+		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
+
+		val isComplete = regenerateSelection(sender, selection, sender.world)
+
+		isComplete.invokeOnCompletion {
+			regenerateOresInSelection(sender, selection, sender.world)
 		}
 	}
 }
