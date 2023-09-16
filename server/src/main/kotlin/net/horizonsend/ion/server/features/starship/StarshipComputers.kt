@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toText
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.format.TextDecoration.BOLD
@@ -168,12 +169,12 @@ object StarshipComputers : IonServerComponent() {
 				2, 0
 			)
 
-			val lockDisplayTag = if (data.isLockEnabled) "<green>Lock Enabled" else "<red>Lock Disabled"
+			val lockDisplayTag = if (data.isLockEnabled) text("Lock Enabled", GREEN) else text("Lock Disabled", RED)
 
 			pane.addItem(
 				guiButton(Material.IRON_DOOR) {
 					toggleLockEnabled(playerClicker, data)
-				}.setName(MiniMessage.miniMessage().deserialize(lockDisplayTag)),
+				}.setName(lockDisplayTag),
 				3, 0
 			)
 
@@ -359,6 +360,7 @@ object StarshipComputers : IonServerComponent() {
 					DeactivatedPlayerStarships.updateType(data, type)
 
 					playerClicker.closeInventory()
+					tryOpenMenu(player, data)
 					player.success("Changed type to $type")
 				}
 			}
@@ -376,6 +378,9 @@ object StarshipComputers : IonServerComponent() {
 		} else {
 			player.success("Disabled Lock")
 		}
+
+		tryOpenMenu(player, data)
+		player.updateInventory()
 	}
 
 	private fun takeOwnership(player: Player, data: PlayerStarshipData) {
