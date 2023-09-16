@@ -1,16 +1,18 @@
 package net.horizonsend.ion.server.listener.fixers
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
+import net.minecraft.world.entity.item.ItemEntity
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerFishEvent
@@ -133,6 +135,13 @@ class CancelListeners : SLEventListener() {
 
 			event.isCancelled = true
 		}
+	}
+
+	@EventHandler
+	fun onItemDamage(event: EntityDamageEvent) {
+		if (event.entity !is ItemEntity) return
+
+		event.isCancelled = true
 	}
 
 	//TODO cancel recipes requiring iron supplied with custom items
