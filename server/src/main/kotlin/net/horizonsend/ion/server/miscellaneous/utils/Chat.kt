@@ -75,7 +75,7 @@ fun <T> Iterable<T>.joinToText(
 	return component
 }
 
-fun String.isAlphanumeric() = matches("^[a-zA-Z0-9]*$".toRegex())
+fun String.isAlphanumeric() = matches("^[a-z]*$".toRegex()) || matches("^[0-9]*$".toRegex()) || matches("^[a-z0-9]*$".toRegex())
 
 @Deprecated("Use Ion MiniMessage Extension Functions")
 fun String.text(): TextComponent = TextComponent(this)
