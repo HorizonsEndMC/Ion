@@ -63,9 +63,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(name.length !in 2..50) {
 			"Name length is ${name.length}, must be between 2 and 50"
 		}
-		failIf(!name.replace('-', ' ').replace('_', ' ').isAlphanumeric()) {
-			"Name must only contain letters, numbers, and - or _"
-		}
+		failIf(name.replace('-', ' ').replace('_',' ').replace(" ","").isAlphanumeric()){
+		        "Name must only contain letters, numbers, and - or _"
+	    	}
 	}
 
 	@Subcommand("save")
