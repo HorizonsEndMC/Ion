@@ -261,7 +261,7 @@ object PilotedStarships : IonServerComponent() {
 			}
 		}
 
-		DeactivatedPlayerStarships.activateAsync(data, state, carriedShips) { activePlayerStarship ->
+		DeactivatedPlayerStarships.activateAsync(player, data, state, carriedShips) { activePlayerStarship ->
 			// if the player logs out while it is piloting, deactivate it
 			if (!player.isOnline) {
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)

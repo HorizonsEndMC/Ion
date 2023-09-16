@@ -1,20 +1,23 @@
 package net.horizonsend.ion.server.features.starship.active
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.minecraft.core.BlockPos
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.kyori.adventure.audience.Audience
+import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import kotlin.math.min
 import kotlin.math.roundToInt
 
 object ActiveStarshipFactory {
 	fun createPlayerStarship(
+		feedbackDestination: Audience,
 		data: PlayerStarshipData,
 		blockCol: Collection<Long>,
 		carriedShips: Map<PlayerStarshipData, LongOpenHashSet>
@@ -26,7 +29,7 @@ object ActiveStarshipFactory {
 
 		val starship = createStarship(data, blocks, carriedShips)
 
-		initSubsystems(starship)
+		initSubsystems(feedbackDestination, starship)
 
 		return starship
 	}
@@ -87,12 +90,12 @@ object ActiveStarshipFactory {
 		return ActivePlayerStarship(data, blocks, mass, centerOfMass, hitbox, carriedShips)
 	}
 
-	private fun initSubsystems(starship: ActivePlayerStarship) {
+	private fun initSubsystems(feedbackDestination: Audience, starship: ActivePlayerStarship) {
 		SubsystemDetector.detectSubsystems(starship)
 		prepareShields(starship)
 		starship.generateThrusterMap()
 		determineForward(starship)
-		fixForwardOnlySubsystems(starship) // this can't be done till after forward is found
+		fixForwardOnlySubsystems(feedbackDestination, starship) // this can't be done till after forward is found
 	}
 
 	private fun determineForward(starship: ActiveStarship) {
@@ -124,7 +127,7 @@ object ActiveStarshipFactory {
 		}
 	}
 
-	private fun fixForwardOnlySubsystems(starship: ActivePlayerStarship) {
+	private fun fixForwardOnlySubsystems(feedbackDestination: Audience, starship: ActivePlayerStarship) {
 		for (weapon in starship.weapons.reversed()) {
 			if (weapon !is DirectionalSubsystem) {
 				continue
@@ -143,7 +146,8 @@ object ActiveStarshipFactory {
 			starship.weapons.remove(weapon)
 			starship.subsystems.remove(weapon)
 			val pos = weapon.pos
-			starship.sendMessage("&c${weapon.name} at $pos is facing $face, but is forward-only and forward is ${starship.forward}")
+
+			feedbackDestination.userError("${weapon.name} at $pos is facing $face, but is forward-only and forward is ${starship.forward}")
 		}
 	}
 }

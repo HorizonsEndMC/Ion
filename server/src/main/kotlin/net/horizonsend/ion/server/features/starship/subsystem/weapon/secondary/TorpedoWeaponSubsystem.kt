@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TorpedoProjectile
@@ -28,6 +28,10 @@ class TorpedoWeaponSubsystem(
 	override val aimDistance: Int = IonServer.balancing.starshipWeapons.protonTorpedo.aimDistance
 
 	override fun getMaxPerShot() = 2
+
+	override fun isAcceptableDirection(face: BlockFace): Boolean {
+		return this.face == starship.forward
+	}
 
 	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
 		TorpedoProjectile(starship, loc, dir, shooter, checkNotNull(target), aimDistance).fire()

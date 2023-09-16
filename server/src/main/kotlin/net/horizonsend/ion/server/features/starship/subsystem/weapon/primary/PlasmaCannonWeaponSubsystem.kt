@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -19,7 +19,7 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.plasmaCannon.extraDistance
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
-		return true
+		return this.face == starship.forward
 	}
 
 	override fun isForwardOnly(): Boolean = IonServer.balancing.starshipWeapons.plasmaCannon.fowardOnly

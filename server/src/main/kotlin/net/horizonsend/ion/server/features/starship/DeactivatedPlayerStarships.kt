@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.audience.Audience
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
@@ -166,6 +167,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 	private val lock = Any()
 
 	fun activateAsync(
+		feedbackDestination: Audience,
 		data: PlayerStarshipData,
 		state: PlayerStarshipState,
 		carriedShips: List<PlayerStarshipData>,
@@ -189,7 +191,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 
 			Tasks.sync {
 				val starship =
-					ActiveStarshipFactory.createPlayerStarship(data, state.blockMap.keys, carriedShipMap) ?: return@sync
+					ActiveStarshipFactory.createPlayerStarship(feedbackDestination, data, state.blockMap.keys, carriedShipMap) ?: return@sync
 				ActiveStarships.add(starship)
 				callback.invoke(starship)
 			}
