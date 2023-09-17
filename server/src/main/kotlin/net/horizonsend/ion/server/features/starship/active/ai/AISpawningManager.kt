@@ -18,32 +18,35 @@ object AISpawningManager : IonServerComponent(true) {
 
 	operator fun get(identifier: String) = spawners.firstOrNull { it.identifier == identifier }
 
-	@OptIn(ExperimentalCoroutinesApi::class)
+
 	override fun onEnable() {
-		Tasks.asyncRepeat(20 * 15, config.spawnRate) {
-			val world = Bukkit.getWorld(config.worldWeightedList().random()) ?: return@asyncRepeat
-			val configuration = config.getWorld(world) ?: return@asyncRepeat
+		Tasks.asyncRepeat(20 * 15, config.spawnRate) { handleSpawn() }
+	}
 
-			val spawnerIdentifier = configuration.templateWeightedList().random()
-			val spawner = AISpawningManager[spawnerIdentifier] ?: return@asyncRepeat
+	@OptIn(ExperimentalCoroutinesApi::class)
+	fun handleSpawn() {
+		val world = Bukkit.getWorld(config.worldWeightedList().random()) ?: return
+		val configuration = config.getWorld(world) ?: return
 
-			val loc = spawner.findLocation(world, configuration)
+		val spawnerIdentifier = configuration.templateWeightedList().random()
+		val spawner = AISpawningManager[spawnerIdentifier] ?: return
 
-			if (loc == null) {
-				IonServer.logger.info("Aborted spawning AI ship. Could not find location after 15 attempts.")
-				return@asyncRepeat
-			}
+		val loc = spawner.findLocation(world, configuration)
 
-			val deferred = spawner.spawn(loc)
+		if (loc == null) {
+			IonServer.logger.info("Aborted spawning AI ship. Could not find location after 15 attempts.")
+			return
+		}
 
-			deferred.invokeOnCompletion { throwable ->
-				val ship = deferred.getCompleted()
+		val deferred = spawner.spawn(loc)
 
-				AIManager.activeShips.add(ship)
+		deferred.invokeOnCompletion { throwable ->
+			val ship = deferred.getCompleted()
 
-				throwable?.let { IonServer.server.debug("AI Starship at could not be spawned: ${throwable.message}!") }
-				Notify.online(Component.text("Spawning AI ship at ${Vec3i(loc)}"))
-			}
+			AIManager.activeShips.add(ship)
+
+			throwable?.let { IonServer.server.debug("AI Starship at could not be spawned: ${throwable.message}!") }
+			Notify.online(Component.text("Spawning AI ship at ${Vec3i(loc)}"))
 		}
 	}
 }
