@@ -16,29 +16,32 @@ object AIControllers {
 		starship,
 		"dumbAI",
 		displayName = text("eeeevil ship", NamedTextColor.DARK_RED)
-	)
+	) { controller ->
+		val location = starship.centerOfMass.toLocation(starship.world)
+		val nearestPlayer = getNearestPlayer(controller, location)
+
+		val direction = nearestPlayer?.location?.toVector()?.subtract(starship.centerOfMass.toVector())
+
+		direction?.let { AIControlUtils.faceDirection(controller, vectorToBlockFace(direction)) }
+
+		AIControlUtils.shiftFlyTowardsPlayer(controller, nearestPlayer)
+
+		nearestPlayer?.let {
+			AIControlUtils.shootAtPlayer(controller, nearestPlayer, true)
+			AIControlUtils.shootAtPlayer(controller, nearestPlayer, false, weaponSet = "phasers")
+		}
+	}
 
 	private fun createController(
 		starship: ActiveStarship,
 		name: String,
-		displayName: Component = text("name")
+		displayName: Component = text("name"),
+		onTick: (AIController) -> Unit
 	): AIController {
 		return object : AIController(starship, name) {
 			override val pilotName: Component = displayName
 			override fun tick() {
-				val location = starship.centerOfMass.toLocation(starship.world)
-				val nearestPlayer = getNearestPlayer(this, location)
-
-				val direction = nearestPlayer?.location?.toVector()?.subtract(starship.centerOfMass.toVector())
-
-				direction?.let { AIControlUtils.faceDirection(this, vectorToBlockFace(direction)) }
-
-				AIControlUtils.shiftFlyTowardsPlayer(this, nearestPlayer)
-
-				nearestPlayer?.let {
-					AIControlUtils.shootAtPlayer(this, nearestPlayer, true)
-					AIControlUtils.shootAtPlayer(this, nearestPlayer, false, weaponSet = "phasers")
-				}
+				onTick(this)
 				super.tick()
 			}
 		}

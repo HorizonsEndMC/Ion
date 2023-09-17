@@ -53,4 +53,6 @@ object AIStarshipTemplates : IonServerComponent(true) {
 
 		return template
 	}
+
+	operator fun get(identifier: String) = templates.firstOrNull { it.identifier == identifier }
 }
