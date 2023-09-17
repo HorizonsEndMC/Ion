@@ -3,15 +3,15 @@ package net.horizonsend.ion.server.miscellaneous.utils
 import java.util.Random
 
 // This was fun to learn
-class WeightedRandomList<T : Any>(private vararg val constructorEntries: Pair<T, Int>) {
-	private val weightedEntryList = arrayListOf<WeightedEntry<T>>().apply {
-		this.addAll(
-			constructorEntries.map { entry -> WeightedEntry(entry.first, entry.second) }
-		)
+class WeightedRandomList<T : Any>() {
+	private val weightedEntryList = arrayListOf<WeightedEntry<T>>()
+
+	constructor(vararg constructorEntries: Pair<T, Int>): this() {
+		addMany(constructorEntries.toList())
 	}
 
-	constructor(entries: Map<T, Int>) : this() {
-		addMany(entries)
+	constructor(map: Map<T, Int>): this() {
+		addMany(map)
 	}
 
 	var rollingWeight = 0
