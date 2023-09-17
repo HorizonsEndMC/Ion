@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager.handleSpawn
 import net.horizonsend.ion.server.features.starship.active.ai.AIUtils
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIControllers
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
@@ -85,5 +86,11 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 			data.displayName,
 			{ ship -> AIControllers.dumbAI(ship) }
 		)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("triggerSpawn")
+	fun triggerSpawn(sender: Player) {
+		handleSpawn()
 	}
 }
