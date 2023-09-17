@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
@@ -24,4 +25,6 @@ abstract class AIController(
 
 	override fun rewardXP(xp: Int) {}
 	override fun rewardMoney(credits: Double) {}
+
+	fun getCenter(): Location = starship.centerOfMass.toLocation(starship.world)
 }

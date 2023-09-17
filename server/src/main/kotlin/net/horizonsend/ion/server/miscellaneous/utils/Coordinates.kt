@@ -61,6 +61,28 @@ inline fun blockKeyZ(key: Long): Int = (key shl 10 shr 37).toInt()
 fun distanceSquared(fromX: Double, fromY: Double, fromZ: Double, toX: Double, toY: Double, toZ: Double): Double =
 	(fromX - toX).squared() + (fromY - toY).squared() + (fromZ - toZ).squared()
 
+fun distance(from: Vector, to: Vector): Double {
+	val fromX = from.x
+	val fromY = from.y
+	val fromZ = from.z
+	val toX = to.x
+	val toY = to.y
+	val toZ = to.z
+
+	return distance(fromX, fromY, fromZ, toX, toY, toZ)
+}
+
+fun distanceSquared(from: Vector, to: Vector): Double {
+	val fromX = from.x
+	val fromY = from.y
+	val fromZ = from.z
+	val toX = to.x
+	val toY = to.y
+	val toZ = to.z
+
+	return distanceSquared(fromX, fromY, fromZ, toX, toY, toZ)
+}
+
 fun distance(fromX: Double, fromY: Double, fromZ: Double, toX: Double, toY: Double, toZ: Double): Double =
 	sqrt(distanceSquared(fromX, fromY, fromZ, toX, toY, toZ))
 
