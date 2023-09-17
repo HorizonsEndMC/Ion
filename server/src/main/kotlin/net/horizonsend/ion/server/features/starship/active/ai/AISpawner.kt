@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship.active.ai
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -45,17 +44,7 @@ abstract class AISpawner(val identifier: String, vararg val ships: AIStarshipTem
 	}
 }
 
-abstract class WeightedAISpawner(
-	identifier: String,
-) : AISpawner(identifier) {
-	override fun getTemplate(world: World): AIStarshipTemplates.AIStarshipTemplate {
-		val worldConfig = IonServer.aiShipConfiguration.getWorld(world)!! // Should only be provided a world with configuration
-
-		return AIStarshipTemplates[worldConfig.templateWeightedList().random()]!!
-	}
-}
-
-class BasicCargoMissionSpawner : WeightedAISpawner("CARGO_MISSION") {
+class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", AIStarshipTemplates.VESTA) {
 	override fun findLocation(world: World, configuration: AIShipConfiguration.AIWorldSettings): Location? {
 		var iterations = 0
 
