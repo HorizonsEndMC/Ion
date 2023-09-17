@@ -17,9 +17,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
+import org.bukkit.block.data.type.Door
+import org.bukkit.block.data.type.Switch
+import org.bukkit.block.data.type.TrapDoor
+import org.bukkit.entity.Animals
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
@@ -34,27 +37,48 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.InventoryHolder
 
 object ProtectionListener : SLEventListener() {
+	/** Handle interact events as block edits **/
 	@EventHandler
 	fun onClickBlock(event: PlayerInteractEvent) {
 		val block: Block = event.clickedBlock ?: return
-
-		// Handle chests, doors, buttons, etc
+		// Chests, button doors
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
-		// Allow crafting table use
-		if (block.type == Material.CRAFTING_TABLE) return
-		if (block.type == Material.ENDER_CHEST) return
-		// Allow eating
-		if (event.item?.type?.isEdible == true) return
+		if (shouldNotBeChecked(block)) return
 
 		onBlockEdit(event, block.location, event.player)
+	}
+
+	/** Allows exceptions to the onBlockEdit check **/
+	private fun shouldNotBeChecked(clickedBlock: Block): Boolean {
+		// It is much easier to decide what should be the exception than to make exceptions
+		// If something ends up getting checked that shouldn't
+		// (e.g. clicking the glass in your cockpit), it could break firing weapons.
+
+		// Manually check these
+		if (clickedBlock.blockData is Switch) return false
+		if (clickedBlock.blockData is TrapDoor) return false
+		if (clickedBlock.blockData is Door) return false
+
+		return clickedBlock.state !is InventoryHolder
 	}
 
 	@EventHandler
 	fun onItemFrameChange(event: PlayerItemFrameChangeEvent) {
 		if (denyBlockAccess(event.player, event.itemFrame.location)) {
+			event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onAnimalHurt(event: EntityDamageByEntityEvent) {
+		val damager = event.damager as? Player ?: return
+		if (event.entity !is Animals) return
+
+		if (denyBlockAccess(damager, event.entity.location)) {
 			event.isCancelled = true
 		}
 	}
