@@ -13,15 +13,26 @@ import org.bukkit.Bukkit
 object AISpawningManager : IonServerComponent(true) {
 	val config = IonServer.aiShipConfiguration
 	val spawners = listOf<AISpawner>(
-		VestaSpawner()
+		BasicCargoMissionSpawner()
 	)
+
+	operator fun get(identifier: String) = spawners.firstOrNull { it.identifier == identifier }
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	override fun onEnable() {
 		Tasks.asyncRepeat(20 * 15, config.spawnRate) {
-			val spawner = spawners.shuffled().firstOrNull() ?: return@asyncRepeat
+			val world = Bukkit.getWorld(config.worldWeightedList().random()) ?: return@asyncRepeat
+			val configuration = config.getWorld(world) ?: return@asyncRepeat
 
-			val loc = spawner.findLocation(Bukkit.getWorld("world")!!)
+			val spawnerIdentifier = configuration.templateWeightedList().random()
+			val spawner = AISpawningManager[spawnerIdentifier] ?: return@asyncRepeat
+
+			val loc = spawner.findLocation(world, configuration)
+
+			if (loc == null) {
+				IonServer.logger.info("Aborted spawning AI ship. Could not find location after 15 attempts.")
+				return@asyncRepeat
+			}
 
 			val deferred = spawner.spawn(loc)
 
