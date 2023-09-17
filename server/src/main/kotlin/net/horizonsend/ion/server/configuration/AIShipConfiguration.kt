@@ -8,7 +8,7 @@ import org.bukkit.World
 @Serializable
 data class AIShipConfiguration(
 	val spawnRate: Long = 20 * 60 * 15,
-	val worldSettings: Map<String, AIWorldSettings>
+	val worldSettings: Map<String, AIWorldSettings> = mutableMapOf("world" to AIWorldSettings())
 ) {
 	/**
 	 * Each world has a number of rolls for selection when a ship spawns
