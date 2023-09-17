@@ -28,7 +28,7 @@ object AISpawningManager : IonServerComponent(true) {
 		val world = Bukkit.getWorld(config.worldWeightedList().random()) ?: return
 		val configuration = config.getWorld(world) ?: return
 
-		val spawnerIdentifier = configuration.templateWeightedList().random()
+		val spawnerIdentifier = configuration.spawnerWeightedRandomList().random()
 		val spawner = AISpawningManager[spawnerIdentifier] ?: return
 
 		val loc = spawner.findLocation(world, configuration)
@@ -37,7 +37,6 @@ object AISpawningManager : IonServerComponent(true) {
 			IonServer.logger.info("Aborted spawning AI ship. Could not find location after 15 attempts.")
 			return
 		}
-
 		val deferred = spawner.spawn(loc)
 
 		deferred.invokeOnCompletion { throwable ->
