@@ -22,7 +22,7 @@ data class AIShipConfiguration(
 		val rolls: Int = 1,
 		val spawners: Map<String, Int> = mapOf("VESTA" to 1)
 	) {
-		fun templateWeightedList(): WeightedRandomList<String> = WeightedRandomList(spawners)
+		fun spawnerWeightedRandomList(): WeightedRandomList<String> = WeightedRandomList(spawners)
 	}
 
 	fun worldWeightedList(): WeightedRandomList<String> = WeightedRandomList(worldSettings.map { it.key to it.value.rolls }.toMap())
