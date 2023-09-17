@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.space
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.World
@@ -41,8 +42,9 @@ object SpaceWorlds : IonServerComponent() {
 
 	fun contains(world: World): Boolean = cache.get(world)
 
+	fun all(): Set<World> = cache.getAll(IonServer.server.worlds).keys
+
 	override fun onDisable() {
 		with(cache) { invalidateAll(); cleanUp() }
 	}
-
 }
