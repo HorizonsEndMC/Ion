@@ -10,15 +10,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
-import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import net.kyori.adventure.audience.Audience
+import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
 import org.bukkit.World
 import kotlin.math.min
 import kotlin.math.roundToInt
 
 object ActiveStarshipFactory {
-	fun createPlayerStarship(
+	fun createControlledStarship(
 		feedbackDestination: Audience,
 		data: StarshipData,
 		blockCol: Collection<Long>,

@@ -89,7 +89,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				isLockEnabled = autoLock
 			)
 
-			createPlayerShipAsync(world, x, y, z, data, callback)
+			createShipAsync(world, x, y, z, data, callback)
 		}
 	}
 
@@ -115,11 +115,11 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				name = name
 			)
 
-			Tasks.sync { callback(data) }
+			createShipAsync(world, x, y, z, data, callback)
 		}
 	}
 
-	fun createPlayerShipAsync(
+	private fun createShipAsync(
 		world: World,
 		x: Int,
 		y: Int,
@@ -205,6 +205,8 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		val cache = DeactivatedShipWorldCache(world)
 		// retrieve all starship data from the database and add it to the cache
 		PlayerStarshipData.find(PlayerStarshipData::levelName eq world.name).forEach { cache.add(it) }
+		AIStarshipData.find(AIStarshipData::levelName eq world.name).forEach { cache.add(it) }
+
 		DEACTIVATED_SHIP_WORLD_CACHES[world] = cache
 	}
 
@@ -238,7 +240,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			val carriedShipMap = captureCarriedShips(carriedShips, cache)
 
 			Tasks.sync {
-				val starship = ActiveStarshipFactory.createPlayerStarship(
+				val starship = ActiveStarshipFactory.createControlledStarship(
 					feedbackDestination,
 					data,
 					state.blockMap.keys,
