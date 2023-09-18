@@ -33,17 +33,20 @@ class AutoCruiseAIController(
 		Tasks.async {
 			ticks++
 
-			if ((ticks % 10) != 0) return@async // Only tick evey 10 ticks
+			if ((ticks % 20) != 0) return@async // Only tick evey second
 			val controlledShip = starship as? ActiveControlledStarship ?: return@async
 
 			val origin = getCenter().toVector()
 
-			AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
-			StarshipCruising.startCruising(this, controlledShip, direction)
+			Tasks.sync {
+				AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
+				StarshipCruising.startCruising(this, controlledShip, direction)
+			}
 
 			if (distanceSquared(origin, destination) <= 10000) {
-				StarshipCruising.stopCruising(this, controlledShip)
-
+				Tasks.sync {
+					StarshipCruising.stopCruising(this, controlledShip)
+				}
 				// Once it reaches its destination, wait 30 seconds then vanish, if not damaged.
 
 				//TODO do all of that

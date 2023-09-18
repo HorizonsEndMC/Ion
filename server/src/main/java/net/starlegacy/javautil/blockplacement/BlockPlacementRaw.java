@@ -20,7 +20,6 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -31,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class BlockPlacementRaw {
-	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = IonServer.INSTANCE.getSLF4JLogger();
 
 	private final WeakHashMap<World, Long2ObjectOpenHashMap<BlockState[][][]>> worldQueues = new WeakHashMap<>();
 
