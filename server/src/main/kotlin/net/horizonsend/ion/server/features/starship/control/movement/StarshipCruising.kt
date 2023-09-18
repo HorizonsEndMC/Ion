@@ -66,12 +66,18 @@ object StarshipCruising : IonServerComponent() {
 
 	override fun onEnable() {
 		Tasks.syncRepeat(0L, (20 * SECONDS_PER_CRUISE).toLong()) {
+			println("Ticking cruise ships")
+
 			for (starship in ActiveStarships.allControlledStarships()) {
+				println("Ticking cruise ships 1")
 				if (!PilotedStarships.isPiloted(starship)) continue
+				println("Ticking cruise ships 2")
 
 				if (shouldStopCruising(starship)) {
+					println("Ticking cruise ships 3")
 					stopCruising(starship.controller, starship)
 				}
+				println("Ticking cruise ships 4")
 
 				updateCruisingShip(starship)
 			}
@@ -80,6 +86,7 @@ object StarshipCruising : IonServerComponent() {
 
 	private fun updateCruisingShip(starship: ActiveControlledStarship) {
 		processUpdatedHullIntegrity(starship)
+		println("cruising 1")
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
 
@@ -104,6 +111,7 @@ object StarshipCruising : IonServerComponent() {
 		if (speed * SECONDS_PER_CRUISE < 1) {
 			return
 		}
+		println("cruising 2")
 
 		val dx = (velocity.x * SECONDS_PER_CRUISE).toInt()
 		val dy = (velocity.y * SECONDS_PER_CRUISE).toInt()
@@ -112,10 +120,12 @@ object StarshipCruising : IonServerComponent() {
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) {
 			return
 		}
+		println("cruising 3")
 
 		if (starship.isTeleporting) {
 			return
 		}
+		println("cruising 4")
 
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
