@@ -29,6 +29,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyX;
+import static net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyZ;
+
 public class BlockPlacementRaw {
 	private final Logger log = IonServer.INSTANCE.getSLF4JLogger();
 
@@ -111,8 +114,8 @@ public class BlockPlacementRaw {
 //          actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, chunkKey, blocks, immediate);
 
 			// Actually Place Chunk
-			int cx = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyX(chunkKey);
-			int cz = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKeyZ(chunkKey);
+			int cx = chunkKeyX(chunkKey);
+			int cz = chunkKeyZ(chunkKey);
 
 			boolean isLoaded = world.isChunkLoaded(cx, cz);
 
