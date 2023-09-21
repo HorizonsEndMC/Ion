@@ -179,10 +179,10 @@ object NationsMasterTasks : IonServerComponent() {
 				Settlement.withdraw(settlementId, tax)
 
 				if (!isActive) {
-					Notify.online(MiniMessage.miniMessage().deserialize("<dark_green>Settlement City $name has paid its hourly tax of $taxCredits, so it's protected!"))
+					Notify.online(MiniMessage.miniMessage().deserialize("<dark_green>Player Trade City $name has paid its hourly tax of $taxCredits, so it's protected!"))
 				}
 			} else {
-				val message = "<red>Settlement City $name failed to pay its hourly tax of $taxCredits! " +
+				val message = "<red>Player Trade City $name failed to pay its hourly tax of $taxCredits! " +
 					"Until it pays its tax, it does not have settlement city protection."
 				Notify.online(MiniMessage.miniMessage().deserialize(message))
 			}
@@ -193,7 +193,7 @@ object NationsMasterTasks : IonServerComponent() {
 				)
 
 				if (activeMembers < NATIONS_BALANCE.settlement.cityMinActive) {
-					Notify.online(MiniMessage.miniMessage().deserialize("<red>Settlement city $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection."))
+					Notify.online(MiniMessage.miniMessage().deserialize("<red>Player Trade City $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection."))
 					willBeActive = false
 				}
 			}
