@@ -361,4 +361,6 @@ abstract class ActiveStarship (
 
 		else -> throw NotImplementedError()
 	}
+
+	fun lastDamaged(): Long = damagers.maxOf { it.value.lastDamaged }
 }
