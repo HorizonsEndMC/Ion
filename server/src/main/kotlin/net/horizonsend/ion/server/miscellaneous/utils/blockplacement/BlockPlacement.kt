@@ -17,7 +17,7 @@ object BlockPlacement {
 
 	fun flush(onComplete: ((World) -> Unit)? = null): Unit = raw.flush(onComplete)
 
-	// can be called async
+	/** can be called async */
 	fun placeQueueEfficiently(
 		world: World,
 		queue: Long2ObjectOpenHashMap<BlockState>,
