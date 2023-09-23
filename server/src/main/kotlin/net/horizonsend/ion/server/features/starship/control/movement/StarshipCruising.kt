@@ -79,7 +79,6 @@ object StarshipCruising : IonServerComponent() {
 
 	private fun updateCruisingShip(starship: ActiveControlledStarship) {
 		processUpdatedHullIntegrity(starship)
-		println("cruising 1")
 
 		val oldVelocity = starship.cruiseData.velocity.clone()
 
@@ -104,7 +103,6 @@ object StarshipCruising : IonServerComponent() {
 		if (speed * SECONDS_PER_CRUISE < 1) {
 			return
 		}
-		println("cruising 2")
 
 		val dx = (velocity.x * SECONDS_PER_CRUISE).toInt()
 		val dy = (velocity.y * SECONDS_PER_CRUISE).toInt()
@@ -113,12 +111,10 @@ object StarshipCruising : IonServerComponent() {
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) {
 			return
 		}
-		println("cruising 3")
 
 		if (starship.isTeleporting) {
 			return
 		}
-		println("cruising 4")
 
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
