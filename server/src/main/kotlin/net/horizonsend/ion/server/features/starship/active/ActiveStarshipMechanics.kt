@@ -127,7 +127,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	fun onBlockBreak(event: BlockBreakEvent) {
 		if (ActiveStarships.findByBlock(event.block) != null) {
 			event.isCancelled = true
-			event.player.userError("&cThat block is part of an active starship!")
+			event.player.userError("That block is part of an active starship!")
 		}
 	}
 
