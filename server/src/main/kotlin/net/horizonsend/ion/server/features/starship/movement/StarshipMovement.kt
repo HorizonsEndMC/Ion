@@ -75,7 +75,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			throw ConditionFailedException("Maximum height limit reached")
 		}
 
-		validateWorldBorders(findPassengers(world1), world2)
+		validateWorldBorders(starship.centerOfMass, findPassengers(world1), world2)
 
 		val oldLocationArray = oldLocationSet.filter {
 			isFlyable(world1.getBlockAt(blockKeyX(it), blockKeyY(it), blockKeyZ(it)).blockData.nms)
@@ -151,7 +151,11 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		return passengers.toList()
 	}
 
-	private fun validateWorldBorders(passengers: List<Entity>, world2: World) {
+	private fun validateWorldBorders(centerOfMass: Vec3i, passengers: List<Entity>, world2: World) {
+		if (world2.worldBorder.isInside(centerOfMass.toLocation(world2)))
+			// Handle cases where there are no pilots
+			throw ConditionFailedException("Starship would be outside the world border!")
+
 		for (passenger: Entity in passengers) {
 			val newLoc: Location = displaceLocation(passenger.location)
 			newLoc.world = world2
