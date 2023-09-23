@@ -61,10 +61,10 @@ object StarshipDetection : IonServerComponent() {
 	}
 	//endregion
 
-	fun detectNewState(data: StarshipData, detector: Audience? = null): StarshipState =
-		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType, detector)
+	fun detectNewState(data: StarshipData, detector: Audience? = null, loadChunks: Boolean = false): StarshipState =
+		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType, detector, loadChunks)
 
-	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null): StarshipState {
+	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null, loadChunks: Boolean = false): StarshipState {
 		/*
 						val forbiddenBlocks = ForbiddenBlocks.getForbiddenBlocks(world)
 		*/
@@ -113,10 +113,12 @@ object StarshipDetection : IonServerComponent() {
 			val y = blockKeyY(key)
 			val z = blockKeyZ(key)
 
-			val blockData = getBlockDataSafe(world, x, y, z)
+			val blockData = if (loadChunks) world.getBlockData(x, y, z) else {
+				getBlockDataSafe(world, x, y, z)
 				// Do not allow checking ships larger than render distance.
 				// The type being null usually means the chunk is unloaded.
-				?: throw DetectionFailedException("The blocks went beyond loaded chunks!")
+					?: throw DetectionFailedException("The blocks went beyond loaded chunks!")
+			}
 
 			val material = blockData.material
 
