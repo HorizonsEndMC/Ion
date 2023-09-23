@@ -3,6 +3,7 @@ package net.starlegacy.javautil.blockplacement;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.horizonsend.ion.server.IonServer;
+import net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt;
 import net.horizonsend.ion.server.miscellaneous.utils.MiscellaneousKt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
@@ -63,14 +64,14 @@ public class BlockPlacementRaw {
 
 	public void addToWorldQueue(Long2ObjectOpenHashMap<BlockState> queue, Long2ObjectOpenHashMap<BlockState[][][]> worldQueue, World world) {
 		queue.forEach((coords, blockData) -> {
-			int y = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyY(coords);
-			int x = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyX(coords);
-			int z = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.blockKeyZ(coords);
+			int y = CoordinatesKt.blockKeyY(coords);
+			int x = CoordinatesKt.blockKeyX(coords);
+			int z = CoordinatesKt.blockKeyZ(coords);
 
 			int chunkX = x >> 4;
 			int chunkZ = z >> 4;
 
-			long chunkKey = net.horizonsend.ion.server.miscellaneous.utils.CoordinatesKt.chunkKey(chunkX, chunkZ);
+			long chunkKey = CoordinatesKt.chunkKey(chunkX, chunkZ);
 
 			BlockState[][][] chunkQueue = worldQueue.computeIfAbsent(chunkKey, c -> emptyChunkMap(world));
 
@@ -120,9 +121,9 @@ public class BlockPlacementRaw {
 			boolean isLoaded = world.isChunkLoaded(cx, cz);
 
 			if (!isLoaded && !immediate) {
-				world.getChunkAtAsync(cx, cz).thenAccept(chunk -> {
-					actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, blocks, cx, cz, false, chunk);
-				});
+				world.getChunkAtAsync(cx, cz).thenAccept(chunk ->
+					actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, blocks, cx, cz, false, chunk)
+				);
 				continue;
 			}
 
