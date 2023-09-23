@@ -359,7 +359,9 @@ abstract class ActiveStarship (
 
 		is AIController -> "AutonomousShip:$charIdentifier"
 
-		else -> throw NotImplementedError()
+		is NoOpController -> charIdentifier
+
+		else -> throw NotImplementedError("$controller does not have an auto turret identifier!")
 	}
 
 	fun lastDamaged(): Long = damagers.maxOf { it.value.lastDamaged }
