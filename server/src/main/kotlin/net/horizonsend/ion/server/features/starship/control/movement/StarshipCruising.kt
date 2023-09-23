@@ -65,18 +65,12 @@ object StarshipCruising : IonServerComponent() {
 
 	override fun onEnable() {
 		Tasks.syncRepeat(0L, (20 * SECONDS_PER_CRUISE).toLong()) {
-			println("Ticking cruise ships")
-
 			for (starship in ActiveStarships.allControlledStarships()) {
-				println("Ticking cruise ships 1")
 				if (!PilotedStarships.isPiloted(starship)) continue
-				println("Ticking cruise ships 2")
 
 				if (shouldStopCruising(starship)) {
-					println("Ticking cruise ships 3")
 					stopCruising(starship.controller, starship)
 				}
-				println("Ticking cruise ships 4")
 
 				updateCruisingShip(starship)
 			}

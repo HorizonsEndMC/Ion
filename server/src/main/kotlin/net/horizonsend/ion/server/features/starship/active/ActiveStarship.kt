@@ -80,7 +80,8 @@ abstract class ActiveStarship (
 
 	abstract val type: StarshipType
 
-	var controller: Controller = NoOpController(this) // Only for initialization
+	@Suppress("leakingThis") // Only for initialization, will be replaced
+	var controller: Controller = NoOpController(this)
 		set(value) {
 			if (this is ActiveControlledStarship) PilotedStarships.changeController(this, value)
 			value.hint("Updated control mode to ${value.name}.")
