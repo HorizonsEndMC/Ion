@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.space
 
+import net.horizonsend.ion.common.utils.text.createHtmlLink
+import net.horizonsend.ion.common.utils.text.wrapStyle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -45,10 +47,14 @@ object SpaceMap : IonServerComponent(true) {
 		}
 
 		for (planet in Space.getPlanets()) {
+			val serverName = IonServer.configuration.serverName
+			val link = "https://$serverName.horizonsend.net/?worldname=${planet.planetWorldName}"
+
 			// planet icon
-			val planetMarker = markerSet.createMarker(
+			markerSet.createMarker(
 				planet.id,
-				planet.name,
+				wrapStyle(createHtmlLink(planet.name, link, "#FFFFFF"), "h3", "font-size:30"),
+				true, // use HTML markup
 				planet.spaceWorldName,
 				planet.location.x.toDouble(),
 				planet.location.y.toDouble(),
@@ -57,18 +63,11 @@ object SpaceMap : IonServerComponent(true) {
 				false // persistent
 			)
 
-			val serverName = IonServer.configuration.serverName
-			val link = "https://$serverName.horizonsend.net/?worldname=${planet.planetWorldName}"
-
-			planetMarker.description = """
-				<h3><a href="$link">Open Planet Map</a></h3>
-			""".trimIndent()
-
 			// planet ring
 			markerSet.createCircleMarker(
 				"${planet.id}_orbit",
 				planet.name,
-				false, // ??
+				false, // Allow html markup in icon labels
 				planet.spaceWorldName,
 				planet.sun.location.x.toDouble(),
 				planet.sun.location.y.toDouble(),
@@ -86,6 +85,21 @@ object SpaceMap : IonServerComponent(true) {
 				val color = Color.fromRGB(r, g, b)
 				setLineStyle(lineWeight, lineOpacity, color.asRGB())
 			}
+
+			// Create a marker to escape the planet view
+			val escapeLink = "https://$serverName.horizonsend.net/?worldname=${planet.spaceWorldName}"
+
+			markerSet.createMarker(
+				"${planet.id}_escape",
+				wrapStyle(createHtmlLink("View Space", escapeLink, "#FFFFFF"), "h3", "font-size:50"),
+				true,
+				planet.planetWorldName,
+				-100.0,
+				384.0,
+				-100.0,
+				markerAPI.getMarkerIcon("world"),
+				false
+			)
 		}
 	}
 
