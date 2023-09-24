@@ -96,7 +96,7 @@ object ShipKillXP : IonServerComponent() {
 	}
 
 	private fun onShipKill(starship: ActiveStarship, killedPilotName: String, arena: Boolean) {
-		IonServer.slF4JLogger.info(
+		log.info(
 			"ship killed at ${starship.centerOfMass}. " +
 				"Pilot: ${starship.controller}. " +
 				"Damagers: ${starship.damagers}"

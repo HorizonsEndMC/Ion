@@ -49,7 +49,7 @@ class EdenFixer9000 : SLEventListener() {
 							event.chunk.getBlock(position.x, position.y, position.z).setBlockData(airBlockData, false)
 						}
 
-						IonServer.slF4JLogger.info(
+						log.info(
 							"Removed ${removedBlocks.size} evil blocks form chunk (${event.chunk.x},${event.chunk.z}) on Eden for a total of $runningTotal this session."
 						)
 

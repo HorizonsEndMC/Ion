@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -64,7 +63,7 @@ class IonWorld private constructor(
 			for (ionWorld in ionWorlds.values)
 			for (starship in ionWorld.starships) {
 				val result = runCatching(starship::tick).exceptionOrNull() ?: continue
-				IonServer.slF4JLogger.warn("Exception while ticking starship!", result)
+				log.warn("Exception while ticking starship!", result)
 			}
 		}
 	}
