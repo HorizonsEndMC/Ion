@@ -29,7 +29,7 @@ enum class StarshipType(
 	val poweroverrider: Double = 1.0,
 	val maxMiningLasers: Int = 0,
 	val miningLaserTier: Int = 0,
-	val dynmapMarker: String = "anchor"
+	val dynmapIcon: String = "anchor"
 ) {
 	SPEEDER(
 		displayName = "Speeder",
