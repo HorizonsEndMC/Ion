@@ -107,7 +107,7 @@ object CustomOrePlacement : SLEventListener() {
 							chunk.getBlock(position.x, position.y, position.z).setBlockData(blockData, false)
 						}
 
-						IonServer.slF4JLogger.info("Updated ores in ${chunk.x} ${chunk.z} @ ${chunk.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
+						log.info("Updated ores in ${chunk.x} ${chunk.z} @ ${chunk.world.name} to version ${placementConfiguration.currentOreVersion} from $chunkOreVersion, ${placedOres.size} ores placed.")
 
 						chunk.persistentDataContainer.set(
 							NamespacedKeys.ORE_CHECK,

@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active.ai
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -84,5 +83,5 @@ object AIUtils : IonServerComponent() {
 	fun warnDetectionFailure(reason: String, computerLoc: Long) = warnDetectionFailure(reason, Vec3i(computerLoc))
 
 	fun warnDetectionFailure(reason: String, computerLoc: Vec3i) =
-		IonServer.slF4JLogger.warn("Could not activate AI ship at ${computerLoc}! " + reason)
+		log.warn("Could not activate AI ship at ${computerLoc}! " + reason)
 }
