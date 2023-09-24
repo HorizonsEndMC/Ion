@@ -48,11 +48,11 @@ class AutoCruiseAIController(
 			if (distanceSquared(origin, destination) <= 10000) {
 				Tasks.sync {
 					StarshipCruising.stopCruising(this, controlledShip)
-				}
-				// Once it reaches its destination, wait 30 seconds then vanish, if not damaged.
+					// Once it reaches its destination, wait 30 seconds then vanish, if not damaged.
 
-				//TODO do all of that
-				StarshipDestruction.vanish(starship)
+					//TODO do all of that
+					StarshipDestruction.vanish(starship)
+				}
 			}
 
 			super.tick()
