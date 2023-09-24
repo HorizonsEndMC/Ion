@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
 
+import net.horizonsend.ion.common.utils.text.createHtmlLink
+import net.horizonsend.ion.common.utils.text.wrapStyle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import org.dynmap.bukkit.DynmapPlugin
@@ -19,9 +21,18 @@ object HyperspaceBeacons : IonServerComponent(true) {
 		set = api.createMarkerSet("beacons", "Beacons", null, false)
 
 		for (beacon in IonServer.configuration.beacons) {
-			val marker = set.createMarker(
+			val serverName = IonServer.configuration.serverName
+			val link = "https://$serverName.horizonsend.net/?worldname=${beacon.destination.world}&x=${beacon.destination.x}&z=${beacon.destination.z}"
+
+			set.createMarker(
 				beacon.name,
-				beacon.name,
+				"""
+					${wrapStyle(createHtmlLink(beacon.name, link, "#FFFFFF"), "h3", "font-size:50")}
+					<p><b>Destination World: </b>${beacon.destination.world}</p>
+					<p><b>Destination Location: ${beacon.destination.toVec3i()}</b></p>
+					<p>${beacon.prompt ?: ""}</p>
+				""".trimIndent(),
+				true,
 				beacon.spaceLocation.world,
 				beacon.spaceLocation.x.toDouble(),
 				128.0,
@@ -29,13 +40,6 @@ object HyperspaceBeacons : IonServerComponent(true) {
 				api.getMarkerIcon("portal"),
 				false
 			)
-
-			val serverName = IonServer.configuration.serverName
-			val link = "https://$serverName.horizonsend.net/?worldname=${beacon.destination.world}"
-
-			marker.description = """
-				<h3><a href="$link">Open Destination Space Map</a></h3>
-			""".trimIndent()
 		}
 	}
 }
