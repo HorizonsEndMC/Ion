@@ -53,7 +53,7 @@ dependencies {
 	implementation("xyz.xenondevs.invui:invui:1.15")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.0.0-RC12")
-	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.0.0-RC12")
+	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.0.0-RC13")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.0.0-RC12")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.0.0-RC13")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
