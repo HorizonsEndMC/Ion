@@ -19,7 +19,7 @@ object HyperspaceBeacons : IonServerComponent(true) {
 		set = api.createMarkerSet("beacons", "Beacons", null, false)
 
 		for (beacon in IonServer.configuration.beacons) {
-			set.createMarker(
+			val marker = set.createMarker(
 				beacon.name,
 				beacon.name,
 				beacon.spaceLocation.world,
@@ -29,6 +29,13 @@ object HyperspaceBeacons : IonServerComponent(true) {
 				api.getMarkerIcon("portal"),
 				false
 			)
+
+			val serverName = IonServer.configuration.serverName
+			val link = "https://$serverName.horizonsend.net/?worldname=${beacon.destination.world}"
+
+			marker.description = """
+				<h3><a href="$link">Open Destination Space Map</a></h3>
+			""".trimIndent()
 		}
 	}
 }

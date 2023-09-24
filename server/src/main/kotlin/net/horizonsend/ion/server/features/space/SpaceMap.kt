@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.space
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPluginManager
@@ -12,7 +13,10 @@ object SpaceMap : IonServerComponent(true) {
 	private lateinit var markerSet: MarkerSet
 
 	override fun onEnable() {
-		if (!getPluginManager().isPluginEnabled("dynmap")) return
+		if (!getPluginManager().isPluginEnabled("dynmap")) {
+			log.warn("Dynmap not enabled! Space map will not be enabled.")
+			return
+		}
 
 		Tasks.syncDelay(20) {
 			refresh()
@@ -42,7 +46,7 @@ object SpaceMap : IonServerComponent(true) {
 
 		for (planet in Space.getPlanets()) {
 			// planet icon
-			markerSet.createMarker(
+			val planetMarker = markerSet.createMarker(
 				planet.id,
 				planet.name,
 				planet.spaceWorldName,
@@ -50,8 +54,15 @@ object SpaceMap : IonServerComponent(true) {
 				planet.location.y.toDouble(),
 				planet.location.z.toDouble(),
 				markerAPI.getMarkerIcon(planet.name.lowercase()),
-				false // ??
+				false // persistent
 			)
+
+			val serverName = IonServer.configuration.serverName
+			val link = "https://$serverName.horizonsend.net/?worldname=${planet.planetWorldName}"
+
+			planetMarker.description = """
+				<h3><a href="$link">Open Planet Map</a></h3>
+			""".trimIndent()
 
 			// planet ring
 			markerSet.createCircleMarker(
@@ -64,7 +75,7 @@ object SpaceMap : IonServerComponent(true) {
 				planet.sun.location.z.toDouble(),
 				planet.orbitDistance.toDouble(),
 				planet.orbitDistance.toDouble(),
-				false // ??
+				false // persistent
 			)?.run {
 				setFillStyle(0.0, 0) // make the inside empty
 
