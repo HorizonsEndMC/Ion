@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -222,4 +223,8 @@ class ActiveControlledStarship (
 		}
 		super.clearPassengers()
 	}
+
+	override fun getDisplayName(): String = PilotedStarships.getDisplayName(this.data)
+	override fun getDisplayNameComponent(): Component = PilotedStarships.getDisplayNameComponent(this.data)
+	override fun getDisplayNamePlain(): String = PilotedStarships.getRawDisplayName(this.data)
 }

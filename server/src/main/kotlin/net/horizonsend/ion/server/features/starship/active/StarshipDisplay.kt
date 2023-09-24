@@ -1,13 +1,19 @@
 package net.horizonsend.ion.server.features.starship.active
 
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.dynmap.bukkit.DynmapPlugin
@@ -76,9 +82,7 @@ object StarshipDisplay : IonServerComponent(true) {
 
 		val isInHyperspace = Hyperspace.isMoving(starship)
 
-		val description = """
-			<h1 style="color: red">aaaa</h1>
-		""".trimIndent()
+		val description = createDynmapPopupHTML(starship, isInHyperspace)
 
 		val starshipIcon = if (isInHyperspace) {
 			if (starship !is ActiveControlledStarship) return
@@ -99,6 +103,29 @@ object StarshipDisplay : IonServerComponent(true) {
 		} else createOverworldMarker(starship, displayName, markerIcon, description)
 
 		starshipsIcons[charIdentifier] = starshipIcon
+	}
+
+	fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
+		if (hyperspace) return "<h1>Hyperspace Echo</h3>"
+
+//		val componentDisplayName = starship.getDisplayNameComponent()
+		val displayNamePlain = starship.getDisplayNamePlain()
+		val pilotNamePlain = starship.controller.pilotName.plainText()
+		val type = starship.type.component.plainText()
+		val blockCount = starship.initialBlockCount
+		val location = starship.centerOfMass
+
+		val nation: Oid<Nation>? = (starship.controller as? PlayerController)?.player?.let { PlayerCache[it] }?.nationOid
+		val cachedNation = nation?.let { NationCache[it] }
+		val colorCSS = cachedNation?.color?.let { "color:${TextColor.color(it).asHexString()};" }
+
+		return """
+			<h1 style="$colorCSS;text-align:center;">$displayNamePlain</h1>
+			<h3><b>Type:</b> $type</h3>
+			<h3><b>Pilot:</b> $pilotNamePlain</h3>
+			<h3><b>Size:</b> $blockCount</h3>
+			<h3><b>Location:</b> $location</h3>
+		""".trimIndent()
 	}
 
 	/** Create a normal marker for a ship not in hyperspace **/
