@@ -47,6 +47,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.kyori.adventure.text.Component
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -372,4 +373,13 @@ abstract class ActiveStarship (
 	}
 
 	fun lastDamaged(): Long = damagers.maxOf { it.value.lastDamaged }
+
+	/** Gets the minimessage display name of this starship */
+	open fun getDisplayName(): String = type.formatted
+
+		/** Gets the component display name of this starship */
+	open fun getDisplayNameComponent(): Component = type.component
+
+	/** Gets the plain text serialized version of this starship's display name */
+	open fun getDisplayNamePlain(): String = type.displayName
 }
