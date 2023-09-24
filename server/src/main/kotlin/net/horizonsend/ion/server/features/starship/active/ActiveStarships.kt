@@ -22,11 +22,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
-import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
 import java.util.UUID
 import kotlin.collections.set
@@ -67,16 +64,6 @@ object ActiveStarships : IonServerComponent() {
 
 		worldMap[world].add(starship)
 
-		starship.iterateBlocks { x, y, z ->
-			val block = starship.world.getBlockAt(x, y, z)
-			if (block.type == Material.REDSTONE_BLOCK) {
-				val below = block.getRelative(BlockFace.DOWN).blockData
-				if (below.material == Material.PISTON && (below as Directional).facing == BlockFace.DOWN) {
-					block.type = Material.LAPIS_BLOCK
-				}
-			}
-		}
-
 		StarshipActivatedEvent(starship).callEvent()
 	}
 
@@ -103,29 +90,29 @@ object ActiveStarships : IonServerComponent() {
 		starship.destroy()
 	}
 
-	fun updateLocation(playerStarshipData: StarshipData, newWorld: World, newKey: Long) {
+	fun updateLocation(starshipData: StarshipData, newWorld: World, newKey: Long) {
 		Tasks.checkMainThread()
 
-		val oldKey = playerStarshipData.blockKey
+		val oldKey = starshipData.blockKey
 		if (oldKey == newKey) {
 			return
 		}
 
-		val oldWorld: World = playerStarshipData.bukkitWorld()
+		val oldWorld: World = starshipData.bukkitWorld()
 		val oldMap: Long2ObjectOpenHashMap<StarshipData> = shipLocationMap[oldWorld]
 		val newMap: Long2ObjectOpenHashMap<StarshipData> = shipLocationMap[newWorld]
 
 		val notYetInNewWorld = !newMap.containsKey(newKey)
-		val successfullyRemoved = oldMap.remove(oldKey, playerStarshipData as Any)
+		val successfullyRemoved = oldMap.remove(oldKey, starshipData as Any)
 		check(notYetInNewWorld && successfullyRemoved) {
 			"Not all conditions ($notYetInNewWorld, $successfullyRemoved) were true when moving computer from " +
 				"${oldWorld.name}@${blockKeyX(oldKey)},${blockKeyY(oldKey)},${blockKeyZ(oldKey)}" +
 				" to ${newWorld.name}@${blockKeyX(newKey)},${blockKeyY(newKey)},${blockKeyZ(newKey)}"
 		}
 
-		playerStarshipData.blockKey = newKey
-		playerStarshipData.levelName = newWorld.name
-		newMap[newKey] = playerStarshipData
+		starshipData.blockKey = newKey
+		starshipData.levelName = newWorld.name
+		newMap[newKey] = starshipData
 	}
 
 	fun updateWorld(starship: ActiveStarship, oldWorld: World, newWorld: World) {
