@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -7,7 +8,6 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.plainText
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.dynmap.bukkit.DynmapPlugin
@@ -77,9 +77,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		val isInHyperspace = Hyperspace.isMoving(starship)
 
 		val description = """
-			<h3><a href="https://google.com">Test Link</a></h3>
-			<p>Marker Description<\p>
-			<b>Blean<\b>
+			<h1 style="color: red">aaaa</h1>
 		""".trimIndent()
 
 		val starshipIcon = if (isInHyperspace) {
