@@ -87,7 +87,7 @@ object PowerToolListener : SLEventListener() {
 				return
 			}
 
-			else -> IonServer.slF4JLogger.warn("Unhandled power tool $type")
+			else -> log.warn("Unhandled power tool $type")
 		}
 	}
 }

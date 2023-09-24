@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.space
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
 import org.bukkit.World
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 data class Sector(val angle: Int, val distance: Int) {
-	companion object {
+	companion object : IonServerComponent() {
 		val letters = "abcdefghijklmnopqrstuvwxyz".toCharArray()
 		val letterIndices: Map<Char, Int> = letters.withIndex().associate { it.value to it.index }
 
@@ -37,7 +37,7 @@ data class Sector(val angle: Int, val distance: Int) {
 			}
 
 			if (string != "Andromeda") {
-				IonServer.slF4JLogger.warn("Invalid sector $worldName, defaulting to 7b")
+				log.warn("Invalid sector $worldName, defaulting to 7b")
 			}
 
 			return Sector(7, getDistance('b'))

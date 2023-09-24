@@ -122,7 +122,7 @@ object RegenerateCommand : SLCommand() {
 
 						val sectionBlocks = (dataResult as DataResult<PalettedContainer<BlockState?>>).getOrThrow(false) {
 							sender.serverError("Error reading section blocks: $it")
-							IonServer.slF4JLogger.warn(it)
+							log.warn(it)
 						}
 
 						regenerateSection(sender, sectionY, chunkPos, sectionBlocks, deferred, selection)
@@ -190,7 +190,7 @@ object RegenerateCommand : SLCommand() {
 			newSection.setBlock(index, BlockData(state, null))
 		}
 
-		IonServer.logger.info("Completed section ${chunkPos.x}, $sectionY, ${chunkPos.z}")
+		log.info("Completed section ${chunkPos.x}, $sectionY, ${chunkPos.z}")
 		deferred.complete(chunkPos to newSection)
 	}
 

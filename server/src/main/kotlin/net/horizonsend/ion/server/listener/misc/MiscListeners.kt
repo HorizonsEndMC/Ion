@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.space.SpaceMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -27,7 +26,7 @@ class MiscListeners : SLEventListener() {
 			val distance = player.location.distance(otherPlayer.location)
 
 			if (distance <= 1_000) {
-				IonServer.slF4JLogger.warn("\"${player.name}\" has potentially combat logged. \"${otherPlayer.name}\" is ${distance}m away.")
+				log.warn("\"${player.name}\" has potentially combat logged. \"${otherPlayer.name}\" is ${distance}m away.")
 			}
 		}
 	}

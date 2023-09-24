@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.listener.misc
 import com.google.common.io.BaseEncoding
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.GameMode
@@ -35,14 +34,14 @@ class ResourcePackListener : SLEventListener() {
 
 				"https://github.com/HorizonsEndMC/ResourcePack/releases/download/$tagName/HorizonsEndResourcePack.zip"
 			} catch (exception: Exception) {
-				IonServer.slF4JLogger.warn("Exception was thrown while updating resource pack URL!", exception)
+				log.warn("Exception was thrown while updating resource pack URL!", exception)
 				null
 			}
 
 			cachedHash = try {
 				BaseEncoding.base16().encode(MessageDigest.getInstance("SHA-1").digest(URL(cachedURL).readBytes()))
 			} catch (exception: Exception) {
-				IonServer.slF4JLogger.warn("Exception was thrown while computing resource pack hash!", exception)
+				log.warn("Exception was thrown while computing resource pack hash!", exception)
 				null
 			}
 
