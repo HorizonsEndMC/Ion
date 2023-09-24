@@ -143,7 +143,6 @@ class ActiveControlledStarship (
 			movement.execute()
 		} catch (e: ConditionFailedException) {
 			controller?.serverError(e.message ?: "Starship could not move for an unspecified reason!")
-			println("Returning false $e")
 			sneakMovements = 0
 			return false
 		}
