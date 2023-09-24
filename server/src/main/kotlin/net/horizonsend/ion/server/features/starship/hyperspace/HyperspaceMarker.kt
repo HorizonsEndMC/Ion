@@ -1,4 +1,5 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
+
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Location

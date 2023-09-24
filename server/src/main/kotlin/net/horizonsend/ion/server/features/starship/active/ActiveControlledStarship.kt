@@ -116,17 +116,17 @@ class ActiveControlledStarship (
 		}
 
 		val pilot = this.controller
-		if (pilot != null) {
-			val event: StarshipMoveEvent = when (movement) {
-				is TranslateMovement -> StarshipTranslateEvent(this, pilot, movement)
-				is RotationMovement -> StarshipRotateEvent(this, pilot, movement)
-				else -> error("Unrecognized movement type ${movement.javaClass.name}")
-			}
 
-			if (!event.callEvent()) {
-				return CompletableFuture.completedFuture(false)
-			}
+		val event: StarshipMoveEvent = when (movement) {
+			is TranslateMovement -> StarshipTranslateEvent(this, pilot, movement)
+			is RotationMovement -> StarshipRotateEvent(this, pilot, movement)
+			else -> error("Unrecognized movement type ${movement.javaClass.name}")
 		}
+
+		if (!event.callEvent()) {
+			return CompletableFuture.completedFuture(false)
+		}
+
 
 		val future = CompletableFuture<Boolean>()
 		Tasks.async {
@@ -143,7 +143,7 @@ class ActiveControlledStarship (
 			movement.execute()
 		} catch (e: ConditionFailedException) {
 			controller?.serverError(e.message ?: "Starship could not move for an unspecified reason!")
-
+			println("Returning false $e")
 			sneakMovements = 0
 			return false
 		}
