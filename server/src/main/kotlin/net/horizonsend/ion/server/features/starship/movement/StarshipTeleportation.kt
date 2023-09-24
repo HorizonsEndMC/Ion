@@ -65,6 +65,8 @@ object StarshipTeleportation {
 		var adjustX = previousAdjustX ?: randomOffset()
 		var adjustZ = previousAdjustZ ?: randomOffset()
 
+		println("Trying to teleport to ${starship.centerOfMass.x + previousDX + adjustX}, ${starship.centerOfMass.z + previousDZ + adjustZ}")
+
 		while (wouldBeOutOfWorldBorder(starship, world, previousDX + adjustX, previousDZ + adjustZ)) {
 			adjustX = previousAdjustX ?: randomOffset()
 			adjustZ = previousAdjustZ ?: randomOffset()
@@ -80,9 +82,8 @@ object StarshipTeleportation {
 					return@thenComposeAsync CompletableFuture.completedFuture(true)
 				}
 
-				starship.onlinePassengers.forEach { passenger ->
-					passenger.information("Adjusting position...")
-				}
+				starship.information("Adjusting position...")
+
 
 				val tries = previousTries + 1
 				return@thenComposeAsync tryTeleport(starship, dx, dy, dz, newWorld, tries, adjustX, adjustZ)
