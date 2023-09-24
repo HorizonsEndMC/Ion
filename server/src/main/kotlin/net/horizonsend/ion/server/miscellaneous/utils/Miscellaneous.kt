@@ -35,8 +35,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.EnumSet
-import java.util.Random
-import kotlin.streams.asSequence
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider

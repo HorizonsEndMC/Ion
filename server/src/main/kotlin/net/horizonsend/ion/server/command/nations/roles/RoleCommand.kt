@@ -3,14 +3,13 @@ package net.horizonsend.ion.server.command.nations.roles
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
-import java.sql.Timestamp
-import java.util.UUID
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Role
 import net.horizonsend.ion.common.database.schema.nations.RoleCompanion
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.server.features.nations.gui.editRoleGUI
 import net.horizonsend.ion.server.features.nations.gui.editRolePermissionGUI
 import net.horizonsend.ion.server.features.nations.gui.guiButton
@@ -21,13 +20,19 @@ import net.horizonsend.ion.server.features.nations.gui.membersRoleGUI
 import net.horizonsend.ion.server.features.nations.gui.name
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
+import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.pull
+import java.sql.Timestamp
+import java.util.UUID
 
 /** Abstract role command logic class, has the logic but not the command description/tab completions due to ACF's restrictions */
 internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>> :
