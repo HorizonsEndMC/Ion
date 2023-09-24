@@ -69,7 +69,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 abstract class ActiveStarship (
-	var world: World,
+	world: World,
 	var blocks: LongOpenHashSet,
 	val mass: Double,
 	var centerOfMass: Vec3i,
@@ -79,6 +79,12 @@ abstract class ActiveStarship (
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
+
+	var world: World = world
+		set(value) {
+			ActiveStarships.updateWorld(this, value, value)
+			field = value
+		}
 
 	@Suppress("leakingThis") // Only for initialization, will be replaced
 	var controller: Controller = NoOpController(this)
