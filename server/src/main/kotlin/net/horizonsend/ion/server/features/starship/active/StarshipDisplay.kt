@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.active
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -13,6 +15,8 @@ import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
 import org.dynmap.markers.MarkerIcon
 import org.dynmap.markers.MarkerSet
+import java.io.FileInputStream
+import java.util.Locale
 
 object StarshipDisplay : IonServerComponent(true) {
 	private lateinit var starshipMarkers: MarkerSet
@@ -22,16 +26,39 @@ object StarshipDisplay : IonServerComponent(true) {
 
 	override fun onEnable() {
 		if (!Bukkit.getPluginManager().isPluginEnabled("dynmap")) return
-
 		starshipMarkers = markerAPI.createMarkerSet("starship-icons", "Starships", null, false)
 		walk = markerAPI.getMarkerIcon("walk")
+		registerIcons(markerAPI)
 
 		Tasks.asyncRepeat(0L, 20L, ::updateStarships)
 	}
 
-	fun updateStarships() {
+	private fun registerIcons(markerAPI: MarkerAPI) {
+		val iconsFolder = IonServer.dataFolder.resolve("icons")
+
+		val icons = StarshipType.values().map { it.dynmapIcon }
+
+		for (iconName in icons) {
+			// Take the name, split it at _'s, replace the first letter of each with capital, and join together with spaces
+			// medium_freighter becomes Medium Freighter
+			val displayName = iconName.split("_")
+				.map { separated ->
+					separated.lowercase().replaceFirstChar { firstChar ->
+						firstChar.uppercase(Locale.getDefault())
+					}
+				}
+				.joinToString { " " }
+
+			val file = iconsFolder.resolve("$iconName.png")
+			if (!file.exists()) continue
+
+			val input = FileInputStream(file)
+			markerAPI.createMarkerIcon(iconName, displayName, input)
+		}
+	}
+
+	private fun updateStarships() {
 		val markerSet = starshipMarkers
-//		markerSet.markers.clear()
 
 		clearInactive(markerSet)
 		ActiveStarships.all().forEach(::createMarker)
@@ -39,15 +66,21 @@ object StarshipDisplay : IonServerComponent(true) {
 	}
 
 	/** Stores the StarshipIcon for use in populating the map */
-	fun createMarker(starship: ActiveStarship, marker: MarkerIcon? = null) {
+	private fun createMarker(starship: ActiveStarship, marker: MarkerIcon? = null) {
 		val charIdentifier = starship.charIdentifier
 		val displayName = starship.controller.getDisplayName().plainText()
 
-		val markerIcon = marker ?: markerAPI.getMarkerIcon(starship.type.dynmapMarker)
+		val markerIcon = marker
+			?: markerAPI.getMarkerIcon(starship.type.dynmapIcon)
+			?: markerAPI.getMarkerIcon("anchor")
 
 		val isInHyperspace = Hyperspace.isMoving(starship)
 
-		val description = "<h3>Marker Description"
+		val description = """
+			<h3><a href="https://google.com">Test Link</a></h3>
+			<p>Marker Description<\p>
+			<b>Blean<\b>
+		""".trimIndent()
 
 		val starshipIcon = if (isInHyperspace) {
 			if (starship !is ActiveControlledStarship) return
