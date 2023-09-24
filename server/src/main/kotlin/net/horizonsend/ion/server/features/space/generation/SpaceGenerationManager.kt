@@ -28,15 +28,6 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.persistence.PersistentDataType.BYTE
 import java.util.Random
-import kotlin.collections.List
-import kotlin.collections.MutableMap
-import kotlin.collections.firstOrNull
-import kotlin.collections.isNotEmpty
-import kotlin.collections.listOf
-import kotlin.collections.listOfNotNull
-import kotlin.collections.minOf
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -52,7 +43,7 @@ object SpaceGenerationManager : SLEventListener() {
 		val serverLevel = (event.world as CraftWorld).handle
 
 		IonServer.configuration.spaceGenConfig[event.world.name]?.let { config ->
-			IonServer.slF4JLogger.info("Creating generator for ${serverLevel.serverLevelData.levelName}")
+			log.info("Creating generator for ${serverLevel.serverLevelData.levelName}")
 			worldGenerators[serverLevel] =
 				SpaceGenerator(
 					serverLevel,
