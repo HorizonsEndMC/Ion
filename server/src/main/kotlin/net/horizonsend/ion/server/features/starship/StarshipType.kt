@@ -63,7 +63,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.IRON_NUGGET,
 		isWarship = true,
 		color = "#ff8000",
-		overridePermission = "ion.ships.override.1"
+		overridePermission = "ion.ships.override.1",
+		dynmapIcon = "starfighter"
 	),
 	GUNSHIP(
 		displayName = "Gunship",
@@ -79,7 +80,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.IRON_INGOT,
 		isWarship = true,
 		color = "#ff4000",
-		overridePermission = "ion.ships.override.10"
+		overridePermission = "ion.ships.override.10",
+		dynmapIcon = "gunship"
 	),
 	CORVETTE(
 		displayName = "Corvette",
@@ -95,7 +97,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.IRON_BLOCK,
 		isWarship = true,
 		color = "#ff0000",
-		overridePermission = "ion.ships.override.20"
+		overridePermission = "ion.ships.override.20",
+		dynmapIcon = "corvette"
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -111,7 +114,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.LAPIS_BLOCK,
 		isWarship = true,
 		color = "#c00000",
-		overridePermission = "ion.ships.override.40"
+		overridePermission = "ion.ships.override.40",
+		dynmapIcon = "frigate"
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -127,7 +131,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.GOLD_BLOCK,
 		isWarship = true,
 		color = "#800000",
-		overridePermission = "ion.ships.override.60"
+		overridePermission = "ion.ships.override.60",
+		dynmapIcon = "destroyer"
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
@@ -196,7 +201,8 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		poweroverrider = 0.7,
 		maxMiningLasers = 1,
-		miningLaserTier = 1
+		miningLaserTier = 1,
+		dynmapIcon = "shuttle"
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -215,7 +221,8 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.10",
 		poweroverrider = 0.7,
 		maxMiningLasers = 1,
-		miningLaserTier = 2
+		miningLaserTier = 2,
+		dynmapIcon = "transport"
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -234,7 +241,8 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.20",
 		poweroverrider = 0.7,
 		maxMiningLasers = 2,
-		miningLaserTier = 2
+		miningLaserTier = 2,
+		dynmapIcon = "light_freighter"
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -253,7 +261,8 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.40",
 		poweroverrider = 0.7,
 		maxMiningLasers = 4,
-		miningLaserTier = 3
+		miningLaserTier = 3,
+		dynmapIcon = "medium_freighter"
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -272,7 +281,8 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.60",
 		poweroverrider = 0.7,
 		maxMiningLasers = 6,
-		miningLaserTier = 3
+		miningLaserTier = 3,
+		dynmapIcon = "heavy_freighter"
 	),
 	PLATFORM(
 		displayName = "Platform",
