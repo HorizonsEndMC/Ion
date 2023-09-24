@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.command.nations.admin
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
-import net.horizonsend.ion.server.miscellaneous.utils.isAlphanumeric
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Color
 import org.bukkit.entity.Player
