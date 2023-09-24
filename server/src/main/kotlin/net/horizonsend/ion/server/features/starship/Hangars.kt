@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.PerWorld
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -131,7 +130,7 @@ object Hangars : IonServerComponent() {
 				}
 			}
 		} catch (e: Exception) {
-			IonServer.slF4JLogger.warn("Failed to load hangar data for world ${world.name}")
+			log.warn("Failed to load hangar data for world ${world.name}")
 			e.printStackTrace()
 		}
 		return map
