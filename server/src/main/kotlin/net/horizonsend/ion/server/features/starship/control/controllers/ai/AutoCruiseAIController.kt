@@ -43,6 +43,8 @@ class AutoCruiseAIController(
 				StarshipCruising.startCruising(this, controlledShip, direction)
 			}
 
+			// TODO vanish if near world border
+
 			if (distanceSquared(origin, destination) <= 10000) {
 				Tasks.sync {
 					StarshipCruising.stopCruising(this, controlledShip)

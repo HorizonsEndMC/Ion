@@ -34,7 +34,7 @@ object AISpawningManager : IonServerComponent(true) {
 		val loc = spawner.findLocation(world, configuration)
 
 		if (loc == null) {
-			IonServer.logger.info("Aborted spawning AI ship. Could not find location after 15 attempts.")
+			log.info("Aborted spawning AI ship. Could not find location after 15 attempts.")
 			return
 		}
 		val deferred = spawner.spawn(loc)

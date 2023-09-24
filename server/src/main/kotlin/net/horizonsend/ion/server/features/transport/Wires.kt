@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.transport
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
@@ -32,17 +31,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.collections.Set
-import kotlin.collections.asSequence
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.filter
-import kotlin.collections.isNotEmpty
-import kotlin.collections.iterator
-import kotlin.collections.mutableSetOf
-import kotlin.collections.setOf
-import kotlin.collections.shuffled
-import kotlin.collections.toSet
 import kotlin.math.min
 import kotlin.system.measureNanoTime
 
@@ -126,7 +116,7 @@ object Wires : IonServerComponent() {
 			}
 
 			if (System.nanoTime() - start > maxTime) {
-				IonServer.slF4JLogger.warn("Power update took too long!")
+				log.warn("Power update took too long!")
 			}
 
 			for ((sign, power) in powerSignUpdateCache.asMap()) {
