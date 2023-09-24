@@ -55,6 +55,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.StarshipDisplay
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipTemplates
@@ -67,7 +68,6 @@ import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWea
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeacons
-import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMap
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.TransportConfig
@@ -172,7 +172,6 @@ val components: List<IonComponent> = listOf(
 
 	SpaceMap,
 	NationsMap,
-	HyperspaceMap,
 	HyperspaceBeacons,
 	Collectors,
 	CityNPCs,
@@ -187,4 +186,5 @@ val components: List<IonComponent> = listOf(
 	AISpawningManager,
 	AIManager,
 	AIStarshipTemplates,
+	StarshipDisplay,
 )

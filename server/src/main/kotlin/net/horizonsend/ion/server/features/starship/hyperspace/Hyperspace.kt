@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
@@ -84,18 +85,19 @@ object Hyperspace : IonServerComponent() {
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
 		checkNotNull(hyperspaceWorld) { "${spaceWorld.name} does not have a hyperspace world" }
 
-		val dest = Location(destinationWorld, x.toDouble(), 128.0, z.toDouble())
+		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
 		val mass = starship.mass
 		val speed = calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
 
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
-		// create a new marker and add it to the collection
-		if (starship.world == dest.world) {
-			val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.world), starship, dest)
-			HyperspaceMap.addMarker(starship, marker)
-		}
+		// Markers are now handled by StarshipDisplay
+//		// create a new marker and add it to the collection
+//		if (starship.world == dest.world) {
+//			val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.world), starship, dest)
+//			HyperspaceMap.addMarker(starship, marker)
+//		}
 
 		(starship.controller as? PlayerController)?.player?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
@@ -105,9 +107,9 @@ object Hyperspace : IonServerComponent() {
 
 		val drive: HyperdriveSubsystem = warmup.drive
 		if (drive.isIntact()) drive.restoreFuel()
-
-		// remove hyperspace marker
-		HyperspaceMap.deleteMarker(warmup.ship)
+		warmup.ship.information("Canceled Jump Warmup")
+//		// remove hyperspace marker
+//		HyperspaceMap.deleteMarker(warmup.ship)
 	}
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
@@ -138,11 +140,11 @@ object Hyperspace : IonServerComponent() {
 			val mass = starship.mass
 			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass) / 10
 			movementTasks[starship] = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
-
-			// Update the marker state (the ship went into hyperspace)
-			val marker = HyperspaceMap.getMarker(starship)
-			marker?.inHyperspace = true
-			marker?.movement = movementTasks[starship]!!
+//
+//			// Update the marker state (the ship went into hyperspace)
+//			val marker = HyperspaceMap.getMarker(starship)
+//			marker?.inHyperspace = true
+//			marker?.movement = movementTasks[starship]!!
 		}
 	}
 

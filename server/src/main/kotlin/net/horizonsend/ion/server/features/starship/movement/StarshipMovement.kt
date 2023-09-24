@@ -149,7 +149,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun validateWorldBorders(centerOfMass: Vec3i, passengers: List<Entity>, world2: World) {
-		if (world2.worldBorder.isInside(centerOfMass.toLocation(world2)))
+		if (!world2.worldBorder.isInside(centerOfMass.toLocation(world2)))
 			// Handle cases where there are no pilots
 			throw ConditionFailedException("Starship would be outside the world border!")
 

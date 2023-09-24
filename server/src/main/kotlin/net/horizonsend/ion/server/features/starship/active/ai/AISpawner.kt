@@ -103,7 +103,7 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", AIStarshipTemplates.
 		return super.spawn(location) callback@{
 			val endpoint = findEndpoint(location) ?: return@callback
 
-			it.controller = AutoCruiseAIController(it, endpoint.toVector(), text(""))
+			it.controller = AutoCruiseAIController(it, endpoint.toVector(), text("Automated Piloting Interface"))
 		}
 	}
 }

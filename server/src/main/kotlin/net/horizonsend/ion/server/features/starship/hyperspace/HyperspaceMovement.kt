@@ -5,9 +5,9 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import org.bukkit.Location
 import org.bukkit.World
@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
 class HyperspaceMovement(
 	val ship: ActiveStarship,
 	val speed: Int,
-	private val originWorld: World,
+	val originWorld: World,
 	val dest: Location
 	) : BukkitRunnable() {
 	var x = ship.centerOfMass.x.toDouble()
@@ -41,7 +41,7 @@ class HyperspaceMovement(
 	}
 
 	override fun run() {
-		if (!ActiveStarships.isActive(ship)) {
+		if (!isPiloted(ship as ActiveControlledStarship)) {
 			cancel()
 			return
 		}
