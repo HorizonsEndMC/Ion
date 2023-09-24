@@ -198,7 +198,12 @@ object StarshipDisplay : IonServerComponent(true) {
 	) {
 		fun update(markerSet: MarkerSet) {
 			val marker: Marker? = markerSet.findMarker(charIdentifier)
-			marker?.deleteMarker()
+//			marker?.deleteMarker()
+
+			val (x, y, z) = position
+
+			marker?.setLocation(world.name, x.toDouble(), y.toDouble(), z.toDouble())
+			marker?.description = description
 
 			createMarker(markerSet)
 		}
@@ -208,7 +213,8 @@ object StarshipDisplay : IonServerComponent(true) {
 
 			val marker: Marker? = markerSet.createMarker(
 				charIdentifier,
-				displayName,
+				"<p>$displayName</p>",
+				true, // HTML label support
 				world.name,
 				x.toDouble(),
 				y.toDouble(),
