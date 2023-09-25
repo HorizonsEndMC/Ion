@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i

@@ -5,7 +5,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.CombatController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
