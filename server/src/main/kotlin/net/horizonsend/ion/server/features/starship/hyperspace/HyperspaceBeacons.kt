@@ -4,21 +4,26 @@ import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import org.dynmap.bukkit.DynmapPlugin
+import net.horizonsend.ion.server.miscellaneous.utils.isDynmapEnabled
+import net.horizonsend.ion.server.miscellaneous.utils.markerAPI
+import net.horizonsend.ion.server.miscellaneous.utils.registerIcon
 import org.dynmap.markers.MarkerSet
 
 object HyperspaceBeacons : IonServerComponent(true) {
 	override fun onEnable() {
+		registerIcon("hyperspace_beacon")
+
 		reloadDynmap()
 	}
 
 	fun reloadDynmap() {
-		val api = try { DynmapPlugin.plugin.markerAPI } catch (_: Error) { return } // dynmap not installed
-		var set: MarkerSet? = api.getMarkerSet("beacons")
+		if (!isDynmapEnabled()) return
+
+		var set: MarkerSet? = markerAPI.getMarkerSet("beacons")
 
 		set?.deleteMarkerSet()
 
-		set = api.createMarkerSet("beacons", "Beacons", null, false)
+		set = markerAPI.createMarkerSet("beacons", "Beacons", null, false)
 
 		for (beacon in IonServer.configuration.beacons) {
 			val serverName = IonServer.configuration.serverName
@@ -37,7 +42,7 @@ object HyperspaceBeacons : IonServerComponent(true) {
 				beacon.spaceLocation.x.toDouble(),
 				128.0,
 				beacon.spaceLocation.z.toDouble(),
-				api.getMarkerIcon("portal"),
+				markerAPI.getMarkerIcon("hyperspace_beacon"),
 				false
 			)
 		}
