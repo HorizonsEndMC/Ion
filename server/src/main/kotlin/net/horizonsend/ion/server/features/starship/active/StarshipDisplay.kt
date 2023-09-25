@@ -88,8 +88,6 @@ object StarshipDisplay : IonServerComponent(true) {
 	}
 
 	fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
-		if (hyperspace) return "<h3>Hyperspace Echo</h3>"
-
 //		val componentDisplayName = starship.getDisplayNameComponent()
 		val displayNamePlain = starship.getDisplayNamePlain()
 		val pilotNamePlain = starship.controller.pilotName.plainText()
@@ -101,8 +99,11 @@ object StarshipDisplay : IonServerComponent(true) {
 		val cachedNation = nation?.let { NationCache[it] }
 		val colorCSS = cachedNation?.color?.let { "color:${TextColor.color(it).asHexString()};" }
 
+		val hyperspaceMessage = if (hyperspace) "<h2 style=\"text-align:center;\">Hyperspace Echo</h2>\n" else ""
+
 		return """
 			<h1 style="$colorCSS;text-align:center;">$displayNamePlain</h1>
+			$hyperspaceMessage
 			<h3><b>Type:</b> $type</h3>
 			<h3><b>Pilot:</b> $pilotNamePlain</h3>
 			<h3><b>Size:</b> $blockCount</h3>
@@ -180,13 +181,17 @@ object StarshipDisplay : IonServerComponent(true) {
 	) {
 		fun update(markerSet: MarkerSet) {
 			val marker: Marker? = markerSet.findMarker(charIdentifier)
-//			marker?.deleteMarker()
+			val oldX = marker?.x?.toInt()
+			val oldY = marker?.y?.toInt()
+			val oldZ = marker?.z?.toInt()
 
 			val (x, y, z) = position
 
-			marker?.setLocation(world.name, x.toDouble(), y.toDouble(), z.toDouble())
 			marker?.description = description
 
+			if (oldX == x && oldY == y && oldZ == z) return
+
+			marker?.deleteMarker()
 			createMarker(markerSet)
 		}
 
