@@ -87,7 +87,7 @@ class Vec3i: DBVec3i {
 
 	override fun toString() = "$x,$y,$z"
 
-	fun toLocation(world: World?): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+	fun toLocation(world: World): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 
 	@Deprecated("Star Legacy's blockKey is not the same as Minecraft's blockKey")
 	fun toBlockKey(): Long = blockKey(x, y, z)

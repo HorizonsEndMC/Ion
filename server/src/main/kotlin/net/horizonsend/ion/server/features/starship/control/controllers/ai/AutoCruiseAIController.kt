@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
-import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -9,50 +8,62 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.util.Vector
 
 class AutoCruiseAIController(
 	starship: ActiveStarship,
 	endPoint: Vector,
-	displayName: Component,
+	maxSpeed: Int,
+	val aggressivenessLevel: AggressivenessLevel
 ) : AIController(starship, "autoCruise") {
 	var ticks = 0
 
-	override var pilotName: Component = displayName
+	override val pilotName: Component = starship.getDisplayNameComponent().append(Component.text(" [NEUTRAL]", NamedTextColor.YELLOW))
 
 	var destination = endPoint
-		set(value) {
-			direction = value.clone().subtract(getCenter().toVector())
-			field = value
-		}
+	val direction: Vector get() = destination.clone().subtract(getCenter().toVector())
 
-	var direction: Vector = endPoint.clone().subtract(getCenter().toVector())
-
+	private var speedLimit = maxSpeed
 
 	override fun tick() {
 		Tasks.async {
 			ticks++
 
-			if ((ticks % 20) != 0) return@async // Only tick evey second
-			val controlledShip = starship as? ActiveControlledStarship ?: return@async
+			// Only tick evey second
+			if ((ticks % 20) != 0) return@async
+
+			var shouldDestroy = false
+
+			val nearbyShip = getNearbyShips(0.0, aggressivenessLevel.engagementDistance) { starship, _ ->
+				starship.controller !is AIController
+			}.firstOrNull()
+
+			nearbyShip?.let {
+				starship.controller = StarfighterCombatController(
+					starship,
+					it,
+					this,
+					aggressivenessLevel
+				)
+			}
 
 			val origin = getCenter().toVector()
+			if (distanceSquared(origin, destination) <= 100000) shouldDestroy = true
+
+			// TODO vanish if near world border
+
+			if (shouldDestroy) {
+				despawn()
+				return@async
+			}
+
+			val controlledShip = starship as? ActiveControlledStarship ?: return@async
+			starship.speedLimit = speedLimit
 
 			Tasks.sync {
 				AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
 				StarshipCruising.startCruising(this, controlledShip, direction)
-			}
-
-			// TODO vanish if near world border
-
-			if (distanceSquared(origin, destination) <= 10000) {
-				Tasks.sync {
-					StarshipCruising.stopCruising(this, controlledShip)
-					// Once it reaches its destination, wait 30 seconds then vanish, if not damaged.
-
-					//TODO do all of that
-					StarshipDestruction.vanish(starship)
-				}
 			}
 
 			super.tick()

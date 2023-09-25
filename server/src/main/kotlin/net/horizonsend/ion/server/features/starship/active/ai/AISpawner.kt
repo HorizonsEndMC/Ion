@@ -8,13 +8,13 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AutoCruiseAIController
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
-import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
@@ -103,7 +103,7 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", AIStarshipTemplates.
 		return super.spawn(location) callback@{
 			val endpoint = findEndpoint(location) ?: return@callback
 
-			it.controller = AutoCruiseAIController(it, endpoint.toVector(), text("Automated Piloting Interface"))
+			it.controller = AutoCruiseAIController(it, endpoint.toVector(), 5, AggressivenessLevel.EXTREME)
 		}
 	}
 }
