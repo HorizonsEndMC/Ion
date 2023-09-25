@@ -276,7 +276,7 @@ object PilotedStarships : IonServerComponent() {
 		val pilotedStarship = PilotedStarships[player]
 		if (pilotedStarship != null) {
 			if (pilotedStarship.dataId == data._id) {
-				tryRelease(pilotedStarship, player)
+				tryRelease(pilotedStarship)
 				return false
 			}
 
@@ -415,18 +415,18 @@ object PilotedStarships : IonServerComponent() {
 		return true
 	}
 
-	fun tryRelease(starship: ActiveControlledStarship, player: Player): Boolean {
-		if (!StarshipUnpilotEvent(starship, player).callEvent()) {
+	fun tryRelease(starship: ActiveControlledStarship): Boolean {
+		if (!StarshipUnpilotEvent(starship, starship.controller).callEvent()) {
 			return false
 		}
 		if (starship.world.name.contains("hyperspace", ignoreCase=true)) return false
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
-		for (nearbyPlayer in player.world.getNearbyPlayers(player.location, 500.0)) {
+		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
 			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
-		player.successActionMessage("Released ${getDisplayName(starship.data)}")
+		starship.controller.successActionMessage("Released ${getDisplayName(starship.data)}")
 		return true
 	}
 

@@ -360,14 +360,14 @@ abstract class ActiveStarship (
 		return planet.atmosphereRadius + max(max.x - min.x, max.z - min.z) / 2 + 10
 	}
 
-	fun getAutoTurretIdentifier(): String = when (controller) {
+	private fun getAutoTurretIdentifier(): String = when (controller) {
 		is UnpilotedController -> "UnpilotedShip:$charIdentifier"
 
 		is PlayerController -> (controller as PlayerController).player.name
 
-		is AIController -> "AutonomousShip:$charIdentifier"
+		is AIController -> "${getDisplayNamePlain()}:$charIdentifier"
 
-		is NoOpController -> charIdentifier
+		is NoOpController -> "${getDisplayNamePlain()}:$charIdentifier"
 
 		else -> throw NotImplementedError("$controller does not have an auto turret identifier!")
 	}

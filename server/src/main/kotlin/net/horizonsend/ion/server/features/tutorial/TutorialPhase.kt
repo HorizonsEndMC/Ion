@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.tutorial
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.event.StarshipComputerOpenMenuEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
@@ -180,7 +181,7 @@ enum class TutorialPhase(vararg val messages: TutorialMessage, val cancel: Boole
 		PopupMessage("&7Releasing", "Releasing also lets you leave the ship"),
 		PopupMessage("&7Releasing", "&e&lType /release or right click the computer")
 	) {
-		override fun setupHandlers() = on<StarshipUnpilotEvent>({ it.player }) { event, player ->
+		override fun setupHandlers() = on<StarshipUnpilotEvent>({ (it.controller as? PlayerController)?.player }) { event, player ->
 			event.isCancelled = true
 			StarshipDestruction.vanish(event.starship)
 			nextStep(player)
