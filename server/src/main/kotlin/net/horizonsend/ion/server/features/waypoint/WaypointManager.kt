@@ -170,7 +170,7 @@ object WaypointManager : IonServerComponent() {
             val vertex = WaypointVertex(
                 name = planet.name,
                 icon = '\uE020',
-                loc = planet.location.toLocation(planet.spaceWorld)
+                loc = planet.location.toLocation(planet.spaceWorld!!)
             )
             mainGraph.addVertex(vertex)
         }
