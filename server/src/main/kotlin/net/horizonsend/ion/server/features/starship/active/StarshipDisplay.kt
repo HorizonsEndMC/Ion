@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -13,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.registerIcon
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -21,8 +21,6 @@ import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
 import org.dynmap.markers.MarkerIcon
 import org.dynmap.markers.MarkerSet
-import java.io.FileInputStream
-import java.util.Locale
 
 object StarshipDisplay : IonServerComponent(true) {
 	private lateinit var starshipMarkers: MarkerSet
@@ -34,32 +32,16 @@ object StarshipDisplay : IonServerComponent(true) {
 		if (!Bukkit.getPluginManager().isPluginEnabled("dynmap")) return
 		starshipMarkers = markerAPI.createMarkerSet("starship-icons", "Starships", null, false)
 		walk = markerAPI.getMarkerIcon("walk")
-		registerIcons(markerAPI)
+		registerIcons()
 
 		Tasks.asyncRepeat(0L, 20L, ::updateStarships)
 	}
 
-	private fun registerIcons(markerAPI: MarkerAPI) {
-		val iconsFolder = IonServer.dataFolder.resolve("icons")
-
+	private fun registerIcons() {
 		val icons = StarshipType.values().map { it.dynmapIcon }
 
 		for (iconName in icons) {
-			// Take the name, split it at _'s, replace the first letter of each with capital, and join together with spaces
-			// medium_freighter becomes Medium Freighter
-			val displayName = iconName.split("_")
-				.map { separated ->
-					separated.lowercase().replaceFirstChar { firstChar ->
-						firstChar.uppercase(Locale.getDefault())
-					}
-				}
-				.joinToString { " " }
-
-			val file = iconsFolder.resolve("$iconName.png")
-			if (!file.exists()) continue
-
-			val input = FileInputStream(file)
-			markerAPI.createMarkerIcon(iconName, displayName, input)
+			registerIcon(iconName)
 		}
 	}
 
