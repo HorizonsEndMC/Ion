@@ -52,7 +52,9 @@ class AutoCruiseAIController(
 	 **/
 	private fun checkRemoval(): Boolean {
 		// If it was damaged in the last 5 minutes don't do anything
-		if (this.starship.lastDamaged() <= System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) return false
+		starship.lastDamagedOrNull()?.let {
+			if (it <= System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) return true
+		}
 
 		val origin = getCenter()
 
