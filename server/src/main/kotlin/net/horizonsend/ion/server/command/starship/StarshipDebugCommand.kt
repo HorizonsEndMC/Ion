@@ -3,15 +3,9 @@ package net.horizonsend.ion.server.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
-import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager.handleSpawn
-import net.horizonsend.ion.server.features.starship.active.ai.AIUtils
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIControllers
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import org.bukkit.Location
@@ -40,30 +34,6 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("releaseall")
 	fun onReleaseAll() {
 		ActiveStarships.allControlledStarships().forEach { DeactivatedPlayerStarships.deactivateNow(it) }
-	}
-
-	@Suppress("Unused")
-	@Subcommand("ai")
-	fun onAI(sender: Player) {
-		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
-
-		starship.controller = AIControllers.dumbAI(starship)
-		starship.clearPassengers()
-		sender.success("success")
-	}
-
-	@Suppress("Unused")
-	@Subcommand("loadAI")
-	fun loadAI(sender: Player, name: String) {
-		val (data, schematic) = StarshipDealers.schematicMap.filter { it.key.schematicName == name }.firstNotNullOfOrNull { it } ?: fail { "Sold ship $name not found!" }
-
-		AIUtils.createFromClipboard(
-			sender.location,
-			schematic,
-			data.shipType,
-			data.displayName,
-			{ ship -> AIControllers.dumbAI(ship) }
-		)
 	}
 
 	@Suppress("Unused")

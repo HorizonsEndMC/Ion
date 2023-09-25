@@ -92,9 +92,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("unused")
 	@CommandAlias("release")
 	fun onRelease(sender: Player) {
-		PilotedStarships.tryRelease(
-			PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship"), sender
-		)
+		PilotedStarships.tryRelease(PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship"))
 	}
 
 	@Suppress("unused")
