@@ -125,7 +125,11 @@ object TutorialManager : IonServerComponent() {
 		}
 
 		listen<StarshipUnpilotEvent>(priority = EventPriority.LOW) { event ->
-			val player = event.player
+			val controller = event.controller
+
+			if (controller !is PlayerController) return@listen
+
+			val player = controller.player
 
 			if (!isWorld(player.world) || playersInTutorials[player] == TutorialPhase.LAST) {
 				return@listen

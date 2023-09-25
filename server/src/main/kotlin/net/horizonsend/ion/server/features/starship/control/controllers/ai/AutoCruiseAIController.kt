@@ -9,64 +9,116 @@ import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Location
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class AutoCruiseAIController(
 	starship: ActiveStarship,
-	endPoint: Vector,
-	maxSpeed: Int,
-	val aggressivenessLevel: AggressivenessLevel
-) : AIController(starship, "autoCruise") {
+	endPoint: Location,
+	maxSpeed: Int = -1,
+	aggressivenessLevel: AggressivenessLevel,
+	val combatController: (AIController, ActiveStarship) -> AIController
+) : AIController(starship, "autoCruise", aggressivenessLevel) {
 	var ticks = 0
 
 	override val pilotName: Component = starship.getDisplayNameComponent().append(Component.text(" [NEUTRAL]", NamedTextColor.YELLOW))
 
 	var destination = endPoint
-	val direction: Vector get() = destination.clone().subtract(getCenter().toVector())
+	val direction: Vector get() = destination.toVector().subtract(getCenter().toVector())
 
 	private var speedLimit = maxSpeed
 
-	override fun tick() {
-		Tasks.async {
-			ticks++
+	/** Checks for nearby aggressive ships to enter a combat mode */
+	private fun searchNearbyShips() {
+		val nearbyShip = getNearbyShips(0.0, aggressivenessLevel.engagementDistance) { starship, _ ->
+			starship.controller !is AIController
+		}.firstOrNull()
 
-			// Only tick evey second
-			if ((ticks % 20) != 0) return@async
+		// Switch to combat controller if nearby ship meets criteria
+		nearbyShip?.let { starship.controller = combatController(this, it) }
+	}
 
-			var shouldDestroy = false
+	/**
+	 * Checks if this starship should be removed
+	 *
+	 * Conditions:
+	 *  - Outside worldborder
+	 *  - Reached objective
+	 *  - Too old
+	 *  - Destination Reached
+	 *
+	 *  Returns true if it should be removed
+	 **/
+	private fun checkRemoval(): Boolean {
+		// If it was damaged in the last 5 minutes don't do anything
+		if (this.starship.lastDamaged() <= System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) return false
 
-			val nearbyShip = getNearbyShips(0.0, aggressivenessLevel.engagementDistance) { starship, _ ->
-				starship.controller !is AIController
-			}.firstOrNull()
+		val origin = getCenter()
 
-			nearbyShip?.let {
-				starship.controller = StarfighterCombatController(
-					starship,
-					it,
-					this,
-					aggressivenessLevel
-				)
-			}
+		// If it's an hour old
+		if (ticks > TimeUnit.HOURS.toMillis(1)) return true
 
-			val origin = getCenter().toVector()
-			if (distanceSquared(origin, destination) <= 100000) shouldDestroy = true
+		// if within 100 blocks of destination
+		if (distanceSquared(origin.toVector(), destination.toVector()) <= 10000) return true
 
-			// TODO vanish if near world border
+		return !starship.world.worldBorder.isInside(origin)
+	}
 
-			if (shouldDestroy) {
-				despawn()
-				return@async
-			}
+	override fun tick() = Tasks.async {
+		ticks++
 
-			val controlledShip = starship as? ActiveControlledStarship ?: return@async
-			starship.speedLimit = speedLimit
+		// Only tick evey second
+		if ((ticks % 20) != 0) return@async
 
-			Tasks.sync {
-				AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
-				StarshipCruising.startCruising(this, controlledShip, direction)
-			}
+		searchNearbyShips()
 
-			super.tick()
+		if (checkRemoval()) {
+			scheduleDespawn()
+			return@async
+		}
+
+		val shouldCruise = assessDistance()
+		if (shouldCruise) cruiseNavigationLoop() else shiftFlightNavigationLoop()
+	}
+
+	/** Returns true if the destination is sufficiently far that it should cruise */
+	private fun assessDistance(): Boolean {
+		val distance = distanceSquared(destination.toVector(), getCenter().toVector())
+
+		// 300 Blocks or more and it should cruise
+		return distance >= 90000.0 // Don't bother with the sqrt
+	}
+
+	/**
+	 * Cruise flight loop
+	 *  - Faces direction
+	 *  - Starts cruising
+	 **/
+	private fun cruiseNavigationLoop() {
+		starship as ActiveControlledStarship
+		starship.speedLimit = speedLimit
+
+		Tasks.sync {
+			AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
+			StarshipCruising.startCruising(this, starship, direction)
+		}
+	}
+
+	/**
+	 * Shift flight loop
+	 *  - Stops cruising
+	 *  - Faces objective
+	 *  - shift flies towards destination
+	 **/
+	private fun shiftFlightNavigationLoop() {
+		starship as ActiveControlledStarship
+		starship.speedLimit = speedLimit
+
+		Tasks.sync {
+			AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
+			AIControlUtils.shiftFlyToLocation(this, destination)
+			StarshipCruising.stopCruising(this, starship)
 		}
 	}
 }

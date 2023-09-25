@@ -3,8 +3,9 @@ package net.horizonsend.ion.server.features.misc
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import org.bukkit.entity.Player
@@ -83,14 +84,16 @@ object DutyModeMonitor : IonServerComponent() {
 
 	@EventHandler
 	fun onStarshipUnpilot(event: StarshipUnpilotEvent) {
-		val player = event.player
+		val controller = event.controller
 
-		if (!isInDutyMode(player)) {
+		if (controller !is PlayerController) return
+
+		if (!isInDutyMode(controller.player)) {
 			return
 		}
 
 		val starship = event.starship
-		record(player, "**Starship Unpilot**: ${starship.type} (${starship.initialBlockCount} blocks)")
+		record(controller.player, "**Starship Unpilot**: ${starship.type} (${starship.initialBlockCount} blocks)")
 	}
 
 	private fun record(player: Player, content: String) {
