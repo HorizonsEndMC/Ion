@@ -92,13 +92,6 @@ object Hyperspace : IonServerComponent() {
 
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
 
-		// Markers are now handled by StarshipDisplay
-//		// create a new marker and add it to the collection
-//		if (starship.world == dest.world) {
-//			val marker = HyperspaceMarker(starship.centerOfMass.toLocation(starship.world), starship, dest)
-//			HyperspaceMap.addMarker(starship, marker)
-//		}
-
 		(starship.controller as? PlayerController)?.player?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
@@ -108,8 +101,6 @@ object Hyperspace : IonServerComponent() {
 		val drive: HyperdriveSubsystem = warmup.drive
 		if (drive.isIntact()) drive.restoreFuel()
 		warmup.ship.information("Canceled Jump Warmup")
-//		// remove hyperspace marker
-//		HyperspaceMap.deleteMarker(warmup.ship)
 	}
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
@@ -140,11 +131,6 @@ object Hyperspace : IonServerComponent() {
 			val mass = starship.mass
 			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass) / 10
 			movementTasks[starship] = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
-//
-//			// Update the marker state (the ship went into hyperspace)
-//			val marker = HyperspaceMap.getMarker(starship)
-//			marker?.inHyperspace = true
-//			marker?.movement = movementTasks[starship]!!
 		}
 	}
 
@@ -163,9 +149,6 @@ object Hyperspace : IonServerComponent() {
 			starship.serverError("Failed to exit hyperspace: Realspace world not found")
 			return
 		}
-
-		// Remove the marker from the map
-		HyperspaceMap.deleteMarker(starship)
 
 		val dest = starship.centerOfMass.toLocation(world)
 		dest.x = movement.x
@@ -186,9 +169,6 @@ object Hyperspace : IonServerComponent() {
 		check(movementTasks.remove(starship, movement)) { "Movement wasn't in the map!" }
 
 		movement.cancel()
-
-		// Remove the marker from the map
-		HyperspaceMap.deleteMarker(starship)
 
 		starship.playSound(starshipExitHyperspaceSound())
 		StarshipTeleportation.teleportStarship(starship, movement.dest) {
