@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager.Companion.damager
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
@@ -103,7 +104,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 	private fun destroyLowHullIntegrityShips() {
 		ActiveStarships.all().forEach { ship ->
-			if (ship.hullIntegrity() < 0.8) {
+			if (ship.hullIntegrity() < MAX_SAFE_HULL_INTEGRITY) {
 				StarshipDestruction.destroy(ship)
 			}
 		}
