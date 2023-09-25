@@ -208,23 +208,25 @@ class StarfighterCombatController(
 
 	private fun combatLoop() {
 		// Get the closest axis
-		val direction = getImmediateLocation()
+		var direction = getImmediateLocation()
 		val blockFace = vectorToBlockFace(direction)
 
 		starship as ActiveControlledStarship
 
-		val offsetX = randomDouble(-1 * aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
-		val offsetY = randomDouble(-1 * aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
-		val offsetZ = randomDouble(-1 * aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+		if (aggressivenessLevel.shotDeviation > 0) {
+			val offsetX = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+			val offsetY = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+			val offsetZ = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
 
-		val aimingDir = direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
+			direction = direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
+		}
 
 		Tasks.sync {
 			AIControlUtils.faceDirection(this, blockFace)
 			AIControlUtils.shiftFlyToLocation(this, locationObjective)
 			StarshipCruising.stopCruising(this, starship)
-			AIControlUtils.shootInDirection(this, aimingDir, leftClick = false, target = getTargetLocation().toVector())
-			AIControlUtils.shootInDirection(this, aimingDir, leftClick = true, target = getTargetLocation().toVector())
+			AIControlUtils.shootInDirection(this, direction, leftClick = false, target = getTargetLocation().toVector())
+			AIControlUtils.shootInDirection(this, direction, leftClick = true, target = getTargetLocation().toVector())
 		}
 	}
 

@@ -14,6 +14,9 @@ fun repeatString(string: String, count: Int): String {
 }
 
 val alphaNumericChars : List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+val vowels : CharArray = "aeiouAEIOU".toCharArray()
+
+fun Char.isVowel() = vowels.contains(this)
 
 fun randomString(length: Long, inputRandom: Random? = null): String {
 	val random = inputRandom ?: Random()

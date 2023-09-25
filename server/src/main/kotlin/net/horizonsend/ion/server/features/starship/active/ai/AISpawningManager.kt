@@ -1,14 +1,20 @@
 package net.horizonsend.ion.server.features.starship.active.ai
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import net.horizonsend.ion.common.utils.text.isVowel
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.World
 
 object AISpawningManager : IonServerComponent(true) {
 	val config = IonServer.aiShipConfiguration
@@ -34,18 +40,61 @@ object AISpawningManager : IonServerComponent(true) {
 		val loc = spawner.findLocation(world, configuration)
 
 		if (loc == null) {
-			log.info("Aborted spawning AI ship. Could not find location after 15 attempts.")
+			log.warn("Aborted spawning AI ship. Could not find location after 15 attempts.")
 			return
 		}
 		val deferred = spawner.spawn(loc)
 
 		deferred.invokeOnCompletion { throwable ->
+			throwable?.let {
+				IonServer.server.debug("AI Starship at could not be spawned: ${throwable.message}!")
+				return@invokeOnCompletion
+			}
+
 			val ship = deferred.getCompleted()
 
-			AIManager.activeShips.add(ship)
+			// Wait 1 tick for the controller to update
+			Tasks.sync {
+				val controller = ship.controller as AIController
 
-			throwable?.let { IonServer.server.debug("AI Starship at could not be spawned: ${throwable.message}!") }
-			Notify.online(Component.text("Spawning AI ship at ${Vec3i(loc)}"))
+				AIManager.activeShips.add(ship)
+
+				val spawnMessage = createSpawnMessage(
+					controller.aggressivenessLevel,
+					ship.getDisplayNameComponent(),
+					Vec3i(loc),
+					loc.world
+				)
+
+				Notify.online(spawnMessage)
+			}
 		}
+	}
+
+	private fun createSpawnMessage(
+		aggressivenessLevel: AggressivenessLevel,
+		shipName: Component,
+		location: Vec3i,
+		world: World
+	): Component {
+		val aAn = if (aggressivenessLevel.name[0].isVowel()) "An " else "A "
+
+		val (x, y, z) = location
+
+		return text()
+			.color(NamedTextColor.GRAY)
+			.append(text(aAn))
+			.append(aggressivenessLevel.displayName)
+			.append(text(" "))
+			.append(shipName)
+			.append(text(" has spawned in "))
+			.append(text(world.name, NamedTextColor.WHITE))
+			.append(text(" at "))
+			.append(text(x, NamedTextColor.WHITE))
+			.append(text(", "))
+			.append(text(y, NamedTextColor.WHITE))
+			.append(text(", "))
+			.append(text(z, NamedTextColor.WHITE))
+			.build()
 	}
 }
