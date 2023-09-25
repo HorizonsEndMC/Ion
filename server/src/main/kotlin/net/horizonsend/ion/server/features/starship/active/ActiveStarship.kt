@@ -372,7 +372,7 @@ abstract class ActiveStarship (
 		else -> throw NotImplementedError("$controller does not have an auto turret identifier!")
 	}
 
-	fun lastDamaged(): Long = damagers.maxOf { it.value.lastDamaged }
+	fun lastDamagedOrNull(): Long? = damagers.maxOfOrNull { it.value.lastDamaged }
 
 	/** Gets the minimessage display name of this starship */
 	open fun getDisplayName(): String = type.formatted

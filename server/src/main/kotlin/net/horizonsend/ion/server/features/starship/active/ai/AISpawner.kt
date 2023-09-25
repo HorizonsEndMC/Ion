@@ -24,7 +24,7 @@ import kotlin.random.Random
 abstract class AISpawner(val identifier: String, vararg val ships: AIStarshipTemplates.AIStarshipTemplate) {
 	abstract fun findLocation(world: World, configuration: AIShipConfiguration.AIWorldSettings): Location?
 
-	open fun getTemplate(world: World): AIStarshipTemplates.AIStarshipTemplate  = ships.randomOrNull() ?: throw NoSuchElementException()
+	open fun getTemplate(world: World): AIStarshipTemplates.AIStarshipTemplate = ships.randomOrNull() ?: throw NoSuchElementException()
 
 	open val createController: (ActiveStarship) -> Controller = { NoOpController(it) }
 
