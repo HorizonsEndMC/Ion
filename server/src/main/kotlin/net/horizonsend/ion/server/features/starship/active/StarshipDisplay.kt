@@ -80,7 +80,7 @@ object StarshipDisplay : IonServerComponent(true) {
 				displayName,
 				walk,
 				movement,
-				"Hyperspace\n$description"
+				description
 			)
 		} else createOverworldMarker(starship, displayName, markerIcon, description)
 
@@ -88,7 +88,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	}
 
 	fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
-		if (hyperspace) return "<h1>Hyperspace Echo</h3>"
+		if (hyperspace) return "<h3>Hyperspace Echo</h3>"
 
 //		val componentDisplayName = starship.getDisplayNameComponent()
 		val displayNamePlain = starship.getDisplayNamePlain()
