@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -40,7 +41,7 @@ abstract class AIController(
 	override fun rewardXP(xp: Int) {}
 	override fun rewardMoney(credits: Double) {}
 
-	fun getCenter(): Location = starship.centerOfMass.toLocation(starship.world)
+	fun getCenter(): Location = (starship as? ActiveControlledStarship)?.directControlCenter ?: starship.centerOfMass.toLocation(starship.world)
 
 	// Begin utility functions
 	fun scheduleDespawn() = Tasks.sync {

@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -65,21 +66,19 @@ object StarshipControl : IonServerComponent() {
 	private fun processDirectControl(starship: ActiveControlledStarship) {
 		val controller = starship.controller
 
-		if (starship.type == PLATFORM) {
-			controller.userErrorAction("This ship type is not capable of moving.")
-			return
-		}
+		if (starship.type == PLATFORM) return controller.userErrorAction("This ship type is not capable of moving.")
 
 		if (starship.isInterdicting || Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) {
 			starship.setDirectControlEnabled(false)
 			return
 		}
 
-		val playerPilot = starship.playerPilot ?: return //TODO
+		val playerPilot = starship.playerPilot
 
-		val ping = getPing(playerPilot)
+		// Ping compensation
+		val ping = playerPilot?.let { getPing(playerPilot) }
 		val movementCooldown = starship.directControlCooldown
-		val speedFac = if (ping > movementCooldown) 2 else 1
+		val speedFac = if (ping != null && ping > movementCooldown) 2 else 1
 
 		val selectedSpeed = controller.selectedDirectControlSpeed
 
@@ -92,6 +91,7 @@ object StarshipControl : IonServerComponent() {
 
 		starship.lastManualMove = currentTime
 
+		// Start calculating offset
 		var dx = 0
 		var dy = 0
 		var dz = 0
@@ -102,25 +102,32 @@ object StarshipControl : IonServerComponent() {
 		dx += (targetSpeed * direction.modX)
 		dz += (targetSpeed * direction.modZ)
 
+		// Boost if shift flying
 		if (controller.isShiftFlying) {
 			dx *= 2
 			dz *= 2
 		}
 
+		// Use the player's location if available, otherwise the computer loc
+		val pilotLocation = playerPilot?.location ?: Vec3i(starship.data.blockKey).toLocation(starship.world)
+
 		var center = starship.directControlCenter
 		if (center == null) {
-			center = playerPilot.location.toBlockLocation().add(0.5, 0.0, 0.5)
+			center = pilotLocation.toBlockLocation().add(0.5, 0.0, 0.5)
 			starship.directControlCenter = center
 		}
-		var vector = playerPilot.location.toVector().subtract(center.toVector())
+
+		// Calculate the movement vector
+		var vector = pilotLocation.toVector().subtract(center.toVector())
 		vector.setY(0)
 		vector.normalize()
 
+		// Clone the vector to do some additional math
 		val directionWrapper = center.clone()
 		directionWrapper.direction = Vector(direction.modX, direction.modY, direction.modZ)
 
 		val playerDirectionWrapper = center.clone()
-		playerDirectionWrapper.direction = playerPilot.location.direction
+		playerPilot?.let { playerDirectionWrapper.direction = it.location.direction }
 
 		val vectorWrapper = center.clone()
 		vectorWrapper.direction = vector
@@ -138,18 +145,20 @@ object StarshipControl : IonServerComponent() {
 		}
 		vectors.add(vector)
 
-		if (vector.x != 0.0 || vector.z != 0.0) {
-			val newLoc = center.clone()
+		playerPilot?.let {
+			if (vector.x != 0.0 || vector.z != 0.0) {
+				val newLoc = center.clone()
 
-			newLoc.pitch = playerPilot.location.pitch
-			newLoc.yaw = playerPilot.location.yaw
+				newLoc.pitch = playerPilot.location.pitch
+				newLoc.yaw = playerPilot.location.yaw
 
-			playerPilot.teleport(
-				newLoc,
-				PlayerTeleportEvent.TeleportCause.PLUGIN,
-				*TeleportFlag.Relative.values(),
-				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
-			)
+				playerPilot.teleport(
+					newLoc,
+					PlayerTeleportEvent.TeleportCause.PLUGIN,
+					*TeleportFlag.Relative.values(),
+					TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
+				)
+			}
 		}
 
 		var highestFrequency = Collections.frequency(vectors, vector)
@@ -204,7 +213,7 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		playerPilot.walkSpeed = 0.009f
+		playerPilot?.walkSpeed = 0.009f
 		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
