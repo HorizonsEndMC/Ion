@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.control.controllers.ai
+package net.horizonsend.ion.server.features.starship.control.controllers.ai.util
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
