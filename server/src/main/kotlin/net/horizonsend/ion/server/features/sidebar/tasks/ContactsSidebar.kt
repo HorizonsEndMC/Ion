@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType.TRANSPORT
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
@@ -44,7 +45,7 @@ import org.bukkit.util.Vector
 import kotlin.math.abs
 
 object ContactsSidebar {
-	val fontKey = Key.key("horizonsend:sidebar")
+	private val fontKey = Key.key("horizonsend:sidebar")
 
     private fun distanceColor(distance: Int): NamedTextColor {
         return when {
@@ -161,7 +162,15 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = (text(starship.identifier)).color(color),
+                    name = (text(starship.identifier)).color(color)
+						.append(
+							(starship.controller as? AIController)?.let {
+								text()
+									.append(text(" "))
+									.append(it.aggressivenessLevel.displayName)
+							} ?: Component.empty()
+						),
+
                     prefix = when (starship.type) {
                         STARFIGHTER -> text("\uE000").font(fontKey)
                         GUNSHIP -> text("\uE001").font(fontKey)
@@ -178,16 +187,16 @@ object ContactsSidebar {
                         val viewerNation = PlayerCache[player].nationOid ?: return@run this.color(GRAY)
                         val pilotNation =
                             PlayerCache[starship.playerPilot ?: return@run this.color(NamedTextColor.DARK_GRAY)].nationOid
-                                ?: return@run this.color(NamedTextColor.GRAY)
+                                ?: return@run this.color(GRAY)
                         return@run this.color(RelationCache[viewerNation, pilotNation].color)
                     } as TextComponent,
 
                     suffix = if (starship.isInterdicting && distance <= starship.type.interdictionRange) {
                         text("\uE033")
-                            .font(fontKey).color(NamedTextColor.RED) as TextComponent
+                            .font(fontKey).color(RED) as TextComponent
                     } else if (starship.isInterdicting) {
                         text("\uE033")
-                            .font(fontKey).color(NamedTextColor.GOLD) as TextComponent
+                            .font(fontKey).color(GOLD) as TextComponent
                     } else Component.empty(),
                     heading = text(direction).append(text(repeatString(" ", 2 - direction.length)).font(fontKey)).color(color),
                     height = text("$height").append(text("y")).append(text(repeatString(" ", 3 - height.toString().length)).font(fontKey)).color(color),
@@ -268,7 +277,7 @@ object ContactsSidebar {
                         .font(fontKey).color(NamedTextColor.DARK_AQUA) as TextComponent,
                     suffix = if (distance <= MassShadows.PLANET_RADIUS) {
                         text("\uE033")
-                            .font(fontKey).color(NamedTextColor.RED) as TextComponent
+                            .font(fontKey).color(RED) as TextComponent
                     } else Component.empty(),
                     heading = text(direction)
                         .append(
@@ -316,7 +325,7 @@ object ContactsSidebar {
                         .font(fontKey).color(NamedTextColor.YELLOW) as TextComponent,
                     suffix = if (distance <= MassShadows.STAR_RADIUS) {
                         text("\uE033")
-                            .font(fontKey).color(NamedTextColor.RED) as TextComponent
+                            .font(fontKey).color(RED) as TextComponent
                     } else Component.empty(),
                     heading = text(direction)
                         .append(
@@ -363,7 +372,7 @@ object ContactsSidebar {
                     prefix = text("\uE022")
                         .font(fontKey).color(NamedTextColor.BLUE) as TextComponent,
                     suffix = if (beacon.prompt?.contains("⚠") == true) text("⚠")
-                        .color(NamedTextColor.RED) else Component.empty(),
+                        .color(RED) else Component.empty(),
                     heading = text(direction)
                         .append(
                             text(repeatString(" ", 2 - direction.length))

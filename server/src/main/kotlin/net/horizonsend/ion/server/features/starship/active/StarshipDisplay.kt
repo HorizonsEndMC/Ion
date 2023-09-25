@@ -56,7 +56,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	/** Stores the StarshipIcon for use in populating the map */
 	private fun createMarker(starship: ActiveStarship, marker: MarkerIcon? = null) {
 		val charIdentifier = starship.charIdentifier
-		val displayName = starship.controller.getDisplayName().plainText()
+		val displayName = starship.identifier
 
 		val markerIcon = marker
 			?: markerAPI.getMarkerIcon(starship.type.dynmapIcon)
@@ -87,10 +87,11 @@ object StarshipDisplay : IonServerComponent(true) {
 		starshipsIcons[charIdentifier] = starshipIcon
 	}
 
-	fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
-//		val componentDisplayName = starship.getDisplayNameComponent()
-		val displayNamePlain = starship.getDisplayNamePlain()
-		val pilotNamePlain = starship.controller.pilotName.plainText()
+	private fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
+		val starshipDisplayName = starship.getDisplayNamePlain()
+
+		val pilotNamePlain = starship.identifier
+
 		val type = starship.type.component.plainText()
 		val blockCount = starship.initialBlockCount
 		val location = starship.centerOfMass
@@ -102,7 +103,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		val hyperspaceMessage = if (hyperspace) "<h2 style=\"text-align:center;\">Hyperspace Echo</h2>\n" else ""
 
 		return """
-			<h1 style="$colorCSS;text-align:center;">$displayNamePlain</h1>
+			<h1 style="$colorCSS;text-align:center;">$starshipDisplayName</h1>
 			$hyperspaceMessage
 			<h3><b>Type:</b> $type</h3>
 			<h3><b>Pilot:</b> $pilotNamePlain</h3>
@@ -150,7 +151,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	 * Clears all inactive starships from the icon set
 	 * The identifier is unique to every piloted ship, if its been released and re-piloted, its old icon will be removed.
 	 **/
-	fun clearInactive(markerSet: MarkerSet) {
+	private fun clearInactive(markerSet: MarkerSet) {
 		val iterator = starshipsIcons.iterator()
 
 		while (iterator.hasNext()) {
@@ -164,7 +165,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	}
 
 	/** Populates the map with markers */
-	fun updateMap(markerSet: MarkerSet) {
+	private fun updateMap(markerSet: MarkerSet) {
 		for ((_, starshipIcon) in starshipsIcons) {
 			starshipIcon.update(markerSet)
 		}
@@ -195,7 +196,7 @@ object StarshipDisplay : IonServerComponent(true) {
 			createMarker(markerSet)
 		}
 
-		fun createMarker(markerSet: MarkerSet): Marker? {
+		private fun createMarker(markerSet: MarkerSet): Marker? {
 			val (x, y, z) = position
 
 			val marker: Marker? = markerSet.createMarker(

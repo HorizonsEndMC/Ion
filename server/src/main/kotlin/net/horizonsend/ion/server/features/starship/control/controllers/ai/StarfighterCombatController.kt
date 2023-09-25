@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -17,6 +19,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import kotlin.jvm.optionals.getOrNull
+import kotlin.math.pow
 
 /**
  * This class is designed for an easy low block count opponent
@@ -30,10 +33,14 @@ class StarfighterCombatController(
 	starship: ActiveStarship,
 	override var target: ActiveStarship,
 	private val previousController: Controller,
-	private var aggressivenessLevel: AggressivenessLevel
-) : AIController(starship, "combat"), CombatController {
-	override val pilotName: Component = starship.getDisplayNameComponent().append(text(" [AGGRESSIVE]", NamedTextColor.RED))
-	override fun getDisplayName(): Component = starship.getDisplayNameComponent()
+	aggressivenessLevel: AggressivenessLevel
+) : AIController(starship, "combat", aggressivenessLevel), CombatController {
+	override val pilotName: Component get() = text()
+		.append(text("Small Craft Combat Intelligence", NamedTextColor.GRAY))
+		.append(text(" "))
+		.append(aggressivenessLevel.displayName)
+		.build()
+
 	override fun getTargetLocation(): Location = target.centerOfMass.toLocation(target.world)
 
 	private val shields get() = starship.shields
@@ -59,9 +66,13 @@ class StarfighterCombatController(
 	private fun getStandoffDistance() : Double {
 		val min = 25.0
 
-		val shieldMultiplier = averageHealth / 10.0
+		val shieldMultiplier = averageHealth
 
-		return min + (1/shieldMultiplier)
+		val disengageMultiplier = (0.1 / aggressivenessLevel.disengageMultiplier) * shieldMultiplier
+
+		val blockCountMultiplier = target.initialBlockCount.toDouble().pow(1.0/3.0) / 10
+
+		return min + ((1 / disengageMultiplier) * blockCountMultiplier)
 	}
 
 	/**
@@ -72,6 +83,8 @@ class StarfighterCombatController(
 	private fun checkOnTarget(): Boolean {
 		val location = getCenter()
 		val targetLocation = target.centerOfMass.toVector()
+
+		if (!ActiveStarships.isActive(target)) return false
 
 		if (target.world != starship.world) {
 			// If null, they've likely jumped to hyperspace, disengage
@@ -106,7 +119,7 @@ class StarfighterCombatController(
 			}
 
 			// They are getting far away so focus on moving towards them
-			(distance in 500.0..1500.0) -> {
+			(distance in 500.0..aggressivenessLevel.engagementDistance) -> {
 				locationObjective = targetLocation.toLocation(target.world)
 				state = State.FOCUS_LOCATION
 				true
@@ -171,7 +184,6 @@ class StarfighterCombatController(
 		return points.minBy { it.distance(shipLocation) }
 	}
 
-
 	/**
 	 * Goals of this AI:
 	 *
@@ -201,12 +213,18 @@ class StarfighterCombatController(
 
 		starship as ActiveControlledStarship
 
+		val offsetX = randomDouble(-1 * aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+		val offsetY = randomDouble(-1 * aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+		val offsetZ = randomDouble(-1 * aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+
+		val aimingDir = direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
+
 		Tasks.sync {
 			AIControlUtils.faceDirection(this, blockFace)
 			AIControlUtils.shiftFlyToLocation(this, locationObjective)
 			StarshipCruising.stopCruising(this, starship)
-			AIControlUtils.shootInDirection(this, direction, leftClick = false, target = getTargetLocation().toVector())
-			AIControlUtils.shootInDirection(this, direction, leftClick = true, target = getTargetLocation().toVector())
+			AIControlUtils.shootInDirection(this, aimingDir, leftClick = false, target = getTargetLocation().toVector())
+			AIControlUtils.shootInDirection(this, aimingDir, leftClick = true, target = getTargetLocation().toVector())
 		}
 	}
 
