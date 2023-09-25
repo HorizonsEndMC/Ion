@@ -90,7 +90,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	private fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
 		val starshipDisplayName = starship.getDisplayNamePlain()
 
-		val pilotNamePlain = starship.identifier
+		val pilotNamePlain = starship.controller.getDisplayName().plainText()
 
 		val type = starship.type.component.plainText()
 		val blockCount = starship.initialBlockCount

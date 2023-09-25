@@ -57,7 +57,10 @@ abstract class AIController(
 		private val locationVector = starship.centerOfMass.toVector()
 
 		private fun checkCancel(): Boolean {
-			if (starship.lastDamaged() <= System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) return true
+			starship.lastDamagedOrNull()?.let {
+				if (it <= System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) return true
+			}
+
 			if (!ActiveStarships.isActive(starship)) return true
 
 			val nearestPlayerDistance = starship.world.players.minOfOrNull { distance(it.location.toVector(), locationVector) }
