@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.StarfighterCombatController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
