@@ -9,8 +9,10 @@ import org.bukkit.Color
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
-abstract class Controller(override val starship: ActiveStarship, val name: String) : ForwardingAudience.Single,
-    Damager {
+abstract class Controller(
+	override val starship: ActiveStarship,
+	val name: String
+) : ForwardingAudience.Single, Damager {
 	abstract val pilotName: Component
 
 	abstract val isShiftFlying: Boolean
