@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces
+package net.horizonsend.ion.server.features.starship.control.controllers.ai.util
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.Location
