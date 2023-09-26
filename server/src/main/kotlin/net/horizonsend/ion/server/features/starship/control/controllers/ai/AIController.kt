@@ -41,6 +41,7 @@ abstract class AIController(
 	override fun rewardXP(xp: Int) {}
 	override fun rewardMoney(credits: Double) {}
 
+	/** Use the direct control center as a sort of cache to avoid the type conversion if possible */
 	fun getCenter(): Location = (starship as? ActiveControlledStarship)?.directControlCenter ?: starship.centerOfMass.toLocation(starship.world)
 
 	// Begin utility functions
