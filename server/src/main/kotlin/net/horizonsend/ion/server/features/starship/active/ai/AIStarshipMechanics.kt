@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.active.ai
 
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -22,10 +22,12 @@ object AIStarshipMechanics : IonServerComponent() {
 		val y = event.block.y
 		val z = event.block.z
 
-		val ship = aiShips.firstOrNull { it.blocks.contains(blockKey(x, y, z)) } ?: return
+		val ship = aiShips.firstOrNull { it.blocks.contains(blockKey(x, y, z)) } as? ActiveControlledStarship ?: return
 
 		event.player.alert("Starship computer destroyed. AI Ship powering down...")
 
-		PilotedStarships.tryRelease(ship as ActiveControlledStarship)
+		DeactivatedPlayerStarships.deactivateAsync(ship) {
+			DeactivatedPlayerStarships.destroyAsync(ship.data) {}
+		}
 	}
 }
