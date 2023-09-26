@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.PathfindingController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
@@ -8,25 +9,17 @@ import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.chunk.LevelChunk
+import net.minecraft.world.level.chunk.LevelChunkSection
+import net.minecraft.world.level.chunk.PalettedContainer
 import org.bukkit.Location
 import org.bukkit.World
 import kotlin.math.abs
-
 
 /*
  * Pathfinding:
  *
  * Uses level chunk sections as nodes, if filled, they are marked as unnavigable
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
+ * Considers only non-ship blocks
  */
 object AIPathfinding {
 	const val MAX_A_STAR_ITERATIONS = 20
@@ -39,11 +32,10 @@ object AIPathfinding {
 		)
 	}
 
-
 	/** Searches the chunk for being navigable */
 	fun checkNavigability(world: World, chunk: LevelChunk, yRange: Iterable<Int>): Set<SectionNode> {
 		val sectionNodes = mutableSetOf<SectionNode>()
-		val levelChunkSections = chunk.sections
+		val levelChunkSections: Array<out LevelChunkSection> = chunk.sections
 
 		val chunkX = chunk.pos.x
 		val chunkZ = chunk.pos.z
@@ -64,11 +56,50 @@ object AIPathfinding {
 				continue
 			}
 
+			if (sectionContainsOnlyShipBlocks(section, world, pos)) {
+				sectionNodes += SectionNode(world, pos, true)
+				continue
+			}
+
 			// Section has blocks, not navigable
 			sectionNodes += SectionNode(world, pos, false)
 		}
 
 		return sectionNodes
+	}
+
+	/** Assumes that the section has already been checked to not be empty */
+	private fun sectionContainsOnlyShipBlocks(section: LevelChunkSection, world: World, sectionPosition: Vec3i): Boolean {
+		val (sectionX, sectionY, sectionZ) = sectionPosition
+		val originX = sectionX.shl(4)
+		val originY = sectionY.shl(4) + world.minHeight
+		val originZ = sectionZ.shl(4)
+
+		val ships = ActiveStarships.findByChunkSectionPosition(world, sectionX, sectionY, sectionZ)
+		if (ships.isEmpty()) return false
+
+		val strategy = PalettedContainer.Strategy.SECTION_STATES
+		val states = section.states
+
+		for (x in 0..15) {
+			val realX = originX + x
+
+			for (y in 0..15) {
+				val realY = originY + y
+
+				for (z in 0..15) {
+					val realZ = originZ + z
+					val index = strategy.getIndex(x, y, z)
+
+					if (states[index].isAir) continue
+
+					// If it's not air, and it's not part of the ships, then it contains non-ship blocks
+					if (!ships.any { it.contains(realX, realY, realZ) }) return false
+				}
+			}
+		}
+
+		return true
 	}
 
 	/** Takes a list of sections across multiple chunks, and returns those sections being searched */
@@ -154,12 +185,17 @@ object AIPathfinding {
 		val originNodeLocation = controller.getSectionOrigin()
 
 		val destinationNodeLocation = getDestinationNode(currentPos, destination, searchDistance)
+		println(1)
 		val destinationNode = allNodes.first { it.location == destinationNodeLocation }
+		println(2)
 
 		val closedNodes = controller.trackedSections.filter { !it.navigable }.toMutableList()
+		println(3)
 		val openNodes = mutableListOf(allNodes.first { it.location == originNodeLocation })
+		println(4)
 
 		val originNode = openNodes.first()
+		println(5)
 
 		var currentNode: SectionNode = originNode
 
@@ -251,12 +287,12 @@ object AIPathfinding {
 		NORTH(0, 0, -1),
 		UP_NORTH(0, 1, -1),
 		DOWN_NORTH(0, -1, -1),
-		NORT_EAST(1, 0, -1),
-		NORT_WEST(-1, 0, -1),
-		UP_NORT_EAST(1, 1, -1),
-		UP_NORT_WEST(-1, 1, -1),
-		DOWN_NORT_EAST(1, -1, -1),
-		DOWN_NORT_WEST(-1, -1, -1),
+		NORTH_EAST(1, 0, -1),
+		NORTH_WEST(-1, 0, -1),
+		UP_NORTH_EAST(1, 1, -1),
+		UP_NORTH_WEST(-1, 1, -1),
+		DOWN_NORTH_EAST(1, -1, -1),
+		DOWN_NORTH_WEST(-1, -1, -1),
 		EAST(1, 0, 0),
 		UP_EAST(1, 1, 0),
 		DOWN_EAST(1, -1, 0),

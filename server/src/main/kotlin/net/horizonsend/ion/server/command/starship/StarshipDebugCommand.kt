@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.
 import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.minecraft.core.BlockPos
@@ -50,7 +51,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("testAStar")
-	fun testAStar(sender: Player, searchDistance: Int, x: Int, y: Int, z: Int) {
+	fun testAStar(sender: Player, searchDistance: Int, x: Int, y: Int, z: Int) = Tasks.async {
 		val wrapper = wrapperB(
 			sender,
 			searchDistance
