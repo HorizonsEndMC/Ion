@@ -28,4 +28,6 @@ data class AIStarshipData(
 
 	@Suppress("UNCHECKED_CAST")
 	override fun companion(): StarshipDataCompanion<StarshipData> = Companion as StarshipDataCompanion<StarshipData>
+
+	override fun isLockActive(): Boolean = false
 }
