@@ -112,7 +112,8 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				IonServer.configuration.serverName,
 				world.name,
 				blockKey,
-				name = name
+				name = name,
+				isLockEnabled = false
 			)
 
 			createShipAsync(world, x, y, z, data, callback)

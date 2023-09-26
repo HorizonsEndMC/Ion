@@ -165,7 +165,7 @@ class StarfighterCombatController(
 	}
 
 	/** Returns the direction to face once its reached its location objective */
-	private fun getImmediateLocation(): Vector {
+	private fun getDirToObjective(): Vector {
 		val closestPoint = getClosestAxisPoint()
 
 		locationObjective = closestPoint.toLocation(starship.world)
@@ -209,7 +209,7 @@ class StarfighterCombatController(
 
 	private fun combatLoop() {
 		// Get the closest axis
-		var direction = getImmediateLocation()
+		var direction = getDirToObjective()
 		val blockFace = vectorToBlockFace(direction)
 
 		starship as ActiveControlledStarship
@@ -233,7 +233,8 @@ class StarfighterCombatController(
 
 	/** Shift flies towards location */
 	private fun navigationLoop() {
-		val targetLocation = locationObjective
+		val targetLocation = locationObjective.clone()
+
 		val location = getCenter()
 		val distance = distance(location.toVector(), targetLocation.toVector())
 
@@ -245,13 +246,13 @@ class StarfighterCombatController(
 
 			if (distance >= 500) {
 				StarshipCruising.startCruising(this, starship, direction)
-				AIControlUtils.shiftFlyToLocation(this, locationObjective)
+				AIControlUtils.shiftFlyToLocation(this, targetLocation)
 
 				return@sync
 			}
 
 			StarshipCruising.stopCruising(this, starship)
-			AIControlUtils.shiftFlyToLocation(this, locationObjective)
+			AIControlUtils.shiftFlyToLocation(this, targetLocation)
 		}
 	}
 }
