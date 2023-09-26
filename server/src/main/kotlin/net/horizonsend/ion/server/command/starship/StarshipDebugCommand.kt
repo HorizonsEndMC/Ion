@@ -6,11 +6,17 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager.handleSpawn
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.PathfindingController
+import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
+import net.minecraft.core.BlockPos
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.World
 import org.bukkit.entity.Player
 
 @CommandPermission("starlegacy.starshipdebug")
