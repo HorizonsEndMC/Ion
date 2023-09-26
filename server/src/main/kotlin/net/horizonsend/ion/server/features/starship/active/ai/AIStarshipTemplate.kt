@@ -24,7 +24,8 @@ object AIStarshipTemplates : IonServerComponent(true) {
 		val identifier: String,
 		val schematicFile: File,
 		val type: StarshipType,
-		val miniMessageName: String
+		val miniMessageName: String,
+		val weaponsets: Set<WeaponSet> = setOf()
 	) {
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
 	}
@@ -49,4 +50,6 @@ object AIStarshipTemplates : IonServerComponent(true) {
 	}
 
 	operator fun get(identifier: String) = templates.firstOrNull { it.identifier == identifier }
+
+	data class WeaponSet(val name: String, val engagementRange: IntRange)
 }
