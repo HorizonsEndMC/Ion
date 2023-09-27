@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
@@ -33,6 +34,9 @@ abstract class Controller(
 
 	/** Called when the controller or its ship is removed. Any cleanup logic should be done here. */
 	open fun destroy() {}
+
+	/** Called when the ship moves. */
+	open fun onMove(movement: StarshipMovement) {}
 
 	/** Checks weather or not the controller can break a specific block **/
 	abstract fun canDestroyBlock(block: Block): Boolean

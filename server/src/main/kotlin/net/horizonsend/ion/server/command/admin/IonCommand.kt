@@ -17,7 +17,7 @@ import java.util.*
 @CommandAlias("ion")
 @CommandPermission("ion.utilities")
 object IonCommand : SLCommand() {
-	val debugEnabledPlayers = mutableListOf<UUID>()
+	val debugEnabledPlayers = mutableListOf<Audience>()
 
 	@Suppress("Unused")
 	@Subcommand("view set")
@@ -74,11 +74,11 @@ object IonCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("debug")
 	fun debugToggle(sender: Player) {
-		if (debugEnabledPlayers.contains(sender.uniqueId)) {
-			debugEnabledPlayers.remove(sender.uniqueId)
+		if (debugEnabledPlayers.contains(sender)) {
+			debugEnabledPlayers.remove(sender)
 			sender.success("Disabled debug mode")
 		} else {
-			debugEnabledPlayers.add(sender.uniqueId)
+			debugEnabledPlayers.add(sender)
 			sender.success("Enabled debug mode")
 		}
 	}
@@ -88,7 +88,7 @@ fun Audience.debugBanner(message: String) = debug("------------------- $message 
 fun Audience.debug(message: String) {
 	if (this !is Player) return
 
-	if (IonCommand.debugEnabledPlayers.contains(uniqueId)) {
+	if (IonCommand.debugEnabledPlayers.contains(this)) {
 		information(message)
 	}
 }
@@ -96,7 +96,7 @@ fun Audience.debug(message: String) {
 fun Audience.debugRed(message: String) {
 	if (this !is Player) return
 
-	if (IonCommand.debugEnabledPlayers.contains(uniqueId)) {
+	if (IonCommand.debugEnabledPlayers.contains(this)) {
 		serverError(message)
 	}
 }

@@ -7,10 +7,10 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.CombatController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.PathfindingController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.LocationObjectiveAI
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.NavigationEngine
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
-import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
-import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -21,7 +21,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.util.Vector
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.pow
@@ -39,17 +38,21 @@ class StarfighterCombatController(
 	override var target: ActiveStarship,
 	private val previousController: Controller,
 	aggressivenessLevel: AggressivenessLevel
-) : AIController(starship, "combat", aggressivenessLevel), CombatController, PathfindingController {
-	override val trackedSections: MutableSet<AIPathfinding.SectionNode> = mutableSetOf()
-	override var searchDestance: Int = 6
+) : AIController(starship, "combat", aggressivenessLevel), CombatController, LocationObjectiveAI {
+	val navigationEngine: NavigationEngine = NavigationEngine(this, target.centerOfMass).apply {
+		shouldRotateDuringShiftFlight = false
+	}
+
+	override fun destroy() {
+		navigationEngine.shutDown()
+		super.destroy()
+	}
 
 	override val pilotName: Component get() = text()
 		.append(text("Small Craft Combat Intelligence", NamedTextColor.GRAY))
 		.append(text(" "))
 		.append(aggressivenessLevel.displayName)
 		.build()
-
-	override fun getWorld(): World = starship.world
 
 	override fun getTargetLocation(): Location = target.centerOfMass.toLocation(target.world)
 
@@ -59,8 +62,6 @@ class StarfighterCombatController(
 
 	/** The location that should be navigated towards */
 	private var locationObjective: Location = target.centerOfMass.toLocation(target.world)
-
-	private val pathfindingObjective: ArrayDeque<Location> = ArrayDeque()
 
 	/** Current state of the AI */
 	var state: State = State.FOCUS_LOCATION
@@ -175,16 +176,6 @@ class StarfighterCombatController(
 		return
 	}
 
-	/** Returns the direction to face once its reached its location objective */
-	private fun getDirToObjective(): Vector {
-		val closestPoint = getClosestAxisPoint()
-
-		locationObjective = closestPoint.toLocation(starship.world)
-		val directionToTarget = target.centerOfMass.toVector().subtract(closestPoint)
-
-		return directionToTarget
-	}
-
 	/** Finds a location in the cardinal directions from the target at the engagement distance */
 	private fun getClosestAxisPoint(): Vector {
 		val shipLocation = getCenter().toVector()
@@ -196,6 +187,12 @@ class StarfighterCombatController(
 		return points.minBy { it.distance(shipLocation) }
 	}
 
+	override fun getObjective(): Vec3i = Vec3i(getClosestAxisPoint())
+
+	override fun onMove(movement: StarshipMovement) {
+		navigationEngine.onMove(movement)
+	}
+
 	/**
 	 * Goals of this AI:
 	 *
@@ -205,33 +202,24 @@ class StarfighterCombatController(
 	 * If no target is found, it will transition into a passive state
 	 */
 
-	var ticks = 0
-	override fun tick() = Tasks.async {
-		ticks++
-
+	override fun tick() {
 		val ok = checkOnTarget()
 
 		if (!ok) {
 			disengage()
-			return@async
+			return
 		}
 
-		// Update the pathfinding after the target has been adjusted
-		updatePath()
-
-		when (state) {
-			State.FOCUS_LOCATION -> navigationLoop()
-			State.COMBAT -> combatLoop()
-		}
+		navigationEngine.tick()
+		if (state == State.COMBAT) combatLoop()
 	}
+
 	private fun combatLoop() {
 		// Get the closest axis
-		var direction = getDirToObjective()
-		val blockFace = vectorToBlockFace(direction)
-
-		val objective = pathfindingObjective.first()
-
 		starship as ActiveControlledStarship
+		starship.speedLimit = -1
+
+		var direction = getDirection(Vec3i(getCenter()), target.centerOfMass)
 
 		if (aggressivenessLevel.shotDeviation > 0) {
 			val offsetX = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
@@ -242,68 +230,9 @@ class StarfighterCombatController(
 		}
 
 		Tasks.sync {
-			AIControlUtils.faceDirection(this, blockFace)
-			AIControlUtils.shiftFlyToLocation(this, objective)
-			StarshipCruising.stopCruising(this, starship)
+			AIControlUtils.faceDirection(this, vectorToBlockFace(direction, false))
 			AIControlUtils.shootInDirection(this, direction, leftClick = false, target = getTargetLocation().toVector())
 			AIControlUtils.shootInDirection(this, direction, leftClick = true, target = getTargetLocation().toVector())
 		}
-	}
-
-	/** Shift flies towards location */
-	private fun navigationLoop() {
-		if (pathfindingObjective.isEmpty()) populatePathfindingObjectives()
-		removeClosestPathfindingObjective()
-		val targetLocation = pathfindingObjective.firstOrNull() ?: locationObjective
-
-		val location = getCenter()
-		val distance = distance(location.toVector(), targetLocation.toVector())
-
-		val direction = targetLocation.toVector().subtract(location.toVector())
-
-		Tasks.sync {
-			starship as ActiveControlledStarship
-			starship.speedLimit = -1
-
-			if (distance >= 500) {
-				StarshipCruising.startCruising(this, starship, direction)
-				AIControlUtils.shiftFlyToLocation(this, targetLocation)
-
-				return@sync
-			}
-
-			StarshipCruising.stopCruising(this, starship)
-			AIControlUtils.shiftFlyToLocation(this, targetLocation)
-		}
-	}
-
-	/** If the starship has reached the closest pathfinding objective, it removes it so that it can navigate to the next */
-	private fun removeClosestPathfindingObjective() {
-		val center = Vec3i(getCenter()) == pathfindingObjective.firstOrNull()?.let { Vec3i(it) }
-
-		if (center) {
-			pathfindingObjective.removeFirst()
-			populatePathfindingObjectives()
-		}
-	}
-
-	/** Replaces the current pathfinding objectives with updated ones */
-	fun populatePathfindingObjectives() = Tasks.async {
-		adjustPosition()
-		val newObjectives = getNavigationPoints(Vec3i(locationObjective)).map { it.location.toLocation(it.world) }
-
-		Tasks.sync {
-			pathfindingObjective.clear()
-			pathfindingObjective.addAll(newObjectives)
-		}
-	}
-
-	fun updatePath() {
-		if (ticks % 20 == 0) populatePathfindingObjectives()
-	}
-
-	init {
-		adjustPosition()
-	    populatePathfindingObjectives()
 	}
 }
