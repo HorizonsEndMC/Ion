@@ -172,18 +172,14 @@ object StarshipCruising : IonServerComponent() {
 		starship.cruiseData.targetDir = Vector(dx, 0, dz).normalize()
 
 		val realAccel = starship.cruiseData.getRealAccel(starship.reactor.powerDistributor.thrusterPortion)
-		val info =
-			"<aqua>$dx,$dz <dark_gray>; <yellow>Accel<dark_gray>/<green>Speed<dark_gray>: <yellow>$realAccel<dark_gray>/<yellow>$maxSpeed"
+
+		val info = "<aqua>$dx,$dz <dark_gray>; <yellow>Accel<dark_gray>/<green>Speed<dark_gray>: <yellow>$realAccel<dark_gray>/<yellow>$maxSpeed"
 		if (!isCruising(starship)) {
-			starship.onlinePassengers.forEach { passenger ->
-				passenger.informationAction("Cruise started, dir<dark_gray>: $info")
-			}
+			starship.informationAction("Cruise started, dir<dark_gray>: $info")
 
 			updateCruisingShip(starship)
 		} else {
-			starship.onlinePassengers.forEach { passenger ->
-				passenger.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
-			}
+			starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
 		}
 	}
 

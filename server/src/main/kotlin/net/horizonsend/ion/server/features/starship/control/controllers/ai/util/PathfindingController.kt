@@ -8,12 +8,11 @@ import org.bukkit.World
 interface PathfindingController {
 	/** Each Vec3i represents a chunk section. They are marked as navigable or not. */
 	val trackedSections: MutableSet<AIPathfinding.SectionNode>
-	var searchDestance: Int
+	var chunkSearchRadius: Int
 
 	fun getWorld(): World
 
-	/** Returns a Vec3i representing a chunk position, and level chunk section representing the center of the ship */
-	fun getSectionOrigin(): Vec3i {
+	fun getSectionPositionOrigin(): Vec3i {
 		val center = Vec3i(getCenter())
 		val world = getWorld()
 
@@ -26,10 +25,11 @@ interface PathfindingController {
 
 	/** Returns a location representation of the center of the ship */
 	fun getCenter(): Location
-
-	/** Adjusts the tracked sections used for pathfinding */
-	fun adjustPosition(loadChunks: Boolean = false) = AIPathfinding.adjustTrackedSections(this, searchDestance, loadChunks)
+	fun getCenterVec3i(): Vec3i
 
 	/** Returns an ordered list of points to navigate towards the provided destination */
-	fun getNavigationPoints(destination: Vec3i): List<AIPathfinding.SectionNode> = AIPathfinding.findNavigationNodes(this, destination, searchDestance)
+	fun getNavigationPoints(
+		destination: Vec3i,
+		completedObjectives: Collection<AIPathfinding.SectionNode> = listOf()
+	): List<AIPathfinding.SectionNode> = AIPathfinding.findNavigationNodes(this, destination, completedObjectives)
 }
