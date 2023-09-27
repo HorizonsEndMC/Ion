@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.highlightRegion
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.chunk.LevelChunk
@@ -13,6 +14,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.chunk.PalettedContainer
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.entity.Player
 import kotlin.math.abs
 
 /*
@@ -24,15 +26,30 @@ import kotlin.math.abs
 object AIPathfinding {
 	const val MAX_A_STAR_ITERATIONS = 20
 
-	data class SectionNode(val world: World, val location: Vec3i, val navigable: Boolean) {
+	data class SectionNode(val world: World, val location: Vec3i, val navigable: Boolean, val reason: String) {
 		val center: Vec3i = Vec3i(
 			location.x.shl(4) + 8,
 			location.y.shl(4) + world.minHeight + 8,
 			location.z.shl(4) + 8
 		)
+
+		fun highlight(player: Player) {
+			val (positionX, positionY, positionZ) = location
+
+			val minPointX = positionX.shl(4)
+			val minPointY = positionY.shl(4)
+			val minPointZ = positionZ.shl(4)
+
+			val maxPointX = minPointX + 16
+			val maxPointY = minPointY + 16
+			val maxPointZ = minPointZ + 16
+
+			player.highlightRegion(Vec3i(minPointX, minPointY, minPointZ), Vec3i(maxPointX, maxPointY, maxPointZ), structureName = reason)
+		}
 	}
 
 	/** Searches the chunk for being navigable */
+	@Synchronized
 	fun checkNavigability(world: World, chunk: LevelChunk, yRange: Iterable<Int>): Set<SectionNode> {
 		val sectionNodes = mutableSetOf<SectionNode>()
 		val levelChunkSections: Array<out LevelChunkSection> = chunk.sections
@@ -46,29 +63,30 @@ object AIPathfinding {
 
 			// Section is not inside the build limit, and is not navigable
 			if (section == null) {
-				sectionNodes += SectionNode(world, pos, false)
+				sectionNodes += SectionNode(world, pos, false, "Section was null")
 				continue
 			}
 
 			// Section is only air, navigable
 			if (section.hasOnlyAir()) {
-				sectionNodes += SectionNode(world, pos, true)
+				sectionNodes += SectionNode(world, pos, true, "Only air")
 				continue
 			}
 
 			if (sectionContainsOnlyShipBlocks(section, world, pos)) {
-				sectionNodes += SectionNode(world, pos, true)
+				sectionNodes += SectionNode(world, pos, true, "Only ship blocks")
 				continue
 			}
 
 			// Section has blocks, not navigable
-			sectionNodes += SectionNode(world, pos, false)
+			sectionNodes += SectionNode(world, pos, false, "non-ship blocks")
 		}
 
 		return sectionNodes
 	}
 
 	/** Assumes that the section has already been checked to not be empty */
+	@Synchronized
 	private fun sectionContainsOnlyShipBlocks(section: LevelChunkSection, world: World, sectionPosition: Vec3i): Boolean {
 		val (sectionX, sectionY, sectionZ) = sectionPosition
 		val originX = sectionX.shl(4)
@@ -103,6 +121,7 @@ object AIPathfinding {
 	}
 
 	/** Takes a list of sections across multiple chunks, and returns those sections being searched */
+	@Synchronized
 	fun searchSections(world: World, sections: Collection<Vec3i>, loadChunks: Boolean = false): Set<SectionNode> {
 		val chunkMap = sections.groupBy { ChunkPos(it.x, it.z) }
 		val nmsWorld = world.minecraft
@@ -115,10 +134,10 @@ object AIPathfinding {
 			val chunk = nmsWorld.getChunkIfLoaded(x, z) ?: if (loadChunks) nmsWorld.getChunk(x, z) else null
 
 			if (chunk == null) {
-				for (sectionPos in sections) {
-					// Don't try to load chunks
-					sectionNodes.add(SectionNode(world, sectionPos, false))
-				}
+//				for (sectionPos in sections) {
+//					// Don't try to load chunks
+//					sectionNodes.add(SectionNode(world, sectionPos, false, "Chunk wasn't loaded"))
+//				}
 
 				continue
 			}
@@ -132,8 +151,10 @@ object AIPathfinding {
 	}
 
 	/** Gets the chunks that should be searched for pathfinding */
-	private fun getSurroundingChunkPositions(controller: PathfindingController, radius: Int = 5): List<Vec3i> {
-		val center = Vec3i(controller.getSectionOrigin())
+	@Synchronized
+	private fun getSurroundingChunkPositions(controller: PathfindingController): List<Vec3i> {
+		val radius = controller.chunkSearchRadius
+		val center = controller.getSectionPositionOrigin()
 
 		val centerChunkX = center.x
 		val centerSectionY = center.y
@@ -153,49 +174,57 @@ object AIPathfinding {
 	}
 
 	/** Adjusts the tracked sections when the AI has moved */
-	fun adjustTrackedSections(controller: PathfindingController, searchDistance: Int, loadChunks: Boolean = false) {
-		if (controller.trackedSections.isEmpty()) {
-			val allSurrounding = getSurroundingChunkPositions(controller, searchDistance)
-			val navigable = searchSections(controller.getWorld(), allSurrounding, loadChunks)
-			controller.trackedSections.addAll(navigable)
-			return
-		}
+	@Synchronized
+	fun adjustTrackedSections(
+		controller: PathfindingController,
+		loadChunks: Boolean = false
+	) {
+//		if (controller.trackedSections.isEmpty()) {
+//			val allSurrounding = getSurroundingChunkPositions(controller, searchDistance)
+//
+//			val navigable = searchSections(controller.getWorld(), allSurrounding, loadChunks)
+//			controller.trackedSections.addAll(navigable)
+//			return
+//		}
 
 		val new = getSurroundingChunkPositions(controller)
+		controller.trackedSections.clear()
 
-		// Remove all the tracked sections that are no longer tracked
-		controller.trackedSections.removeIf { !new.contains(it.location) }
+//		// Remove all the tracked sections that are no longer tracked
+//		controller.trackedSections.removeIf { !new.contains(it.location) }
+//
+//		val existingPositions = controller.trackedSections.map { it.location }
+//
+//		// Non-searched new sections
+//		new.removeIf { existingPositions.contains(it) }
 
-		val existingPositions = controller.trackedSections.map { it.location }
-
-		// Non-searched new sections
-		val toSearch = new.toMutableSet()
-		toSearch.removeIf { existingPositions.contains(it) }
-
-		val navigable = searchSections(controller.getWorld(), toSearch, loadChunks)
+		val navigable = searchSections(controller.getWorld(), new, loadChunks)
 
 		controller.trackedSections.addAll(navigable)
 	}
 
 	// Begin A* Implementation
-	fun findNavigationNodes(controller: PathfindingController, destination: Vec3i, searchDistance: Int): List<SectionNode> {
+	/** Nodes must be populated first */
+	@Synchronized
+	fun findNavigationNodes(
+		controller: PathfindingController,
+		destination: Vec3i,
+		previousPositions: Collection<SectionNode>
+	): List<SectionNode> {
+		val searchDistance = controller.chunkSearchRadius
+
 		val allNodes = controller.trackedSections.toSet()
 
 		val currentPos = controller.getCenter()
-		val originNodeLocation = controller.getSectionOrigin()
+		val originNodeLocation = controller.getSectionPositionOrigin()
 
 		val destinationNodeLocation = getDestinationNode(currentPos, destination, searchDistance)
-		println(1)
 		val destinationNode = allNodes.first { it.location == destinationNodeLocation }
-		println(2)
 
 		val closedNodes = controller.trackedSections.filter { !it.navigable }.toMutableList()
-		println(3)
 		val openNodes = mutableListOf(allNodes.first { it.location == originNodeLocation })
-		println(4)
 
 		val originNode = openNodes.first()
-		println(5)
 
 		var currentNode: SectionNode = originNode
 
@@ -204,7 +233,14 @@ object AIPathfinding {
 			iterations++
 //			closedNodes += currentNode
 
-			val nextNode = searchNeighbors(currentNode, allNodes, closedNodes, destinationNode) ?: return openNodes
+			val nextNode = searchNeighbors(
+				currentNode,
+				allNodes,
+				closedNodes,
+				destinationNode,
+				previousPositions
+			) ?: return openNodes
+
 			currentNode = nextNode
 			openNodes += nextNode
 
@@ -214,11 +250,13 @@ object AIPathfinding {
 		return openNodes
 	}
 
-	fun searchNeighbors(
+	@Synchronized
+	private fun searchNeighbors(
 		previousNode: SectionNode,
 		allNodes: Collection<SectionNode>,
 		closedNodes: Collection<SectionNode>,
 		destinationNode: SectionNode,
+		previousPositions: Collection<SectionNode>
 	): SectionNode? {
 		val neighbors = getNeighborNodes(previousNode, allNodes)
 
@@ -227,18 +265,28 @@ object AIPathfinding {
 		return neighbors
 			.filter { it.navigable }
 			.filter { !closedNodes.contains(it) }
-			.associateWith { getEstimatedCostEuclidean(it, destinationNode) }
+			.associateWith {
+				var distance = getEstimatedCostEuclidean(it, destinationNode)
+
+				// Discourage moving into nodes with neighbors that aren't navigable
+				if (getNeighborNodes(it, allNodes).any { neighborNeighbor -> !neighborNeighbor.navigable }) distance += 100
+
+				// Discourage moving into nodes with neighbors that have been moved through already
+				if (previousPositions.contains(it)) distance += 100
+
+				distance
+			}
 			.minByOrNull { it.value }?.key
 	}
 
-	fun getNeighborNodes(node: SectionNode, all: Collection<SectionNode>): Set<SectionNode> {
+	private fun getNeighborNodes(node: SectionNode, all: Collection<SectionNode>): Set<SectionNode> {
 		val nodes = mutableSetOf<SectionNode>()
 		val neighbors = getNeighbors(node)
 
 		return all.filterTo(nodes) { neighbors.contains(it.location) }
 	}
 
-	fun getNeighbors(node: SectionNode): Set<Vec3i> {
+	private fun getNeighbors(node: SectionNode): Set<Vec3i> {
 		val (x, y, z) = node.location
 		val sections = mutableSetOf<Vec3i>()
 
@@ -254,7 +302,7 @@ object AIPathfinding {
 	}
 
 	/** Gets a destination node location */
-	fun getDestinationNode(origin: Location, destination: Vec3i, searchDistance: Int): Vec3i {
+	private fun getDestinationNode(origin: Location, destination: Vec3i, searchDistance: Int): Vec3i {
 		val vector = destination.toVector().subtract(origin.toVector()).normalize().multiply((searchDistance - 1).shl(4))
 
 		val (x, y, z) = Vec3i(origin.clone().add(vector))
@@ -266,7 +314,7 @@ object AIPathfinding {
 	}
 
 	// Use squares for estimation
-	fun getEstimatedCostEuclidean(node: SectionNode, destinationNode: SectionNode): Int =
+	private fun getEstimatedCostEuclidean(node: SectionNode, destinationNode: SectionNode): Int =
 		distanceSquared(node.location, destinationNode.location)
 
 	fun getEstimatedCostManhattan(node: SectionNode, destination: Vec3i): Double {

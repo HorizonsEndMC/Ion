@@ -8,11 +8,12 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.minecraft.nbt.CompoundTag
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
+import net.minecraft.nbt.CompoundTag
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
@@ -71,7 +72,7 @@ object DefuseBomb: Encounter(identifier = "defuse_bomb") {
 
 			buttonBlock.blockData = blockData
 			buttonList.add(buttonBlock)
-			highlightBlock(event.player, buttonOn.location.toBlockPos(), (timeLimit * 20).toLong())
+			highlightBlock(event.player, Vec3i(buttonOn.location), (timeLimit * 20).toLong())
 		}
 
 		val correctOrder = validColors.shuffled()
