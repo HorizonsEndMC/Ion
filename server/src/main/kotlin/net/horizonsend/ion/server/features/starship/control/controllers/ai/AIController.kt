@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import org.bukkit.scheduler.BukkitRunnable
@@ -43,6 +44,7 @@ abstract class AIController(
 
 	/** Use the direct control center as a sort of cache to avoid the type conversion if possible */
 	fun getCenter(): Location = (starship as? ActiveControlledStarship)?.directControlCenter ?: starship.centerOfMass.toLocation(starship.world)
+	fun getWorld(): World = starship.world
 
 	// Begin utility functions
 	fun scheduleDespawn() = Tasks.sync {

@@ -3,9 +3,11 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.LocationObjectiveAI
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
@@ -20,12 +22,14 @@ class AutoCruiseAIController(
 	maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
 	val combatController: (AIController, ActiveStarship) -> AIController
-) : AIController(starship, "autoCruise", aggressivenessLevel) {
+) : AIController(starship, "autoCruise", aggressivenessLevel), LocationObjectiveAI {
 	var ticks = 0
 
 	override val pilotName: Component = starship.getDisplayNameComponent().append(Component.text(" [NEUTRAL]", NamedTextColor.YELLOW))
 
 	var destination = endPoint
+	override fun getObjective(): Vec3i = Vec3i(destination)
+
 	val direction: Vector get() = destination.toVector().subtract(getCenter().toVector())
 
 	private var speedLimit = maxSpeed

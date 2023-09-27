@@ -133,6 +133,7 @@ class ActiveControlledStarship (
 		Tasks.async {
 			val result = executeMovement(movement, pilot)
 			future.complete(result)
+			controller.onMove(movement)
 		}
 
 		return future

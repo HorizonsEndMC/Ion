@@ -52,7 +52,7 @@ enum class AggressivenessLevel(
 		NamedTextColor.RED,
 		text()
 			.append(text("[", NamedTextColor.GRAY))
-			.append(text("HIGH AGGRESSIVENESS", NamedTextColor.RED))
+			.append(text("HIGHLY AGGRESSIVE", NamedTextColor.RED))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
 	),

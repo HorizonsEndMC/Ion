@@ -97,6 +97,15 @@ class Vec3i: DBVec3i {
 
 	fun distance(x: Int, y: Int, z: Int): Double = distance(this.x, this.y, this.z, x, y, z)
 
+	/**
+	 * @param other Vector that should be added from this one
+	 * @return A new vector with the values added
+	 **/
 	operator fun plus(other: Vec3i) = Vec3i(x + other.x, y + other.y, z + other.z)
+
+	/**
+	 * @param other Vector that should be subtracted from this one
+	 * @return A new vector with the values subtracted
+	 **/
 	operator fun minus(other: Vec3i) = Vec3i(x - other.x, y - other.y, z - other.z)
 }

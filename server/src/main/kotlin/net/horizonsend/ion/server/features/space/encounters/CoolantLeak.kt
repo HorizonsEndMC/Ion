@@ -12,10 +12,11 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Z
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.minecraft.core.BlockPos
-import net.minecraft.nbt.CompoundTag
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
 import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
+import net.minecraft.core.BlockPos
+import net.minecraft.nbt.CompoundTag
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
@@ -84,7 +85,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 		var iteration = 0
 		val leverPos = getLever(chest)
 
-		highlightBlock(event.player, leverPos.below(), (MAX_ATTEMPTS * 2).toLong())
+		highlightBlock(event.player, leverPos.below().toVec3i(), (MAX_ATTEMPTS * 2).toLong())
 
 		val iceTypes = listOf(
 			Material.ICE,
