@@ -23,6 +23,7 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import java.util.concurrent.LinkedBlockingQueue
@@ -31,7 +32,7 @@ open class NavigationEngine(
 	val controller: AIController,
 	var destination: Vec3i
 ) : PathfindingController {
-	protected val log: Logger = IonServer.slF4JLogger
+	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	override fun getCenter(): Location = controller.getCenter()
 	override fun getCenterVec3i(): Vec3i = controller.starship.centerOfMass
@@ -80,9 +81,6 @@ open class NavigationEngine(
 
 		// Update the path
 		updateChartedPath()
-
-		log.info("Tracked section size: ${trackedSections.size}")
-		log.info("Charted path size: ${chartedPath.size}")
 	}
 
 	/** A queue containing the section nodes along the charted path */
