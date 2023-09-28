@@ -212,6 +212,8 @@ class StarfighterCombatController(
 
 		navigationEngine.tick()
 		if (state == State.COMBAT) combatLoop()
+
+		super.tick()
 	}
 
 	private fun combatLoop() {
