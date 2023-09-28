@@ -309,6 +309,23 @@ enum class StarshipType(
 		overridePermission = "ion.ships.eventship",
 		eventship = true,
 		poweroverrider = 2.0
+	),
+	AI_SHIP(
+		displayName = "AI Ship",
+		minSize = 50,
+		maxSize = 48000,
+		minLevel = 1000,
+		containerPercent = 0.025,
+		concretePercent = 0.0,
+		crateLimitMultiplier = 0.5,
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 3200,
+		hyperspaceRangeMultiplier = 2.7,
+		menuItemMaterial = Material.EMERALD_BLOCK,
+		isWarship = true,
+		color = "#d000d0",
+		overridePermission = "ion.ships.aiship"
 	);
 
 	val formatted: String get() = "<$color>$displayName</$color>"
