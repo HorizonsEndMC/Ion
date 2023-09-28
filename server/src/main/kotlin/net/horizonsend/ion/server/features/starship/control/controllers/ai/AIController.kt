@@ -8,7 +8,9 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.World
@@ -105,5 +107,22 @@ abstract class AIController(
 			.filter { additionalFilter(it.key, it.value) }
 
 		return inRange.keys
+	}
+
+	override fun tick() {
+		highlightComputer()
+		super.tick()
+	}
+
+	private fun highlightComputer() {
+		val controlledStarship = starship as? ActiveControlledStarship ?: return
+		val computerLoc = Vec3i(controlledStarship.data.blockKey)
+
+		val location = getCenter()
+		val players = location.getNearbyPlayers(160.0)
+
+		for (player in players) {
+			player.highlightBlock(computerLoc, 1L)
+		}
 	}
 }
