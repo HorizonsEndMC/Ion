@@ -178,7 +178,7 @@ open class NavigationEngine(
 
 	/** Handle the movement */
 	open fun navigationLoop() {
-		val distance = getDistanceSquaredToObjective()
+		val distance = getDistanceSquaredToDestination()
 
 		when {
 			distance >= 250000 -> cruiseLoop()
@@ -238,14 +238,17 @@ open class NavigationEngine(
 
 	/** Poll at the charted path to get the flight direction to the first objective */
 	private fun getNavDirection(): Vector {
-		val objective: Vec3i = getImmediateNavigationObjective()?.center ?: destination
+		var objective: Vec3i = getImmediateNavigationObjective()?.center ?: destination
+
+		val distance = getDistanceSquaredToDestination()
+		if (distance < 512) objective = destination
 
 		val origin = getCenterVec3i()
 
 		return objective.minus(origin).toVector()
 	}
 
-	private fun getDistanceSquaredToObjective(): Int = distanceSquared(getCenterVec3i(), Vec3i(destination))
+	private fun getDistanceSquaredToDestination(): Int = distanceSquared(getCenterVec3i(), Vec3i(destination))
 
 	private fun submitTask(task: () -> Unit) = AIManager.navigationThread.submit(task)
 }
