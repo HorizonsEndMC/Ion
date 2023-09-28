@@ -87,6 +87,8 @@ class AutoCruiseAIController(
 
 		val shouldCruise = assessDistance()
 		if (shouldCruise) cruiseNavigationLoop() else shiftFlightNavigationLoop()
+
+		super.tick()
 	}
 
 	/** Returns true if the destination is sufficiently far that it should cruise */
