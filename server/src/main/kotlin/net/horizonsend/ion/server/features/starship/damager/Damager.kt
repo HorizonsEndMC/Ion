@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.starship.damager
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -48,15 +51,17 @@ class PlayerDamagerWrapper(override val player: Player, override val starship: A
 
 val noOpDamager = NoOpDamager()
 
+val entityDamagerCache: LoadingCache<Entity, Damager> = CacheBuilder.newBuilder()
+	.weakKeys()
+	.build(CacheLoader.from { entity -> entity.damager() })
+
+fun Entity.damager(starship: ActiveStarship? = null) : Damager {
+	if (this is Player) return PlayerDamagerWrapper(this, starship)
+	return EntityDamager(this)
+}
+
 class EntityDamager(val entity: Entity) : NoOpDamager() {
 	override fun getDisplayName(): Component = entity.name()
-
-	companion object {
-		fun Entity.damager(starship: ActiveStarship? = null) : Damager {
-			if (this is Player) return PlayerDamagerWrapper(this, starship)
-			return EntityDamager(this)
-		}
-	}
 }
 
 open class NoOpDamager : Damager {
@@ -65,6 +70,12 @@ open class NoOpDamager : Damager {
 	override fun getDisplayName(): Component = Component.text("none")
 	override fun rewardMoney(credits: Double) { }
 	override fun rewardXP(xp: Int) { }
+}
+
+fun addToDamagers(world: World, block: Block, shooter: Entity) {
+	val damager = entityDamagerCache[shooter]
+
+	addToDamagers(world, block, damager)
 }
 
 fun addToDamagers(world: World, block: Block, shooter: Damager) {

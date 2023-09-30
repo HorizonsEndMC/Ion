@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.listener.gear
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
-import net.horizonsend.ion.server.features.starship.damager.EntityDamager.Companion.damager
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
@@ -100,7 +99,7 @@ object DetonatorListener : SLEventListener() {
 				addToDamagers(
 					event.player.world,
 					block,
-					player.damager()
+					player
 				)
 
 				blocks.forEach { it.setType(Material.AIR, false) }
