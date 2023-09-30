@@ -1,14 +1,17 @@
 package net.horizonsend.ion.server.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager.handleSpawn
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.StarfighterCombatController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.PathfindingController
-import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
@@ -66,16 +69,6 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("Unused")
-	@Subcommand("ai")
-	fun onAI(sender: Player) {
-		val starship = PilotedStarships[sender] ?: return sender.userError("You are not piloting a starship")
-
-		starship.controller = AIControllers.dumbAI(starship)
-		starship.clearPassengers()
-		sender.success("success")
-	}
-
-	@Suppress("Unused")
 	@Subcommand("loadAI")
 	fun loadAI(sender: Player, name: String) {
 		val (data, schematic) = StarshipDealers.schematicMap.filter { it.key.schematicName == name }.firstNotNullOfOrNull { it } ?: fail { "Sold ship $name not found!" }
@@ -93,5 +86,33 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("triggerSpawn")
 	fun triggerSpawn(sender: Player) {
 		handleSpawn()
+	}
+
+	@CommandCompletion("destinationX destinationY destinationZ")
+	fun ai(sender: Player, controller: AI, aggressivenessLevel: AggressivenessLevel, destinationX: Double, destinationY: Double, destinationZ: Double) {
+		val destination = Location(sender.world, destinationX, destinationY, destinationZ)
+		val starship = getStarshipRiding(sender)
+
+		starship.controller = controller.createController(starship, aggressivenessLevel, destination)
+	}
+
+	enum class AI(val createController: (ActiveStarship, AggressivenessLevel, Location, ) -> AIController) {
+		ONLY_ONE_FOR_NOW(
+			{ ship, aggressivenessLevel, location ->
+				AutoCruiseAIController(
+					ship,
+					location,
+					-1,
+					aggressivenessLevel
+				) { controller, nearbyShip ->
+					StarfighterCombatController(
+						controller.starship,
+						nearbyShip,
+						controller,
+						controller.aggressivenessLevel
+					)
+				}
+			}
+		)
 	}
 }
