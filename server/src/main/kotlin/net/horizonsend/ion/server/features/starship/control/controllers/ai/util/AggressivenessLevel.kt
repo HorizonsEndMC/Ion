@@ -19,7 +19,7 @@ enum class AggressivenessLevel(
 		NamedTextColor.BLUE,
 		text()
 			.append(text("[", NamedTextColor.GRAY))
-			.append(text("Non-Aggressive", NamedTextColor.BLUE))
+			.append(text("❤", NamedTextColor.BLUE))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
 	),
@@ -30,7 +30,7 @@ enum class AggressivenessLevel(
 		NamedTextColor.GREEN,
 		text()
 			.append(text("[", NamedTextColor.GRAY))
-			.append(text("Low Aggressiveness", NamedTextColor.GREEN))
+			.append(text("✔", NamedTextColor.GREEN))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
 	),
@@ -41,7 +41,7 @@ enum class AggressivenessLevel(
 		NamedTextColor.GOLD,
 		text()
 			.append(text("[", NamedTextColor.GRAY))
-			.append(text("Medium Aggressiveness", NamedTextColor.GOLD))
+			.append(text("⚠", NamedTextColor.GOLD))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
 	),
@@ -52,7 +52,7 @@ enum class AggressivenessLevel(
 		NamedTextColor.RED,
 		text()
 			.append(text("[", NamedTextColor.GRAY))
-			.append(text("HIGHLY AGGRESSIVE", NamedTextColor.RED))
+			.append(text("✖", NamedTextColor.RED))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
 	),
@@ -63,7 +63,7 @@ enum class AggressivenessLevel(
 		NamedTextColor.DARK_RED,
 		text()
 			.append(text("[", NamedTextColor.GRAY))
-			.append(text("EXTREMELY AGGRESSIVE", NamedTextColor.DARK_RED))
+			.append(text("☠", NamedTextColor.DARK_RED))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
 	)
