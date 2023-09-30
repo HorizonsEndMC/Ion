@@ -89,6 +89,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandCompletion("destinationX destinationY destinationZ")
+	@Subcommand("ai")
 	fun ai(sender: Player, controller: AI, aggressivenessLevel: AggressivenessLevel, destinationX: Double, destinationY: Double, destinationZ: Double) {
 		val destination = Location(sender.world, destinationX, destinationY, destinationZ)
 		val starship = getStarshipRiding(sender)
