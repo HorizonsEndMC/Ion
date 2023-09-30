@@ -12,6 +12,9 @@ import java.util.concurrent.ThreadFactory
 object Tasks {
 	fun checkMainThread() = check(Bukkit.isPrimaryThread()) { "Attempted to call non-thread-safe method async!" }
 
+	fun asyncOrImmediate(immediate: Boolean = false, block: () -> Unit) = if (immediate) block() else async(block)
+	fun syncOrImmediate(immediate: Boolean = false, block: () -> Unit) = if (immediate) block() else sync(block)
+
 	fun async(block: () -> Unit) {
 		Bukkit.getScheduler().runTaskAsynchronously(IonServer, block)
 	}
