@@ -91,13 +91,16 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			failIf(Blueprint.count(Blueprint::owner eq slPlayerId) > getMaxBlueprints(sender)) {
 				"You can only have up to ${getMaxBlueprints(sender)} blueprints."
 			}
-			Blueprint.create(slPlayerId, name, starship.data.starshipType.actualType, pilotLoc, starship.initialBlockCount, data)
+
+			Blueprint.create(slPlayerId, name, starship.data.starshipType, pilotLoc, starship.initialBlockCount, data)
 			sender.success("Saved blueprint $name")
 		} else {
 			val blueprint = getBlueprint(sender, name)
+
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
 			blueprint.type = starship.data.starshipType
+
 			saveBlueprint(blueprint)
 			sender.success("Updated blueprint $name")
 		}
