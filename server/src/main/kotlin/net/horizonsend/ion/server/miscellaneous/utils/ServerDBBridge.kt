@@ -4,7 +4,6 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.StarshipTypeDB
-import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
@@ -22,9 +21,6 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.litote.kmongo.and
-import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
 import java.util.Base64
 
 val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
@@ -52,14 +48,6 @@ fun Blueprint.Companion.createData(schematic: Clipboard): String {
 
 fun Blueprint.Companion.parseData(data: String): Clipboard {
 	return StarshipSchematic.deserializeSchematic(Base64.getDecoder().decode(data))
-}
-
-fun Blueprint.Companion.get(owner: SLPlayerId, name: String): Blueprint? {
-	return Blueprint.col.findOne(and(Blueprint::owner eq owner, Blueprint::name eq name))
-}
-
-fun Blueprint.Companion.create(owner: SLPlayerId, name: String, type: StarshipType, pilotLoc: Vec3i, size: Int, data: String) {
-	Blueprint.col.insertOne(Blueprint(objId(), owner, name, type.name, pilotLoc, size, data))
 }
 
 fun Blueprint.loadClipboard(): Clipboard {
