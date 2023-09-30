@@ -57,6 +57,10 @@ object AIPathfinding {
 		val chunkX = chunk.pos.x
 		val chunkZ = chunk.pos.z
 
+		if (chunk.level.worldBorder.isChunkInBounds(chunkX, chunkZ)) {
+			return yRange.map { SectionNode(world, Vec3i(chunkX, it, chunkZ), false, "Out of world border") }.toSet()
+		}
+
 		for (sectionPos in yRange) {
 			val section = levelChunkSections.getOrNull(sectionPos)
 			val pos = Vec3i(chunkX, sectionPos, chunkZ)
