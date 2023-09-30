@@ -114,8 +114,8 @@ abstract class AIController(
 		super.tick()
 	}
 
-	private fun highlightComputer() {
-		val controlledStarship = starship as? ActiveControlledStarship ?: return
+	private fun highlightComputer() = Tasks.sync {
+		val controlledStarship = starship as? ActiveControlledStarship ?: return@sync
 		val computerLoc = Vec3i(controlledStarship.data.blockKey)
 
 		val location = getCenter()
