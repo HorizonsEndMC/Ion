@@ -1,21 +1,23 @@
 package net.horizonsend.ion.server.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager.handleSpawn
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.StarfighterCombatController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.PathfindingController
-import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.text
 import net.horizonsend.ion.server.miscellaneous.utils.title
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.entity.Player
 
 @CommandPermission("starlegacy.starshipdebug")
@@ -68,31 +70,31 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.title(currentNode?.reason?.text() ?: "Node not tracked.".text(), "".text())
 	}
 
-//	@Suppress("Unused")
-//	@Subcommand("testAStar")
-//	fun testAStar(sender: Player, searchDistance: Int, x: Int, y: Int, z: Int) = Tasks.async {
-//		val wrapper = wrapperB(
-//			sender,
-//			searchDistance
-//		)
-//
-//		wrapper.adjustPosition(true)
-//		val nodes = wrapper.getNavigationPoints(Vec3i(x, y, z)).map { it.center }
-//
-//		for (node in nodes) {
-//			highlightBlock(sender, node, 60L)
-//		}
-//	}
+	@CommandCompletion("destinationX destinationY destinationZ")
+	fun ai(sender: Player, controller: AI, aggressivenessLevel: AggressivenessLevel, destinationX: Double, destinationY: Double, destinationZ: Double) {
+		val destination = Location(sender.world, destinationX, destinationY, destinationZ)
+		val starship = getStarshipRiding(sender)
 
-	class wrapperB(
-		val player: Player,
-		override var chunkSearchRadius: Int
-	): PathfindingController {
-		override val trackedSections: MutableSet<AIPathfinding.SectionNode> = mutableSetOf()
+		starship.controller = controller.createController(starship, aggressivenessLevel, destination)
+	}
 
-		override fun getWorld(): World = player.world
-
-		override fun getCenter(): Location = player.location
-		override fun getCenterVec3i(): Vec3i = Vec3i(getCenter())
+	enum class AI(val createController: (ActiveStarship, AggressivenessLevel, Location, ) -> AIController) {
+		ONLY_ONE_FOR_NOW(
+			{ ship, aggressivenessLevel, location ->
+				AutoCruiseAIController(
+					ship,
+					location,
+					-1,
+					aggressivenessLevel
+				) { controller, nearbyShip ->
+					StarfighterCombatController(
+						controller.starship,
+						nearbyShip,
+						controller,
+						controller.aggressivenessLevel
+					)
+				}
+			}
+		)
 	}
 }
