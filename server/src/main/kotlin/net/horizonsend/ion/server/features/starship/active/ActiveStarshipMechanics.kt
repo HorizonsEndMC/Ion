@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipDestruction.MAX_SAFE_HULL_INTEGRITY
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
-import net.horizonsend.ion.server.features.starship.damager.EntityDamager.Companion.damager
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
+import net.horizonsend.ion.server.features.starship.damager.entityDamagerCache
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.actionAndMsg
 import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
-import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.entity.TNTPrimed
@@ -115,11 +115,13 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		val block = event.location.block
 		val world = block.world
 
-		val damager = when (val entity = event.entity) {
-			is Projectile ->  (entity.shooter as? LivingEntity)?.damager() ?: entity.damager()
-			is TNTPrimed -> entity.source?.damager() ?: entity.damager()
-			else -> entity.damager()
-		}
+		val entity: Entity = when (val entity = event.entity) {
+			is Projectile -> entity.shooter as? Entity
+			is TNTPrimed -> entity.source
+			else -> entity
+		} ?: return
+
+		val damager = entityDamagerCache[entity]
 
 		addToDamagers(world, block, damager)
 	}
