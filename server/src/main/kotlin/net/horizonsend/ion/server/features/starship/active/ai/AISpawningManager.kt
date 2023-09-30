@@ -66,7 +66,10 @@ object AISpawningManager : IonServerComponent(true) {
 					loc.world
 				)
 
-				Notify.online(spawnMessage)
+				if (IonServer.configuration.serverName == "Survival")
+					Notify.online(spawnMessage)
+				else
+					IonServer.server.sendMessage(spawnMessage)
 			}
 		}
 	}
