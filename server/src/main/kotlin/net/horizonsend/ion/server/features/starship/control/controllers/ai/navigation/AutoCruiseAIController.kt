@@ -1,7 +1,8 @@
-package net.horizonsend.ion.server.features.starship.control.controllers.ai
+package net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.LocationObjectiveAI
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
