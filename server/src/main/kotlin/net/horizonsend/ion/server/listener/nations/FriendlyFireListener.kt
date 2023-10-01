@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.listener.nations
 
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType
@@ -54,6 +54,6 @@ object FriendlyFireListener : SLEventListener() {
 		val damagedNation: Oid<Nation> = damagedData.nationOid ?: return false
 		val damagerNation: Oid<Nation> = damagerData.nationOid ?: return false
 
-		return NationRelation.getRelationActual(damagedNation, damagerNation).ordinal >= 5
+		return RelationCache[damagedNation, damagerNation].ordinal >= 5
 	}
 }

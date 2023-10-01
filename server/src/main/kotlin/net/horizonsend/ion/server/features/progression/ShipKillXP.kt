@@ -8,8 +8,8 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.Colors
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
@@ -149,7 +149,7 @@ object ShipKillXP : IonServerComponent() {
 			val killedNation = SLPlayer[getPlayer(killedName)!!].nation
 
 			if (pilotNation != null && killedNation != null) {
-				if (NationRelation.getRelationActual(pilotNation, killedNation).ordinal >= 5) {
+				if (RelationCache[pilotNation, killedNation].ordinal >= 5) {
 					data.map.remove(damager)
 					continue
 				}

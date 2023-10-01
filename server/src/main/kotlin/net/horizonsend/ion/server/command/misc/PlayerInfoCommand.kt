@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
@@ -62,7 +63,7 @@ object PlayerInfoCommand : SLCommand() {
 						val senderNation: Oid<Nation>? = Settlement.findPropById(senderSettlement, Settlement::nation)
 
 						if (senderNation != null) {
-							val relation: NationRelation.Level = NationRelation.getRelationActual(nationId, senderNation)
+							val relation: NationRelation.Level = RelationCache[nationId, senderNation]
 
 							sender.sendMessage(
 								text()

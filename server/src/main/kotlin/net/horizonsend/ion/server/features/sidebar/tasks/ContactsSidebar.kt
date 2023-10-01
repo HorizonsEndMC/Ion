@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.sidebar.tasks
 
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -179,7 +179,7 @@ object ContactsSidebar {
                         val pilotNation =
                             PlayerCache[starship.pilot ?: return@run this.color(DARK_GRAY)].nationOid
                                 ?: return@run this.color(GRAY)
-                        return@run this.color(NationRelation.getRelationActual(viewerNation, pilotNation).color)
+                        return@run this.color(RelationCache[viewerNation, pilotNation].color)
                     } as TextComponent,
 
                     suffix = if (starship.isInterdicting && distance <= starship.type.interdictionRange) {

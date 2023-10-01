@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.binary
 import net.horizonsend.ion.common.database.boolean
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.nullable
@@ -161,7 +162,7 @@ class RegionTerritory(territory: Territory) :
 
 						// if the min build access is ally and they're at least an ally, they can build
 						if (settlementNation?.let {
-							NationRelation.getRelationActual(it, playerNation).ordinal >= NationRelation.Level.ALLY.ordinal
+							RelationCache[it, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal
 						} == true) return null
 
 					}

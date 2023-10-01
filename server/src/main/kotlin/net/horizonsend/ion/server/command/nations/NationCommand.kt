@@ -7,10 +7,31 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.nations.utils.cmd
+import net.horizonsend.ion.server.features.nations.utils.hover
+import net.horizonsend.ion.server.features.nations.utils.isActive
+import net.horizonsend.ion.server.features.nations.utils.isInactive
+import net.horizonsend.ion.server.features.nations.utils.isSemiActive
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -21,27 +42,6 @@ import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.chat.TextComponent
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
-import net.horizonsend.ion.common.database.schema.nations.NationRole
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.Territory
-import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
-import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.nations.utils.cmd
-import net.horizonsend.ion.server.features.nations.utils.hover
-import net.horizonsend.ion.server.features.nations.utils.isActive
-import net.horizonsend.ion.server.features.nations.utils.isInactive
-import net.horizonsend.ion.server.features.nations.utils.isSemiActive
-import net.horizonsend.ion.server.miscellaneous.utils.*
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -529,9 +529,9 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		message.append(newline())
 
 		senderNationId?.let {
-			val relation = NationRelation.getRelationActual(nationId, senderNationId)
-			val otherRelation = NationRelation.getRelationWish(nationId, senderNationId)
-			val wish = NationRelation.getRelationWish(senderNationId, nationId)
+			val relation = RelationCache[nationId, senderNationId]
+			val otherRelation = RelationCache.getWish(nationId, senderNationId)
+			val wish = RelationCache.getWish(senderNationId, nationId)
 
 			val relationHover = text("Your Wish: ")
 				.append(wish.component)

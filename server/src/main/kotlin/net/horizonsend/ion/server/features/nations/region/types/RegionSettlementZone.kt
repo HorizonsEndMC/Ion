@@ -1,11 +1,9 @@
 package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
-import net.horizonsend.ion.server.command.nations.settlementZones.SettlementZoneCommand
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
@@ -14,18 +12,20 @@ import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
+import net.horizonsend.ion.server.command.nations.settlementZones.SettlementZoneCommand
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
-import org.litote.kmongo.eq
 
 class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) {
 	override val priority: Int = 1
@@ -105,8 +105,8 @@ class RegionSettlementZone(zone: SettlementZone) : Region<SettlementZone>(zone) 
 				}
 
 				Settlement.ForeignRelation.ALLY -> {
-					for (relation in NationRelation.find(NationRelation::nation eq Settlement.getNation(settlement))) {
-						if (playerNation != null && relation.other == playerNation && relation.actual == NationRelation.Level.ALLY) {
+					SettlementCache[settlement].nation?.let { nation ->
+						if (playerNation != null && RelationCache[nation, playerNation] >= NationRelation.Level.ALLY) {
 							return null
 						}
 					}

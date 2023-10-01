@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.listener.misc
 
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.common.extensions.hintAction
 import net.horizonsend.ion.common.extensions.specialAction
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -33,10 +31,10 @@ class HeadListener : SLEventListener() {
 		val clickerPlayer = SLPlayer[event.player.slPlayerId] ?: return
 
 		val relationColor = if (skullPlayer.nation == null || clickerPlayer.nation == null) "" else
-			"<${NationRelation.getRelationActual(
+			"<${RelationCache[
 				clickerPlayer.nation!!,
 				skullPlayer.nation!!
-			).textStyle}>"
+			].textStyle}>"
 
 		event.player.specialAction("This head belonged to $relationColor${skullPlayer.lastKnownName}.")
 	}

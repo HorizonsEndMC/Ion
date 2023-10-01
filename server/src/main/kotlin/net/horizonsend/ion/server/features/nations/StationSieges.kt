@@ -1,21 +1,8 @@
 package net.horizonsend.ion.server.features.nations
 
 import net.horizonsend.ion.common.database.Oid
-import java.lang.System.currentTimeMillis
-import java.time.ZonedDateTime
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import net.horizonsend.ion.server.features.achievements.Achievement
-import net.horizonsend.ion.common.extensions.alert
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.informationAction
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
@@ -23,8 +10,15 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.kyori.adventure.text.Component.text
+import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.achievements.Achievement
+import net.horizonsend.ion.server.features.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -37,6 +31,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.getDurationBreakdown
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -45,6 +42,10 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
+import java.lang.System.currentTimeMillis
+import java.time.ZonedDateTime
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 object StationSieges : IonServerComponent() {
 	data class Siege(var siegerId: SLPlayerId, val stationId: Oid<CapturableStation>, val start: Long)
@@ -138,7 +139,7 @@ object StationSieges : IonServerComponent() {
 		val station = Regions.findFirstOf<RegionCapturableStation>(player.location)
 			?: return@asyncLocked player.userError("You must be within a station's area to siege it.")
 
-		if (station.nation?.let { NationRelation.getRelationActual(nation, it).ordinal >= 5 } == true) {
+		if (station.nation?.let { RelationCache[nation, it].ordinal >= 5 } == true) {
 			return@asyncLocked player.userError("This station is owned by an ally of your nation.")
 		}
 
@@ -255,12 +256,12 @@ object StationSieges : IonServerComponent() {
 				// includes NATION relation, so this includes same nation
 
 				// Get the relation between the current station holder and the other players inside
-				val relationOld = NationRelation.getRelationActual(oldNation, otherNation)
+				val relationOld = RelationCache[oldNation, otherNation]
 
 				if (relationOld.ordinal <= 4) continue
 
 				// Get the relation between the sieging nation and the other players inside
-				val relationNew = NationRelation.getRelationActual(playerNation, otherNation)
+				val relationNew = RelationCache[playerNation, otherNation]
 
 				// Ignore this player if they're also allies to the sieging nation
 				if (relationNew.ordinal >= 5) continue
@@ -310,7 +311,7 @@ object StationSieges : IonServerComponent() {
 
 					val otherPlayerNation = PlayerCache[otherPlayer].nationOid ?: continue
 
-					if (NationRelation.getRelationActual(playerNation, otherPlayerNation).ordinal >= NationRelation.Level.ALLY.ordinal) {
+					if (RelationCache[playerNation, otherPlayerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
 
 						SLXP.addAsync(otherPlayer, NATIONS_BALANCE.capturableStation.siegerAllyXP)
 						player.rewardAchievement(Achievement.CAPTURE_STATION)
@@ -348,7 +349,7 @@ object StationSieges : IonServerComponent() {
 
 			val otherPlayerNation = PlayerCache[otherPlayer].nationOid ?: continue
 
-			if (NationRelation.getRelationActual(playerNation, otherPlayerNation).ordinal >= NationRelation.Level.ALLY.ordinal) {
+			if (RelationCache[playerNation, otherPlayerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
 
 				players.add(otherPlayer)
 			}

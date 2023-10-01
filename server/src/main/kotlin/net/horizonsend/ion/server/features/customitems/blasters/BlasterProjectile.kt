@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.customitems.blasters
 
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
@@ -147,9 +147,9 @@ class RayTracedParticleProjectile(
 				val shooterNation = SLPlayer[shooter as Player].nation
 				val isSameNation = shooterNation?.let { shootNation ->
 					hitNation?.let { hitNation1 ->
-						NationRelation.getRelationActual(
+						RelationCache[
 							hitNation1, shootNation
-						).ordinal < 5
+						].ordinal < 5
 					}
 				} ?: false
 

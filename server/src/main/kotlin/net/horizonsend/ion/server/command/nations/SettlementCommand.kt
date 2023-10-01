@@ -8,11 +8,11 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
@@ -471,9 +471,9 @@ internal object SettlementCommand : SLCommand() {
 				.clickEvent(ClickEvent.runCommand("/n info ${settlementNationCached.name}"))
 
 			senderNationId?.let {
-				val relation = NationRelation.getRelationActual(nationId, senderNationId)
-				val otherRelation = NationRelation.getRelationWish(nationId, senderNationId)
-				val wish = NationRelation.getRelationWish(senderNationId, nationId)
+				val relation = RelationCache[nationId, senderNationId]
+				val otherRelation = RelationCache.getWish(nationId, senderNationId)
+				val wish = RelationCache.getWish(senderNationId, nationId)
 
 				val relationHover = text("Your Wish: ")
 					.append(wish.component)

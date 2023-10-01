@@ -1,12 +1,10 @@
 package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import java.time.DayOfWeek
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.array
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
@@ -14,14 +12,16 @@ import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.string
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.miscellaneous.utils.d
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.squared
 import org.bukkit.entity.Player
+import java.time.DayOfWeek
 
 class RegionCapturableStation(station: CapturableStation) :
 	Region<CapturableStation>(station),
@@ -67,7 +67,7 @@ class RegionCapturableStation(station: CapturableStation) :
 
 		// if they're at least an ally they can build]
 
-		if (NationRelation.getRelationActual(playerNation, nation).ordinal >= 5) return null
+		if (RelationCache[playerNation, nation].ordinal >= 5) return null
 
 		return noAccessMessage
 	}
