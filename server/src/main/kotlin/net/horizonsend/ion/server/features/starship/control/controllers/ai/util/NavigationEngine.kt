@@ -39,7 +39,7 @@ open class NavigationEngine(
 	override fun getWorld(): World = controller.starship.world
 
 	/** Polls the charted path for the first position in the path */
-	private fun getImmediateNavigationObjective(): AIPathfinding.SectionNode? = chartedPath.minBy {
+	private fun getImmediateNavigationObjective(): AIPathfinding.SectionNode? = chartedPath.minByOrNull {
 		val (x, y, z) = getSectionPositionOrigin()
 
 		it.location.distance(x, y, z)
