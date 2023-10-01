@@ -8,7 +8,6 @@ import net.horizonsend.ion.common.Colors
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
@@ -140,7 +139,7 @@ object ShipKillXP : IonServerComponent() {
 
 			if (pilotNation != null && killedNation != null) {
 				if (RelationCache[pilotNation, killedNation].ordinal >= 5) {
-					data.map.remove(damager)
+					dataMap.remove(damager)
 					continue
 				}
 			}

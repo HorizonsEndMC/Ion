@@ -14,6 +14,7 @@ import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object AIControlUtils {
@@ -127,17 +128,26 @@ object AIControlUtils {
 	) {
 		val originLocation = controllerLoc ?: controller.starship.centerOfMass.toLocation(controller.starship.world)
 
-		StarshipWeaponry.cooldown.tryExec(controller) {
-			StarshipWeaponry.manualFire(
-				controller,
-				controller.starship,
-				leftClick,
-				yawToBlockFace(controller.yaw.roundToInt()),
-				direction,
-				target ?: StarshipWeaponry.getTarget(originLocation, direction, controller.starship),
-				weaponSet
-			)
+		if (!leftClick) {
+			val elapsedSinceRightClick = System.nanoTime() - StarshipWeaponry.rightClickTimes.getOrDefault(controller, 0)
+
+			if (elapsedSinceRightClick > TimeUnit.MILLISECONDS.toNanos(250)) {
+				StarshipWeaponry.rightClickTimes[controller] = System.nanoTime()
+				return
+			}
+
+			StarshipWeaponry.rightClickTimes.remove(controller)
 		}
+
+		StarshipWeaponry.manualFire(
+			controller,
+			controller.starship,
+			leftClick,
+			yawToBlockFace(controller.yaw.roundToInt()),
+			direction,
+			target ?: StarshipWeaponry.getTarget(originLocation, direction, controller.starship),
+			weaponSet
+		)
 	}
 
 	fun setAutoWeapons(controller: AIController, node: String, target: AutoTurretTargeting.AutoTurretTarget<*>?) {
