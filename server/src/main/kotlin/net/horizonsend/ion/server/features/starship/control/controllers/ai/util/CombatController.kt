@@ -14,9 +14,20 @@ interface CombatController : LocationObjectiveAI {
 	val starship: ActiveStarship
 	var target: ActiveStarship
 
+	// Weapon sets
 	val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
 	val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
 
+	// Shield Health indicators
+	val shields get() = starship.shields
+	val shieldCount get() = shields.size
+	val averageHealth get() = shields.sumOf { it.powerRatio } / shieldCount.toDouble()
+
+
+	/** The location that should be navigated towards */
+	var locationObjective: Location
+
+	/** Gets the location of the targeted ship */
 	fun getTargetLocation(): Location
 
 	/**
@@ -43,17 +54,21 @@ interface CombatController : LocationObjectiveAI {
 		}
 	}
 
+	/** Fires light weapons (left click) in a direction */
 	fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
 		if (this !is AIController) return
 
 		AIControlUtils.shootInDirection(this, direction, leftClick = true, target = target, weaponSet = weaponSet)
 	}
+
+	/** Fires heavy weapons (right click) in a direction */
 	fun fireHeavyWeapons(direction: Vector, target: Vector? = null, node: String? = null) {
 		if (this !is AIController) return
 
 		AIControlUtils.shootInDirection(this, direction, leftClick = false, target = target, weaponSet = node)
 	}
 
+	/** Updates all auto weapons,that are in range, to fire on the target */
 	fun handleAutoWeapons(origin: Vec3i) {
 		if (this !is AIController) return
 
