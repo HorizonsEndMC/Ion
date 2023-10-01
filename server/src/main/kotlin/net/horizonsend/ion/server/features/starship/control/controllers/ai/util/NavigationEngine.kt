@@ -30,7 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 open class NavigationEngine(
 	val controller: AIController,
-	var destination: Vec3i
+	var destination: Vec3i?
 ) : PathfindingController {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -91,6 +91,7 @@ open class NavigationEngine(
 
 	/** Updates the stored path with  */
 	private fun updateChartedPath() {
+		val destination = this.destination ?: return
 		debugAudience.debug("Updating Charted Path")
 
 		// This list is created with the closest node at the first index, and the destination as its final.
@@ -178,7 +179,7 @@ open class NavigationEngine(
 
 	/** Handle the movement */
 	open fun navigationLoop() {
-		val distance = getDistanceSquaredToDestination()
+		val distance = getDistanceSquaredToDestination() ?: return
 
 		when {
 			distance >= 250000 -> cruiseLoop()
@@ -219,6 +220,7 @@ open class NavigationEngine(
 	var shouldRotateDuringShiftFlight = true
 
 	open fun shiftFlightLoop() = Tasks.sync {
+		val destination = this.destination ?: return@sync
 		val starship = controller.starship as ActiveControlledStarship
 		val isCruising = StarshipCruising.isCruising(starship)
 
@@ -238,9 +240,11 @@ open class NavigationEngine(
 
 	/** Poll at the charted path to get the flight direction to the first objective */
 	private fun getNavDirection(): Vector {
+		val destination = this.destination ?: return Vector(0.0, 0.0, 0.0)
+
 		var objective: Vec3i = getImmediateNavigationObjective()?.center ?: destination
 
-		val distance = getDistanceSquaredToDestination()
+		val distance = getDistanceSquaredToDestination() ?: return Vector(0.0, 0.0, 0.0)
 		if (distance < 512) objective = destination
 
 		val origin = getCenterVec3i()
@@ -248,7 +252,7 @@ open class NavigationEngine(
 		return objective.minus(origin).toVector()
 	}
 
-	private fun getDistanceSquaredToDestination(): Int = distanceSquared(getCenterVec3i(), Vec3i(destination))
+	private fun getDistanceSquaredToDestination(): Int? = destination?.let { distanceSquared(getCenterVec3i(), Vec3i(it)) }
 
 	private fun submitTask(task: () -> Unit) = AIManager.navigationThread.submit(task)
 }

@@ -12,7 +12,7 @@ import org.bukkit.util.Vector
 
 interface CombatController : LocationObjectiveAI {
 	val starship: ActiveStarship
-	var target: ActiveStarship
+	var target: ActiveStarship?
 
 	// Weapon sets
 	val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
@@ -25,10 +25,10 @@ interface CombatController : LocationObjectiveAI {
 
 
 	/** The location that should be navigated towards */
-	var locationObjective: Location
+	var locationObjective: Location?
 
 	/** Gets the location of the targeted ship */
-	fun getTargetLocation(): Location
+	fun getTargetLocation(): Location?
 
 	/**
 	 * Use Vec3i as a target to allow block targeting
@@ -70,6 +70,7 @@ interface CombatController : LocationObjectiveAI {
 
 	/** Updates all auto weapons,that are in range, to fire on the target */
 	fun handleAutoWeapons(origin: Vec3i) {
+		val target = this.target ?: return
 		if (this !is AIController) return
 
 		val (x, y, z) = origin
