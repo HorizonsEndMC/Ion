@@ -235,7 +235,7 @@ class StarfighterCombatController(
 		Tasks.sync {
 			AIControlUtils.faceDirection(this, vectorToBlockFace(faceDirection, false))
 			AIControlUtils.shootInDirection(this, direction, leftClick = false, target = getTargetLocation().toVector())
-			AIControlUtils.shootInDirection(this, direction, leftClick = true, target = getTargetLocation().toVector())
+			AIControlUtils.shootInDirection(this, direction, leftClick = true)
 		}
 	}
 }

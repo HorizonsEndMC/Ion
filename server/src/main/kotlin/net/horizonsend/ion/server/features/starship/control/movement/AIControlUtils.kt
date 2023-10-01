@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -136,7 +138,17 @@ object AIControlUtils {
 		)
 	}
 
-	fun setAutoWeapons(controller: AIController, target: Player) {
+	fun setAutoWeapons(controller: AIController, node: String, target: AutoTurretTargeting.AutoTurretTarget<*>) {
+		val starship = controller.starship
 
+		starship.autoTurretTargets[node] = target
+	}
+
+	fun setAutoWeapons(controller: AIController, node: String, target: Player) {
+		setAutoWeapons(controller, node, AutoTurretTargeting.target(target))
+	}
+
+	fun setAutoWeapons(controller: AIController, node: String, target: ActiveStarship) {
+		setAutoWeapons(controller, node, AutoTurretTargeting.target(target))
 	}
 }
