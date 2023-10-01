@@ -167,7 +167,8 @@ class StarfighterCombatController(
 
 		if (nearbyShips.isEmpty()) return null
 
-		return nearbyShips.firstOrNull()
+		target = nearbyShips.firstOrNull()
+		return target
 	}
 
 	/** Returns to previous controller if there is no target left **/
@@ -212,6 +213,8 @@ class StarfighterCombatController(
 	 */
 
 	override fun tick() {
+		if (target == null) findNextTarget()
+
 		val ok = checkOnTarget()
 
 		if (!ok) {
