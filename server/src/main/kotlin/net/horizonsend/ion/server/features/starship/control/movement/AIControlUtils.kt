@@ -140,17 +140,22 @@ object AIControlUtils {
 		}
 	}
 
-	fun setAutoWeapons(controller: AIController, node: String, target: AutoTurretTargeting.AutoTurretTarget<*>) {
+	fun setAutoWeapons(controller: AIController, node: String, target: AutoTurretTargeting.AutoTurretTarget<*>?) {
 		val starship = controller.starship
 
-		starship.autoTurretTargets[node] = target
+		if (target != null) starship.autoTurretTargets[node] = target
+			else starship.autoTurretTargets.remove(node)
 	}
 
-	fun setAutoWeapons(controller: AIController, node: String, target: Player) {
-		setAutoWeapons(controller, node, AutoTurretTargeting.target(target))
+	fun setAutoWeapons(controller: AIController, node: String, target: Player?) {
+		setAutoWeapons(controller, node, target?.let { AutoTurretTargeting.target(it) })
 	}
 
-	fun setAutoWeapons(controller: AIController, node: String, target: ActiveStarship) {
-		setAutoWeapons(controller, node, AutoTurretTargeting.target(target))
+	fun setAutoWeapons(controller: AIController, node: String, target: ActiveStarship?) {
+		setAutoWeapons(controller, node, target?.let { AutoTurretTargeting.target(it) })
+	}
+
+	fun unSetAllWeapons(controller: AIController) {
+		controller.starship.autoTurretTargets.clear()
 	}
 }
