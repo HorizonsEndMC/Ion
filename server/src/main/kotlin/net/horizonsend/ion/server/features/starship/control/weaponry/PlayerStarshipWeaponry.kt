@@ -9,9 +9,10 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
+import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.cooldown
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.manualFire
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamagerWrapper
-import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
+import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -27,7 +28,6 @@ import java.util.concurrent.TimeUnit
 
 object PlayerStarshipWeaponry : IonServerComponent() {
 	private val rightClickTimes = mutableMapOf<UUID, Long>()
-	private val cooldown = PerPlayerCooldown(250L, TimeUnit.MILLISECONDS)
 
 	@EventHandler(priority = EventPriority.LOW)
 	fun onClick(event: PlayerInteractEvent) {
@@ -69,7 +69,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 
 		player.debug("didnt click sign, trying to fire")
 
-		cooldown.tryExec(player) {
+		cooldown.tryExec(player.damager()) {
 			manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
 		}
 
