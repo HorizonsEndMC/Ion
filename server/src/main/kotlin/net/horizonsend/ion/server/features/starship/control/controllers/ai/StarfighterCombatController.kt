@@ -221,7 +221,8 @@ class StarfighterCombatController(
 		starship as ActiveControlledStarship
 		starship.speedLimit = -1
 
-		var direction = getDirection(Vec3i(getCenter()), target.centerOfMass)
+		val faceDirection = getDirection(Vec3i(getCenter()), Vec3i(target.blocks.random()))
+		var direction = getDirection(Vec3i(getCenter()), target.centerOfMass).normalize()
 
 		if (aggressivenessLevel.shotDeviation > 0) {
 			val offsetX = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
@@ -232,7 +233,7 @@ class StarfighterCombatController(
 		}
 
 		Tasks.sync {
-			AIControlUtils.faceDirection(this, vectorToBlockFace(direction, false))
+			AIControlUtils.faceDirection(this, vectorToBlockFace(faceDirection, false))
 			AIControlUtils.shootInDirection(this, direction, leftClick = false, target = getTargetLocation().toVector())
 			AIControlUtils.shootInDirection(this, direction, leftClick = true, target = getTargetLocation().toVector())
 		}
