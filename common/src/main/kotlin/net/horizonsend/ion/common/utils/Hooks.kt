@@ -4,26 +4,40 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import litebans.api.Database
+import net.horizonsend.ion.common.IonComponent
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-val liteBansDatabase = Database.get()
+object Mutes: IonComponent() {
+	var isLitebansEnabled: Boolean = false
+	lateinit var liteBansDatabase: Database
 
-val muteCache: LoadingCache<UUID, Boolean> = CacheBuilder.newBuilder()
-	.expireAfterAccess(5, TimeUnit.MINUTES)
-	.build(
-		CacheLoader.from { uuid ->
-			playerIsMuted(uuid)
-		}
-	)
+	override fun onEnable() {
+		liteBansDatabase = try {
+			val db = Database.get()
+			isLitebansEnabled = true
+			db
+		} catch (e: Exception) { throw Error("Litebans is not installed. Mutes will not be checked, but chat will still function.") }
+	}
 
-val banCache: LoadingCache<UUID, Boolean> = CacheBuilder.newBuilder()
-	.expireAfterAccess(5, TimeUnit.MINUTES)
-	.build(
-		CacheLoader.from { uuid ->
-			playerIsBanned(uuid)
-		}
-	)
+	val muteCache: LoadingCache<UUID, Boolean> = CacheBuilder.newBuilder()
+		.expireAfterAccess(5, TimeUnit.MINUTES)
+		.build(
+			CacheLoader.from { uuid ->
+				if (!isLitebansEnabled) return@from false
+				playerIsMuted(uuid)
+			}
+		)
 
-fun playerIsMuted(playerId: UUID): Boolean = runCatching { liteBansDatabase.isPlayerMuted(playerId, null) }.getOrDefault(false)
-fun playerIsBanned(playerId: UUID): Boolean = runCatching { liteBansDatabase.isPlayerBanned(playerId, null) }.getOrDefault(false)
+	val banCache: LoadingCache<UUID, Boolean> = CacheBuilder.newBuilder()
+		.expireAfterAccess(5, TimeUnit.MINUTES)
+		.build(
+			CacheLoader.from { uuid ->
+				if (!isLitebansEnabled) return@from false
+				playerIsBanned(uuid)
+			}
+		)
+
+	fun playerIsMuted(playerId: UUID): Boolean = runCatching { liteBansDatabase.isPlayerMuted(playerId, null) }.getOrDefault(false)
+	fun playerIsBanned(playerId: UUID): Boolean = runCatching { liteBansDatabase.isPlayerBanned(playerId, null) }.getOrDefault(false)
+}

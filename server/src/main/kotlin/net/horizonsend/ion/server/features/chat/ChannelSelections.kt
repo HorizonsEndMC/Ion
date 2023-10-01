@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.chat
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.redis
-import net.horizonsend.ion.common.utils.muteCache
+import net.horizonsend.ion.common.utils.Mutes.muteCache
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
