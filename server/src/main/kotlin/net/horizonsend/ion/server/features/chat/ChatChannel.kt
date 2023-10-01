@@ -1,35 +1,34 @@
 package net.horizonsend.ion.server.features.chat
 
 import github.scarsz.discordsrv.DiscordSRV
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.extensions.userErrorAction
-import net.luckperms.api.LuckPermsProvider
-import net.luckperms.api.node.NodeEqualityPredicate
-import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.chat.TextComponent
-import net.horizonsend.ion.server.LegacySettings
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.common.database.cache.nations.NationCache
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.luckPerms
+import net.horizonsend.ion.common.utils.redisaction.RedisAction
+import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.hover
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.common.utils.redisaction.RedisAction
 import net.horizonsend.ion.server.miscellaneous.utils.msg
+import net.luckperms.api.node.NodeEqualityPredicate
+import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.ComponentBuilder
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
-import org.litote.kmongo.eq
 
 enum class ChatChannel(val displayName: String, val commandAliases: List<String>, val messageColor: SLTextStyle) {
 	GLOBAL("<dark_green>Global", listOf("global", "g"), SLTextStyle.RESET) {
@@ -240,7 +239,6 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val format = "&5&lAlly &e$nationName$roleString &b${player.name} &8»".colorize()
 			val message = messageColor.toString() + event.message.replace("${SLTextStyle.RESET}", "$messageColor")
 
-			player.sendMessage("$format $message")
 			allyAction(NationsChatMessage(nation, format, message, playerInfo(player)))
 		}
 	};
@@ -310,12 +308,8 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			val component = message.buildChatComponent()
 			for (player in Bukkit.getOnlinePlayers()) {
 				val playerNation = PlayerCache.getIfOnline(player)?.nationOid ?: continue
-				for (relation in NationRelation.find(NationRelation::nation eq message.id)) {
-					if (relation.other == playerNation && (relation.actual == NationRelation.Level.ALLY)) {
-						player.sendMessage(*component)
-					}
-				}
-				if (playerNation == message.id && !message.playerInfo.contains("Player: ${player.name}")) {
+
+				if (RelationCache[playerNation, message.id] >= NationRelation.Level.ALLY) {
 					player.sendMessage(*component)
 				}
 			}

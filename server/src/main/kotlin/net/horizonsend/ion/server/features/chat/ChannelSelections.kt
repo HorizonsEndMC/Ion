@@ -3,10 +3,11 @@ package net.horizonsend.ion.server.features.chat
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.redis
+import net.horizonsend.ion.common.utils.muteCache
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -58,14 +59,26 @@ object ChannelSelections : IonServerComponent() {
 
 			val message: String = event.message
 			val args: List<String> = message.removePrefix("/").split(" ")
-			val command: String = args[0].lowercase(Locale.getDefault())
+			val command: String = args[0].toLowerCase()
 
-			ChatChannel.entries.firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
+			ChatChannel.values().firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
 				event.isCancelled = true
 
 				val playerID: UUID = player.uniqueId
 
 				val oldChannel = get(player)
+
+				if (args.size > 1) {
+					if (muteCache[playerID]) return@let
+
+					localCache[playerID] = channel
+					try {
+						player.chat(message.removePrefix("/").removePrefix("$command "))
+					} finally {
+						localCache[playerID] = oldChannel
+					}
+					return@let
+				}
 
 				if (oldChannel == channel) {
 					player.userErrorAction(
