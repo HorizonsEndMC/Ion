@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -88,13 +87,13 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 		handleSpawn()
 	}
 
-	@CommandCompletion("destinationX destinationY destinationZ")
 	@Subcommand("ai")
 	fun ai(sender: Player, controller: AI, aggressivenessLevel: AggressivenessLevel, destinationX: Double, destinationY: Double, destinationZ: Double) {
 		val destination = Location(sender.world, destinationX, destinationY, destinationZ)
 		val starship = getStarshipRiding(sender)
 
 		starship.controller = controller.createController(starship, aggressivenessLevel, destination)
+		starship.removePassenger(sender.uniqueId)
 	}
 
 	enum class AI(val createController: (ActiveStarship, AggressivenessLevel, Location, ) -> AIController) {
