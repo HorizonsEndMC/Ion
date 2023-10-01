@@ -44,7 +44,8 @@ class StarfighterCombatController(
 		shouldRotateDuringShiftFlight = false
 	}
 
-	override val weaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
+	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
+	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 
 	override fun destroy() {
 		navigationEngine.shutDown()
