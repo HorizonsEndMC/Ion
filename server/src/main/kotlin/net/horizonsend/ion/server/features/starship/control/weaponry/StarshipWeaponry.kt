@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit
 
 object StarshipWeaponry : IonServerComponent() {
 	val cooldown = PerDamagerCooldown(250L, TimeUnit.MILLISECONDS)
+	val rightClickTimes = mutableMapOf<Damager, Long>()
 
 	fun manualFire(
         shooter: Damager,
@@ -29,7 +30,7 @@ object StarshipWeaponry : IonServerComponent() {
         dir: Vector,
         target: Vector,
         weaponSet: String?
-	) {
+	) = cooldown.tryExec(shooter) {
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 
 		val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
