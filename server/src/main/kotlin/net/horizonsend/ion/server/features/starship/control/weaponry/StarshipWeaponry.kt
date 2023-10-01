@@ -30,11 +30,15 @@ object StarshipWeaponry : IonServerComponent() {
         dir: Vector,
         target: Vector,
         weaponSet: String?
-	) = cooldown.tryExec(shooter) {
+	) {
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 
-		val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
-		StarshipWeapons.fireQueuedShots(queuedShots, starship)
+		val fireTask = {
+			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
+			StarshipWeapons.fireQueuedShots(queuedShots, starship)
+		}
+
+		if (!leftClick) cooldown.tryExec(shooter, fireTask) else fireTask()
 	}
 
 	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship): Vector {
