@@ -60,12 +60,7 @@ class StarfighterCombatController(
 
 	override fun getTargetLocation(): Location = target.centerOfMass.toLocation(target.world)
 
-	private val shields get() = starship.shields
-	private val shieldCount get() = shields.size
-	private val averageHealth get() = shields.sumOf { it.powerRatio } / shieldCount.toDouble()
-
-	/** The location that should be navigated towards */
-	private var locationObjective: Location = target.centerOfMass.toLocation(target.world)
+	override var locationObjective: Location = target.centerOfMass.toLocation(target.world)
 
 	/** Current state of the AI */
 	var state: State = State.FOCUS_LOCATION
