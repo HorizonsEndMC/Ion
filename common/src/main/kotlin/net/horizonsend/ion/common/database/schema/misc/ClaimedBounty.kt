@@ -13,7 +13,7 @@ data class ClaimedBounty(
 	val hunter: SLPlayerId,
 	val target: SLPlayerId,
 	val claimTime: Date,
-	val completed: Boolean
+	var completed: Boolean
 ) : DbObject {
 	companion object : OidDbObjectCompanion<ClaimedBounty>(
 		ClaimedBounty::class,

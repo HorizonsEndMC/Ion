@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.bounties
 
+import net.horizonsend.ion.common.database.cache.BountyCache
 import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
@@ -27,12 +28,10 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
-import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.setValue
 import java.util.Date
 import java.util.UUID
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 object Bounties : IonServerComponent() {
@@ -57,7 +56,7 @@ object Bounties : IonServerComponent() {
 	}
 
 	fun claimBounty(hunter: Player, targetId: SLPlayerId, targetName: String, targetBounty: Double) = Tasks.async {
-		if (hasActive(hunter.slPlayerId, targetId).get()) return@async hunter.userError("You already have an active bounty on $targetName!")
+		if (hasActive(hunter.slPlayerId, targetId)) return@async hunter.userError("You already have an active bounty on $targetName!")
 		if (!canClaim(hunter.slPlayerId, targetId)) return@async hunter.userError("You already claimed a bounty on $targetName in the last two days!")
 
 		ClaimedBounty.claim(hunter.slPlayerId, targetId)
@@ -67,31 +66,18 @@ object Bounties : IonServerComponent() {
 
 	/** Checks if the hunter has claimed a bounty on the target in the previous two days **/
 	fun canClaim(hunter: SLPlayerId, target: SLPlayerId): Boolean {
-		val query = and(
-			ClaimedBounty::target eq target,
-			ClaimedBounty::hunter eq hunter,
-			ClaimedBounty::claimTime gte coolDown
-		)
+		val mostRecent = BountyCache[hunter, target] ?: return true
 
-		return ClaimedBounty.none(query)
+		return mostRecent.claimTime < coolDown
 	}
 
 	/** Checks if the hunter has an active bounty on the target **/
-	private fun hasActive(hunter: SLPlayerId, target: SLPlayerId): CompletableFuture<Boolean> {
-		val future = CompletableFuture<Boolean>()
+	private fun hasActive(hunter: SLPlayerId, target: SLPlayerId): Boolean {
+		val mostRecent = BountyCache[hunter, target] ?: return false
 
-		Tasks.async {
-			val query = and(
-				ClaimedBounty::target eq target,
-				ClaimedBounty::hunter eq hunter,
-				ClaimedBounty::claimTime gte lastActive,
-				ClaimedBounty::completed eq false
-			)
+		if (mostRecent.claimTime < lastActive) return false
 
-			future.complete(ClaimedBounty.any(query))
-		}
-
-		return future
+		return !mostRecent.completed
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -103,7 +89,7 @@ object Bounties : IonServerComponent() {
 		// Check names because of combat NPCs
 		if (killer.name == victim.name) return@async
 
-		if (hasActive(killer.slPlayerId, victim.slPlayerId).get()) {
+		if (hasActive(killer.slPlayerId, victim.slPlayerId)) {
 			collectBounty(killer, victim)
 		} else {
 			val amount = 2500.0

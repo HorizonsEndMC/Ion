@@ -1,6 +1,7 @@
 package net.horizonsend.ion.proxy.features.cache
 
 import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.database.cache.BountyCache
 import net.horizonsend.ion.common.database.cache.Cache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
@@ -13,7 +14,8 @@ object Caches : IonComponent() {
 //		PlayerCache,
 		SettlementCache,
 		NationCache,
-		RelationCache
+		RelationCache,
+		BountyCache
 	)
 
 	override fun onEnable() = caches.forEach {

@@ -1,22 +1,26 @@
 package net.horizonsend.ion.server.features.cache
 
+import net.horizonsend.ion.common.database.cache.BountyCache
 import net.horizonsend.ion.common.database.cache.Cache
-import net.horizonsend.ion.common.database.cache.nations.*
+import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
+import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.*
+import java.util.UUID
 
 object Caches : IonServerComponent() {
 	private val caches: List<Cache> = listOf(
@@ -24,6 +28,7 @@ object Caches : IonServerComponent() {
 		SettlementCache,
 		NationCache,
 		RelationCache,
+		BountyCache,
 
 		CargoCrates,
 		EcoStations
