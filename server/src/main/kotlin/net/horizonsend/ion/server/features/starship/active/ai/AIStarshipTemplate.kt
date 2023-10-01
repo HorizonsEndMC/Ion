@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
+import org.apache.commons.lang.math.DoubleRange
 import java.io.File
 
 object AIStarshipTemplates : IonServerComponent(true) {
@@ -51,5 +52,5 @@ object AIStarshipTemplates : IonServerComponent(true) {
 
 	operator fun get(identifier: String) = templates.firstOrNull { it.identifier == identifier }
 
-	data class WeaponSet(val name: String, val engagementRange: IntRange)
+	data class WeaponSet(val name: String, val engagementRange: DoubleRange)
 }

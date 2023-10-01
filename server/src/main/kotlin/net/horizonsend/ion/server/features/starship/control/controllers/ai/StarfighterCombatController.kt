@@ -4,15 +4,14 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.CombatController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.LocationObjectiveAI
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.NavigationEngine
-import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
@@ -38,10 +37,14 @@ class StarfighterCombatController(
 	override var target: ActiveStarship,
 	private val previousController: Controller,
 	aggressivenessLevel: AggressivenessLevel
-) : AIController(starship, "combat", aggressivenessLevel), CombatController, LocationObjectiveAI {
+) : AIController(starship, "combat", aggressivenessLevel),
+	CombatController,
+	LocationObjectiveAI {
 	val navigationEngine: NavigationEngine = NavigationEngine(this, target.centerOfMass).apply {
 		shouldRotateDuringShiftFlight = false
 	}
+
+	override val weaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 
 	override fun destroy() {
 		navigationEngine.shutDown()
@@ -221,21 +224,20 @@ class StarfighterCombatController(
 		starship as ActiveControlledStarship
 		starship.speedLimit = -1
 
-		val faceDirection = getDirection(Vec3i(getCenter()), Vec3i(target.blocks.random()))
-		var direction = getDirection(Vec3i(getCenter()), target.centerOfMass).normalize()
+		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), Vec3i(target.blocks.random())), includeVertical = false)
 
-		if (aggressivenessLevel.shotDeviation > 0) {
-			val offsetX = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
-			val offsetY = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
-			val offsetZ = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+		fireAllWeapons(
+			starship.centerOfMass,
+			target.centerOfMass,
+			faceDirection = faceDirection
+		) { direction ->
+			if (aggressivenessLevel.shotDeviation > 0) {
+				val offsetX = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+				val offsetY = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+				val offsetZ = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
 
-			direction = direction.clone().add(Vector(offsetX, offsetY, offsetZ)).normalize()
-		}
-
-		Tasks.sync {
-			AIControlUtils.faceDirection(this, vectorToBlockFace(faceDirection, false))
-			AIControlUtils.shootInDirection(this, direction, leftClick = false, target = getTargetLocation().toVector())
-			AIControlUtils.shootInDirection(this, direction, leftClick = true)
+				direction.add(Vector(offsetX, offsetY, offsetZ)).normalize()
+			}
 		}
 	}
 }
