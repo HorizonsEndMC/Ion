@@ -223,13 +223,13 @@ object AIPathfinding {
 		val originNodeLocation = controller.getSectionPositionOrigin()
 
 		val destinationNodeLocation = getDestinationNode(currentPos, destination, searchDistance)
-		val destinationNode = allNodes.first { it.location == destinationNodeLocation }
+		val destinationNode = allNodes.firstOrNull { it.location == destinationNodeLocation } ?: return listOf()
 
 		val closedNodes = controller.trackedSections.filter { !it.navigable }.toMutableList()
-		val openNodes = mutableListOf(allNodes.first { it.location == originNodeLocation })
 
-		val originNode = openNodes.first()
+		val originNode = allNodes.firstOrNull { it.location == originNodeLocation } ?: return listOf()
 
+		val openNodes = mutableListOf(originNode)
 		var currentNode: SectionNode = originNode
 
 		var iterations = 0
