@@ -14,7 +14,8 @@ interface CombatController : LocationObjectiveAI {
 	val starship: ActiveStarship
 	var target: ActiveStarship
 
-	val weaponSets: MutableList<AIStarshipTemplates.WeaponSet>
+	val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
+	val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
 
 	fun getTargetLocation(): Location
 
@@ -29,7 +30,7 @@ interface CombatController : LocationObjectiveAI {
 		val (x, y, z) = origin
 		val distance = target.distance(x, y, z)
 
-		val weaponSet = weaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
+		val weaponSet = autoWeaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
 		val direction = getDirection(Vec3i(getCenter()), target).normalize()
 
 		directionMod(direction)
@@ -51,5 +52,20 @@ interface CombatController : LocationObjectiveAI {
 		if (this !is AIController) return
 
 		AIControlUtils.shootInDirection(this, direction, leftClick = false, target = target, weaponSet = node)
+	}
+
+	fun handleAutoWeapons(origin: Vec3i) {
+		if (this !is AIController) return
+
+		val (x, y, z) = origin
+		val distance = target.centerOfMass.distance(x, y, z)
+		val weaponSet = autoWeaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
+
+		if (weaponSet == null) {
+			AIControlUtils.unSetAllWeapons(this)
+			return
+		}
+
+		AIControlUtils.setAutoWeapons(this, weaponSet, target)
 	}
 }
