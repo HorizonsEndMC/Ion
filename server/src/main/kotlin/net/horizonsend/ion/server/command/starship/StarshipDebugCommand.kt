@@ -8,8 +8,9 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AISpawningManager.handleSpawn
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AutoCruiseAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.StarfighterCombatController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.FrigateCombatController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -97,7 +98,27 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	enum class AI(val createController: (ActiveStarship, AggressivenessLevel, Location, ) -> AIController) {
-		ONLY_ONE_FOR_NOW(
+		STARFIGHTER({ ship, aggressivenessLevel, _ ->
+			StarfighterCombatController(
+				starship = ship,
+				target = null,
+				aggressivenessLevel = aggressivenessLevel,
+				previousController = null
+			)
+		}),
+
+		FRIGATE({ ship, aggressivenessLevel, _ ->
+			FrigateCombatController(
+				starship = ship,
+				target = null,
+				aggressivenessLevel = aggressivenessLevel,
+				previousController = null,
+				autoWeaponSets = mutableListOf(),
+				manualWeaponSets = mutableListOf()
+			)
+		}),
+
+		AUTO_CRUISE_WITH_SF_FALLBACK(
 			{ ship, aggressivenessLevel, location ->
 				AutoCruiseAIController(
 					ship,
@@ -108,8 +129,8 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 					StarfighterCombatController(
 						controller.starship,
 						nearbyShip,
+						controller.aggressivenessLevel,
 						controller,
-						controller.aggressivenessLevel
 					)
 				}
 			}
