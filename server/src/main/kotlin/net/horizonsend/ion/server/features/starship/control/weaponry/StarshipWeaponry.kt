@@ -1,13 +1,14 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.PerDamagerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.isLava
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import org.bukkit.Location
@@ -15,8 +16,11 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.LinkedList
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.TimeUnit
 
 object StarshipWeaponry : IonServerComponent() {
+	val cooldown = PerDamagerCooldown(250L, TimeUnit.MILLISECONDS)
+
 	fun manualFire(
         shooter: Damager,
         starship: ActiveStarship,
