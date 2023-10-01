@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.combat
 
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -14,7 +15,6 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
-import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
