@@ -127,15 +127,17 @@ object AIControlUtils {
 	) {
 		val originLocation = controllerLoc ?: controller.starship.centerOfMass.toLocation(controller.starship.world)
 
-		StarshipWeaponry.manualFire(
-			controller,
-			controller.starship,
-			leftClick,
-			yawToBlockFace(controller.yaw.roundToInt()),
-			direction,
-			target ?: StarshipWeaponry.getTarget(originLocation, direction, controller.starship),
-			weaponSet
-		)
+		StarshipWeaponry.cooldown.tryExec(controller) {
+			StarshipWeaponry.manualFire(
+				controller,
+				controller.starship,
+				leftClick,
+				yawToBlockFace(controller.yaw.roundToInt()),
+				direction,
+				target ?: StarshipWeaponry.getTarget(originLocation, direction, controller.starship),
+				weaponSet
+			)
+		}
 	}
 
 	fun setAutoWeapons(controller: AIController, node: String, target: AutoTurretTargeting.AutoTurretTarget<*>) {
