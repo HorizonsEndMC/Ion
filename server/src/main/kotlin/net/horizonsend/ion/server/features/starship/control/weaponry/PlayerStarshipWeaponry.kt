@@ -9,9 +9,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
-import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.cooldown
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.manualFire
-import net.horizonsend.ion.server.features.starship.damager.PlayerDamagerWrapper
+import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.rightClickTimes
 import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
@@ -23,12 +22,9 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 object PlayerStarshipWeaponry : IonServerComponent() {
-	private val rightClickTimes = mutableMapOf<UUID, Long>()
-
 	@EventHandler(priority = EventPriority.LOW)
 	fun onClick(event: PlayerInteractEvent) {
 		val player = event.player
@@ -51,27 +47,26 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		player.debug("player is rclicking")
 
 		if (event.action.isRightClick) {
-			val uuid = player.uniqueId
-			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(uuid, 0)
+			val damager = player.damager(starship)
+			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(damager, 0)
+
 			player.debug("elapsedSinceRCLICK = $elapsedSinceRightClick")
+
 			if (elapsedSinceRightClick > TimeUnit.MILLISECONDS.toNanos(250)) {
 				player.debug("click isn't doubleclick, adding...")
-				rightClickTimes[uuid] = System.nanoTime()
+				rightClickTimes[damager] = System.nanoTime()
 				return
 			}
+
 			player.debug("it's a doubleclick, going on")
-			rightClickTimes.remove(uuid)
+			rightClickTimes.remove(damager)
 		}
 
-		if (event.clickedBlock?.type?.isSign == true) {
-			return
-		}
+		if (event.clickedBlock?.type?.isSign == true) return
 
 		player.debug("didnt click sign, trying to fire")
 
-		cooldown.tryExec(player.damager()) {
-			manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
-		}
+		manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
 
 		player.debugBanner("END")
 	}
@@ -99,7 +94,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		clock: ItemStack
 	) {
 		// Mantain multicrew capabilities by creating a player damager if they're not the pilot
-		val damager = ActivePlayerController[player] ?: PlayerDamagerWrapper(player, starship)
+		val damager = ActivePlayerController[player] ?: player.damager(starship)
 
 		val loc = player.eyeLocation
 		val playerFacing = player.facing
