@@ -17,8 +17,6 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopC
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.roundToHundredth
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.abs
 import kotlin.math.min
