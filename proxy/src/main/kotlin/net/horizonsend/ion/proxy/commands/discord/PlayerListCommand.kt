@@ -6,18 +6,17 @@ import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.proxy.PLUGIN
-import net.horizonsend.ion.proxy.commands.IonDiscordCommand
 import net.horizonsend.ion.proxy.messageEmbed
 import net.md_5.bungee.api.ProxyServer
 
 @CommandAlias("playerlist")
 @Description("List online players.")
-object PlayerListCommand : IonDiscordCommand {
+object PlayerListCommand : IonDiscordCommand() {
 	val proxy: ProxyServer = PLUGIN.getProxy()
 
 	@Default
 	@Suppress("Unused")
-	fun onPlayerListCommand(event: SlashCommandInteractionEvent) {
+	fun onPlayerListCommand(event: SlashCommandInteractionEvent) = asyncDiscordCommand(event) {
 		event.replyEmbeds(
 			messageEmbed(
 				fields = proxy.serversCopy.values

@@ -16,7 +16,6 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 object PlayerCache : AbstractPlayerCache(), Listener {
-
 	@EventHandler
 	fun preLogin(event: PreLoginEvent) {
 		if (PLUGIN.proxy.players.any { it.uniqueId == event.connection.uniqueId }) return
@@ -40,8 +39,7 @@ object PlayerCache : AbstractPlayerCache(), Listener {
 	}
 
 	@EventHandler
-	fun quit(event: PlayerDisconnectEvent) =
-		callOnQuit(event.player.uniqueId)
+	fun quit(event: PlayerDisconnectEvent) = callOnQuit(event.player.uniqueId)
 
 	override fun onlinePlayerIds(): List<SLPlayerId> = PLUGIN.proxy.players.map { it.uniqueId.slPlayerId }
 

@@ -155,6 +155,10 @@ data class Nation(
 			return Settlement.findProp(Settlement::nation eq nationId, Settlement::_id)
 		}
 
+		fun getTerritories(nationId: Oid<Nation>): MongoIterable<Oid<Territory>> {
+			return Territory.findProp(Territory::nation eq nationId, Territory::_id)
+		}
+
 		fun getPlayers(nationId: Oid<Nation>): MongoIterable<SLPlayerId> {
 			return SLPlayer.findProp(SLPlayer::nation eq nationId, SLPlayer::_id)
 		}
