@@ -14,11 +14,12 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
 import net.horizonsend.ion.proxy.PLUGIN
+import net.horizonsend.ion.proxy.commands.IonDiscordCommand
 import net.horizonsend.ion.proxy.messageEmbed
 
 @CommandAlias("playerinfo")
 @Description("Get information about a player.")
-object DiscordPlayerInfoCommand {
+object DiscordPlayerInfoCommand : IonDiscordCommand {
 	@Default
 	@Suppress("Unused")
 	fun onPlayerInfo(event: SlashCommandInteractionEvent, @Description("Player's Name") player: String) {

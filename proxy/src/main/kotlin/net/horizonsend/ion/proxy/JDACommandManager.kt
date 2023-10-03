@@ -13,11 +13,11 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
+import net.horizonsend.ion.proxy.commands.IonDiscordCommand
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
@@ -29,11 +29,11 @@ import kotlin.reflect.jvm.javaMethod
  * command manager that will act similar to how ACF does.
  */
 class JDACommandManager(private val jda: JDA, private val configuration: ProxyConfiguration) : ListenerAdapter() {
-	private val globalCommands = mutableListOf<Any>()
-	private val guildCommands = mutableListOf<Any>()
+	private val globalCommands = mutableListOf<IonDiscordCommand>()
+	private val guildCommands = mutableListOf<IonDiscordCommand>()
 
-	fun registerGlobalCommand(command: Any) = globalCommands.add(command)
-	fun registerGuildCommand(command: Any) = guildCommands.add(command)
+	fun registerGlobalCommand(command: IonDiscordCommand) = globalCommands.add(command)
+	fun registerGuildCommand(command: IonDiscordCommand) = guildCommands.add(command)
 
 	fun build() {
 		jda.updateCommands()
@@ -101,7 +101,6 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 
 	override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
 		val commandList = if (event.isGlobalCommand) globalCommands else guildCommands
-
 		val commandClass = commandList.find { it::class.commandAlias == event.name }!!
 
 		if (event.subcommandGroup != null) {
@@ -111,7 +110,7 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 			val subcommandFunction = subcommandGroupClass.declaredFunctions
 				.find { it.subcommand == event.subcommandName }!!
 
-			invokeCommand(event, subcommandGroupClass.createInstance(), subcommandFunction)
+			invokeCommand(event, commandClass, subcommandFunction)
 		} else if (event.subcommandName != null) {
 			val subcommandFunction = commandClass::class.declaredFunctions
 				.find { it.subcommand == event.subcommandName }!!
@@ -124,35 +123,22 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 		}
 	}
 
-	private fun invokeCommand(event: SlashCommandInteractionEvent, commandClass: Any, commandMethod: KFunction<*>) {
-		println(commandMethod.parameters.joinToString { it.type.toString() })
-		println(event.options.map { b -> b.toString() })
-		println("running command")
-
+	private fun invokeCommand(event: SlashCommandInteractionEvent, commandClassInstance: IonDiscordCommand, commandMethod: KFunction<*>) {
 		val params = listOf(
-			commandClass::class.java,
 			*commandMethod.parameters.map {
 				if (it.type == SlashCommandInteractionEvent::class.createType()) return@map event
-				println(it.kind)
-				println(KParameter.Kind.VALUE)
 				if (it.kind != KParameter.Kind.VALUE) return@map null
 
 				val option = event.getOption(it.name ?: return@map null)!!
-				println(option)
 
 				when (it.type) {
 					String::class.createType() -> option.asString
 					else -> throw NotImplementedError("$it")
 				}
 			}.filterNotNull().toTypedArray()
-		)
+		).toTypedArray()
 
-		println(params)
-
-		commandMethod.javaMethod!!.invoke(
-			commandClass,
-			params
-		)
+		commandMethod.javaMethod!!.invoke(commandClassInstance, *params)
 	}
 
 	private val KAnnotatedElement.commandAlias get() = findAnnotation<CommandAlias>()?.value
