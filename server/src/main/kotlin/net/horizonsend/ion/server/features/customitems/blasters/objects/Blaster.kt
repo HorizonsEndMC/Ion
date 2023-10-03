@@ -3,13 +3,13 @@ package net.horizonsend.ion.server.features.customitems.blasters.objects
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Balancing
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.blasters.RayTracedParticleProjectile
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.randomDouble
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source.PLAYER
