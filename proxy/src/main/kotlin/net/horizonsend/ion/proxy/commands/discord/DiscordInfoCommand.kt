@@ -4,15 +4,14 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.horizonsend.ion.proxy.commands.IonDiscordCommand
 import net.horizonsend.ion.proxy.messageEmbed
 
 @CommandAlias("info")
 @Description("List of useful links.")
-class DiscordInfoCommand : IonDiscordCommand {
+object DiscordInfoCommand : IonDiscordCommand() {
 	@Default
 	@Suppress("Unused")
-	fun onInfoCommand(event: SlashCommandInteractionEvent) {
+	fun onInfoCommand(event: SlashCommandInteractionEvent) = asyncDiscordCommand(event) {
 		event.replyEmbeds(
 			messageEmbed(
 				title = "Here are a few links of potential use:",

@@ -8,21 +8,30 @@ import co.aikar.commands.annotation.Description
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
+import net.horizonsend.ion.proxy.JDACommandManager
 import net.horizonsend.ion.proxy.PLUGIN
-import net.horizonsend.ion.proxy.commands.IonDiscordCommand
 import net.horizonsend.ion.proxy.messageEmbed
 
 @CommandAlias("playerinfo")
 @Description("Get information about a player.")
-object DiscordPlayerInfoCommand : IonDiscordCommand {
+object DiscordPlayerInfoCommand : IonDiscordCommand() {
+	override fun onEnable(commandManager: JDACommandManager) {
+		commandManager.registerCommandCompletion("players") { SLPlayer.all().map { it.lastKnownName } }
+	}
+
 	@Default
 	@Suppress("Unused")
-	fun onPlayerInfo(event: SlashCommandInteractionEvent, @Description("Player's Name") player: String) {
+
+	fun onPlayerInfo(
+		event: SlashCommandInteractionEvent,
+		@Description("Player's Name") @ParamCompletion("players") player: String
+	) = asyncDiscordCommand(event) {
 		val slPlayer = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found!")
 
 		val settlementId: Oid<Settlement>? = slPlayer.settlement
@@ -32,30 +41,32 @@ object DiscordPlayerInfoCommand : IonDiscordCommand {
 			MessageEmbed.Field(
 				"Settlement:",
 				settlementName,
-				false
+				true
 			)
 		}
 
 		val nationId: Oid<Nation>? = slPlayer.nation
-		val nationInfo = nationId?.let {
-			val nationName: String = Nation.findPropById(nationId, Nation::name)!!
+		val cachedNation = nationId?.let { NationCache[nationId] }
+
+		val nationInfo = cachedNation?.let {
+			val nationName = cachedNation.name
 
 			MessageEmbed.Field(
 				"Nation:",
 				nationName,
-				false
+				true
 			)
 		}
 
 		val xpField = MessageEmbed.Field(
 			"XP:",
 			slPlayer.xp.toString(),
-			false
+			true
 		)
 		val levelField = MessageEmbed.Field(
 			"Level:",
 			slPlayer.level.toString(),
-			false
+			true
 		)
 
 		val time: Long = System.currentTimeMillis() - slPlayer.lastSeen.time
@@ -69,19 +80,22 @@ object DiscordPlayerInfoCommand : IonDiscordCommand {
 			false
 		)
 
-		val fields = listOf(
+		val fields = listOfNotNull(
 			settlementInfo,
 			nationInfo,
 			xpField,
 			levelField,
 			onlineField
-		).filterNotNull()
+		)
 
-		event.replyEmbeds(
+		respondEmbed(
+			event,
 			messageEmbed(
 				title = "Player: $player",
-				fields = fields
+				fields = fields,
+				thumbnail = MessageEmbed.Thumbnail("https://minotar.net/avatar/$player", null, 16, 16),
+				color = cachedNation?.color ?: Integer.parseInt("ffffff", 16)
 			)
-		).setEphemeral(true).queue()
+		)
 	}
 }
