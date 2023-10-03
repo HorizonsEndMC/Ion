@@ -57,8 +57,13 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 	fun build() {
 		jda.updateCommands()
 			.addCommands(buildCommands(globalCommands))
-			.queue { commandList ->
+			.queue({ commandList ->
 				log.info("Registered Global Commands: ${commandList.map { it.name }}")
+			}) {
+					exception ->
+
+				log.error("Could not register global command: ${exception.message}!")
+				exception.printStackTrace()
 			}
 
 		val guild = jda.getGuildById(configuration.discordServer)
@@ -68,8 +73,13 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 		guild
 			?.updateCommands()
 			?.addCommands(buildCommands(guildCommands))
-			?.queue { commandList ->
+			?.queue({ commandList ->
 				log.info("Registered Guild Commands: ${commandList.map { it.name }}")
+			}) {
+				exception ->
+
+				log.error("Could not register guild command: ${exception.message}!")
+				exception.printStackTrace()
 			}
 
 		jda.addEventListener(this)
@@ -135,6 +145,9 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 	override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
 		val commandList = if (event.isGlobalCommand) globalCommands else guildCommands
 		val commandClass = commandList.find { it::class.commandAlias == event.name }!!
+
+		val guild = if (event.isGuildCommand) "guild" else "global"
+		log.info("${event.user.name} issued $guild command: ${event.name} ${event.options.map { "${it.name}: ${it.asString}" }}")
 
 		val method = getCommandMethod(event, commandClass)
 		invokeCommand(event, commandClass, method)
