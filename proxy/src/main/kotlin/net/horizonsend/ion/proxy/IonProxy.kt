@@ -16,6 +16,7 @@ import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordNationInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerInfoCommand
 import net.horizonsend.ion.proxy.commands.discord.DiscordSettlementInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.IonDiscordCommand.Companion.ASYNC_COMMAND_THREAD
 import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
@@ -119,6 +120,8 @@ class IonProxy : Plugin() {
 	override fun onDisable() {
 		adventure.close()
 		discord?.shutdown()
+
+		ASYNC_COMMAND_THREAD.shutdown()
 	}
 }
 
