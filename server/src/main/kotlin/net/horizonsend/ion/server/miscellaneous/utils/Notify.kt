@@ -72,12 +72,11 @@ object Notify : IonServerComponent() {
 	}
 
 	fun sendDiscord(channel: TextChannel?, message: String) {
+		if (!getPluginManager().isPluginEnabled("DiscordSRV")) return
 		if (channel == null) {
-			System.err.println("ERROR: No channel found!")
+			log.error("ERROR: No channel found!")
 			return
 		}
-
-		if (!getPluginManager().isPluginEnabled("DiscordSRV")) return
 
 		Tasks.async {
 			channel.sendMessage(message).queue()
