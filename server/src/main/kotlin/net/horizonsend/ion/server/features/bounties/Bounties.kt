@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -16,7 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor

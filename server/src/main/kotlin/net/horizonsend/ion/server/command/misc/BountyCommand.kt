@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.bounties.BountiesMenu
@@ -19,7 +20,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.repeatString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
@@ -23,7 +24,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.d
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.isLava
 import net.horizonsend.ion.server.miscellaneous.utils.isSign

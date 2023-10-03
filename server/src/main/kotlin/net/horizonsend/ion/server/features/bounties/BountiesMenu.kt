@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.features.bounties.Bounties.BountyPlayer
 import net.horizonsend.ion.server.features.bounties.Bounties.coolDown
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
@@ -11,7 +12,6 @@ import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.toCreditsString
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
