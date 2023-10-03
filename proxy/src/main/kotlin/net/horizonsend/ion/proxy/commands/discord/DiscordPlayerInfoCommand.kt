@@ -22,15 +22,15 @@ import net.horizonsend.ion.proxy.messageEmbed
 @Description("Get information about a player.")
 object DiscordPlayerInfoCommand : IonDiscordCommand() {
 	override fun onEnable(commandManager: JDACommandManager) {
-		commandManager.registerCommandCompletion("players") { SLPlayer.all().map { it.lastKnownName } }
+		commandManager.registerCommandCompletion("onlinePlayers") { PLUGIN.proxy.players.map { it.name } }
+		commandManager.registerCommandCompletion("allPlayers") { SLPlayer.all().map { it.lastKnownName } }
 	}
 
 	@Default
 	@Suppress("Unused")
-
 	fun onPlayerInfo(
 		event: SlashCommandInteractionEvent,
-		@Description("Player's Name") @ParamCompletion("players") player: String
+		@Description("Player's Name") @ParamCompletion("onlinePlayers") player: String
 	) = asyncDiscordCommand(event) {
 		val slPlayer = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found!")
 
