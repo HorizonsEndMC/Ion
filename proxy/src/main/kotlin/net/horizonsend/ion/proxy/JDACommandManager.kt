@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import net.horizonsend.ion.proxy.commands.IonDiscordCommand
+import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -123,10 +124,11 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 		}
 	}
 
+	private val interactEventType = SlashCommandInteractionEvent::class.createType()
 	private fun invokeCommand(event: SlashCommandInteractionEvent, commandClassInstance: IonDiscordCommand, commandMethod: KFunction<*>) {
 		val params = listOf(
 			*commandMethod.parameters.map {
-				if (it.type == SlashCommandInteractionEvent::class.createType()) return@map event
+				if (it.type == interactEventType) return@map event
 				if (it.kind != KParameter.Kind.VALUE) return@map null
 
 				val option = event.getOption(it.name ?: return@map null)!!
@@ -138,7 +140,12 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 			}.filterNotNull().toTypedArray()
 		).toTypedArray()
 
-		commandMethod.javaMethod!!.invoke(commandClassInstance, *params)
+		try { commandMethod.javaMethod!!.invoke(commandClassInstance, *params) } catch (error: Throwable) {
+			val message = (error as? InvocationTargetException)?.cause?.message ?: error.message
+
+			event.replyEmbeds(messageEmbed(title = "Error: $message")).setEphemeral(true).queue()
+			return
+		}
 	}
 
 	private val KAnnotatedElement.commandAlias get() = findAnnotation<CommandAlias>()?.value
