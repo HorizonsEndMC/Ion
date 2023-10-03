@@ -53,7 +53,7 @@ object DiscordPlayerInfoCommand : IonDiscordCommand {
 			false
 		)
 		val levelField = MessageEmbed.Field(
-			"XP:",
+			"Level:",
 			slPlayer.level.toString(),
 			false
 		)
