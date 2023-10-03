@@ -1,7 +1,6 @@
 package net.horizonsend.ion.proxy.commands.discord
 
 import co.aikar.commands.InvalidCommandArgument
-import io.netty.util.internal.logging.Slf4JLoggerFactory
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.horizonsend.ion.common.database.Oid
@@ -13,15 +12,14 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.proxy.JDACommandManager
+import net.horizonsend.ion.proxy.JDACommandManager.Companion.handleException
 import net.horizonsend.ion.proxy.PLUGIN
-import net.horizonsend.ion.proxy.messageEmbed
 import net.horizonsend.ion.proxy.utils.ProxyTask
-import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 abstract class IonDiscordCommand {
-	private val log = Slf4JLoggerFactory.getInstance(this::class.java)
+	private val log = org.slf4j.LoggerFactory.getLogger(javaClass)
 
 	companion object {
 		val ASYNC_COMMAND_THREAD: ExecutorService =
@@ -55,24 +53,7 @@ abstract class IonDiscordCommand {
 			try {
 				block()
 			} catch (e: Exception) {
-				if (e is InvalidCommandArgument) {
-					event.replyEmbeds(messageEmbed(title = "Error: ${e.message}")).setEphemeral(true).queue()
-					return@submit
-				}
-
-				val cause = e.cause
-				if (cause is InvalidCommandArgument) {
-					event.replyEmbeds(messageEmbed(title = "Error: ${e.message}")).setEphemeral(true).queue()
-					return@submit
-				}
-
-				val uuid = UUID.randomUUID()
-				log.error("Command Error for ${event.name}, id: $uuid", e)
-				event.replyEmbeds(
-					messageEmbed(
-						title = "Something went wrong with that command, please tell staff.\nError ID: $uuid"
-					)
-				).setEphemeral(true).queue()
+				handleException(log, event, e)
 			}
 		}
 	}

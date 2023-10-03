@@ -1,5 +1,6 @@
 package net.horizonsend.ion.proxy
 
+import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
@@ -18,7 +19,8 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import net.horizonsend.ion.proxy.commands.discord.IonDiscordCommand
 import net.horizonsend.ion.proxy.commands.discord.ParamCompletion
 import net.horizonsend.ion.proxy.utils.ProxyTask
-import java.lang.reflect.InvocationTargetException
+import org.slf4j.Logger
+import java.util.UUID
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -34,6 +36,8 @@ import kotlin.reflect.jvm.javaMethod
  * command manager that will act similar to how ACF does.
  */
 class JDACommandManager(private val jda: JDA, private val configuration: ProxyConfiguration) : ListenerAdapter() {
+	private val log = org.slf4j.LoggerFactory.getLogger(javaClass)
+
 	private val globalCommands = mutableListOf<IonDiscordCommand>()
 	private val guildCommands = mutableListOf<IonDiscordCommand>()
 
@@ -54,14 +58,18 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 		jda.updateCommands()
 			.addCommands(buildCommands(globalCommands))
 			.queue { commandList ->
-				PLUGIN.slF4JLogger.info("Registered Global Commands: ${commandList.map { it.name }}")
+				log.info("Registered Global Commands: ${commandList.map { it.name }}")
 			}
 
-		jda.getGuildById(configuration.discordServer)
+		val guild = jda.getGuildById(configuration.discordServer)
+
+		if (guild == null) log.warn("Could not find guild! Cannot register guild commands.")
+
+		guild
 			?.updateCommands()
 			?.addCommands(buildCommands(guildCommands))
 			?.queue { commandList ->
-				PLUGIN.slF4JLogger.info("Registered Guild Commands: ${commandList.map { it.name }}")
+				log.info("Registered Guild Commands: ${commandList.map { it.name }}")
 			}
 
 		jda.addEventListener(this)
@@ -164,10 +172,31 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 		).toTypedArray()
 
 		try { commandMethod.javaMethod!!.invoke(commandClassInstance, *params) } catch (error: Throwable) {
-			val message = (error as? InvocationTargetException)?.cause?.message ?: error.message
-
-			event.replyEmbeds(messageEmbed(title = "Error: $message")).setEphemeral(true).queue()
+			handleException(log, event, error)
 			return
+		}
+	}
+
+	companion object {
+		fun handleException(logger: Logger, event: SlashCommandInteractionEvent, e: Throwable) {
+			if (e is InvalidCommandArgument) {
+				event.replyEmbeds(messageEmbed(title = "Error: ${e.message}")).setEphemeral(true).queue()
+				return
+			}
+
+			val cause = e.cause
+			if (cause is InvalidCommandArgument) {
+				event.replyEmbeds(messageEmbed(title = "Error: ${e.message}")).setEphemeral(true).queue()
+				return
+			}
+
+			val uuid = UUID.randomUUID()
+			logger.error("Command Error for ${event.name}, id: $uuid", e)
+			event.replyEmbeds(
+				messageEmbed(
+					title = "Something went wrong with that command, please tell staff.\nError ID: $uuid"
+				)
+			).setEphemeral(true).queue()
 		}
 	}
 
