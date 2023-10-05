@@ -316,7 +316,7 @@ object PilotedStarships : IonServerComponent() {
 		if (!StarshipUnpilotEvent(starship, player).callEvent()) {
 			return false
 		}
-		if (starship.serverLevel.world.name.contains("hyperspace")) return false
+		if (starship.serverLevel.world.name.contains("hyperspace", ignoreCase=true)) return false
 
 		unpilot(starship)
 		DeactivatedPlayerStarships.deactivateAsync(starship)
