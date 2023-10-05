@@ -17,6 +17,9 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopC
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.leftFace
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.math.abs
 import kotlin.math.min
@@ -214,4 +217,17 @@ object StarshipCruising : IonServerComponent() {
 	}
 
 	fun isCruising(starship: ActiveControlledStarship) = starship.cruiseData.targetDir != null
+
+	enum class Diagonal {
+		DIAGONAL_LEFT { override fun face(forward: BlockFace): BlockFace { return forward.leftFace } },
+		DIAGONAL_RIGHT { override fun face(forward: BlockFace): BlockFace { return forward.rightFace } }
+
+		;
+
+		abstract fun face(forward: BlockFace): BlockFace
+
+		fun vector(forward: BlockFace): Vector {
+			return forward.direction.add(face(forward).direction).normalize()
+		}
+	}
 }
