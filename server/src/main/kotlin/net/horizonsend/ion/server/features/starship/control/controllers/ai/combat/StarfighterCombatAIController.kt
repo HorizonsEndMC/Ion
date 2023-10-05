@@ -5,14 +5,17 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipTemplates
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.IdleController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.CombatController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.NavigationEngine
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
@@ -32,22 +35,24 @@ import kotlin.math.pow
  *
  * It does not use DC, only shift flies and cruises
  **/
-class StarfighterCombatController(
+class StarfighterCombatAIController(
 	starship: ActiveStarship,
 	override var target: ActiveStarship?,
 	aggressivenessLevel: AggressivenessLevel,
-	private val previousController: AIController?
+	override val previousController: AIController?
 ) : AIController(starship, "StarfighterCombatMatrix", aggressivenessLevel),
-	CombatController {
-	val navigationEngine: NavigationEngine = NavigationEngine(this, target?.centerOfMass).apply {
-		shouldRotateDuringShiftFlight = false
-	}
+	CombatAIController,
+	TemporaryAIController,
+	ActiveAIController {
+	override val positioningEngine = AxisStandoffPositioningEngine(this, target, getStandoffDistance(target))
+	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target.centerOfMass)
+	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target.centerOfMass)
 
 	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 
 	override fun destroy() {
-		navigationEngine.shutDown()
+		pathfindingEngine.shutDown()
 		super.destroy()
 	}
 
@@ -57,9 +62,7 @@ class StarfighterCombatController(
 		.append(aggressivenessLevel.displayName)
 		.build()
 
-	override fun getTargetLocation(): Location? = target?.let { it.centerOfMass.toLocation(it.world) }
-
-	override var locationObjective: Location? = target?.let { it.centerOfMass.toLocation(it.world) }
+	override var locationObjective: Location = target.centerOfMass.toLocation(target.world)
 
 	/** Current state of the AI */
 	var state: State = State.FOCUS_LOCATION
@@ -92,7 +95,7 @@ class StarfighterCombatController(
 	 * If target has moved out of range, deals with that scenario
 	 **/
 	private fun checkOnTarget(): Boolean {
-		val target = this.target ?: return false
+		val target = this.target
 
 		val location = getCenter()
 		val targetLocation = target.centerOfMass.toVector()
@@ -147,60 +150,10 @@ class StarfighterCombatController(
 		}
 	}
 
-	private fun disengage() {
-		if (aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal) {
-			val nextTarget = findNextTarget()
-
-			if (nextTarget == null) fallback()
-
-			else target = nextTarget
-			return
-		}
-
-		fallback()
-	}
-
-	private fun findNextTarget(): ActiveStarship? {
-		val nearbyShips = getNearbyShips(0.0, aggressivenessLevel.engagementDistance) { starship, _ ->
-			starship.controller !is AIController
-		}
-
-		if (nearbyShips.isEmpty()) return null
-
-		target = nearbyShips.firstOrNull()
-		return target
-	}
-
-	/** Returns to previous controller if there is no target left **/
-	private fun fallback() {
-		if (previousController == null) {
-			starship.controller = IdleController(this) {
-				getNearbyShips(0.0, aggressivenessLevel.engagementDistance) { starship, _ ->
-					starship.controller !is AIController
-				}.isNotEmpty()
-			}
-		} else {
-			starship.controller = previousController
-		}
-
-		return
-	}
-
-	/** Finds a location in the cardinal directions from the target at the engagement distance */
-	private fun getClosestAxisPoint(target: ActiveStarship): Vector {
-		val shipLocation = getCenter().toVector()
-		val targetLocation = target.centerOfMass.toVector()
-
-		val cardinalOffsets = CARDINAL_BLOCK_FACES.map { it.direction.multiply(getStandoffDistance(target)) }
-		val points = cardinalOffsets.map { targetLocation.clone().add(it) }
-
-		return points.minBy { it.distance(shipLocation) }
-	}
-
-	override fun getObjective(): Vec3i? = target?.let { Vec3i(getClosestAxisPoint(it)) }
+	override fun getObjective(): Vec3i = positioningEngine.getCenterVec3i()
 
 	override fun onMove(movement: StarshipMovement) {
-		navigationEngine.onMove(movement)
+		pathfindingEngine.onMove(movement)
 	}
 
 	/**
@@ -213,23 +166,29 @@ class StarfighterCombatController(
 	 */
 
 	override fun tick() {
-		if (target == null) findNextTarget()
-
 		val ok = checkOnTarget()
 
 		if (!ok) {
-			disengage()
+			aggressivenessLevel.disengage(this)
 			return
 		}
 
-		navigationEngine.tick()
+		positioningEngine.standoffDistance = getStandoffDistance(target)
+		positioningEngine.tick()
+
+		pathfindingEngine.destination = positioningEngine.findPositionVec3i()
+		pathfindingEngine.tick()
+
+		movementEngine.destination = pathfindingEngine.getNavPoint()
+		movementEngine.tick()
+
 		if (state == State.COMBAT) combatLoop()
 
 		super.tick()
 	}
 
 	private fun combatLoop() {
-		val target = this.target ?: return
+		val target = this.target
 
 		// Get the closest axis
 		starship as ActiveControlledStarship
