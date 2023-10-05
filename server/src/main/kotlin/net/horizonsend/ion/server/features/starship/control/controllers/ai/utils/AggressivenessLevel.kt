@@ -1,5 +1,9 @@
-package net.horizonsend.ion.server.features.starship.control.controllers.ai.util
+package net.horizonsend.ion.server.features.starship.control.controllers.ai.utils
 
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -66,5 +70,35 @@ enum class AggressivenessLevel(
 			.append(text("☠", NamedTextColor.DARK_RED))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
-	)
+	) {
+		override fun disengage(controller: AIController) {
+			if (controller !is CombatAIController) return
+
+			// Populate the target value of the controller with the next target
+			findNextTarget(controller)
+
+			// If none found, return
+			if (controller.target == null) controller.returnToPreviousController()
+		}
+	}
+
+	;
+
+	open fun disengage(controller: AIController) {
+		if (controller !is TemporaryAIController) return
+
+		controller.returnToPreviousController()
+	}
+
+	fun findNextTarget(controller: AIController) {
+		if (controller !is CombatAIController) return
+
+		val nearbyShips = controller.getNearbyShips(0.0, engagementDistance) { starship, _ ->
+			starship.controller !is AIController
+		}
+
+		controller.target = nearbyShips.firstOrNull()
+	}
+
+	open fun onDamaged(damager: Damager) {}
 }

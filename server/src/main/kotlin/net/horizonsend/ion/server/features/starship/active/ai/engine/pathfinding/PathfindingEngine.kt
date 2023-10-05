@@ -1,42 +1,32 @@
-package net.horizonsend.ion.server.features.starship.control.controllers.ai.util
+package net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
+import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.LocationObjectiveAIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
-import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlocks
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
-import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.entity.Player
-import org.bukkit.util.Vector
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import java.util.concurrent.LinkedBlockingQueue
 
-open class NavigationEngine(
-	val controller: AIController,
-	var destination: Vec3i?
-) : PathfindingController {
+open class PathfindingEngine(
+	controller: AIController,
+	var destination: Vec3i
+) : AIEngine(controller) {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
-
-	override fun getCenter(): Location = controller.getCenter()
-	override fun getCenterVec3i(): Vec3i = controller.starship.centerOfMass
-	override fun getWorld(): World = controller.starship.world
 
 	/** Polls the charted path for the first position in the path */
 	private fun getImmediateNavigationObjective(): AIPathfinding.SectionNode? = chartedPath.minByOrNull {
@@ -47,11 +37,21 @@ open class NavigationEngine(
 
 	/** Update the tracked environment around the ship */
 	var center: Vec3i? = null
+	fun getSectionPositionOrigin(): Vec3i {
+		val center = Vec3i(getCenter())
+		val world = getWorld()
 
-	override var chunkSearchRadius: Int = IonServer.server.viewDistance
+		val x = center.x.shr(4)
+		val z = center.z.shr(4)
+		val y = (center.y - world.minHeight).shr(4)
+
+		return Vec3i(x, y, z)
+	}
+
+	var chunkSearchRadius: Int = IonServer.server.viewDistance
 
 	/** Store the currently tracked section nodes */
-	override val trackedSections = mutableSetOf<AIPathfinding.SectionNode>()
+	val trackedSections = mutableSetOf<AIPathfinding.SectionNode>()
 
 	/** General update task for pathfinding */
 	private fun updatePathfinding() {
@@ -75,7 +75,7 @@ open class NavigationEngine(
 		AIPathfinding.adjustTrackedSections(this, loadChunks)
 
 		// Set the destination if it has changed
-		if (controller is LocationObjectiveAI) {
+		if (controller is LocationObjectiveAIController) {
 			destination = controller.getObjective()
 		}
 
@@ -137,7 +137,7 @@ open class NavigationEngine(
 	open fun shutDown() {}
 
 	/** Called when the ship moves. */
-	fun onMove(movement: StarshipMovement) {
+	override fun onMove(movement: StarshipMovement) {
 		when (movement) {
 			is TranslateMovement -> updatePathfinding()
 			is RotationMovement -> return
@@ -145,7 +145,7 @@ open class NavigationEngine(
 	}
 
 	/** On the ticking of the controller */
-	fun tick() {
+	override fun tick() {
 		if (!previousTask.isDone) return
 
 		ticks++
@@ -157,16 +157,11 @@ open class NavigationEngine(
 		previousTask = CompletableFuture<Any>()
 
 		val run = runCatching {
-
 			// See if the objective has changed
 			updatePathfinding()
 
 			debugAudience.information("Charted path size: ${chartedPath.size}")
 			debugAudience.highlightBlocks(chartedPath.map { it.center }, 5L)
-
-			// Move along the path
-			navigationLoop()
-
 		}
 
 		previousTask.complete(Any())
@@ -177,82 +172,21 @@ open class NavigationEngine(
 		exception.printStackTrace()
 	}
 
-	/** Handle the movement */
-	open fun navigationLoop() {
-		val distance = getDistanceSquaredToDestination() ?: return
-
-		when {
-			distance >= 250000 -> cruiseLoop()
-			distance < 250000 -> shiftFlightLoop()
-		}
-	}
-
-	open fun cruiseLoop() {
-		println("Cruise loop")
-		val starship = controller.starship as ActiveControlledStarship
-		val isCruising = StarshipCruising.isCruising(starship)
-
-		val direction = getNavDirection()
-		val facing = starship.forward
-
-		val blockFace = vectorToBlockFace(direction)
-
-		if (facing != blockFace) {
-			Tasks.sync { AIControlUtils.faceDirection(controller, blockFace) }
-
-			// Can't cruise if not facing the right direction
-			return
-		}
-
-		if (!isCruising) {
-			debugAudience.information("Cruise loop: Started Cruising")
-			Tasks.sync { StarshipCruising.startCruising(controller, starship, direction) }
-
-			return
-		}
-
-		if (starship.cruiseData.targetDir == direction.normalize()) return
-
-		debugAudience.information("Cruise loop: Adjusted Direction")
-		Tasks.sync { StarshipCruising.startCruising(controller, starship, direction) }
-	}
-
-	var shouldRotateDuringShiftFlight = true
-
-	open fun shiftFlightLoop() = Tasks.sync {
-		val destination = this.destination ?: return@sync
-		val starship = controller.starship as ActiveControlledStarship
-		val isCruising = StarshipCruising.isCruising(starship)
-
-		if (isCruising) {
-			StarshipCruising.stopCruising(controller, starship)
-		}
-
-		checkObjective()
-		val direction = getNavDirection()
-		val directionToTarget = destination.minus(getCenterVec3i()).toVector()
-
-		val blockFace = vectorToBlockFace(directionToTarget)
-
-		if (shouldRotateDuringShiftFlight) { AIControlUtils.faceDirection(controller, blockFace) }
-		AIControlUtils.shiftFlyInDirection(controller, direction)
-	}
+	fun popFirst() = chartedPath.firstOrNull()
 
 	/** Poll at the charted path to get the flight direction to the first objective */
-	private fun getNavDirection(): Vector {
-		val destination = this.destination ?: return Vector(0.0, 0.0, 0.0)
+	fun getNavPoint(): Vec3i {
+		val destination = this.destination
 
 		var objective: Vec3i = getImmediateNavigationObjective()?.center ?: destination
 
-		val distance = getDistanceSquaredToDestination() ?: return Vector(0.0, 0.0, 0.0)
+		val distance = getDistanceSquaredToDestination() ?: Int.MAX_VALUE
 		if (distance < 512) objective = destination
 
-		val origin = getCenterVec3i()
-
-		return objective.minus(origin).toVector()
+		return objective
 	}
 
-	private fun getDistanceSquaredToDestination(): Int? = destination?.let { distanceSquared(getCenterVec3i(), Vec3i(it)) }
+	private fun getDistanceSquaredToDestination(): Int? =distanceSquared(getCenterVec3i(), Vec3i(destination))
 
 	private fun submitTask(task: () -> Unit) = AIManager.navigationThread.submit(task)
 }
