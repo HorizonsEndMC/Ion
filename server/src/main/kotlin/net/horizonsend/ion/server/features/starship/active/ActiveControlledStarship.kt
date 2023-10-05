@@ -139,6 +139,8 @@ class ActiveControlledStarship (
 		return future
 	}
 
+	var lastBlockedTime: Long = 0
+
 	@Synchronized
 	private fun executeMovement(movement: StarshipMovement, controller: Controller?): Boolean {
 		try {
@@ -146,6 +148,7 @@ class ActiveControlledStarship (
 		} catch (e: ConditionFailedException) {
 			controller?.serverError(e.message ?: "Starship could not move for an unspecified reason!")
 			sneakMovements = 0
+			lastBlockedTime = System.currentTimeMillis()
 			return false
 		}
 

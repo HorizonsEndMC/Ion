@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.PathfindingController
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
@@ -50,7 +50,7 @@ object AIPathfinding {
 
 	/** Searches the chunk for being navigable */
 	@Synchronized
-	fun checkNavigability(world: World, chunk: LevelChunk, yRange: Iterable<Int>): Set<SectionNode> {
+	fun checkNavigability(searchingStarship: ActiveStarship?, world: World, chunk: LevelChunk, yRange: Iterable<Int>): Set<SectionNode> {
 		val sectionNodes = mutableSetOf<SectionNode>()
 		val levelChunkSections: Array<out LevelChunkSection> = chunk.sections
 
@@ -77,7 +77,7 @@ object AIPathfinding {
 				continue
 			}
 
-			if (sectionContainsOnlyShipBlocks(section, world, pos)) {
+			if (searchingStarship != null && sectionContainsOnlySelfBlocks(searchingStarship, section, world, pos)) {
 				sectionNodes += SectionNode(world, pos, true, "Only ship blocks")
 				continue
 			}
@@ -91,14 +91,11 @@ object AIPathfinding {
 
 	/** Assumes that the section has already been checked to not be empty */
 	@Synchronized
-	private fun sectionContainsOnlyShipBlocks(section: LevelChunkSection, world: World, sectionPosition: Vec3i): Boolean {
+	private fun sectionContainsOnlySelfBlocks(starship: ActiveStarship, section: LevelChunkSection, world: World, sectionPosition: Vec3i): Boolean {
 		val (sectionX, sectionY, sectionZ) = sectionPosition
 		val originX = sectionX.shl(4)
 		val originY = sectionY.shl(4) + world.minHeight
 		val originZ = sectionZ.shl(4)
-
-		val ships = ActiveStarships.findByChunkSectionPosition(world, sectionX, sectionY, sectionZ)
-		if (ships.isEmpty()) return false
 
 		val strategy = PalettedContainer.Strategy.SECTION_STATES
 		val states = section.states
@@ -116,7 +113,7 @@ object AIPathfinding {
 					if (states[index].isAir) continue
 
 					// If it's not air, and it's not part of the ships, then it contains non-ship blocks
-					if (!ships.any { it.contains(realX, realY, realZ) }) return false
+					if (!starship.contains(realX, realY, realZ)) return false
 				}
 			}
 		}
@@ -126,7 +123,7 @@ object AIPathfinding {
 
 	/** Takes a list of sections across multiple chunks, and returns those sections being searched */
 	@Synchronized
-	fun searchSections(world: World, sections: Collection<Vec3i>, loadChunks: Boolean = false): Set<SectionNode> {
+	fun searchSections(starship: ActiveStarship?, world: World, sections: Collection<Vec3i>, loadChunks: Boolean = false): Set<SectionNode> {
 		val chunkMap = sections.groupBy { ChunkPos(it.x, it.z) }
 		val nmsWorld = world.minecraft
 
@@ -146,7 +143,7 @@ object AIPathfinding {
 				continue
 			}
 
-			val nodes = checkNavigability(world, chunk, sectionsList.map { it.y })
+			val nodes = checkNavigability(starship, world, chunk, sectionsList.map { it.y })
 
 			sectionNodes.addAll(nodes)
 		}
@@ -156,9 +153,9 @@ object AIPathfinding {
 
 	/** Gets the chunks that should be searched for pathfinding */
 	@Synchronized
-	private fun getSurroundingChunkPositions(controller: PathfindingController): List<Vec3i> {
-		val radius = controller.chunkSearchRadius
-		val center = controller.getSectionPositionOrigin()
+	private fun getSurroundingChunkPositions(engine: PathfindingEngine): List<Vec3i> {
+		val radius = engine.chunkSearchRadius
+		val center = engine.getSectionPositionOrigin()
 
 		val centerChunkX = center.x
 		val centerSectionY = center.y
@@ -180,7 +177,7 @@ object AIPathfinding {
 	/** Adjusts the tracked sections when the AI has moved */
 	@Synchronized
 	fun adjustTrackedSections(
-		controller: PathfindingController,
+		engine: PathfindingEngine,
 		loadChunks: Boolean = false
 	) {
 //		if (controller.trackedSections.isEmpty()) {
@@ -191,8 +188,8 @@ object AIPathfinding {
 //			return
 //		}
 
-		val new = getSurroundingChunkPositions(controller)
-		controller.trackedSections.clear()
+		val new = getSurroundingChunkPositions(engine)
+		engine.trackedSections.clear()
 
 //		// Remove all the tracked sections that are no longer tracked
 //		controller.trackedSections.removeIf { !new.contains(it.location) }
@@ -202,30 +199,30 @@ object AIPathfinding {
 //		// Non-searched new sections
 //		new.removeIf { existingPositions.contains(it) }
 
-		val navigable = searchSections(controller.getWorld(), new, loadChunks)
+		val navigable = searchSections(engine.controller.starship, engine.getWorld(), new, loadChunks)
 
-		controller.trackedSections.addAll(navigable)
+		engine.trackedSections.addAll(navigable)
 	}
 
 	// Begin A* Implementation
 	/** Nodes must be populated first */
 	@Synchronized
 	fun findNavigationNodes(
-		controller: PathfindingController,
+		engine: PathfindingEngine,
 		destination: Vec3i,
 		previousPositions: Collection<SectionNode>
 	): List<SectionNode> {
-		val searchDistance = controller.chunkSearchRadius
+		val searchDistance = engine.chunkSearchRadius
 
-		val allNodes = controller.trackedSections.toSet()
+		val allNodes = engine.trackedSections.toSet()
 
-		val currentPos = controller.getCenter()
-		val originNodeLocation = controller.getSectionPositionOrigin()
+		val currentPos = engine.getCenter()
+		val originNodeLocation = engine.getSectionPositionOrigin()
 
 		val destinationNodeLocation = getDestinationNode(currentPos, destination, searchDistance)
 		val destinationNode = allNodes.firstOrNull { it.location == destinationNodeLocation } ?: return listOf()
 
-		val closedNodes = controller.trackedSections.filter { !it.navigable }.toMutableList()
+		val closedNodes = engine.trackedSections.filter { !it.navigable }.toMutableList()
 
 		val originNode = allNodes.firstOrNull { it.location == originNodeLocation } ?: return listOf()
 

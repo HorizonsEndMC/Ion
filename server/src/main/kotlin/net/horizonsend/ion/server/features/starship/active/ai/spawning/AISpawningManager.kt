@@ -1,12 +1,13 @@
-package net.horizonsend.ion.server.features.starship.active.ai
+package net.horizonsend.ion.server.features.starship.active.ai.spawning
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.horizonsend.ion.common.utils.text.isVowel
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i

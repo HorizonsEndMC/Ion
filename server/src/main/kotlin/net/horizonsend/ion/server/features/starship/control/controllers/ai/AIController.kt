@@ -6,7 +6,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.AggressiveLevelAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
@@ -22,8 +23,9 @@ import java.util.concurrent.TimeUnit
 abstract class AIController(
 	starship: ActiveStarship,
 	name: String,
-	val aggressivenessLevel: AggressivenessLevel
-) : Controller(starship, name) {
+	override val aggressivenessLevel: AggressivenessLevel
+) : Controller(starship, name),
+	AggressiveLevelAIController {
 	override val pilotName: Component get() = Component.text()
 		.append(Component.text("AI Controller "))
 		.append(aggressivenessLevel.displayName)
@@ -32,7 +34,7 @@ abstract class AIController(
 	override var isShiftFlying: Boolean = false
 	override var pitch: Float = 0f
 	override var yaw: Float = 0f
-	override var selectedDirectControlSpeed: Int = 0
+	override var selectedDirectControlSpeed: Int = 1
 
 	var lastRotation: Long = 0L
 
@@ -46,7 +48,26 @@ abstract class AIController(
 
 	/** Use the direct control center as a sort of cache to avoid the type conversion if possible */
 	fun getCenter(): Location = (starship as? ActiveControlledStarship)?.directControlCenter ?: starship.centerOfMass.toLocation(starship.world)
+	fun getCenterVec3i(): Vec3i = starship.centerOfMass
+
 	fun getWorld(): World = starship.world
+
+	override fun tick() {
+		highlightComputer()
+		super.tick()
+	}
+
+	private fun highlightComputer() = Tasks.sync {
+		val controlledStarship = starship as? ActiveControlledStarship ?: return@sync
+		val computerLoc = Vec3i(controlledStarship.data.blockKey)
+
+		val location = getCenter()
+		val players = location.getNearbyPlayers(160.0)
+
+		for (player in players) {
+			player.highlightBlock(computerLoc, 1L)
+		}
+	}
 
 	// Begin utility functions
 	fun scheduleDespawn() = Tasks.sync {
@@ -109,20 +130,5 @@ abstract class AIController(
 		return inRange.keys
 	}
 
-	override fun tick() {
-		highlightComputer()
-		super.tick()
-	}
-
-	private fun highlightComputer() = Tasks.sync {
-		val controlledStarship = starship as? ActiveControlledStarship ?: return@sync
-		val computerLoc = Vec3i(controlledStarship.data.blockKey)
-
-		val location = getCenter()
-		val players = location.getNearbyPlayers(160.0)
-
-		for (player in players) {
-			player.highlightBlock(computerLoc, 1L)
-		}
-	}
+	val nonAICheck: (ActiveStarship, Double) -> Boolean = { starship, _ -> starship.controller !is AIController }
 }
