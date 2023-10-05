@@ -142,6 +142,7 @@ import org.bukkit.Material.SPONGE
 import org.bukkit.Material.SPRUCE_FENCE_GATE
 import org.bukkit.Material.STICKY_PISTON
 import org.bukkit.Material.STONECUTTER
+import org.bukkit.Material.TARGET
 import org.bukkit.Material.TERRACOTTA
 import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
@@ -219,6 +220,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	LODESTONE,
 	BREWING_STAND,
 	LECTERN,
+	TARGET,
 
 	END_PORTAL_FRAME,
 
