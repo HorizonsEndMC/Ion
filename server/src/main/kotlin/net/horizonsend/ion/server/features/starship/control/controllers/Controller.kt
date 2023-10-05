@@ -38,6 +38,9 @@ abstract class Controller(
 	/** Called when the ship moves. */
 	open fun onMove(movement: StarshipMovement) {}
 
+	/** Called when a damager is added, or incremented */
+	open fun onDamaged(damager: Damager) {}
+
 	/** Checks weather or not the controller can break a specific block **/
 	abstract fun canDestroyBlock(block: Block): Boolean
 

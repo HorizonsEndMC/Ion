@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.features.starship.control.controllers.ai.util
+package net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipTemplates
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -10,8 +10,8 @@ import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-interface CombatController : LocationObjectiveAI {
-	val starship: ActiveStarship
+interface CombatAIController : LocationObjectiveAIController, TemporaryAIController {
+	override val starship: ActiveStarship
 	var target: ActiveStarship?
 
 	// Weapon sets
@@ -23,12 +23,10 @@ interface CombatController : LocationObjectiveAI {
 	val shieldCount get() = shields.size
 	val averageHealth get() = shields.sumOf { it.powerRatio } / shieldCount.toDouble()
 
-
 	/** The location that should be navigated towards */
-	var locationObjective: Location?
+	var locationObjective: Location
 
-	/** Gets the location of the targeted ship */
-	fun getTargetLocation(): Location?
+	override fun getObjective(): Vec3i = Vec3i(locationObjective)
 
 	/**
 	 * Use Vec3i as a target to allow block targeting

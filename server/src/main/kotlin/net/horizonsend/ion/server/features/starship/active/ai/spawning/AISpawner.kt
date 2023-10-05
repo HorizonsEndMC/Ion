@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.active.ai
+package net.horizonsend.ion.server.features.starship.active.ai.spawning
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -6,11 +6,12 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.AIUtils
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
@@ -38,7 +39,7 @@ abstract class AISpawner(val identifier: String, vararg val ships: AIStarshipTem
 
         AIUtils.createFromClipboard(location, schematic, type, name, createController) {
             deferred.complete(it)
-			callback(it)
+            callback(it)
         }
 
 		return deferred
@@ -107,7 +108,7 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", AIStarshipTemplates.
 			val aggressivenessLevel = AggressivenessLevel.values().random()
 
 			it.controller = AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel) { controller, nearbyShip ->
-				StarfighterCombatController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
+				StarfighterCombatAIController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
 			}
 		}
 	}
