@@ -11,6 +11,7 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 
+/** Misc random mechanics involving AI ships */
 object AIStarshipMechanics : IonServerComponent() {
 	@EventHandler
 	fun onBlockBreak(event: BlockBreakEvent) {

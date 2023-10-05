@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
@@ -34,21 +35,23 @@ object AIControlUtils {
 	}
 
 	/** Will stop moving if provided a null location **/
-	fun shiftFlyToLocation(controller: AIController, location: Location?) = Tasks.async {
-		val starshipLocation = controller.starship.centerOfMass.toLocation(controller.starship.world)
+	fun shiftFlyToLocation(controller: AIController, starshipLocation: Vec3i, location: Location?) = Tasks.async {
+		shiftFlyToLocation(controller, starshipLocation, location?.let { Vec3i(it) })
+	}
 
+	fun shiftFlyToLocation(controller: AIController, starshipLocation: Vec3i, location: Vec3i?) = Tasks.async {
 		if (location == null) {
 			controller.isShiftFlying = false
 			return@async
 		}
 
-		val dir = location.toVector().subtract(starshipLocation.toVector())
-
-		shiftFlyInDirection(controller, dir)
+		val direction = location.minus(starshipLocation).toVector()
+		shiftFlyInDirection(controller, direction)
 	}
 
 	/** Will stop moving if provided a null player **/
-	fun shiftFlyTowardsPlayer(controller: AIController, player: Player?) = shiftFlyToLocation(controller, player?.location)
+	fun shiftFlyTowardsPlayer(controller: AIController, starshipLocation: Vec3i, player: Player?) =
+		shiftFlyToLocation(controller, starshipLocation, player?.location)
 
 	/** Will attempt to face in the specified direction **/
 	fun faceDirection(controller: AIController, direction: BlockFace) {
