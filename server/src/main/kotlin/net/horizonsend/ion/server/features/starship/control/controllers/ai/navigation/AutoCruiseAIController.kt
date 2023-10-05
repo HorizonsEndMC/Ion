@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai.navi
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.AggressivenessLevel
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.util.LocationObjectiveAI
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.LocationObjectiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
@@ -17,13 +20,21 @@ import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
+/**
+ * General use Auto cruise AI controller
+ *
+ * The method to create the combat controller upon becoming aggressive can be passed in as a lambda,
+ * allowing this to be applied to many different types of ship.
+ **/
 class AutoCruiseAIController(
 	starship: ActiveStarship,
 	endPoint: Location,
 	maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
 	val combatController: (AIController, ActiveStarship) -> AIController
-) : AIController(starship, "autoCruise", aggressivenessLevel), LocationObjectiveAI {
+) : AIController(starship, "autoCruise", aggressivenessLevel),
+	LocationObjectiveAIController,
+	NeutralAIController {
 	var ticks = 0
 
 	override val pilotName: Component = starship.getDisplayNameComponent().append(Component.text(" [NEUTRAL]", NamedTextColor.YELLOW))
@@ -130,5 +141,13 @@ class AutoCruiseAIController(
 			AIControlUtils.shiftFlyToLocation(this, destination)
 			StarshipCruising.stopCruising(this, starship)
 		}
+	}
+
+	override fun createCombatController(controller: AIController, target: ActiveStarship): AIController {
+		return combatController(controller, target)
+	}
+
+	override fun onDamaged(damager: Damager) {
+		if (damager is Controller) return combatMode(this, damager.starship)
 	}
 }

@@ -169,8 +169,6 @@ abstract class ActiveStarship (
 	var forward: BlockFace = BlockFace.NORTH
 	var isExploding = false
 
-	val damagers = mutableMapOf<Damager, ShipKillXP.ShipDamageData>()
-
 	var isInterdicting = false; private set
 	abstract val interdictionRange: Int
 
@@ -372,7 +370,14 @@ abstract class ActiveStarship (
 		else -> throw NotImplementedError("$controller does not have an auto turret identifier!")
 	}
 
+	val damagers = mutableMapOf<Damager, ShipKillXP.ShipDamageData>()
 	fun lastDamagedOrNull(): Long? = damagers.maxOfOrNull { it.value.lastDamaged }
+
+	fun addToDamagers(damager: Damager) {
+		damagers.getOrPut(damager) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
+
+		controller.onDamaged(damager)
+	}
 
 	/** Gets the minimessage display name of this starship */
 	open fun getDisplayName(): String = type.formatted

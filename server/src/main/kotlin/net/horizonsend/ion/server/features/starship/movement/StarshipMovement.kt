@@ -40,10 +40,10 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	// null if the ship is not a player ship
 	private val playerShip: ActiveControlledStarship? = starship as? ActiveControlledStarship
 
-	protected abstract fun displaceX(oldX: Int, oldZ: Int): Int
-	protected abstract fun displaceY(oldY: Int): Int
-	protected abstract fun displaceZ(oldZ: Int, oldX: Int): Int
-	protected abstract fun displaceLocation(oldLocation: Location): Location
+	abstract fun displaceX(oldX: Int, oldZ: Int): Int
+	abstract fun displaceY(oldY: Int): Int
+	abstract fun displaceZ(oldZ: Int, oldX: Int): Int
+	abstract fun displaceLocation(oldLocation: Location): Location
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
 	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
