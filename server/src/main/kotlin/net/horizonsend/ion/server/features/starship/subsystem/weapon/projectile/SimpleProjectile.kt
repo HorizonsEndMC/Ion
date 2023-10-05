@@ -104,7 +104,7 @@ abstract class SimpleProjectile(
 
 	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
 		if (starship?.serverLevel?.world?.name?.lowercase(Locale.getDefault())
-				?.contains("hyperspace")!!
+				?.contains("hyperspace", ignoreCase=true)!!
 		) return false
 		if (GracePeriod.isGracePeriod) return false
 
@@ -132,7 +132,7 @@ abstract class SimpleProjectile(
 		if (GracePeriod.isGracePeriod) return
 
 		val world = newLoc.world
-		if (world.environment == World.Environment.NETHER && world.name.lowercase().contains("hyperspace")) {
+		if (world.environment == World.Environment.NETHER && world.name.contains("hyperspace", ignoreCase=true)) {
 			return
 		}
 
