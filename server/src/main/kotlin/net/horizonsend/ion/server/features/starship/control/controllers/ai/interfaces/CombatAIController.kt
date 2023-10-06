@@ -24,9 +24,9 @@ interface CombatAIController : LocationObjectiveAIController, TemporaryAIControl
 	val averageHealth get() = shields.sumOf { it.powerRatio } / shieldCount.toDouble()
 
 	/** The location that should be navigated towards */
-	var locationObjective: Location
+	var locationObjective: Location?
 
-	override fun getObjective(): Vec3i = Vec3i(locationObjective)
+	override fun getObjective(): Vec3i? = locationObjective?.let { Vec3i(it) }
 
 	/**
 	 * Use Vec3i as a target to allow block targeting
