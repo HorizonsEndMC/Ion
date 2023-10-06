@@ -2,8 +2,13 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai.navi
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.BasicPositioningEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.LocationObjectiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
@@ -34,7 +39,12 @@ class AutoCruiseAIController(
 	val combatController: (AIController, ActiveStarship) -> AIController
 ) : AIController(starship, "autoCruise", aggressivenessLevel),
 	LocationObjectiveAIController,
-	NeutralAIController {
+	NeutralAIController,
+	ActiveAIController {
+	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, getObjective())
+	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, getObjective())
+	override val positioningEngine = BasicPositioningEngine(this, endPoint)
+
 	var ticks = 0
 
 	override val pilotName: Component = starship.getDisplayNameComponent().append(Component.text(" [NEUTRAL]", NamedTextColor.YELLOW))
@@ -132,15 +142,15 @@ class AutoCruiseAIController(
 	 *  - Faces objective
 	 *  - shift flies towards destination
 	 **/
-	private fun shiftFlightNavigationLoop() {
-		starship as ActiveControlledStarship
-		starship.speedLimit = speedLimit
-
-		Tasks.sync {
-			AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
-			AIControlUtils.shiftFlyToLocation(this, destination)
-			StarshipCruising.stopCruising(this, starship)
-		}
+	private fun shiftFlightNavigationLoop() { //TODO integration movement engine
+//		starship as ActiveControlledStarship
+//		starship.speedLimit = speedLimit
+//
+//		Tasks.sync {
+//			AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
+//			AIControlUtils.shiftFlyToLocation(this, destination)
+//			StarshipCruising.stopCruising(this, starship)
+//		}
 	}
 
 	override fun createCombatController(controller: AIController, target: ActiveStarship): AIController {
