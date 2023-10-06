@@ -44,9 +44,9 @@ class StarfighterCombatAIController(
 	CombatAIController,
 	TemporaryAIController,
 	ActiveAIController {
-	override val positioningEngine = AxisStandoffPositioningEngine(this, target, getStandoffDistance(target))
-	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target.centerOfMass)
-	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target.centerOfMass)
+	override val positioningEngine = AxisStandoffPositioningEngine(this, target, target?.let { getStandoffDistance(it) } ?: 25.0)
+	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
+	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)
 
 	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
@@ -62,7 +62,7 @@ class StarfighterCombatAIController(
 		.append(aggressivenessLevel.displayName)
 		.build()
 
-	override var locationObjective: Location = target.centerOfMass.toLocation(target.world)
+	override var locationObjective: Location? = target?.let { it.centerOfMass.toLocation(it.world) }
 
 	/** Current state of the AI */
 	var state: State = State.FOCUS_LOCATION
@@ -95,7 +95,7 @@ class StarfighterCombatAIController(
 	 * If target has moved out of range, deals with that scenario
 	 **/
 	private fun checkOnTarget(): Boolean {
-		val target = this.target
+		val target = this.target ?: return false
 
 		val location = getCenter()
 		val targetLocation = target.centerOfMass.toVector()
@@ -167,6 +167,7 @@ class StarfighterCombatAIController(
 
 	override fun tick() {
 		val ok = checkOnTarget()
+		val target = this.target ?: return returnToPreviousController()
 
 		if (!ok) {
 			aggressivenessLevel.disengage(this)
@@ -188,7 +189,7 @@ class StarfighterCombatAIController(
 	}
 
 	private fun combatLoop() {
-		val target = this.target
+		val target = this.target ?: return
 
 		// Get the closest axis
 		starship as ActiveControlledStarship
