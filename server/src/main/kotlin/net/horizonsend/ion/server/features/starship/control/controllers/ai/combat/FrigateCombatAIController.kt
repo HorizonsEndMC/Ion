@@ -4,9 +4,13 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
@@ -37,10 +41,13 @@ class FrigateCombatAIController(
 	override val previousController: AIController?
 ): AIController(starship, "FrigateCombatMatrix", aggressivenessLevel),
 	CombatAIController,
-	TemporaryAIController {
-	val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
+	TemporaryAIController,
+	ActiveAIController {
+	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
+	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)
+	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
 
-	override var locationObjective: Location = target?.let { it.centerOfMass.toLocation(it.world) }
+	override var locationObjective: Location? = target?.let { it.centerOfMass.toLocation(it.world) }
 
 	val lastBlockedTime get() = (starship as ActiveControlledStarship).lastBlockedTime
 

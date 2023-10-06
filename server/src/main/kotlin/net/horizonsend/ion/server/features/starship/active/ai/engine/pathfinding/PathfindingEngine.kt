@@ -24,7 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 open class PathfindingEngine(
 	controller: AIController,
-	var destination: Vec3i
+	var destination: Vec3i?
 ) : AIEngine(controller) {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -175,18 +175,18 @@ open class PathfindingEngine(
 	fun popFirst() = chartedPath.firstOrNull()
 
 	/** Poll at the charted path to get the flight direction to the first objective */
-	fun getNavPoint(): Vec3i {
+	fun getNavPoint(): Vec3i? {
 		val destination = this.destination
 
-		var objective: Vec3i = getImmediateNavigationObjective()?.center ?: destination
+		var objective: Vec3i = getImmediateNavigationObjective()?.center ?: destination ?: return null
 
 		val distance = getDistanceSquaredToDestination() ?: Int.MAX_VALUE
-		if (distance < 512) objective = destination
+		if (distance < 512) objective = destination ?: return null
 
 		return objective
 	}
 
-	private fun getDistanceSquaredToDestination(): Int? =distanceSquared(getCenterVec3i(), Vec3i(destination))
+	private fun getDistanceSquaredToDestination(): Int? = destination?.let { distanceSquared(getCenterVec3i(), Vec3i(it)) }
 
 	private fun submitTask(task: () -> Unit) = AIManager.navigationThread.submit(task)
 }

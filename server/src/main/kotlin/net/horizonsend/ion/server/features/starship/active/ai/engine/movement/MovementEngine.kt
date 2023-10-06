@@ -14,11 +14,10 @@ import org.bukkit.util.Vector
 
 /** Controlling the movement of the starship */
 abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
-	abstract var destination: Vec3i
+	abstract var destination: Vec3i?
 	abstract var starshipLocation: Vec3i
 
 	open fun updateDestination() {}
-	fun getDestination(): Vec3i = destination
 
 	fun getVector(origin: Vector, destination: Vector, normalized: Boolean = false): Vector {
 		val vec = destination.clone().subtract(origin)
@@ -39,7 +38,8 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 	}
 
 	/** Faces the target */
-	fun faceDirection(origin: Location, target: Location) {
+	fun faceDirection(origin: Location) {
+		val destination = destination ?: return
 		val direction = getVector(origin.toVector(), destination.toVector())
 
 		faceDirection(direction)

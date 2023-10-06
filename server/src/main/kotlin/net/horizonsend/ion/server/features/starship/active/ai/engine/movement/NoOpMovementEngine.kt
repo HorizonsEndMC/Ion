@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 
 class NoOpMovementEngine(controller: AIController) : MovementEngine(controller) {
-	override var destination: Vec3i = Vec3i(0, 0, 0)
+	override var destination: Vec3i? = Vec3i(0, 0, 0)
 	override fun tick() {}
+
+	override var starshipLocation: Vec3i = controller.starship.centerOfMass
 }
