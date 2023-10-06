@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 
 class ShiftFlightMovementEngine(
 	controller: AIController,
-	override var destination: Vec3i
+	override var destination: Vec3i?
 ) : MovementEngine(controller) {
 	override var starshipLocation: Vec3i = controller.starship.centerOfMass
 		get() = controller.getCenterVec3i()

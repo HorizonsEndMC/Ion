@@ -13,10 +13,12 @@ import org.bukkit.util.Vector
  **/
 class AxisStandoffPositioningEngine(
 	controller: AIController,
-	var target: ActiveStarship,
+	var target: ActiveStarship?,
 	var standoffDistance: Double
 ) : PositioningEngine(controller) {
 	fun getAxisPoint(): Vector {
+		val target = target ?: return controller.getCenter().toVector()
+
 		val shipLocation = getCenter().toVector()
 		val targetLocation = target.centerOfMass.toVector()
 
