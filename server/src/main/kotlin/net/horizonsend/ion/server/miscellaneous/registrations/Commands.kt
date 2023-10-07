@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.AdminCommands
 import net.horizonsend.ion.server.command.admin.BatteryCommand
-import net.horizonsend.ion.server.command.admin.CustomItemCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
@@ -73,7 +72,6 @@ val commands: List<SLCommand> = listOf(
 	GlobalGameRuleCommand,
 
 	BatteryCommand,
-	CustomItemCommand,
 	ListCommand,
 	TransportDebugCommand,
 	ShuttleCommand,
