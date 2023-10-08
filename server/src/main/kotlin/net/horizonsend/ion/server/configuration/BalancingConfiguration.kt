@@ -5,8 +5,33 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BalancingConfiguration(
 	val energyWeapons: EnergyWeapons = EnergyWeapons(),
-	val starshipWeapons: StarshipWeapons = StarshipWeapons()
+	val starshipWeapons: StarshipWeapons = StarshipWeapons(),
+	val throwables: Throwables = Throwables()
 ) {
+	@Serializable
+	data class Throwables(
+		val detonator: ThrowableBalancing = ThrowableBalancing(
+			80.0,
+			4.0,
+			1.0,
+			5,
+			30,
+			1,
+			25,
+		)
+	) {
+		@Serializable
+		data class ThrowableBalancing(
+			val damage: Double,
+			val damageRadius: Double,
+			val throwVelocityMultiplier: Double,
+			val maxHealth: Int,
+			val maxTicks: Int,
+			val tickInterval: Long,
+			val throwCooldownTicks: Int,
+		)
+	}
+
 	@Serializable
 	data class EnergyWeapons(
 		val pistol: Singleshot = Singleshot(

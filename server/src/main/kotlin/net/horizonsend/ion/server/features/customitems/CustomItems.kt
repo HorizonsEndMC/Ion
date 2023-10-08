@@ -6,6 +6,9 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWea
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
+import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
+import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
+import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
@@ -21,6 +24,9 @@ import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
+import org.bukkit.block.Dispenser
+import org.bukkit.entity.Entity
+import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
@@ -298,14 +304,30 @@ object CustomItems {
 		.decoration(ITALIC, false)
 
 	// Gas Canisters End
+	// Throwables start
+
+	val DETONATOR = register(
+		object : ThrowableCustomItem(
+			identifier = "DETONATOR",
+			customModelData = 1101,
+			text().append(text("Thermal ", RED), text("Detonator", GRAY)).decoration(ITALIC, false).build(),
+			IonServer.balancing.throwables::detonator
+		) {
+			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
+				return ThrownDetonator(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
+			}
+		}
+	)
+
+	// Throwables end
 
 	// This is just a convenient alias for items that don't do anything or are placeholders.
-	private fun register(identifier: String, customModelData: Int, component: Component): CustomItem {
+	private fun register(identifier: String, customModelData: Int, displayName: Component): CustomItem {
 		return register(object : CustomItem(identifier) {
 			override fun constructItemStack(): ItemStack {
 				return ItemStack(WARPED_FUNGUS_ON_A_STICK).updateMeta {
 					it.setCustomModelData(customModelData)
-					it.displayName(component.decoration(ITALIC, false))
+					it.displayName(displayName.decoration(ITALIC, false))
 					it.persistentDataContainer.set(CUSTOM_ITEM, STRING, identifier)
 				}
 			}
@@ -330,7 +352,9 @@ object CustomItems {
 }
 
 abstract class CustomItem(val identifier: String) {
+	open fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
 	open fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
 	open fun handleTertiaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
+	open fun handleDispense(dispenser: Dispenser, itemStack: ItemStack) {}
 	abstract fun constructItemStack(): ItemStack
 }

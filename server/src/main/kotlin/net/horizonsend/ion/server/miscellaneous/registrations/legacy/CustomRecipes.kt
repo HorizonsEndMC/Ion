@@ -21,7 +21,6 @@ object CustomRecipes : IonServerComponent() {
 			registerModuleRecipes()
 			registerSwordRecipes()
 			registerPowerToolRecipes()
-			registerDetonatorRecipe()
 			registerWireRecipe()
 			registerSeaLanternRecipe()
 			registerEndPortalFrameRecipe()
@@ -217,17 +216,6 @@ object CustomRecipes : IonServerComponent() {
 				'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
 				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
 				's' to materialChoice(Material.STICK)
-			)
-		)
-	}
-
-	private fun registerDetonatorRecipe() {
-		createRecipe(
-			CustomItems.DETONATOR, " r ", "tut", " t ",
-			ingredients = mapOf(
-				'r' to materialChoice(Material.REDSTONE),
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-				'u' to customItemChoice(CustomItems.MINERAL_URANIUM)
 			)
 		)
 	}

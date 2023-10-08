@@ -76,7 +76,7 @@ class CachedPlanet(
 	var orbitProgress: Double = orbitProgress; private set
 
 	val planetIcon: CustomItem = CustomItems["planet_icon_${name.lowercase(Locale.getDefault()).replace(" ", "")}"]
-		?: CustomItems.DETONATOR
+		?: CustomItems.MINERAL_URANIUM
 
 	init {
 		require(size > 0 && size <= 1)

@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
+import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
 import net.horizonsend.ion.server.features.customitems.CustomItems.GUN_BARREL
 import net.horizonsend.ion.server.features.customitems.CustomItems.PISTOL
@@ -19,6 +20,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGA
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.MINERAL_ALUMINUM
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.MINERAL_TITANIUM
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.MINERAL_URANIUM
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -356,6 +358,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('i', ExactChoice(MINERAL_ALUMINUM.singleItem()))
 			setIngredient('g', GLASS_PANE)
 			setIngredient('x', AIR)
+		}
+
+		itemStackShapeRecipe("detonator", DETONATOR.constructItemStack()) {
+			shape(" r ", "tut", " t ",)
+
+			setIngredient('r', REDSTONE)
+			setIngredient('t', MINERAL_TITANIUM.singleItem())
+			setIngredient('u', MINERAL_URANIUM.singleItem())
 		}
 	}
 

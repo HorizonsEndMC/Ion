@@ -2,11 +2,13 @@ package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
+import org.bukkit.Material
+import org.bukkit.block.Dispenser
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
@@ -23,6 +25,11 @@ class CustomItemListeners : SLEventListener() {
 		when (event.action) {
 			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
 				customItem.handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand)
+				event.isCancelled = true
+			}
+
+			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
+				customItem.handlePrimaryInteract(event.player, event.player.inventory.itemInMainHand)
 				event.isCancelled = true
 			}
 
@@ -59,5 +66,16 @@ class CustomItemListeners : SLEventListener() {
 
 		event.isCancelled = true
 		customItem.handleTertiaryInteract(event.player, itemStack)
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	@Suppress("unused")
+	fun onItemDispensed(event: BlockDispenseEvent) {
+		// Retain the dispenser/ dropper parity
+		if (event.block.type != Material.DISPENSER) return
+		val customItem = event.item.customItem ?: return
+
+		event.isCancelled = true
+		customItem.handleDispense(event.block.state as Dispenser, event.item)
 	}
 }

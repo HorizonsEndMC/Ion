@@ -44,6 +44,7 @@ abstract class AmmunitionHoldingItem(
 				.append(text("Refill: ", GRAY))
 				.append(translatable(matchMaterial(getTypeRefill())!!.translationKey(), AQUA))
 		} else null
+
 		val magazineTypeComponent = if (this is Blaster<*> && getConsumesAmmo()) {
 			empty()
 				.decoration(ITALIC, false)

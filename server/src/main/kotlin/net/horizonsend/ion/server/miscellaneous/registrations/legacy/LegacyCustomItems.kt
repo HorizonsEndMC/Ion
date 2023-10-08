@@ -26,7 +26,6 @@ import org.bukkit.Material.LEATHER_BOOTS
 import org.bukkit.Material.LEATHER_CHESTPLATE
 import org.bukkit.Material.LEATHER_HELMET
 import org.bukkit.Material.LEATHER_LEGGINGS
-import org.bukkit.Material.SHEARS
 import org.bukkit.Material.SHIELD
 import org.bukkit.Material.SNOWBALL
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
@@ -131,15 +130,6 @@ object CustomItems {
 	}
 
 	fun all(): Collection<CustomItem> = idMap.values
-
-	//region Misc
-	val DETONATOR: CustomItem = makeItem(
-		id = "detonator",
-		name = "${RED}Thermal$GRAY Detonator",
-		mat = SHEARS,
-		model = 1
-	)
-	//endregion Misc
 
 	//region Batteries
 	enum class BatteryType(val itemId: String, val maxPower: Int) {

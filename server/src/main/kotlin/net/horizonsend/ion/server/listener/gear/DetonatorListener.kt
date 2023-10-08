@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.listener.gear
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -16,11 +16,11 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
-import java.util.Locale
 
 object DetonatorListener : SLEventListener() {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onThrowDetonator(event: PlayerInteractEvent) {
+		return
 		if (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.RIGHT_CLICK_AIR) {
 			return
 		}
@@ -28,9 +28,9 @@ object DetonatorListener : SLEventListener() {
 		val item = event.item ?: return
 		val customItem = CustomItems[item]
 
-		if (customItem != CustomItems.DETONATOR) {
-			return
-		}
+//		if (customItem != CustomItems.DETONATOR) {
+//			return
+//		}
 
 		event.isCancelled = true
 		val player = event.player
@@ -89,9 +89,7 @@ object DetonatorListener : SLEventListener() {
 				player.world.createExplosion(detonator, 1f, false, false)
 				player.world.playSound(detonator.location, Sound.ENTITY_GENERIC_EXPLODE, 10f, 0.5f)
 
-				if (!blockExplodeEvent.callEvent() && !detonator.world.name.lowercase(Locale.getDefault())
-					.contains("arena")
-				) {
+				if (!blockExplodeEvent.callEvent() && !detonator.world.name.contains("arena", ignoreCase = true)) {
 					return@syncDelay
 				}
 

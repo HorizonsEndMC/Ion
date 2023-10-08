@@ -341,7 +341,7 @@ object BazaarCommand : SLCommand() {
 				val territory: RegionTerritory = Regions[territoryId]
 
 				// attempt to get the planet icon, just use a detonator if unavailable
-				val item: CustomItem = Space.getPlanet(territory.world)?.planetIcon ?: CustomItems.DETONATOR
+				val item: CustomItem = Space.getPlanet(territory.world)?.planetIcon ?: CustomItems.MINERAL_URANIUM
 
 				return@map guiButton(item.itemStack(1)) {
 					val clicker: Player = playerClicker
