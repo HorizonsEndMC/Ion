@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.customitems
 
+import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Material
@@ -8,7 +9,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
@@ -70,12 +70,12 @@ class CustomItemListeners : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	@Suppress("unused")
-	fun onItemDispensed(event: BlockDispenseEvent) {
+	fun onItemDispensed(event: BlockPreDispenseEvent) {
 		// Retain the dispenser/ dropper parity
 		if (event.block.type != Material.DISPENSER) return
-		val customItem = event.item.customItem ?: return
+		val customItem = event.itemStack.customItem ?: return
 
 		event.isCancelled = true
-		customItem.handleDispense(event.block.state as Dispenser, event.item)
+		customItem.handleDispense(event.block.state as Dispenser, event.slot)
 	}
 }

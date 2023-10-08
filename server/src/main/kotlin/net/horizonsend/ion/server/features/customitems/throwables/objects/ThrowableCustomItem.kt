@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.customitems.throwables.objects
 
+import org.bukkit.block.Dispenser as DispenserState
+import org.bukkit.block.data.type.Dispenser as DispenserData
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.Throwables.ThrowableBalancing
 import net.horizonsend.ion.server.features.customitems.CustomItem
@@ -59,21 +61,23 @@ abstract class ThrowableCustomItem(
 		)
 	}
 
-//	override fun handleDispense(dispenser: DispenserState, itemStack: ItemStack) {
-//		val facing = (dispenser.blockData as DispenserData).facing
-//		val origin = dispenser.location.toCenterLocation().add(facing.direction)
-//		val droppedItem = dispenser.world.dropItem(origin, itemStack)
-//
-//		throwItem(
-//			itemStack,
-//			droppedItem,
-//			facing.direction.normalize().multiply(balancing.throwVelocityMultiplier),
-//			null,
-//			balancing.maxTicks
-//		)
-//
-//		dispenser.inventory.removeItemAnySlot(itemStack)
-//	}
+	override fun handleDispense(dispenser: DispenserState, slot: Int) {
+		val facing = (dispenser.blockData as DispenserData).facing
+		val origin = dispenser.location.toCenterLocation().add(facing.direction)
+		val droppedItem = dispenser.world.dropItem(origin, constructItemStack())
+
+		val item = dispenser.inventory.getItem(slot) ?: return
+
+		throwItem(
+			item,
+			droppedItem,
+			facing.direction.normalize().multiply(balancing.throwVelocityMultiplier),
+			null,
+			balancing.maxTicks * 2
+		)
+
+		dispenser.inventory.setItem(slot, null)
+	}
 
 	open fun throwItem(
 		item: ItemStack,

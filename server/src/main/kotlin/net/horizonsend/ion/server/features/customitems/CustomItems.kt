@@ -343,6 +343,7 @@ object CustomItems {
 		get() {
 			// Who tf annotated itemMeta with "UndefinedNullability"
 			// if ya cant promise it's not null, then mark it nullable
+			// ^ he did not know how nullability works in java
 			return customItems[itemMeta?.persistentDataContainer?.get(CUSTOM_ITEM, STRING) ?: return null]
 		}
 
@@ -355,6 +356,6 @@ abstract class CustomItem(val identifier: String) {
 	open fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
 	open fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
 	open fun handleTertiaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {}
-	open fun handleDispense(dispenser: Dispenser, itemStack: ItemStack) {}
+	open fun handleDispense(dispenser: Dispenser, slot: Int) {}
 	abstract fun constructItemStack(): ItemStack
 }
