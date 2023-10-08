@@ -9,9 +9,9 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
-import org.bukkit.entity.LivingEntity
 import org.bukkit.event.block.BlockExplodeEvent
 import java.util.function.Supplier
 
@@ -47,6 +47,7 @@ class ThrownDetonator(
 	}
 
 	private fun doExplosion() {
+		val location = location
 		item.remove()
 
 		val blocks = mutableListOf<Block>()
@@ -78,7 +79,7 @@ class ThrownDetonator(
 		blocks.forEach { it.setType(Material.AIR, false) }
 
 		world.getNearbyEntities(location, balancing.damageRadius, balancing.damageRadius, balancing.damageRadius)
-			.stream().map { it as? LivingEntity }
+			.map { it as? Damageable }
 			.forEach { it?.damage(balancing.damage / it.location.distance(location), damageSource) }
 	}
 }
