@@ -199,7 +199,7 @@ object AIPathfinding {
 //		// Non-searched new sections
 //		new.removeIf { existingPositions.contains(it) }
 
-		val navigable = searchSections(engine.controller.starship, engine.getWorld(), new, loadChunks)
+		val navigable = searchSections(engine.controller.starship, engine.world, new, loadChunks)
 
 		engine.trackedSections.addAll(navigable)
 	}
