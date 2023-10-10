@@ -16,8 +16,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlocks
 import org.bukkit.entity.Player
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import java.util.concurrent.LinkedBlockingQueue
@@ -26,8 +24,6 @@ open class PathfindingEngine(
 	controller: AIController,
 	var destination: Vec3i?
 ) : AIEngine(controller) {
-	protected val log: Logger = LoggerFactory.getLogger(javaClass)
-
 	/** Polls the charted path for the first position in the path */
 	private fun getImmediateNavigationObjective(): AIPathfinding.SectionNode? = chartedPath.minByOrNull {
 		val (x, y, z) = getSectionPositionOrigin()
@@ -37,9 +33,9 @@ open class PathfindingEngine(
 
 	/** Update the tracked environment around the ship */
 	var center: Vec3i? = null
+
 	fun getSectionPositionOrigin(): Vec3i {
 		val center = Vec3i(getCenter())
-		val world = getWorld()
 
 		val x = center.x.shr(4)
 		val z = center.z.shr(4)
@@ -132,9 +128,6 @@ open class PathfindingEngine(
 
 	private var previousTask: CompletableFuture<Any> = CompletableFuture.completedFuture(Any())
 	var ticks = 0
-
-	/** On the removal of the controller */
-	open fun shutDown() {}
 
 	/** Called when the ship moves. */
 	override fun onMove(movement: StarshipMovement) {

@@ -1,24 +1,19 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation
 
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.BasicPositioningEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.LocationObjectiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
-import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
-import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
@@ -33,28 +28,22 @@ import java.util.concurrent.TimeUnit
  **/
 class AutoCruiseAIController(
 	starship: ActiveStarship,
-	endPoint: Location,
-	maxSpeed: Int = -1,
+	var destination: Location,
+	var maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
 	val combatController: (AIController, ActiveStarship) -> AIController
 ) : AIController(starship, "autoCruise", aggressivenessLevel),
-	LocationObjectiveAIController,
 	NeutralAIController,
 	ActiveAIController {
-	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, getObjective())
-	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, getObjective())
-	override val positioningEngine = BasicPositioningEngine(this, endPoint)
+	override var pathfindingEngine = PathfindingEngine(this, Vec3i(destination))
+	override var movementEngine = CruiseEngine(this, Vec3i(destination))
+	override var positioningEngine = BasicPositioningEngine(this, destination)
 
 	var ticks = 0
 
 	override val pilotName: Component = starship.getDisplayNameComponent().append(Component.text(" [NEUTRAL]", NamedTextColor.YELLOW))
 
-	var destination = endPoint
-	override fun getObjective(): Vec3i = Vec3i(destination)
-
 	val direction: Vector get() = destination.toVector().subtract(getCenter().toVector())
-
-	private var speedLimit = maxSpeed
 
 	/** Checks for nearby aggressive ships to enter a combat mode */
 	private fun searchNearbyShips() {
@@ -107,57 +96,22 @@ class AutoCruiseAIController(
 			return@async
 		}
 
-		val shouldCruise = assessDistance()
-		if (shouldCruise) cruiseNavigationLoop() else shiftFlightNavigationLoop()
+		movementEngine.speedLimit = maxSpeed
+		tickAll()
 
 		super.tick()
-	}
-
-	/** Returns true if the destination is sufficiently far that it should cruise */
-	private fun assessDistance(): Boolean {
-		val distance = distanceSquared(destination.toVector(), getCenter().toVector())
-
-		// 300 Blocks or more and it should cruise
-		return distance >= 90000.0 // Don't bother with the sqrt
-	}
-
-	/**
-	 * Cruise flight loop
-	 *  - Faces direction
-	 *  - Starts cruising
-	 **/
-	private fun cruiseNavigationLoop() {
-		starship as ActiveControlledStarship
-		starship.speedLimit = speedLimit
-
-		Tasks.sync {
-			AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
-			StarshipCruising.startCruising(this, starship, direction)
-		}
-	}
-
-	/**
-	 * Shift flight loop
-	 *  - Stops cruising
-	 *  - Faces objective
-	 *  - shift flies towards destination
-	 **/
-	private fun shiftFlightNavigationLoop() { //TODO integration movement engine
-//		starship as ActiveControlledStarship
-//		starship.speedLimit = speedLimit
-//
-//		Tasks.sync {
-//			AIControlUtils.faceDirection(this, vectorToBlockFace(direction))
-//			AIControlUtils.shiftFlyToLocation(this, destination)
-//			StarshipCruising.stopCruising(this, starship)
-//		}
 	}
 
 	override fun createCombatController(controller: AIController, target: ActiveStarship): AIController {
 		return combatController(controller, target)
 	}
 
+	override fun onMove(movement: StarshipMovement) {
+		passMovement(movement)
+	}
+
 	override fun onDamaged(damager: Damager) {
+		passDamage(damager)
 		if (damager is Controller) return combatMode(this, damager.starship)
 	}
 }

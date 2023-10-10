@@ -6,8 +6,8 @@ import org.bukkit.Location
 
 class BasicPositioningEngine(controller: AIController, val destination: Location) : PositioningEngine(controller) {
 	val vec3i = Vec3i(destination)
+
 	override fun findPosition(): Location = destination
 	override fun findPositionVec3i(): Vec3i = vec3i
-
 	override fun tick() {}
 }
