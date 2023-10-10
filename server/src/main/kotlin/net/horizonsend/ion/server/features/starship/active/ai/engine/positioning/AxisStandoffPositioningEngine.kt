@@ -29,7 +29,7 @@ class AxisStandoffPositioningEngine(
 	}
 
 	override fun findPosition(): Location {
-		return getAxisPoint().toLocation(getWorld())
+		return getAxisPoint().toLocation(world)
 	}
 
 	override fun findPositionVec3i(): Vec3i {

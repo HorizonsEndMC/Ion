@@ -44,9 +44,9 @@ class StarfighterCombatAIController(
 	CombatAIController,
 	TemporaryAIController,
 	ActiveAIController {
-	override val positioningEngine = AxisStandoffPositioningEngine(this, target, target?.let { getStandoffDistance(it) } ?: 25.0)
-	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
-	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)
+	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target, target?.let { getStandoffDistance(it) } ?: 25.0)
+	override var pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
+	override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)
 
 	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
@@ -175,13 +175,7 @@ class StarfighterCombatAIController(
 		}
 
 		positioningEngine.standoffDistance = getStandoffDistance(target)
-		positioningEngine.tick()
-
-		pathfindingEngine.destination = positioningEngine.findPositionVec3i()
-		pathfindingEngine.tick()
-
-		movementEngine.destination = pathfindingEngine.getNavPoint()
-		movementEngine.tick()
+		tickAll()
 
 		if (state == State.COMBAT) combatLoop()
 
