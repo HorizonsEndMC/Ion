@@ -50,7 +50,7 @@ dependencies {
 	implementation("io.github.config4k:config4k:0.6.0")
 	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
 	implementation("io.github.skytasul:guardianbeam:2.3.3")
-	implementation("xyz.xenondevs.invui:invui:1.17")
+	implementation("xyz.xenondevs.invui:invui:1.20")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-extra-kotlin:2.0.0-RC12")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-api:2.0.0-RC12")
