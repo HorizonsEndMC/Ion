@@ -15,9 +15,7 @@ import org.bukkit.util.Vector
 /** Controlling the movement of the starship */
 abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 	abstract var destination: Vec3i?
-	abstract var starshipLocation: Vec3i
-
-	open fun updateDestination() {}
+	val starshipLocation: Vec3i get() = getCenterVec3i()
 
 	fun getVector(origin: Vector, destination: Vector, normalized: Boolean = false): Vector {
 		val vec = destination.clone().subtract(origin)
@@ -32,15 +30,21 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 		stopCruising: Boolean = false
 	) = Tasks.sync {
 		val destination = this.destination
-		val starship = controller.starship as ActiveControlledStarship
 
 		AIControlUtils.shiftFlyToLocation(controller, starshipLocation, destination)
 	}
 
 	/** Faces the target */
-	fun faceDirection(origin: Location) {
+	fun faceTarget(origin: Location) {
 		val destination = destination ?: return
 		val direction = getVector(origin.toVector(), destination.toVector())
+
+		faceDirection(direction)
+	}
+
+	/** Faces the provided target */
+	fun faceTarget(origin: Location, target: Vector) {
+		val direction = getVector(origin.toVector(), target)
 
 		faceDirection(direction)
 	}
@@ -66,8 +70,10 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 		StarshipCruising.startCruising(controller, starship, diagonal.vector(starship.forward))
 	}
 
-	fun cruiseToDestination(starshipCenter: Vec3i) {
+	fun cruiseToDestination(origin: Location) {
+		val direction = destination?.toVector()?.let { getVector(origin.toVector(), it) } ?: return
 
+		cruiseInDirection(direction)
 	}
 
 	fun cruiseToVec3i(starshipCenter: Vec3i, vec3i: Vec3i) {
