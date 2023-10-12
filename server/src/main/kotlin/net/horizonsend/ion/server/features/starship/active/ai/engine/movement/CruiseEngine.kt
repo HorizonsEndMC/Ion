@@ -33,7 +33,7 @@ class CruiseEngine(
 		Tasks.sync {
 			if (assessDistance()) handleCruise(origin)
 
-			if (useShiftFlightForPrecision) shiftFly(origin, false)
+			if (shiftFlightType == ShiftFlightType.ALL) shiftFly(origin, false)
 		}
 	}
 
