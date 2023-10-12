@@ -11,9 +11,10 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
 abstract class Controller(
-	override val starship: ActiveStarship,
+	val damager: Damager,
+	val starship: ActiveStarship,
 	val name: String
-) : ForwardingAudience.Single, Damager {
+) : ForwardingAudience.Single {
 	abstract val pilotName: Component
 
 	abstract val isShiftFlying: Boolean
@@ -27,7 +28,7 @@ abstract class Controller(
 	override fun audience(): Audience = Audience.empty()
 
 	/** The color used for this controller. Currently, applies weapon color **/
-	override val color = Color.fromRGB(Integer.parseInt("ffffff", 16))
+	open val color = Color.fromRGB(Integer.parseInt("ffffff", 16))
 
 	/** Called on each server tick. */
 	open fun tick() {}

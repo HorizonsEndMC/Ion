@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -32,7 +33,7 @@ class AutoCruiseAIController(
 	var maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
 	val combatController: (AIController, ActiveStarship) -> AIController
-) : AIController(starship, "autoCruise", aggressivenessLevel),
+) : AIController(starship, "autoCruise", AIShipDamager(starship), aggressivenessLevel),
 	NeutralAIController,
 	ActiveAIController {
 	override var pathfindingEngine = PathfindIfBlockedEngine(this, Vec3i(destination))
