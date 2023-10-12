@@ -71,6 +71,12 @@ open class NoOpDamager : Damager {
 	override fun rewardXP(xp: Int) { }
 }
 
+class AIShipDamager(override val starship: ActiveStarship, override val color: Color = Color.RED): Damager {
+	override fun getDisplayName(): Component = starship.getDisplayNameComponent()
+	override fun rewardMoney(credits: Double) {}
+	override fun rewardXP(xp: Int) {}
+}
+
 fun addToDamagers(world: World, block: Block, shooter: Entity) {
 	val damager = entityDamagerCache[shooter]
 

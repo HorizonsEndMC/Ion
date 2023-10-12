@@ -9,6 +9,7 @@ class IdleController(
 ) : AIController(
 	previousController.starship,
 	"combat",
+	previousController.damager,
 	previousController.aggressivenessLevel
 ),
 	TemporaryAIController {
