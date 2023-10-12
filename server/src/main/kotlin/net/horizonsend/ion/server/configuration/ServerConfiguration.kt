@@ -11,13 +11,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
-import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.EntityType
+import org.bukkit.util.Vector
 
 @Serializable
 data class ServerConfiguration(
@@ -191,7 +191,7 @@ data class ServerConfiguration(
 		fun bukkitWorld(): World = Bukkit.getWorld(world) ?: throw
 		kotlin.NullPointerException("Could not find world $world")
 
-		fun toBlockPos(): BlockPos = BlockPos(x, y, z)
+		fun toVector(): Vector = Vector(x, y, z)
 
 		fun toVec3i(): Vec3i = Vec3i(x, y, z)
 

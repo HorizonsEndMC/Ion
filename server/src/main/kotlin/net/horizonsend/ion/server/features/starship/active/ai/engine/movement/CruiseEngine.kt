@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import org.bukkit.Location
 
 /**
  * Basic cruise flight engine.
@@ -16,7 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 class CruiseEngine(
 	controller: AIController,
 	override var destination: Vec3i?,
-	var useShiftFlightForPrecision: Boolean = true,
+	var shiftFlightType: ShiftFlightType = ShiftFlightType.IF_BLOCKED,
 	var maximumCruiseDistanceSquared: Double = 90000.0,
 ) : MovementEngine(controller) {
 	// The pathfinding controller will change the destination, so store the eventual destination in a seperate variable.
@@ -30,13 +31,25 @@ class CruiseEngine(
 		val origin = starshipLocation.toLocation(world)
 
 		Tasks.sync {
-			if (assessDistance()) {
-				faceTarget(origin)
-				cruiseToVec3i(starshipLocation, cruiseDestination ?: return@sync)
-			}
+			if (assessDistance()) handleCruise(origin)
 
 			if (useShiftFlightForPrecision) shiftFly(origin, false)
 		}
+	}
+
+	fun handleCruise(origin: Location) {
+		val destination = cruiseDestination?.toVector() ?: return
+
+		val distanceSquared = distanceSquared(origin.toVector(), destination)
+
+		if (distanceSquared >= 250000) {
+			faceTarget(origin)
+			cruiseToVec3i(starshipLocation, cruiseDestination ?: return)
+
+			return
+		}
+
+		stopCruising()
 	}
 
 	/** Returns true if the destination is sufficiently far that it should cruise */
@@ -52,4 +65,6 @@ class CruiseEngine(
 	override fun shutDown() {
 		stopCruising()
 	}
+
+	enum class ShiftFlightType { NONE, MATCH_Y, IF_BLOCKED, ALL }
 }

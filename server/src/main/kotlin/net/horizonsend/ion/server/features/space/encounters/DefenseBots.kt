@@ -6,15 +6,16 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
+import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.minecraft.nbt.CompoundTag
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Chest
@@ -56,7 +57,7 @@ object DefenseBots : Encounter(identifier = "defense_bots") {
 
 		val blocks = Encounters.getBlocks(
 			chest.world,
-			chest.location.toBlockPos(),
+			Vec3i(chest.location),
 			10.0
 		) { Encounters.checkAir(it) && it.isSolid }
 		val firstFour = blocks.shuffled().subList(0, 3)
