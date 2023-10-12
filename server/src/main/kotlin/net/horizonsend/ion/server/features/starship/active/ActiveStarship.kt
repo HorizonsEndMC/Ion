@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.randomString
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
@@ -43,6 +44,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
@@ -367,7 +369,7 @@ abstract class ActiveStarship (
 
 		is NoOpController -> "${getDisplayNamePlain()}:$charIdentifier"
 
-		else -> throw NotImplementedError("$controller does not have an auto turret identifier!")
+		else -> throw NotImplementedError("${controller::class.java.simpleName} does not have an auto turret identifier!")
 	}
 
 	val damagers = mutableMapOf<Damager, ShipKillXP.ShipDamageData>()
@@ -375,6 +377,7 @@ abstract class ActiveStarship (
 
 	fun addToDamagers(damager: Damager) {
 		damagers.getOrPut(damager) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
+		debugAudience.debug("$damager added to damagers")
 
 		controller.onDamaged(damager)
 	}
