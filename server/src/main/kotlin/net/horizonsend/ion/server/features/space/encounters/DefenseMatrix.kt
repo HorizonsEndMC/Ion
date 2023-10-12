@@ -4,11 +4,11 @@ import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
+import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.nbt.CompoundTag
-import net.horizonsend.ion.server.miscellaneous.utils.distance
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import org.bukkit.FluidCollisionMode
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
@@ -32,7 +32,7 @@ object DefenseMatrix : Encounter(identifier = "defense_matrix") { // TODO
 
 		val blocks = Encounters.getBlocks(
 			event.player.world,
-			chest.location.toBlockPos(),
+			Vec3i(chest.location),
 			30.0,
 		) {
 			val rayCast = if (!it.isEmpty) {
