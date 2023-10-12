@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
-import net.horizonsend.ion.server.miscellaneous.utils.toVector
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -360,7 +359,7 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>
     ) {
         for (beacon in beacons) {
-            val vector = beacon.spaceLocation.toBlockPos().toVector()
+            val vector = beacon.spaceLocation.toVector()
             val distance = vector.distance(playerVector).toInt()
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()

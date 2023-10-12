@@ -10,10 +10,10 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOC
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Y
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.Z
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -40,7 +40,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 	)
 
 	private fun placeLever(chest: Chest) {
-		val chestPos = BlockPos(chest.x, chest.y, chest.z)
+		val chestPos = Vec3i(chest.x, chest.y, chest.z)
 
 		fun checkAir(block: Block): Boolean {
 			val up1 = block.getRelative(BlockFace.UP)
@@ -122,7 +122,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 
 			for (block in Encounters.getBlocks(
 				chest.world,
-				chest.location.toCenterLocation().toBlockPos(),
+				Vec3i(chest.location),
 				currentSize
 			) {
 				!it.isEmpty && it.isSolid && !iceTypes.contains(it.type) && it.type != Material.CHEST

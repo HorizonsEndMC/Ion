@@ -2,15 +2,15 @@ package net.horizonsend.ion.server.features.space.encounters
 
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minecraft.nbt.CompoundTag
-import net.horizonsend.ion.server.features.nations.gui.input
-import net.horizonsend.ion.server.miscellaneous.utils.Notify
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
@@ -19,7 +19,7 @@ import org.bukkit.entity.Fireball
 import org.bukkit.entity.ZombieVillager
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
-import java.util.*
+import java.util.Random
 
 object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 	private fun checkAir(block: Block): Boolean {
@@ -39,7 +39,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			return
 		}
 
-		val blocks = Encounters.getBlocks(chest.world, chest.location.toBlockPos(), 3.0) {
+		val blocks = Encounters.getBlocks(chest.world, Vec3i(chest.location), 3.0) {
 			checkAir(it)
 		}
 
