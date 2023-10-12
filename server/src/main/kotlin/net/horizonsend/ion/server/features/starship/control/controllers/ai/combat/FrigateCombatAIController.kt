@@ -4,15 +4,17 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.CirclingPositionEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import org.bukkit.Location
 import kotlin.jvm.optionals.getOrNull
@@ -41,8 +43,8 @@ class FrigateCombatAIController(
 	CombatAIController,
 	ActiveAIController {
 	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
-	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)
-	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
+	override val movementEngine: MovementEngine = CruiseEngine(this, target?.centerOfMass)
+	override val positioningEngine = CirclingPositionEngine(this, target?.centerOfMass, 240.0)
 
 	override var locationObjective: Location? = target?.let { it.centerOfMass.toLocation(it.world) }
 
@@ -54,6 +56,9 @@ class FrigateCombatAIController(
 		val ok = checkOnTarget()
 
 		if (!ok) aggressivenessLevel.disengage(this)
+
+		positioningEngine.target = target?.centerOfMass
+		tickAll()
 	}
 
 	/**
@@ -111,5 +116,14 @@ class FrigateCombatAIController(
 				true
 			}
 		}
+	}
+
+	override fun onMove(movement: StarshipMovement) {
+		passMovement(movement)
+	}
+
+	override fun onDamaged(damager: Damager) {
+		aggressivenessLevel.onDamaged(this, damager)
+		passDamage(damager)
 	}
 }
