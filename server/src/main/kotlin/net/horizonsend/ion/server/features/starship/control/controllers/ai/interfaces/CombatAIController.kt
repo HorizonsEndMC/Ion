@@ -10,8 +10,8 @@ import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-interface CombatAIController : LocationObjectiveAIController, TemporaryAIController {
-	override val starship: ActiveStarship
+interface CombatAIController : LocationObjectiveAIController {
+	val starship: ActiveStarship
 	var target: ActiveStarship?
 
 	// Weapon sets

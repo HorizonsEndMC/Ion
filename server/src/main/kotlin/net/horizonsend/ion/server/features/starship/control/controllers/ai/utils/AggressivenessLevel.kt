@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.utils
 
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
@@ -26,7 +28,15 @@ enum class AggressivenessLevel(
 			.append(text("❤", NamedTextColor.BLUE))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
-	),
+	) {
+		override fun onDamaged(controller: NeutralAIController, damager: Damager) {
+			if (damager !is Controller) return
+
+			if (controller is CombatAIController && controller.target != null) return
+
+			controller.combatMode(controller as AIController, damager.starship)
+		}
+	  },
 	LOW(
 		500.0,
 		5.0,
@@ -78,7 +88,7 @@ enum class AggressivenessLevel(
 			findNextTarget(controller)
 
 			// If none found, return
-			if (controller.target == null) controller.returnToPreviousController()
+			if (controller.target == null && controller is TemporaryAIController) controller.returnToPreviousController()
 		}
 	}
 
@@ -100,5 +110,5 @@ enum class AggressivenessLevel(
 		controller.target = nearbyShips.firstOrNull()
 	}
 
-	open fun onDamaged(damager: Damager) {}
+	open fun onDamaged(controller: NeutralAIController, damager: Damager) {}
 }
