@@ -145,7 +145,7 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		if (starship.isInterdicting || Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) {
+		if (Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) {
 			starship.setDirectControlEnabled(false)
 			return
 		}

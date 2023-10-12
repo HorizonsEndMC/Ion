@@ -95,10 +95,6 @@ object StarshipCruising : IonServerComponent() {
 					"Cruise Speed: ${"<aqua>" + speed.roundToHundredth()}<gray>/</gray><dark_aqua>$targetSpeed"
 				)
 			}
-
-			if (starship.isInterdicting) {
-				starship.setIsInterdicting(false)
-			}
 		}
 
 		// immobile
@@ -112,6 +108,10 @@ object StarshipCruising : IonServerComponent() {
 
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) {
 			return
+		}
+
+		if (starship.isInterdicting) {
+			starship.setIsInterdicting(false)
 		}
 
 		if (starship.isTeleporting) {
