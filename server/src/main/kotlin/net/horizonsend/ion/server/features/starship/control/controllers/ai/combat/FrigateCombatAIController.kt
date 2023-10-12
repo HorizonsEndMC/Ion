@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshi
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import org.bukkit.Location
@@ -37,11 +36,9 @@ class FrigateCombatAIController(
 	override var target: ActiveStarship?,
 	aggressivenessLevel: AggressivenessLevel,
 	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>,
-	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>,
-	override val previousController: AIController?
+	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
 ): AIController(starship, "FrigateCombatMatrix", aggressivenessLevel),
 	CombatAIController,
-	TemporaryAIController,
 	ActiveAIController {
 	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
 	override val movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)

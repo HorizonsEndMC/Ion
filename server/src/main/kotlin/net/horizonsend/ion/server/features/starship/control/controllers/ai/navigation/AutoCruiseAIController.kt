@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai.navi
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.BasicPositioningEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -35,7 +35,7 @@ class AutoCruiseAIController(
 ) : AIController(starship, "autoCruise", aggressivenessLevel),
 	NeutralAIController,
 	ActiveAIController {
-	override var pathfindingEngine = PathfindingEngine(this, Vec3i(destination))
+	override var pathfindingEngine = PathfindIfBlockedEngine(this, Vec3i(destination))
 	override var movementEngine = CruiseEngine(this, Vec3i(destination))
 	override var positioningEngine = BasicPositioningEngine(this, destination)
 
@@ -86,8 +86,8 @@ class AutoCruiseAIController(
 	override fun tick() = Tasks.async {
 		ticks++
 
-		// Only tick evey second
-		if ((ticks % 20) != 0) return@async
+		// Only tick every quarter second
+		if ((ticks % 5) != 0) return@async
 
 		searchNearbyShips()
 

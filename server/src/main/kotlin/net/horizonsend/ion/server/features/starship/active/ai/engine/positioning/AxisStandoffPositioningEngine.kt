@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.nearestPointToVector
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
@@ -22,10 +23,23 @@ class AxisStandoffPositioningEngine(
 		val shipLocation = getCenter().toVector()
 		val targetLocation = target.centerOfMass.toVector()
 
+		val vectors = CARDINAL_BLOCK_FACES.map {
+			val vec = it.direction.multiply(200)
+			nearestPointToVector(targetLocation, vec, shipLocation)
+		}
+
+		val axisPointFar = vectors.minBy {
+			it.distance(shipLocation)
+		}
+
 		val cardinalOffsets = CARDINAL_BLOCK_FACES.map { it.direction.multiply(standoffDistance) }
 		val points = cardinalOffsets.map { targetLocation.clone().add(it) }
 
-		return points.minBy { it.distance(shipLocation) }
+		val axisPointClose = points.minBy {
+			it.distance(shipLocation)
+		}
+
+		return if (shipLocation.distanceSquared(axisPointFar) <= 100.0) axisPointClose else axisPointFar
 	}
 
 	override fun findPosition(): Location {
