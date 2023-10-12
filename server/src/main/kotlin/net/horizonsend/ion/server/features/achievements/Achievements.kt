@@ -1,23 +1,24 @@
 package net.horizonsend.ion.server.features.achievements
 
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.features.progression.SLXP
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.miscellaneous.utils.vaultEconomy
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.LegacySettings
-import net.horizonsend.ion.server.miscellaneous.utils.get
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
-import net.horizonsend.ion.server.features.progression.SLXP
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet
 
-fun Player.rewardAchievement(achievement: Achievement) {
-	if (!LegacySettings.master) return
+fun Player.rewardAchievement(achievement: Achievement) = Tasks.async {
+	if (!LegacySettings.master) return@async
 
 	val playerData = SLPlayer[this]
-	if (playerData.achievements.map { Achievement.valueOf(it) }.find { it == achievement } != null) return
+	if (playerData.achievements.map { Achievement.valueOf(it) }.find { it == achievement } != null) return@async
 
 	SLPlayer.updateById(playerData._id, addToSet(SLPlayer::achievements, achievement.name))
 
