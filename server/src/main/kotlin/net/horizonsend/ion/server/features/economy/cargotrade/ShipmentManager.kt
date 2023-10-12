@@ -538,8 +538,8 @@ object ShipmentManager : IonServerComponent() {
 			return
 		}
 
-		val name = shulkerBox.customName ?: error("No name for shulker box clicked by ${event.player.name}")
-        event.player.sendRichMessage(name)
+		val name = shulkerBox.customName() ?: error("No name for shulker box clicked by ${event.player.name}")
+        event.player.sendMessage(name)
 		val lore: List<String> = shulkerBox.inventory.getItem(0)?.lore ?: return
 		lore.forEach(event.player::sendMessage)
 	}
