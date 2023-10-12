@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
@@ -49,7 +50,7 @@ open class StarfighterCombatAIController(
 	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 
 	override fun destroy() {
-		pathfindingEngine.shutDown()
+		shutDownAll()
 		super.destroy()
 	}
 
@@ -150,7 +151,12 @@ open class StarfighterCombatAIController(
 	override fun getObjective(): Vec3i = positioningEngine.getCenterVec3i()
 
 	override fun onMove(movement: StarshipMovement) {
-		pathfindingEngine.onMove(movement)
+		passMovement(movement)
+	}
+
+	override fun onDamaged(damager: Damager) {
+		aggressivenessLevel.onDamaged(this, damager)
+		passDamage(damager)
 	}
 
 	/**
