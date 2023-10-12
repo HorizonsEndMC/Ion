@@ -25,7 +25,6 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.space.Sector
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
@@ -301,11 +300,11 @@ object BazaarCommand : SLCommand() {
 	@Default
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
-		val sector = Sector.getSector(sender.world)
+//		val sector = Sector.getSector(sender.world)
 
 		val cities: List<TradeCityData> = CityNPCs.BAZAAR_CITY_TERRITORIES
 			.map { Regions.get<RegionTerritory>(it) }
-			.filter { Sector.getSector(it.world) == sector }
+//			.filter { Sector.getSector(it.world) == sector }
 			.mapNotNull(TradeCities::getIfCity)
 
 		MenuHelper.apply {
