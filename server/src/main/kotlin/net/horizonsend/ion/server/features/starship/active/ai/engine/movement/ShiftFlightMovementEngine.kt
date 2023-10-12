@@ -9,6 +9,9 @@ class ShiftFlightMovementEngine(
 	override var destination: Vec3i?
 ) : MovementEngine(controller) {
 	override fun tick() {
-		Tasks.sync { shiftFly(starshipLocation.toLocation(world), false) }
+		Tasks.sync {
+			stopCruising()
+			shiftFly(starshipLocation.toLocation(world), false)
+		}
 	}
 }
