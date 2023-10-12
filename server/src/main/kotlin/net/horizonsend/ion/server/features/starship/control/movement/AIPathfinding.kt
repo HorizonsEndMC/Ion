@@ -230,8 +230,10 @@ object AIPathfinding {
 		var currentNode: SectionNode = originNode
 
 		var iterations = 0
-		while (currentNode != destinationNode && iterations <= MAX_A_STAR_ITERATIONS) {
+		while (currentNode != destinationNode) {
+			if (iterations > MAX_A_STAR_ITERATIONS) break
 			iterations++
+
 //			closedNodes += currentNode
 
 			val nextNode = searchNeighbors(
@@ -262,6 +264,8 @@ object AIPathfinding {
 		val neighbors = getNeighborNodes(previousNode, allNodes)
 
 		if (neighbors.isEmpty()) throw PathfindingException("No neighbors for $previousNode!")
+
+		neighbors.forEach { if (it == destinationNode) return it }
 
 		return neighbors
 			.filter { it.navigable }
