@@ -3,10 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
@@ -14,10 +11,13 @@ import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.StarshipCruising
-import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -131,6 +131,7 @@ object Interdiction : IonServerComponent() {
 
 			val pilot = cruisingShip.pilot ?: continue
 
+			if (pilot.world != sign.world) continue
 			if (pilot.location.distance(sign.location) > starship.type.interdictionRange) {
 				continue
 			}
