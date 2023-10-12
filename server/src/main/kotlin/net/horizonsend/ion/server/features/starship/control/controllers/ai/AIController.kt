@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.AggressiveLevelAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
@@ -23,8 +24,9 @@ import java.util.concurrent.TimeUnit
 abstract class AIController(
 	starship: ActiveStarship,
 	name: String,
+	damager: Damager,
 	override val aggressivenessLevel: AggressivenessLevel
-) : Controller(starship, name),
+) : Controller(damager, starship, name),
 	AggressiveLevelAIController {
 	override val pilotName: Component get() = Component.text()
 		.append(Component.text("AI Controller "))
@@ -40,11 +42,6 @@ abstract class AIController(
 
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
-
-	override fun getDisplayName(): Component = pilotName
-
-	override fun rewardXP(xp: Int) {}
-	override fun rewardMoney(credits: Double) {}
 
 	/** Use the direct control center as a sort of cache to avoid the type conversion if possible */
 	fun getCenter(): Location = (starship as? ActiveControlledStarship)?.directControlCenter ?: starship.centerOfMass.toLocation(starship.world)
@@ -131,4 +128,8 @@ abstract class AIController(
 	}
 
 	val nonAICheck: (ActiveStarship, Double) -> Boolean = { starship, _ -> starship.controller !is AIController }
+
+	override fun toString(): String {
+		return "$name[${starship.identifier}]"
+	}
 }
