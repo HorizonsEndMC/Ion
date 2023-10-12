@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshi
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -35,14 +34,12 @@ import kotlin.math.pow
  *
  * It does not use DC, only shift flies and cruises
  **/
-class StarfighterCombatAIController(
+open class StarfighterCombatAIController(
 	starship: ActiveStarship,
-	override var target: ActiveStarship?,
-	aggressivenessLevel: AggressivenessLevel,
-	override val previousController: AIController?
+	final override var target: ActiveStarship?,
+	aggressivenessLevel: AggressivenessLevel
 ) : AIController(starship, "StarfighterCombatMatrix", aggressivenessLevel),
 	CombatAIController,
-	TemporaryAIController,
 	ActiveAIController {
 	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target, target?.let { getStandoffDistance(it) } ?: 25.0)
 	override var pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
@@ -167,7 +164,7 @@ class StarfighterCombatAIController(
 
 	override fun tick() {
 		val ok = checkOnTarget()
-		val target = this.target ?: return returnToPreviousController()
+		val target = this.target ?: return
 
 		if (!ok) {
 			aggressivenessLevel.disengage(this)
@@ -186,8 +183,7 @@ class StarfighterCombatAIController(
 		val target = this.target ?: return
 
 		// Get the closest axis
-		starship as ActiveControlledStarship
-		starship.speedLimit = -1
+		(starship as ActiveControlledStarship).speedLimit = -1
 
 		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), Vec3i(target.blocks.random())), includeVertical = false)
 

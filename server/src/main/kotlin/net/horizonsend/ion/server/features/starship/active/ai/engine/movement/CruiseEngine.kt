@@ -19,6 +19,8 @@ class CruiseEngine(
 	var useShiftFlightForPrecision: Boolean = true,
 	var maximumCruiseDistanceSquared: Double = 90000.0,
 ) : MovementEngine(controller) {
+	// The pathfinding controller will change the destination, so store the eventual destination in a seperate variable.
+	var cruiseDestination = destination
 	var speedLimit = -1
 
 	override fun tick() {
@@ -30,7 +32,7 @@ class CruiseEngine(
 		Tasks.sync {
 			if (assessDistance()) {
 				faceTarget(origin)
-				cruiseToDestination(origin)
+				cruiseToVec3i(starshipLocation, cruiseDestination ?: return@sync)
 			}
 
 			if (useShiftFlightForPrecision) shiftFly(origin, false)

@@ -35,7 +35,7 @@ interface ActiveAIController {
 		pathfindingEngine.destination = positioningEngine.findPositionVec3i()
 		pathfindingEngine.tick()
 
-		movementEngine.destination = pathfindingEngine.getNavPoint()
+		movementEngine.destination = pathfindingEngine.getFirstNavPoint()
 		movementEngine.tick()
 	}
 }
