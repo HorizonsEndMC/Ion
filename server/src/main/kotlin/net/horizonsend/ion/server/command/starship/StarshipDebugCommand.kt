@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawnin
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.FrigateCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.TemporaryStarfighterCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
@@ -102,8 +103,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 			StarfighterCombatAIController(
 				starship = ship,
 				target = null,
-				aggressivenessLevel = aggressivenessLevel,
-				previousController = null
+				aggressivenessLevel = aggressivenessLevel
 			)
 		}),
 
@@ -112,7 +112,6 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 				starship = ship,
 				target = null,
 				aggressivenessLevel = aggressivenessLevel,
-				previousController = null,
 				autoWeaponSets = mutableListOf(),
 				manualWeaponSets = mutableListOf()
 			)
@@ -126,7 +125,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 					-1,
 					aggressivenessLevel
 				) { controller, nearbyShip ->
-					StarfighterCombatAIController(
+					TemporaryStarfighterCombatAIController(
 						controller.starship,
 						nearbyShip,
 						controller.aggressivenessLevel,

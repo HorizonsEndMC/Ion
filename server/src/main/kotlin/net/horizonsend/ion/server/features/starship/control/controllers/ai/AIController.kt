@@ -65,7 +65,7 @@ abstract class AIController(
 		val players = location.getNearbyPlayers(160.0)
 
 		for (player in players) {
-			player.highlightBlock(computerLoc, 1L)
+			player.highlightBlock(computerLoc, 2L)
 		}
 	}
 
