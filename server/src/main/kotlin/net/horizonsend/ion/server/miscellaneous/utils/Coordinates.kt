@@ -384,6 +384,8 @@ fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {
 	return pitch to yaw
 }
 
+fun getDirection(origin: Vec3i, destination: Vec3i): Vector = destination.minus(origin).toVector()
+
 /** Find the closest point along the vector to the vector **/
 fun nearestPointToVector(origin: Vector, direction: Vector, point: Vector): Vector {
 	val endPoint = origin.clone().add(direction)
