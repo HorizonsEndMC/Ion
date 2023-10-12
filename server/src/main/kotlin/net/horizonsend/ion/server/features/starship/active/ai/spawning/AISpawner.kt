@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.AIUtils
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.TemporaryStarfighterCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.component1
@@ -108,7 +108,7 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", AIStarshipTemplates.
 			val aggressivenessLevel = AggressivenessLevel.values().random()
 
 			it.controller = AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel) { controller, nearbyShip ->
-				StarfighterCombatAIController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
+				TemporaryStarfighterCombatAIController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
 			}
 		}
 	}

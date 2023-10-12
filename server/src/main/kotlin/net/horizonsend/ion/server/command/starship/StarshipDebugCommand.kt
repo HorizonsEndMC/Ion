@@ -10,13 +10,11 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawnin
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.FrigateCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.TemporaryStarfighterCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.text
-import net.horizonsend.ion.server.miscellaneous.utils.title
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -51,25 +49,6 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 		handleSpawn()
 	}
 
-	@Suppress("Unused")
-	@Subcommand("debugReason")
-	fun debugReason(sender: Player) {
-		val (x, y, z) = Vec3i(sender.location)
-
-		val ship = ActiveStarships.allControlledStarships().minBy { it.centerOfMass.distance(x, y, z) }
-		val controller = ship.controller as? StarfighterCombatAIController
-
-		val nodes = controller?.pathfindingEngine?.trackedSections
-
-		val secX = x.shr(4)
-		val secY = (y - sender.world.minHeight).shr(4)
-		val secZ = z.shr(4)
-
-		val currentNode = nodes?.firstOrNull { it.location == Vec3i(secX, secY, secZ) }
-
-		sender.title(currentNode?.reason?.text() ?: "Node not tracked.".text(), "".text())
-	}
-
 	@Subcommand("ai")
 	fun ai(sender: Player, controller: AI, aggressivenessLevel: AggressivenessLevel, destinationX: Double, destinationY: Double, destinationZ: Double) {
 		val destination = Location(sender.world, destinationX, destinationY, destinationZ)
@@ -84,8 +63,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 			StarfighterCombatAIController(
 				starship = ship,
 				target = null,
-				aggressivenessLevel = aggressivenessLevel,
-				previousController = null
+				aggressivenessLevel = aggressivenessLevel
 			)
 		}),
 
@@ -94,7 +72,6 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 				starship = ship,
 				target = null,
 				aggressivenessLevel = aggressivenessLevel,
-				previousController = null,
 				autoWeaponSets = mutableListOf(),
 				manualWeaponSets = mutableListOf()
 			)
@@ -108,7 +85,7 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 					-1,
 					aggressivenessLevel
 				) { controller, nearbyShip ->
-					StarfighterCombatAIController(
+					TemporaryStarfighterCombatAIController(
 						controller.starship,
 						nearbyShip,
 						controller.aggressivenessLevel,
