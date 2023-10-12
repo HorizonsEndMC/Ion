@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -55,7 +54,7 @@ object DefuseBomb: Encounter(identifier = "defuse_bomb") {
 		var iteration = 0 // ticks
 		event.player.alert("Defusable bomb activated! Press the buttons in the correct order within $timeLimit seconds!")
 
-		val surroundingBlocks = Encounters.getBlocks(chest.world, chest.location.toBlockPos(), 10.0) {
+		val surroundingBlocks = Encounters.getBlocks(chest.world, Vec3i(chest.location), 10.0) {
 			Encounters.checkAir(it) && it.isSolid && it.type != Material.CHEST && it.type !in validColors
 		}
 
