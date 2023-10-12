@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai.util
 
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.AggressiveLevelAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
@@ -29,12 +30,12 @@ enum class AggressivenessLevel(
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
 	) {
-		override fun onDamaged(controller: NeutralAIController, damager: Damager) {
+		override fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {
 			if (damager !is Controller) return
 
 			if (controller is CombatAIController && controller.target != null) return
 
-			controller.combatMode(controller as AIController, damager.starship)
+			if (controller is NeutralAIController) controller.combatMode(controller as AIController, damager.starship)
 		}
 	  },
 	LOW(
@@ -110,5 +111,5 @@ enum class AggressivenessLevel(
 		controller.target = nearbyShips.firstOrNull()
 	}
 
-	open fun onDamaged(controller: NeutralAIController, damager: Damager) {}
+	open fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {}
 }

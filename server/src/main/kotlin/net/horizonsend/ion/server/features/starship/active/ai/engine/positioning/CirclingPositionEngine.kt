@@ -12,18 +12,20 @@ import kotlin.math.sin
 /**
  * Tries to position the ship in a circling pattern around the target
  **/
-class CirclingPositionEngine(controller: AIController, var target: Vec3i, var holdOffDistance: Double) : PositioningEngine(controller) {
+class CirclingPositionEngine(controller: AIController, var target: Vec3i?, var holdOffDistance: Double) : PositioningEngine(controller) {
 	private val ticksPerCruise = StarshipCruising.SECONDS_PER_CRUISE * 20.0
-	var destination: Vec3i = target
+	var destination: Vec3i? = target
 
-	override fun findPosition(): Location = destination.toLocation(world)
+	override fun findPosition(): Location = destination?.toLocation(world) ?: getCenter()
 
-	override fun findPositionVec3i(): Vec3i = destination
+	override fun findPositionVec3i(): Vec3i = destination ?: getCenterVec3i()
 
 	var ticks = 0
 	/** Do the calculation on tick so its not done every time its called */
 	override fun tick() {
 		ticks++
+
+		val target = target ?: return
 
 		// Calculate the amount of ticks it would take to do a lap around the target
 		val moveTicks = 1 / getMovePercent()
