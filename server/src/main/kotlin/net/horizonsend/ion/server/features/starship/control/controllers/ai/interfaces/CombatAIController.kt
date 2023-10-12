@@ -6,11 +6,12 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-interface CombatAIController : LocationObjectiveAIController {
+interface CombatAIController : VariableObjectiveController {
 	val starship: ActiveStarship
 	var target: ActiveStarship?
 
