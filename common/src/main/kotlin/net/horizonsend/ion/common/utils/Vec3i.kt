@@ -19,4 +19,6 @@ open class DBVec3i(val x: Int, val y: Int, val z: Int) {
 		result = 31 * result + z
 		return result
 	}
+
+	override fun toString() = "$x,$y,$z"
 }
