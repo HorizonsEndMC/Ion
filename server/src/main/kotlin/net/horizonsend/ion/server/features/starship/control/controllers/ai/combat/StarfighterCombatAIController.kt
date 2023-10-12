@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -147,8 +148,6 @@ open class StarfighterCombatAIController(
 			}
 		}
 	}
-
-	override fun getObjective(): Vec3i = positioningEngine.getCenterVec3i()
 
 	override fun onMove(movement: StarshipMovement) {
 		passMovement(movement)
