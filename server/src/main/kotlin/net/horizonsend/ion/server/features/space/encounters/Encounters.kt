@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.space.encounters
 
-import kotlin.math.ceil
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.ENCOUNTER
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
-import net.minecraft.core.BlockPos
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.NamespacedKey
 import org.bukkit.World
@@ -11,6 +10,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.Chest
 import org.bukkit.persistence.PersistentDataType.STRING
+import kotlin.math.ceil
 
 @Suppress("Unused")
 object Encounters {
@@ -52,7 +52,7 @@ object Encounters {
 		chest.update()
 	}
 
-	fun getBlocks(world: World, origin: BlockPos, radius: Double, filter: (Block) -> Boolean): List<Block> {
+	fun getBlocks(world: World, origin: Vec3i, radius: Double, filter: (Block) -> Boolean): List<Block> {
 		val radiusSquared = radius * radius
 
 		val blocks = mutableListOf<Block>()
