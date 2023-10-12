@@ -24,11 +24,21 @@ open class PathfindingEngine(
 	controller: AIController,
 	var destination: Vec3i?
 ) : AIEngine(controller) {
+	open val tickInterval: Int = 1
+	var lastCompletedSection = AIPathfinding.SectionNode(world, getSectionPositionOrigin(), true)
+
 	/** Polls the charted path for the first position in the path */
 	private fun getImmediateNavigationObjective(): AIPathfinding.SectionNode? = chartedPath.minByOrNull {
-		val (x, y, z) = getSectionPositionOrigin()
+		val origin = getSectionPositionOrigin()
+		val (x, y, z) = origin
 
-		it.location.distance(x, y, z)
+		// Don't navigate to a completed objective
+		if (it.position == origin || it.position == lastCompletedSection.position) {
+			lastCompletedSection = it
+			return@minByOrNull Double.MAX_VALUE
+		}
+
+		it.position.distance(x, y, z)
 	}
 
 	/** Update the tracked environment around the ship */
@@ -55,7 +65,6 @@ open class PathfindingEngine(
 
 		// It has not left the old section center, return
 		if (center == newCenter && chartedPath.isNotEmpty() && trackedSections.isNotEmpty()) {
-			log.info("Returning because new center is old center new $newCenter old $center")
 			return
 		}
 
@@ -87,6 +96,7 @@ open class PathfindingEngine(
 
 	/** Updates the stored path with  */
 	private fun updateChartedPath() {
+		println("Destination: $destination")
 		val destination = this.destination ?: return
 		debugAudience.debug("Updating Charted Path")
 
@@ -110,7 +120,7 @@ open class PathfindingEngine(
 		val currentSection = getSectionPositionOrigin()
 		val firstObjective = getImmediateNavigationObjective()
 
-		if (currentSection == firstObjective?.location) {
+		if (currentSection == firstObjective?.position) {
 			objectiveCompleted()
 			return true
 		}
@@ -140,6 +150,7 @@ open class PathfindingEngine(
 	/** On the ticking of the controller */
 	override fun tick() {
 		if (!previousTask.isDone) return
+		if (ticks % tickInterval != 0) return
 
 		ticks++
 		navigate()
@@ -153,6 +164,7 @@ open class PathfindingEngine(
 			// See if the objective has changed
 			updatePathfinding()
 
+			debugAudience.information("Tracked sections size: ${trackedSections.size}")
 			debugAudience.information("Charted path size: ${chartedPath.size}")
 			debugAudience.highlightBlocks(chartedPath.map { it.center }, 5L)
 		}
@@ -165,10 +177,8 @@ open class PathfindingEngine(
 		exception.printStackTrace()
 	}
 
-	fun popFirst() = chartedPath.firstOrNull()
-
 	/** Poll at the charted path to get the flight direction to the first objective */
-	fun getNavPoint(): Vec3i? {
+	open fun getFirstNavPoint(): Vec3i? {
 		val destination = this.destination
 
 		var objective: Vec3i = getImmediateNavigationObjective()?.center ?: destination ?: return null

@@ -77,7 +77,10 @@ object AIControlUtils {
 			isFacing.leftFace -> starship.tryRotate(false)
 
 			// New direction is backwards, just rotate either way
-			isFacing.oppositeFace -> starship.tryRotate(true)
+			isFacing.oppositeFace -> {
+				starship.tryRotate(true)
+				starship.tryRotate(true)
+			}
 
 			else -> return
 		}
