@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.LocationObjectiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.VariableObjectiveController
 import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -80,7 +80,7 @@ open class PathfindingEngine(
 		AIPathfinding.adjustTrackedSections(this, loadChunks)
 
 		// Set the destination if it has changed
-		if (controller is LocationObjectiveAIController) {
+		if (controller is VariableObjectiveController) {
 			destination = controller.getObjective()
 		}
 
