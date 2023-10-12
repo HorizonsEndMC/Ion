@@ -12,17 +12,32 @@ import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companio
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
 import net.horizonsend.ion.server.features.space.generation.generators.GenerateChunk
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceGenerator
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SPACE_GEN_VERSION
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.cbukkit
+import net.horizonsend.ion.server.miscellaneous.utils.component1
+import net.horizonsend.ion.server.miscellaneous.utils.component2
+import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.ChunkPos
-import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.persistence.PersistentDataType.BYTE
 import java.util.Random
+import kotlin.collections.List
+import kotlin.collections.MutableMap
+import kotlin.collections.firstOrNull
+import kotlin.collections.isNotEmpty
+import kotlin.collections.listOf
+import kotlin.collections.listOfNotNull
+import kotlin.collections.minOf
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 import kotlin.math.ceil
 
 object SpaceGenerationManager : SLEventListener() {
@@ -48,53 +63,55 @@ object SpaceGenerationManager : SLEventListener() {
 
 	@Deprecated("Event Listener")
 	@EventHandler
-	fun onChunkLoadEvent(event: ChunkLoadEvent) = coroutineScope.launch {
-		val generator = getGenerator(event.world.minecraft) ?: return@launch//@runBlocking
-		if (event.chunk.persistentDataContainer.has(SPACE_GEN_VERSION)) return@launch//@runBlocking
+	fun onChunkLoadEvent(event: ChunkLoadEvent) {
+		coroutineScope.launch {
+			val generator = getGenerator(event.world.minecraft) ?: return@launch//@runBlocking
+			if (event.chunk.persistentDataContainer.has(SPACE_GEN_VERSION)) return@launch//@runBlocking
 
-		event.chunk.persistentDataContainer.set(SPACE_GEN_VERSION, BYTE, generator.spaceGenerationVersion)
+			event.chunk.persistentDataContainer.set(SPACE_GEN_VERSION, BYTE, generator.spaceGenerationVersion)
 
-		val chunkPos = event.chunk.minecraft.pos
+			val chunkPos = event.chunk.minecraft.pos
 
-		// Generate a number of random asteroids in a chunk, proportional to the density in a portion of the chunk. Allows densities of X>1 asteroid per chunk.
+			// Generate a number of random asteroids in a chunk, proportional to the density in a portion of the chunk. Allows densities of X>1 asteroid per chunk.
 
-		// Asteroids
-		val cornerX = chunkPos.x.shl(4)
-		val cornerZ = chunkPos.z.shl(4)
+			// Asteroids
+			val cornerX = chunkPos.x.shl(4)
+			val cornerZ = chunkPos.z.shl(4)
 
-		val acquiredAsteroids = search(
-			generator,
-			chunkPos,
-			-4207097,
-			1.0
-		) { chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z ->
-			val asteroid = generator.generateRandomAsteroid(chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z)
-			val distance = distance(cornerX, cornerZ, asteroid.x, asteroid.z)
-			if (distance > (asteroid.size * 1.25)) null else asteroid
-		}
-
-		val acquiredWrecks = if (generator.configuration.wreckClasses.isNotEmpty()) {
-			search(
+			val acquiredAsteroids = search(
 				generator,
 				chunkPos,
-				4207097,
-				generator.configuration.wreckMultiplier
-			) { _, chunkRandom, _, _, x, y, z ->
-				generator.generateRandomWreckData(chunkRandom, x, y, z)
+				-4207097,
+				1.0
+			) { chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z ->
+				val asteroid = generator.generateRandomAsteroid(chunkSeed, chunkRandom, maxHeight, minHeight, x, y, z)
+				val distance = distance(cornerX, cornerZ, asteroid.x, asteroid.z)
+				if (distance > (asteroid.size * 1.25)) null else asteroid
 			}
-		} else listOf()
 
-		if (acquiredAsteroids.isEmpty() && acquiredWrecks.isEmpty()) return@launch//@runBlocking
+			val acquiredWrecks = if (generator.configuration.wreckClasses.isNotEmpty()) {
+				search(
+					generator,
+					chunkPos,
+					4207097,
+					generator.configuration.wreckMultiplier
+				) { _, chunkRandom, _, _, x, y, z ->
+					generator.generateRandomWreckData(chunkRandom, x, y, z)
+				}
+			} else listOf()
 
-		handleGeneration(
-			GenerateChunk(
-				generator,
-				event.chunk.minecraft,
-				acquiredWrecks,
-				acquiredAsteroids
-			),
-			this
-		)
+			if (acquiredAsteroids.isEmpty() && acquiredWrecks.isEmpty()) return@launch//@runBlocking
+
+			handleGeneration(
+				GenerateChunk(
+					generator,
+					event.chunk.minecraft,
+					acquiredWrecks,
+					acquiredAsteroids
+				),
+				this
+			)
+		}
 	}
 
 	private fun <T> search(
