@@ -132,21 +132,22 @@ object AIControlUtils {
 		weaponSet: String? = null,
 		controllerLoc: Location? = null
 	) {
+		val damager = controller.damager
 		val originLocation = controllerLoc ?: controller.starship.centerOfMass.toLocation(controller.starship.world)
 
 		if (!leftClick) {
-			val elapsedSinceRightClick = System.nanoTime() - StarshipWeaponry.rightClickTimes.getOrDefault(controller, 0)
+			val elapsedSinceRightClick = System.nanoTime() - StarshipWeaponry.rightClickTimes.getOrDefault(damager, 0)
 
 			if (elapsedSinceRightClick > TimeUnit.MILLISECONDS.toNanos(250)) {
-				StarshipWeaponry.rightClickTimes[controller] = System.nanoTime()
+				StarshipWeaponry.rightClickTimes[damager] = System.nanoTime()
 				return
 			}
 
-			StarshipWeaponry.rightClickTimes.remove(controller)
+			StarshipWeaponry.rightClickTimes.remove(damager)
 		}
 
 		StarshipWeaponry.manualFire(
-			controller,
+			controller.damager,
 			controller.starship,
 			leftClick,
 			yawToBlockFace(controller.yaw.roundToInt()),

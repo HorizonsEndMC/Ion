@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -40,7 +41,7 @@ open class StarfighterCombatAIController(
 	starship: ActiveStarship,
 	final override var target: ActiveStarship?,
 	aggressivenessLevel: AggressivenessLevel
-) : AIController(starship, "StarfighterCombatMatrix", aggressivenessLevel),
+) : AIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController,
 	ActiveAIController {
 	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target, target?.let { getStandoffDistance(it) } ?: 25.0)
