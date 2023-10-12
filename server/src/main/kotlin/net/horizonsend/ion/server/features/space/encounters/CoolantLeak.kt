@@ -14,8 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
-import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
-import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -33,7 +31,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 	private const val MAX_RADIUS = 15.0
 	private const val MAX_ATTEMPTS = 500
 
-	private fun getLever(chest: Chest): BlockPos = BlockPos(
+	private fun getLever(chest: Chest): Vec3i = Vec3i(
 		(Encounters.getChestFlag(chest, X))!!.toInt(),
 		(Encounters.getChestFlag(chest, Y))!!.toInt(),
 		(Encounters.getChestFlag(chest, Z))!!.toInt()
@@ -85,7 +83,7 @@ object CoolantLeak : Encounter(identifier = "coolant_leak") {
 		var iteration = 0
 		val leverPos = getLever(chest)
 
-		highlightBlock(event.player, leverPos.below().toVec3i(), (MAX_ATTEMPTS * 2).toLong())
+		highlightBlock(event.player, leverPos.below(), (MAX_ATTEMPTS * 2).toLong())
 
 		val iceTypes = listOf(
 			Material.ICE,

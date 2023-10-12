@@ -15,7 +15,6 @@ import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.minecraft.core.BlockPos
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -69,11 +68,7 @@ class Vec3i: DBVec3i {
 
 	constructor(location: Location) : super(location.blockX, location.blockY, location.blockZ)
 
-	constructor(blockPos: BlockPos) : super(blockPos.x, blockPos.y, blockPos.z)
-
 	constructor(vector: BlockVector3) : super(vector.blockX, vector.blockY, vector.blockZ)
-
-	override fun toString() = "$x,$y,$z"
 
 	fun toLocation(world: World): Location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 
@@ -97,6 +92,8 @@ class Vec3i: DBVec3i {
 	 * @return A new vector with the values subtracted
 	 **/
 	operator fun minus(other: Vec3i) = Vec3i(x - other.x, y - other.y, z - other.z)
+
+	fun below(blocks: Int = 1) = Vec3i(x, y - blocks, z)
 	operator fun times(m: Double): Vec3i = Vec3i((x * m).toInt(), (y * m).toInt(), (z * m).toInt())
 	operator fun times(m: Int): Vec3i = Vec3i((x * m), (y * m), (z * m))
 }
