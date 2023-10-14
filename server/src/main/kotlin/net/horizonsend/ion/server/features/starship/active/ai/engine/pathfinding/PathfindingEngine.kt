@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding
 
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.VariableObjectiveController
 import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
@@ -24,22 +24,11 @@ open class PathfindingEngine(
 	controller: AIController,
 	var destination: Vec3i?
 ) : AIEngine(controller) {
-	open val tickInterval: Int = 1
-	var lastCompletedSection = AIPathfinding.SectionNode(world, getSectionPositionOrigin(), true)
-
-	/** Polls the charted path for the first position in the path */
-	private fun getImmediateNavigationObjective(): AIPathfinding.SectionNode? = chartedPath.minByOrNull {
-		val origin = getSectionPositionOrigin()
-		val (x, y, z) = origin
-
-		// Don't navigate to a completed objective
-		if (it.position == origin || it.position == lastCompletedSection.position) {
-			lastCompletedSection = it
-			return@minByOrNull Double.MAX_VALUE
-		}
-
-		it.position.distance(x, y, z)
+	open fun passToMovementEngine(movementEngine: MovementEngine) {
+		movementEngine.destination = getFirstNavPoint()
 	}
+
+	open val tickInterval: Int = 1
 
 	/** Update the tracked environment around the ship */
 	var center: Vec3i? = null
@@ -60,7 +49,7 @@ open class PathfindingEngine(
 	val trackedSections = mutableSetOf<AIPathfinding.SectionNode>()
 
 	/** General update task for pathfinding */
-	private fun updatePathfinding() {
+	fun updatePathfinding() {
 		val newCenter = getSectionPositionOrigin()
 
 		// It has not left the old section center, return
@@ -96,7 +85,6 @@ open class PathfindingEngine(
 
 	/** Updates the stored path with  */
 	private fun updateChartedPath() {
-		println("Destination: $destination")
 		val destination = this.destination ?: return
 		debugAudience.debug("Updating Charted Path")
 
@@ -109,23 +97,6 @@ open class PathfindingEngine(
 		for (point in points) {
 			chartedPath.offer(point)
 		}
-	}
-
-	/**
-	 * Checks to see if it has reached the first objective
-	 *
-	 * @return true if it has, false otherwise
-	 **/
-	private fun checkObjective(): Boolean {
-		val currentSection = getSectionPositionOrigin()
-		val firstObjective = getImmediateNavigationObjective()
-
-		if (currentSection == firstObjective?.position) {
-			objectiveCompleted()
-			return true
-		}
-
-		return false
 	}
 
 	/** Once the first objective in pathfinding has been reached, remove it from the queue. */
@@ -157,15 +128,13 @@ open class PathfindingEngine(
 	}
 
 	/** Main navigation loop */
-	private fun navigate(): Future<*> = submitTask {
+	open fun navigate(): Future<*> = submitTask {
 		previousTask = CompletableFuture<Any>()
 
 		val run = runCatching {
 			// See if the objective has changed
 			updatePathfinding()
 
-			debugAudience.information("Tracked sections size: ${trackedSections.size}")
-			debugAudience.information("Charted path size: ${chartedPath.size}")
 			debugAudience.highlightBlocks(chartedPath.map { it.center }, 5L)
 		}
 
@@ -189,7 +158,21 @@ open class PathfindingEngine(
 		return objective
 	}
 
-	private fun getDistanceSquaredToDestination(): Int? = destination?.let { distanceSquared(getCenterVec3i(), Vec3i(it)) }
+	private var lastCompletedSection = AIPathfinding.SectionNode(world, getSectionPositionOrigin(), true)
+	/** Polls the charted path for the first position in the path */
+	private fun getImmediateNavigationObjective(): AIPathfinding.SectionNode? = chartedPath.minByOrNull {
+		val origin = getSectionPositionOrigin()
+		val (x, y, z) = origin
 
+		// Don't navigate to a completed objective
+		if (it.position == origin || it.position == lastCompletedSection.position) {
+			lastCompletedSection = it
+			return@minByOrNull Double.MAX_VALUE
+		}
+
+		it.position.distance(x, y, z)
+	}
+
+	private fun getDistanceSquaredToDestination(): Int? = destination?.let { distanceSquared(getCenterVec3i(), Vec3i(it)) }
 	private fun submitTask(task: () -> Unit) = AIManager.navigationThread.submit(task)
 }

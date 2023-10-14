@@ -250,6 +250,7 @@ object AIPathfinding {
 		if (neighbors.isEmpty()) throw PathfindingException("No neighbors for $previousNode!")
 
 		neighbors.forEach { if (it == destinationNode) return it }
+		if (!previousNode.navigable) return neighbors.firstOrNull { it.navigable }
 
 		return neighbors
 			.filter { it.navigable }
