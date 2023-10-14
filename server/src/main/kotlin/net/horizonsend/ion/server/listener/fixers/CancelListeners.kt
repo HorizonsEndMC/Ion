@@ -4,6 +4,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.world.entity.item.ItemEntity
 import org.bukkit.Material
@@ -12,6 +14,8 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
+import org.bukkit.event.block.BlockPistonExtendEvent
+import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
@@ -142,6 +146,20 @@ class CancelListeners : SLEventListener() {
 		if (event.entity !is ItemEntity) return
 
 		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
+		if (event.block.getRelativeIfLoaded(event.direction)?.getTypeSafe() == Material.BROWN_MUSHROOM_BLOCK) {
+            event.isCancelled = true
+		}
+	}
+
+	@EventHandler
+	fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
+		if (event.block.getRelativeIfLoaded(event.direction)?.getTypeSafe() == Material.BROWN_MUSHROOM_BLOCK) {
+			event.isCancelled = true
+		}
 	}
 
 	//TODO cancel recipes requiring iron supplied with custom items
