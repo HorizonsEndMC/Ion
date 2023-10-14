@@ -4,8 +4,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
-import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.world.entity.item.ItemEntity
 import org.bukkit.Material
@@ -150,15 +148,15 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler
 	fun onBlockPistonExtendEvent(event: BlockPistonExtendEvent) {
-		if (event.block.getRelativeIfLoaded(event.direction)?.getTypeSafe() == Material.BROWN_MUSHROOM_BLOCK) {
+		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
             event.isCancelled = true
 		}
 	}
 
 	@EventHandler
 	fun onBlockPistonRetractEvent(event: BlockPistonRetractEvent) {
-		if (event.block.getRelativeIfLoaded(event.direction)?.getTypeSafe() == Material.BROWN_MUSHROOM_BLOCK) {
-			event.isCancelled = true
+		if (event.blocks.any { it.type == Material.BROWN_MUSHROOM_BLOCK }) {
+            event.isCancelled = true
 		}
 	}
 
