@@ -68,6 +68,11 @@ object DiscordPlayerInfoCommand : IonDiscordCommand() {
 			slPlayer.level.toString(),
 			true
 		)
+		val bountyField = MessageEmbed.Field(
+			"Bounty:",
+			slPlayer.bounty.toString(),
+			true
+		)
 
 		val time: Long = System.currentTimeMillis() - slPlayer.lastSeen.time
 		val prefix: String = when {
@@ -85,6 +90,7 @@ object DiscordPlayerInfoCommand : IonDiscordCommand() {
 			nationInfo,
 			xpField,
 			levelField,
+			bountyField,
 			onlineField
 		)
 
