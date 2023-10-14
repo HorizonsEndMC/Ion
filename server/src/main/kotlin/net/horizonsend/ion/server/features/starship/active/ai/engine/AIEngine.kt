@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine
 
+import co.aikar.commands.ConditionFailedException
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -18,6 +19,8 @@ abstract class AIEngine(val controller: AIController) {
 	open fun tick() {}
 
 	open fun onMove(movement: StarshipMovement) {}
+
+	open fun onBlocked(movement: StarshipMovement, reason: ConditionFailedException) {}
 
 	open fun onDamaged(damager: Damager) {}
 

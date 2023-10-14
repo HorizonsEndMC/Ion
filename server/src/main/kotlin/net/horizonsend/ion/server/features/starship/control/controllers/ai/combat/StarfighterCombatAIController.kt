@@ -10,13 +10,10 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.Sh
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
-import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
@@ -41,9 +38,8 @@ open class StarfighterCombatAIController(
 	starship: ActiveStarship,
 	final override var target: ActiveStarship?,
 	aggressivenessLevel: AggressivenessLevel
-) : AIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
-	CombatAIController,
-	ActiveAIController {
+) : ActiveAIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
+	CombatAIController {
 	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target, target?.let { getStandoffDistance(it) } ?: 25.0)
 	override var pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
 	override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)
@@ -150,15 +146,6 @@ open class StarfighterCombatAIController(
 		}
 	}
 
-	override fun onMove(movement: StarshipMovement) {
-		passMovement(movement)
-	}
-
-	override fun onDamaged(damager: Damager) {
-		aggressivenessLevel.onDamaged(this, damager)
-		passDamage(damager)
-	}
-
 	/**
 	 * Goals of this AI:
 	 *
@@ -170,6 +157,8 @@ open class StarfighterCombatAIController(
 
 	override fun tick() {
 		val ok = checkOnTarget()
+
+		if (target == null) aggressivenessLevel.findNextTarget(this)
 		val target = this.target ?: return
 
 		if (!ok) {
