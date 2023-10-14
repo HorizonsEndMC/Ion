@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.inter
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
@@ -33,11 +32,10 @@ class AutoCruiseAIController(
 	var maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
 	val combatController: (AIController, ActiveStarship) -> AIController
-) : AIController(starship, "autoCruise", AIShipDamager(starship), aggressivenessLevel),
-	NeutralAIController,
-	ActiveAIController {
+) : ActiveAIController(starship, "autoCruise", AIShipDamager(starship), aggressivenessLevel),
+	NeutralAIController {
 	override var pathfindingEngine = PathfindIfBlockedEngine(this, Vec3i(destination))
-	override var movementEngine = CruiseEngine(this, Vec3i(destination))
+	override var movementEngine = CruiseEngine(this, Vec3i(destination), CruiseEngine.ShiftFlightType.IF_BLOCKED_AND_MATCH_Y)
 	override var positioningEngine = BasicPositioningEngine(this, destination)
 
 	var ticks = 0
@@ -107,12 +105,8 @@ class AutoCruiseAIController(
 		return combatController(controller, target)
 	}
 
-	override fun onMove(movement: StarshipMovement) {
-		passMovement(movement)
-	}
-
 	override fun onDamaged(damager: Damager) {
-		passDamage(damager)
+		super.onDamaged(damager)
 		if (damager is Controller) return combatMode(this, damager.starship)
 	}
 }
