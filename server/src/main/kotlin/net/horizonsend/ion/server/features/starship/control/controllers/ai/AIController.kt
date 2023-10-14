@@ -25,10 +25,10 @@ abstract class AIController(
 	starship: ActiveStarship,
 	name: String,
 	damager: Damager,
-	override val aggressivenessLevel: AggressivenessLevel
+	final override val aggressivenessLevel: AggressivenessLevel //TODO move this to superclasses later
 ) : Controller(damager, starship, name),
 	AggressiveLevelAIController {
-	override val pilotName: Component get() = Component.text()
+	override val pilotName: Component = Component.text()
 		.append(Component.text("AI Controller "))
 		.append(aggressivenessLevel.displayName)
 		.build()
@@ -62,7 +62,7 @@ abstract class AIController(
 		val players = location.getNearbyPlayers(160.0)
 
 		for (player in players) {
-			player.highlightBlock(computerLoc, 2L)
+			player.highlightBlock(computerLoc, 5L)
 		}
 	}
 
@@ -132,4 +132,6 @@ abstract class AIController(
 	override fun toString(): String {
 		return "$name[${starship.identifier}]"
 	}
+
+	val blocked get() = (starship as ActiveControlledStarship).lastBlockedTime > System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(5)
 }

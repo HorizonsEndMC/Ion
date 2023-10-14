@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers
 
+import co.aikar.commands.ConditionFailedException
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -38,6 +39,9 @@ abstract class Controller(
 
 	/** Called when the ship moves. */
 	open fun onMove(movement: StarshipMovement) {}
+
+	/** Called when the ship's movement is blocked */
+	open fun onBlocked(movement: StarshipMovement, reason: ConditionFailedException) {}
 
 	/** Called when a damager is added, or incremented */
 	open fun onDamaged(damager: Damager) {}
