@@ -29,9 +29,42 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 		origin: Location,
 		stopCruising: Boolean = false
 	) = Tasks.sync {
-		val destination = this.destination
+		val starship = controller.starship as ActiveControlledStarship
+		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
 
+		val destination = this.destination
 		AIControlUtils.shiftFlyToLocation(controller, starshipLocation, destination)
+	}
+
+	open fun shiftFlyTowardsBlockFace(
+		blockFace: BlockFace,
+		stopCruising: Boolean = false
+	) = Tasks.sync {
+		val starship = controller.starship as ActiveControlledStarship
+		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
+
+		AIControlUtils.shiftFlyInDirection(controller, blockFace.direction)
+	}
+
+	open fun shiftFlyInDirection(
+		direction: Vector,
+		stopCruising: Boolean = false
+	) = Tasks.sync {
+		val starship = controller.starship as ActiveControlledStarship
+		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
+
+		AIControlUtils.shiftFlyInDirection(controller, direction)
+	}
+
+	open fun shiftFlyToVec3i(
+		origin: Location,
+		destination: Vec3i?,
+		stopCruising: Boolean = false
+	) = Tasks.sync {
+		val starship = controller.starship as ActiveControlledStarship
+		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
+
+		AIControlUtils.shiftFlyToLocation(controller, Vec3i(origin), destination)
 	}
 
 	/** Faces the target */
@@ -95,16 +128,14 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 			return
 		}
 
-		if (starship.cruiseData.targetDir == direction.normalize()) return
-
 		Tasks.sync { StarshipCruising.startCruising(controller, starship, direction) }
 	}
 
-	fun stopCruising() {
+	fun stopCruising(immediate: Boolean = false) {
 		val starship = controller.starship as ActiveControlledStarship
 
 		val isCruising = StarshipCruising.isCruising(starship)
 
-		if (isCruising) StarshipCruising.stopCruising(controller, starship)
+		if (isCruising) if (immediate) StarshipCruising.forceStopCruising(starship) else StarshipCruising.stopCruising(controller, starship)
 	}
 }

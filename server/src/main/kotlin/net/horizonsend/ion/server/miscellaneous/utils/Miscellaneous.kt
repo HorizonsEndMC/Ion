@@ -160,7 +160,7 @@ fun buildStructureBlock(minPoint: Vec3i, maxPoint: Vec3i, message: String = ""):
 	val state = block.defaultBlockState()
 
 	val (x, y, z) = minPoint
-	val blockPos = BlockPos(x + 8, y + 8, z + 8)
+	val blockPos = BlockPos(x, y - 1, z)
 
 	val xDiff = maxPoint.x - minPoint.x
 	val yDiff = maxPoint.y - minPoint.y
