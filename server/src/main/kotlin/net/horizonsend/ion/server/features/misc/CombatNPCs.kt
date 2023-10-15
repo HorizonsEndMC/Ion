@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.features.misc
 
-import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.event.NPCDamageEvent
 import net.citizensnpcs.api.event.NPCDeathEvent
-import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -16,6 +14,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
 import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -62,7 +61,7 @@ object CombatNPCs : IonServerComponent(true) {
 			lastJoinMap[playerId] = System.currentTimeMillis()
 		}
 
-		combatNpcRegistry = CitizensAPI.createNamedNPCRegistry("combat-npcs", MemoryNPCDataStore())
+		combatNpcRegistry = createNamedMemoryRegistry("combat-npcs")
 
 		//when a player quits, create a combat npc
 		listen<PlayerQuitEvent> { event ->
