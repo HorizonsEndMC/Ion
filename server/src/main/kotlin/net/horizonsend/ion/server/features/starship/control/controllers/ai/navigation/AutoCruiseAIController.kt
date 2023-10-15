@@ -4,13 +4,12 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.BasicPositioningEngine
-import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
@@ -31,7 +30,7 @@ class AutoCruiseAIController(
 	var destination: Location,
 	var maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
-	val combatController: (AIController, ActiveStarship) -> AIController
+	val combatController: (AIController, AITarget) -> AIController
 ) : ActiveAIController(starship, "autoCruise", AIShipDamager(starship), aggressivenessLevel),
 	NeutralAIController {
 	override var pathfindingEngine = PathfindIfBlockedEngine(this, Vec3i(destination))
@@ -45,10 +44,8 @@ class AutoCruiseAIController(
 	val direction: Vector get() = destination.toVector().subtract(getCenter().toVector())
 
 	/** Checks for nearby aggressive ships to enter a combat mode */
-	private fun searchNearbyShips() {
-		val nearbyShip = getNearbyShips(0.0, aggressivenessLevel.engagementDistance) { starship, _ ->
-			starship.controller !is AIController
-		}.firstOrNull()
+	private fun searchNearbyShips() = Tasks.sync {
+		val nearbyShip = aggressivenessLevel.getNearbyTargets(this)
 
 		// Switch to combat controller if nearby ship meets criteria
 		nearbyShip?.let { starship.controller = combatController(this, it) }
@@ -101,12 +98,7 @@ class AutoCruiseAIController(
 		super.tick()
 	}
 
-	override fun createCombatController(controller: AIController, target: ActiveStarship): AIController {
+	override fun createCombatController(controller: AIController, target: AITarget): AIController {
 		return combatController(controller, target)
-	}
-
-	override fun onDamaged(damager: Damager) {
-		super.onDamaged(damager)
-		if (damager is Controller) return combatMode(this, damager.starship)
 	}
 }

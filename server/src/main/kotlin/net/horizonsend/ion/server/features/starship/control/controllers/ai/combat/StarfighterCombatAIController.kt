@@ -4,12 +4,13 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
@@ -36,13 +37,13 @@ import kotlin.math.pow
  **/
 open class StarfighterCombatAIController(
 	starship: ActiveStarship,
-	final override var target: ActiveStarship?,
+	final override var target: AITarget?,
 	aggressivenessLevel: AggressivenessLevel
 ) : ActiveAIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController {
-	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target, target?.let { getStandoffDistance(it) } ?: 25.0)
-	override var pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
-	override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.centerOfMass)
+	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
+	override var pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.getVec3i())
+	override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.getVec3i())
 
 	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
 	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
@@ -58,7 +59,7 @@ open class StarfighterCombatAIController(
 		.append(aggressivenessLevel.displayName)
 		.build()
 
-	override var locationObjective: Location? = target?.let { it.centerOfMass.toLocation(it.world) }
+	override var locationObjective: Location? = target?.getLocation()
 
 	/** Current state of the AI */
 	var state: State = State.FOCUS_LOCATION
@@ -94,13 +95,14 @@ open class StarfighterCombatAIController(
 		val target = this.target ?: return false
 
 		val location = getCenter()
-		val targetLocation = target.centerOfMass.toVector()
+		val targetLocationVector = target.getVec3i().toVector()
+		val targetLocation = target.getLocation()
 
-		if (!ActiveStarships.isActive(target)) return false
+		if (!target.isActive()) return false
 
-		if (target.world != starship.world) {
+		if (target.getWorld() != starship.world) {
 			// If null, they've likely jumped to hyperspace, disengage
-			val planet = Space.planetWorldCache[target.world].getOrNull() ?: return false
+			val planet = Space.planetWorldCache[target.getWorld()].getOrNull() ?: return false
 
 			// Only if it is very aggressive, follow the target to the planet they entered
 			if (aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal) {
@@ -114,7 +116,7 @@ open class StarfighterCombatAIController(
 			return false
 		}
 
-		val distance = distance(location.toVector(), targetLocation)
+		val distance = distance(location.toVector(), targetLocationVector)
 
 		return when {
 			// Check if they've moved out of range
@@ -122,7 +124,7 @@ open class StarfighterCombatAIController(
 
 				// Keep pursuing if aggressive, else out of range and should disengage
 				if (aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal) {
-					locationObjective = targetLocation.toLocation(target.world)
+					locationObjective = targetLocation
 					state = State.FOCUS_LOCATION
 					return true
 				}
@@ -132,7 +134,7 @@ open class StarfighterCombatAIController(
 
 			// They are getting far away so focus on moving towards them
 			(distance in 500.0..aggressivenessLevel.engagementDistance) -> {
-				locationObjective = targetLocation.toLocation(target.world)
+				locationObjective = targetLocation
 				state = State.FOCUS_LOCATION
 				true
 			}
@@ -166,9 +168,14 @@ open class StarfighterCombatAIController(
 			return
 		}
 
-		positioningEngine.standoffDistance = getStandoffDistance(target)
+		if (target is StarshipTarget) {
+			positioningEngine.standoffDistance = getStandoffDistance(target.ship)
+		} else {
+			positioningEngine.standoffDistance = 10.0
+		}
 		tickAll()
 
+		handleAutoWeapons(starship.centerOfMass)
 		if (state == State.COMBAT) combatLoop()
 
 		super.tick()
@@ -180,11 +187,11 @@ open class StarfighterCombatAIController(
 		// Get the closest axis
 		(starship as ActiveControlledStarship).speedLimit = -1
 
-		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), Vec3i(target.blocks.random())), includeVertical = false)
+		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
 
 		fireAllWeapons(
 			starship.centerOfMass,
-			target.centerOfMass,
+			target.getVec3i(true),
 			faceDirection = faceDirection
 		) { direction ->
 			if (aggressivenessLevel.shotDeviation > 0) {
