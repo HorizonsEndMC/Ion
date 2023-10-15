@@ -3,12 +3,13 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai.comb
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.CirclingPositionEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
@@ -33,17 +34,17 @@ import kotlin.jvm.optionals.getOrNull
  **/
 class FrigateCombatAIController(
 	starship: ActiveStarship,
-	override var target: ActiveStarship?,
+	override var target: AITarget?,
 	aggressivenessLevel: AggressivenessLevel,
 	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>,
 	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
 ): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController {
-	override val pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.centerOfMass)
-	override val movementEngine: MovementEngine = CruiseEngine(this, target?.centerOfMass, CruiseEngine.ShiftFlightType.ALL)
-	override val positioningEngine = CirclingPositionEngine(this, target?.centerOfMass, 240.0)
+	override val pathfindingEngine: PathfindingEngine = PathfindIfBlockedEngine(this, target?.getVec3i())
+	override val movementEngine: MovementEngine = CruiseEngine(this, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL)
+	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
 
-	override var locationObjective: Location? = target?.let { it.centerOfMass.toLocation(it.world) }
+	override var locationObjective: Location? = target?.let { it.getLocation() }
 
 	val lastBlockedTime get() = (starship as ActiveControlledStarship).lastBlockedTime
 
@@ -57,7 +58,7 @@ class FrigateCombatAIController(
 
 		if (!ok) aggressivenessLevel.disengage(this)
 
-		positioningEngine.target = target.centerOfMass
+//		positioningEngine.target = target.centerOfMass
 		tickAll()
 	}
 
@@ -70,13 +71,13 @@ class FrigateCombatAIController(
 		val target = this.target ?: return false
 
 		val location = getCenter()
-		val targetLocation = target.centerOfMass.toVector()
+		val targetLocation = target.getVec3i().toVector()
 
-		if (!ActiveStarships.isActive(target)) return false
+		if (!target.isActive()) return false
 
-		if (target.world != starship.world) {
+		if (target.getWorld() != starship.world) {
 			// If null, they've likely jumped to hyperspace, disengage
-			val planet = Space.planetWorldCache[target.world].getOrNull() ?: return false
+			val planet = Space.planetWorldCache[target.getWorld()].getOrNull() ?: return false
 
 			// Only if it is very aggressive, follow the target to the planet they entered
 			if (aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal) {
@@ -97,7 +98,7 @@ class FrigateCombatAIController(
 
 				// Keep pursuing if aggressive, else out of range and should disengage
 				if (aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal) {
-					locationObjective = targetLocation.toLocation(target.world)
+					locationObjective = targetLocation.toLocation(target.getWorld())
 					return true
 				}
 
@@ -106,7 +107,7 @@ class FrigateCombatAIController(
 
 			// They are getting far away so focus on moving towards them
 			(distance in 500.0..aggressivenessLevel.engagementDistance) -> {
-				locationObjective = targetLocation.toLocation(target.world)
+				locationObjective = targetLocation.toLocation(target.getWorld())
 				true
 			}
 

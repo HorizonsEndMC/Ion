@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.combat
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
@@ -15,7 +16,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils
  **/
 class TemporaryStarfighterCombatAIController(
 	starship: ActiveStarship,
-	target: ActiveStarship?,
+	target: AITarget?,
 	aggressivenessLevel: AggressivenessLevel,
 	override val previousController: AIController,
 ) : StarfighterCombatAIController(starship, target, aggressivenessLevel),
