@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -14,14 +14,14 @@ import org.bukkit.util.Vector
  **/
 class AxisStandoffPositioningEngine(
 	controller: AIController,
-	var target: ActiveStarship?,
+	var target: AITarget?,
 	var standoffDistance: Double
 ) : PositioningEngine(controller) {
 	fun getAxisPoint(): Vector {
 		val target = target ?: return controller.getCenter().toVector()
 
 		val shipLocation = getCenter().toVector()
-		val targetLocation = target.centerOfMass.toVector()
+		val targetLocation = target.getVec3i().toVector()
 
 		val vectors = CARDINAL_BLOCK_FACES.map {
 			val vec = it.direction.multiply(200)
