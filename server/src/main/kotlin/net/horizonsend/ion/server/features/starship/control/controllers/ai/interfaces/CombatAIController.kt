@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai.inte
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -13,7 +14,7 @@ import org.bukkit.util.Vector
 
 interface CombatAIController : VariableObjectiveController {
 	val starship: ActiveStarship
-	var target: ActiveStarship?
+	var target: AITarget?
 
 	// Weapon sets
 	val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
@@ -73,7 +74,7 @@ interface CombatAIController : VariableObjectiveController {
 		if (this !is AIController) return
 
 		val (x, y, z) = origin
-		val distance = target.centerOfMass.distance(x, y, z)
+		val distance = target.getVec3i(true).distance(x, y, z)
 		val weaponSet = autoWeaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
 
 		if (weaponSet == null) {
@@ -81,6 +82,6 @@ interface CombatAIController : VariableObjectiveController {
 			return
 		}
 
-		AIControlUtils.setAutoWeapons(this, weaponSet, target)
+		AIControlUtils.setAutoWeapons(this, weaponSet, target.getAutoTurretTarget())
 	}
 }
