@@ -6,6 +6,9 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWea
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
+import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralBlockItem
+import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
+import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralOreItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
@@ -27,7 +30,10 @@ import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
+import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_HOE
+import org.bukkit.Material.IRON_INGOT
+import org.bukkit.Material.IRON_ORE
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
@@ -299,6 +305,60 @@ object CustomItems {
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
 			displayName = canisterName(text("Carbon Dioxide", BLUE))
+		) {}
+	)
+
+	val ALUMINUM = register(
+		object : MineralItem(
+			identifier = "ALUMINUM",
+			material = IRON_INGOT,
+			customModelData = 1,
+			displayName = text("Aluminum").decoration(ITALIC, false)
+		) {}
+	)
+
+	val CHETHERITE = register(
+		object : MineralItem(
+			identifier = "CHETHERITE",
+			material = IRON_INGOT,
+			customModelData = 2,
+			displayName = text("Chetherite").decoration(ITALIC, false)
+		) {}
+	)
+
+	val ALUMINUM_ORE = register(
+		object : MineralOreItem(
+			identifier = "ALUMINUM_ORE",
+			material = IRON_ORE,
+			customModelData = 1,
+			displayName = text("Aluminum Ore").decoration(ITALIC, false)
+		) {}
+	)
+
+	val CHETHERITE_ORE = register(
+		object : MineralOreItem(
+			identifier = "CHETHERITE_ORE",
+			material = IRON_ORE,
+			customModelData = 2,
+			displayName = text("Chetherite Ore").decoration(ITALIC, false)
+		) {}
+	)
+
+	val ALUMINUM_BLOCK = register(
+		object : MineralBlockItem(
+			identifier = "ALUMINUM_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 1,
+			displayName = text("Aluminum Block").decoration(ITALIC, false)
+		) {}
+	)
+
+	val CHETHERITE_BLOCK = register(
+		object : MineralBlockItem(
+			identifier = "CHETHERITE_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 2,
+			displayName = text("Chetherite Block").decoration(ITALIC, false)
 		) {}
 	)
 
