@@ -45,6 +45,7 @@ object MassShadows {
 		}
 
 		for (otherShip in ActiveStarships.getInWorld(realWorld)) {
+			if (!ActiveStarships.isActive(otherShip)) continue
 			if (!otherShip.isInterdicting) {
 				continue
 			}
