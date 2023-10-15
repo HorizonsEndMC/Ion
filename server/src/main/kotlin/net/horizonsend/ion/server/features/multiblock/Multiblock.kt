@@ -17,6 +17,8 @@ abstract class Multiblock {
 
 	abstract val signText: Array<Component?>
 
+	open val requiredPermission: String? = null
+
 	open fun matchesSign(lines: Array<Component>): Boolean {
 		for (i in 0..3) {
 			if (signText[i] != null && signText[i] != lines[i]) {

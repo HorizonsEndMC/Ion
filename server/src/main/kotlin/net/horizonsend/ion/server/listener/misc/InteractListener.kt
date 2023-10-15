@@ -1,16 +1,18 @@
 package net.horizonsend.ion.server.listener.misc
 
 import net.horizonsend.ion.common.extensions.successActionMessage
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.setPower
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
+import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import org.bukkit.GameMode
@@ -88,9 +90,16 @@ object InteractListener : SLEventListener() {
 	fun handleMultiblockInteract(event: PlayerInteractEvent) {
 		if (event.hand != EquipmentSlot.HAND) return
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
+		val player = event.player
 
 		val sign = event.clickedBlock?.getState(false) as? Sign ?: return
-		(Multiblocks[sign, true, false] as? InteractableMultiblock)?.onSignInteract(sign, event.player, event)
+		(Multiblocks[sign, true, false] as? InteractableMultiblock)?.let { multiblock ->
+			(multiblock as Multiblock).requiredPermission?.let { permission ->
+				if (!player.hasPermission(permission)) return player.userError("You don't have permission to use that multiblock!")
+			}
+
+			multiblock.onSignInteract(sign, player, event)
+		}
 	}
 
 	// Disable beds

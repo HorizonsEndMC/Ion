@@ -36,6 +36,7 @@ abstract class AutoCrafterMultiblock(
 	private val iterations: Int
 ) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name = "autocrafter"
+	override val requiredPermission: String? = "ion.multiblock.autocrafter"
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

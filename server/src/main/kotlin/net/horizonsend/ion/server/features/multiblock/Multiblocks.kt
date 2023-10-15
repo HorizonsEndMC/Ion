@@ -10,6 +10,9 @@ import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield20
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield30
 import net.horizonsend.ion.server.features.multiblock.areashield.AreaShield5
+import net.horizonsend.ion.server.features.multiblock.autocrafter.AutoCrafterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.autocrafter.AutoCrafterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.autocrafter.AutoCrafterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.charger.ChargerMultiblockTier3
@@ -215,7 +218,11 @@ object Multiblocks : IonServerComponent() {
 			GasPowerPlantMultiblock,
 			VentMultiblock,
 
-			LandingGearMultiblock
+			LandingGearMultiblock,
+
+			AutoCrafterMultiblockTier1,
+			AutoCrafterMultiblockTier2,
+			AutoCrafterMultiblockTier3,
 		)
 	}
 
@@ -300,6 +307,10 @@ object Multiblocks : IonServerComponent() {
 		for (multiblock in multiblocks) {
 			if (multiblock.matchesUndetectedSign(sign)) {
 				if (multiblock.signMatchesStructure(sign, particles = true)) {
+					multiblock.requiredPermission?.let {
+						if (!player.hasPermission(it)) return player.userError("You don't have permission to use that multiblock!")
+					}
+
 					event.player.rewardAchievement(Achievement.DETECT_MULTIBLOCK)
 					return multiblock.setupSign(player, sign)
 				} else {
