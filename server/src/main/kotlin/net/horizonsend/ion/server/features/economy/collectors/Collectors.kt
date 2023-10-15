@@ -1,16 +1,16 @@
 package net.horizonsend.ion.server.features.economy.collectors
 
 import net.citizensnpcs.api.CitizensAPI
-import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
 import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
+import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
+import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.loadChunkAsync
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -20,8 +20,6 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
 object Collectors : IonServerComponent(true) {
-	private val isCitizensLoaded get() = IonServer.server.pluginManager.isPluginEnabled("Citizens")
-
 	private lateinit var citizensRegistry: NPCRegistry
 
 	private const val npcRegistryName = "trade-collectors"
@@ -54,8 +52,7 @@ object Collectors : IonServerComponent(true) {
 		clearCitizenNPCs()
 		npcStationCache.clear()
 
-		val dataStore = MemoryNPCDataStore()
-		citizensRegistry = CitizensAPI.createNamedNPCRegistry(npcRegistryName, dataStore)
+		citizensRegistry = createNamedMemoryRegistry(npcRegistryName)
 
 		for (ecoStation in EcoStation.all()) {
 			val world = Bukkit.getWorld(ecoStation.world) ?: continue
