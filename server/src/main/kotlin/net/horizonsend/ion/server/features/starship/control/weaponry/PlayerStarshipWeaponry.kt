@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry.manualFire
@@ -94,7 +93,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		clock: ItemStack
 	) {
 		// Mantain multicrew capabilities by creating a player damager if they're not the pilot
-		val damager = ActivePlayerController[player] ?: player.damager(starship)
+		val damager = player.damager(starship)
 
 		val loc = player.eyeLocation
 		val playerFacing = player.facing

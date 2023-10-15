@@ -1,12 +1,17 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.utils
 
-import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
+import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.AggressiveLevelAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
+import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -31,11 +36,12 @@ enum class AggressivenessLevel(
 			.build()
 	) {
 		override fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {
-			if (damager !is Controller) return
-
 			if (controller is CombatAIController && controller.target != null) return
 
-			if (controller is NeutralAIController) controller.combatMode(controller as AIController, damager.starship)
+			if (controller is NeutralAIController) when (damager) {
+				is AIShipDamager -> controller.combatMode(controller as AIController, StarshipTarget(damager.starship))
+				is PlayerDamager -> controller.combatMode(controller as AIController, PlayerTarget(damager.player))
+			}
 		}
 	  },
 	LOW(
@@ -101,14 +107,19 @@ enum class AggressivenessLevel(
 		controller.returnToPreviousController()
 	}
 
-	fun findNextTarget(controller: AIController) {
-		if (controller !is CombatAIController) return
+	fun findNextTarget(controller: AIController) = Tasks.sync {
+		if (controller !is CombatAIController) return@sync
 
+		controller.target = getNearbyTargets(controller)
+	}
+
+	fun getNearbyTargets(controller: AIController): AITarget? {
 		val nearbyShips = controller.getNearbyShips(0.0, engagementDistance) { starship, _ ->
 			starship.controller !is AIController
 		}
 
-		controller.target = nearbyShips.firstOrNull()
+		return nearbyShips.firstOrNull()?.let { StarshipTarget(it) } ?:
+			controller.getCenter().getNearbyPlayers(engagementDistance).firstOrNull()?.let { PlayerTarget(it) }
 	}
 
 	open fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {}
