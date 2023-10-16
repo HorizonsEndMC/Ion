@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.listener.misc
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.features.misc.getPower
 import net.horizonsend.ion.server.features.misc.setPower
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
@@ -22,7 +24,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
@@ -52,15 +53,6 @@ object InteractListener : SLEventListener() {
 
 		setPower(item, power - powerToTransfer / item.amount)
 		PowerMachines.addPower(sign, powerToTransfer)
-	}
-
-	@EventHandler
-	fun onBlockPlaceEvent(event: BlockPlaceEvent) {
-		if (event.isCancelled) return
-		if (!event.canBuild()) return
-
-		val item = CustomItems[event.itemInHand] as? CustomBlockItem ?: return
-		event.block.setBlockData(item.customBlock.blockData, false)
 	}
 
 	// When not in creative mode, make breaking a custom item drop the proper drops
@@ -117,6 +109,7 @@ object InteractListener : SLEventListener() {
 		}
 	}
 
+	/*
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onBlockPlace(event: BlockPlaceEvent) {
 		val player = event.player
@@ -127,4 +120,5 @@ object InteractListener : SLEventListener() {
 
 		event.block.location.block.setBlockData(item.customBlock.blockData, true)
 	}
+	 */
 }
