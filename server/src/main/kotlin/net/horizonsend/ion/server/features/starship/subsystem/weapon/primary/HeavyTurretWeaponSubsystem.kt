@@ -25,7 +25,7 @@ class HeavyTurretWeaponSubsystem(
         target: Vector
 	) {
 		if (starship.initialBlockCount < 6500 || starship.initialBlockCount > 12000) {
-			shooter.userError("You can't fire HTs on a ship smaller than 6500 blocks or larger than 12000 blocks!")
+			shooter.userError("You can't fire heavy turrets on a ship smaller than 6500 blocks or larger than 12000 blocks!")
 			return
 		}
 
