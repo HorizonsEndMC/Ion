@@ -234,7 +234,8 @@ class JDACommandManager(private val jda: JDA, private val configuration: ProxyCo
 				.values
 				.map { it() }
 				.flatten()
-				.filter { it.startsWith(entered) }
+				.filter { it.lowercase().startsWith(entered) }
+				.take(25)
 				.toTypedArray()
 
 			event.replyChoiceStrings(*results).queue()
