@@ -1,13 +1,14 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.LightTurretMultiblock
-import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class LightTurretWeaponSubsystem(
@@ -21,7 +22,11 @@ class LightTurretWeaponSubsystem(
 
 	override val range: Double get() = multiblock.range
 
-	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {
-		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager)
+	override fun autoFire(target: Player, dir: Vector) {
+		multiblock.shoot(starship.serverLevel.world, pos, face, dir, starship, starship.controller)
+		if (starship.initialBlockCount > 12000) {
+			target.userError("You can't fire light turrets on a ship larger than 12000 blocks!")
+			return
+		}
 	}
 }
