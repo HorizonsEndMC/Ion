@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -37,11 +38,11 @@ class PhaserWeaponSubsystem(
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		fixDirections(loc)
 		PhaserProjectile(starship, loc, dir, shooter).fire()
-	} {
 		if (starship.initialBlockCount > 12000) {
 			shooter.userError("You can't fire phasers on a ship larger than 12000 blocks!")
 			return
 		}
+	}
 
 	private fun fixDirections(loc: Location) {
 		fixGrindstoneData(loc)
