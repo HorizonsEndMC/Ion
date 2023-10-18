@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.combat
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
+import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -8,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.Mo
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
@@ -45,8 +45,8 @@ open class StarfighterCombatAIController(
 	override var pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.getVec3i())
 	override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.getVec3i())
 
-	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
-	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet> = mutableListOf()
+	override val autoWeaponSets: MutableList<WeaponSet> = mutableListOf()
+	override val manualWeaponSets: MutableList<WeaponSet> = mutableListOf()
 
 	override fun destroy() {
 		shutDownAll()
