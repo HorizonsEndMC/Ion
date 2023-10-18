@@ -118,8 +118,8 @@ enum class AggressivenessLevel(
 			starship.controller !is AIController
 		}
 
-		return nearbyShips.firstOrNull()?.let { StarshipTarget(it) } ?:
-			controller.getCenter().getNearbyPlayers(engagementDistance).firstOrNull()?.let { PlayerTarget(it) }
+		return nearbyShips.firstOrNull()?.let { StarshipTarget(it) }
+//			?: controller.getCenter().getNearbyPlayers(engagementDistance).firstOrNull()?.let { PlayerTarget(it) }
 	}
 
 	open fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {}
