@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces
 
+import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -17,8 +17,8 @@ interface CombatAIController : VariableObjectiveController {
 	var target: AITarget?
 
 	// Weapon sets
-	val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
-	val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
+	val manualWeaponSets: MutableList<WeaponSet>
+	val autoWeaponSets: MutableList<WeaponSet>
 
 	// Shield Health indicators
 	val shields get() = starship.shields

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.combat
 
+import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -8,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.Mo
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AIStarshipTemplates
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
@@ -36,8 +36,8 @@ class FrigateCombatAIController(
 	starship: ActiveStarship,
 	override var target: AITarget?,
 	aggressivenessLevel: AggressivenessLevel,
-	override val manualWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>,
-	override val autoWeaponSets: MutableList<AIStarshipTemplates.WeaponSet>
+	override val manualWeaponSets: MutableList<WeaponSet>,
+	override val autoWeaponSets: MutableList<WeaponSet>
 ): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController {
 	override val pathfindingEngine: PathfindingEngine = PathfindIfBlockedEngine(this, target?.getVec3i())
