@@ -2,11 +2,13 @@ package net.horizonsend.ion.server.features.starship.active.ai.spawning
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.AIUtils
+import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipFactory.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.TemporaryStarfighterCombatAIController
@@ -22,22 +24,26 @@ import org.bukkit.World
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-abstract class AISpawner(val identifier: String, vararg val ships: AIStarshipTemplates.AIStarshipTemplate) {
-	abstract fun findLocation(world: World, configuration: AIShipConfiguration.AIWorldSettings): Location?
+abstract class AISpawner(val identifier: String) {
+	val config: AIShipConfiguration.AISpawnerConfiguration =
+		IonServer.aiShipConfiguration.spawners
+			.firstOrNull() { it.identifier == identifier } ?: throw IllegalStateException("AI Spawner $identifier does not have configuration!")
 
-	open fun getTemplate(world: World): AIStarshipTemplates.AIStarshipTemplate = ships.randomOrNull() ?: throw NoSuchElementException()
+	abstract fun findLocation(): Location?
+
+	// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
+	open fun getTemplate(world: World): AIStarshipTemplate? {
+		val shipID = config.getWorld(world)?.shipsWeightedList?.randomOrNull() ?: return null
+		return IonServer.aiShipConfiguration.getShipTemplate(shipID)
+	}
 
 	open val createController: (ActiveStarship) -> Controller = { NoOpController(it) }
 
 	open fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit = {}): Deferred<ActiveControlledStarship> {
-		val ship = getTemplate(location.world)
+		val ship = getTemplate(location.world)!!
 		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
-		val schematic = AIStarshipTemplates.loadedSchematics.getOrPut(ship.schematicFile) { ship.schematic() }
-		val type = ship.type
-		val name = ship.miniMessageName
-
-        AIUtils.createFromClipboard(location, schematic, type, name, createController) {
+        createAIShipFromTemplate(ship, location, createController) {
             deferred.complete(it)
             callback(it)
         }
@@ -46,8 +52,11 @@ abstract class AISpawner(val identifier: String, vararg val ships: AIStarshipTem
 	}
 }
 
-class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", AIStarshipTemplates.VESTA) {
-	override fun findLocation(world: World, configuration: AIShipConfiguration.AIWorldSettings): Location? {
+class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
+	override fun findLocation(): Location? {
+		val worldConfig = config.worldWeightedRandomList.random()
+		val world = worldConfig.getWorld()
+
 		var iterations = 0
 
 		val border = world.worldBorder

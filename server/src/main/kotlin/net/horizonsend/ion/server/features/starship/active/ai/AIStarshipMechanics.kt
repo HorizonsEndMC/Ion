@@ -3,9 +3,11 @@ package net.horizonsend.ion.server.features.starship.active.ai
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -30,5 +32,14 @@ object AIStarshipMechanics : IonServerComponent() {
 		DeactivatedPlayerStarships.deactivateAsync(ship) {
 			DeactivatedPlayerStarships.destroyAsync(ship.data) {}
 		}
+	}
+
+	@EventHandler
+	fun onAIUnpilot(event: StarshipUnpilotEvent) {
+		val starship = event.starship
+
+		if (starship.controller !is AIController && !starship.isExploding) return
+
+		StarshipDestruction.vanish(starship)
 	}
 }
