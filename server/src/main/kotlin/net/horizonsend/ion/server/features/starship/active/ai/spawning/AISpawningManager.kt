@@ -1,21 +1,27 @@
 package net.horizonsend.ion.server.features.starship.active.ai.spawning
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
+import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.horizonsend.ion.common.utils.text.isVowel
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.World
+import java.util.Optional
 
 object AISpawningManager : IonServerComponent(true) {
 	val config = IonServer.aiShipConfiguration
@@ -23,22 +29,29 @@ object AISpawningManager : IonServerComponent(true) {
 		BasicCargoMissionSpawner()
 	)
 
+	val templates: MutableMap<String, AIStarshipTemplate> = mutableMapOf()
+
+	val schematicCache: LoadingCache<String, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
+		CacheLoader.from { identifier ->
+				val template = templates[identifier] ?: return@from Optional.empty<Clipboard>()
+				val clipboard = readSchematic(template.schematicFile) ?: return@from Optional.empty<Clipboard>()
+				return@from Optional.of(clipboard)
+			}
+		)
+
 	operator fun get(identifier: String) = spawners.firstOrNull { it.identifier == identifier }
 
 
 	override fun onEnable() {
-		Tasks.asyncRepeat(20 * 15, config.spawnRate) { handleSpawn() }
+		Tasks.asyncRepeat(config.spawnRate, config.spawnRate) { handleSpawn() }
 	}
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	fun handleSpawn() {
-		val world = Bukkit.getWorld(config.worldWeightedList().random()) ?: return
-		val configuration = config.getWorld(world) ?: return
+		val worldSettings = config.spawnerWeightedRandomList().randomOrNull()?.identifier ?: return
+		val spawner = AISpawningManager[worldSettings] ?: return
 
-		val spawnerIdentifier = configuration.spawnerWeightedRandomList().random()
-		val spawner = AISpawningManager[spawnerIdentifier] ?: return
-
-		val loc = spawner.findLocation(world, configuration)
+		val loc = spawner.findLocation()
 
 		if (loc == null) {
 			log.warn("Aborted spawning AI ship. Could not find location after 15 attempts.")
