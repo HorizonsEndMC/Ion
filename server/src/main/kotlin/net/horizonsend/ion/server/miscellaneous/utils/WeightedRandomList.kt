@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import java.util.Random
+import java.util.concurrent.ThreadLocalRandom
 
 // This was fun to learn
 class WeightedRandomList<T : Any>() {
@@ -85,14 +86,30 @@ class WeightedRandomList<T : Any>() {
 		throw NoSuchElementException("Weighted random list is empty!")
 	}
 
-	fun randomOrNull(random: Random): T? {
+	fun randomOrNull(random: Random = ThreadLocalRandom.current()): T? {
 		if (weightedEntryList.isEmpty()) return null
 		val selection = random.nextInt(0, rollingWeight)
 		for ((parent, weight) in weightedEntryList) {
 			if (weight >= selection) return parent
 		}
 
-		throw NoSuchElementException("Weighted random list is empty!")
+		return null
+	}
+
+	fun randomOrNull(random: Random = ThreadLocalRandom.current(), predicate: (T) -> Boolean): T? {
+		if (weightedEntryList.isEmpty()) return null
+		val filtered = weightedEntryList.filter { predicate(it.parent) }
+
+		val selection = random.nextInt(0, filtered.sumOf { it.weight })
+
+		var localRollingWeight = 0
+		for ((parent, weight) in filtered) {
+			localRollingWeight += weight
+
+			if (localRollingWeight >= selection) return parent
+		}
+
+		return null
 	}
 
 	fun entries(): List<T> {
