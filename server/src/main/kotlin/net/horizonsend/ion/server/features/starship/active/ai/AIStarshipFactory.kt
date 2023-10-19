@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -43,6 +44,9 @@ object AIStarshipFactory : IonServerComponent() {
 		placeSchematicEfficiently(clipboard, location.world, vec3i, true) {
 			tryPilotWithController(location.world, vec3i, type, starshipName, createController) {
 				callback(it)
+
+				val computerLoc = Vec3i(it.data.blockKey).toLocation(it.world)
+				NPCFakePilot.add(it, computerLoc)
 			}
 		}
 	}
