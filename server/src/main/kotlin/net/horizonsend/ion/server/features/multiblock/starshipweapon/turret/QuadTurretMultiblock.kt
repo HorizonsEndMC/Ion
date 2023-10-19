@@ -158,7 +158,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 				x(+2).stainedTerracotta()
 				x(+3).ironBlock()
 			}
-			y(getSign() * 3) {
+			y(getSign() * 4) {
 				x(-2).endRod()
 				x(-1).endRod()
 				x(0).type(IRON_TRAPDOOR)
