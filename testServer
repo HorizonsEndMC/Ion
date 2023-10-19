@@ -15,6 +15,9 @@ cd run
 
 case $1 in
 	setup)
+		cd ..
+		./gradlew build
+		cd run
 		safeSudo docker compose up --no-start
 		mkdir -p paper/plugins
 		cd ..
@@ -43,7 +46,12 @@ case $1 in
 			docker compose stop
 		"
 	;;
+	op)
+		printf "Enter a username to OP "
+		read username
+		safeSudo docker exec paper mc-send-to-console op + $username
+	;;
 	*)
-		echo "Usage: server {setup|reset|start|stop|logs|run}"
+		echo "Usage: server {setup|reset|start|stop|logs|run|run-fallback|op [player]}"
 	;;
 esac
