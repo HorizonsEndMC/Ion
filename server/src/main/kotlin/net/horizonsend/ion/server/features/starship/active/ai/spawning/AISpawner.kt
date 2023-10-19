@@ -25,9 +25,9 @@ import org.bukkit.util.Vector
 import kotlin.random.Random
 
 abstract class AISpawner(val identifier: String) {
-	val config: AIShipConfiguration.AISpawnerConfiguration =
+	val config: AIShipConfiguration.AISpawnerConfiguration get() =
 		IonServer.aiShipConfiguration.spawners
-			.firstOrNull() { it.identifier == identifier } ?: throw IllegalStateException("AI Spawner $identifier does not have configuration!")
+			.firstOrNull { it.identifier == identifier } ?: throw IllegalStateException("AI Spawner $identifier does not have configuration!")
 
 	abstract fun findLocation(): Location?
 
