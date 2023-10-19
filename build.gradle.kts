@@ -11,7 +11,7 @@ plugins {
 // TODO: Don't redownload every time
 fun downloadJenkinsArtifact(domain: String, project: String, filter: String, location: String) {
 	val jarName =
-		URL("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath[$filter]")
+		URL("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath${if (filter.isNotEmpty()) "[$filter]" else ""}")
 			.readText()
 			.substringAfter("<relativePath>$location/")
 			.substringBefore("</relativePath>")
@@ -31,5 +31,6 @@ tasks.create("downloadTestServerDependencies") {
 	doFirst {
 		downloadJenkinsArtifact("ci.athion.net", "FastAsyncWorldEdit", "contains(.,'Bukkit')", "artifacts")
 		downloadJenkinsArtifact("ci.lucko.me", "LuckPerms", "starts-with(.,'bukkit/')", "bukkit/loader/build/libs")
+		downloadJenkinsArtifact("ci.dmulloy2.net", "ProtocolLib", "", "build/libs")
 	}
 }
