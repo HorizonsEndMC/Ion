@@ -531,7 +531,8 @@ data class BalancingConfiguration(
 			fireCooldownNanos = 10000,
 			boostChargeNanos = 3,
 			aimDistance = 0,
-			inaccuracyRadians = 8.0
+			inaccuracyRadians = 8.0,
+			maxPerShot = 3
 		),
 		val pointDefence: StarshipWeapon = StarshipWeapon(
 			range = 120.0,
