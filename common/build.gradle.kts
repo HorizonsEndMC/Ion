@@ -28,7 +28,7 @@ dependencies {
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
 	api("org.litote.kmongo:kmongo:4.10.0")
-	api("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+	api("com.fasterxml.jackson.core:jackson-databind:2.15.3")
 
 	api("redis.clients:jedis:5.0.2")
 }
