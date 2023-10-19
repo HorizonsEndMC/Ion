@@ -87,12 +87,7 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.Upwar
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.misc.PointDefenseStarshipWeaponMultiblockTop
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomHeavyTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomLightTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.BottomTriTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopLightTurretMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopTriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.*
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -198,6 +193,8 @@ object Multiblocks : IonServerComponent() {
 			BottomHeavyTurretMultiblock,
 			TopTriTurretMultiblock,
 			BottomTriTurretMultiblock,
+			TopQuadTurretMultiblock,
+			BottomQuadTurretMultiblock,
 			HorizontalRocketStarshipWeaponMultiblock,
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,
