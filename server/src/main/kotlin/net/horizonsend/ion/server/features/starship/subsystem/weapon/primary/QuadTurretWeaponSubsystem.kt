@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.Quad
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -17,7 +18,7 @@ class QuadTurretWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace,
     override val multiblock: QuadTurretMultiblock
-) : TurretWeaponSubsystem(ship, pos, face) {
+) : TurretWeaponSubsystem(ship, pos, face), StarshipCooldownSubsystem {
 	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.quadTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.quadTurret.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
