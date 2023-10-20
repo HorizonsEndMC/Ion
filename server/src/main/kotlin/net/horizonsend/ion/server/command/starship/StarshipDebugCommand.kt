@@ -1,12 +1,18 @@
 package net.horizonsend.ion.server.command.starship
 
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager.handleSpawn
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.FrigateCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatAIController
@@ -20,7 +26,17 @@ import org.bukkit.entity.Player
 
 @CommandPermission("starlegacy.starshipdebug")
 @CommandAlias("starshipdebug|sbug")
-object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
+object StarshipDebugCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandContexts.registerContext(AISpawner::class.java) { context ->
+			AISpawningManager.spawners.firstOrNull { it.identifier == context.popFirstArg() } ?: throw InvalidCommandArgument("No such spawner: ${context.popFirstArg()}")
+		}
+
+		manager.commandCompletions.registerAsyncCompletion("aiSpawners") { _ ->
+			AISpawningManager.spawners.map { it.identifier }
+		}
+	}
+
 	@Suppress("Unused")
 	@Subcommand("teleport")
 	fun onTeleport(sender: Player, x: Int, y: Int, z: Int) {
@@ -45,8 +61,10 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("triggerSpawn")
-	fun triggerSpawn(sender: Player) {
-		handleSpawn()
+	@CommandCompletion("@aiSpawners")
+	fun triggerSpawn(sender: Player, spawner: AISpawner) {
+		sender.success("Triggered spawn for ${spawner.identifier}")
+		spawner.handleSpawn()
 	}
 
 	@Subcommand("ai")
