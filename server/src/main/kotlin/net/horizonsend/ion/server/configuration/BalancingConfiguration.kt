@@ -528,7 +528,7 @@ data class BalancingConfiguration(
 			angleRadians = 0.0,
 			convergeDistance = 0.0,
 			extraDistance = 1,
-			fireCooldownNanos = 1000000,
+			fireCooldownNanos = 2,
 			boostChargeNanos = 3,
 			aimDistance = 0,
 			inaccuracyRadians = 8.0,
