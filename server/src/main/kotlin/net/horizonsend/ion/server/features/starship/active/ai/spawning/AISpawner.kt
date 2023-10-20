@@ -49,7 +49,7 @@ abstract class AISpawner(val identifier: String) {
 		return IonServer.aiShipConfiguration.getShipTemplate(shipID)
 	}
 
-	open val createController: (ActiveStarship) -> Controller = { NoOpController(it) }
+	open val createController: (ActiveStarship) -> Controller = { NoOpController(it, null) }
 
 	open fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit = {}): Deferred<ActiveControlledStarship> {
 		val ship = getTemplate(location.world)!!
