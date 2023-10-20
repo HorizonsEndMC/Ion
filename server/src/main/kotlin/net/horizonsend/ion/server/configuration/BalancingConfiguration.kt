@@ -496,17 +496,17 @@ data class BalancingConfiguration(
 			explosionPower = 4.5f,
 			volume = 0,
 			pitch = 2.0f,
-			soundName = "starship.weapon.turbolaser.tri.shoot",
+			soundName = "starship.weapon.turbolaser.quad.shoot",
 			powerUsage = 4500,
 			length = 0,
 			angleRadians = 0.0,
 			convergeDistance = 0.0,
 			extraDistance = 1,
-			fireCooldownNanos = 200,
+			fireCooldownNanos = 3000,
 			aimDistance = 0,
 			inaccuracyRadians = 2.0,
 			boostChargeNanos = 0,
-			maxPerShot = 1
+			maxPerShot = 3
 		),
 		val pointDefence: StarshipWeapon = StarshipWeapon(
 			range = 120.0,
