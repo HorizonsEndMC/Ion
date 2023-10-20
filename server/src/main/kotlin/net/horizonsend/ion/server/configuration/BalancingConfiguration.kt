@@ -516,10 +516,10 @@ data class BalancingConfiguration(
 		val quadTurret: StarshipWeapon = StarshipWeapon(
 			range = 500.0,
 			speed = 80.0,
-			shieldDamageMultiplier = 9,
+			shieldDamageMultiplier = 7,
 			thickness = 0.0,
 			particleThickness = 0.8,
-			explosionPower = 5f,
+			explosionPower = 4.5f,
 			volume = 0,
 			pitch = 2.0f,
 			soundName = "starship.weapon.turbolaser.tri.shoot",
@@ -528,11 +528,10 @@ data class BalancingConfiguration(
 			angleRadians = 0.0,
 			convergeDistance = 0.0,
 			extraDistance = 1,
-			fireCooldownNanos = 3,
+			fireCooldownNanos = 200,
 			aimDistance = 0,
-			inaccuracyRadians = 1.0,
-			boostChargeNanos = 3,
-			maxPerShot = 3
+			inaccuracyRadians = 2.0,
+			boostChargeNanos = 0
 		),
 		val pointDefence: StarshipWeapon = StarshipWeapon(
 			range = 120.0,
