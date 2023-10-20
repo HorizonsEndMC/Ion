@@ -32,4 +32,15 @@ class LightTurretWeaponSubsystem(
 		}
 		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager)
 	}
+	override fun manualFire(
+			shooter: Damager,
+			dir: Vector,
+			target: Vector,
+	) {
+		if (starship.initialBlockCount > 12000) {
+			shooter.userError("You can't fire light turrets on a ship smaller than 16000 blocks!")
+			return
+		}
+		super.manualFire(shooter, dir, target)
+	}
 }
