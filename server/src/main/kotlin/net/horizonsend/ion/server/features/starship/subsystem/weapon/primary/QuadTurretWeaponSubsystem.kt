@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
+
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.QuadTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
@@ -19,17 +20,19 @@ class QuadTurretWeaponSubsystem(
 ) : TurretWeaponSubsystem(ship, pos, face) {
 	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.quadTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.quadTurret.powerUsage
-	override var fireCooldownNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
+	val lastFiredMillis: Long = System.currentTimeMillis()
 
 	override fun manualFire(
-		shooter: Controller,
+		shooter: Damager,
 		dir: Vector,
-		target: Vector
+		target: Vector,
 	) {
 		if (starship.initialBlockCount < 16000) {
 			shooter.userError("You can't fire quad turrets on a ship smaller than 16000 blocks!")
 			return
 		}
+		if ((lastFiredMillis + 3000) > System.currentTimeMillis()) return
 
 		super.manualFire(shooter, dir, target)
 	}

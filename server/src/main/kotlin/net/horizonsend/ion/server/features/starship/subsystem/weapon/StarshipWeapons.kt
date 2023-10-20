@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
+import org.bukkit.entity.Player
 import com.google.common.collect.HashMultimap
 import com.google.common.util.concurrent.AtomicDouble
 import net.horizonsend.ion.common.extensions.alertActionMessage
@@ -40,7 +41,7 @@ object StarshipWeapons {
 	data class AutoQueuedShot(
 		override val weapon: WeaponSubsystem,
 		val target: AutoTurretTargeting.AutoTurretTarget<*>,
-		val dir: Vector
+		val dir: Vector,
 	) : QueuedShot {
 		override fun shoot() {
 			check(weapon is AutoWeaponSubsystem)
