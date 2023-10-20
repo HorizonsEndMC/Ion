@@ -160,7 +160,8 @@ object PilotedStarships : IonServerComponent() {
 
 	fun isPiloted(starship: ActiveControlledStarship): Boolean {
 		if (starship.controller is UnpilotedController) return false
-		return starship.controller !is NoOpController
+		if (starship.controller is NoOpController) return false
+		return true
 	}
 
 	fun canTakeControl(starship: ActiveControlledStarship, player: Player): Boolean {
@@ -175,7 +176,7 @@ object PilotedStarships : IonServerComponent() {
 
 		val unpilotedController = when (starship.controller) {
 			is PlayerController -> UnpilotedController(starship.controller as PlayerController)
-			else -> NoOpController(starship)
+			else -> NoOpController(starship, starship.controller.damager)
 		}
 
 		starship.controller = unpilotedController
