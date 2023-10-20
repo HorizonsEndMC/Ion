@@ -1,0 +1,665 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Red ",
+                "color": "red",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Energy ",
+                    "color": "yellow",
+                    "italic": false,
+                    "extra": [
+                      {
+                        "text": "Sword",
+                        "color": "dark_aqua",
+                        "italic": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:2}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Blue ",
+                "color": "blue",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Energy ",
+                    "color": "yellow",
+                    "italic": false,
+                    "extra": [
+                      {
+                        "text": "Sword",
+                        "color": "dark_aqua",
+                        "italic": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:1}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Yellow ",
+                "color": "yellow",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Energy ",
+                    "color": "yellow",
+                    "italic": false,
+                    "extra": [
+                      {
+                        "text": "Sword",
+                        "color": "dark_aqua",
+                        "italic": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:3}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Green ",
+                "color": "green",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Energy ",
+                    "color": "yellow",
+                    "italic": false,
+                    "extra": [
+                      {
+                        "text": "Sword",
+                        "color": "dark_aqua",
+                        "italic": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:4}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Orange ",
+                "color": "gold",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Energy ",
+                    "color": "yellow",
+                    "italic": false,
+                    "extra": [
+                      {
+                        "text": "Sword",
+                        "color": "dark_aqua",
+                        "italic": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:6, Unbreakable:1b}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Purple ",
+                "color": "dark_purple",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Energy ",
+                    "color": "yellow",
+                    "italic": false,
+                    "extra": [
+                      {
+                        "text": "Sword",
+                        "color": "dark_aqua",
+                        "italic": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:5}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 2,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:leather_boots",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "entity": "this",
+              "lore": [
+                {
+                  "text": "Power: ",
+                  "color": "dark_gray",
+                  "italic": false,
+                  "extra": [
+                    {
+                      "text": "50000",
+                      "color": "gray",
+                      "italic": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Power ",
+                "color": "gold",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Boots",
+                    "color": "gray",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:1}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:leather_leggings",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "entity": "this",
+              "lore": [
+                {
+                  "text": "Power: ",
+                  "color": "dark_gray",
+                  "italic": false,
+                  "extra": [
+                    {
+                      "text": "50000",
+                      "color": "gray",
+                      "italic": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Power ",
+                "color": "gold",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Leggings",
+                    "color": "gray",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:1}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:leather_chestplate",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "entity": "this",
+              "lore": [
+                {
+                  "text": "Power: ",
+                  "color": "dark_gray",
+                  "italic": false,
+                  "extra": [
+                    {
+                      "text": "50000",
+                      "color": "gray",
+                      "italic": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Power ",
+                "color": "gold",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Chestplate",
+                    "color": "gray",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:1}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:leather_helmet",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "entity": "this",
+              "lore": [
+                {
+                  "text": "Power: ",
+                  "color": "dark_gray",
+                  "italic": false,
+                  "extra": [
+                    {
+                      "text": "50000",
+                      "color": "gray",
+                      "italic": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Power ",
+                "color": "gold",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Helmet",
+                    "color": "gray",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:1}"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 3,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "minecraft:flint_and_steel",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:4}"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Night Vision ",
+                "color": "gray",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Module",
+                    "color": "gold",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:flint_and_steel",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:1}"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Shock Absorbing ",
+                "color": "gray",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Module",
+                    "color": "gold",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:flint_and_steel",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:3}"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Rocket Boosting ",
+                "color": "gray",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Module",
+                    "color": "gold",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:flint_and_steel",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:2}"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Speed Boosting ",
+                "color": "gray",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Module",
+                    "color": "gold",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:flint_and_steel",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            },
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:6, Unbreakable:1b}"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Pressure Field ",
+                "color": "gray",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Module",
+                    "color": "gold",
+                    "italic": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 1,
+          "name": "minecraft:flint_and_steel",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{CustomModelData:5}"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Enviornment ",
+                "color": "gray",
+                "italic": false,
+                "extra": [
+                  {
+                    "text": "Module",
+                    "color": "gold",
+                    "italic": false
+                  }
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
