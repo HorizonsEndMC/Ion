@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class QuadTurretWeaponSubsystem(
     ship: ActiveStarship,
@@ -18,6 +19,7 @@ class QuadTurretWeaponSubsystem(
 ) : TurretWeaponSubsystem(ship, pos, face) {
 	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.quadTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.quadTurret.powerUsage
+	override var fireCooldownNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
 
 	override fun manualFire(
 		shooter: Controller,
