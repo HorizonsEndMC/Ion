@@ -7,6 +7,7 @@ import net.citizensnpcs.api.npc.NPCRegistry
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -19,6 +20,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
 import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import org.bukkit.Location
+import org.bukkit.entity.Damageable
+import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -44,6 +47,9 @@ object NPCFakePilot : IonServerComponent(true) {
 
 	fun tickPilots() {
 		for ((ship, npc) in activeFakePilots) {
+			if (!isActive(ship)) continue
+			if (!isPiloted(ship)) continue
+
 			if (!npc.isSpawned) npc.spawn(getLocation(ship.data))
 
 			val entity = npc.entity ?: continue
@@ -74,7 +80,10 @@ object NPCFakePilot : IonServerComponent(true) {
 			val (ship, pilot) = iterator.next()
 
 			if (isActive(ship)) continue
+			if (isPiloted(ship)) continue
 
+			// Kill the entity to drop its items
+			(pilot.entity as? Damageable)?.health = 0.0
 			pilot.destroy()
 			iterator.remove()
 		}
@@ -99,7 +108,7 @@ object NPCFakePilot : IonServerComponent(true) {
 		)
 
 		npc.isProtected = false
-//		npc.getOrAddTrait(SkinTrait::class.java)
+//		npc.getOrAddTrait(SkinTrait::class.java) TODO skins
 //		(npc.traits.first() as SkinTrait).setSkinPersistent()
 		npc.spawn(spawnLoc)
 
@@ -116,35 +125,27 @@ object NPCFakePilot : IonServerComponent(true) {
 	}
 
 	fun isFakePilot(npc: NPC) = pilotRegistry.contains(npc)
+	fun isFakePilot(entity: Entity) = pilotRegistry.isNPC(entity)
 
 	/** If the fake pilot of the starship is destroyed */
 	@EventHandler
 	fun onPilotDestroyed(event: NPCDeathEvent) {
-		println("event: $event")
 		val npc = event.npc
 		if (!isFakePilot(npc)) return
-		println("2")
 
 		val ship = activeFakePilots.filterValues { it == npc }.keys.firstOrNull() ?: return
-		println("3")
-		Tasks.sync { PilotedStarships.unpilot(ship)
-			println("4")}
+		Tasks.sync { PilotedStarships.unpilot(ship) }
 	}
 
 	@EventHandler
 	fun onPilotDamaged(event: NPCDamageByEntityEvent) {
-		println("event: $event")
 		val damager = event.damager
 		if (damager !is Player) return
-		println("2")
 
 		val npc = event.npc
 		if (!isFakePilot(npc)) return
-		println("3")
 
 		val ship = activeFakePilots.filterValues { it == npc }.keys.firstOrNull() ?: return
-		println("4")
-		Tasks.sync { ship.addToDamagers(damager.damager())
-			println("5")}
+		Tasks.sync { ship.addToDamagers(damager.damager()) }
 	}
 }
