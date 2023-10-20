@@ -7,12 +7,13 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import org.bukkit.util.Vector
 
 object StarshipWeapons {
@@ -92,6 +93,14 @@ object StarshipWeapons {
 			ship.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
 				ship.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
+				if (shot.weapon is StarshipCooldownSubsystem) {
+					val clazz = shot.weapon::class.java
+
+					for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
+						subsystem.lastFire = System.nanoTime()
+					}
+				}
+
 				continue
 			}
 
