@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.noOpDamager
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
@@ -8,7 +9,7 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
-class NoOpController(starship: ActiveStarship) : Controller(noOpDamager, starship, "idle") {
+class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Controller(previousDamager ?: noOpDamager, starship, "idle") {
 	// Can't move
 	override val isShiftFlying: Boolean = false
 	override val selectedDirectControlSpeed: Int = 0
