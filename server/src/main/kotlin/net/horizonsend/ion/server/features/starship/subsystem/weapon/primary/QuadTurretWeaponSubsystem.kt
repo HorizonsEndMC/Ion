@@ -21,7 +21,6 @@ class QuadTurretWeaponSubsystem(
 	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.quadTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.quadTurret.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
-	val lastFiredMillis: Long = System.currentTimeMillis()
 
 	override fun manualFire(
 		shooter: Damager,
@@ -32,8 +31,6 @@ class QuadTurretWeaponSubsystem(
 			shooter.userError("You can't fire quad turrets on a ship smaller than 16000 blocks!")
 			return
 		}
-		if ((lastFiredMillis + 3000) > System.currentTimeMillis()) return
-
 		super.manualFire(shooter, dir, target)
 	}
 }
