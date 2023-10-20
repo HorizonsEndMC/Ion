@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -35,13 +35,13 @@ class PhaserWeaponSubsystem(
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
-	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
-		fixDirections(loc)
-		PhaserProjectile(starship, loc, dir, shooter).fire()
+	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
 		if (starship.initialBlockCount > 12000) {
 			shooter.userError("You can't fire phasers on a ship larger than 12000 blocks!")
 			return
 		}
+		fixDirections(loc)
+		PhaserProjectile(starship, loc, dir, shooter).fire()
 	}
 
 	private fun fixDirections(loc: Location) {
