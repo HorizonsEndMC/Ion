@@ -17,44 +17,52 @@ import kotlin.jvm.optionals.getOrNull
 /** Registration and spawning parameters of AI ships **/
 @Serializable
 data class AIShipConfiguration(
-	val spawnRate: Long = 20 * 60 * 15,
 	val templates: List<AIStarshipTemplate> = listOf(AIStarshipTemplate()),
-	val spawners: List<AISpawnerConfiguration> = listOf(AISpawnerConfiguration())
+	val spawners: AISpawners = AISpawners()
 ) {
 	fun getShipTemplate(identifier: String) = templates.first { it.identifier == identifier }
-	fun spawnerWeightedRandomList(): WeightedRandomList<AISpawnerConfiguration> = WeightedRandomList(spawners.associateWith { it.rolls })
+
+	@Serializable
+	data class AISpawners(
+		val CARGO_MISSION: AISpawnerConfiguration = AISpawnerConfiguration()
+	)
 
 	/**
 	 * Each world has a number of rolls for selection when a ship spawns
 	 * Feeds config values to an AISpawner with the same identifier.
 	 * Allows varied ships by world.
 	 *
-	 * @param worldSettings contains a list of defined AI ship template identifiers, and their number of rolls when this world is selected
+	 * @param miniMessageSpawnMessage The custom message to send when this spawner spawns a ship, uses string templates {0}, {1}, etc.
+	 * @param spawnChance Chance for a ship to spawn whenever this spawner is triggered.
+	 * @param worldSettings each contains a list of defined AI ship template identifiers, and their number of rolls when this world is selected.
 	 *
 	 * @see AIStarshipTemplate
 	 * @See AISpawner
 	 **/
 	@Serializable
 	data class AISpawnerConfiguration (
-		val identifier: String = "CARGO_MISSION",
-		val rolls: Int = 1,
 		val miniMessageSpawnMessage: String = "",
-		val worldSettings: Map<AIWorldSettings, Int> = mapOf(AIWorldSettings() to 1)
+		val spawnChance: Double = 1.0,
+		val spawnRate: Long = 20 * 60 * 15,
+		val worldSettings: List<AIWorldSettings> = listOf(AIWorldSettings())
 	) {
 		@Transient
-		val worldWeightedRandomList = WeightedRandomList(worldSettings)
+		val worldWeightedRandomList = WeightedRandomList(worldSettings.associateWith { it.rolls })
 
-		fun getWorld(world: World) = worldSettings.keys.firstOrNull() { it.world == world.name }
+		fun getWorld(world: World) = worldSettings.firstOrNull { it.world == world.name }
 
-		fun availableForWorld(worldName: String) = worldSettings.keys.any { it.world == worldName }
+		fun availableForWorld(worldName: String) = worldSettings.any { it.world == worldName }
 	}
 
 	/**
 	 * Each world has a number of rolls for selection when a ship spawns
 	 *
-	 * @param rolls, then number of rolls for this world
+	 * @param world The bukkit world's name.
+	 * @param rolls then number of rolls for this world.
+	 * @param ships Map of AI ship templates to their number of rolls.
 	 *
 	 * @see AISpawnerConfiguration
+	 * @see AIStarshipTemplate
 	 **/
 	@Serializable
 	data class AIWorldSettings(
@@ -86,7 +94,7 @@ data class AIShipConfiguration(
 		@Transient
 		val schematicFile: File = IonServer.dataFolder.resolve("aiShips").resolve("$schematicName.schem")
 
-		fun getSchematic(): Clipboard? = AISpawningManager.schematicCache[schematicName].getOrNull()
+		fun getSchematic(): Clipboard? = AISpawningManager.schematicCache[identifier].getOrNull()
 
 		@Serializable
 		data class WeaponSet(val name: String, private val engagementRangeMin: Double, private val engagementRangeMax: Double) {
