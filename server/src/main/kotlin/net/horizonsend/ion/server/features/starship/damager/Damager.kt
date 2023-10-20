@@ -52,11 +52,16 @@ val noOpDamager = NoOpDamager()
 
 val entityDamagerCache: LoadingCache<Entity, Damager> = CacheBuilder.newBuilder()
 	.weakKeys()
-	.build(CacheLoader.from { entity -> entity.damager() })
+	.build(CacheLoader.from { entity -> getDamager(entity) })
 
-fun Entity.damager(starship: ActiveStarship? = null) : Damager {
-	if (this is Player) return PlayerDamagerWrapper(this, starship)
-	return EntityDamager(this)
+fun Entity.damager(): Damager = entityDamagerCache[this]
+
+fun getDamager(entity: Entity, starship: ActiveStarship? = null) : Damager {
+	if (entity is Player) {
+		val foundShip = starship ?: ActiveStarships.findByPassenger(entity)
+		return PlayerDamagerWrapper(entity, foundShip)
+	}
+	return EntityDamager(entity)
 }
 
 class EntityDamager(val entity: Entity) : NoOpDamager() {

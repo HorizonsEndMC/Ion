@@ -18,7 +18,7 @@ import org.bukkit.inventory.EquipmentSlot
 abstract class PlayerController(
 	val player: Player,
 	starship: ActiveStarship, name: String
-) : Controller(player.damager(starship), starship, name) {
+) : Controller(player.damager(), starship, name) {
 	override val pilotName: Component = player.displayName()
 
 	override val yaw: Float get() = player.location.yaw

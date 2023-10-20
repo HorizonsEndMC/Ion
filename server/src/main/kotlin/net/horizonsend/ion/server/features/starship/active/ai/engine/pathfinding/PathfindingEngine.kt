@@ -24,6 +24,9 @@ open class PathfindingEngine(
 	controller: AIController,
 	var destination: Vec3i?
 ) : AIEngine(controller) {
+	/** How many ticks between the clearing of the tracked sections, -1 to never clear */
+	var clearInterval: Int = 100
+
 	open fun passToMovementEngine(movementEngine: MovementEngine) {
 		movementEngine.destination = getFirstNavPoint()
 	}
@@ -133,6 +136,10 @@ open class PathfindingEngine(
 
 		val run = runCatching {
 			// See if the objective has changed
+			if (ticks != -1 && ticks % clearInterval == 0) {
+				trackedSections.clear()
+			}
+
 			updatePathfinding()
 
 			debugAudience.highlightBlocks(chartedPath.map { it.center }, 5L)
