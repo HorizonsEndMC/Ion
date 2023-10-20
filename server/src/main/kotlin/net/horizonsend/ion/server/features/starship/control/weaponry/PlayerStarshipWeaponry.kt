@@ -46,7 +46,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		player.debug("player is rclicking")
 
 		if (event.action.isRightClick) {
-			val damager = player.damager(starship)
+			val damager = player.damager()
 			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(damager, 0)
 
 			player.debug("elapsedSinceRCLICK = $elapsedSinceRightClick")
@@ -93,7 +93,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		clock: ItemStack
 	) {
 		// Mantain multicrew capabilities by creating a player damager if they're not the pilot
-		val damager = player.damager(starship)
+		val damager = player.damager()
 
 		val loc = player.eyeLocation
 		val playerFacing = player.facing
