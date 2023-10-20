@@ -20,6 +20,7 @@ class PathfindIfBlockedEngine(
 	}
 
 	/** Check if the projected section is blocked */
+	@Synchronized
 	private fun predictBlocked(): Boolean {
 		starship as ActiveControlledStarship
 		val cruiseDir = starship.cruiseData.velocity
