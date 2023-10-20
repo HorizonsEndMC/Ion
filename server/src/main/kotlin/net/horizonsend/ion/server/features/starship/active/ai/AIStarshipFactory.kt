@@ -27,7 +27,14 @@ object AIStarshipFactory : IonServerComponent() {
 		createController: (ActiveStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
-		createFromClipboard(location, template.getSchematic() ?: return, template.type, template.miniMessageName, createController, callback)
+		val schematic = template.getSchematic()
+
+		if (schematic == null) {
+			log.warn("Schematic not found for ${template.identifier} at ${template.schematicFile.toURI()}")
+			return
+		}
+
+		createFromClipboard(location, schematic, template.type, template.miniMessageName, createController, callback)
 	}
 
 	fun createFromClipboard(
@@ -45,8 +52,7 @@ object AIStarshipFactory : IonServerComponent() {
 			tryPilotWithController(location.world, vec3i, type, starshipName, createController) {
 				callback(it)
 
-				val computerLoc = Vec3i(it.data.blockKey).toLocation(it.world)
-				NPCFakePilot.add(it, computerLoc)
+				NPCFakePilot.add(it, null)
 			}
 		}
 	}

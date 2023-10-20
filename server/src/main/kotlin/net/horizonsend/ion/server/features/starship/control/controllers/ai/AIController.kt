@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
-import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.World
@@ -48,23 +47,6 @@ abstract class AIController(
 	fun getCenterVec3i(): Vec3i = starship.centerOfMass
 
 	fun getWorld(): World = starship.world
-
-	override fun tick() {
-		highlightComputer()
-		super.tick()
-	}
-
-	private fun highlightComputer() = Tasks.sync {
-		val controlledStarship = starship as? ActiveControlledStarship ?: return@sync
-		val computerLoc = Vec3i(controlledStarship.data.blockKey)
-
-		val location = getCenter()
-		val players = location.getNearbyPlayers(160.0)
-
-		for (player in players) {
-			player.highlightBlock(computerLoc, 5L)
-		}
-	}
 
 	// Begin utility functions
 	fun scheduleDespawn() = Tasks.sync {
