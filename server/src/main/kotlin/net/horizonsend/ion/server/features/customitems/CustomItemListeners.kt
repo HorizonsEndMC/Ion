@@ -10,7 +10,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
@@ -27,7 +26,9 @@ class CustomItemListeners : SLEventListener() {
 		when (event.action) {
 			Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
 				customItem.handleSecondaryInteract(event.player, event.player.inventory.itemInMainHand)
-				event.isCancelled = true
+				if (customItem !is CustomBlockItem) {
+					event.isCancelled = true
+				}
 			}
 
 			Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
