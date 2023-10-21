@@ -60,8 +60,6 @@ object Skins : IonServerComponent() {
 
 			val reader = BufferedReader(InputStreamReader(connection.inputStream))
 			val dataOutput = JSONParser().parse(reader) as JSONObject
-
-			println(dataOutput.toJSONString())
 			val data = dataOutput["data"] as JSONObject
 
 			val uuid = data["uuid"] as String
