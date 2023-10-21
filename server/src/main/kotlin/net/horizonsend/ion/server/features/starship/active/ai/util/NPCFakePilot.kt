@@ -61,6 +61,7 @@ object NPCFakePilot : IonServerComponent(true) {
 			}
 
 			entity.isGlowing = true
+			entity.setGravity(false)
 			entity.location.pitch = ship.controller.pitch
 			entity.location.yaw = ship.controller.yaw
 			entity.isInvulnerable = false
