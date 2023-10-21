@@ -52,6 +52,7 @@ object InteractListener : SLEventListener() {
 		PowerMachines.addPower(sign, powerToTransfer)
 	}
 
+	/*
 	// When not in creative mode, make breaking a custom item drop the proper drops
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onBlockBreakEvent(event: BlockBreakEvent) {
@@ -74,6 +75,7 @@ object InteractListener : SLEventListener() {
 			}
 		}
 	}
+	 */
 
 	@EventHandler
 	fun handleMultiblockInteract(event: PlayerInteractEvent) {
