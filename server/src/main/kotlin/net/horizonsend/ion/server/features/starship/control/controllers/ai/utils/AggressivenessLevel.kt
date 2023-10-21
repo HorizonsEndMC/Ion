@@ -1,16 +1,13 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.utils
 
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.AggressiveLevelAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
-import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -116,9 +113,9 @@ enum class AggressivenessLevel(
 	open fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {
 		if (controller is CombatAIController && controller.target != null) return
 
-		if (controller is NeutralAIController) when (damager) {
-			is AIShipDamager -> controller.combatMode(controller as AIController, StarshipTarget(damager.starship))
-			is PlayerDamager -> controller.combatMode(controller as AIController, PlayerTarget(damager.player))
+		when (controller) {
+			is NeutralAIController -> controller.combatMode(controller as AIController, damager.getAITarget())
+			is CombatAIController -> if (controller.target == null) controller.target = damager.getAITarget()
 		}
 	}
 }
