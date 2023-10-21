@@ -34,16 +34,7 @@ enum class AggressivenessLevel(
 			.append(text("❤", NamedTextColor.BLUE))
 			.append(text("]", NamedTextColor.GRAY))
 			.build()
-	) {
-		override fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {
-			if (controller is CombatAIController && controller.target != null) return
-
-			if (controller is NeutralAIController) when (damager) {
-				is AIShipDamager -> controller.combatMode(controller as AIController, StarshipTarget(damager.starship))
-				is PlayerDamager -> controller.combatMode(controller as AIController, PlayerTarget(damager.player))
-			}
-		}
-	  },
+	),
 	LOW(
 		500.0,
 		5.0,
@@ -122,5 +113,12 @@ enum class AggressivenessLevel(
 //			?: controller.getCenter().getNearbyPlayers(engagementDistance).firstOrNull()?.let { PlayerTarget(it) }
 	}
 
-	open fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {}
+	open fun onDamaged(controller: AggressiveLevelAIController, damager: Damager) {
+		if (controller is CombatAIController && controller.target != null) return
+
+		if (controller is NeutralAIController) when (damager) {
+			is AIShipDamager -> controller.combatMode(controller as AIController, StarshipTarget(damager.starship))
+			is PlayerDamager -> controller.combatMode(controller as AIController, PlayerTarget(damager.player))
+		}
+	}
 }
