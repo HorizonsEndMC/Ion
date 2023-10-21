@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -17,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
+import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.event.world.WorldLoadEvent
@@ -72,6 +74,8 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 			val id = objId<PlayerStarshipData>()
 			val blockKey = blockKey(x, y, z)
 			val worldName = world.name
+			val autoLock = Bukkit.getPlayer(playerId)?.hasProtection() == true
+
 			val data = PlayerStarshipData(
 				_id = id,
 				captain = captain,
@@ -80,7 +84,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 				levelName = worldName,
 				blockKey = blockKey,
 				name = name,
-				isLockEnabled = true
+				isLockEnabled = autoLock
 			)
 			PlayerStarshipData.add(data)
 			getCache(world).add(data)
