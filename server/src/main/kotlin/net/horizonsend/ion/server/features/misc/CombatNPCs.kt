@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
 import net.horizonsend.ion.server.miscellaneous.utils.firsts
 import net.horizonsend.ion.server.miscellaneous.utils.get
+import net.horizonsend.ion.server.miscellaneous.utils.isNPC
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -197,7 +198,6 @@ object CombatNPCs : IonServerComponent(true) {
 				destroyNPC(it.first)
 			}
 
-
 			if (SLPlayer[event.player].wasKilled && IonServer.legacySettings.master) { // TODO find a more permanent fix for server checks
 				event.player.inventory.clear()
 				event.player.health = 0.0
@@ -206,6 +206,7 @@ object CombatNPCs : IonServerComponent(true) {
 		}
 
 		listen<PlayerDeathEvent>(priority = EventPriority.LOWEST) { event ->
+			if (event.player.isNPC()) return@listen
 			val data = SLPlayer[event.player]
 			if (data.wasKilled) {
 				event.drops.clear()
