@@ -56,7 +56,7 @@ object Interdiction : IonServerComponent() {
 		}
 	}
 
-	private fun toggleGravityWell(starship: ActiveStarship) {
+	fun toggleGravityWell(starship: ActiveStarship) {
 		when (starship.isInterdicting) {
 			true -> for (player in starship.serverLevel.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.serverLevel.world),

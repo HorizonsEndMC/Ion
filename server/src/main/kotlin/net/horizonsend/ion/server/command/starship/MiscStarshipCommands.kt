@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtectio
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
@@ -585,5 +586,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		for (sign in signs) {
 			DrillMultiblock.setUser(sign, user)
 		}
+	}
+
+	@Suppress("unused")
+	@CommandAlias("gravwell")
+	@Description("Toggle all gravity wells on your starship")
+	fun onToggleGravwell(sender: Player) {
+		val starship = getStarshipPiloting(sender)
+
+		toggleGravityWell(starship)
 	}
 }
