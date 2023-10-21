@@ -13,7 +13,8 @@ interface NeutralAIController : AggressiveLevelAIController {
 
 	fun createCombatController(controller: AIController, target: AITarget): AIController
 
-	fun combatMode(controller: AIController, target: AITarget) {
+	fun combatMode(controller: AIController, target: AITarget?) {
+		target ?: return
 		val combatMode = createCombatController(controller, target)
 
 		starship.controller = combatMode

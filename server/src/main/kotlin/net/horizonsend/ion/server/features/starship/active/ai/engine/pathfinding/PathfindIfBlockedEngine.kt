@@ -38,7 +38,7 @@ class PathfindIfBlockedEngine(
 	}
 
 	override fun passToMovementEngine(movementEngine: MovementEngine) {
-		if (!blocked) return
+		if (!blocked && movementEngine.destination != null) return
 
 		super.passToMovementEngine(movementEngine)
 	}

@@ -45,16 +45,15 @@ class FrigateCombatAIController(
 	override val autoWeaponSets: MutableList<WeaponSet>
 ): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController {
+	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
 	override val pathfindingEngine: PathfindingEngine = PathfindIfBlockedEngine(this, target?.getVec3i())
 	override val movementEngine: MovementEngine = CruiseEngine(this, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL)
-	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
 
 	override var locationObjective: Location? = target?.getLocation()
 
 	override fun tick() {
-		super.tick()
-
 		if (target == null) aggressivenessLevel.findNextTarget(this)
+		this.target ?: return
 
 		val ok = checkOnTarget()
 
