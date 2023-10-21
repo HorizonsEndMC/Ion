@@ -162,6 +162,7 @@ open class StarfighterCombatAIController(
 
 		if (target == null) aggressivenessLevel.findNextTarget(this)
 		val target = this.target ?: return
+		positioningEngine.target = target
 
 		if (!ok) {
 			aggressivenessLevel.disengage(this)
@@ -171,7 +172,7 @@ open class StarfighterCombatAIController(
 		if (target is StarshipTarget) {
 			positioningEngine.standoffDistance = getStandoffDistance(target.ship)
 		} else {
-			positioningEngine.standoffDistance = 10.0
+			positioningEngine.standoffDistance = 25.0
 		}
 		tickAll()
 
