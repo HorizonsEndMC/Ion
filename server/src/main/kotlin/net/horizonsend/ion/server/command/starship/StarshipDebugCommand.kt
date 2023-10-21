@@ -9,10 +9,12 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.FrigateCombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatAIController
@@ -73,6 +75,7 @@ object StarshipDebugCommand : SLCommand() {
 		val starship = getStarshipRiding(sender)
 
 		starship.controller = controller.createController(starship, aggressivenessLevel, destination)
+		NPCFakePilot.add(starship as ActiveControlledStarship, null)
 		starship.removePassenger(sender.uniqueId)
 	}
 
