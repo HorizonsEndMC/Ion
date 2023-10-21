@@ -86,10 +86,7 @@ object ShipKillXP : IonServerComponent() {
 			val starship = ActiveStarships.findByPassenger(killer) ?: return
 			val damager = PlayerDamagerWrapper(killer, starship)
 
-			val data = killedStarship.damagers.getOrPut(damager) { ShipDamageData(AtomicInteger(), System.currentTimeMillis()) }
-
-			data.points.incrementAndGet()
-			data.lastDamaged = System.currentTimeMillis()
+			killedStarship.addToDamagers(damager)
 		}
 
 		onShipKill(killedStarship, killedName, arena)

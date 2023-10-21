@@ -121,7 +121,6 @@ open class StarfighterCombatAIController(
 		return when {
 			// Check if they've moved out of range
 			(distance > aggressivenessLevel.engagementDistance) -> {
-
 				// Keep pursuing if aggressive, else out of range and should disengage
 				if (aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal) {
 					locationObjective = targetLocation
@@ -178,8 +177,6 @@ open class StarfighterCombatAIController(
 
 		handleAutoWeapons(starship.centerOfMass)
 		if (state == State.COMBAT) combatLoop()
-
-		super.tick()
 	}
 
 	private fun combatLoop() {
