@@ -21,6 +21,7 @@ object BlockListener : SLEventListener() {
 	}
 
 	// Don't allow breaking blocks with custom items
+	/*
 	@EventHandler
 	fun onBlockBreakEventA(event: BlockBreakEvent) {
 		val item = event.player.inventory.itemInMainHand
@@ -29,6 +30,7 @@ object BlockListener : SLEventListener() {
 			event.isCancelled = true
 		}
 	}
+	 */
 
 	// Prevent huge mushroom trees from growing as large mushroom blocks are used as custom ores
 	@EventHandler
