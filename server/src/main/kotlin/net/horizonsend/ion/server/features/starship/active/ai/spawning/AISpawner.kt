@@ -74,7 +74,6 @@ abstract class AISpawner(val identifier: String) {
 		val deferred = spawn(loc)
 
 		deferred.invokeOnCompletion { throwable ->
-			println("completed")
 			throwable?.let {
 				IonServer.server.debug("AI Starship at could not be spawned: ${throwable.message}!")
 				return@invokeOnCompletion
