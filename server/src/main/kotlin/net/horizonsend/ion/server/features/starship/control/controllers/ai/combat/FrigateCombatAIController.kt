@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.combat
 
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -14,8 +15,12 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.inter
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.getDirection
+import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import org.bukkit.Location
+import org.bukkit.util.Vector
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -44,22 +49,19 @@ class FrigateCombatAIController(
 	override val movementEngine: MovementEngine = CruiseEngine(this, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL)
 	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
 
-	override var locationObjective: Location? = target?.let { it.getLocation() }
-
-	val lastBlockedTime get() = (starship as ActiveControlledStarship).lastBlockedTime
+	override var locationObjective: Location? = target?.getLocation()
 
 	override fun tick() {
 		super.tick()
 
 		if (target == null) aggressivenessLevel.findNextTarget(this)
-		val target = this.target ?: return
 
 		val ok = checkOnTarget()
 
 		if (!ok) aggressivenessLevel.disengage(this)
 
-//		positioningEngine.target = target.centerOfMass
 		tickAll()
+		handleAutoWeapons(starship.centerOfMass)
 	}
 
 	/**
@@ -71,7 +73,8 @@ class FrigateCombatAIController(
 		val target = this.target ?: return false
 
 		val location = getCenter()
-		val targetLocation = target.getVec3i().toVector()
+		val targetLocationVector = target.getVec3i().toVector()
+		val targetLocation = target.getLocation()
 
 		if (!target.isActive()) return false
 
@@ -90,31 +93,35 @@ class FrigateCombatAIController(
 			return false
 		}
 
-		val distance = distance(location.toVector(), targetLocation)
+		val distance = distance(location.toVector(), targetLocationVector)
+		locationObjective = targetLocation
 
-		return when {
-			// Check if they've moved out of range
-			(distance > aggressivenessLevel.engagementDistance) -> {
+		if (distance > aggressivenessLevel.engagementDistance) {
+			return aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal
+		}
 
-				// Keep pursuing if aggressive, else out of range and should disengage
-				if (aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal) {
-					locationObjective = targetLocation.toLocation(target.getWorld())
-					return true
-				}
+		return true
+	}
 
-				false
-			}
+	private fun combatLoop() {
+		val target = this.target ?: return
 
-			// They are getting far away so focus on moving towards them
-			(distance in 500.0..aggressivenessLevel.engagementDistance) -> {
-				locationObjective = targetLocation.toLocation(target.getWorld())
-				true
-			}
+		// Get the closest axis
+		(starship as ActiveControlledStarship).speedLimit = -1
 
-			// They are in range, in the same world, should continue to engage
-			else -> {
-				// The combat loop will handle the location gathering
-				true
+		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
+
+		fireAllWeapons(
+			starship.centerOfMass,
+			target.getVec3i(true),
+			faceDirection = faceDirection
+		) { direction ->
+			if (aggressivenessLevel.shotDeviation > 0) {
+				val offsetX = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+				val offsetY = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+				val offsetZ = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
+
+				direction.add(Vector(offsetX, offsetY, offsetZ)).normalize()
 			}
 		}
 	}
