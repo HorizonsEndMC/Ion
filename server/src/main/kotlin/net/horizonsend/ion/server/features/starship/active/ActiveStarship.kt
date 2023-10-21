@@ -376,8 +376,12 @@ abstract class ActiveStarship (
 	fun lastDamagedOrNull(): Long? = damagers.maxOfOrNull { it.value.lastDamaged }
 
 	fun addToDamagers(damager: Damager) {
-		damagers.getOrPut(damager) { ShipKillXP.ShipDamageData() }.points.incrementAndGet()
+		val data = damagers.getOrPut(damager) { ShipKillXP.ShipDamageData() }
+		data.points.incrementAndGet()
+		data.lastDamaged = System.currentTimeMillis()
+
 		debugAudience.debug("$damager added to damagers")
+		damager.debug("$damager added to $identifier's damagers")
 
 		controller.onDamaged(damager)
 	}
