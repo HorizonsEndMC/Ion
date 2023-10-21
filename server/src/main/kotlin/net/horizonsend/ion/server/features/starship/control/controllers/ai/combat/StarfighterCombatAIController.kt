@@ -143,6 +143,7 @@ open class StarfighterCombatAIController(
 			else -> {
 				// The combat loop will handle the location gathering
 				state = State.COMBAT
+				locationObjective = targetLocation
 				true
 			}
 		}
