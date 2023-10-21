@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -266,6 +267,33 @@ object BazaarCommand : SLCommand() {
 					.append(text(price).color(NamedTextColor.YELLOW))
 					.append(text("]").color(NamedTextColor.DARK_GRAY))
 			)
+		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("list menu")
+	@Description("List the items you're selling at this city")
+	fun onListMenu(sender: Player) = asyncCommand(sender) {
+		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
+
+		MenuHelper.apply {
+			val guiItems = items.map { item ->
+				val city = cityName(Regions[item.cityTerritory])
+				val stock = item.stock
+				val uncollected = item.balance.toCreditsString()
+				val price = item.price.toCreditsString()
+
+				guiButton(Bazaars.fromItemString(item.itemString)).apply {
+					setLoreComponent(listOf(
+						text().append(text("City: ", NamedTextColor.DARK_PURPLE), text(city, NamedTextColor.LIGHT_PURPLE)).decoration(TextDecoration.ITALIC, false).build(),
+						text().append(text("Stock: ", NamedTextColor.GRAY), text(stock, NamedTextColor.GRAY)).decoration(TextDecoration.ITALIC, false).build(),
+						text().append(text("Balance: ", NamedTextColor.GRAY), text(uncollected, NamedTextColor.GOLD)).decoration(TextDecoration.ITALIC, false).build(),
+						text().append(text("Price: ", NamedTextColor.GRAY), text(price, NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, false).build(),
+					))
+				}
+			}
+
+			Tasks.sync { sender.openPaginatedMenu("Your Items (${items.size})", guiItems) }
 		}
 	}
 
