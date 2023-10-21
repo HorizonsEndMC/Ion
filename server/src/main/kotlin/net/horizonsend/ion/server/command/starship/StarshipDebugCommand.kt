@@ -93,8 +93,13 @@ object StarshipDebugCommand : SLCommand() {
 				starship = ship,
 				target = null,
 				aggressivenessLevel = aggressivenessLevel,
-				autoWeaponSets = mutableListOf(),
-				manualWeaponSets = mutableListOf()
+				autoWeaponSets = mutableListOf(
+					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 0.0, 1000.0)
+				),
+				manualWeaponSets = mutableListOf(
+					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 100.0, 1000.0),
+					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("Phasers", 0.0, 100.0),
+				)
 			)
 		}),
 
@@ -111,6 +116,25 @@ object StarshipDebugCommand : SLCommand() {
 						nearbyShip,
 						controller.aggressivenessLevel,
 						controller,
+					)
+				}
+			}
+		),
+
+		AUTO_CRUISE_WITH_FRIGATE_FALLBACK(
+			{ ship, aggressivenessLevel, location ->
+				AutoCruiseAIController(
+					ship,
+					location,
+					-1,
+					aggressivenessLevel
+				) { controller, nearbyShip ->
+					FrigateCombatAIController(
+						controller.starship,
+						nearbyShip,
+						controller.aggressivenessLevel,
+						mutableListOf(),
+						mutableListOf()
 					)
 				}
 			}

@@ -8,6 +8,9 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
+import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
@@ -26,6 +29,7 @@ interface Damager : Audience {
 	fun getDisplayName() : Component
 	fun rewardXP(xp: Int)
 	fun rewardMoney(credits: Double)
+	fun getAITarget(): AITarget? //TODO non null eventually
 }
 
 interface PlayerDamager : Damager {
@@ -46,6 +50,7 @@ interface PlayerDamager : Damager {
 class PlayerDamagerWrapper(override val player: Player, override val starship: ActiveStarship?) : PlayerDamager {
 	override val color: Color
 		get() = PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: Color.RED
+	override fun getAITarget(): AITarget = PlayerTarget(player)
 }
 
 val noOpDamager = NoOpDamager()
@@ -66,6 +71,7 @@ fun getDamager(entity: Entity, starship: ActiveStarship? = null) : Damager {
 
 class EntityDamager(val entity: Entity) : NoOpDamager() {
 	override fun getDisplayName(): Component = entity.name()
+	override fun getAITarget(): AITarget? = null
 }
 
 open class NoOpDamager : Damager {
@@ -74,12 +80,14 @@ open class NoOpDamager : Damager {
 	override fun getDisplayName(): Component = Component.text("none")
 	override fun rewardMoney(credits: Double) { }
 	override fun rewardXP(xp: Int) { }
+	override fun getAITarget(): AITarget? = null
 }
 
 class AIShipDamager(override val starship: ActiveStarship, override val color: Color = Color.RED): Damager {
 	override fun getDisplayName(): Component = starship.getDisplayNameComponent()
 	override fun rewardMoney(credits: Double) {}
 	override fun rewardXP(xp: Int) {}
+	override fun getAITarget(): AITarget = StarshipTarget(starship)
 }
 
 fun addToDamagers(world: World, block: Block, shooter: Entity) {
