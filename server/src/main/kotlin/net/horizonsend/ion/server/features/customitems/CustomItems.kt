@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
-import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralBlockItem
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralOreItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
@@ -317,6 +316,26 @@ object CustomItems {
 		) {}
 	)
 
+	val ALUMINUM_ORE = register(
+		object : CustomBlockItem(
+			identifier = "ALUMINUM_ORE",
+			material = IRON_ORE,
+			customModelData = 1,
+			displayName = text("Aluminum Ore").decoration(ITALIC, false),
+			customBlockIdentifier = "ALUMINUM_ORE"
+		) {}
+	)
+
+	val ALUMINUM_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "ALUMINUM_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 1,
+			displayName = text("Aluminum Block").decoration(ITALIC, false),
+			customBlockIdentifier = "ALUMINUM_BLOCK"
+		) {}
+	)
+
 	val CHETHERITE = register(
 		object : MineralItem(
 			identifier = "CHETHERITE",
@@ -326,39 +345,52 @@ object CustomItems {
 		) {}
 	)
 
-	val ALUMINUM_ORE = register(
-		object : MineralOreItem(
-			identifier = "ALUMINUM_ORE",
-			material = IRON_ORE,
-			customModelData = 1,
-			displayName = text("Aluminum Ore").decoration(ITALIC, false)
-		) {}
-	)
-
 	val CHETHERITE_ORE = register(
-		object : MineralOreItem(
+		object : CustomBlockItem(
 			identifier = "CHETHERITE_ORE",
 			material = IRON_ORE,
 			customModelData = 2,
-			displayName = text("Chetherite Ore").decoration(ITALIC, false)
-		) {}
-	)
-
-	val ALUMINUM_BLOCK = register(
-		object : MineralBlockItem(
-			identifier = "ALUMINUM_BLOCK",
-			material = IRON_BLOCK,
-			customModelData = 1,
-			displayName = text("Aluminum Block").decoration(ITALIC, false)
+			displayName = text("Chetherite Ore").decoration(ITALIC, false),
+			customBlockIdentifier = "CHETHERITE_ORE"
 		) {}
 	)
 
 	val CHETHERITE_BLOCK = register(
-		object : MineralBlockItem(
+		object : CustomBlockItem(
 			identifier = "CHETHERITE_BLOCK",
 			material = IRON_BLOCK,
 			customModelData = 2,
-			displayName = text("Chetherite Block").decoration(ITALIC, false)
+			displayName = text("Chetherite Block").decoration(ITALIC, false),
+			customBlockIdentifier = "CHETHERITE_BLOCK"
+		) {}
+	)
+
+	val TITANIUM = register(
+		object : MineralItem(
+			identifier = "TITANIUM",
+			material = IRON_INGOT,
+			customModelData = 3,
+			displayName = text("Titanium").decoration(ITALIC, false)
+		) {}
+	)
+
+	val TITANIUM_ORE = register(
+		object : CustomBlockItem(
+			identifier = "TITANIUM_ORE",
+			material = IRON_ORE,
+			customModelData = 3,
+			displayName = text("Titanium Ore").decoration(ITALIC, false),
+			customBlockIdentifier = "TITANIUM_ORE"
+		) {}
+	)
+
+	val TITANIUM_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "TITANIUM_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 3,
+			displayName = text("Titanium Block").decoration(ITALIC, false),
+			customBlockIdentifier = "TITANIUM_BLOCK"
 		) {}
 	)
 
