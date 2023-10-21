@@ -4,6 +4,7 @@ import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.event.NPCDeathEvent
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.npc.NPCRegistry
+import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships.isActive
 import net.horizonsend.ion.server.features.starship.damager.damager
+import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -108,10 +110,12 @@ object NPCFakePilot : IonServerComponent(true) {
 		)
 
 		npc.isProtected = false
-//		npc.getOrAddTrait(SkinTrait::class.java) TODO skins
-//		(npc.traits.first() as SkinTrait).setSkinPersistent()
-		npc.spawn(spawnLoc)
+		Skins["https://assets.horizonsend.net/training_droid.png"]?.let { (_, textureData, signature) ->
+			val trait = npc.getOrAddTrait(SkinTrait::class.java)
+			trait.setSkinPersistent("training-droid", signature, textureData)
+		}
 
+		npc.spawn(spawnLoc)
 
 		index++
 		activeFakePilots[starship] = npc
