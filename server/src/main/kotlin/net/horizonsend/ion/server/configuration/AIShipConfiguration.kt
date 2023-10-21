@@ -50,8 +50,6 @@ data class AIShipConfiguration(
 		val worldWeightedRandomList = WeightedRandomList(worldSettings.associateWith { it.rolls })
 
 		fun getWorld(world: World) = worldSettings.firstOrNull { it.world == world.name }
-
-		fun availableForWorld(worldName: String) = worldSettings.any { it.world == worldName }
 	}
 
 	/**
