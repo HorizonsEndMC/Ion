@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.features.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.client.VoidNetwork
+import net.horizonsend.ion.server.features.customblocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.customitems.CustomItemListeners
 import net.horizonsend.ion.server.features.customitems.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
@@ -67,6 +68,7 @@ val listeners: List<Listener> = listOf(
 	CancelListeners(),
 	CustomOrePlacement,
 	CustomItemListeners(),
+	CustomBlockListeners(),
 	EdenFixer9000(),
 	GameplayTweaksListeners(),
 	HeadListener(),
