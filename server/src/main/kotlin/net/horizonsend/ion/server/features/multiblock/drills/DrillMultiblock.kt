@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.drills
 
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
@@ -104,10 +105,8 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 					continue
 				}
 
-				val customBlock = CustomBlocks[block]
-				var drops = if (customBlock == null) {
-					if (block.type == Material.SNOW_BLOCK) listOf<ItemStack>() else block.drops
-				} else listOf(*customBlock.getDrops())
+				val customBlock = CustomBlocks.getByBlock(block)
+				var drops = customBlock?.getDrops() ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
 
 				if (block.type.isShulkerBox) drops = listOf()
 
