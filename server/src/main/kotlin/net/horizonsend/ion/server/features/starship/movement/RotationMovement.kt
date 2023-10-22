@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -25,11 +25,11 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))
 
-	override fun blockDataTransform(blockData: BlockState): BlockState =
-		if (CustomBlocks[blockData] == null) {
-			blockData.rotate(nmsRotation)
+	override fun blockDataTransform(blockState: BlockState): BlockState =
+		if (CustomBlocks.getByBlockState(blockState) == null) {
+			blockState.rotate(nmsRotation)
 		} else {
-			blockData
+			blockState
 		}
 
 	override fun displaceX(oldX: Int, oldZ: Int): Int {

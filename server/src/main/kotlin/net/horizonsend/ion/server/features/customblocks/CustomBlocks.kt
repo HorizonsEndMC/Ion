@@ -8,6 +8,11 @@ import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.BlockFace.EAST
+import org.bukkit.block.BlockFace.NORTH
+import org.bukkit.block.BlockFace.SOUTH
+import org.bukkit.block.BlockFace.UP
+import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.inventory.ItemStack
@@ -27,44 +32,58 @@ object CustomBlocks {
 
     val ALUMINUM_ORE = register(CustomBlock(
         identifier = "ALUMINUM_ORE",
-        blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP)),
+        blockData = mushroomBlockData(setOf(NORTH, UP)),
         tool = "pickaxe",
         drops = customItemDrop("ALUMINUM_ORE")
     ))
 
     val ALUMINUM_BLOCK = register(CustomBlock(
         identifier = "ALUMINUM_BLOCK",
-        blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP, BlockFace.WEST)),
+        blockData = mushroomBlockData(setOf(SOUTH, UP, WEST)),
         tool = "pickaxe",
         drops = customItemDrop("ALUMINUM_BLOCK")
     ))
 
     val CHETHERITE_ORE = register(CustomBlock(
         identifier = "CHETHERITE_ORE",
-        blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.UP)),
+        blockData = mushroomBlockData(setOf(EAST, NORTH, UP)),
         tool = "pickaxe",
         drops = customItemDrop("CHETHERITE")
     ))
 
     val CHETHERITE_BLOCK = register(CustomBlock(
         identifier = "CHETHERITE_BLOCK",
-        blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.UP)),
+        blockData = mushroomBlockData(setOf(SOUTH, UP)),
         tool = "pickaxe",
         drops = customItemDrop("CHETHERITE_BLOCK")
     ))
 
     val TITANIUM_ORE = register(CustomBlock(
         identifier = "TITANIUM_ORE",
-        blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.WEST)),
+        blockData = mushroomBlockData(setOf(UP, WEST)),
         tool = "pickaxe",
         drops = customItemDrop("TITANIUM_ORE")
     ))
 
     val TITANIUM_BLOCK = register(CustomBlock(
-        identifier = "CHETHERITE_BLOCK",
-        blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.SOUTH, BlockFace.UP)),
+        identifier = "TITANIUM_BLOCK",
+        blockData = mushroomBlockData(setOf(EAST, SOUTH, UP)),
         tool = "pickaxe",
         drops = customItemDrop("TITANIUM_BLOCK")
+    ))
+
+    val URANIUM_ORE = register(CustomBlock(
+        identifier = "URANIUM_ORE",
+        blockData = mushroomBlockData(setOf(UP)),
+        tool = "pickaxe",
+        drops = customItemDrop("URANIUM_ORE")
+    ))
+
+    val URANIUM_BLOCK = register(CustomBlock(
+        identifier = "URANIUM_BLOCK",
+        blockData = mushroomBlockData(setOf(EAST, NORTH, SOUTH, WEST)),
+        tool = "pickaxe",
+        drops = customItemDrop("URANIUM_BLOCK")
     ))
 
     private fun customItemDrop(identifier: String, amount: Int = 1): List<ItemStack> {

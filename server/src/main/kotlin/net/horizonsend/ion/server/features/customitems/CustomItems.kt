@@ -394,6 +394,35 @@ object CustomItems {
 		) {}
 	)
 
+	val URANIUM = register(
+		object : MineralItem(
+			identifier = "URANIUM",
+			material = IRON_INGOT,
+			customModelData = 4,
+			displayName = text("Uranium")
+		) {}
+	)
+
+	val URANIUM_ORE = register(
+		object : CustomBlockItem(
+			identifier = "URANIUM_ORE",
+			material = IRON_ORE,
+			customModelData = 4,
+			displayName = text("Uranium Ore").decoration(ITALIC, false),
+			customBlockIdentifier = "URANIUM_ORE"
+		) {}
+	)
+
+	val URANIUM_BLOCK = register(
+		object : CustomBlockItem(
+			identifier = "URANIUM_BLOCK",
+			material = IRON_BLOCK,
+			customModelData = 4,
+			displayName = text("Uranium Block").decoration(ITALIC, false),
+			customBlockIdentifier = "URANIUM_BLOCK"
+		) {}
+	)
+
 	fun canisterName(gasName: Component): Component = text()
 		.append(gasName)
 		.append(text(" Gas Canister", GRAY))
