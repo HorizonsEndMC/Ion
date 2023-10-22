@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.starship.factory
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
+import net.horizonsend.ion.server.features.customitems.CustomItem
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
@@ -17,7 +17,7 @@ import java.util.Optional
 data class PrintItem(val itemString: String) {
 	constructor(itemStack: ItemStack) : this(Bazaars.toItemString(itemStack))
 
-	constructor(customItem: CustomItem) : this(customItem.singleItem())
+	constructor(customItem: CustomItem) : this(customItem.constructItemStack())
 
 	constructor(material: Material) : this(ItemStack(material))
 
@@ -40,10 +40,10 @@ data class PrintItem(val itemString: String) {
 		}
 
 		private fun findPrintItem(data: BlockData): PrintItem? {
+			val customBlock = CustomBlocks.getByBlockData(data)
 			when {
-				CustomBlocks[data] != null -> {
-					val customBlock = CustomBlocks[data] ?: return null
-					val customItem = CustomItems[customBlock.id] ?: return null
+				customBlock != null -> {
+					val customItem = CustomItems.getByIdentifier(customBlock.identifier) ?: return null
 					return PrintItem(customItem)
 				}
 
