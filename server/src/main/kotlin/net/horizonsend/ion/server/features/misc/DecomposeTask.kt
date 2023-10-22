@@ -3,11 +3,11 @@ package net.horizonsend.ion.server.features.misc
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.customblocks.CustomBlocks
 import net.horizonsend.ion.server.features.ores.Ore
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.starship.isFlyable
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import org.bukkit.Bukkit
@@ -120,11 +120,11 @@ class DecomposeTask(
 				// get drops BEFORE breaking
 				var drops: Collection<ItemStack> = block.drops
 
-				val customBlock = CustomBlocks[block] != null
+				val customBlock = CustomBlocks.getByBlock(block) != null
 				var customOre = false
-				Ore.values().forEach { Ore -> if (Ore.blockData == (CustomBlocks[block]?.blockData ?: false)) customOre = true }
+				Ore.entries.forEach { ore -> if (ore.blockData == (CustomBlocks.getByBlock(block)?.blockData ?: false)) customOre = true }
 
-				if (customBlock && !customOre) drops = CustomBlocks[block]?.getDrops()?.toList()!!
+				if (customBlock && !customOre) drops = CustomBlocks.getByBlock(block)?.getDrops()?.toList()!!
 
 				block.setType(Material.AIR, false)
 
