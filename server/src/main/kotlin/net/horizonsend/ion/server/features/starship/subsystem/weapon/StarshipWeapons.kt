@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import org.bukkit.util.Vector
+import java.util.concurrent.ThreadLocalRandom
 
 object StarshipWeapons {
 	interface QueuedShot {
@@ -83,7 +84,16 @@ object StarshipWeapons {
 		}
 
 		val firedCounts = HashMultimap.create<String, WeaponSubsystem>()
-		for (shot in queuedShots.sortedBy { it.weapon.lastFire }) {
+
+		for (shot in queuedShots.shuffled(ThreadLocalRandom.current())) {
+			if (shot.weapon is StarshipCooldownSubsystem) {
+				val clazz = shot.weapon::class.java
+
+				for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
+					subsystem.lastFire = System.nanoTime()
+				}
+			}
+
 			val weapon = shot.weapon
 
 			val maxPerShot = weapon.getMaxPerShot()
@@ -93,13 +103,6 @@ object StarshipWeapons {
 			ship.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
 				ship.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
-				if (shot.weapon is StarshipCooldownSubsystem) {
-					val clazz = shot.weapon::class.java
-
-					for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
-						subsystem.lastFire = System.nanoTime()
-					}
-				}
 
 				continue
 			}
