@@ -34,6 +34,8 @@ object AIPathfinding {
 			position.y.shl(4) + world.minHeight + 8,
 			position.z.shl(4) + 8
 		)
+		fun anyNeighborsUnnavigable(trackedNodes: Collection<SectionNode>): Boolean =
+			getNeighborNodes(this, trackedNodes).any { neighborNeighbor -> !neighborNeighbor.navigable }
 
 		fun highlight(player: Player) {
 			val (positionX, positionY, positionZ) = position
@@ -177,8 +179,7 @@ object AIPathfinding {
 		val currentlyTracked = engine.trackedSections.map { it.position }
 		val new = getSurroundingSectionPositions(engine)
 
-		val toRemove = currentlyTracked
-			.toMutableList() // clone
+		val toRemove = currentlyTracked.toMutableList() // clone
 		toRemove.removeAll(new) // Get a list of all the old
 
 		val unTracked = new.toMutableList()
@@ -186,6 +187,78 @@ object AIPathfinding {
 
 		engine.trackedSections.removeAll { toRemove.contains(it.position) }
 		engine.trackedSections.addAll(newSections)
+	}
+
+	fun pathfind(engine: PathfindingEngine) {
+		val trackedNodes = engine.trackedSections
+		if (trackedNodes.isEmpty()) adjustTrackedSections(engine, false)
+
+		val originNode = engine.getOriginNode()
+
+		val openList: List<SectionNode> = listOf()
+		val closedList: List<SectionNode> = listOf()
+
+
+	}
+
+	/**
+	 * Wraps a pathfinding node to provide the information gained from the algorithm
+	 *
+	 * @param node: The node this wraps
+	 * @param parent: The parent of this node, used to calculate G cost.
+	 * @param parent: The positional relation to the parent.
+	 **/
+	data class PathfindingNodeWrapper(
+		val node: SectionNode,
+		var parent: SectionNode?,
+		val parentRelation: Adjacent?,
+		val origin: Boolean = false
+	) {
+		/** G cost, the sum of the distances between the origin and current node */
+		fun getGCost(closedNodes: Collection<PathfindingNodeWrapper>): Int {
+			val chain = getChain(closedNodes)
+
+			return chain.sumOf { it.parentRelation?.cost ?: 0 }
+		}
+
+		/** Heuristic, the distance from the destination */
+		fun getHCost(destinationNode: SectionNode): Int {
+			return getEstimatedCostEuclidean(this.node, destinationNode)
+		}
+
+		fun getFCost(closedNodes: Collection<PathfindingNodeWrapper>, destinationNode: SectionNode): Int {
+			return  getGCost(closedNodes) + getHCost(destinationNode)
+		}
+
+		/** Iterates backwards from this node, through its parents, to the origin. */
+		fun iterateParents(closedNodes: Collection<PathfindingNodeWrapper>, b: (PathfindingNodeWrapper) -> Unit) {
+			getChain(closedNodes).forEach(b)
+		}
+
+		/** Collects a list of pathfinding node wrappers */
+		fun getChain(closedNodes: Collection<PathfindingNodeWrapper>): Collection<PathfindingNodeWrapper> {
+			var current: SectionNode? = this.node
+			val path = mutableListOf<PathfindingNodeWrapper>()
+
+			while (current != null) {
+				val pathfinding = get(closedNodes, current) ?: break
+				// If it is the origin node, break
+				if (pathfinding.origin) break
+
+				// shouldn't happen since it's not the origin, but handle the possibility
+				current = pathfinding.parent ?: break
+
+				path.add(pathfinding)
+			}
+
+			return path
+		}
+
+		companion object {
+			fun get(closedNodes: Collection<PathfindingNodeWrapper>, sectionNode: SectionNode): PathfindingNodeWrapper? {
+				return closedNodes.firstOrNull { it.node == sectionNode }
+			}
+		}
 	}
 
 	// Begin A* Implementation
@@ -282,7 +355,7 @@ object AIPathfinding {
 		val (x, y, z) = node.position
 		val sections = mutableSetOf<Vec3i>()
 
-		for (face in ADJACENT.values()) {
+		for (face in Adjacent.values()) {
 			val newX = x + face.modX
 			val newY = y + face.modY
 			val newZ = z + face.modZ
@@ -323,32 +396,32 @@ object AIPathfinding {
 
 	class PathfindingException(message: String?) : Exception(message)
 
-	enum class ADJACENT(val modX: Int, val modY: Int, val modZ: Int) {
-		NORTH(0, 0, -1),
-		UP_NORTH(0, 1, -1),
-		DOWN_NORTH(0, -1, -1),
-		NORTH_EAST(1, 0, -1),
-		NORTH_WEST(-1, 0, -1),
-		UP_NORTH_EAST(1, 1, -1),
-		UP_NORTH_WEST(-1, 1, -1),
-		DOWN_NORTH_EAST(1, -1, -1),
-		DOWN_NORTH_WEST(-1, -1, -1),
-		EAST(1, 0, 0),
-		UP_EAST(1, 1, 0),
-		DOWN_EAST(1, -1, 0),
-		SOUTH(0, 0, 1),
-		UP_SOUTH(0, 1, 1),
-		DOWN_SOUTH(0, -1, 1),
-		SOUTH_EAST(1, 0, 1),
-		SOUTH_WEST(-1, 0, 1),
-		UP_SOUTH_EAST(1, 1, 1),
-		UP_SOUTH_WEST(-1, 1, 1),
-		DOWN_SOUTH_EAST(1, -1, 1),
-		DOWN_SOUTH_WEST(-1, -1, 1),
-		WEST(-1, 0, 0),
-		UP_WEST(-1, 1, 0),
-		DOWN_WEST(-1, -1, 0),
-		UP(0, 1, 0),
-		DOWN(0, -1, 0),
+	enum class Adjacent(val modX: Int, val modY: Int, val modZ: Int, val cost: Int) {
+		NORTH(0, 0, -1, 100),
+		UP_NORTH(0, 1, -1, 141),
+		DOWN_NORTH(0, -1, -1, 141),
+		NORTH_EAST(1, 0, -1, 141),
+		NORTH_WEST(-1, 0, -1, 141),
+		UP_NORTH_EAST(1, 1, -1, 144),
+		UP_NORTH_WEST(-1, 1, -1, 144),
+		DOWN_NORTH_EAST(1, -1, -1, 144),
+		DOWN_NORTH_WEST(-1, -1, -1, 144),
+		EAST(1, 0, 0, 100),
+		UP_EAST(1, 1, 0, 141),
+		DOWN_EAST(1, -1, 0, 141),
+		SOUTH(0, 0, 1, 100),
+		UP_SOUTH(0, 1, 1, 141),
+		DOWN_SOUTH(0, -1, 1, 141),
+		SOUTH_EAST(1, 0, 1, 141),
+		SOUTH_WEST(-1, 0, 1, 141),
+		UP_SOUTH_EAST(1, 1, 1, 144),
+		UP_SOUTH_WEST(-1, 1, 1, 144),
+		DOWN_SOUTH_EAST(1, -1, 1, 144),
+		DOWN_SOUTH_WEST(-1, -1, 1, 144),
+		WEST(-1, 0, 0, 100),
+		UP_WEST(-1, 1, 0, 141),
+		DOWN_WEST(-1, -1, 0, 141),
+		UP(0, 1, 0, 100),
+		DOWN(0, -1, 0, 100),
 	}
 }
