@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.ForwardingAudience
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -85,18 +86,18 @@ object IonCommand : SLCommand() {
 }
 
 fun Audience.debugBanner(message: String) = debug("------------------- $message -------------------")
-fun Audience.debug(message: String) {
-	if (this !is Player) return
+fun Audience.debug(message: String): Unit = when (this) {
+	is Player -> if (IonCommand.debugEnabledPlayers.contains(this)) information(message) else {}
 
-	if (IonCommand.debugEnabledPlayers.contains(this)) {
-		information(message)
-	}
+	is ForwardingAudience -> audiences().filter { IonCommand.debugEnabledPlayers.contains(it) }.forEach{ _ -> information(message) }
+
+	else -> {}
 }
 
-fun Audience.debugRed(message: String) {
-	if (this !is Player) return
+fun Audience.debugRed(message: String): Unit = when (this) {
+	is Player -> if (IonCommand.debugEnabledPlayers.contains(this)) serverError(message) else {}
 
-	if (IonCommand.debugEnabledPlayers.contains(this)) {
-		serverError(message)
-	}
+	is ForwardingAudience -> audiences().filter { IonCommand.debugEnabledPlayers.contains(it) }.forEach{ _ -> serverError(message) }
+
+	else -> {}
 }
