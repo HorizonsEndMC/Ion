@@ -179,19 +179,25 @@ fun buildStructureBlock(minPoint: Vec3i, maxPoint: Vec3i, message: String = ""):
 	return state to entity
 }
 
-fun Player.highlightRegion(minPoint: Vec3i, maxPoint: Vec3i, structureName: String = "") {
+fun Player.highlightRegion(minPoint: Vec3i, maxPoint: Vec3i, structureName: String = "", duration: Long) {
 	val (state, entity) = buildStructureBlock(minPoint, maxPoint, structureName)
 
-	showBlockState(state, entity)
+	showBlockState(state, entity, duration)
 }
 
-fun Player.showBlockState(state: BlockState, blockEntity: BlockEntity) {
+val airState = Blocks.AIR.defaultBlockState()
+
+fun Player.showBlockState(state: BlockState, blockEntity: BlockEntity, duration: Long) {
 	val position = blockEntity.blockPos
 
 	val conn: ServerGamePacketListenerImpl = this.minecraft.connection
 
 	conn.send(ClientboundBlockUpdatePacket(position, state))
 	conn.send(ClientboundBlockEntityDataPacket.create(blockEntity))
+
+	Tasks.syncDelayTask(duration) {
+		conn.send(ClientboundBlockUpdatePacket(position, airState))
+	}
 }
 
 fun Player.showBlockState(position: BlockPos, state: BlockState, blockEntity: BlockEntity?) {
