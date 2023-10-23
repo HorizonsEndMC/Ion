@@ -51,6 +51,17 @@ open class PathfindingEngine(
 	/** Store the currently tracked section nodes */
 	val trackedSections = mutableSetOf<AIPathfinding.SectionNode>()
 
+	fun getOriginNode(): AIPathfinding.SectionNode {
+		val centerPos = getSectionPositionOrigin()
+		val originCandidate = trackedSections.firstOrNull { it.position == centerPos }
+
+		if (originCandidate != null) return originCandidate
+
+		AIPathfinding.adjustTrackedSections(this, true)
+		// The origin node must be present after tracking sections
+		return trackedSections.first { it.position == centerPos }
+	}
+
 	/** General update task for pathfinding */
 	fun updatePathfinding() {
 		val newCenter = getSectionPositionOrigin()
