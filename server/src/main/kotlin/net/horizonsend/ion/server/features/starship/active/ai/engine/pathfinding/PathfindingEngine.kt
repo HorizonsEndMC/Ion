@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlocks
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -36,14 +37,18 @@ open class PathfindingEngine(
 	/** Update the tracked environment around the ship */
 	var center: Vec3i? = null
 
+	fun realToSectionPos(realPosition: Vec3i): Vec3i {
+		val x = realPosition.x.shr(4)
+		val z = realPosition.z.shr(4)
+		val y = (realPosition.y - world.minHeight).shr(4)
+
+		return Vec3i(x, y, z)
+	}
+
 	fun getSectionPositionOrigin(): Vec3i {
 		val center = Vec3i(getCenter())
 
-		val x = center.x.shr(4)
-		val z = center.z.shr(4)
-		val y = (center.y - world.minHeight).shr(4)
-
-		return Vec3i(x, y, z)
+		return realToSectionPos(center)
 	}
 
 	var chunkSearchRadius: Int = IonServer.server.viewDistance
@@ -62,12 +67,69 @@ open class PathfindingEngine(
 		return trackedSections.first { it.position == centerPos }
 	}
 
+	/**
+	 * Gets a destination node location
+	 *
+	 * @param destination, the destination, in real coordinates
+	 * */
+	fun getDestinationNode(): AIPathfinding.SectionNode {
+		val origin = getOriginNode()
+
+		val destination = destination ?: return origin
+		val destinationNodePosition = realToSectionPos(destination)
+
+		// If the destination node is already tracked, return it
+		AIPathfinding.SectionNode.get(trackedSections, destinationNodePosition)?.let { return it }
+
+		// Get a destination within the tracked nodes in the direction of the destination
+		val vectorToDestination = destinationNodePosition.toVector().subtract(origin.position.toVector()).normalize().multiply(chunkSearchRadius)
+		val trackedDestinationNode = origin.position + Vec3i(vectorToDestination)
+
+		// Get it from the tracked sections
+		val newDestination = AIPathfinding.SectionNode.get(trackedSections, trackedDestinationNode)
+
+		// If its present and navigable, return it
+		if (newDestination?.navigable == true) return newDestination
+
+		// Search closer if its null
+		if (newDestination == null) {
+			var newDistance = 0.8
+
+			while (newDistance > 0) {
+				val multiply = chunkSearchRadius * newDistance
+				val newVector = destinationNodePosition.toVector().subtract(origin.position.toVector()).normalize().multiply(multiply)
+
+				val closerDestination = AIPathfinding.SectionNode.get(trackedSections, origin.position + Vec3i(newVector))
+
+				if (closerDestination?.navigable == true) return closerDestination
+
+				newDistance -= 0.2
+			}
+		}
+
+		// If it's still null, something's wrong.
+		if (newDestination?.navigable == null) return origin
+
+		// At this point the destination is non-null, but unnavigable. Just find the nearest navigable node
+		newDestination.getNeighbors(trackedSections).values.firstOrNull { it.navigable }?.let { return it }
+
+		// None of the neighbors are navigable either
+		newDestination.getNeighbors(trackedSections).values.firstNotNullOfOrNull { immediateNeighbors ->
+			immediateNeighbors.getNeighbors(trackedSections).values.firstOrNull { neighborNeighbors -> neighborNeighbors.navigable }
+		}?.let { return it }
+
+		// Give up
+		return origin
+	}
+
 	/** General update task for pathfinding */
 	fun updatePathfinding() {
 		val newCenter = getSectionPositionOrigin()
+		debugAudience.debug("Updating pathfinding")
 
 		// It has not left the old section center, return
 		if (center == newCenter && chartedPath.isNotEmpty() && trackedSections.isNotEmpty()) {
+			debugAudience.debug("Returning because ship has not moved")
 			return
 		}
 
@@ -88,7 +150,9 @@ open class PathfindingEngine(
 		}
 
 		// Update the path
+		debugAudience.debug("Updating Charted path")
 		updateChartedPath()
+		debugAudience.debug("Updated Charted path")
 	}
 
 	/** A queue containing the section nodes along the charted path */
@@ -99,17 +163,19 @@ open class PathfindingEngine(
 
 	/** Updates the stored path with  */
 	private fun updateChartedPath() {
-		val destination = this.destination ?: return
 		debugAudience.debug("Updating Charted Path")
 
 		// This list is created with the closest node at the first index, and the destination as its final.
 		// When put into the list queue, the closest will be first.
-		val points = AIPathfinding.findNavigationNodes(this, destination, previousSections)
+		val points = AIPathfinding.pathfind(this)
+		debugAudience.audiences().filterIsInstance<Player>().forEach { player -> points.forEach { point -> point.node.highlight(player, 200L) } }
+		debugAudience.debug("Found points: $points")
 
 		chartedPath.clear()
 
 		for (point in points) {
-			chartedPath.offer(point)
+			debugAudience.highlightBlock(point.node.center, 5L)
+			chartedPath.offer(point.node)
 		}
 	}
 
@@ -134,7 +200,10 @@ open class PathfindingEngine(
 
 	/** On the ticking of the controller */
 	override fun tick() {
-		if (!previousTask.isDone) return
+		if (!previousTask.isDone) {
+			debugAudience.debug("Previous task is not completed")
+			return
+		}
 		if (ticks % tickInterval != 0) return
 
 		ticks++
@@ -143,6 +212,7 @@ open class PathfindingEngine(
 
 	/** Main navigation loop */
 	open fun navigate(): Future<*> = submitTask {
+		debugAudience.debug("Navigating")
 		previousTask = CompletableFuture<Any>()
 
 		val run = runCatching {
@@ -151,7 +221,9 @@ open class PathfindingEngine(
 				trackedSections.clear()
 			}
 
+			debugAudience.debug("Updating pathfinding")
 			updatePathfinding()
+			debugAudience.debug("Updating pathfinding completed")
 
 			debugAudience.highlightBlocks(chartedPath.map { it.center }, 5L)
 		}

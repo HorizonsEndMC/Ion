@@ -1,18 +1,18 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.highlightRegion
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.chunk.PalettedContainer
-import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 import kotlin.math.abs
@@ -24,20 +24,57 @@ import kotlin.math.abs
  * Considers only non-ship blocks
  */
 object AIPathfinding {
-	const val MAX_A_STAR_ITERATIONS = 20
-
 	data class SectionNode(val world: World, val position: Vec3i, val navigable: Boolean) {
-		var inhabitedTime = 0
-
 		val center: Vec3i = Vec3i(
 			position.x.shl(4) + 8,
 			position.y.shl(4) + world.minHeight + 8,
 			position.z.shl(4) + 8
 		)
-		fun anyNeighborsUnnavigable(trackedNodes: Collection<SectionNode>): Boolean =
-			getNeighborNodes(this, trackedNodes).any { neighborNeighbor -> !neighborNeighbor.navigable }
 
-		fun highlight(player: Player) {
+		fun anyNeighborsUnnavigable(trackedNodes: Collection<SectionNode>): Boolean =
+			getNeighbors(trackedNodes).any { neighborNeighbor -> !neighborNeighbor.value.navigable }
+
+		/** G cost, the sum of the distances between the origin and current node */
+		private fun getGCost(accumulated: Float, parentRelation: Adjacent): Float {
+			return accumulated + parentRelation.cost
+		}
+
+		/** Heuristic, the distance from the destination */
+		private fun getHCost(destinationNode: SectionNode): Float {
+			return getEstimatedCostManhattan(this, destinationNode)
+		}
+
+		fun getFCost(accumulated: Float, parentRelation: Adjacent, destinationNode: SectionNode, allNodes: Collection<SectionNode>): Float {
+			return  getGCost(accumulated, parentRelation) + getHCost(destinationNode) + getAdditionalCost(allNodes)
+		}
+
+		fun getAdditionalCost(trackedNodes: Collection<SectionNode>): Float {
+			var additional = 0f
+
+			if (anyNeighborsUnnavigable(trackedNodes)) additional += 25.0f
+
+			return additional
+		}
+
+		fun getNeighbors(trackedNodes: Collection<SectionNode>): Map<Adjacent, SectionNode> {
+			val (x, y, z) = position
+			val sections = mutableMapOf<Adjacent, SectionNode>()
+
+			for (face in Adjacent.values()) {
+				val newX = x + face.modX
+				val newY = y + face.modY
+				val newZ = z + face.modZ
+
+				val position = Vec3i(newX, newY, newZ)
+				val sectionNode = get(trackedNodes, position) ?: continue
+
+				sections[face] = sectionNode
+			}
+
+			return sections
+		}
+
+		fun highlight(player: Player, duration: Long = 200L) {
 			val (positionX, positionY, positionZ) = position
 
 			val minPointX = positionX.shl(4)
@@ -48,7 +85,20 @@ object AIPathfinding {
 			val maxPointY = minPointY + 16
 			val maxPointZ = minPointZ + 16
 
-			player.highlightRegion(Vec3i(minPointX, minPointY, minPointZ), Vec3i(maxPointX, maxPointY, maxPointZ))
+			player.highlightRegion(Vec3i(minPointX, minPointY, minPointZ), Vec3i(maxPointX, maxPointY, maxPointZ), "", duration)
+		}
+
+		// Will throw an exception if the nodes are not immediate neighbors.
+		fun getRelation(from: SectionNode): Adjacent {
+			val offset = position - from.position
+
+			return Adjacent.values().first { it.offset == offset }
+		}
+
+		companion object {
+			fun get(trackedNodes: Collection<SectionNode>, position: Vec3i): SectionNode? {
+				return trackedNodes.firstOrNull { it.position == position }
+			}
 		}
 	}
 
@@ -176,8 +226,10 @@ object AIPathfinding {
 	 **/
 	@Synchronized
 	fun adjustTrackedSections(engine: PathfindingEngine, loadChunks: Boolean = false) {
+		debugAudience.debug("Adjusting tracked sections 1")
 		val currentlyTracked = engine.trackedSections.map { it.position }
 		val new = getSurroundingSectionPositions(engine)
+		debugAudience.debug("Adjusting tracked sections 2")
 
 		val toRemove = currentlyTracked.toMutableList() // clone
 		toRemove.removeAll(new) // Get a list of all the old
@@ -187,18 +239,114 @@ object AIPathfinding {
 
 		engine.trackedSections.removeAll { toRemove.contains(it.position) }
 		engine.trackedSections.addAll(newSections)
+		debugAudience.debug("Adjusting tracked sections 3")
 	}
 
-	fun pathfind(engine: PathfindingEngine) {
+	/**
+	 * A* Algorithm.
+	 *
+	 * TODO insert explainer of how A* works
+	 **/
+	@Synchronized
+	fun pathfind(engine: PathfindingEngine): Collection<PathfindingNodeWrapper> {
 		val trackedNodes = engine.trackedSections
 		if (trackedNodes.isEmpty()) adjustTrackedSections(engine, false)
 
 		val originNode = engine.getOriginNode()
+		val destinationNode = engine.getDestinationNode()
 
-		val openList: List<SectionNode> = listOf()
-		val closedList: List<SectionNode> = listOf()
+		// All nodes available for pathfinding
+		val navigableList = trackedNodes.filter { it.navigable }
 
+		// Open nodes is a list of all nodes that have not been evaluated
+		val openSet: MutableSet<PathfindingNodeWrapper> = mutableSetOf()
 
+		// Closed nodes is a list of nodes that have been evaluated. Every one has a parent.
+		val closedSet: MutableSet<PathfindingNodeWrapper> = mutableSetOf()
+
+		// The current node, may be part of the path, may not.
+		val originNodeWrapper = PathfindingNodeWrapper(originNode, 0f, false, null, null)
+		openSet += originNodeWrapper
+
+		debugAudience.debug("Beginning A*, Origin: $originNode, destination: $destinationNode")
+		iterateNeighbors(originNodeWrapper, navigableList, trackedNodes, openSet, closedSet, destinationNode)
+
+		var iterations = 0
+		while (iterations <= 1000) {
+			iterations++
+
+			debugAudience.debug("Open size: ${openSet.size}, Closed size: ${closedSet.size}")
+			val currentNode = openSet.minBy { it.fCost }
+			debugAudience.debug("Current node: $currentNode")
+			debugAudience.audiences().filterIsInstance<Player>().forEach { player -> currentNode.node.highlight(player, 50L) }
+
+			openSet.remove(currentNode)
+			closedSet += currentNode
+
+			if (currentNode.node.position == destinationNode.position) {
+				debugAudience.debug("Found destination")
+				return currentNode.getChain()
+			}
+
+			iterateNeighbors(currentNode, navigableList, trackedNodes, openSet, closedSet, destinationNode)
+		}
+
+		debugAudience.debug("COULD NOT FIND DESTINATION, GAVE UP")
+		return listOf()
+	}
+
+	@Synchronized
+	fun iterateNeighbors(
+		currentNode: PathfindingNodeWrapper,
+		navigableNodes: List<SectionNode>,
+		allNodes: Collection<SectionNode>,
+		openSet: MutableSet<PathfindingNodeWrapper>,
+		closedSet: MutableSet<PathfindingNodeWrapper>,
+		destinationNode: SectionNode
+	) {
+		debugAudience.debug("Iterating neighbors")
+		val neighbors = currentNode.node.getNeighbors(navigableNodes)
+
+		for ((relation: Adjacent, neighborNode: SectionNode) in neighbors) {
+			if (closedSet.any { it.node == neighborNode }) {
+				debugAudience.debug("Closed nodes contained $neighborNode")
+				continue
+			}
+
+			val parentFCost = currentNode.fCost
+			debugAudience.debug("parent F cost $parentFCost")
+			var shouldContinue = false
+
+			// Handle an existing node
+			openSet.firstOrNull { it.node.position == neighborNode.position }?.let { existingNeighbor: PathfindingNodeWrapper ->
+				debugAudience.debug("Open nodes contained $neighborNode")
+				// Should not add it to the list now
+				shouldContinue = true
+
+				val newFCost = neighborNode.getFCost(parentFCost, relation, destinationNode, allNodes)
+				debugAudience.debug("New F Cost: $newFCost, existing F Cost: ${existingNeighbor.fCost}")
+
+				// If the new F cost is lower, set its parent to this node, and the new, lower, F cost
+				if (newFCost < existingNeighbor.fCost) {
+					existingNeighbor.parent = currentNode
+					existingNeighbor.fCost = newFCost
+
+					debugAudience.debug("Set parent and F cost to new values: $existingNeighbor")
+				}
+			}
+
+			if (shouldContinue) continue
+
+			val wrapper = PathfindingNodeWrapper(
+				neighborNode,
+				neighborNode.getFCost(parentFCost, relation, destinationNode, allNodes),
+				false,
+				relation,
+				currentNode
+			)
+
+			openSet += wrapper
+		}
 	}
 
 	/**
@@ -210,45 +358,29 @@ object AIPathfinding {
 	 **/
 	data class PathfindingNodeWrapper(
 		val node: SectionNode,
-		var parent: SectionNode?,
+		var fCost: Float,
+		val origin: Boolean = false,
 		val parentRelation: Adjacent?,
-		val origin: Boolean = false
+		var parent: PathfindingNodeWrapper?,
 	) {
-		/** G cost, the sum of the distances between the origin and current node */
-		fun getGCost(closedNodes: Collection<PathfindingNodeWrapper>): Int {
-			val chain = getChain(closedNodes)
-
-			return chain.sumOf { it.parentRelation?.cost ?: 0 }
-		}
-
-		/** Heuristic, the distance from the destination */
-		fun getHCost(destinationNode: SectionNode): Int {
-			return getEstimatedCostEuclidean(this.node, destinationNode)
-		}
-
-		fun getFCost(closedNodes: Collection<PathfindingNodeWrapper>, destinationNode: SectionNode): Int {
-			return  getGCost(closedNodes) + getHCost(destinationNode)
-		}
-
 		/** Iterates backwards from this node, through its parents, to the origin. */
-		fun iterateParents(closedNodes: Collection<PathfindingNodeWrapper>, b: (PathfindingNodeWrapper) -> Unit) {
-			getChain(closedNodes).forEach(b)
+		fun iterateParents(b: (PathfindingNodeWrapper) -> Unit) {
+			getChain().forEach(b)
 		}
 
 		/** Collects a list of pathfinding node wrappers */
-		fun getChain(closedNodes: Collection<PathfindingNodeWrapper>): Collection<PathfindingNodeWrapper> {
-			var current: SectionNode? = this.node
+		fun getChain(): Collection<PathfindingNodeWrapper> {
+			var current: PathfindingNodeWrapper? = this
 			val path = mutableListOf<PathfindingNodeWrapper>()
 
 			while (current != null) {
-				val pathfinding = get(closedNodes, current) ?: break
 				// If it is the origin node, break
-				if (pathfinding.origin) break
+				if (current.origin) break
 
 				// shouldn't happen since it's not the origin, but handle the possibility
-				current = pathfinding.parent ?: break
+				current = current.parent ?: break
 
-				path.add(pathfinding)
+				path.add(current)
 			}
 
 			return path
@@ -261,167 +393,54 @@ object AIPathfinding {
 		}
 	}
 
-	// Begin A* Implementation
-	/** Nodes must be populated first */
-	@Synchronized
-	fun findNavigationNodes(
-		engine: PathfindingEngine,
-		destination: Vec3i,
-		previousPositions: Collection<SectionNode>
-	): List<SectionNode> {
-		val searchDistance = engine.chunkSearchRadius
-
-		val allNodes = engine.trackedSections.toSet()
-
-		val currentPos = engine.getCenter()
-		val originNodeLocation = engine.getSectionPositionOrigin()
-
-		val destinationNodeLocation = getDestinationNode(currentPos, destination, searchDistance)
-		val destinationNode = allNodes.firstOrNull { it.position == destinationNodeLocation } ?: return listOf()
-
-		val closedNodes = engine.trackedSections.filter { !it.navigable }.toMutableList()
-
-		val originNode = allNodes.firstOrNull { it.position == originNodeLocation } ?: return listOf()
-
-		val openNodes = mutableListOf(originNode)
-		var currentNode: SectionNode = originNode
-
-		var iterations = 0
-		while (currentNode != destinationNode) {
-			if (iterations > MAX_A_STAR_ITERATIONS) break
-			iterations++
-
-			closedNodes += currentNode
-
-			val nextNode = searchNeighbors(
-				currentNode,
-				allNodes,
-				closedNodes,
-				destinationNode,
-				previousPositions
-			) ?: return openNodes
-
-			currentNode = nextNode
-			openNodes += nextNode
-
-			continue
-		}
-
-		return openNodes
-	}
-
-	@Synchronized
-	private fun searchNeighbors(
-		previousNode: SectionNode,
-		allNodes: Collection<SectionNode>,
-		closedNodes: Collection<SectionNode>,
-		destinationNode: SectionNode,
-		previousPositions: Collection<SectionNode>
-	): SectionNode? {
-		val neighbors = getNeighborNodes(previousNode, allNodes)
-
-		if (neighbors.isEmpty()) throw PathfindingException("No neighbors for $previousNode!")
-
-		neighbors.forEach { if (it == destinationNode) return it }
-		if (!previousNode.navigable) return neighbors.firstOrNull { it.navigable }
-
-		return neighbors
-			.filter { it.navigable }
-			.filter { !closedNodes.contains(it) }
-			.associateWith {
-				var distance = getEstimatedCostEuclidean(it, destinationNode)
-
-				// Discourage moving into nodes with neighbors that aren't navigable
-				if (getNeighborNodes(it, allNodes).any { neighborNeighbor -> !neighborNeighbor.navigable }) distance += 100
-
-				// Discourage moving into nodes with neighbors that have been moved through already
-				if (previousPositions.contains(it)) distance += 100
-
-				distance += it.inhabitedTime
-
-				distance
-			}
-			.minByOrNull { it.value }?.key
-	}
-
-	private fun getNeighborNodes(node: SectionNode, all: Collection<SectionNode>): Set<SectionNode> {
-		val nodes = mutableSetOf<SectionNode>()
-		val neighbors = getNeighbors(node)
-
-		return all.filterTo(nodes) { neighbors.contains(it.position) }
-	}
-
-	private fun getNeighbors(node: SectionNode): Set<Vec3i> {
-		val (x, y, z) = node.position
-		val sections = mutableSetOf<Vec3i>()
-
-		for (face in Adjacent.values()) {
-			val newX = x + face.modX
-			val newY = y + face.modY
-			val newZ = z + face.modZ
-
-			sections += Vec3i(newX, newY, newZ)
-		}
-
-		return sections
-	}
-
-	/** Gets a destination node location */
-	private fun getDestinationNode(origin: Location, destination: Vec3i, searchDistance: Int): Vec3i {
-		val vector = destination.toVector().subtract(origin.toVector()).normalize().multiply((searchDistance - 1).shl(4))
-
-		val (x, y, z) = Vec3i(origin.clone().add(vector))
-		val chunkX = x.shr(4)
-		val chunkZ = z.shr(4)
-		val sectionMinY = (y - origin.world.minHeight).shr(4)
-
-		return Vec3i(chunkX, sectionMinY, chunkZ)
-	}
-
 	// Use squares for estimation
-	private fun getEstimatedCostEuclidean(node: SectionNode, destinationNode: SectionNode): Int =
-		distanceSquared(node.position, destinationNode.position)
+//	private fun getEstimatedCostEuclidean(node: SectionNode, destinationNode: SectionNode): Float =
+//		distanceSquared(node.position, destinationNode.position)
 
-	fun getEstimatedCostManhattan(node: SectionNode, destination: Vec3i): Double {
-		val origin = node.center.toVector()
+	fun getEstimatedCostManhattan(node: SectionNode, destinationNode: SectionNode): Float {
+		val origin = node.position
 
-		destination.toVector()
+		val (x, y, z) = destinationNode.position
 
-		val xDiff = abs(origin.x - destination.x)
-		val yDiff = abs(origin.y - destination.y)
-		val zDiff = abs(origin.z - destination.z)
+		val xDiff = abs(origin.x - x) * 16.0f
+		val yDiff = abs(origin.y - y) * 16.0f
+		val zDiff = abs(origin.z - z) * 16.0f
 
 		return xDiff + yDiff + zDiff
 	}
 
-	class PathfindingException(message: String?) : Exception(message)
+	class PathfindingException(message: String) : Exception(message)
 
-	enum class Adjacent(val modX: Int, val modY: Int, val modZ: Int, val cost: Int) {
-		NORTH(0, 0, -1, 100),
-		UP_NORTH(0, 1, -1, 141),
-		DOWN_NORTH(0, -1, -1, 141),
-		NORTH_EAST(1, 0, -1, 141),
-		NORTH_WEST(-1, 0, -1, 141),
-		UP_NORTH_EAST(1, 1, -1, 144),
-		UP_NORTH_WEST(-1, 1, -1, 144),
-		DOWN_NORTH_EAST(1, -1, -1, 144),
-		DOWN_NORTH_WEST(-1, -1, -1, 144),
-		EAST(1, 0, 0, 100),
-		UP_EAST(1, 1, 0, 141),
-		DOWN_EAST(1, -1, 0, 141),
-		SOUTH(0, 0, 1, 100),
-		UP_SOUTH(0, 1, 1, 141),
-		DOWN_SOUTH(0, -1, 1, 141),
-		SOUTH_EAST(1, 0, 1, 141),
-		SOUTH_WEST(-1, 0, 1, 141),
-		UP_SOUTH_EAST(1, 1, 1, 144),
-		UP_SOUTH_WEST(-1, 1, 1, 144),
-		DOWN_SOUTH_EAST(1, -1, 1, 144),
-		DOWN_SOUTH_WEST(-1, -1, 1, 144),
-		WEST(-1, 0, 0, 100),
-		UP_WEST(-1, 1, 0, 141),
-		DOWN_WEST(-1, -1, 0, 141),
-		UP(0, 1, 0, 100),
-		DOWN(0, -1, 0, 100),
+	enum class Adjacent(val modX: Int, val modY: Int, val modZ: Int, val cost: Float) {
+		NORTH(0, 0, -1, 16.0f),
+		UP_NORTH(0, 1, -1, 22.6f),
+		DOWN_NORTH(0, -1, -1, 22.6f),
+		NORTH_EAST(1, 0, -1, 22.6f),
+		NORTH_WEST(-1, 0, -1, 22.6f),
+		UP_NORTH_EAST(1, 1, -1, 27.7f),
+		UP_NORTH_WEST(-1, 1, -1, 27.7f),
+		DOWN_NORTH_EAST(1, -1, -1, 27.7f),
+		DOWN_NORTH_WEST(-1, -1, -1, 27.7f),
+		EAST(1, 0, 0, 16.0f),
+		UP_EAST(1, 1, 0, 22.6f),
+		DOWN_EAST(1, -1, 0, 22.6f),
+		SOUTH(0, 0, 1, 16.0f),
+		UP_SOUTH(0, 1, 1, 22.6f),
+		DOWN_SOUTH(0, -1, 1, 22.6f),
+		SOUTH_EAST(1, 0, 1, 22.6f),
+		SOUTH_WEST(-1, 0, 1, 22.6f),
+		UP_SOUTH_EAST(1, 1, 1, 27.7f),
+		UP_SOUTH_WEST(-1, 1, 1, 27.7f),
+		DOWN_SOUTH_EAST(1, -1, 1, 27.7f),
+		DOWN_SOUTH_WEST(-1, -1, 1, 27.7f),
+		WEST(-1, 0, 0, 16.0f),
+		UP_WEST(-1, 1, 0, 22.6f),
+		DOWN_WEST(-1, -1, 0, 22.6f),
+		UP(0, 1, 0, 16.0f),
+		DOWN(0, -1, 0, 16.0f),
+
+		;
+
+		val offset: Vec3i = Vec3i(modX, modY, modZ)
 	}
 }
