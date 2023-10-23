@@ -38,7 +38,7 @@ class LightTurretWeaponSubsystem(
 			target: Vector,
 	) {
 		if (starship.initialBlockCount > 12000) {
-			shooter.userError("You can't fire light turrets on a ship smaller than 12000 blocks!")
+			starship.userError("You can't fire light turrets on a ship larger than 12000 blocks!")
 			return
 		}
 		super.manualFire(shooter, dir, target)
