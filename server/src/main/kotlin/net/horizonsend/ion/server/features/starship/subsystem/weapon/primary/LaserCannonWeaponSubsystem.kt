@@ -12,7 +12,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
-	CannonWeaponSubsystem(starship, pos, face), StarshipCooldownSubsystem {
+	CannonWeaponSubsystem(starship, pos, face) {
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.laserCannon.powerUsage
 	override val length: Int = IonServer.balancing.starshipWeapons.laserCannon.length
 	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.laserCannon.angleRadians)
