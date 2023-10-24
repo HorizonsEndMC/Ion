@@ -16,7 +16,7 @@ class HeavyTurretWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace,
     override val multiblock: HeavyTurretMultiblock
-) : TurretWeaponSubsystem(ship, pos, face) {
+) : TurretWeaponSubsystem(ship, pos, face), StarshipCooldownSubsystem {
 	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.heavyTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.heavyTurret.powerUsage / 3
 
