@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
@@ -19,7 +20,7 @@ class LightTurretWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace,
     override val multiblock: LightTurretMultiblock
-) : TurretWeaponSubsystem(ship, pos, face), AutoWeaponSubsystem {
+) : TurretWeaponSubsystem(ship, pos, face), AutoWeaponSubsystem, StarshipCooldownSubsystem {
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.lightTurret.powerUsage
 	override val inaccuracyRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.lightTurret.inaccuracyRadians)
 
