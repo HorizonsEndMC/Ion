@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
@@ -15,7 +16,7 @@ import org.bukkit.util.Vector
 import kotlin.math.sqrt
 
 class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
-	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
+	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem, StarshipCooldownSubsystem {
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.pointDefence.powerUsage
 	override val range: Double = IonServer.balancing.starshipWeapons.pointDefence.range
 
