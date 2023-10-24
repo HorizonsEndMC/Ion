@@ -16,7 +16,7 @@ import org.bukkit.util.Vector
 import kotlin.math.sqrt
 
 class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
-	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem, StarshipCooldownSubsystem {
+	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.pointDefence.powerUsage
 	override val range: Double = IonServer.balancing.starshipWeapons.pointDefence.range
 
