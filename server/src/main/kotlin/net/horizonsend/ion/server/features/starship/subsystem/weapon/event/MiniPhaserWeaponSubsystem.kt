@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.RestrictedSubsyste
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.MiniPhaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.MiniPhaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -24,9 +25,8 @@ class MiniPhaserWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : CannonWeaponSubsystem(starship, pos, face),
-	AmmoConsumingWeaponSubsystem,
-	PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem(starship, pos, face), RestrictedSubsystem,
+	AmmoConsumingWeaponSubsystem, StarshipCooldownSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val length: Int = IonServer.balancing.starshipWeapons.miniPhaser.length
 	override val convergeDist: Double = IonServer.balancing.starshipWeapons.miniPhaser.convergeDistance
