@@ -12,7 +12,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
-	CannonWeaponSubsystem(starship, pos, face) {
+	CannonWeaponSubsystem(starship, pos, face), StarshipCooldownSubsystem {
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.plasmaCannon.powerUsage
 	override val length: Int = IonServer.balancing.starshipWeapons.plasmaCannon.length
 	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.plasmaCannon.angleRadians)
