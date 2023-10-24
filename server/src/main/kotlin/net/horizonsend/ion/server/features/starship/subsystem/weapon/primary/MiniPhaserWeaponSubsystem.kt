@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.RestrictedSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.MiniPhaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
@@ -23,7 +24,7 @@ class MiniPhaserWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face), RestrictedSubsystem,
-	AmmoConsumingWeaponSubsystem {
+	AmmoConsumingWeaponSubsystem, StarshipCooldownSubsystem {
 	override val length: Int = IonServer.balancing.starshipWeapons.miniPhaser.length
 	override val convergeDist: Double = IonServer.balancing.starshipWeapons.miniPhaser.convergeDistance
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.miniPhaser.extraDistance
