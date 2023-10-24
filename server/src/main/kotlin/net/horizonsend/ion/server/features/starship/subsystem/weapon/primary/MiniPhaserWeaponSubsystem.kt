@@ -24,7 +24,7 @@ class MiniPhaserWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace
 ) : CannonWeaponSubsystem(starship, pos, face), RestrictedSubsystem,
-	AmmoConsumingWeaponSubsystem, StarshipCooldownSubsystem {
+	AmmoConsumingWeaponSubsystem {
 	override val length: Int = IonServer.balancing.starshipWeapons.miniPhaser.length
 	override val convergeDist: Double = IonServer.balancing.starshipWeapons.miniPhaser.convergeDistance
 	override val extraDistance: Int = IonServer.balancing.starshipWeapons.miniPhaser.extraDistance
