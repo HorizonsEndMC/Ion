@@ -18,7 +18,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
-	CannonWeaponSubsystem(starship, pos, face) {
+	CannonWeaponSubsystem(starship, pos, face), StarshipCooldownSubsystem {
 	companion object {
 		private val colorMap: Map<Material, Color> = STAINED_GLASS_TYPES
 			.associateWith { DyeColor.valueOf(it.name.removeSuffix("_STAINED_GLASS")).color }
