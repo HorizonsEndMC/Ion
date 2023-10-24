@@ -40,13 +40,11 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 		}
 		z(-3) {
 			y(getSign() * 3) {
-				x(-3).anyWall()
 				x(-2).ironBlock()
 				x(-1).carbyne()
 				x(0).carbyne()
 				x(+1).carbyne()
 				x(+2).ironBlock()
-				x(+3).anyWall()
 			}
 			y(getSign() * 4) {
 				x(-1).anyStairs()
@@ -168,13 +166,11 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 		}
 		z(+3) {
 			y(getSign() * 3) {
-				x(-3).anyWall()
 				x(-2).ironBlock()
 				x(-1).stainedTerracotta()
 				x(0).carbyne()
 				x(+1).stainedTerracotta()
 				x(+2).ironBlock()
-				x(+3).anyWall()
 			}
 			y(getSign() * 4) {
 				x(-1).endRod()
