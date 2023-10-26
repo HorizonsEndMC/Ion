@@ -48,22 +48,26 @@ object NPCFakePilot : IonServerComponent(true) {
 	}
 
 	fun tickPilots() {
-		for ((ship, npc) in activeFakePilots) {
-			if (!isActive(ship)) continue
-			if (!isPiloted(ship)) continue
+		for ((starship, npc) in activeFakePilots) {
+			if (!isActive(starship)) continue
+			if (!isPiloted(starship)) continue
 
-			if (!npc.isSpawned) npc.spawn(getLocation(ship.data))
+			if (!npc.isSpawned) npc.spawn(getLocation(starship.data))
 
 			val entity = npc.entity ?: continue
 
 			if (entity.isDead) {
-				StarshipDestruction.destroy(ship)
+				StarshipDestruction.destroy(starship)
 			}
+
+			// Shouldn't be null since it just spawned
+			val (x, y, z) = Vec3i(npc.entity.location)
+			if (!starship.contains(x, y, z)) npc.entity?.teleport(getLocation(starship.data))
 
 			entity.isGlowing = true
 			entity.setGravity(false)
-			entity.location.pitch = ship.controller.pitch
-			entity.location.yaw = ship.controller.yaw
+			entity.location.pitch = starship.controller.pitch
+			entity.location.yaw = starship.controller.yaw
 			entity.isInvulnerable = false
 		}
 	}
