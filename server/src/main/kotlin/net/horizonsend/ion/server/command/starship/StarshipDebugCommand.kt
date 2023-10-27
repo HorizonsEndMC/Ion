@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.text
 import net.horizonsend.ion.server.miscellaneous.utils.title
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.World
@@ -124,6 +125,7 @@ object StarshipDebugCommand : SLCommand() {
 			StarfighterCombatAIController(
 				starship = ship,
 				target = null,
+				pilotName = text("NPC Ship"),
 				aggressivenessLevel = aggressivenessLevel
 			)
 		}),
@@ -132,6 +134,7 @@ object StarshipDebugCommand : SLCommand() {
 			FrigateCombatAIController(
 				starship = ship,
 				target = null,
+				pilotName = text("NPC Ship"),
 				aggressivenessLevel = aggressivenessLevel,
 				autoWeaponSets = mutableListOf(
 //					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 0.0, 1000.0)
@@ -149,7 +152,8 @@ object StarshipDebugCommand : SLCommand() {
 					ship,
 					location,
 					-1,
-					aggressivenessLevel
+					aggressivenessLevel,
+					text("NPC Ship"),
 				) { controller, nearbyShip ->
 					TemporaryStarfighterCombatAIController(
 						controller.starship,
@@ -167,11 +171,13 @@ object StarshipDebugCommand : SLCommand() {
 					ship,
 					location,
 					-1,
-					aggressivenessLevel
+					aggressivenessLevel,
+					text("NPC Ship"),
 				) { controller, nearbyShip ->
 					FrigateCombatAIController(
 						controller.starship,
 						nearbyShip,
+						controller.pilotName,
 						controller.aggressivenessLevel,
 						mutableListOf(),
 						mutableListOf()

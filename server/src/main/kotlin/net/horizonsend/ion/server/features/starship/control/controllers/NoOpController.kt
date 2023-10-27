@@ -15,7 +15,7 @@ class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Cont
 	override val selectedDirectControlSpeed: Int = 0
 	override val yaw: Float = 0f
 	override val pitch: Float = 0f
-	override val pilotName: Component = text("idle")
+	override var pilotName: Component = text("idle")
 
 	// Shouldn't be treated like they're still piloting it
 	override fun audience(): Audience = Audience.empty()
