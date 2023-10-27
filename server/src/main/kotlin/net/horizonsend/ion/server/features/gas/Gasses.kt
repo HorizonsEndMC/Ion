@@ -26,6 +26,7 @@ import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.ThreadLocalRandom
 
 @Suppress("UNUSED")
 object Gasses : IonServerComponent(false) {
@@ -215,7 +216,7 @@ object Gasses : IonServerComponent(false) {
 		}
 	}
 
-	private fun findGas(location: Location) = gasses.values.filter { it.tryCollect(location) }
+	private fun findGas(location: Location) = gasses.values.filter { it.tryCollect(location) }.shuffled(ThreadLocalRandom.current())
 	fun findAvailableGasses(location: Location) = gasses.values.filter {
 		it.canBeFound(location)
 	}
