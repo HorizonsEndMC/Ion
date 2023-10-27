@@ -18,10 +18,10 @@ class AxisStandoffPositioningEngine(
 	var standoffDistance: Double
 ) : PositioningEngine(controller) {
 	fun getAxisPoint(): Vector {
-		val target = target ?: return controller.getCenter().toVector()
+		target ?: return controller.getCenter().toVector()
 
 		val shipLocation = getCenter().toVector()
-		val targetLocation = target.getVec3i().toVector()
+		val targetLocation = getDestination().toVector()
 
 		val vectors = CARDINAL_BLOCK_FACES.map {
 			val vec = it.direction.multiply(200)
@@ -41,6 +41,8 @@ class AxisStandoffPositioningEngine(
 
 		return if (shipLocation.distanceSquared(axisPointFar) <= 100.0) axisPointClose else axisPointFar
 	}
+
+	override fun getDestination(): Vec3i = target?.getVec3i() ?: controller.starship.centerOfMass
 
 	override fun findPosition(): Location {
 		return getAxisPoint().toLocation(world)

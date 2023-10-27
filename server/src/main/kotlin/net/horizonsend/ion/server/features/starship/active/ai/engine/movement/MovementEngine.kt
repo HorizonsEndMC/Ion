@@ -2,19 +2,23 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 /** Controlling the movement of the starship */
-abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
-	abstract var destination: Vec3i?
+abstract class MovementEngine(
+	controller: AIController,
+	val pathfindingEngine: PathfindingEngine
+) : AIEngine(controller) {
 	val starshipLocation: Vec3i get() = getCenterVec3i()
 
 	fun getVector(origin: Vector, destination: Vector, normalized: Boolean = false): Vector {
@@ -25,6 +29,14 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 
 	fun getDistance(origin: Vector, destination: Vector) = getVector(origin, destination, normalized = false).length()
 
+	open fun getDestination(): Vec3i {
+		val pathfindingObjective = pathfindingEngine.getFirstNavPoint()
+		val destination = pathfindingEngine.getFallbackPosition()
+
+		// if target is more than 22 blocks away give the pathfinding objective, else the destination
+		return if (distanceSquared(destination, starshipLocation) <= 512) destination else pathfindingObjective
+	}
+
 	open fun shiftFly(
 		origin: Location,
 		stopCruising: Boolean = false
@@ -32,7 +44,11 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 		val starship = controller.starship as ActiveControlledStarship
 		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
 
-		val destination = this.destination
+		val destination = getDestination()
+
+		// If within 9 blocks of destination, don't bother moving
+		if (distanceSquared(destination, starshipLocation) <= 81) return@sync
+
 		AIControlUtils.shiftFlyToLocation(controller, starshipLocation, destination)
 	}
 
@@ -69,7 +85,7 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 
 	/** Faces the target */
 	fun faceTarget(origin: Location) {
-		val destination = destination ?: return
+		val destination = getDestination()
 		val direction = getVector(origin.toVector(), destination.toVector())
 
 		faceDirection(direction)
@@ -104,7 +120,7 @@ abstract class MovementEngine(controller: AIController) : AIEngine(controller) {
 	}
 
 	fun cruiseToDestination(origin: Location) {
-		val direction = destination?.toVector()?.let { getVector(origin.toVector(), it) } ?: return
+		val direction = getVector(origin.toVector(), getDestination().toVector())
 
 		cruiseInDirection(direction)
 	}

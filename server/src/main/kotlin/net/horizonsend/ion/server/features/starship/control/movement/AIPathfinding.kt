@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.highlightRegion
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
@@ -35,8 +36,8 @@ object AIPathfinding {
 			getNeighbors(trackedNodes).any { neighborNeighbor -> !neighborNeighbor.value.navigable }
 
 		/** G cost, the sum of the distances between the origin and current node */
-		private fun getGCost(accumulated: Float, parentRelation: Adjacent): Float {
-			return accumulated + parentRelation.cost
+		private fun getGCost(relation: Adjacent, parent: PathfindingNodeWrapper): Float {
+			return parent.getChain().sumOf { it.parentRelation?.cost?.toInt() ?: 0 }.toFloat() + relation.cost
 		}
 
 		/** Heuristic, the distance from the destination */
@@ -44,8 +45,25 @@ object AIPathfinding {
 			return getEstimatedCostManhattan(this, destinationNode)
 		}
 
-		fun getFCost(accumulated: Float, parentRelation: Adjacent, destinationNode: SectionNode, allNodes: Collection<SectionNode>): Float {
-			return  getGCost(accumulated, parentRelation) + getHCost(destinationNode) + getAdditionalCost(allNodes)
+		fun getFCost(parentRelation: Adjacent, destinationNode: SectionNode, allNodes: Collection<SectionNode>, parentWrapper: PathfindingNodeWrapper): Float {
+			val gCost = getGCost(parentRelation, parentWrapper)
+			val hCost = getHCost(destinationNode)
+			val additional = getAdditionalCost(allNodes)
+
+//			debugAudience.debug("""
+//				parent F cost: $accumulated
+//				gCost: $gCost
+//				gCostEuclidean: ${getEstimatedCostEuclidean(this, originNode)}
+//				gCostEuclidean: ${getEstimatedCostManhattan(this, originNode)}
+//
+//				hCost: $hCost
+//				hCostEuclidean: ${getEstimatedCostEuclidean(this, destinationNode)}
+//				hCostEuclidean: ${getEstimatedCostManhattan(this, destinationNode)}
+//
+//				additionalCost: $additional
+//			""".trimIndent())
+
+			return gCost + hCost + additional
 		}
 
 		fun getAdditionalCost(trackedNodes: Collection<SectionNode>): Float {
@@ -269,16 +287,16 @@ object AIPathfinding {
 		openSet += originNodeWrapper
 
 		debugAudience.debug("Beginning A*, Origin: $originNode, destination: $destinationNode")
-		iterateNeighbors(originNodeWrapper, navigableList, trackedNodes, openSet, closedSet, destinationNode)
+		iterateNeighbors(originNodeWrapper, navigableList, trackedNodes, openSet, closedSet, destinationNode, originNode)
 
 		var iterations = 0
 		while (iterations <= 1000) {
 			iterations++
 
-			debugAudience.debug("Open size: ${openSet.size}, Closed size: ${closedSet.size}")
+//			debugAudience.debug("Open size: ${openSet.size}, Closed size: ${closedSet.size}")
 			val currentNode = openSet.minBy { it.fCost }
-			debugAudience.debug("Current node: $currentNode")
-			debugAudience.audiences().filterIsInstance<Player>().forEach { player -> currentNode.node.highlight(player, 50L) }
+//			debugAudience.debug("Current node: $currentNode")
+//			debugAudience.audiences().filterIsInstance<Player>().forEach { player -> currentNode.node.highlight(player, 50L) }
 
 			openSet.remove(currentNode)
 			closedSet += currentNode
@@ -288,11 +306,11 @@ object AIPathfinding {
 				return currentNode.getChain()
 			}
 
-			iterateNeighbors(currentNode, navigableList, trackedNodes, openSet, closedSet, destinationNode)
+			iterateNeighbors(currentNode, navigableList, trackedNodes, openSet, closedSet, destinationNode, originNode)
 		}
 
 		debugAudience.debug("COULD NOT FIND DESTINATION, GAVE UP")
-		return listOf()
+		return openSet.minBy { it.fCost }.getChain()
 	}
 
 	@Synchronized
@@ -302,36 +320,36 @@ object AIPathfinding {
 		allNodes: Collection<SectionNode>,
 		openSet: MutableSet<PathfindingNodeWrapper>,
 		closedSet: MutableSet<PathfindingNodeWrapper>,
-		destinationNode: SectionNode
+		destinationNode: SectionNode,
+		originNode: SectionNode
 	) {
-		debugAudience.debug("Iterating neighbors")
+//		debugAudience.debug("Iterating neighbors")
 		val neighbors = currentNode.node.getNeighbors(navigableNodes)
 
 		for ((relation: Adjacent, neighborNode: SectionNode) in neighbors) {
 			if (closedSet.any { it.node == neighborNode }) {
-				debugAudience.debug("Closed nodes contained $neighborNode")
+//				debugAudience.debug("Closed nodes contained $neighborNode")
 				continue
 			}
 
-			val parentFCost = currentNode.fCost
-			debugAudience.debug("parent F cost $parentFCost")
+//			debugAudience.debug("parent F cost $parentFCost")
 			var shouldContinue = false
 
 			// Handle an existing node
 			openSet.firstOrNull { it.node.position == neighborNode.position }?.let { existingNeighbor: PathfindingNodeWrapper ->
-				debugAudience.debug("Open nodes contained $neighborNode")
+//				debugAudience.debug("Open nodes contained $neighborNode")
 				// Should not add it to the list now
 				shouldContinue = true
 
-				val newFCost = neighborNode.getFCost(parentFCost, relation, destinationNode, allNodes)
-				debugAudience.debug("New F Cost: $newFCost, existing F Cost: ${existingNeighbor.fCost}")
+				val newFCost = neighborNode.getFCost(relation, destinationNode, allNodes, currentNode)
+//				debugAudience.debug("New F Cost: $newFCost, existing F Cost: ${existingNeighbor.fCost}")
 
 				// If the new F cost is lower, set its parent to this node, and the new, lower, F cost
 				if (newFCost < existingNeighbor.fCost) {
 					existingNeighbor.parent = currentNode
 					existingNeighbor.fCost = newFCost
 
-					debugAudience.debug("Set parent and F cost to new values: $existingNeighbor")
+//					debugAudience.debug("Set parent and F cost to new values: $existingNeighbor")
 				}
 			}
 
@@ -339,7 +357,7 @@ object AIPathfinding {
 
 			val wrapper = PathfindingNodeWrapper(
 				neighborNode,
-				neighborNode.getFCost(parentFCost, relation, destinationNode, allNodes),
+				neighborNode.getFCost(relation, destinationNode, allNodes, currentNode),
 				false,
 				relation,
 				currentNode
@@ -394,8 +412,8 @@ object AIPathfinding {
 	}
 
 	// Use squares for estimation
-//	private fun getEstimatedCostEuclidean(node: SectionNode, destinationNode: SectionNode): Float =
-//		distanceSquared(node.position, destinationNode.position)
+	private fun getEstimatedCostEuclidean(node: SectionNode, destinationNode: SectionNode): Float =
+		distanceSquared(node.position, destinationNode.position).toFloat()
 
 	fun getEstimatedCostManhattan(node: SectionNode, destinationNode: SectionNode): Float {
 		val origin = node.position
