@@ -37,12 +37,12 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorldBorder
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.EnumSet
 import kotlin.reflect.jvm.isAccessible
 
 val vaultEconomy = try {
@@ -51,8 +51,7 @@ val vaultEconomy = try {
 	null
 }
 
-val metrics =
-	if (Bukkit.getPluginManager().isPluginEnabled("UnifiedMetrics")) UnifiedMetricsProvider.get() else null
+val metrics = if (Bukkit.getPluginManager().isPluginEnabled("UnifiedMetrics")) UnifiedMetricsProvider.get() else null
 
 val gayColors = arrayOf(
 	Color.fromRGB(255, 0, 24),
@@ -62,9 +61,6 @@ val gayColors = arrayOf(
 	Color.fromRGB(0, 0, 249),
 	Color.fromRGB(134, 0, 125)
 )
-
-inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
-	EnumSet.noneOf(T::class.java).apply { addAll(elems) }
 
 /** Used for catching when a function that is not designed to be used async is being used async. */
 fun mainThreadCheck() {
@@ -78,9 +74,7 @@ fun mainThreadCheck() {
 
 fun Player.worldBorderEffect(duration: Long) {
 	val start = ClientboundSetBorderWarningDistancePacket(WorldBorder().apply { this.warningBlocks = Int.MAX_VALUE })
-	val end = ClientboundSetBorderWarningDistancePacket(
-		WorldBorder().apply { this.warningBlocks = this@worldBorderEffect.worldBorder?.warningDistance ?: 0 }
-	)
+	val end = ClientboundSetBorderWarningDistancePacket((this.world.worldBorder as CraftWorldBorder).handle)
 
 	this.minecraft.connection.send(start)
 
@@ -90,10 +84,6 @@ fun Player.worldBorderEffect(duration: Long) {
 }
 
 fun Location.triple() = DoubleLocation(x, y, z)
-
-fun <K> Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
-fun <V> Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
-fun <K, V : Comparable<V>> Map<K, V>.keysSortedByValue(): List<K> = this.keys.sortedBy { this[it]!! }
 
 val Chunk.minecraft: LevelChunk get() = (this as CraftChunk).getHandle(ChunkStatus.FULL) as LevelChunk // ChunkStatus.FULL guarantees a LevelChunk
 val Player.minecraft: ServerPlayer get() = (this as CraftPlayer).handle
