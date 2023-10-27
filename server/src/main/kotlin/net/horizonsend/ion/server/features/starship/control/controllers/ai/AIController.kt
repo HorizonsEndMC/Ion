@@ -24,10 +24,11 @@ abstract class AIController(
 	starship: ActiveStarship,
 	name: String,
 	damager: Damager,
+	pilotName: Component?,
 	final override val aggressivenessLevel: AggressivenessLevel //TODO move this to superclasses later
 ) : Controller(damager, starship, name),
 	AggressiveLevelAIController {
-	override val pilotName: Component = Component.text()
+	override val pilotName: Component = pilotName ?: Component.text()
 		.append(Component.text("AI Controller "))
 		.append(aggressivenessLevel.displayName)
 		.build()

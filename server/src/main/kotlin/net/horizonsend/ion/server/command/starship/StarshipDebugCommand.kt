@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.navig
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -84,6 +85,7 @@ object StarshipDebugCommand : SLCommand() {
 			StarfighterCombatAIController(
 				starship = ship,
 				target = null,
+				pilotName = text("NPC Ship"),
 				aggressivenessLevel = aggressivenessLevel
 			)
 		}),
@@ -92,6 +94,7 @@ object StarshipDebugCommand : SLCommand() {
 			FrigateCombatAIController(
 				starship = ship,
 				target = null,
+				pilotName = text("NPC Ship"),
 				aggressivenessLevel = aggressivenessLevel,
 				autoWeaponSets = mutableListOf(
 //					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 0.0, 1000.0)
@@ -109,7 +112,8 @@ object StarshipDebugCommand : SLCommand() {
 					ship,
 					location,
 					-1,
-					aggressivenessLevel
+					aggressivenessLevel,
+					text("NPC Ship"),
 				) { controller, nearbyShip ->
 					TemporaryStarfighterCombatAIController(
 						controller.starship,
@@ -127,11 +131,13 @@ object StarshipDebugCommand : SLCommand() {
 					ship,
 					location,
 					-1,
-					aggressivenessLevel
+					aggressivenessLevel,
+					text("NPC Ship"),
 				) { controller, nearbyShip ->
 					FrigateCombatAIController(
 						controller.starship,
 						nearbyShip,
+						controller.pilotName,
 						controller.aggressivenessLevel,
 						mutableListOf(),
 						mutableListOf()
