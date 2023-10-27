@@ -9,4 +9,6 @@ class BasicPositioningEngine(controller: AIController, val destination: Location
 
 	override fun findPosition(): Location = destination
 	override fun findPositionVec3i(): Vec3i = vec3i
+
+	override fun getDestination(): Vec3i = findPositionVec3i()
 }
