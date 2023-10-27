@@ -41,7 +41,7 @@ interface CombatAIController : VariableObjectiveController {
 		val (x, y, z) = origin
 		val distance = target.distance(x, y, z)
 
-		val weaponSet = autoWeaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
+		val weaponSet = manualWeaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
 		val direction = getDirection(Vec3i(getCenter()), target).normalize()
 
 		directionMod(direction)
