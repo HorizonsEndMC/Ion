@@ -33,9 +33,9 @@ class AutoCruiseAIController(
 	val combatController: (AIController, AITarget) -> AIController
 ) : ActiveAIController(starship, "autoCruise", AIShipDamager(starship), aggressivenessLevel),
 	NeutralAIController {
-	override var pathfindingEngine = PathfindIfBlockedEngine(this, Vec3i(destination))
-	override var movementEngine = CruiseEngine(this, Vec3i(destination), CruiseEngine.ShiftFlightType.IF_BLOCKED_AND_MATCH_Y)
 	override var positioningEngine = BasicPositioningEngine(this, destination)
+	override var pathfindingEngine = PathfindIfBlockedEngine(this, positioningEngine)
+	override var movementEngine = CruiseEngine(this, pathfindingEngine, Vec3i(destination), CruiseEngine.ShiftFlightType.IF_BLOCKED_AND_MATCH_Y)
 
 	var ticks = 0
 

@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
 
-abstract class DirectControlMovementEngine(controller: AIController) : MovementEngine(controller) { //TODO
-	override var destination: Vec3i? = null
+abstract class DirectControlMovementEngine(controller: AIController, pathfindingEngine: PathfindingEngine,) :
+	MovementEngine(controller, pathfindingEngine) { //TODO
 
 	init {
 	    require(starship is ActiveControlledStarship)
