@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 import co.aikar.commands.ConditionFailedException
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -23,12 +24,12 @@ import kotlin.math.abs
  **/
 class CruiseEngine(
 	controller: ActiveAIController,
-	override var destination: Vec3i?,
+	pathfindingEngine: PathfindingEngine,
+	var cruiseDestination: Vec3i?,
 	var shiftFlightType: ShiftFlightType,
 	var maximumCruiseDistanceSquared: Double = 90000.0,
-) : MovementEngine(controller) {
+) : MovementEngine(controller, pathfindingEngine) {
 	// The pathfinding controller will change the destination, so store the eventual destination in a seperate variable.
-	var cruiseDestination = destination
 	var speedLimit = -1
 
 	override fun tick() {
@@ -47,6 +48,7 @@ class CruiseEngine(
 
 	fun handleCruise(origin: Location) {
 		if (controller.blocked) {
+			debugAudience.debug("Blocked, stopping cruising")
 			stopCruising(true)
 			return
 		}
@@ -57,6 +59,7 @@ class CruiseEngine(
 
 		if (distanceSquared >= 250000) {
 			faceTarget(origin)
+			debugAudience.debug("More than 500 blocks away, cruising")
 			cruiseToVec3i(starshipLocation, cruiseDestination ?: return)
 
 			return
@@ -67,7 +70,7 @@ class CruiseEngine(
 
 	/** Returns true if the destination is sufficiently far that it should cruise */
 	private fun assessDistance(): Boolean {
-		val destination = destination ?: return true
+		val destination = getDestination()
 
 		val distance = distanceSquared(destination.toVector(), getCenter().toVector())
 
@@ -80,14 +83,14 @@ class CruiseEngine(
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: ConditionFailedException) {
-		debugAudience.debug("$controller is blocked $reason by movement $movement trying to move to $destination eventual destination $cruiseDestination")
+		debugAudience.debug("$controller is blocked $reason by movement $movement trying to move to ${getDestination()} eventual destination $cruiseDestination")
 	}
 
 	enum class ShiftFlightType {
 		NONE,
 		MATCH_Y {
 			override fun handleShiftFlight(engine: CruiseEngine, origin: Location) {
-				val destination = engine.destination ?: return
+				val destination = engine.getDestination()
 
 				val difference = origin.y - destination.y
 				if (abs(difference) < 5) return
@@ -108,7 +111,7 @@ class CruiseEngine(
 			override fun handleShiftFlight(engine: CruiseEngine, origin: Location) {
 				// Null for true, false for match y, true for blocked
 				var shouldFly: Boolean? = null
-				val destination = engine.destination ?: return
+				val destination = engine.getDestination()
 
 				val difference = origin.y - destination.y
 				if (abs(difference) >= 5) shouldFly = false

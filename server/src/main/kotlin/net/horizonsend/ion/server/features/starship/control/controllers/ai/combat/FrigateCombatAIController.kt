@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
@@ -46,8 +45,8 @@ class FrigateCombatAIController(
 ): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController {
 	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
-	override val pathfindingEngine: PathfindingEngine = PathfindIfBlockedEngine(this, target?.getVec3i())
-	override val movementEngine: MovementEngine = CruiseEngine(this, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL)
+	override val pathfindingEngine: PathfindingEngine = PathfindIfBlockedEngine(this, positioningEngine)
+	override val movementEngine = CruiseEngine(this, pathfindingEngine, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL)
 
 	override var locationObjective: Location? = target?.getLocation()
 
@@ -60,6 +59,7 @@ class FrigateCombatAIController(
 		if (!ok) aggressivenessLevel.disengage(this)
 
 		tickAll()
+		movementEngine.cruiseDestination = target?.getVec3i()
 		handleAutoWeapons(starship.centerOfMass)
 	}
 
