@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 
 class PathfindIfBlockedEngine(
 	controller: AIController,
@@ -13,7 +12,7 @@ class PathfindIfBlockedEngine(
 ) : PathfindingEngine(controller, destinationSupplier) {
 	private val blocked get() = controller.blocked || predictBlocked()
 
-	override fun navigate(): Future<*> {
+	override fun navigate(): CompletableFuture<*> {
 		if (!blocked) return CompletableFuture.completedFuture(Any())
 
 		return super.navigate()
