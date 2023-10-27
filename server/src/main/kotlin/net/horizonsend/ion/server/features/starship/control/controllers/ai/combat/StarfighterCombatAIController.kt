@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.CombatPathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
@@ -41,9 +41,9 @@ open class StarfighterCombatAIController(
 	aggressivenessLevel: AggressivenessLevel
 ) : ActiveAIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController {
-	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
-	override var pathfindingEngine: PathfindingEngine = PathfindingEngine(this, target?.getVec3i())
-	override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, target?.getVec3i())
+	final override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
+	final override var pathfindingEngine = CombatPathfindingEngine(this, positioningEngine)
+	final override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, pathfindingEngine)
 
 	override val autoWeaponSets: MutableList<WeaponSet> = mutableListOf()
 	override val manualWeaponSets: MutableList<WeaponSet> = mutableListOf()
