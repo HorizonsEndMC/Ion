@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.createNamedMemoryRegistry
 import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import org.bukkit.Location
 import org.bukkit.entity.Damageable
@@ -103,7 +104,7 @@ object NPCFakePilot : IonServerComponent(true) {
 	}
 
 	/** If location is null, one will be generated from the ship computer location */
-	fun add(starship: ActiveControlledStarship, location: Location?): NPC? {
+	fun add(starship: ActiveControlledStarship, location: Location?, pilotName: Component? = null): NPC? {
 		val spawnLoc = location ?: getLocation(starship.data)
 		if (!isCitizensLoaded) return null
 
@@ -111,7 +112,7 @@ object NPCFakePilot : IonServerComponent(true) {
 			EntityType.PLAYER,
 			UUID.randomUUID(),
 			index,
-			legacyAmpersand().serialize(starship.controller.pilotName),
+			legacyAmpersand().serialize(pilotName ?: starship.controller.pilotName),
 		)
 
 		npc.isProtected = false
