@@ -13,10 +13,12 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.World
 
@@ -25,6 +27,7 @@ object AIStarshipFactory : IonServerComponent() {
 		template: AIShipConfiguration.AIStarshipTemplate,
 		location: Location,
 		createController: (ActiveStarship) -> Controller,
+		pilotName: Component?,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val schematic = template.getSchematic()
@@ -34,7 +37,7 @@ object AIStarshipFactory : IonServerComponent() {
 			return
 		}
 
-		createFromClipboard(location, schematic, template.type, template.miniMessageName, createController, callback)
+		createFromClipboard(location, schematic, template.type, template.miniMessageName, pilotName, createController, callback)
 	}
 
 	fun createFromClipboard(
@@ -42,6 +45,7 @@ object AIStarshipFactory : IonServerComponent() {
 		clipboard: Clipboard,
 		type: StarshipType,
 		starshipName: String,
+		pilotName: Component?,
 		createController: (ActiveStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
@@ -50,9 +54,11 @@ object AIStarshipFactory : IonServerComponent() {
 
 		placeSchematicEfficiently(clipboard, location.world, vec3i, true) {
 			tryPilotWithController(location.world, vec3i, type, starshipName, createController) {
+				// Set the initial NoOp controller's name to the end name, for access from whatever replaces it in the callback
+				pilotName?.let { _ -> (it.controller as NoOpController).pilotName = pilotName }
 				callback(it)
 
-				NPCFakePilot.add(it, null)
+				NPCFakePilot.add(it, null, pilotName)
 			}
 		}
 	}

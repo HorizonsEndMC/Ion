@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
@@ -43,19 +44,24 @@ abstract class AISpawner(val identifier: String) {
 
 	abstract fun findLocation(): Location?
 
-	// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
-	open fun getTemplate(world: World): AIStarshipTemplate? {
-		val shipID = config.getWorld(world)?.shipsWeightedList?.randomOrNull() ?: return null
-		return IonServer.aiShipConfiguration.getShipTemplate(shipID)
+	open fun getTemplate(world: World): Pair<AIStarshipTemplate, Component> {
+		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
+		val worldConfig = config.getWorld(world)!!
+		val tierIdentifier = worldConfig.tierWeightedRandomList.random()
+		val tier = config.getTier(tierIdentifier)
+		val shipIdentifier = tier.shipsWeightedList.random()
+		val name = MiniMessage.miniMessage().deserialize(tier.namesWeightedList.random())
+
+		return IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name
 	}
 
 	open val createController: (ActiveStarship) -> Controller = { NoOpController(it, null) }
 
 	open fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit = {}): Deferred<ActiveControlledStarship> {
-		val ship = getTemplate(location.world)!!
+		val (ship, pilotName) = getTemplate(location.world)
 		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
-        createAIShipFromTemplate(ship, location, createController) {
+        createAIShipFromTemplate(ship, location, createController, pilotName) {
             deferred.complete(it)
             callback(it)
         }
@@ -193,7 +199,7 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
 
 			val aggressivenessLevel = AggressivenessLevel.values().random()
 
-			it.controller = AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel) { controller, nearbyShip ->
+			it.controller = AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel, it.controller.pilotName) { controller, nearbyShip ->
 				TemporaryStarfighterCombatAIController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
 			}
 		}

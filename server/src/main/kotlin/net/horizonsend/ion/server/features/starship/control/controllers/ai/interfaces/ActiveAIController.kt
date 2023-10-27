@@ -9,13 +9,15 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.kyori.adventure.text.Component
 
 abstract class ActiveAIController(
 	starship: ActiveStarship,
 	name: String,
 	damager: Damager,
-	aggressivenessLevel: AggressivenessLevel
-) : AIController(starship, name, damager, aggressivenessLevel) {
+	pilotName: Component?,
+	aggressivenessLevel: AggressivenessLevel,
+) : AIController(starship, name, damager, pilotName, aggressivenessLevel) {
 	abstract val positioningEngine: PositioningEngine
 	abstract val pathfindingEngine: PathfindingEngine
 	abstract val movementEngine: MovementEngine
