@@ -17,8 +17,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlocks
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.RejectedExecutionException
 
 open class PathfindingEngine(
 	controller: AIController,
@@ -135,8 +135,7 @@ open class PathfindingEngine(
 	}
 
 	open fun shouldNotPathfind(newCenter: Vec3i): Boolean =
-		center == newCenter
-		&& trackedSections.isNotEmpty()
+		center == newCenter && chartedPath.isNotEmpty() && trackedSections.isNotEmpty()
 
 	/** General update task for pathfinding */
 	fun updatePathfinding() {
@@ -176,7 +175,6 @@ open class PathfindingEngine(
 		// When put into the list queue, the closest will be first.
 		val points = AIPathfinding.pathfind(this)
 
-
 		debugAudience.audiences().filterIsInstance<Player>().forEach { player -> points.forEach { point -> point.node.highlight(player, 200L) } }
 		debugAudience.debug("Found points: $points")
 
@@ -196,7 +194,7 @@ open class PathfindingEngine(
 		}
 	}
 
-	private var previousTask: Future<*> = CompletableFuture.completedFuture(Any())
+	private var previousTask: CompletableFuture<*> = CompletableFuture.completedFuture(Any())
 	var ticks = 0
 	var uncompletedTicks = 0
 
@@ -215,11 +213,12 @@ open class PathfindingEngine(
 		if (ticks % tickInterval != 0) return
 
 		ticks++
-		previousTask = navigate()
+
+		try { previousTask = navigate() } catch (_: RejectedExecutionException) { return }
 	}
 
 	/** Main navigation loop */
-	open fun navigate(): Future<*> = submitTask {
+	open fun navigate(): CompletableFuture<*> = submitTask {
 		debugAudience.debug("Navigating")
 
 		val run = runCatching {
@@ -263,5 +262,5 @@ open class PathfindingEngine(
 		it.position.distance(x, y, z)
 	}
 
-	private fun submitTask(task: () -> Unit) = AIManager.navigationThread.submit(task)
+	private fun submitTask(task: () -> Unit): CompletableFuture<Void> = AIManager.serviceExecutor.execute(starship, task)
 }
