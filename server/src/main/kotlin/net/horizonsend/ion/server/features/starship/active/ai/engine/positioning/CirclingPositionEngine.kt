@@ -14,18 +14,24 @@ import kotlin.math.sin
  **/
 class CirclingPositionEngine(controller: AIController, var target: Vec3i?, var holdOffDistance: Double) : PositioningEngine(controller) {
 	private val ticksPerCruise = StarshipCruising.SECONDS_PER_CRUISE * 20.0
-	var destination: Vec3i? = target
+	private var internalDestination: Vec3i? = target
 
-	override fun findPosition(): Location = destination?.toLocation(world) ?: getCenter()
+	override fun findPosition(): Location = internalDestination?.toLocation(world) ?: getCenter()
 
-	override fun findPositionVec3i(): Vec3i = destination ?: getCenterVec3i()
+	override fun findPositionVec3i(): Vec3i = internalDestination ?: getCenterVec3i()
 
 	var ticks = 0
+
 	/** Do the calculation on tick so its not done every time its called */
 	override fun tick() {
 		ticks++
 
-		val target = target ?: return
+		val target = target
+
+		if (target == null) {
+			internalDestination = null
+			return
+		}
 
 		// Calculate the amount of ticks it would take to do a lap around the target
 		val moveTicks = 1 / getMovePercent()
@@ -37,7 +43,7 @@ class CirclingPositionEngine(controller: AIController, var target: Vec3i?, var h
 		val y = target.y
 		val z = ((sin(radians) * holdOffDistance) + target.z).toInt()
 
-		destination = Vec3i(x, y, z)
+		internalDestination = Vec3i(x, y, z)
 	}
 
 	private fun circleCircumference() = 2 * PI * holdOffDistance
@@ -53,4 +59,6 @@ class CirclingPositionEngine(controller: AIController, var target: Vec3i?, var h
 
 		return blocksPerTick/ circumference
 	}
+
+	override fun getDestination(): Vec3i = internalDestination ?: getCenterVec3i()
 }
