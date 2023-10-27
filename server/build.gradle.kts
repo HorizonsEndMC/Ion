@@ -45,7 +45,7 @@ dependencies {
 	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.10")
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.12")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("io.github.config4k:config4k:0.6.0")
 	implementation("net.wesjd:anvilgui:1.6.3-SNAPSHOT")
