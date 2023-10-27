@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtectio
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
@@ -595,5 +596,22 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val starship = getStarshipPiloting(sender)
 
 		toggleGravityWell(starship)
+	}
+
+	@Suppress("unused")
+	@CommandAlias("pilot")
+	@Description("Try to pilot the ship you're standing on")
+	fun onPilot(sender: Player) {
+		val world = sender.world
+		val (x, y, z) = Vec3i(sender.location)
+
+		val starshipData = DeactivatedPlayerStarships.getContaining(world, x, y - 1, z)
+
+		if (starshipData == null) {
+			sender.userError("Could not find starship. Is it detected?")
+			return
+		}
+
+		PilotedStarships.tryPilot(sender, starshipData)
 	}
 }
