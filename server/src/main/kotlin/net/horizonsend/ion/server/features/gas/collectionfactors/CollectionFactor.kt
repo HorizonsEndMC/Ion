@@ -11,6 +11,8 @@ abstract class CollectionFactor {
 
     companion object {
         fun valueOf(text: String): CollectionFactor {
+			if (text.isEmpty()) return DefaultFactor()
+
             val params = text.split(":".toRegex()).dropLastWhile { it.isEmpty() }
 
             when (params[0].lowercase(Locale.getDefault())) {
