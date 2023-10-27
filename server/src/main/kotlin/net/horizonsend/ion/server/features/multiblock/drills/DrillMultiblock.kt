@@ -2,24 +2,23 @@ package net.horizonsend.ion.server.features.multiblock.drills
 
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -157,23 +156,19 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 		val furnace = event.clickedBlock!!.getRelative(sign.getFacing().oppositeFace).getState(false) as? Furnace
 			?: return
 
-		val multiblock = Multiblocks[sign]
-
-		if (multiblock is DrillMultiblock) {
-			if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
-				event.player.userError(
-					"You need Prismarine Crystals in both slots of the furnace!"
-				)
-				return
-			}
-
-			val user = when {
-				isEnabled(sign) -> null
-				else -> event.player.name
-			}
-
-			setUser(sign, user)
+		if (furnace.inventory.let { it.fuel == null || it.smelting?.type != Material.PRISMARINE_CRYSTALS }) {
+			event.player.userError(
+				"You need Prismarine Crystals in both slots of the furnace!"
+			)
+			return
 		}
+
+		val user = when {
+			isEnabled(sign) -> null
+			else -> event.player.name
+		}
+
+		setUser(sign, user)
 	}
 
 	override fun MultiblockShape.buildStructure() {
