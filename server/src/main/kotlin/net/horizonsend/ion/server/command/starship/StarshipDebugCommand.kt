@@ -134,11 +134,11 @@ object StarshipDebugCommand : SLCommand() {
 				target = null,
 				aggressivenessLevel = aggressivenessLevel,
 				autoWeaponSets = mutableListOf(
-					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 0.0, 1000.0)
+//					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 0.0, 1000.0)
 				),
 				manualWeaponSets = mutableListOf(
-					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 100.0, 1000.0),
-					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("Phasers", 0.0, 100.0),
+//					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 100.0, 1000.0),
+//					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("Phasers", 0.0, 100.0),
 				)
 			)
 		}),
