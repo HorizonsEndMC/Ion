@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.CombatPathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
@@ -44,23 +44,36 @@ class FrigateCombatAIController(
 	override val autoWeaponSets: MutableList<WeaponSet>
 ): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
 	CombatAIController {
-	override val positioningEngine = AxisStandoffPositioningEngine(this, target, 240.0)
-	override val pathfindingEngine: PathfindingEngine = PathfindIfBlockedEngine(this, positioningEngine)
-	override val movementEngine = CruiseEngine(this, pathfindingEngine, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL)
+	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
+	override var pathfindingEngine = CombatPathfindingEngine(this, positioningEngine)
+	override var movementEngine = CruiseEngine(this, pathfindingEngine, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL).apply {
+		maximumCruiseDistanceSquared = 2500.0
+	}
 
 	override var locationObjective: Location? = target?.getLocation()
 
 	override fun tick() {
-		if (target == null) aggressivenessLevel.findNextTarget(this)
-		this.target ?: return
-
 		val ok = checkOnTarget()
 
-		if (!ok) aggressivenessLevel.disengage(this)
+		if (target == null) aggressivenessLevel.findNextTarget(this)
+		val target = this.target ?: return
+		positioningEngine.target = target
+		movementEngine.cruiseDestination = target.getVec3i()
 
+		if (!ok) {
+			aggressivenessLevel.disengage(this)
+			return
+		}
+
+		if (target is StarshipTarget) {
+			positioningEngine.standoffDistance = 240.0
+		} else {
+			positioningEngine.standoffDistance = 25.0
+		}
 		tickAll()
-		movementEngine.cruiseDestination = target?.getVec3i()
+
 		handleAutoWeapons(starship.centerOfMass)
+		combatLoop()
 	}
 
 	/**
