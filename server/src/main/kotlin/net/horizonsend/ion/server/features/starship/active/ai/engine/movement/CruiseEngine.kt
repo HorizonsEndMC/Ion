@@ -39,33 +39,22 @@ class CruiseEngine(
 		val origin = starshipLocation.toLocation(world)
 
 		Tasks.sync {
-			if (assessDistance()) handleCruise(origin)
+			if (assessDistance()) handleCruise()
 
 			shiftFlightType.handleShiftFlight(this, origin)
 			shiftFlightType.refresh(controller)
 		}
 	}
 
-	fun handleCruise(origin: Location) {
+	fun handleCruise() {
 		if (controller.blocked) {
 			debugAudience.debug("Blocked, stopping cruising")
 			stopCruising(true)
 			return
 		}
 
-		val destination = cruiseDestination?.toVector() ?: return
-
-		val distanceSquared = distanceSquared(origin.toVector(), destination)
-
-		if (distanceSquared >= 250000) {
-			faceTarget(origin)
-			debugAudience.debug("More than 500 blocks away, cruising")
-			cruiseToVec3i(starshipLocation, cruiseDestination ?: return)
-
-			return
-		}
-
-		stopCruising()
+		debugAudience.debug("More than 500 blocks away, cruising")
+		cruiseToVec3i(starshipLocation, cruiseDestination ?: return)
 	}
 
 	/** Returns true if the destination is sufficiently far that it should cruise */
