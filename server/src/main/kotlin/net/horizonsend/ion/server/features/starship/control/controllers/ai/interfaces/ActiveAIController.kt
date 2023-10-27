@@ -48,11 +48,7 @@ abstract class ActiveAIController(
 
 	fun tickAll() {
 		positioningEngine.tick()
-		positioningEngine.passToPathfinding(pathfindingEngine)
-
 		pathfindingEngine.tick()
-		pathfindingEngine.passToMovementEngine(movementEngine)
-
 		movementEngine.tick()
 	}
 }
