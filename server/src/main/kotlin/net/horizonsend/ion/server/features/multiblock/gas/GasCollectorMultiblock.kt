@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.gas
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
@@ -28,6 +29,8 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		at(0, 0, 1).hopper()
 	}
 
+	val configuration = IonServer.gassesConfiguration
+
 	override fun onFurnaceTick(
 		event: FurnaceBurnEvent,
 		furnace: Furnace,
@@ -43,7 +46,7 @@ object GasCollectorMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		if (!Gasses.isCanister(furnace.inventory.fuel)) return
 
 		event.isBurning = false
-		event.burnTime = (500 + Math.random() * 250).toInt()
+		event.burnTime = (configuration.collectorMinTime + Math.random() * configuration.collectorVariableTime).toInt()
 		furnace.cookTime = (-1000).toShort()
 		event.isCancelled = false
 

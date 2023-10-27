@@ -225,7 +225,6 @@ object CustomItems {
 	val GAS_CANISTER_HYDROGEN = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_HYDROGEN",
-			maximumFill = 300,
 			customModelData = 1001,
 			gasIdentifier = "HYDROGEN",
 			displayName = canisterName(text("Hydrogen", RED))
@@ -234,7 +233,6 @@ object CustomItems {
 	val GAS_CANISTER_NITROGEN = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_NITROGEN",
-			maximumFill = 100,
 			customModelData = 1002,
 			gasIdentifier = "NITROGEN",
 			displayName = canisterName(text("Nitrogen", RED))
@@ -243,7 +241,6 @@ object CustomItems {
 	val GAS_CANISTER_METHANE = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_METHANE",
-			maximumFill = 150,
 			customModelData = 1003,
 			gasIdentifier = "METHANE",
 			displayName = canisterName(text("Methane", RED))
@@ -254,7 +251,6 @@ object CustomItems {
 	val GAS_CANISTER_OXYGEN = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_OXYGEN",
-			maximumFill = 300,
 			customModelData = 1010,
 			gasIdentifier = "OXYGEN",
 			displayName = canisterName(text("Oxygen", YELLOW))
@@ -263,7 +259,6 @@ object CustomItems {
 	val GAS_CANISTER_CHLORINE = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_CHLORINE",
-			maximumFill = 100,
 			customModelData = 1011,
 			gasIdentifier = "CHLORINE",
 			displayName = canisterName(text("Chlorine", YELLOW))
@@ -272,7 +267,6 @@ object CustomItems {
 	val GAS_CANISTER_FLUORINE = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_FLUORINE",
-			maximumFill = 150,
 			customModelData = 1012,
 			gasIdentifier = "FLUORINE",
 			displayName = canisterName(text("Fluorine", YELLOW))
@@ -283,7 +277,6 @@ object CustomItems {
 	val GAS_CANISTER_HELIUM = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_HELIUM",
-			maximumFill = 300,
 			customModelData = 1020,
 			gasIdentifier = "HELIUM",
 			displayName = canisterName(text("Helium", BLUE))
@@ -292,7 +285,6 @@ object CustomItems {
 	val GAS_CANISTER_CARBON_DIOXIDE = register(
 		object : GasCanister(
 			identifier = "GAS_CANISTER_CARBON_DIOXIDE",
-			maximumFill = 100,
 			customModelData = 1021,
 			gasIdentifier = "CARBON_DIOXIDE",
 			displayName = canisterName(text("Carbon Dioxide", BLUE))

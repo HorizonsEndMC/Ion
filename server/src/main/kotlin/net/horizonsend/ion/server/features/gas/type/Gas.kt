@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gas.type
 
+import net.horizonsend.ion.server.configuration.Gasses.GasConfiguration
 import net.horizonsend.ion.server.features.gas.collectionfactors.CollectionFactor
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -10,9 +11,10 @@ abstract class Gas(
 	val displayName: Component,
 	val containerIdentifier: String,
 
-	val factorSupplier: Supplier<List<CollectionFactor>>
+	val configurationSupplier: Supplier<GasConfiguration>
 	) {
-	val factors get(): List<CollectionFactor> = factorSupplier.get()
+	val configuration = configurationSupplier.get()
+	val factors: List<CollectionFactor> = configurationSupplier.get().formattedFactors
 
     fun tryCollect(location: Location): Boolean {
 		if (factors.isEmpty()) return false

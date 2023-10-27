@@ -18,12 +18,13 @@ import kotlin.math.roundToInt
 abstract class GasCanister(
 	identifier: String,
 
-	val maximumFill: Int,
 	private val customModelData: Int,
 	val displayName: Component,
 	val gasIdentifier: String
 ) : CustomItem(identifier) {
-	val gas = Gasses[gasIdentifier]!!
+	val gas = Gasses[gasIdentifier]
+	val maximumFill = gas.configuration.maxStored
+//	val maximumFill get() = gas
 
 	override fun constructItemStack(): ItemStack = createWithFill(maximumFill)
 

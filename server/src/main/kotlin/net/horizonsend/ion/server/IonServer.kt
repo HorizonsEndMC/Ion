@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
-import net.horizonsend.ion.server.configuration.GasConfiguration
+import net.horizonsend.ion.server.configuration.GassesConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
@@ -40,7 +40,7 @@ val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs(
 object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
-	var gasConfiguration: GasConfiguration = Configuration.load(dataFolder, "gasses.json")
+	var gassesConfiguration: GassesConfiguration = Configuration.load(dataFolder, "gasses.json")
 	var legacySettings: LegacyConfig = loadConfig(IonServer.dataFolder, "config") // Setting
 
 	override fun onEnable(): Unit =

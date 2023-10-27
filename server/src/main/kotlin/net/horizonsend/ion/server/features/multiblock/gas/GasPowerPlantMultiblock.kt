@@ -202,7 +202,7 @@ object GasPowerPlantMultiblock : Multiblock(), PowerStoringMultiblock, FurnaceMu
 
 		// Burn fuel and oxidizer at 1:1
 		// Cap consumption at 30 units
-		val consumed = minOf(IonServer.gasConfiguration.powerPlantConsumption, fuelFill, oxidizerFill)
+		val consumed = minOf(IonServer.gassesConfiguration.powerPlantConsumption, fuelFill, oxidizerFill)
 
 		// God forbid it goes negative
 		if (fuelFill <= 0) {
