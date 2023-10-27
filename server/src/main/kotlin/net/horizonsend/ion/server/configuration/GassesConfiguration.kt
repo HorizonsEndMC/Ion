@@ -21,8 +21,8 @@ data class Gasses(
 	val oxygen: OxidizerGasConfiguration = OxidizerGasConfiguration(1.0, 1000, listOf("")),
 	val chlorine: OxidizerGasConfiguration = OxidizerGasConfiguration(1.5, 500, listOf("")),
 	val fluorine: OxidizerGasConfiguration = OxidizerGasConfiguration(2.0, 750, listOf("")),
-	val carbonDioxide: GasConfiguration = InertGasConfiguration(300, listOf("")),
-	val helium: GasConfiguration = InertGasConfiguration(100, listOf("")),
+	val carbonDioxide: GasConfiguration = InertGasConfiguration(1000, listOf("")),
+	val helium: GasConfiguration = InertGasConfiguration(500, listOf("")),
 ) {
 	@Serializable
 	data class InertGasConfiguration(
