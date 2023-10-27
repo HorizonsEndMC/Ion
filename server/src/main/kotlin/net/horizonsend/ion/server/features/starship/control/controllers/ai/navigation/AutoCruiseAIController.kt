@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -30,16 +29,15 @@ class AutoCruiseAIController(
 	var destination: Location,
 	var maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
+	pilotName: Component?,
 	val combatController: (AIController, AITarget) -> AIController
-) : ActiveAIController(starship, "autoCruise", AIShipDamager(starship), aggressivenessLevel),
+) : ActiveAIController(starship, "autoCruise", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	NeutralAIController {
 	override var positioningEngine = BasicPositioningEngine(this, destination)
 	override var pathfindingEngine = PathfindIfBlockedEngine(this, positioningEngine)
 	override var movementEngine = CruiseEngine(this, pathfindingEngine, Vec3i(destination), CruiseEngine.ShiftFlightType.IF_BLOCKED_AND_MATCH_Y)
 
 	var ticks = 0
-
-	override val pilotName: Component = starship.getDisplayNameComponent().append(Component.text(" [NEUTRAL]", NamedTextColor.YELLOW))
 
 	val direction: Vector get() = destination.toVector().subtract(getCenter().toVector())
 
