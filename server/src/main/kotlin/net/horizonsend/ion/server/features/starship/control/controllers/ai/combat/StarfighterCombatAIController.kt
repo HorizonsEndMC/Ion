@@ -20,8 +20,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import kotlin.jvm.optionals.getOrNull
@@ -38,8 +36,9 @@ import kotlin.math.pow
 open class StarfighterCombatAIController(
 	starship: ActiveStarship,
 	final override var target: AITarget?,
+	pilotName: Component?,
 	aggressivenessLevel: AggressivenessLevel
-) : ActiveAIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
+) : ActiveAIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	CombatAIController {
 	final override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
 	final override var pathfindingEngine = CombatPathfindingEngine(this, positioningEngine)
@@ -52,12 +51,6 @@ open class StarfighterCombatAIController(
 		shutDownAll()
 		super.destroy()
 	}
-
-	override val pilotName: Component get() = text()
-		.append(text("Small Craft Combat Intelligence", NamedTextColor.GRAY))
-		.append(text(" "))
-		.append(aggressivenessLevel.displayName)
-		.build()
 
 	override var locationObjective: Location? = target?.getLocation()
 

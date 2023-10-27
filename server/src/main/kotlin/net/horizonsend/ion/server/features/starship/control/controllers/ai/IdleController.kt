@@ -10,6 +10,7 @@ class IdleController(
 	previousController.starship,
 	"combat",
 	previousController.damager,
+	previousController.pilotName,
 	previousController.aggressivenessLevel
 ),
 	TemporaryAIController {

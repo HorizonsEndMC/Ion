@@ -19,7 +19,7 @@ class TemporaryStarfighterCombatAIController(
 	target: AITarget?,
 	aggressivenessLevel: AggressivenessLevel,
 	override val previousController: AIController,
-) : StarfighterCombatAIController(starship, target, aggressivenessLevel),
+) : StarfighterCombatAIController(starship, target, previousController.pilotName, aggressivenessLevel),
 	TemporaryAIController {
 	override fun tick() {
 		if (target == null) returnToPreviousController()

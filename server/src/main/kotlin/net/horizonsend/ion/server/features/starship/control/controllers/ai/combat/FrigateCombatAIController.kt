@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import kotlin.jvm.optionals.getOrNull
@@ -39,10 +40,11 @@ import kotlin.jvm.optionals.getOrNull
 class FrigateCombatAIController(
 	starship: ActiveStarship,
 	override var target: AITarget?,
+	pilotName: Component?,
 	aggressivenessLevel: AggressivenessLevel,
 	override val manualWeaponSets: MutableList<WeaponSet>,
 	override val autoWeaponSets: MutableList<WeaponSet>
-): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), aggressivenessLevel),
+): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	CombatAIController {
 	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
 	override var pathfindingEngine = CombatPathfindingEngine(this, positioningEngine)
