@@ -15,7 +15,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.minecraft.core.NonNullList
 import net.minecraft.server.MinecraftServer
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.CraftingContainer
+import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.crafting.RecipeType
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -24,6 +27,7 @@ import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -33,7 +37,7 @@ private const val POWER_USAGE_PER_INGREDIENT = 50
 abstract class AutoCrafterMultiblock(
 	tierText: String,
 	private val tierMaterial: Material,
-	private val iterations: Int
+	private val iterations: Int,
 ) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
 	override val name = "autocrafter"
 	override val requiredPermission: String? = "ion.multiblock.autocrafter"
@@ -132,12 +136,15 @@ abstract class AutoCrafterMultiblock(
 		event.isBurning = false
 		event.burnTime = 20
 
+		if (furnace.inventory.smelting?.type != Material.PRISMARINE_CRYSTALS) return
+		if (furnace.inventory.fuel?.type != Material.PRISMARINE_CRYSTALS) return
+
 		val input: InventoryHolder = getInput(sign) ?: return
 		val recipeHolder: InventoryHolder = getRecipeHolder(sign) ?: return
 		val output: InventoryHolder = getOutput(sign) ?: return
 
 		// material data of each item in the recipe holder, used as the crafting grid
-		val grid: List<Material?> = recipeHolder.inventory.map { it?.type }
+		val grid: List<ItemStack?> = recipeHolder.inventory.map { it }
 
 		var power = PowerMachines.getPower(sign, fast = true)
 
@@ -169,12 +176,12 @@ abstract class AutoCrafterMultiblock(
 				// increment matched ingredients,
 				// and move on to the next ingredient
 				ingredientLoop@
-				for (ingredient: Material? in grid) {
+				for (ingredient: ItemStack? in grid) {
 					if (ingredient != null) {
 						requiredIngredients++
 						for ((index: Int, item: ItemStack?) in inputInventory.withIndex()) {
 							// if it matches AND we haven't already taken too much from it, use it
-							if (item?.type == ingredient && item.amount >= removeSlots.count { it == index } + 1) {
+							if (item?.isSimilar(ingredient) == true && item.amount >= removeSlots.count { it == index } + 1) {
 								removeSlots += index
 								matchedIngredients++
 								continue@ingredientLoop
@@ -191,7 +198,7 @@ abstract class AutoCrafterMultiblock(
 				val remaining: HashMap<Int, ItemStack> = output.inventory.addItem(result)
 
 				if (remaining.isNotEmpty()) {
-					val added = result.amount - remaining.values.sumBy { it.amount }
+					val added = result.amount - remaining.values.sumOf { it.amount }
 					check(added >= 0)
 					if (added > 0) {
 						output.inventory.removeItem(result.clone().apply { amount = added })
@@ -239,25 +246,36 @@ abstract class AutoCrafterMultiblock(
 			return itemsField.get(inventoryCrafting) as NonNullList<NMSItemStack>
 		}
 
-		private val recipeCache: LoadingCache<List<Material?>, Optional<ItemStack>> = CacheBuilder.newBuilder().build(CacheLoader.from { items ->
-			requireNotNull(items)
-			val inventoryCrafting = CraftingContainer(/* handler = */null, /*width=*/3, /*height=*/3)
+		private val recipeCache: LoadingCache<List<ItemStack?>, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
+			CacheLoader.from { items ->
+				requireNotNull(items)
+				val inventoryCrafting = CraftingContainer(
+					object : AbstractContainerMenu(null as MenuType<*>?, -1) {
+						override fun quickMoveStack(player: Player, slot: Int): NMSItemStack = NMSItemStack.EMPTY
+						override fun stillValid(player: Player): Boolean = false
+						override fun getBukkitView(): InventoryView = throw NotImplementedError()
+					},
+					3,
+					3
+				)
 
-			val inventoryItems: NonNullList<NMSItemStack> = getItems(inventoryCrafting)
-			for ((index: Int, material: Material?) in items.withIndex()) {
-				val item: NMSItemStack = if (material != null) CBItemStack.asNMSCopy(ItemStack(material, 1))
-				else NMSItemStack.EMPTY
-				inventoryItems[index] = item
+				val inventoryItems: NonNullList<NMSItemStack> = getItems(inventoryCrafting)
+
+				for ((index: Int, material: ItemStack?) in items.withIndex()) {
+					val item: NMSItemStack = if (material != null) CBItemStack.asNMSCopy(material) else NMSItemStack.EMPTY
+					inventoryItems[index] = item
+				}
+
+				val level = Bukkit.getWorlds().first().minecraft
+
+				val result = MinecraftServer.getServer().recipeManager
+					.getRecipeFor(RecipeType.CRAFTING, inventoryCrafting, level)
+					.map { recipeCrafting -> recipeCrafting.assemble(inventoryCrafting, level.registryAccess()) }
+					.getOrNull()
+
+				return@from Optional.ofNullable(result?.asBukkitCopy())
 			}
-
-			val level = Bukkit.getWorlds().first().minecraft
-
-			val result: NMSItemStack? = MinecraftServer.getServer().recipeManager
-				.getRecipeFor(RecipeType.CRAFTING, inventoryCrafting, level)
-				.getOrNull()?.assemble(inventoryCrafting, level.registryAccess())
-
-			return@from Optional.ofNullable(result?.asBukkitCopy())
-		})
+		)
 	}
 }
 
