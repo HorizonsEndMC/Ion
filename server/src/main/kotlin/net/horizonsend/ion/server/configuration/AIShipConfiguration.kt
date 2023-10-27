@@ -28,10 +28,6 @@ data class AIShipConfiguration(
 	)
 
 	/**
-	 * Each world has a number of rolls for selection when a ship spawns
-	 * Feeds config values to an AISpawner with the same identifier.
-	 * Allows varied ships by world.
-	 *
 	 * @param miniMessageSpawnMessage The custom message to send when this spawner spawns a ship, uses string templates {0}, {1}, etc.
 	 * @param spawnChance Chance for a ship to spawn whenever this spawner is triggered.
 	 * @param worldSettings each contains a list of defined AI ship template identifiers, and their number of rolls when this world is selected.
@@ -40,16 +36,43 @@ data class AIShipConfiguration(
 	 * @See AISpawner
 	 **/
 	@Serializable
-	data class AISpawnerConfiguration (
+	data class AISpawnerConfiguration(
 		val miniMessageSpawnMessage: String = "",
 		val spawnChance: Double = 1.0,
 		val spawnRate: Long = 20 * 60 * 15,
+		val tiers: List<AISpawnerTier> = listOf(AISpawnerTier()),
 		val worldSettings: List<AIWorldSettings> = listOf(AIWorldSettings())
 	) {
 		@Transient
 		val worldWeightedRandomList = WeightedRandomList(worldSettings.associateWith { it.rolls })
 
 		fun getWorld(world: World) = worldSettings.firstOrNull { it.world == world.name }
+
+		fun getTier(identifier: String) = tiers.first { it.identifier == identifier }
+	}
+
+	/**
+	 * Each world has a number of rolls for selection when a ship spawns
+	 *
+	 * @param identifier, the tier of this identifier
+	 * @param rolls then number of rolls for this world.
+	 * @param ships Map of AI ship templates to their number of rolls.
+	 *
+	 * @see AISpawnerConfiguration
+	 * @see AIStarshipTemplate
+	 **/
+	@Serializable
+	data class AISpawnerTier(
+		val identifier: String = "BASIC",
+		val rolls: Int = 1,
+		val nameList: Map<String, Int> = mapOf("<Red><Bold>Level 1 thug" to 1),
+		val ships: Map<String, Int> = mapOf("VESTA" to 1),
+	) {
+		@Transient
+		val shipsWeightedList: WeightedRandomList<String> = WeightedRandomList(ships)
+
+		@Transient
+		val namesWeightedList: WeightedRandomList<String> = WeightedRandomList(nameList)
 	}
 
 	/**
@@ -66,12 +89,12 @@ data class AIShipConfiguration(
 	data class AIWorldSettings(
 		val world: String = "world",
 		val rolls: Int = 1,
-		val ships: Map<String, Int> = mapOf("VESTA" to 1),
+		val tiers: Map<String, Int> = mapOf("VESTA" to 1),
 	) {
 		fun getWorld(): World = Bukkit.getWorld(world)!!
 
 		@Transient
-		val shipsWeightedList: WeightedRandomList<String> = WeightedRandomList(ships)
+		val tierWeightedRandomList: WeightedRandomList<String> = WeightedRandomList(tiers)
 	}
 
 	@Serializable
