@@ -10,8 +10,8 @@ import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
-class AIServiceExecutor(val maxPerShip: Int = 10) {
-	lateinit var navigationThread: ExecutorService
+class AIServiceExecutor(private val maxPerShip: Int = 10) {
+	private lateinit var navigationThread: ExecutorService
 	val queue = LinkedBlockingQueue<Runnable>()
 
 	fun initialize(): AIServiceExecutor {
