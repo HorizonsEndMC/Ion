@@ -18,7 +18,15 @@ abstract class HitscanProjectile(
 		drawBeam()
 
 		if (result != null) {
-			tryImpact(result, loc)
+			result.hitBlock?.let {
+				tryImpact(result, it.location)
+				return
+			}
+
+			result.hitEntity?.let {
+				tryImpact(result, it.location)
+				return
+			}
 		}
 	}
 
