@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWea
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
+import net.horizonsend.ion.server.features.customitems.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
@@ -15,11 +16,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
+import org.bukkit.Material
 import org.bukkit.Material.DIAMOND_HOE
 import org.bukkit.Material.GOLDEN_HOE
 import org.bukkit.Material.IRON_HOE
@@ -315,6 +320,25 @@ object CustomItems {
 		) {
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
 				return ThrownDetonator(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
+			}
+		}
+	)
+
+	val PUMPKIN_GRENADE = register(
+		object : ThrowableCustomItem(
+			identifier = "PUMPKIN_GRENADE",
+			customModelData = 0,
+			text().append(text("Pumpkin ", GOLD), text("Grenade", GREEN)).decoration(ITALIC, false).build(),
+			IonServer.balancing.throwables::detonator
+		) {
+			override fun constructItemStack(): ItemStack {
+				return super.constructItemStack().apply {
+					type = Material.PUMPKIN
+				}.updateMeta { it.lore(mutableListOf(text("Spooky", LIGHT_PURPLE))) }
+			}
+
+			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
+				return ThrownPumpkinGrenade(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
 			}
 		}
 	)
