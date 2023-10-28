@@ -18,7 +18,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Furnace
@@ -143,9 +142,7 @@ object Gasses : IonServerComponent(false) {
 			Tasks.sync {
 				val gas = availableGasses.firstOrNull { it.tryCollect(location) } ?: return@sync
 
-				val result = tryHarvestGas(furnace, hopper, gas)
-				val sound = if (result) Sound.ITEM_BOTTLE_FILL_DRAGONBREATH else Sound.ITEM_BOTTLE_FILL
-				lightningRod.world.playSound(lightningRod.location, sound, 10.0f, 0.5f)
+				tryHarvestGas(furnace, hopper, gas)
 			}
 		}
 	}
