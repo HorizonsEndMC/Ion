@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWea
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
-import net.horizonsend.ion.server.features.customitems.throwables.ThrownIncendiaryGrenade
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ITEM
@@ -16,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -320,18 +318,18 @@ object CustomItems {
 			}
 		}
 	)
-	val INCENDIARY_GRENADE = register(
-		object : ThrowableCustomItem(
-			identifier = "INCENDIARY_GRENADE",
-			customModelData = 1102,
-			text().append(text("Incendiary ", RED), text("Grenade", GOLD)).decoration(ITALIC, false).build(),
-			IonServer.balancing.throwables::detonator
-		) {
-			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
-				return ThrownIncendiaryGrenade(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
-			}
-		}
-	)
+//	val INCENDIARY_GRENADE = register(
+//		object : ThrowableCustomItem(
+//			identifier = "INCENDIARY_GRENADE",
+//			customModelData = 1102,
+//			text().append(text("Incendiary ", RED), text("Grenade", GOLD)).decoration(ITALIC, false).build(),
+//			IonServer.balancing.throwables::detonator
+//		) {
+//			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
+//				return ThrownIncendiaryGrenade(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
+//			}
+//		}
+//	)
 
 	// Throwables end
 

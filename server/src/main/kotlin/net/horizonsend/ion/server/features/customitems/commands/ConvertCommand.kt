@@ -1,13 +1,12 @@
 package net.horizonsend.ion.server.features.customitems.commands
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
@@ -34,6 +33,32 @@ object ConvertCommand : SLCommand() { // I imagine we'll need more than blasters
 			4 -> CustomItems.CANNON
 			else -> {
 				sender.information("Sorry, but there is no current equivalent for the cannon, one will come soon")
+				return
+			}
+		}.constructItemStack()
+
+		newVersion.amount = 1
+
+		sender.inventory.setItemInMainHand(newVersion)
+		sender.updateInventory()
+	}
+
+	@Subcommand("detonator")
+	fun onConvertDetonator(sender: Player) {
+		val heldItem = sender.inventory.itemInMainHand
+
+		if (heldItem.type != Material.SHEARS ||
+			!heldItem.itemMeta.hasCustomModelData() ||
+			heldItem.itemMeta.customModelData == 0
+		) {
+			sender.userError("Not a valid custom item!")
+			return
+		}
+
+		val newVersion = when (heldItem.itemMeta.customModelData) {
+			1 -> CustomItems.DETONATOR
+			else -> {
+				sender.information("Wtf do you have")
 				return
 			}
 		}.constructItemStack()
