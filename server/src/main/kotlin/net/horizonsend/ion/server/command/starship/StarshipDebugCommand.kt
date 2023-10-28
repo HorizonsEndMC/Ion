@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.command.starship
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import org.bukkit.Location
@@ -25,5 +26,13 @@ object StarshipDebugCommand : net.horizonsend.ion.server.command.SLCommand() {
 		for (dir in CARDINAL_BLOCK_FACES) {
 			sender.sendRichMessage(starship.thrusterMap[dir].toString())
 		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("dumpSubsystems")
+	fun onDumpSubsystems(sender: Player) {
+		val starship = getStarshipRiding(sender)
+
+		sender.information(starship.subsystems.joinToString { it.javaClass.simpleName })
 	}
 }

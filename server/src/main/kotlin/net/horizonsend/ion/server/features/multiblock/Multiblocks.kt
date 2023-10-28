@@ -74,10 +74,11 @@ import net.horizonsend.ion.server.features.multiblock.printer.CarbonProcessorMul
 import net.horizonsend.ion.server.features.multiblock.printer.GlassPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.starshipweapon.cannon.SonicMissileWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.HorizontalPumpkinCannonStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.MiniPhaserStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.HorizontalRocketStarshipWeaponMultiblock
@@ -93,6 +94,9 @@ import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.Bott
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TopTriTurretMultiblock
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockBottom
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockSide
+import net.horizonsend.ion.server.legacy.starshipweapon.multiblock.CthulhuBeamStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -223,6 +227,11 @@ object Multiblocks : IonServerComponent() {
 			AutoCrafterMultiblockTier1,
 			AutoCrafterMultiblockTier2,
 			AutoCrafterMultiblockTier3,
+
+			HorizontalPumpkinCannonStarshipWeaponMultiblock,
+			CthulhuBeamStarshipWeaponMultiblockBottom,
+			CthulhuBeamStarshipWeaponMultiblockTop,
+			CthulhuBeamStarshipWeaponMultiblockSide,
 		)
 	}
 

@@ -1,11 +1,11 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.SonicMissileProjectile
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.SonicMissileProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i

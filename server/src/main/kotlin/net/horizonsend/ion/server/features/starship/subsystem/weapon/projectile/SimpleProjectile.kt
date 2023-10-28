@@ -2,11 +2,11 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -102,7 +102,7 @@ abstract class SimpleProjectile(
 
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
-	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
+	protected fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
 		if (starship?.serverLevel?.world?.name?.lowercase(Locale.getDefault())
 				?.contains("hyperspace", ignoreCase=true)!!
 		) return false

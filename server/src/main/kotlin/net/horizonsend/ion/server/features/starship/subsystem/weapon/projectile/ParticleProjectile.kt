@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import org.bukkit.Location
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 abstract class ParticleProjectile(
