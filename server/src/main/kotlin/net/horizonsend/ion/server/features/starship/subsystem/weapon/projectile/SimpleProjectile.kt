@@ -65,7 +65,7 @@ abstract class SimpleProjectile(
 	}
 
 	override fun tick() {
-		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0
+		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
 
 		val predictedNewLoc = loc.clone().add(dir.clone().multiply(delta * speed))
 		if (!predictedNewLoc.isChunkLoaded) {

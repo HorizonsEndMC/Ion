@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.customitems.throwables
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
-import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.regeneratingBlockChange
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
@@ -14,7 +14,6 @@ import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.util.function.Supplier
@@ -77,14 +76,9 @@ class ThrownPumpkinGrenade(
 			}
 		}
 
-		val blockExplodeEvent = BlockExplodeEvent(block, blocks, 0.123f)
+		val called = regeneratingBlockChange(item, block, blocks, 0.123f, true)
 
-		AreaShields.bypassShieldEvents.add(blockExplodeEvent)
-
-		world.createExplosion(item, 1f, false, false)
-		world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 10f, 0.5f)
-
-		if (!blockExplodeEvent.callEvent() && !world.name.contains("arena", ignoreCase = true)) return
+		if (!called && !world.name.contains("arena", ignoreCase = true)) return
 
 		blocks.forEach { it.setType(Material.AIR, false) }
 

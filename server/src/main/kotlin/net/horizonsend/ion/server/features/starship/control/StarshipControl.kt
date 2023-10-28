@@ -536,7 +536,7 @@ object StarshipControl : IonServerComponent() {
 
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet])
 			.shuffled(ThreadLocalRandom.current())
-
+		starship.controller?.playerPilot?.debug("Queuing shots")
 		val queuedShots = queueShots(starship.controller!!, weapons, leftClick, playerFacing, dir, target)
 		StarshipWeapons.fireQueuedShots(queuedShots, starship)
 	}
@@ -580,7 +580,10 @@ object StarshipControl : IonServerComponent() {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
 
 		for (weapon: WeaponSubsystem in weapons) {
+			player.playerPilot?.debug("Weapon: $weapon")
+
 			if (weapon !is ManualWeaponSubsystem) {
+				player.playerPilot?.debug("Weapon is not manual")
 				continue
 			}
 
@@ -593,20 +596,24 @@ object StarshipControl : IonServerComponent() {
 			}
 
 			if (!weapon.isCooledDown()) {
+				player.playerPilot?.debug("Weapon not cooled down")
 				continue
 			}
 
 			if (!weapon.isIntact()) {
+				player.playerPilot?.debug("Weapon not intact")
 				continue
 			}
 
 			val targetedDir: Vector = weapon.getAdjustedDir(dir, target)
 
 			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) {
+				player.playerPilot?.debug("Turret not oriented")
 				continue
 			}
 
 			if (!weapon.canFire(targetedDir, target)) {
+				player.playerPilot?.debug("Can not fire")
 				continue
 			}
 

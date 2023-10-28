@@ -549,7 +549,26 @@ data class BalancingConfiguration(
 			fireCooldownNanos = 10,
 			boostChargeNanos = 0,
 			aimDistance = 0
-		)
+		),
+		val flamethrower: StarshipWeapon = StarshipWeapon(
+			range = 200.0,
+			speed = 250.0,
+			shieldDamageMultiplier = 1,
+			thickness = 0.2,
+			particleThickness = 0.44,
+			explosionPower = 2.0f,
+			volume = 10,
+			pitch = 2.0f,
+			soundName = "entity.firework_rocket.blast_far",
+			powerUsage = 1600,
+			length = 2,
+			angleRadians = 15.0,
+			convergeDistance = 20.0,
+			extraDistance = 2,
+			fireCooldownNanos = 250,
+			boostChargeNanos = 0,
+			aimDistance = 0
+		),
 	) {
 		@Serializable
 		data class StarshipWeapon(

@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShiel
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterType
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -162,6 +163,10 @@ object SubsystemDetector {
 			val pos = Vec3i(block.location)
 
 			val subsystem = multiblock.createSubsystem(starship, pos, face)
+
+			if (subsystem is PermissionWeaponSubsystem && starship.pilot?.hasPermission(subsystem.permission) == false) {
+				continue
+			}
 
 			if (isDuplicate(starship, subsystem)) {
 				continue
