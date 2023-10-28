@@ -73,7 +73,7 @@ class PumpkinCannonWeaponSubsystem(
 
 	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.serverLevel.world)
-		val projectile = PumpkinCannonProjectile(starship, origin, this.face, shooter)
+		val projectile = PumpkinCannonProjectile(starship, origin, dir, shooter)
 		projectile.fire()
 	}
 }

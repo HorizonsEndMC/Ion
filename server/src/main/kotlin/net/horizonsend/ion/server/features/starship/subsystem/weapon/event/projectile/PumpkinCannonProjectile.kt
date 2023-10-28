@@ -9,17 +9,17 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 import org.bukkit.entity.Entity
+import org.bukkit.util.Vector
 
 class PumpkinCannonProjectile(
 	starship: ActiveStarship,
 	loc: Location,
-	face: BlockFace,
+	direction: Vector,
 	shooter: Controller?
-) : BlockProjectile(starship, loc, face.direction, shooter) {
+) : BlockProjectile(starship, loc, direction, shooter) {
 	override val blockMap: Map<Vec3i, BlockData> = faces
 
 	companion object {

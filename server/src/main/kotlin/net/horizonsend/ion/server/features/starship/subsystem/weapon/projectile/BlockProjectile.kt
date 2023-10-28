@@ -1,17 +1,17 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.Projectiles
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.minecraft.core.BlockPos
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -32,7 +32,7 @@ abstract class BlockProjectile(
 		renderOldBlocks(oldLocation, newBlocks)
 	}
 
-	private fun renderOldBlocks(oldLocation: Location, newBlocks: Set<Block>) {
+	protected fun renderOldBlocks(oldLocation: Location, newBlocks: Set<Block>) {
 		val oldBlockOrigin = oldLocation.block
 
 		for ((dx, dy, dz) in blockMap.keys) {
@@ -53,7 +53,7 @@ abstract class BlockProjectile(
 		}
 	}
 
-	private fun renderNewBlocks(newLocation: Location): Set<Block> {
+	protected fun renderNewBlocks(newLocation: Location): Set<Block> {
 		val newBlocks = mutableSetOf<Block>()
 
 		if (!newLocation.isChunkLoaded) {
@@ -89,7 +89,7 @@ abstract class BlockProjectile(
 		return newBlocks
 	}
 
-	private fun updateIfLoaded(blockWorld: World, blockX: Int, blockY: Int, blockZ: Int) {
+	protected fun updateIfLoaded(blockWorld: World, blockX: Int, blockY: Int, blockZ: Int) {
 		val block = getBlockIfLoaded(blockWorld, blockX, blockY, blockZ) ?: return
 
 		if (!refreshedBlocks.add(block.blockKey)) {
@@ -99,7 +99,7 @@ abstract class BlockProjectile(
 		sendFakeBlock(block, block.blockData)
 	}
 
-	private fun sendFakeBlock(block: Block, blockData: BlockData) {
+	protected fun sendFakeBlock(block: Block, blockData: BlockData) {
 		val nmsBlockPos = BlockPos(block.x, block.y, block.z)
 		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms)
 		block.chunk.minecraft.playerChunk?.broadcast(packet, false)

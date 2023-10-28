@@ -302,12 +302,18 @@ fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFa
 		}
 	}
 
-	val yaw = atan2(-x, z)
-	val yawDegrees = Math.floorMod(Math.toDegrees(yaw).roundToInt(), 360)
-	return when (yawDegrees) {
-		in -45..45 -> BlockFace.SOUTH
-		in 45..135 -> BlockFace.WEST
-		in 135..225 -> BlockFace.NORTH
-		else -> BlockFace.EAST
-	}
+	val twoPi = 2 * Math.PI
+	val theta = atan2(-x, z)
+	val yawDegrees = Math.toDegrees((theta + twoPi) % twoPi).toInt()
+
+	return yawToBlockFace(yawDegrees)
+}
+
+fun yawToBlockFace(yawDegrees: Int): BlockFace = when (yawDegrees) {
+	in 0..45 -> BlockFace.SOUTH
+	in 45..135 -> BlockFace.WEST
+	in 135..225 -> BlockFace.NORTH
+	in 225..315 -> BlockFace.EAST
+	in 315..360 -> BlockFace.SOUTH
+	else -> throw IllegalArgumentException()
 }
