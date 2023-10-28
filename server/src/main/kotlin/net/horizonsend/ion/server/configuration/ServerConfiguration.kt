@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.configuration
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
@@ -26,7 +27,23 @@ data class ServerConfiguration(
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
 	val soldShips: List<Ship> = listOf(),
-	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
+	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(
+		"world" to PlanetSpawnConfig(
+			listOf(
+				PlanetSpawnConfig.Mob(
+					2,
+					EntityType.WITHER_SKELETON.name,
+					mapOf("<gold><bold>Pumpkin Man" to 1),
+					onHand = PlanetSpawnConfig.Gear("energy_sword_orange", 0f),
+					offHand = null,
+					helmet = PlanetSpawnConfig.Gear("CARVED_PUMPKIN", 0.25f),
+					null,
+					null,
+					null,
+				)
+			)
+		)
+	),
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -228,15 +245,32 @@ data class ServerConfiguration(
 		data class Mob(
 			val weight: Int,
 			val type: String,
+			val namePool: Map<String, Int>,
+			val onHand: Gear?,
+			val offHand: Gear?,
+			val helmet: Gear?,
+			val chestPlate: Gear?,
+			val leggings: Gear?,
+			val boots: Gear?,
+		) {
+			@Transient
+			val nameList: WeightedRandomList<String> = WeightedRandomList(namePool)
+
+			fun getEntityType(): EntityType = EntityType.valueOf(type)
+		}
+
+		/**
+		 * Uses bazaar strings for now
+		 * Not the end of the world, but could be improved upon
+		 **/
+		@Serializable
+		data class Gear(
+			val itemString: String,
+			val dropChance: Float,
 		)
 
-		fun weightedList(): WeightedRandomList<EntityType> {
-			val list = WeightedRandomList<EntityType>()
-			val transformed = mobs.map { (weight, type) -> EntityType.valueOf(type) to weight }
-
-			list.addMany(transformed)
-
-			return list
+		fun weightedList(): WeightedRandomList<Mob> {
+			return WeightedRandomList(*mobs.map { it to it.weight }.toTypedArray())
 		}
 	}
 }

@@ -25,6 +25,6 @@ class CthulhuBeamProjectile(
 
 	override fun drawBeam() {
 		val laserEnd = loc.clone().add(dir.clone().multiply(range))
-		Laser.CrystalLaser(loc, laserEnd, 40, -1).durationInTicks().apply { start(IonServer) }
+		Laser.CrystalLaser(loc, laserEnd, 5, -1).durationInTicks().apply { start(IonServer) }
 	}
 }
