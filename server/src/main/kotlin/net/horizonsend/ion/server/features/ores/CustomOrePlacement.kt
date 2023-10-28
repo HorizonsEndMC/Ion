@@ -157,7 +157,7 @@ object CustomOrePlacement : SLEventListener() {
 			val y = oreData[1].toInt()
 			val z = oreData[2].toInt()
 
-			if (region?.contains(BlockVector3.at(x + chunkStartX, y, z + chunkStartZ)) == false) return@async
+			if (region?.contains(BlockVector3.at(x + chunkStartX, y, z + chunkStartZ)) == false) return@forEach
 
 			val placedOre = Ore.valueOf(oreData[4])
 

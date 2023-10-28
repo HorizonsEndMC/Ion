@@ -191,7 +191,7 @@ object RegenerateCommand : SLCommand() {
 			newSection.setBlock(index, BlockData(state, null))
 		}
 
-		IonServer.logger.info("Completed section ${chunkPos.x}, $sectionY, ${chunkPos.z}")
+		log.info("Completed section ${chunkPos.x}, $sectionY, ${chunkPos.z}")
 		deferred.complete(chunkPos to newSection)
 	}
 
@@ -216,6 +216,7 @@ object RegenerateCommand : SLCommand() {
 	}
 
 	fun regenerateOresInSelection(feedback: Audience, region: Region, world: World) {
+		feedback.information("Regenerating ores")
 		val chunks = region.chunks
 		val deferredChunks = chunks.map { pos ->
 			val x = pos.x
