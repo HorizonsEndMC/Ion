@@ -106,14 +106,15 @@ object RegenerateCommand : SLCommand() {
 					val sectionsList = (chunkData.getList("sections", 10).toList() as List<CompoundTag>)
 						.associateBy { it.getByte("Y") }
 
+					section@
 					for (sectionY in sectionsHeight) {
 						val sectionPos = Triple(chunk.x, sectionY, chunk.z)
 						val storedSection = sectionsList[sectionY.toByte()]
 
 						if (storedSection == null) {
 							sender.serverError("Stored section for $sectionPos was not found. Skipping.")
-							sections.remove(sectionPos)
-							continue
+							sections[sectionPos]!!.complete(chunkPos to CompletedSection.empty(sectionY))
+							continue@section
 						}
 
 						val deferred = sections[sectionPos]!! // I hope not
