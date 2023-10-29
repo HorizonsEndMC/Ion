@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsyst
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.PumpkinCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -22,7 +23,9 @@ class PumpkinCannonWeaponSubsystem(
 	private val multiblock: PumpkinCannonStarshipWeaponMultiblock
 ) : WeaponSubsystem(starship, pos),
 	ManualWeaponSubsystem,
-	DirectionalSubsystem {
+	DirectionalSubsystem,
+	PermissionWeaponSubsystem {
+	override val permission: String = "ioncore.eventweapon"
 	override val powerUsage: Int = 1000
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {

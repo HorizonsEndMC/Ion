@@ -26,19 +26,18 @@ class CapitalBeamCannonProjectile(
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		val vector = dir.clone().normalize().multiply(travel)
-		println(travel)
 
 		for (location in helixAroundVector(oldLocation, vector, 5.0, 150)) {
-
 			loc.world.spawnParticle(
-				Particle.BLOCK_MARKER,
+				Particle.DRAGON_BREATH,
 				location,
-				0,
+				10,
 				0.5,
 				0.5,
 				0.5,
 				0.0,
-				FlamethrowerProjectile.fire, true
+				null,
+				true
 			)
 		}
 	}

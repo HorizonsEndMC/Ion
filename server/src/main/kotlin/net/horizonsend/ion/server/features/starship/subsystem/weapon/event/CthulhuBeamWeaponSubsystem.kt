@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsyst
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.CthulhuBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
@@ -15,7 +16,11 @@ import org.bukkit.util.Vector
 import kotlin.math.sqrt
 
 class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
-	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
+	WeaponSubsystem(starship, pos),
+	DirectionalSubsystem,
+	AutoWeaponSubsystem,
+	PermissionWeaponSubsystem {
+	override val permission: String = "ioncore.eventweapon"
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.cthulhuBeam.powerUsage
 	override val range: Double = IonServer.balancing.starshipWeapons.cthulhuBeam.range
 

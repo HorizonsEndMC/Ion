@@ -13,7 +13,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 class FlamethrowerWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
-	CannonWeaponSubsystem(starship, pos, face), PermissionWeaponSubsystem {
+	CannonWeaponSubsystem(starship, pos, face),
+	PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.laserCannon.powerUsage

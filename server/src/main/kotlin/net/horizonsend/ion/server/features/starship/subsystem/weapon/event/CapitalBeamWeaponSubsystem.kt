@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.CapitalBeamCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -18,7 +19,9 @@ class CapitalBeamWeaponSubsystem(
 	pos: Vec3i,
 ) : WeaponSubsystem(starship, pos),
 	ManualWeaponSubsystem,
-	HeavyWeaponSubsystem {
+	HeavyWeaponSubsystem,
+	PermissionWeaponSubsystem {
+	override val permission: String = "ioncore.eventweapon"
 	override val powerUsage: Int = IonServer.balancing.starshipWeapons.capitalBeam.powerUsage
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.capitalBeam.boostChargeNanos)
 
