@@ -347,6 +347,7 @@ fun helixAroundVector(
 	radius: Double,
 	limPoints: Int,
 	step: Double = 2 * PI,
+	wavelength: Double = 1.0,
 	offsetRadians: Double = 0.0
 ): List<Location> {
 	val points = mutableListOf<Location>()
@@ -359,9 +360,9 @@ fun helixAroundVector(
 	origin.iterateVector(direction, limPoints) { pointAlong, progress ->
 		val distance = progress * direction.length() + offsetRadians
 
-		val x = pointAlong.x + (radius * cos(distance) * i.x) + (radius * sin(distance) * j.x) + (progression * progress * k.x)
-		val y = pointAlong.y + (radius * cos(distance) * i.y) + (radius * sin(distance) * j.y) + (progression * progress * k.y)
-		val z = pointAlong.z + (radius * cos(distance) * i.z) + (radius * sin(distance) * j.z) + (progression * progress * k.z)
+		val x = pointAlong.x + (radius * cos(distance * wavelength) * i.x) + (radius * sin(distance * wavelength) * j.x) + (progression * progress * k.x)
+		val y = pointAlong.y + (radius * cos(distance * wavelength) * i.y) + (radius * sin(distance * wavelength) * j.y) + (progression * progress * k.y)
+		val z = pointAlong.z + (radius * cos(distance * wavelength) * i.z) + (radius * sin(distance * wavelength) * j.z) + (progression * progress * k.z)
 
 		points += Location(origin.world, x, y, z)
 	}
