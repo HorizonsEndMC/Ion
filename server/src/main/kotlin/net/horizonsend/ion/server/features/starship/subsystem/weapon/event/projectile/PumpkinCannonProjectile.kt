@@ -33,13 +33,13 @@ class PumpkinCannonProjectile(
 		}
 	}
 
-	override val range: Double = 300.0
-	override var speed: Double = 15.0
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.rocket.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.rocket.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.rocket.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.rocket.volume
-	override val soundName: String = IonServer.balancing.starshipWeapons.rocket.soundName
+	override val range: Double = IonServer.balancing.starshipWeapons.pumpkinCannon.range
+	override var speed: Double = IonServer.balancing.starshipWeapons.pumpkinCannon.speed
+	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pumpkinCannon.shieldDamageMultiplier
+	override val thickness: Double = IonServer.balancing.starshipWeapons.pumpkinCannon.thickness
+	override val explosionPower: Float = IonServer.balancing.starshipWeapons.pumpkinCannon.explosionPower
+	override val volume: Int = IonServer.balancing.starshipWeapons.pumpkinCannon.volume
+	override val soundName: String = IonServer.balancing.starshipWeapons.pumpkinCannon.soundName
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)

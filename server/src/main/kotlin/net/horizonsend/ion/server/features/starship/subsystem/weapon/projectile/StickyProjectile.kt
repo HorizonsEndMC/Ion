@@ -5,12 +5,12 @@ import net.horizonsend.ion.server.features.starship.controllers.Controller
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
-abstract class StickyProjectile(
+abstract class StickyParticleProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
 	shooter: Controller?
-) : SimpleProjectile(starship, loc, dir, shooter) {
+) : ParticleProjectile(starship, loc, dir, shooter) {
 	var embeddedShip: ActiveStarship? = null
 
 	override fun onImpactStarship(starship: ActiveStarship) {
