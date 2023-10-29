@@ -28,15 +28,16 @@ class CapitalBeamCannonProjectile(
 		val vector = dir.clone().normalize().multiply(travel)
 
 		for (location in helixAroundVector(oldLocation, vector, 5.0, 150)) {
+
 			loc.world.spawnParticle(
-				Particle.DRAGON_BREATH,
+				Particle.BLOCK_MARKER,
 				location,
-				10,
+				0,
 				0.5,
 				0.5,
 				0.5,
 				0.0,
-				null,
+				FlamethrowerProjectile.fire,
 				true
 			)
 		}

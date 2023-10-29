@@ -17,7 +17,7 @@ object EventShieldMultiblock : SphereShieldMultiblock(), PermissionWeaponSubsyst
 		line4 = "&8Class &d0.8i"
 	)
 
-	override val maxRange = 60
+	override val maxRange = 220
 	override val isReinforced: Boolean = true
 
 	override fun setupSign(player: Player, sign: Sign) {
