@@ -40,7 +40,7 @@ abstract class SimpleProjectile(
 	abstract val soundName: String
 	protected var distance: Double = 0.0
 	protected var firedAtNanos: Long = -1
-	private var lastTick: Long = -1
+	protected var lastTick: Long = -1
 	protected var delta: Double = 0.0
 	private var hasHit: Boolean = false
 
@@ -190,7 +190,10 @@ abstract class SimpleProjectile(
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship != starship && otherStarship.contains(x, y, z)) {
 				otherStarship.damagers.getOrPut(damager) { AtomicInteger() }.incrementAndGet()
+				onImpactStarship(otherStarship)
 			}
 		}
 	}
+
+	open fun onImpactStarship(starship: ActiveStarship) {}
 }
