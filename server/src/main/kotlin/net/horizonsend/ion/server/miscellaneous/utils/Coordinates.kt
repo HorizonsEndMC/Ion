@@ -341,7 +341,7 @@ fun Vector.orthogonalThird(other: Vector): Vector {
 	return Vector(+((y * oz) + (z * oy)), -((x * oz) - (z * ox)), +((x * oy) - (y * ox)))
 }
 
-fun spiralAroundVector(
+fun helixAroundVector(
 	origin: Location,
 	direction: Vector,
 	radius: Double,

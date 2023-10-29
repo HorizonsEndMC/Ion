@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.features.multiblock.particleshield
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
-object EventShieldMultiblock : SphereShieldMultiblock() {
+object EventShieldMultiblock : SphereShieldMultiblock(), PermissionWeaponSubsystem {
+	override val permission: String = "ioncore.eventweapon"
+
 	override val signText = createSignText(
 		line1 = "&3Particle Shield",
 		line2 = "&7Generator",

@@ -17,7 +17,7 @@ class PlagueCannonProjectile(
 	shooter: Controller?
 ) : StickyParticleProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.plagueCannon.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.flamethrower.speed
+	override var speed: Double = IonServer.balancing.starshipWeapons.flameThrower.speed
 	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.plagueCannon.shieldDamageMultiplier
 	override val thickness: Double = IonServer.balancing.starshipWeapons.plagueCannon.thickness
 	override val explosionPower: Float = IonServer.balancing.starshipWeapons.plagueCannon.explosionPower
