@@ -1,11 +1,14 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.StarshipType.BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -177,6 +180,9 @@ object StarshipCruising : IonServerComponent() {
 		}
 
 		maxSpeed /= 2
+		if (starship.type == BATTLECRUISER) {
+			maxSpeed = maxSpeed * 7 / 8
+		}
 
 		starship.cruiseData.accel = accel
 		starship.cruiseData.targetSpeed = maxSpeed
