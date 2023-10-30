@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
+import org.apache.commons.lang.math.Fraction
 
 @Serializable
 data class BalancingConfiguration(
@@ -672,7 +673,7 @@ data class BalancingConfiguration(
 			var boostChargeNanos: Long, // Seconds, should only be put for heavyWeapons
 			var aimDistance: Int, // should only be put if the weapon in question is target tracking
 			var maxDegrees: Double = 0.0,
-			override var inaccuracyRadians: Double = 2.0
+			override var inaccuracyRadians: Double = 2.0,
 		) : ProjectileBalancing()
 
 		@Serializable
