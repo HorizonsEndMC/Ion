@@ -42,6 +42,9 @@ object Interdiction : IonServerComponent() {
 			if (!starship.contains(block.x, block.y, block.z)) {
 				return@listen
 			}
+			if (StarshipCruising.isCruising(starship as ActivePlayerStarship)) {
+				return@listen player.userError("Cannot activate while cruising")
+			}
 			when (event.action) {
 				Action.RIGHT_CLICK_BLOCK -> {
 					toggleGravityWell(starship)
