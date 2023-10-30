@@ -517,7 +517,7 @@ data class BalancingConfiguration(
 		val quadTurret: StarshipWeapon = StarshipWeapon(
 			range = 500.0,
 			speed = 80.0,
-			shieldDamageMultiplier = 7,
+			shieldDamageMultiplier = 6,
 			thickness = 0.0,
 			particleThickness = 0.6,
 			explosionPower = 5f,
