@@ -162,7 +162,7 @@ object Bounties : IonServerComponent() {
 
 		val message = text()
 			.append(text(hunter.name, NamedTextColor.DARK_RED))
-			.append(text(" has collected a boutny of ", NamedTextColor.RED))
+			.append(text(" has collected a bounty of ", NamedTextColor.RED))
 			.append(text((bounty).toCreditsString(), NamedTextColor.GOLD))
 			.append(text(" for killing ", NamedTextColor.RED))
 			.append(text(target.name, NamedTextColor.DARK_RED))
