@@ -29,6 +29,8 @@ class CapitalBeamWeaponSubsystem(
 		return true
 	}
 
+	override fun getMaxPerShot(): Int = 1
+
 	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return !starship.isInternallyObstructed(getFirePos(), dir)
 	}
