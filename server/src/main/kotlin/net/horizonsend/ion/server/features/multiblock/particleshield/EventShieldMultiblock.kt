@@ -21,7 +21,7 @@ object EventShieldMultiblock : SphereShieldMultiblock(), PermissionWeaponSubsyst
 	override val isReinforced: Boolean = true
 
 	override fun setupSign(player: Player, sign: Sign) {
-		if (player.hasPermission("ioncore.eventweapon")) return player.userError("Nuh uh")
+		if (!player.hasPermission("ioncore.eventweapon")) return player.userError("Nuh uh")
 
 		super.setupSign(player, sign)
 	}
