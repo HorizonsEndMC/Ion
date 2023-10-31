@@ -26,11 +26,11 @@ class CustomMobSpawner(val world: World, val mobs: WeightedRandomList<ServerConf
 		val location = event.location
 
 		val mob = mobs.random()
-		val name = mob.nameList.random()
+		val name = mob.nameList.randomOrNull()
 
 		world.spawnEntity(location, mob.getEntityType(), CreatureSpawnEvent.SpawnReason.NATURAL) { entity ->
 			entity.persistentDataContainer.set(CUSTOM_ENTITY, BOOLEAN, true)
-			entity.customName(MiniMessage.miniMessage().deserialize(name))
+			name?.let { entity.customName(MiniMessage.miniMessage().deserialize(name)) }
 
 			(entity as? LivingEntity)?.equipment?.apply {
 				mob.boots?.let {

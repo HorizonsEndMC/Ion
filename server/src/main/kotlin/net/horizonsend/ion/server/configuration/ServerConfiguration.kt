@@ -245,13 +245,13 @@ data class ServerConfiguration(
 		data class Mob(
 			val weight: Int,
 			val type: String,
-			val namePool: Map<String, Int>,
-			val onHand: Gear?,
-			val offHand: Gear?,
-			val helmet: Gear?,
-			val chestPlate: Gear?,
-			val leggings: Gear?,
-			val boots: Gear?,
+			val namePool: Map<String, Int> = mapOf(),
+			val onHand: Gear? = null,
+			val offHand: Gear? = null,
+			val helmet: Gear? = null,
+			val chestPlate: Gear? = null,
+			val leggings: Gear? = null,
+			val boots: Gear? = null,
 		) {
 			@Transient
 			val nameList: WeightedRandomList<String> = WeightedRandomList(namePool)
