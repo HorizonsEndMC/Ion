@@ -19,6 +19,8 @@ class CustomMobSpawner(val world: World, val mobs: WeightedRandomList<ServerConf
 		if (event.entity !is Monster) return
 		if (event.entity.persistentDataContainer.get(CUSTOM_ENTITY, BOOLEAN) == true) return
 
+		event
+
 		event.isCancelled = true
 
 		val location = event.location

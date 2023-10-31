@@ -103,10 +103,10 @@ data class ServerConfiguration(
 			val material: String, // Serialized BlockData
 			val rolls: Int
 		) {
-			@kotlinx.serialization.Transient
+			@Transient
 			val blockData = Bukkit.createBlockData(this.material)
 
-			@kotlinx.serialization.Transient
+			@Transient
 			val blockState = blockData.nms
 		}
 
@@ -153,13 +153,13 @@ data class ServerConfiguration(
 				val weight: Int,
 				val encounters: Map<String, Int>
 			) {
-				@kotlinx.serialization.Transient
+				@Transient
 				val encounterWeightedRandomList = WeightedRandomList<String>().apply {
 					this.addMany(this@Wreck.encounters)
 				}
 			}
 
-			@kotlinx.serialization.Transient
+			@Transient
 			val weightedWrecks = WeightedRandomList<Wreck>().apply {
 				this.addMany(
 					wrecks.associateWith { it.weight }
@@ -167,7 +167,7 @@ data class ServerConfiguration(
 			}
 		}
 
-		@kotlinx.serialization.Transient
+		@Transient
 		val weightedWreckList = WeightedRandomList<WeightedRandomList<WreckClass.Wreck>>().apply {
 			this.addMany(
 				wreckClasses.associate { wreckClass -> wreckClass.weightedWrecks to wreckClass.weight }
@@ -228,10 +228,10 @@ data class ServerConfiguration(
 		private val shipClass: StarshipTypeDB,
 		val lore: List<String>
 	) {
-		@kotlinx.serialization.Transient
+		@Transient
 		val shipType: StarshipType = shipClass.actualType
 
-		@kotlinx.serialization.Transient
+		@Transient
 		private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
