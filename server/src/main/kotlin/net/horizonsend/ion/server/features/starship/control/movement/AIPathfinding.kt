@@ -16,6 +16,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection
 import net.minecraft.world.level.chunk.PalettedContainer
 import org.bukkit.World
 import org.bukkit.entity.Player
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.abs
 
 /*
@@ -32,7 +33,7 @@ object AIPathfinding {
 			position.z.shl(4) + 8
 		)
 
-		fun anyNeighborsUnnavigable(trackedNodes: Collection<SectionNode>): Boolean =
+		fun anyNeighborsUnnavigable(trackedNodes: ConcurrentLinkedQueue<SectionNode>): Boolean =
 			getNeighbors(trackedNodes).any { neighborNeighbor -> !neighborNeighbor.value.navigable }
 
 		/** G cost, the sum of the distances between the origin and current node */
@@ -45,7 +46,7 @@ object AIPathfinding {
 			return getEstimatedCostManhattan(this, destinationNode)
 		}
 
-		fun getFCost(parentRelation: Adjacent, destinationNode: SectionNode, allNodes: Collection<SectionNode>, parentWrapper: PathfindingNodeWrapper): Float {
+		fun getFCost(parentRelation: Adjacent, destinationNode: SectionNode, allNodes: ConcurrentLinkedQueue<SectionNode>, parentWrapper: PathfindingNodeWrapper): Float {
 			val gCost = getGCost(parentRelation, parentWrapper)
 			val hCost = getHCost(destinationNode)
 			val additional = getAdditionalCost(allNodes)
@@ -66,7 +67,7 @@ object AIPathfinding {
 			return gCost + hCost + additional
 		}
 
-		fun getAdditionalCost(trackedNodes: Collection<SectionNode>): Float {
+		fun getAdditionalCost(trackedNodes: ConcurrentLinkedQueue<SectionNode>): Float {
 			var additional = 0f
 
 			if (anyNeighborsUnnavigable(trackedNodes)) additional += 25.0f
@@ -74,7 +75,7 @@ object AIPathfinding {
 			return additional
 		}
 
-		fun getNeighbors(trackedNodes: Collection<SectionNode>): Map<Adjacent, SectionNode> {
+		fun getNeighbors(trackedNodes: ConcurrentLinkedQueue<SectionNode>): Map<Adjacent, SectionNode> {
 			val (x, y, z) = position
 			val sections = mutableMapOf<Adjacent, SectionNode>()
 
@@ -114,7 +115,8 @@ object AIPathfinding {
 		}
 
 		companion object {
-			fun get(trackedNodes: Collection<SectionNode>, position: Vec3i): SectionNode? {
+			@Synchronized
+			fun get(trackedNodes: ConcurrentLinkedQueue<SectionNode>, position: Vec3i): SectionNode? {
 				return trackedNodes.firstOrNull { it.position == position }
 			}
 		}
@@ -274,7 +276,8 @@ object AIPathfinding {
 		val destinationNode = engine.getDestinationNode()
 
 		// All nodes available for pathfinding
-		val navigableList = trackedNodes.filter { it.navigable }
+		val navigableList = ConcurrentLinkedQueue<SectionNode>()
+		trackedNodes.filterTo(navigableList) { it.navigable }
 
 		// Open nodes is a list of all nodes that have not been evaluated
 		val openSet: MutableSet<PathfindingNodeWrapper> = mutableSetOf()
@@ -302,7 +305,7 @@ object AIPathfinding {
 			closedSet += currentNode
 
 			if (currentNode.node.position == destinationNode.position) {
-				debugAudience.debug("Found destination")
+				debugAudience.debug("Found destination: $destinationNode")
 				return currentNode.getChain()
 			}
 
@@ -316,8 +319,8 @@ object AIPathfinding {
 	@Synchronized
 	fun iterateNeighbors(
 		currentNode: PathfindingNodeWrapper,
-		navigableNodes: List<SectionNode>,
-		allNodes: Collection<SectionNode>,
+		navigableNodes: ConcurrentLinkedQueue<SectionNode>,
+		allNodes: ConcurrentLinkedQueue<SectionNode>,
 		openSet: MutableSet<PathfindingNodeWrapper>,
 		closedSet: MutableSet<PathfindingNodeWrapper>,
 		destinationNode: SectionNode,
