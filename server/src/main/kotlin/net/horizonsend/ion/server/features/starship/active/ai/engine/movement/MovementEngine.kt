@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -16,7 +16,7 @@ import org.bukkit.util.Vector
 
 /** Controlling the movement of the starship */
 abstract class MovementEngine(
-	controller: AIController,
+	controller: ActiveAIController,
 	val pathfindingEngine: PathfindingEngine
 ) : AIEngine(controller) {
 	val starshipLocation: Vec3i get() = getCenterVec3i()
@@ -78,7 +78,7 @@ abstract class MovementEngine(
 		stopCruising: Boolean = false
 	) = Tasks.sync {
 		val starship = controller.starship as ActiveControlledStarship
-		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
+		if (stopCruising) StarshipCruising.forceStopCruising(starship)
 
 		AIControlUtils.shiftFlyToLocation(controller, Vec3i(origin), destination)
 	}

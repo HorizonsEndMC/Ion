@@ -25,7 +25,7 @@ import kotlin.math.abs
 class CruiseEngine(
 	controller: ActiveAIController,
 	pathfindingEngine: PathfindingEngine,
-	var cruiseDestination: Vec3i?,
+	var cruiseDestination: Vec3i,
 	var shiftFlightType: ShiftFlightType,
 	var maximumCruiseDistanceSquared: Double = 90000.0,
 ) : MovementEngine(controller, pathfindingEngine) {
@@ -82,7 +82,10 @@ class CruiseEngine(
 				val destination = engine.getDestination()
 
 				val difference = origin.y - destination.y
-				if (abs(difference) < 5) return
+				if (abs(difference) < 5) {
+					engine.controller.isShiftFlying = false
+					return
+				}
 
 				val blockFace = if (difference > 0) BlockFace.UP else BlockFace.DOWN
 
@@ -91,29 +94,39 @@ class CruiseEngine(
 		},
 		IF_BLOCKED {
 			override fun handleShiftFlight(engine: CruiseEngine, origin: Location) {
-				if (engine.controller.blocked) return
+				val blocked = engine.controller.pathfindingEngine.blocked
 
-				engine.shiftFlyToVec3i(origin, (engine.controller as ActiveAIController).pathfindingEngine.getFirstNavPoint(), true)
+				if (!blocked) {
+					engine.controller.isShiftFlying = false
+					return
+				}
+
+				engine.controller.pathfindingEngine.triggerTask()
+				engine.shiftFlyToVec3i(origin, engine.controller.pathfindingEngine.getFirstNavPoint(), true)
 			}
 		},
 		IF_BLOCKED_AND_MATCH_Y {
 			override fun handleShiftFlight(engine: CruiseEngine, origin: Location) {
-				// Null for true, false for match y, true for blocked
-				var shouldFly: Boolean? = null
-				val destination = engine.getDestination()
+				val blocked = engine.controller.pathfindingEngine.blocked
+				val yObjective = engine.cruiseDestination.y
 
-				val difference = origin.y - destination.y
-				if (abs(difference) >= 5) shouldFly = false
+				val yDifference = yObjective - origin.y
 
-				if (engine.controller.blocked) shouldFly = true
+				// Only try to match y if not blocked
+				if (abs(yDifference) > 10.0 && !blocked) {
+					val blockFace = if (yDifference > 0) BlockFace.UP else BlockFace.DOWN
+					engine.shiftFlyTowardsBlockFace(blockFace, false)
 
-				if (shouldFly == null) return
-
-				if (!shouldFly) {
-					engine.shiftFly(origin, false)
-				} else {
-					engine.shiftFlyToVec3i(origin, (engine.controller as ActiveAIController).pathfindingEngine.getFirstNavPoint(), true)
+					return
 				}
+
+				if (!blocked) {
+					engine.controller.isShiftFlying = false
+					return
+				}
+
+				engine.controller.pathfindingEngine.triggerTask()
+				engine.shiftFlyToVec3i(origin, engine.controller.pathfindingEngine.getFirstNavPoint(), true)
 			}
 		},
 		ALL {
