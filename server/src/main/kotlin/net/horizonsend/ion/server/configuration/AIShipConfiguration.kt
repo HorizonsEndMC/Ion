@@ -89,7 +89,7 @@ data class AIShipConfiguration(
 	data class AIWorldSettings(
 		val world: String = "world",
 		val rolls: Int = 1,
-		val tiers: Map<String, Int> = mapOf("VESTA" to 1),
+		val tiers: Map<String, Int> = mapOf("BASIC" to 1),
 	) {
 		fun getWorld(): World = Bukkit.getWorld(world)!!
 

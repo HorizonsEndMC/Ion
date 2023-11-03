@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine
 
 import co.aikar.commands.ConditionFailedException
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -10,7 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /** An executable class containing logic for the positioning, navigation, and control of the starship */
-abstract class AIEngine(val controller: AIController) {
+abstract class AIEngine(open val controller: ActiveAIController) {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	val starship = controller.starship
