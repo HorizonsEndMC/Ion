@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -61,8 +61,7 @@ object AIStarshipFactory : IonServerComponent() {
 
 		placeSchematicEfficiently(clipboard, location.world, vec3i, true) {
 			tryPilotWithController(location.world, vec3i, type, starshipName, createController) {
-				// Set the initial NoOp controller's name to the end name, for access from whatever replaces it in the callback
-				pilotName?.let { _ -> (it.controller as NoOpController).pilotName = pilotName }
+				pilotName?.let { _ -> (it.controller as AIController).pilotName = pilotName }
 				callback(it)
 
 				NPCFakePilot.add(it, null, pilotName)

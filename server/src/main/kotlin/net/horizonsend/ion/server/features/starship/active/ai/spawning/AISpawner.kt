@@ -199,8 +199,7 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
 
 		val aggressivenessLevel = AggressivenessLevel.values().random()
 
-		endpoint?.let { _ ->
-			AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel, it.controller.pilotName) { controller, nearbyShip ->
+		endpoint?.let { _ -> AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel, it.controller.pilotName) { controller, nearbyShip ->
 				TemporaryStarfighterCombatAIController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
 			}
 		} ?: super.setupController(it)
