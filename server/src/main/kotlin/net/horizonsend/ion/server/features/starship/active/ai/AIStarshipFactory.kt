@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
@@ -26,7 +25,7 @@ object AIStarshipFactory : IonServerComponent() {
 	fun createAIShipFromTemplate(
 		template: AIShipConfiguration.AIStarshipTemplate,
 		location: Location,
-		createController: (ActiveStarship) -> Controller,
+		createController: (ActiveControlledStarship) -> Controller,
 		pilotName: Component?,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
@@ -37,7 +36,15 @@ object AIStarshipFactory : IonServerComponent() {
 			return
 		}
 
-		createFromClipboard(location, schematic, template.type, template.miniMessageName, pilotName, createController, callback)
+		createFromClipboard(
+			location,
+			schematic,
+			template.type,
+			template.miniMessageName,
+			pilotName,
+			createController,
+			callback
+		)
 	}
 
 	fun createFromClipboard(
@@ -46,7 +53,7 @@ object AIStarshipFactory : IonServerComponent() {
 		type: StarshipType,
 		starshipName: String,
 		pilotName: Component?,
-		createController: (ActiveStarship) -> Controller,
+		createController: (ActiveControlledStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val target = StarshipDealers.resolveTarget(clipboard, location)
@@ -68,7 +75,7 @@ object AIStarshipFactory : IonServerComponent() {
 		origin: Vec3i,
 		type: StarshipType,
 		name: String,
-		createController: (ActiveStarship) -> Controller,
+		createController: (ActiveControlledStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val block = world.getBlockAtKey(origin.toBlockKey())
