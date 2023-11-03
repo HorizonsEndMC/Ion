@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
 import org.bukkit.Bukkit
@@ -100,11 +101,12 @@ data class AIShipConfiguration(
 	@Serializable
 	data class AIStarshipTemplate(
 		val identifier: String = "VESTA",
-		val name: String = "Vesta",
 		val schematicName: String = "Vesta",
 		val miniMessageName: String = "<red><bold>Vesta",
 		val type: StarshipType = StarshipType.SHUTTLE,
-		val weaponSets: Set<WeaponSet> = setOf(),
+		val aggressivenessLevel: Map<AggressivenessLevel, Int> = mapOf(AggressivenessLevel.EXTREME to 1),
+		val manualWeaponSets: Set<WeaponSet> = setOf(),
+		val autoWeaponSets: Set<WeaponSet> = setOf(),
 	) {
 		init {
 			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique!")

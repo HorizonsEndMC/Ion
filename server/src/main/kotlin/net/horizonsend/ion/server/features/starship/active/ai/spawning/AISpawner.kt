@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipFactory.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -55,13 +54,14 @@ abstract class AISpawner(val identifier: String) {
 		return IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name
 	}
 
-	open val createController: (ActiveStarship) -> Controller = { NoOpController(it, null) }
+	/** Sets the initial controller */
+	open val setupController: (ActiveControlledStarship) -> Controller = { NoOpController(it, null) }
 
 	open fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit = {}): Deferred<ActiveControlledStarship> {
 		val (ship, pilotName) = getTemplate(location.world)
 		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
-        createAIShipFromTemplate(ship, location, createController, pilotName) {
+        createAIShipFromTemplate(ship, location, setupController, pilotName) {
             deferred.complete(it)
             callback(it)
         }
@@ -193,15 +193,16 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
 		return null
 	}
 
-	override fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit): Deferred<ActiveControlledStarship> {
-		return super.spawn(location) callback@{
-			val endpoint = findEndpoint(location) ?: return@callback
+	override val setupController: (ActiveControlledStarship) -> Controller = {
+		val location = it.centerOfMass.toLocation(it.world)
+		val endpoint = findEndpoint(location)
 
-			val aggressivenessLevel = AggressivenessLevel.values().random()
+		val aggressivenessLevel = AggressivenessLevel.values().random()
 
-			it.controller = AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel, it.controller.pilotName) { controller, nearbyShip ->
+		endpoint?.let { _ ->
+			AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel, it.controller.pilotName) { controller, nearbyShip ->
 				TemporaryStarfighterCombatAIController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
 			}
-		}
+		} ?: super.setupController(it)
 	}
 }
