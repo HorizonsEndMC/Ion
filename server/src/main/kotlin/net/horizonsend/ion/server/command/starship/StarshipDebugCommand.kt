@@ -22,16 +22,21 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.comba
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.text
 import net.horizonsend.ion.server.miscellaneous.utils.title
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 
 @CommandPermission("starlegacy.starshipdebug")
 @CommandAlias("starshipdebug|sbug")
@@ -100,6 +105,41 @@ object StarshipDebugCommand : SLCommand() {
 			data.displayName,
 			{ ship -> AIControllers.dumbAI(ship) }
 		)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("visualProjectile")
+	fun visualProjectile(
+		sender: CommandSender,
+		originWorld: World,
+		originX: Double,
+		originY: Double,
+		originZ: Double,
+		destinationX: Double,
+		destinationY: Double,
+		destinationZ: Double,
+		range: Double,
+		speed: Double,
+		color: Int,
+		particleThickness: Float,
+		extraParticles: Int,
+	) {
+		val origin = Location(originWorld, originX, originY, originZ)
+		val destination = Vector(destinationX, destinationY, destinationZ)
+
+		val dir = destination.clone().subtract(origin.toVector())
+
+		VisualProjectile(
+			Location(originWorld, originX, originY, originZ),
+			dir,
+			range,
+			speed,
+			Color.fromRGB(color),
+			particleThickness,
+			extraParticles
+		).fire()
+
+		sender.success("Spawned projectile")
 	}
 
 	@Suppress("Unused")
