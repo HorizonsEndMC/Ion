@@ -48,22 +48,22 @@ object Colors {
 	}
 
 	/** Wrapper enum for the 16 colors of minecraft **/
-	enum class Color(val kyori: NamedTextColor) {
-		BLACK(NamedTextColor.BLACK),
-		DARK_BLUE(NamedTextColor.DARK_BLUE),
-		DARK_GREEN(NamedTextColor.DARK_GREEN),
-		DARK_AQUA(NamedTextColor.DARK_AQUA),
-		DARK_RED(NamedTextColor.DARK_RED),
-		DARK_PURPLE(NamedTextColor.DARK_PURPLE),
-		GOLD(NamedTextColor.GOLD),
-		GRAY(NamedTextColor.GRAY),
-		DARK_GRAY(NamedTextColor.DARK_GRAY),
-		BLUE(NamedTextColor.BLUE),
-		GREEN(NamedTextColor.GREEN),
-		AQUA(NamedTextColor.AQUA),
-		RED(NamedTextColor.RED),
-		LIGHT_PURPLE(NamedTextColor.LIGHT_PURPLE),
-		YELLOW(NamedTextColor.YELLOW),
-		WHITE(NamedTextColor.WHITE),
+	enum class Color(val kyori: NamedTextColor, val rgb: Int) {
+		BLACK(NamedTextColor.BLACK, BLACK.rgb),
+		DARK_BLUE(NamedTextColor.DARK_BLUE, DARK_BLUE.rgb),
+		DARK_GREEN(NamedTextColor.DARK_GREEN, DARK_GREEN.rgb),
+		DARK_AQUA(NamedTextColor.DARK_AQUA, DARK_AQUA.rgb),
+		DARK_RED(NamedTextColor.DARK_RED, DARK_RED.rgb),
+		DARK_PURPLE(NamedTextColor.DARK_PURPLE, DARK_PURPLE.rgb),
+		GOLD(NamedTextColor.GOLD, GOLD.rgb),
+		GRAY(NamedTextColor.GRAY, GRAY.rgb),
+		DARK_GRAY(NamedTextColor.DARK_GRAY, DARK_GRAY.rgb),
+		BLUE(NamedTextColor.BLUE, BLUE.rgb),
+		GREEN(NamedTextColor.GREEN, GREEN.rgb),
+		AQUA(NamedTextColor.AQUA, AQUA.rgb),
+		RED(NamedTextColor.RED, RED.rgb),
+		LIGHT_PURPLE(NamedTextColor.LIGHT_PURPLE, LIGHT_PURPLE.rgb),
+		YELLOW(NamedTextColor.YELLOW, YELLOW.rgb),
+		WHITE(NamedTextColor.WHITE, WHITE.rgb),
 	}
 }
