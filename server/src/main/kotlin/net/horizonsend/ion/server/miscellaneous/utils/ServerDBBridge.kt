@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
+import net.horizonsend.ion.common.Colors
 import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.Cryopod
@@ -16,6 +17,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -57,6 +59,8 @@ fun Blueprint.canAccess(player: Player): Boolean {
 	val slPlayerId = player.slPlayerId
 	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
 }
+
+fun Colors.Color.bukkit() = Color.fromRGB(rgb)
 
 class Vec3i: DBVec3i {
 	constructor(a: DBVec3i) : super(a.x, a.y, a.z)
