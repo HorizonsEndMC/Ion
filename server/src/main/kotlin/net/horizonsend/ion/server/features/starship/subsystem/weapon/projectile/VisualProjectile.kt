@@ -1,26 +1,25 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.common.Colors
 import net.horizonsend.ion.server.features.starship.damager.noOpDamager
-import net.horizonsend.ion.server.miscellaneous.utils.bukkit
+import net.horizonsend.ion.server.miscellaneous.utils.alongVector
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
 
-abstract class VisualProjectile(
+class VisualProjectile(
 	var loc: Location,
 	var dir: Vector,
 	val range: Double,
 	val speed: Double,
-	val color: Colors.Color,
-	val particleThickness: Float
+	val color: Color,
+	val particleThickness: Float,
+	val extraParticles: Int
 ) : Projectile(null, noOpDamager) {
-	abstract val thickness: Double
-
 	private var distance: Double = 0.0
 	private var firedAtNanos: Long = -1
 	private var lastTick: Long = -1
-	protected var delta: Double = 0.0
+	private var delta: Double = 0.0
 
 	override fun fire() {
 		firedAtNanos = System.nanoTime()
@@ -50,15 +49,11 @@ abstract class VisualProjectile(
 	}
 
 	private fun moveVisually(travel: Double) {
-		for (i in 0 until travel.toInt()) {
-			val x = loc.x + dir.x * i
-			val y = loc.y + dir.y * i
-			val z = loc.z + dir.z * i
-			val force = i % 3 == 0
+		val particle = Particle.REDSTONE
+		val dustOptions = Particle.DustOptions(color, particleThickness * 4f)
 
-			val particle = Particle.REDSTONE
-			val dustOptions = Particle.DustOptions(color.bukkit(), particleThickness * 4f)
-			loc.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+		loc.alongVector(dir, 1 + extraParticles).forEach {
+			loc.world.spawnParticle(particle, it, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 		}
 	}
 }
