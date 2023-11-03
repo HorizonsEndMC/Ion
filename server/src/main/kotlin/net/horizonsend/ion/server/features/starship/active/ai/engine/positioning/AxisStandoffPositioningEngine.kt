@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nearestPointToVector
@@ -13,7 +13,7 @@ import org.bukkit.util.Vector
  * it has a variable holdoff distance
  **/
 class AxisStandoffPositioningEngine(
-	controller: AIController,
+	controller: ActiveAIController,
 	var target: AITarget?,
 	var standoffDistance: Double
 ) : PositioningEngine(controller) {

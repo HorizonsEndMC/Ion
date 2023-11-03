@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.PositioningEngine
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -17,13 +17,16 @@ import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlocks
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.RejectedExecutionException
 
 open class PathfindingEngine(
-	controller: AIController,
+	controller: ActiveAIController,
 	protected val positioningSupplier: PositioningEngine
 ) : AIEngine(controller) {
+	open val blocked get() = controller.blocked
+
 	/** How many ticks between the clearing of the tracked sections, -1 to never clear */
 	private var clearInterval: Int = 100
 	open val tickInterval: Int = 1
@@ -48,7 +51,7 @@ open class PathfindingEngine(
 	var chunkSearchRadius: Int = IonServer.server.viewDistance
 
 	/** Store the currently tracked section nodes */
-	val trackedSections = mutableSetOf<AIPathfinding.SectionNode>()
+	val trackedSections = ConcurrentLinkedQueue<AIPathfinding.SectionNode>()
 
 	fun getOriginNode(): AIPathfinding.SectionNode {
 		val centerPos = getSectionPositionOrigin()
@@ -201,6 +204,7 @@ open class PathfindingEngine(
 	/** On the ticking of the controller */
 	override fun tick() {
 		if (!ActiveStarships.isActive(controller.starship)) return
+		if (ticks % tickInterval != 0) return
 
 		if (!previousTask.isDone) {
 			debugAudience.debug("Previous task is not completed")
@@ -210,10 +214,14 @@ open class PathfindingEngine(
 				previousTask.cancel(true)
 			} else return
 		}
-		if (ticks % tickInterval != 0) return
 
 		ticks++
 
+		try { previousTask = navigate() } catch (_: RejectedExecutionException) { return }
+	}
+
+	fun triggerTask() {
+		if (!previousTask.isDone) return
 		try { previousTask = navigate() } catch (_: RejectedExecutionException) { return }
 	}
 
