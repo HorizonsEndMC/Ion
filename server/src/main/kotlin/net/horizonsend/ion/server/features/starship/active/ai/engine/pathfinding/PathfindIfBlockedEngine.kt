@@ -2,15 +2,16 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.pathfindin
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.PositioningEngine
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import java.util.concurrent.CompletableFuture
 
 class PathfindIfBlockedEngine(
-	controller: AIController,
+	controller: ActiveAIController,
 	destinationSupplier: PositioningEngine
 ) : PathfindingEngine(controller, destinationSupplier) {
-	private val blocked get() = controller.blocked || predictBlocked()
+	override var tickInterval: Int = 1
+	override val blocked get() = controller.blocked || predictBlocked()
 
 	override fun navigate(): CompletableFuture<*> {
 		if (!blocked) return CompletableFuture.completedFuture(Any())
@@ -28,6 +29,7 @@ class PathfindIfBlockedEngine(
 		val projectedSection = Vec3i(x.shr(4), y.shr(4), z.shr(4))
 
 		return trackedSections
+			.toMutableSet() // Clone
 			.filter { it.position == projectedSection }
 			.any { !it.navigable }
 	}

@@ -48,7 +48,7 @@ class FrigateCombatAIController(
 	CombatAIController {
 	override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
 	override var pathfindingEngine = CombatPathfindingEngine(this, positioningEngine)
-	override var movementEngine = CruiseEngine(this, pathfindingEngine, target?.getVec3i(), CruiseEngine.ShiftFlightType.ALL).apply {
+	override var movementEngine = CruiseEngine(this, pathfindingEngine, target?.getVec3i() ?: getCenterVec3i(), CruiseEngine.ShiftFlightType.ALL).apply {
 		maximumCruiseDistanceSquared = 2500.0
 	}
 
