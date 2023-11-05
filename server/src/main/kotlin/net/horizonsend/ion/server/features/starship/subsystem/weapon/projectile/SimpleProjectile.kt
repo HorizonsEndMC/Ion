@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
-import net.horizonsend.ion.server.command.admin.debugRed
+import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
-import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -100,7 +101,7 @@ abstract class SimpleProjectile(
 
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
-	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
+	protected fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
 		if (loc.world.name.lowercase(Locale.getDefault()).contains("hyperspace", ignoreCase = true)) return false
 		if (GracePeriod.isGracePeriod) return false
 
@@ -137,7 +138,7 @@ abstract class SimpleProjectile(
 		val impactedBlastResist = CraftMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
 
-		starship?.debugRed(
+		starship?.debug(
 			"ship dmg: \n\n" +
 			"armorBlastResist = $armorBlastResist, \n" +
 			"impactedBlastResist = $impactedBlastResist, \n" +

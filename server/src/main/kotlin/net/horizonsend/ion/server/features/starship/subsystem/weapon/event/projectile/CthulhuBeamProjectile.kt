@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proj
 import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HitscanProjectile
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -12,7 +12,7 @@ class CthulhuBeamProjectile(
 	starship: ActiveStarship,
 	loc: Location,
 	dir: Vector,
-	shooter: Controller?,
+	shooter: Damager,
 ) : HitscanProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.cthulhuBeam.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.cthulhuBeam.speed

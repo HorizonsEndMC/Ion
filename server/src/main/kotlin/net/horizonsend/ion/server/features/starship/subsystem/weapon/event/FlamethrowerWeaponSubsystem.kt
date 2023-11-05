@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.FlamethrowerProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
@@ -23,12 +22,12 @@ class FlamethrowerWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 	override val convergeDist: Double = IonServer.balancing.starshipWeapons.laserCannon.convergeDistance
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		if ((starship as ActivePlayerStarship).pilot?.hasPermission("ioncore.eventweapon") == false) return false
+		if (starship.playerPilot?.hasPermission("ioncore.eventweapon") == false) return false
 
 		return super.canFire(dir, target)
 	}
 
-	override fun fire(loc: Location, dir: Vector, shooter: Controller, target: Vector?) {
+	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		FlamethrowerProjectile(starship, loc, dir, shooter).fire()
 	}
 
