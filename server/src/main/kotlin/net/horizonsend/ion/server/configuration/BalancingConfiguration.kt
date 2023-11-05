@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
+import kotlin.math.PI
 
 @Serializable
 data class BalancingConfiguration(
@@ -549,7 +550,84 @@ data class BalancingConfiguration(
 			fireCooldownNanos = 10,
 			boostChargeNanos = 0,
 			aimDistance = 0
-		)
+		),
+		val flameThrower: StarshipWeapon = StarshipWeapon(
+			range = 340.0,
+			speed = 250.0,
+			shieldDamageMultiplier = 55,
+			thickness = 0.2,
+			particleThickness = 0.0,
+			explosionPower = 2.0f,
+			volume = 10,
+			pitch = 2.0f,
+			soundName = "starship.weapon.plasma_cannon.shoot",
+			powerUsage = 50000,
+			length = 8,
+			angleRadians = 180.0,
+			convergeDistance = 0.0,
+			extraDistance = 0,
+			fireCooldownNanos = 10,
+			boostChargeNanos = 3,
+			aimDistance = 0
+		),
+		val pumpkinCannon: StarshipWeapon = StarshipWeapon(
+			range = 500.0,
+			speed = 125.0,
+			shieldDamageMultiplier = 3,
+			thickness = 0.0,
+			particleThickness = 0.8,
+			explosionPower = 6f,
+			volume = 0,
+			pitch = 2.0f,
+			soundName = "entity.firework_rocket.blast_far",
+			powerUsage = 15000,
+			length = 4,
+			angleRadians = 0.0,
+			convergeDistance = 0.0,
+			extraDistance = 0,
+			fireCooldownNanos = 10,
+			boostChargeNanos = 3,
+			aimDistance = 0,
+			inaccuracyRadians = 3.0
+		),
+		val plagueCannon: StarshipWeapon = StarshipWeapon(
+			range = 200.0,
+			speed = 250.0,
+			shieldDamageMultiplier = 1,
+			thickness = 0.2,
+			particleThickness = 0.44,
+			explosionPower = 2.0f,
+			volume = 10,
+			pitch = 2.0f,
+			soundName = "entity.firework_rocket.blast_far",
+			powerUsage = 5000,
+			length = 2,
+			angleRadians = 15.0,
+			convergeDistance = 20.0,
+			extraDistance = 2,
+			fireCooldownNanos = 250,
+			boostChargeNanos = 0,
+			aimDistance = 0
+		),
+		val capitalBeam: StarshipWeapon = StarshipWeapon(
+			range = 500.0,
+			speed = PI * 50,
+			shieldDamageMultiplier = 0,
+			thickness = 0.2,
+			particleThickness = 0.44,
+			explosionPower = 20.0f,
+			volume = 10,
+			pitch = 2.0f,
+			soundName = "entity.firework_rocket.blast_far",
+			powerUsage = 1600,
+			length = 2,
+			angleRadians = 15.0,
+			convergeDistance = 20.0,
+			extraDistance = 2,
+			fireCooldownNanos = 0,
+			boostChargeNanos = 0,
+			aimDistance = 0
+		),
 	) {
 		@Serializable
 		data class StarshipWeapon(

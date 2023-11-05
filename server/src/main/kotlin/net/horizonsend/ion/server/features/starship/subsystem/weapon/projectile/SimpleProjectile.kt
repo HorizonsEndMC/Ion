@@ -2,11 +2,11 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -40,7 +40,7 @@ abstract class SimpleProjectile(
 	abstract val soundName: String
 	protected var distance: Double = 0.0
 	protected var firedAtNanos: Long = -1
-	private var lastTick: Long = -1
+	protected var lastTick: Long = -1
 	protected var delta: Double = 0.0
 	private var hasHit: Boolean = false
 
@@ -65,7 +65,7 @@ abstract class SimpleProjectile(
 	}
 
 	override fun tick() {
-		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0
+		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
 
 		val predictedNewLoc = loc.clone().add(dir.clone().multiply(delta * speed))
 		if (!predictedNewLoc.isChunkLoaded) {
@@ -102,7 +102,7 @@ abstract class SimpleProjectile(
 
 	protected abstract fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double)
 
-	private fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
+	protected fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
 		if (starship?.serverLevel?.world?.name?.lowercase(Locale.getDefault())
 				?.contains("hyperspace", ignoreCase=true)!!
 		) return false
@@ -190,7 +190,10 @@ abstract class SimpleProjectile(
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship != starship && otherStarship.contains(x, y, z)) {
 				otherStarship.damagers.getOrPut(damager) { AtomicInteger() }.incrementAndGet()
+				onImpactStarship(otherStarship)
 			}
 		}
 	}
+
+	open fun onImpactStarship(starship: ActiveStarship) {}
 }

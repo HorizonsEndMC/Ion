@@ -1,12 +1,11 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.controllers.Controller
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
 import org.bukkit.Location
 import org.bukkit.Particle
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class MiniPhaserProjectile(

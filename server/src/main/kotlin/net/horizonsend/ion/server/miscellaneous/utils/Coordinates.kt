@@ -143,6 +143,15 @@ fun Location.alongVector(vector: Vector, points: Int): List<Location> {
 	return locationList
 }
 
+fun Location.iterateVector(vector: Vector, points: Int, function: (Location, Double) -> Unit) {
+	for (count in 0..points) {
+		val progress = count.toDouble() / points.toDouble()
+		val progression = this.clone().add(vector.clone().multiply(progress))
+
+		function(progression, progress)
+	}
+}
+
 fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 	val goldenRatio = (1.0 + 5.0.pow(0.5)) / 2.0
 	val coordinates = mutableListOf<Location>()
@@ -302,12 +311,61 @@ fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFa
 		}
 	}
 
-	val yaw = atan2(-x, z)
-	val yawDegrees = Math.floorMod(Math.toDegrees(yaw).roundToInt(), 360)
-	return when (yawDegrees) {
-		in -45..45 -> BlockFace.SOUTH
-		in 45..135 -> BlockFace.WEST
-		in 135..225 -> BlockFace.NORTH
-		else -> BlockFace.EAST
+	val twoPi = 2 * Math.PI
+	val theta = atan2(-x, z)
+	val yawDegrees = Math.toDegrees((theta + twoPi) % twoPi).toInt()
+
+	return yawToBlockFace(yawDegrees)
+}
+
+fun yawToBlockFace(yawDegrees: Int): BlockFace = when (yawDegrees) {
+	in 0..45 -> BlockFace.SOUTH
+	in 45..135 -> BlockFace.WEST
+	in 135..225 -> BlockFace.NORTH
+	in 225..315 -> BlockFace.EAST
+	in 315..360 -> BlockFace.SOUTH
+	else -> throw IllegalArgumentException()
+}
+
+fun Vector.orthogonalVectors(): Pair<Vector, Vector> {
+	val right = this.getCrossProduct(BlockFace.UP.direction)
+	val next = this.orthogonalThird(right)
+
+	return right.normalize() to next.normalize()
+}
+
+fun Vector.orthogonalThird(other: Vector): Vector {
+	val x = x; val y = y; val z = z;
+	val ox = other.x; val oy = other.y; val oz = other.z;
+
+	return Vector(+((y * oz) + (z * oy)), -((x * oz) - (z * ox)), +((x * oy) - (y * ox)))
+}
+
+fun helixAroundVector(
+	origin: Location,
+	direction: Vector,
+	radius: Double,
+	limPoints: Int,
+	step: Double = 2 * PI,
+	wavelength: Double = 1.0,
+	offsetRadians: Double = 0.0
+): List<Location> {
+	val points = mutableListOf<Location>()
+	val theta = (2 * PI)
+	val progression = step / theta
+
+	val k = direction.clone().normalize()
+	val (i, j) = direction.orthogonalVectors()
+
+	origin.iterateVector(direction, limPoints) { pointAlong, progress ->
+		val distance = progress * direction.length() + offsetRadians
+
+		val x = pointAlong.x + (radius * cos(distance * wavelength) * i.x) + (radius * sin(distance * wavelength) * j.x) + (progression * progress * k.x)
+		val y = pointAlong.y + (radius * cos(distance * wavelength) * i.y) + (radius * sin(distance * wavelength) * j.y) + (progression * progress * k.y)
+		val z = pointAlong.z + (radius * cos(distance * wavelength) * i.z) + (radius * sin(distance * wavelength) * j.z) + (progression * progress * k.z)
+
+		points += Location(origin.world, x, y, z)
 	}
+
+	return  points
 }

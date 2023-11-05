@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.features.multiblock.particleshield
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 
-object EventShieldMultiblock : SphereShieldMultiblock() {
+object EventShieldMultiblock : SphereShieldMultiblock(), PermissionWeaponSubsystem {
+	override val permission: String = "ioncore.eventweapon"
+
 	override val signText = createSignText(
 		line1 = "&3Particle Shield",
 		line2 = "&7Generator",
@@ -14,11 +17,11 @@ object EventShieldMultiblock : SphereShieldMultiblock() {
 		line4 = "&8Class &d0.8i"
 	)
 
-	override val maxRange = 60
+	override val maxRange = 220
 	override val isReinforced: Boolean = true
 
 	override fun setupSign(player: Player, sign: Sign) {
-		if (player.hasPermission("ioncore.eventweapon")) return player.userError("Nuh uh")
+		if (!player.hasPermission("ioncore.eventweapon")) return player.userError("Nuh uh")
 
 		super.setupSign(player, sign)
 	}

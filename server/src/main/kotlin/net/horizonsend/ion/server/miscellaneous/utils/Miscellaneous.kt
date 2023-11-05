@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.DoubleLocation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.machine.AreaShields
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
@@ -17,14 +18,21 @@ import net.minecraft.world.entity.monster.Shulker
 import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.level.chunk.ChunkStatus
 import net.minecraft.world.level.chunk.LevelChunk
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.Chunk
+import org.bukkit.Color
+import org.bukkit.Location
+import org.bukkit.Sound
+import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_19_R3.CraftChunk
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.*
+import java.util.EnumSet
 
 val vaultEconomy = try {
 	Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)?.provider
@@ -143,4 +151,30 @@ fun repeatString(string: String, count: Int): String {
 	}
 
 	return builder.toString()
+}
+
+/**
+ * Abuse explosion regen to allow block changes to regenerate
+ *
+ * @param source: The source entity
+ * @param origin: The origin block
+ * @param changedBlocks: The list of blocks (before they were changed)
+ * @param yield: The yield of the explosion, for the event call
+ * @param bypassAreaShields: Whether this block change will bypass area shields
+ *
+ * @return whether the explosion was cancelled
+ **/
+fun regeneratingBlockChange(source: Entity?, origin: Block, changedBlocks: MutableList<Block>, yield: Float, bypassAreaShields: Boolean): Boolean {
+	val world = origin.world
+	val location = origin.location.toCenterLocation()
+	val blockExplodeEvent = BlockExplodeEvent(origin, changedBlocks, yield)
+
+	if (bypassAreaShields) AreaShields.bypassShieldEvents.add(blockExplodeEvent)
+
+	if (source != null) origin.world.createExplosion(source, 1f, false, false) else
+		world.createExplosion(location, 1f, false, false)
+
+	world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 10f, 0.5f)
+
+	return blockExplodeEvent.callEvent()
 }

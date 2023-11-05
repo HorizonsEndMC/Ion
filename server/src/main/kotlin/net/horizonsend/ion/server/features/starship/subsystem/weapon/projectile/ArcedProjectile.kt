@@ -5,21 +5,26 @@ import net.horizonsend.ion.server.features.starship.controllers.Controller
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
-abstract class ParticleProjectile(
+abstract class ArcedProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
 	shooter: Controller?
 ) : SimpleProjectile(starship, loc, dir, shooter) {
-	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		for (i in 0 until travel.toInt()) {
-			val x = loc.x + dir.x * i
-			val y = loc.y + dir.y * i
-			val z = loc.z + dir.z * i
-			val force = i % 3 == 0
-			spawnParticle(x, y, z, force)
-		}
+	abstract val gravityMultiplier: Double
+	abstract val decelerationAmount: Double
+	abstract override var speed: Double
+
+	override fun tick() {
+		speed *= (1.0 - decelerationAmount)
+
+		val oldY = dir.y
+		dir.y = oldY - ((GRAVITY_ACCELERATION * gravityMultiplier) * delta)
+
+		super.tick()
 	}
 
-	protected abstract fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean)
+	companion object {
+		const val GRAVITY_ACCELERATION: Double = 9.81
+	}
 }

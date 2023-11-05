@@ -1,26 +1,34 @@
 package net.horizonsend.ion.server.features.customitems.throwables
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.Throwables.ThrowableBalancing
+import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.regeneratingBlockChange
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
+import org.bukkit.entity.LivingEntity
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.util.function.Supplier
 
-class ThrownDetonator(
+class ThrownPumpkinGrenade(
 	item: Item,
 	maxTicks: Int,
 	damageSource: Entity?,
-	balancingSupplier: Supplier<ThrowableBalancing>
+	balancingSupplier: Supplier<BalancingConfiguration.Throwables.ThrowableBalancing>
 ) : ThrownCustomItem(item, maxTicks, damageSource, balancingSupplier) {
 	var isExploding = false
+
+	override fun tick() {
+		world.spawnParticle(Particle.SPELL_MOB_AMBIENT, location, 0,1.000, 0.482, 0.141)
+	}
 
 	override fun onImpact(hitBlock: Block) {
 		super.onImpact(hitBlock)
@@ -36,6 +44,8 @@ class ThrownDetonator(
 		Tasks.bukkitRunnable {
 			if (item.isDead) return@bukkitRunnable cancel()
 			if (hasImpacted || ticks >= maxOf(ticks, maxTicks - 10)) world.playSound(location, Sound.BLOCK_NOTE_BLOCK_BELL, 10f, 1.0f)
+			world.spawnParticle(Particle.SPELL_MOB_AMBIENT, location, 0,1.000, 0.482, 0.141)
+			world.spawnParticle(Particle.SMOKE_NORMAL, location, 10,2.0, 2.0, 2.0)
 			explosionTicks++
 
 			if (explosionTicks < 20) return@bukkitRunnable
@@ -73,7 +83,10 @@ class ThrownDetonator(
 		blocks.forEach { it.setType(Material.AIR, false) }
 
 		world.getNearbyEntities(location, balancing.damageRadius, balancing.damageRadius, balancing.damageRadius)
-			.map { it as? Damageable }
-			.forEach { it?.damage(balancing.damage / it.location.distance(location), damageSource) }
+			.filterIsInstance<Damageable>()
+			.forEach { damageable ->
+				damageable.damage(balancing.damage / damageable.location.distance(location), damageSource)
+				(damageable as? LivingEntity)?.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 50, 0))
+			}
 	}
 }

@@ -22,7 +22,7 @@ import org.bukkit.util.Vector
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
-import java.util.*
+import java.util.Base64
 
 val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
 val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
@@ -89,6 +89,7 @@ class Vec3i: DBVec3i {
 	fun toCenterVector(): Vector = Vector(x.toDouble() + 0.5, y.toDouble() + 0.5, z.toDouble() + 0.5)
 
 	fun distance(x: Int, y: Int, z: Int): Double = distance(this.x, this.y, this.z, x, y, z)
+	fun distance(other: Vec3i): Double = distance(this.x, this.y, this.z, other.x, other.y, other.z)
 
 	operator fun plus(other: Vec3i) = Vec3i(x + other.x, y + other.y, z + other.z)
 	operator fun minus(other: Vec3i) = Vec3i(x - other.x, y - other.y, z - other.z)
