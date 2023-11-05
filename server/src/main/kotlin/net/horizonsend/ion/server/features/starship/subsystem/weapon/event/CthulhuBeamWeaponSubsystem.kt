@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
@@ -54,19 +55,20 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 			val x = pos.x + face.modX * i
 			val y = pos.y + face.modY * i
 			val z = pos.z + face.modZ * i
-			if (starship.serverLevel.world.getBlockAt(x, y, z).type.isAir) {
+			if (starship.world.getBlockAt(x, y, z).type.isAir) {
 				return false
 			}
 		}
 		return true
 	}
 
-	override fun autoFire(target: Player, dir: Vector) {
+	override fun autoFire(target: AutoTurretTargeting.AutoTurretTarget<*>, dir: Vector) {
 		lastFire = System.nanoTime()
+		val world = target.location()?.world ?: return
 
-		val shooter = (starship as? ActivePlayerStarship)?.controller
-		val loc = getFirePos().toCenterVector().toLocation(target.world)
-		CthulhuBeamProjectile(starship, loc, dir, shooter).fire()
+		val shooter = (starship as? ActiveControlledStarship)?.controller ?: return
+		val loc = getFirePos().toCenterVector().toLocation(world)
+		CthulhuBeamProjectile(starship, loc, dir, shooter.damager).fire()
 	}
 
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
