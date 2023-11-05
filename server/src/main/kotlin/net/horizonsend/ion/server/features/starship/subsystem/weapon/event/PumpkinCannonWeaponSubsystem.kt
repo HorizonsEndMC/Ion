@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.PumpkinCannonStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.PumpkinCannonProjectile
@@ -37,7 +36,7 @@ class PumpkinCannonWeaponSubsystem(
 	}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		if ((starship as ActivePlayerStarship).pilot?.hasPermission("ioncore.eventweapon") == false) return false
+		if (starship.playerPilot?.hasPermission("ioncore.eventweapon") == false) return false
 
 		if (vectorToBlockFace(dir, includeVertical = false) != this.face) {
 			return false
@@ -69,13 +68,13 @@ class PumpkinCannonWeaponSubsystem(
 	}
 
 	override fun isIntact(): Boolean {
-		val block = pos.toLocation(starship.serverLevel.world).block
+		val block = pos.toLocation(starship.world).block
 		val inward = if (face in arrayOf(BlockFace.UP, BlockFace.DOWN)) BlockFace.NORTH else face
 		return multiblock.blockMatchesStructure(block, inward)
 	}
 
-	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
-		val origin = getFirePos().toLocation(starship.serverLevel.world)
+	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
+		val origin = getFirePos().toLocation(starship.world)
 		val projectile = PumpkinCannonProjectile(starship, origin, dir, shooter)
 		projectile.fire()
 	}

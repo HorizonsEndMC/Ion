@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proj
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.BlockProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -18,7 +18,7 @@ class PumpkinCannonProjectile(
 	starship: ActiveStarship,
 	loc: Location,
 	direction: Vector,
-	shooter: Controller?
+	shooter: Damager
 ) : BlockProjectile(starship, loc, direction, shooter) {
 	override val blockMap: Map<Vec3i, BlockData> = faces
 

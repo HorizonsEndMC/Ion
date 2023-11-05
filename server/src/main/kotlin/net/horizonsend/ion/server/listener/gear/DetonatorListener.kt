@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.listener.gear
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
+import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
