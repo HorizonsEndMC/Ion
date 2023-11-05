@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -10,7 +10,7 @@ abstract class HitscanProjectile(
 	starship: ActiveStarship,
 	loc: Location,
 	dir: Vector,
-	shooter: Controller?,
+	shooter: Damager,
 ) : SimpleProjectile(starship, loc, dir, shooter) {
 
 	override fun tick() {

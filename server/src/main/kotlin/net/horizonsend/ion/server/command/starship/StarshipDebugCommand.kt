@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
@@ -25,16 +26,12 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportati
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.text
-import net.horizonsend.ion.server.miscellaneous.utils.title
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.World
-import org.bukkit.command.CommandSender
 import org.bukkit.Particle
 import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
@@ -91,20 +88,6 @@ object StarshipDebugCommand : SLCommand() {
 		helixAroundVector(origin, direction, radius, points, step = step, wavelength = wavelength, offsetRadians = offset).forEach {
 			sender.world.spawnParticle(particle, it, 1, 0.0, 0.0, 0.0, 0.0, null)
 		}
-	}
-
-	@Suppress("Unused")
-	@Subcommand("loadAI")
-	fun loadAI(sender: Player, name: String) {
-		val (data, schematic) = StarshipDealers.schematicMap.filter { it.key.schematicName == name }.firstNotNullOfOrNull { it } ?: fail { "Sold ship $name not found!" }
-
-		AIUtils.createFromClipboard(
-			sender.location,
-			schematic,
-			data.shipType,
-			data.displayName,
-			{ ship -> AIControllers.dumbAI(ship) }
-		)
 	}
 
 	@Suppress("Unused")
