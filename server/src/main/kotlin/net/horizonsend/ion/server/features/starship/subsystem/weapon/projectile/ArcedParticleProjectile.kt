@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
@@ -9,7 +9,7 @@ abstract class ArcedParticleProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
-	shooter: Controller?
+	shooter: Damager
 ) : ArcedProjectile(starship, loc, dir, shooter) {
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		for (i in 0 until travel.toInt()) {

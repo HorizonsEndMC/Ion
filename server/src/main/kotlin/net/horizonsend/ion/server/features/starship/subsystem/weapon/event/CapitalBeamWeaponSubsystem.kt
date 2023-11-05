@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.CapitalBeamCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -42,14 +42,14 @@ class CapitalBeamWeaponSubsystem(
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		return dir
 	}
-	override fun manualFire(shooter: Controller, dir: Vector, target: Vector) {
-		CapitalBeamCannonProjectile(starship, getFirePos().toLocation(starship.serverLevel.world), dir, shooter).fire()
+	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
+		CapitalBeamCannonProjectile(starship, getFirePos().toLocation(starship.world), dir, shooter).fire()
 	}
 
 	override fun isIntact(): Boolean {
 		val (x, y, z) = pos
 		return CapitalBeamStarshipWeaponMultiblock.blockMatchesStructure(
-			starship.serverLevel.world.getBlockAt(x, y, z),
+			starship.world.getBlockAt(x, y, z),
 			inward = starship.forward,
 			loadChunks = true,
 			particles = false
