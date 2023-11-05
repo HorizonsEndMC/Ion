@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proj
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import org.bukkit.Location
@@ -13,7 +13,7 @@ class CapitalBeamCannonProjectile(
 	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
-	shooter: Controller?
+	shooter: Damager
 ) : ParticleProjectile(starship, loc, dir, shooter) {
 	override val range: Double = IonServer.balancing.starshipWeapons.capitalBeam.range
 	override var speed: Double = IonServer.balancing.starshipWeapons.capitalBeam.speed

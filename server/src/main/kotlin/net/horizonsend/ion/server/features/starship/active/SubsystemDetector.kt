@@ -164,7 +164,7 @@ object SubsystemDetector {
 
 			val subsystem = multiblock.createSubsystem(starship, pos, face)
 
-			if (subsystem is PermissionWeaponSubsystem && starship.pilot?.hasPermission(subsystem.permission) == false) {
+			if (subsystem is PermissionWeaponSubsystem && starship.playerPilot?.hasPermission(subsystem.permission) == false) {
 				continue
 			}
 
