@@ -32,7 +32,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-private const val POWER_USAGE_PER_INGREDIENT = 50
+private const val POWER_USAGE_PER_INGREDIENT = 15
 
 abstract class AutoCrafterMultiblock(
 	tierText: String,
