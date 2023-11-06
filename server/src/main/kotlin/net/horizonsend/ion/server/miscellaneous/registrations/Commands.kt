@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.command.misc.BountyCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
+import net.horizonsend.ion.server.command.misc.HelpCommand
 import net.horizonsend.ion.server.command.misc.IonBroadcastCommand
 import net.horizonsend.ion.server.command.misc.ListCommand
 import net.horizonsend.ion.server.command.misc.LocatorCommands
@@ -55,7 +56,6 @@ import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
-import net.horizonsend.ion.server.command.space.SpaceGenCommand
 import net.horizonsend.ion.server.command.space.SpaceWorldCommand
 import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
@@ -173,4 +173,7 @@ val commands: List<SLCommand> = listOf(
 	SettingsCommand,
 	FleetCommand,
 	LocatorCommands,
+
+	HelpCommand,
+	FleetCommand
 )
