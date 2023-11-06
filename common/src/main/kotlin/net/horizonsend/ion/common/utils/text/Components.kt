@@ -14,6 +14,7 @@ fun Audience.paginatedMessage(
 	vararg entries: Component,
 	footer: Component? = null,
 	entriesText: ((Int, Int, Int) -> Component)? = null,
+	entriesPerPage: Int = 10,
 	leftButton: Component? = null,
 	leftCommand: String,
 	rightButton: Component? = null,
@@ -28,8 +29,8 @@ fun Audience.paginatedMessage(
 		.append(header)
 		.append(newline())
 
-	val min = minOf(entries.size, 0 + (10 * (page - 1)))
-	val max = minOf(entries.size, 10 + (10 * (page - 1)))
+	val min = minOf(entries.size, 0 + (entriesPerPage * (page - 1)))
+	val max = minOf(entries.size, entriesPerPage + (entriesPerPage * (page - 1)))
 
 	for (entry in entries.toList().subList(min, max)) {
 		message
