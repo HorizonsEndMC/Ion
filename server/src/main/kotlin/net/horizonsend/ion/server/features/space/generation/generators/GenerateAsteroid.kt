@@ -44,8 +44,8 @@ object GenerateAsteroid {
 					val ySquared = (worldYDouble - asteroid.y) * (worldYDouble - asteroid.y)
 
 					val isCave: Boolean =
-						(abs(asteroid.cave1.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.07) &&
-								(abs(asteroid.cave2.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.07)
+						(abs(asteroid.cave1.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.1) &&
+								(abs(asteroid.cave2.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.1)
 
 					if (isCave) continue
 
