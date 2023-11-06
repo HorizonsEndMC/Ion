@@ -52,6 +52,7 @@ object HelpCommand : SLCommand() {
 				page = page,
 				header = title,
 				entries = pages,
+				entriesPerPage = 1,
 				leftCommand = "help $name",
 				rightCommand = "help $name",
 			)
