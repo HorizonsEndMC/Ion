@@ -24,14 +24,11 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
-import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.sharedDataFolder
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.Component.textOfChildren
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
@@ -216,14 +213,14 @@ object CollectionMissions : IonServerComponent() {
 
 				icon.lore(
 					listOf(
-						Component.text("Cost per stack: ").color(NamedTextColor.GRAY)
-							.append(Component.text(cost).color(NamedTextColor.RED)),
-						Component.text("Cost to fill remaining slots: ").color(NamedTextColor.GRAY)
-							.append(Component.text(fillCost).color(NamedTextColor.RED)),
-						Component.text("Available Stacks: ").color(NamedTextColor.GRAY)
-							.append(Component.text(stock).color(NamedTextColor.GREEN)),
-						Component.text("(Left click to buy one stack)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
-						Component.text("(SHIFT left click to fill remaining slots)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
+						text("Cost per stack: ").color(NamedTextColor.GRAY)
+							.append(text(cost).color(NamedTextColor.RED)),
+						text("Cost to fill remaining slots: ").color(NamedTextColor.GRAY)
+							.append(text(fillCost).color(NamedTextColor.RED)),
+						text("Available Stacks: ").color(NamedTextColor.GRAY)
+							.append(text(stock).color(NamedTextColor.GREEN)),
+						text("(Left click to buy one stack)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
+						text("(SHIFT left click to fill remaining slots)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
 					)
 				)
 
@@ -274,9 +271,15 @@ object CollectionMissions : IonServerComponent() {
 		incrementDatabaseValues(item, mission)
 		giveXP(player, mission)
 
-		player msg "&2Completed collection mission! " +
-			"Delivered &a${mission.stacks}&2 stack(s) of &f${itemStack.displayNameString}&2 " +
-			"and received &6${money.toCreditsString()}&2."
+		player.sendMessage(textOfChildren(
+			text("Completed collection mission! Delivered ", NamedTextColor.DARK_GREEN),
+			text(mission.stacks, NamedTextColor.GREEN),
+			text(" stack(s) of ", NamedTextColor.DARK_GREEN),
+			itemStack.displayNameComponent,
+			text(" and received ", NamedTextColor.DARK_GREEN),
+			text(money.toCreditsString(), NamedTextColor.GOLD),
+			text(".", NamedTextColor.DARK_GREEN),
+		))
 	}
 
 	private fun removeFullStacks(fullStackSlots: List<Int>, player: Player) {
@@ -338,13 +341,13 @@ object CollectionMissions : IonServerComponent() {
 		}
 
 		if (collectedItem.stock <= 0) {
-			return player msg "&cItem is out of stock."
+			return player.userError("Item is out of stock.")
 		}
 
 		val maxBuy: Int = getMaxBuy(shiftClick, player)
 
 		if (maxBuy == 0) {
-			return player msg "&cInventory is full."
+			return player.userError("Inventory is full.")
 		}
 
 		val costPerStack: Double = getBuyCost(collectedItem).toDouble()
@@ -353,8 +356,7 @@ object CollectionMissions : IonServerComponent() {
 		if (buyAmount == -1) {
 			return
 		} else if (buyAmount == 0) {
-			player msg "&cYou can't afford that! It costs ${costPerStack.toCreditsString()} per stack, " +
-				"but you only have ${VAULT_ECO.getBalance(player)}."
+			player.userError("ou can't afford that! It costs ${costPerStack.toCreditsString()} per stack, but you only have ${VAULT_ECO.getBalance(player)}")
 			return
 		}
 
@@ -366,17 +368,26 @@ object CollectionMissions : IonServerComponent() {
 		updateLocalValue(collectedItem, buyAmount)
 		updateDatabaseValue(collectedItem, buyAmount)
 
-		player msg "&2Bought &a$buyAmount stack(s)&2 of &f${itemStack.displayNameString}&2 for &6${totalCost.toCreditsString()}&2. " +
-			"Remaining stacks in stock: &e${collectedItem.stock}&2."
+		player.sendMessage(textOfChildren(
+			text("Bought ", NamedTextColor.DARK_GREEN),
+			text("$buyAmount stack(s)", NamedTextColor.YELLOW),
+			text(" of ", NamedTextColor.DARK_GREEN),
+			itemStack.displayNameComponent,
+			text(" for ", NamedTextColor.DARK_GREEN),
+			text(totalCost.toCreditsString(), NamedTextColor.GOLD),
+			text(". Remaining stacks in stock: ", NamedTextColor.DARK_GREEN),
+			text(collectedItem.stock, NamedTextColor.YELLOW),
+			text(".", NamedTextColor.DARK_GREEN),
+		))
 	}
 
 	private fun getPurchasedItem(collectedItem: CollectedItem, stationId: Oid<EcoStation>, costPerStack: Double) =
 		createItem(collectedItem).apply {
 			amount = maxStackSize
-			lore = listOf(
-				"&6Purchased from &b${EcoStations[stationId].name}",
-				"&6for &e${costPerStack.toCreditsString()}".colorize()
-			)
+			lore(mutableListOf(
+				textOfChildren(text("Purchased from ", NamedTextColor.GOLD), text(EcoStations[stationId].name, NamedTextColor.AQUA)),
+				textOfChildren(text("for ", NamedTextColor.GOLD), text(costPerStack.toCreditsString(), NamedTextColor.YELLOW)),
+			))
 		}
 
 	private fun getMaxBuy(shiftClick: Boolean, player: Player): Int {
@@ -395,7 +406,7 @@ object CollectionMissions : IonServerComponent() {
 			}
 
 			if ((boughtStacks + 1) > collectedItem.stock) {
-				player msg "&cOut of stock!"
+				player.userError("Out of stock!")
 
 				if (boughtStacks == 0) {
 					return -1
