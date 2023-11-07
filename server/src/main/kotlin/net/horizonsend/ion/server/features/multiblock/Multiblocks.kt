@@ -21,6 +21,12 @@ import net.horizonsend.ion.server.features.multiblock.dockingtube.DisconnectedDo
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.farming.harvester.HarvesterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.farming.planter.PlanterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.farming.planter.PlanterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.farming.planter.PlanterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.gas.GasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.gas.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.gas.VentMultiblock
@@ -235,7 +241,14 @@ object Multiblocks : IonServerComponent() {
 			CthulhuBeamStarshipWeaponMultiblockTop,
 			CthulhuBeamStarshipWeaponMultiblockSide,
 			FlamethrowerStarshipWeaponMultiblock,
-			CapitalBeamStarshipWeaponMultiblock
+			CapitalBeamStarshipWeaponMultiblock,
+
+			PlanterMultiblockTier1,
+			PlanterMultiblockTier2,
+			PlanterMultiblockTier3,
+			HarvesterMultiblockTier1,
+			HarvesterMultiblockTier2,
+			HarvesterMultiblockTier3,
 		)
 	}
 

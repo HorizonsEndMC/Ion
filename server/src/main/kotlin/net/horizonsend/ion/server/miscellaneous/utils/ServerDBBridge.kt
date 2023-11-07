@@ -93,4 +93,6 @@ class Vec3i: DBVec3i {
 
 	operator fun plus(other: Vec3i) = Vec3i(x + other.x, y + other.y, z + other.z)
 	operator fun minus(other: Vec3i) = Vec3i(x - other.x, y - other.y, z - other.z)
+	operator fun times(m: Double): Vec3i = Vec3i((x * m).toInt(), (y * m).toInt(), (z * m).toInt())
+	operator fun times(m: Int): Vec3i = Vec3i((x * m), (y * m), (z * m))
 }
