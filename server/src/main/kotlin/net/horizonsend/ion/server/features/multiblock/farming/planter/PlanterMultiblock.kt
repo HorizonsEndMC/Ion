@@ -14,6 +14,7 @@ import org.bukkit.block.Sign
 import org.bukkit.event.inventory.FurnaceBurnEvent
 
 abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : CropMultiblock() {
+	override val requiredPermission: String? = "ion.multiblock.planter"
 	override val name: String = "planter"
 	override val signText: Array<Component?> = arrayOf(
 		text().append(text("Auto ", NamedTextColor.GRAY), text("Planter", NamedTextColor.GREEN)).build(),

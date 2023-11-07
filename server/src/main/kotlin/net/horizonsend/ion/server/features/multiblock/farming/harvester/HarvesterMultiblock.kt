@@ -20,6 +20,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
 abstract class HarvesterMultiblock(val tierMaterial: Material, tierNumber: Int) : CropMultiblock() {
+	override val requiredPermission: String? = "ion.multiblock.harvester"
 	override val name: String = "harvester"
 	override val signText: Array<Component?> = arrayOf(
 		Component.text().append(Component.text("Auto ", NamedTextColor.GRAY), Component.text("Harvester", NamedTextColor.GREEN)).build(),
