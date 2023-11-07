@@ -13,20 +13,13 @@ fun ItemStack.updateMeta(block: (ItemMeta) -> Unit): ItemStack = apply {
 	itemMeta = requireNotNull(itemMeta) { "No item meta for $type!" }.apply(block)
 }
 
+@Deprecated("use components", ReplaceWith("setDisplayNameAndGet(component)"))
 fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = updateMeta { it.setDisplayName(name) }
 
 fun ItemStack.setDisplayNameAndGet(name: Component): ItemStack = updateMeta { it.displayName(name) }
 
-val ItemStack.displayNameComponent: Component
-	get() =
-		if (this.hasItemMeta() && this.itemMeta.hasDisplayName()) {
-			this.itemMeta.displayName()!!
-		} else {
-			this.displayName()
-		}
-
-val ItemStack.displayNameString
-	get() = PlainTextComponentSerializer.plainText().serialize(this.displayNameComponent)
+val ItemStack.displayNameComponent: Component get() = if (hasItemMeta() && itemMeta.hasDisplayName()) { itemMeta.displayName() ?: displayName() } else displayName()
+val ItemStack.displayNameString get() = PlainTextComponentSerializer.plainText().serialize(this.displayNameComponent)
 
 fun ItemStack.setLoreAndGet(lines: List<String>): ItemStack = apply { this.lore = lines }
 

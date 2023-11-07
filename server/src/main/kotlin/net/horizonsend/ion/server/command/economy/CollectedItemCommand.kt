@@ -6,12 +6,12 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.cache.trade.EcoStations
-import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import org.bukkit.command.CommandSender
@@ -81,7 +81,7 @@ object CollectedItemCommand : SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("add")
-	@CommandCompletion("@ecostations DIAMOND:0|chetherite 10|20|50|100|200|300 1|2|3|5 1|3|6|9|27")
+	@CommandCompletion("@ecostations @possibleBazaarItemStrings 10|20|50|100|200|300 1|2|3|5 1|3|6|9|27")
 	fun onAdd(
 		sender: CommandSender,
 		station: EcoStation,

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.economy.bazaar
 
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems as LegacyCustomItems
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -16,6 +17,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.economy.BazaarCommand
+import net.horizonsend.ion.server.features.customitems.CustomItems
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -23,7 +25,6 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.nations.gui.input
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -40,6 +41,7 @@ import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.ne
+import java.util.Optional
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
@@ -47,7 +49,7 @@ import kotlin.reflect.KProperty
 object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>().apply {
 		addAll(Material.values().filter { it.isItem && !it.isLegacy }.map { it.name })
-		addAll(CustomItems.all().map { it.id })
+		addAll(LegacyCustomItems.all().map { it.id })
 		addAll(net.horizonsend.ion.server.features.customitems.CustomItems.identifiers)
 	}
 
@@ -327,22 +329,23 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun toItemString(item: ItemStack): String {
-		return item.customItem?.identifier ?: CustomItems[item]?.id ?: item.type.toString()
+		return item.customItem?.identifier ?: LegacyCustomItems[item]?.id ?: item.type.toString()
 	}
 
-	val stringItemCache: LoadingCache<String, ItemStack> = CacheBuilder.newBuilder().build(
-		CacheLoader.from { string -> stringToItem(string) }
+	val stringItemCache: LoadingCache<String, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
+		CacheLoader.from { string -> Optional.ofNullable(stringToItem(string)) }
 	)
 
-	fun fromItemString(string: String): ItemStack = stringItemCache[string]
+	fun fromItemString(string: String): ItemStack = stringItemCache[string].get()
 
-	fun stringToItem(string: String): ItemStack {
+	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
+		CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
+		LegacyCustomItems[string]?.let { return it.itemStack(1) }
 
-		net.horizonsend.ion.server.features.customitems.CustomItems.getByIdentifier(string)?.let { return it.constructItemStack() }
-		CustomItems[string]?.let { return it.itemStack(1) }
-		val material: Material = Material.valueOf(string)
-		check(material.isItem) { "$material is not an item" }
+		val material: Material = try { Material.valueOf(string) } catch (e: Throwable) { return null }
+
+		if (!material.isItem) return null
 		return ItemStack(material, 1)
 	}
 

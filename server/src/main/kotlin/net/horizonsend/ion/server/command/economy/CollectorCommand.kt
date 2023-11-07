@@ -4,12 +4,12 @@ import co.aikar.commands.ConditionFailedException
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.cache.trade.EcoStations
-import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
@@ -22,8 +22,7 @@ object CollectorCommand : SLCommand() {
 	private fun getEcoStation(location: Location): EcoStation = EcoStations.getAll()
 		.filter { it.world == location.world.name }
 		.filter { it.distance(location.x, location.y, location.z) < 200 }
-		.sortedBy { it.distance(location.x, location.y, location.z) }
-		.firstOrNull()
+		.minByOrNull { it.distance(location.x, location.y, location.z) }
 		?: throw ConditionFailedException("You're not within 200 blocks of any eco station!")
 
 	@Subcommand("create")
@@ -70,7 +69,7 @@ object CollectorCommand : SLCommand() {
 			val items = CollectedItem.findAllAt(ecoStation._id).toList()
 
 			if (items.isEmpty()) {
-				sender.userError("  &4>> Empty?!")
+				sender.userError("  >> Empty?!")
 				continue
 			}
 

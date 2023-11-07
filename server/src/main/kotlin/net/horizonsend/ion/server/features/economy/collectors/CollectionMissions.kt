@@ -15,6 +15,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomRange
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.stringItemCache
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
@@ -29,7 +31,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.sharedDataFolder
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
@@ -39,6 +41,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.inc
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -67,13 +70,11 @@ object CollectionMissions : IonServerComponent() {
 		?: error("Failed to parse item string ${collectedItem.itemString}")
 
 	fun getItemFromString(itemString: String): ItemStack? {
-		CustomItems[itemString]?.let { return it.itemStack(1) }
-		val material: Material = Material.getMaterial(itemString) ?: return null
-		return ItemStack(material, 1)
+		return stringItemCache[itemString].getOrNull()
 	}
 
 	fun getString(itemStack: ItemStack): String {
-		return CustomItems[itemStack]?.id ?: itemStack.type.toString()
+		return Bazaars.toItemString(itemStack)
 	}
 
 	private val itemCache: LoadingCache<Oid<EcoStation>, List<CollectedItem>> = CacheBuilder.newBuilder()
@@ -142,15 +143,48 @@ object CollectionMissions : IonServerComponent() {
 		itemStack.amount = mission.stacks
 
 		val stacks: Int = mission.stacks
-		val itemName: String = (itemStack.displayNameComponent as TextComponent).content()
+		val itemName = itemStack.displayName()
+//		val itemName = text("item name")
 		val rewardCredits: String = mission.reward.toCreditsString()
 		val xp: Int = mission.xp
 
-		itemStack.lore = listOf(
-			"&3Eco Station&7:&b ${ecoStation.name}".colorize(),
-			"&2Collect &a$stacks&2 &nstacks&2 of &f$itemName&2 in return for &6$rewardCredits&2 and &5$xp SLXP&2.".colorize(),
-			"&7&oTo turn the items in, click on this mission icon!".colorize()
-		)
+		val stationHeader = text().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).append(
+			text("Eco Station", NamedTextColor.DARK_AQUA),
+			text(": ", NamedTextColor.DARK_GRAY),
+			text(ecoStation.name, NamedTextColor.AQUA),
+		).build()
+
+		val collectedItemText = text().decoration(TextDecoration.ITALIC, false).append(
+			text("Collect ", NamedTextColor.DARK_GREEN),
+			text(stacks, NamedTextColor.GREEN),
+			text(" "),
+			text("stacks", NamedTextColor.DARK_GREEN).decorate(TextDecoration.UNDERLINED),
+			text(" of ", NamedTextColor.DARK_GREEN),
+//			itemStack.displayName(),
+			text(" in return for ", NamedTextColor.DARK_GREEN),
+			text(rewardCredits, NamedTextColor.GOLD),
+			text(" and ", NamedTextColor.DARK_GREEN),
+			text(xp, NamedTextColor.DARK_PURPLE),
+			text(" XP", NamedTextColor.DARK_PURPLE),
+			text(".", NamedTextColor.DARK_GREEN),
+		).build()
+
+		val returnText = text().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).append(
+			text("To tuArn the items in, click on this mission icon!", NamedTextColor.GRAY).decorate(TextDecoration.ITALIC)
+		).build()
+
+		itemStack.lore(mutableListOf(
+			stationHeader,
+			collectedItemText,
+			returnText,
+			null
+		))
+
+//		itemStack.lore = listOf(
+//			"&3Eco Station&7:&b ${ecoStation.name}".colorize(),
+//			"&2Collect &a$stacks&2 &nstacks&2 of &f$itemName&2 in return for &6$rewardCredits&2 and &5$xp SLXP&2.".colorize(),
+//			"&7&oTo turn the items in, click on this mission icon!".colorize()
+//		)
 
 		return guiButton(itemStack) {
 			onClickMissionButton(playerClicker, ecoStation, mission)
@@ -222,15 +256,11 @@ object CollectionMissions : IonServerComponent() {
 		val fullStackSlots: List<Int> = getMatchingFullStackSlots(itemStack, player, mission.stacks)
 
 		if (fullStackSlots.size < mission.stacks) {
-			player.sendMessage(
-				Component.text("You don't have enough of ").color(NamedTextColor.RED)
-					.append(itemStack.displayNameComponent)
-					.append(
-						Component.text(
-							"You need ${mission.stacks} stack(s), but only have ${fullStackSlots.size} stack(s)."
-						).color(NamedTextColor.RED)
-					)
-			)
+			player.sendMessage(text().append(
+				text("You don't have enough of ", NamedTextColor.RED),
+				itemStack.displayNameComponent,
+				text("You need ${mission.stacks} stack(s), but only have ${fullStackSlots.size} stack(s).", NamedTextColor.RED)
+			))
 
 			return
 		}
