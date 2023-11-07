@@ -18,7 +18,7 @@ fun ItemStack.setDisplayNameAndGet(name: String): ItemStack = updateMeta { it.se
 
 fun ItemStack.setDisplayNameAndGet(name: Component): ItemStack = updateMeta { it.displayName(name) }
 
-val ItemStack.displayNameComponent: Component get() = if (hasItemMeta() && itemMeta.hasDisplayName()) { itemMeta.displayName() ?: displayName() } else displayName()
+val ItemStack.displayNameComponent: Component get() = if (hasItemMeta() && itemMeta.hasDisplayName()) { itemMeta.displayName() ?: displayName().hoverEvent(null) } else displayName().hoverEvent(null)
 val ItemStack.displayNameString get() = PlainTextComponentSerializer.plainText().serialize(this.displayNameComponent)
 
 fun ItemStack.setLoreAndGet(lines: List<String>): ItemStack = apply { this.lore = lines }

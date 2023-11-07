@@ -143,8 +143,7 @@ object CollectionMissions : IonServerComponent() {
 		itemStack.amount = mission.stacks
 
 		val stacks: Int = mission.stacks
-		val itemName = itemStack.displayName()
-//		val itemName = text("item name")
+		val itemName = itemStack.displayNameComponent
 		val rewardCredits: String = mission.reward.toCreditsString()
 		val xp: Int = mission.xp
 
@@ -160,7 +159,7 @@ object CollectionMissions : IonServerComponent() {
 			text(" "),
 			text("stacks", NamedTextColor.DARK_GREEN).decorate(TextDecoration.UNDERLINED),
 			text(" of ", NamedTextColor.DARK_GREEN),
-//			itemStack.displayName(),
+			itemName,
 			text(" in return for ", NamedTextColor.DARK_GREEN),
 			text(rewardCredits, NamedTextColor.GOLD),
 			text(" and ", NamedTextColor.DARK_GREEN),
