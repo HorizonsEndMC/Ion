@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.GassesConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.configuration.TradeConfiguration
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -41,6 +42,7 @@ object IonServer : JavaPlugin() {
 	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
 	var gassesConfiguration: GassesConfiguration = Configuration.load(dataFolder, "gasses.json")
+	var tradeConfiguration: TradeConfiguration = Configuration.load(dataFolder, "trade.json")
 	var legacySettings: LegacyConfig = loadConfig(IonServer.dataFolder, "config") // Setting
 
 	override fun onEnable(): Unit =

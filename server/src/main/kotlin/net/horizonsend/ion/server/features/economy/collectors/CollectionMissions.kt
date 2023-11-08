@@ -9,10 +9,12 @@ import net.citizensnpcs.api.event.NPCLeftClickEvent
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
+import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomRange
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
@@ -26,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.sharedDataFolder
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.textOfChildren
@@ -38,6 +41,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.inc
+import java.util.Date
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -112,7 +116,7 @@ object CollectionMissions : IonServerComponent() {
 
 	private fun randomItem(station: EcoStation) = itemCache[station._id].random()
 
-	private fun openSellMenu(player: Player, ecoStation: EcoStation) {
+	private fun openSellMenu(player: Player, ecoStation: EcoStation) = Tasks.async {
 		val stationId = ecoStation._id
 		val available: List<CollectionMission> = missions[stationId]
 
@@ -122,20 +126,29 @@ object CollectionMissions : IonServerComponent() {
 
 		val rows: Int = config.generateAmount / 9
 
-		MenuHelper.apply {
-			val pane: OutlinePane = outlinePane(x = 0, y = 0, length = 9, height = rows)
+		val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-			for (mission: CollectionMission in available) {
-				val item: GuiItem = getMissionItem(mission, ecoStation)
-				pane.addItem(item)
+		if (profitLastDay >= IonServer.tradeConfiguration.ecoStationConfiguration.maxProfitPerStationPerDay) {
+			player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
+			return@async
+		}
+
+		Tasks.sync {
+			MenuHelper.apply {
+				val pane: OutlinePane = outlinePane(x = 0, y = 0, length = 9, height = rows)
+
+				for (mission: CollectionMission in available) {
+					val item: GuiItem = getMissionItem(mission, ecoStation)
+					pane.addItem(item)
+				}
+
+				gui(rows, title = "${ecoStation.name} Collection Missions").withPane(pane).show(player)
 			}
-
-			gui(rows, title = "${ecoStation.name} Collection Missions").withPane(pane).show(player)
 		}
 	}
 
 	private fun MenuHelper.getMissionItem(mission: CollectionMission, ecoStation: EcoStation): GuiItem {
-		val itemStack: ItemStack = createItem(mission.item)
+		val itemStack: ItemStack = createItem(mission.item).clone()
 
 		itemStack.amount = mission.stacks
 
@@ -239,47 +252,59 @@ object CollectionMissions : IonServerComponent() {
 	private fun tryCompleteMission(player: Player, stationId: Oid<EcoStation>, mission: CollectionMission) {
 		require(Bukkit.isPrimaryThread()) // cache shouldn't be modified concurrently
 
-		val station = EcoStations[stationId]
+		Tasks.async {
+			val profitLastDay = CompletedCollectionMission.profitIn(player.slPlayerId, stationId, 24L)
 
-		if (!missions[stationId].contains(mission)) { // This could happen if someone else turned in the mission before they clicked the button.
-			player.userError("Mission is no longer available.")
-			return
+			if (profitLastDay >= IonServer.tradeConfiguration.ecoStationConfiguration.maxProfitPerStationPerDay) {
+				player.userError("You've reached the sell limit at this station today. Please come back tomorrow.")
+				return@async
+			}
+
+			Tasks.sync {
+				val station = EcoStations[stationId]
+
+				if (!missions[stationId].contains(mission)) { // This could happen if someone else turned in the mission before they clicked the button.
+					player.userError("Mission is no longer available.")
+					return@sync
+				}
+
+				val item: CollectedItem = mission.item
+				val itemStack: ItemStack = createItem(item).clone()
+
+				val fullStackSlots: List<Int> = getMatchingFullStackSlots(itemStack, player, mission.stacks)
+
+				if (fullStackSlots.size < mission.stacks) {
+					player.sendMessage(text().append(
+						text("You don't have enough of ", NamedTextColor.RED),
+						itemStack.displayNameComponent,
+						text(" You need ${mission.stacks} stack(s), but only have ${fullStackSlots.size} stack(s).", NamedTextColor.RED)
+					))
+
+					return@sync
+				}
+
+				removeFullStacks(fullStackSlots, player)
+
+				val money: Double = giveMoney(mission, player)
+
+				replaceWithNewMission(mission, station)
+
+				incrementLocalStock(item, mission)
+				incrementDatabaseValues(item, mission)
+				giveXP(player, mission)
+				recordCompletedMission(player, stationId, mission)
+
+				player.sendMessage(textOfChildren(
+					text("Completed collection mission! Delivered ", NamedTextColor.DARK_GREEN),
+					text(mission.stacks, NamedTextColor.GREEN),
+					text(" stack(s) of ", NamedTextColor.DARK_GREEN),
+					itemStack.displayNameComponent,
+					text(" and received ", NamedTextColor.DARK_GREEN),
+					text(money.toCreditsString(), NamedTextColor.GOLD),
+					text(".", NamedTextColor.DARK_GREEN),
+				))
+			}
 		}
-
-		val item: CollectedItem = mission.item
-		val itemStack: ItemStack = createItem(item).clone()
-
-		val fullStackSlots: List<Int> = getMatchingFullStackSlots(itemStack, player, mission.stacks)
-
-		if (fullStackSlots.size < mission.stacks) {
-			player.sendMessage(text().append(
-				text("You don't have enough of ", NamedTextColor.RED),
-				itemStack.displayNameComponent,
-				text("You need ${mission.stacks} stack(s), but only have ${fullStackSlots.size} stack(s).", NamedTextColor.RED)
-			))
-
-			return
-		}
-
-		removeFullStacks(fullStackSlots, player)
-
-		val money: Double = giveMoney(mission, player)
-
-		replaceWithNewMission(mission, station)
-
-		incrementLocalStock(item, mission)
-		incrementDatabaseValues(item, mission)
-		giveXP(player, mission)
-
-		player.sendMessage(textOfChildren(
-			text("Completed collection mission! Delivered ", NamedTextColor.DARK_GREEN),
-			text(mission.stacks, NamedTextColor.GREEN),
-			text(" stack(s) of ", NamedTextColor.DARK_GREEN),
-			itemStack.displayNameComponent,
-			text(" and received ", NamedTextColor.DARK_GREEN),
-			text(money.toCreditsString(), NamedTextColor.GOLD),
-			text(".", NamedTextColor.DARK_GREEN),
-		))
 	}
 
 	private fun removeFullStacks(fullStackSlots: List<Int>, player: Player) {
@@ -293,10 +318,18 @@ object CollectionMissions : IonServerComponent() {
 		return player.inventory.contents
 			.withIndex()
 			.filter { it.value != null }
-			.filter {
+			.filter { (_, item) ->
+				item!!
 				when (customItem) {
-					null -> it.value!!.isSimilar(itemStack) && it.value!!.amount == it.value!!.maxStackSize
-					else -> customItem == CustomItems[it.value] && it.value!!.amount == customItem.material.maxStackSize
+					null -> {
+						println("Item $item")
+						println("Item2 $itemStack")
+						println("First ${item.isSimilar(itemStack)}")
+						println("Second ${item.amount == item.maxStackSize}")
+
+						item.isSimilar(itemStack) && item.amount == item.maxStackSize
+					}
+					else -> customItem == CustomItems[item] && item.amount == customItem.material.maxStackSize
 				}
 			}
 			// limit to the amount of stacks to avoid taking more stacks than required if they're carrying extra
@@ -310,6 +343,18 @@ object CollectionMissions : IonServerComponent() {
 				item._id,
 				inc(CollectedItem::stock, mission.stacks),
 				inc(CollectedItem::sold, mission.stacks)
+			)
+		}
+	}
+
+	private fun recordCompletedMission(player: Player, stationId: Oid<EcoStation>, mission: CollectionMission) {
+		Tasks.async {
+			CompletedCollectionMission.create(
+				player = player.slPlayerId,
+				claimed = Date(System.currentTimeMillis()),
+				profit = mission.reward.toDouble(),
+				station = stationId,
+				item = mission.item._id
 			)
 		}
 	}
