@@ -52,6 +52,7 @@ abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : 
 			if (block.type != Material.AIR) continue
 			if (seedItem.amount <= 0) break
 			if (!crop.canBePlanted(block)) continue
+			if (block.lightLevel < 7) continue
 
 			if ((planted + 1) * powerPerCrop > initialPower) {
 				event.burnTime = 500
