@@ -31,7 +31,17 @@ abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : 
 	private val powerPerCrop: Int = 10
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		if (furnace.inventory.smelting?.type != Material.PRISMARINE_CRYSTALS) return
+		event.isCancelled = true
+
+		var planted = 0
+		val initialPower = PowerMachines.getPower(sign)
+
+		event.isCancelled = true
+		val smelting = furnace.inventory.smelting
+
+		if (PowerMachines.getPower(sign) == 0 || smelting?.type != Material.PRISMARINE_CRYSTALS) {
+			return
+		}
 
 		val seedItem = furnace.inventory.fuel ?: return
 		val crop = Crop.findBySeed(seedItem.type) ?: return
@@ -39,14 +49,6 @@ abstract class PlanterMultiblock(val tierMaterial: Material, tierNumber: Int) : 
 		event.isCancelled = false
 		event.isBurning = false
 		event.burnTime = 20
-
-		var planted = 0
-		val initialPower = PowerMachines.getPower(sign)
-
-		if (initialPower == 0) {
-			event.burnTime = 500
-			return
-		}
 
 		for (block in regionIterable(sign)) {
 			if (block.type != Material.AIR) continue
