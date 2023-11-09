@@ -72,7 +72,7 @@ object CollectionMissions : IonServerComponent() {
 		?: error("Failed to parse item string ${collectedItem.itemString}")
 
 	fun getItemFromString(itemString: String): ItemStack? {
-		return stringItemCache[itemString].getOrNull()
+		return stringItemCache[itemString].getOrNull()?.clone()
 	}
 
 	fun getString(itemStack: ItemStack): String {

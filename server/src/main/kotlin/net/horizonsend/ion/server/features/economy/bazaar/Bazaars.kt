@@ -336,7 +336,7 @@ object Bazaars : IonServerComponent() {
 		CacheLoader.from { string -> Optional.ofNullable(stringToItem(string)) }
 	)
 
-	fun fromItemString(string: String): ItemStack = stringItemCache[string].get()
+	fun fromItemString(string: String): ItemStack = stringItemCache[string].get().clone()
 
 	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
