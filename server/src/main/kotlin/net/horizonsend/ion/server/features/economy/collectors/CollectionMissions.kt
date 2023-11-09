@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.sharedDataFolder
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.textOfChildren
 import net.kyori.adventure.text.format.NamedTextColor
@@ -218,11 +219,11 @@ object CollectionMissions : IonServerComponent() {
 
 		MenuHelper.apply {
 			val buttons: List<GuiItem> = items.map { collectedItem ->
-				val icon: ItemStack = createItem(collectedItem)
+				val icon: ItemStack = createItem(collectedItem).clone()
 
 				val cost: String = getBuyCost(collectedItem).toCreditsString()
 				val fillCost: String = getBuyCost(collectedItem).times(freeSpace).toCreditsString()
-				val stock: String = if (collectedItem.stock == 0) "&c0" else "&a${collectedItem.stock}"
+				val stock: Component = if (collectedItem.stock == 0) text(0, NamedTextColor.RED) else text(collectedItem.stock, NamedTextColor.GREEN)
 
 				icon.lore(
 					listOf(
@@ -231,7 +232,7 @@ object CollectionMissions : IonServerComponent() {
 						text("Cost to fill remaining slots: ").color(NamedTextColor.GRAY)
 							.append(text(fillCost).color(NamedTextColor.RED)),
 						text("Available Stacks: ").color(NamedTextColor.GRAY)
-							.append(text(stock).color(NamedTextColor.GREEN)),
+							.append(stock),
 						text("(Left click to buy one stack)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
 						text("(SHIFT left click to fill remaining slots)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
 					)
