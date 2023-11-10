@@ -49,7 +49,7 @@ interface CombatAIController : VariableObjectiveController {
 		Tasks.sync {
 			faceDirection?.let { AIControlUtils.faceDirection(this, faceDirection) }
 
-			fireHeavyWeapons(direction, target.toVector(), node = weaponSet)
+			fireHeavyWeapons(direction, target.toVector(), weaponSet = weaponSet)
 			fireLightWeapons(direction, target.toVector(), weaponSet = weaponSet)
 		}
 	}
@@ -62,10 +62,10 @@ interface CombatAIController : VariableObjectiveController {
 	}
 
 	/** Fires heavy weapons (right click) in a direction */
-	fun fireHeavyWeapons(direction: Vector, target: Vector? = null, node: String? = null) {
+	fun fireHeavyWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
 		if (this !is AIController) return
 
-		AIControlUtils.shootInDirection(this, direction, leftClick = false, target = target, weaponSet = node)
+		AIControlUtils.shootInDirection(this, direction, leftClick = false, target = target, weaponSet = weaponSet)
 	}
 
 	/** Updates all auto weapons,that are in range, to fire on the target */
