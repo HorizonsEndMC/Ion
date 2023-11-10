@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStat
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -125,6 +126,18 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			failIf(distance < minDistance) {
 				"This claim would be too close to the space station ${other.name}"
+			}
+		}
+
+		// Check conflicts with eco stations
+		// (use the database directly, in order to avoid people making
+		// another one in the same location before the cache updates)
+		for (other in EcoStations.getAll()) {
+			val minDistance = 5000
+			val distance = distance(x, y, z, other.x, y, other.z)
+
+			failIf(distance < minDistance) {
+				"This claim would be too close to the eco station ${other.name}"
 			}
 		}
 
