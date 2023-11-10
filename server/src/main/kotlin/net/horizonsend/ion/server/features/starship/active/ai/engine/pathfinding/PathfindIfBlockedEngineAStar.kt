@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.inter
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import java.util.concurrent.CompletableFuture
 
-class PathfindIfBlockedEngine(
+class PathfindIfBlockedEngineAStar(
 	controller: ActiveAIController,
 	destinationSupplier: PositioningEngine
-) : PathfindingEngine(controller, destinationSupplier) {
+) : AStarPathfindingEngine(controller, destinationSupplier) {
 	override var tickInterval: Int = 1
 	override val blocked get() = controller.blocked || predictBlocked()
 

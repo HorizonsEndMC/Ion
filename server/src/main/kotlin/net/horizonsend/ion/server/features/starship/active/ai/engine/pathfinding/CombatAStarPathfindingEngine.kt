@@ -4,9 +4,9 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 
-class CombatPathfindingEngine(
+class CombatAStarPathfindingEngine(
 	controller: ActiveAIController,
 	destinationSupplier: PositioningEngine
-) : PathfindingEngine(controller, destinationSupplier) {
+) : AStarPathfindingEngine(controller, destinationSupplier) {
 	override fun shouldNotPathfind(newCenter: Vec3i): Boolean = false
 }

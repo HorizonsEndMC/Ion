@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -17,7 +17,7 @@ import org.bukkit.util.Vector
 /** Controlling the movement of the starship */
 abstract class MovementEngine(
 	controller: ActiveAIController,
-	val pathfindingEngine: PathfindingEngine
+	val pathfindingEngine: AStarPathfindingEngine
 ) : AIEngine(controller) {
 	val starshipLocation: Vec3i get() = getCenterVec3i()
 

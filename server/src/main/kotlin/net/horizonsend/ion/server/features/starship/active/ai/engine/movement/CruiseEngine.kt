@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 import co.aikar.commands.ConditionFailedException
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -24,7 +24,7 @@ import kotlin.math.abs
  **/
 class CruiseEngine(
 	controller: ActiveAIController,
-	pathfindingEngine: PathfindingEngine,
+	pathfindingEngine: AStarPathfindingEngine,
 	var cruiseDestination: Vec3i,
 	var shiftFlightType: ShiftFlightType,
 	var maximumCruiseDistanceSquared: Double = 90000.0,
