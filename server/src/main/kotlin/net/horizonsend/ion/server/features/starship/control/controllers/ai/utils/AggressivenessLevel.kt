@@ -106,7 +106,7 @@ enum class AggressivenessLevel(
 			starship.controller !is AIController
 		}
 
-		return nearbyShips.firstOrNull()?.let { StarshipTarget(it) }
+		return nearbyShips.minByOrNull { it.centerOfMass.distance(controller.starship.centerOfMass) }?.let { StarshipTarget(it) }
 //			?: controller.getCenter().getNearbyPlayers(engagementDistance).firstOrNull()?.let { PlayerTarget(it) }
 	}
 
