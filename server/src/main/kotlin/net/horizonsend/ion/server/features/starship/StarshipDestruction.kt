@@ -11,12 +11,14 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
@@ -80,18 +82,26 @@ object StarshipDestruction {
 	private fun destroyShip(starship: ActiveStarship) {
 		val world = starship.serverLevel.world
 		val blocks = starship.blocks
+
 		if (SpaceWorlds.contains(world)) {
-			zeroGSink(world, blocks)
+			val random = Random(blocks.hashCode())
+
+			val randomVelocity = Vec3i(
+				random.nextInt(-2, 2),
+				random.nextInt(-2, 2),
+				random.nextInt(-2, 2)
+			)
+
+			sink(world, blocks, randomVelocity)
 		} else {
 			sink(world, blocks)
 		}
 	}
 
 	private val air = Material.AIR.createBlockData()
-
 	private val limitPerTick = TimeUnit.MILLISECONDS.toNanos(10)
 
-	private fun sink(world: World, blocks: LongOpenHashSet) {
+	private fun sink(world: World, blocks: LongOpenHashSet, velocity: Vec3i = Vec3i(0, -1, 0)) {
 		val sinking = LongOpenHashSet(blocks)
 
 		val newSinking = LinkedBlockingQueue<Long>()
@@ -99,53 +109,7 @@ object StarshipDestruction {
 		val placements = Long2ObjectOpenHashMap<BlockState>(sinking.size)
 
 		var iterator = sinking.iterator()
-
 		val obstructedLocs = LongOpenHashSet()
-
-		Tasks.bukkitRunnable {
-			if (!processVerticalSinkQueue(iterator, obstructedLocs, world, newSinking, sinking, placements)) {
-				return@bukkitRunnable
-			}
-
-			placements.clear()
-
-			removeBlocksAroundObstructed(newSinking, obstructedLocs)
-
-			sinking.clear()
-			sinking.addAll(newSinking)
-			iterator = sinking.iterator()
-			blocks.removeAll(placements.keys)
-			blocks.addAll(newSinking)
-
-			if (newSinking.isEmpty()) {
-				cancel()
-				Tasks.sync {
-					explode(world, blocks)
-				}
-			} else {
-				newSinking.clear()
-			}
-		}.runTaskTimerAsynchronously(IonServer, 20L, 20L)
-	}
-
-	private fun zeroGSink(world: World, blocks: LongOpenHashSet) {
-		val sinking = LongOpenHashSet(blocks)
-
-		val newSinking = LinkedBlockingQueue<Long>()
-
-		val placements = Long2ObjectOpenHashMap<BlockState>(sinking.size)
-
-		var iterator = sinking.iterator()
-
-		val obstructedLocs = LongOpenHashSet()
-
-		val random = Random(blocks.hashCode())
-
-		val randomVelocity = Triple(
-			random.nextDouble(-2.0, 2.0),
-			random.nextDouble(-2.0, 2.0),
-			random.nextDouble(-2.0, 2.0)
-		)
 
 		val maxIteration = sqrt(blocks.size.toDouble())
 		var iteration = 0
@@ -160,7 +124,7 @@ object StarshipDestruction {
 				}
 			}
 
-			if (!processHorizontalSinkQueue(iterator, obstructedLocs, world, newSinking, randomVelocity, sinking, placements)) {
+			if (!processSinkQueue(iterator, obstructedLocs, world, newSinking, sinking, placements, velocity)) {
 				return@bukkitRunnable
 			}
 
@@ -173,7 +137,9 @@ object StarshipDestruction {
 			val y = blockKeyY(randomBlock).toDouble()
 			val z = blockKeyZ(randomBlock).toDouble()
 
-			Tasks.sync { world.createExplosion(x, y, z, 8.0f) }
+			if (isBlockLoaded(world, x, y, z)) {
+				Tasks.sync { world.createExplosion(x, y, z, 8.0f) }
+			}
 
 			sinking.clear()
 			sinking.addAll(newSinking)
@@ -192,65 +158,21 @@ object StarshipDestruction {
 		}.runTaskTimerAsynchronously(IonServer, 20L, 20L)
 	}
 
-	private fun processVerticalSinkQueue(
+	private fun processSinkQueue(
 		iterator: LongIterator,
 		obstructedLocations: LongOpenHashSet,
 		world: World,
 		newSinkingBlocks: LinkedBlockingQueue<Long>,
 		sinkingBlocks: LongOpenHashSet,
-		placements: Long2ObjectOpenHashMap<BlockState>
-	): Boolean = Tasks.getSyncBlocking {
+		placements: Long2ObjectOpenHashMap<BlockState>,
+		velocity: Vec3i = Vec3i(0, -1, 0)
+	) = Tasks.getSyncBlocking {
 		val start = System.nanoTime()
 
 		while (iterator.hasNext()) {
 			if (System.nanoTime() - start > limitPerTick) {
 				return@getSyncBlocking false
 			}
-
-			val key = iterator.nextLong()
-			val x = blockKeyX(key)
-			val y = blockKeyY(key)
-			val z = blockKeyZ(key)
-			val newY = y - 1
-			if (newY < 1) {
-				obstructedLocations.add(key)
-				continue
-			}
-			val block = world.getBlockAtKey(key)
-			val blockData = block.blockData
-			val belowKey = blockKey(x, newY, z)
-			newSinkingBlocks.add(belowKey)
-			if (!sinkingBlocks.contains(belowKey)) {
-				val below = world.getBlockAtKey(belowKey)
-				val belowData = below.blockData
-				if (belowData.nms.material.isLiquid) {
-					Hangars.dissipateBlock(world, belowKey)
-				} else if (!belowData.material.isAir) {
-					obstructedLocations.add(key)
-					continue
-				}
-			}
-			placements.putIfAbsent(key, air.nms)
-			placements[belowKey] = blockData.nms
-		}
-
-		BlockPlacement.placeImmediate(world, placements)
-		return@getSyncBlocking true
-	}
-
-	private fun processHorizontalSinkQueue(
-		iterator: LongIterator,
-		obstructedLocations: LongOpenHashSet,
-		world: World,
-		newSinkingBlocks: LinkedBlockingQueue<Long>,
-		velocity: Triple<Double, Double, Double>,
-		sinkingBlocks: LongOpenHashSet,
-		placements: Long2ObjectOpenHashMap<BlockState>
-	): Boolean = Tasks.getSyncBlocking {
-		val start = System.nanoTime()
-
-		while (iterator.hasNext()) {
-			if (System.nanoTime() - start > limitPerTick) return@getSyncBlocking false
 
 			val key = iterator.nextLong()
 
@@ -265,6 +187,12 @@ object StarshipDestruction {
 			val newZ = z + zOffset
 
 			if (newY < world.minHeight || newY > world.maxHeight) {
+				obstructedLocations.add(key)
+				continue
+			}
+
+			// Check here, also when exploding
+			if (!isBlockLoaded(world, newX, newY, newZ)) {
 				obstructedLocations.add(key)
 				continue
 			}
@@ -334,8 +262,10 @@ object StarshipDestruction {
 
 			val delay = ticksBetweenExplosions * (i / blockInterval)
 			Tasks.syncDelayTask(delay) {
-				ActiveStarshipMechanics.withBlockExplosionDamageAllowed {
-					world.createExplosion(x, y, z, 6.0f)
+				if (isBlockLoaded(world, x, y, z)) {
+					ActiveStarshipMechanics.withBlockExplosionDamageAllowed {
+						world.createExplosion(x, y, z, 6.0f)
+					}
 				}
 			}
 		}
@@ -347,7 +277,8 @@ object StarshipDestruction {
 				val x = blockKeyX(block).toDouble()
 				val y = blockKeyY(block).toDouble()
 				val z = blockKeyZ(block).toDouble()
-				ActiveStarshipMechanics.withBlockExplosionDamageAllowed {
+
+				if (isBlockLoaded(world, x, y, z)) ActiveStarshipMechanics.withBlockExplosionDamageAllowed {
 					world.createExplosion(x, y, z, 8.0f)
 				}
 			}

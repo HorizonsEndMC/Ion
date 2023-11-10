@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.google.common.collect.ImmutableSet
+import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import org.bukkit.Axis
 import org.bukkit.Material
@@ -38,6 +39,13 @@ fun getBlockIfLoaded(world: World, x: Int, y: Int, z: Int): Block? {
 	}
 
 	return world.minecraft.getChunkIfLoaded(x shr 4, z shr 4)?.cbukkit?.getBlock(x and 15, y, z and 15)
+}
+
+/**
+ * Given the coordinates of a block, return whether the chunk containing is loaded
+ **/
+fun isBlockLoaded(world: World, x: Number, y: Number, z: Number): Boolean {
+	return world.minecraft.isLoaded(BlockPos(x.toInt(), y.toInt(), z.toInt()))
 }
 
 /**
