@@ -25,12 +25,13 @@ import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtectio
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
-import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayNameComponent
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -60,6 +61,7 @@ import org.litote.kmongo.eq
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 import kotlin.math.PI
 import kotlin.math.abs
@@ -654,5 +656,31 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		PilotedStarships.tryPilot(sender, starshipData)
+	}
+
+	val uploadCooldown = object : PerPlayerCooldown(60L, TimeUnit.SECONDS) {
+		override fun cooldownRejected(player: UUID) {
+			Bukkit.getPlayer(player)?.userError("You're doing that too often!")
+		}
+	}
+
+	@Suppress("unused")
+	@CommandAlias("download")
+	@Description("Download the ship you're currently piloting")
+	fun onDownload(sender: Player) = asyncCommand(sender) {
+		uploadCooldown.tryExec(sender) {
+			val starship = getStarshipPiloting(sender)
+
+			val schem = Tasks.getSyncBlocking { StarshipSchematic.createSchematic(starship) }
+
+			schem.uploadAsync {
+				if (it == null) {
+					sender.serverError("There was an error uploading your schematic")
+					return@uploadAsync
+				}
+
+				sender.information("Your schematic has been uploaded. Use $it to download the file.")
+			}
+		}
 	}
 }

@@ -18,11 +18,13 @@ open class AbstractCooldown <T> (cooldown: Long, timeUnit: TimeUnit = TimeUnit.M
 		if (nanoTime() - map.getOrElse(player) { 0 } >= timeUnit.toNanos(cooldown)) {
 			map[player] = nanoTime()
 			block()
-		}
+		} else cooldownRejected(player)
 	}
+
+	open fun cooldownRejected(player: T) {}
 }
 
-class PerPlayerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): AbstractCooldown<UUID>(cooldown, timeUnit) {
+open class PerPlayerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): AbstractCooldown<UUID>(cooldown, timeUnit) {
 	fun tryExec(player: Player, block: () -> Unit) = tryExec(player.uniqueId, this.cooldownNanos, TimeUnit.NANOSECONDS, block)
 }
 

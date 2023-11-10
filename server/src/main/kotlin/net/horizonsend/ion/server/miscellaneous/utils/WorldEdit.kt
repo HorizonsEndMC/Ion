@@ -2,9 +2,7 @@ package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.world.block.BlockState as WorldEditBlockState
 import net.minecraft.world.level.block.state.BlockState as MinecraftBlockState
-import com.sk89q.jnbt.CompoundTag
-import com.sk89q.jnbt.NBTUtils
-import com.sk89q.jnbt.Tag
+import com.fastasyncworldedit.core.FaweAPI
 import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -16,6 +14,20 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
+import com.sk89q.worldedit.util.nbt.BinaryTag
+import com.sk89q.worldedit.util.nbt.ByteArrayBinaryTag
+import com.sk89q.worldedit.util.nbt.ByteBinaryTag
+import com.sk89q.worldedit.util.nbt.CompoundBinaryTag
+import com.sk89q.worldedit.util.nbt.DoubleBinaryTag
+import com.sk89q.worldedit.util.nbt.EndBinaryTag
+import com.sk89q.worldedit.util.nbt.FloatBinaryTag
+import com.sk89q.worldedit.util.nbt.IntArrayBinaryTag
+import com.sk89q.worldedit.util.nbt.IntBinaryTag
+import com.sk89q.worldedit.util.nbt.ListBinaryTag
+import com.sk89q.worldedit.util.nbt.LongArrayBinaryTag
+import com.sk89q.worldedit.util.nbt.LongBinaryTag
+import com.sk89q.worldedit.util.nbt.ShortBinaryTag
+import com.sk89q.worldedit.util.nbt.StringBinaryTag
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.minecraft.nbt.ByteArrayTag
@@ -37,6 +49,7 @@ import org.bukkit.entity.Player
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.net.URL
 
 fun readSchematic(file: File): Clipboard? {
 	val format = ClipboardFormats.findByFile(file) ?: return null
@@ -111,10 +124,11 @@ fun WorldEditBlockState.toBukkitBlockData(): BlockData {
 	}
 }
 
-fun CompoundTag.nms(): net.minecraft.nbt.CompoundTag {
+fun CompoundBinaryTag.nms(): net.minecraft.nbt.CompoundTag {
 	val base = net.minecraft.nbt.CompoundTag()
 
-	for ((key, tag) in this.value) {
+
+	for ((key, tag) in this) {
 		val nmsTag = tag.nms()
 
 		base.put(key, nmsTag)
@@ -123,10 +137,10 @@ fun CompoundTag.nms(): net.minecraft.nbt.CompoundTag {
 	return base
 }
 
-fun com.sk89q.jnbt.ListTag.nms(): ListTag {
+fun ListBinaryTag.nms(): ListTag {
 	val base = ListTag()
 
-	for (tag in this.value) {
+	for (tag in this) {
 		val nmsTag = tag.nms()
 
 		base.add(nmsTag)
@@ -135,21 +149,21 @@ fun com.sk89q.jnbt.ListTag.nms(): ListTag {
 	return base
 }
 
-fun Tag.nms(): net.minecraft.nbt.Tag {
-	return when (NBTUtils.getTypeCode(this.javaClass)) {
-		0 -> EndTag.INSTANCE
-		1 -> ByteTag.valueOf((this as com.sk89q.jnbt.ByteTag).value)
-		2 -> ShortTag.valueOf((this as com.sk89q.jnbt.ShortTag).value)
-		3 -> IntTag.valueOf((this as com.sk89q.jnbt.IntTag).value)
-		4 -> LongTag.valueOf((this as com.sk89q.jnbt.LongTag).value)
-		5 -> FloatTag.valueOf((this as com.sk89q.jnbt.FloatTag).value)
-		6 -> DoubleTag.valueOf((this as com.sk89q.jnbt.DoubleTag).value)
-		7 -> ByteArrayTag((this as com.sk89q.jnbt.ByteArrayTag).value)
-		8 -> StringTag.valueOf((this as com.sk89q.jnbt.StringTag).value)
-		9 -> (this as com.sk89q.jnbt.ListTag).nms()
-		10 -> (this as CompoundTag).nms()
-		11 -> IntArrayTag((this as com.sk89q.jnbt.IntArrayTag).value)
-		12 -> LongArrayTag((this as com.sk89q.jnbt.LongArrayTag).value)
+fun BinaryTag.nms(): net.minecraft.nbt.Tag {
+	return when (this) {
+		is EndBinaryTag -> EndTag.INSTANCE
+		is ByteBinaryTag -> ByteTag.valueOf(this.value())
+		is ShortBinaryTag -> ShortTag.valueOf((this).value())
+		is IntBinaryTag -> IntTag.valueOf((this).value())
+		is LongBinaryTag -> LongTag.valueOf((this).value())
+		is FloatBinaryTag -> FloatTag.valueOf((this).value())
+		is DoubleBinaryTag -> DoubleTag.valueOf((this).value())
+		is ByteArrayBinaryTag -> ByteArrayTag((this).value())
+		is StringBinaryTag -> StringTag.valueOf((this).value())
+		is ListBinaryTag -> this.nms()
+		is CompoundBinaryTag -> this.nms()
+		is IntArrayBinaryTag -> IntArrayTag((this).value())
+		is LongArrayBinaryTag -> LongArrayTag((this).value())
 		else -> throw IllegalArgumentException()
 	}
 }
@@ -157,4 +171,16 @@ fun Tag.nms(): net.minecraft.nbt.Tag {
 fun Player.getSelection(): Region? {
 	val session = WorldEdit.getInstance().sessionManager.findByName(name) ?: return null
 	return session.getSelection(session.selectionWorld)
+}
+
+/** Uploads the clipboard to the specified schematic upload site */
+fun Clipboard.upload(): URL? {
+	return try { FaweAPI.upload(this, BuiltInClipboardFormat.SPONGE_SCHEMATIC) } catch (_: Throwable) { return null }
+}
+
+fun Clipboard.uploadAsync(callback: (URL?) -> Unit = {}) {
+	Tasks.async {
+		val url: URL? = this.upload()
+		callback(url)
+	}
 }
