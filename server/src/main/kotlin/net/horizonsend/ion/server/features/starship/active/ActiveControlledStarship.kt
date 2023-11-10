@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.features.starship.active
 
-import co.aikar.commands.ConditionFailedException
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
-import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
@@ -18,6 +16,8 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
+import net.horizonsend.ion.server.features.starship.movement.BlockedException
+import net.horizonsend.ion.server.features.starship.movement.MovementException
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
@@ -145,9 +145,11 @@ class ActiveControlledStarship (
 	private fun executeMovement(movement: StarshipMovement, controller: Controller): Boolean {
 		try {
 			movement.execute()
-		} catch (e: ConditionFailedException) {
-			controller.serverError(e.message ?: "Starship could not move for an unspecified reason!")
-			controller.onBlocked(movement, e)
+		} catch (e: MovementException) {
+			val location = if (e is BlockedException) e.location else null
+			controller.onBlocked(movement, e, location)
+			controller.sendMessage(e.formatMessage())
+
 			sneakMovements = 0
 			lastBlockedTime = System.currentTimeMillis()
 			return false
