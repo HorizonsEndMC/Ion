@@ -227,14 +227,11 @@ object CollectionMissions : IonServerComponent() {
 
 				icon.lore(
 					listOf(
-						text("Cost per stack: ").color(NamedTextColor.GRAY)
-							.append(text(cost).color(NamedTextColor.RED)),
-						text("Cost to fill remaining slots: ").color(NamedTextColor.GRAY)
-							.append(text(fillCost).color(NamedTextColor.RED)),
-						text("Available Stacks: ").color(NamedTextColor.GRAY)
-							.append(stock),
-						text("(Left click to buy one stack)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
-						text("(SHIFT left click to fill remaining slots)").color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
+						text("Cost per stack: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(text(cost).color(NamedTextColor.RED)),
+						text("Cost to fill remaining slots: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(text(fillCost).color(NamedTextColor.RED)),
+						text("Available Stacks: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(stock),
+						text("(Left click to buy one stack)").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
+						text("(SHIFT left click to fill remaining slots)").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
 					)
 				)
 
@@ -322,14 +319,7 @@ object CollectionMissions : IonServerComponent() {
 			.filter { (_, item) ->
 				item!!
 				when (customItem) {
-					null -> {
-						println("Item $item")
-						println("Item2 $itemStack")
-						println("First ${item.isSimilar(itemStack)}")
-						println("Second ${item.amount == item.maxStackSize}")
-
-						item.isSimilar(itemStack) && item.amount == item.maxStackSize
-					}
+					null -> item.isSimilar(itemStack) && item.amount == item.maxStackSize
 					else -> customItem == CustomItems[item] && item.amount == customItem.material.maxStackSize
 				}
 			}
