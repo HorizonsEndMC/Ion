@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
@@ -219,7 +219,7 @@ object AIPathfinding {
 
 	/** Gets the chunks that should be searched for pathfinding */
 	@Synchronized
-	private fun getSurroundingSectionPositions(engine: PathfindingEngine): List<Vec3i> {
+	private fun getSurroundingSectionPositions(engine: AStarPathfindingEngine): List<Vec3i> {
 		val radius = engine.chunkSearchRadius
 		val center = engine.getSectionPositionOrigin()
 
@@ -245,7 +245,7 @@ object AIPathfinding {
 	 * Saves time by not searching existing sections, and maintains inhabited time of currently tracked sections
 	 **/
 	@Synchronized
-	fun adjustTrackedSections(engine: PathfindingEngine, loadChunks: Boolean = false) {
+	fun adjustTrackedSections(engine: AStarPathfindingEngine, loadChunks: Boolean = false) {
 		debugAudience.debug("Adjusting tracked sections 1")
 		val currentlyTracked = engine.trackedSections.map { it.position }
 		val new = getSurroundingSectionPositions(engine)
@@ -268,7 +268,7 @@ object AIPathfinding {
 	 * TODO insert explainer of how A* works
 	 **/
 	@Synchronized
-	fun pathfind(engine: PathfindingEngine): Collection<PathfindingNodeWrapper> {
+	fun pathfind(engine: AStarPathfindingEngine): Collection<PathfindingNodeWrapper> {
 		val trackedNodes = engine.trackedSections
 		if (trackedNodes.isEmpty()) adjustTrackedSections(engine, false)
 

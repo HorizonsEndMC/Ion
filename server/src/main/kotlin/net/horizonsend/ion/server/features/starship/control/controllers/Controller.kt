@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.starship.control.controllers
 
-import co.aikar.commands.ConditionFailedException
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.movement.MovementException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
@@ -41,7 +42,7 @@ abstract class Controller(
 	open fun onMove(movement: StarshipMovement) {}
 
 	/** Called when the ship's movement is blocked */
-	open fun onBlocked(movement: StarshipMovement, reason: ConditionFailedException) {}
+	open fun onBlocked(movement: StarshipMovement, reason: MovementException, location: Vec3i?) {}
 
 	/** Called when a damager is added, or incremented */
 	open fun onDamaged(damager: Damager) {}
