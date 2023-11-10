@@ -110,8 +110,8 @@ class FrigateCombatAIController(
 		val distance = distance(location.toVector(), targetLocationVector)
 		locationObjective = targetLocation
 
-		if (distance > aggressivenessLevel.engagementDistance) {
-			return aggressivenessLevel.ordinal >= AggressivenessLevel.HIGH.ordinal
+		if (distance >= 550) {
+			aggressivenessLevel.findNextTarget(this)
 		}
 
 		return true
