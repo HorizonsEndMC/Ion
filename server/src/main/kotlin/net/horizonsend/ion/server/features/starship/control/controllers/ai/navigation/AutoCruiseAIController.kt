@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.controllers.ai.navi
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngineAStar
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.BasicPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -34,7 +34,7 @@ class AutoCruiseAIController(
 ) : ActiveAIController(starship, "autoCruise", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	NeutralAIController {
 	override var positioningEngine = BasicPositioningEngine(this, destination)
-	override var pathfindingEngine = PathfindIfBlockedEngine(this, positioningEngine)
+	override var pathfindingEngine = PathfindIfBlockedEngineAStar(this, positioningEngine)
 	override var movementEngine = CruiseEngine(this, pathfindingEngine, Vec3i(destination), CruiseEngine.ShiftFlightType.IF_BLOCKED_AND_MATCH_Y)
 
 	var ticks = 0
