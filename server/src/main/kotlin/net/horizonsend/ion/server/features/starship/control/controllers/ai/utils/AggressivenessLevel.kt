@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.utils
 
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -7,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.inter
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.TemporaryAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
@@ -103,7 +105,10 @@ enum class AggressivenessLevel(
 
 	fun getNearbyTargets(controller: AIController): AITarget? {
 		val nearbyShips = controller.getNearbyShips(0.0, engagementDistance) { starship, _ ->
-			starship.controller !is AIController
+			val shipController = starship.controller
+			if (shipController !is PlayerController) return@getNearbyShips false
+
+			return@getNearbyShips !shipController.player.hasProtection()
 		}
 
 		return nearbyShips.minByOrNull { it.centerOfMass.distance(controller.starship.centerOfMass) }?.let { StarshipTarget(it) }
