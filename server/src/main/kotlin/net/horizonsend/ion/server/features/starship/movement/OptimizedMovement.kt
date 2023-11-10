@@ -1,7 +1,18 @@
 package net.horizonsend.ion.server.features.starship.movement
 
-import co.aikar.commands.ConditionFailedException
+import net.horizonsend.ion.server.features.starship.Hangars
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.BaseEntityBlock
@@ -11,17 +22,6 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.levelgen.Heightmap
-import net.horizonsend.ion.server.features.starship.Hangars
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.nms
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Material
@@ -120,7 +120,7 @@ object OptimizedMovement {
 
 					if (!passThroughBlocks.contains(blockData)) {
 						if (!isHangar(blockData)) {
-							throw ConditionFailedException("Blocked at $x, $y, $z by `$blockData`!")
+							throw BlockedException(Vec3i(x, y, z), blockData)
 						}
 
 						hangars.add(blockKey)
