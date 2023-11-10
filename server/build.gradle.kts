@@ -21,6 +21,7 @@ repositories {
 	maven("https://repo.alessiodp.com/releases") // Libby (Required by Citizens)
 	maven("https://repo.decalium.ru/releases")
 	maven("https://repo.xenondevs.xyz/releases") // InvUI
+	maven("https://repo.papermc.io/repository/maven-public/") // FAWE api
 
 	maven("https://repo.horizonsend.net/mirror")
 }
@@ -57,6 +58,7 @@ dependencies {
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-implementation:2.0.0-RC12")
 	implementation("com.github.megavexnetwork.scoreboard-library:scoreboard-library-modern:2.0.0-RC12")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.7.0")
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }

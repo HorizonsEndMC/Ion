@@ -10,14 +10,14 @@ import net.horizonsend.ion.server.features.space.encounters.SecondaryChest
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.ENCOUNTER
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SECONDARY_CHEST
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.SECONDARY_CHEST_MONEY
+import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.DoubleTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.nbt.Tag
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
-import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 
 object GenerateWreck {
 	fun generateWreckSection(
@@ -43,7 +43,7 @@ object GenerateWreck {
 
 					val baseBlock = clipboard.getFullBlock(schematicRelative)
 					val originalBlockState: BlockState = baseBlock.toImmutableState().toBukkitBlockData().nms
-					val blockNBT = if (originalBlockState.hasBlockEntity()) baseBlock.nbtData else null
+					val blockNBT = if (originalBlockState.hasBlockEntity()) baseBlock.nbt else null
 
 					if (originalBlockState.isAir) continue
 
