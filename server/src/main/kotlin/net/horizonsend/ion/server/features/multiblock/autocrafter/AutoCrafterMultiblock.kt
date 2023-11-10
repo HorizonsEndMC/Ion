@@ -155,7 +155,7 @@ abstract class AutoCrafterMultiblock(
 
 		val inputInventory = input.inventory
 
-		val powerUsage = grid.distinct().count() * POWER_USAGE_PER_INGREDIENT
+		val powerUsage = grid.filterNotNull().distinct().count() * POWER_USAGE_PER_INGREDIENT
 
 		try {
 			for (iteration in (1..iterations)) {
