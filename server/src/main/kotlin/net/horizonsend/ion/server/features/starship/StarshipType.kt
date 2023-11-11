@@ -99,7 +99,9 @@ enum class StarshipType(
 		isWarship = true,
 		color = "#ff0000",
 		overridePermission = "ion.ships.override.20",
-		dynmapIcon = "corvette"
+		dynmapIcon = "corvette",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -116,7 +118,9 @@ enum class StarshipType(
 		isWarship = true,
 		color = "#c00000",
 		overridePermission = "ion.ships.override.40",
-		dynmapIcon = "frigate"
+		dynmapIcon = "frigate",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -133,7 +137,9 @@ enum class StarshipType(
 		isWarship = true,
 		color = "#800000",
 		overridePermission = "ion.ships.override.60",
-		dynmapIcon = "destroyer"
+		dynmapIcon = "destroyer",
+		maxMiningLasers = 1,
+		miningLaserTier = 1,
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
