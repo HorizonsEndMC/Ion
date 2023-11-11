@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllers
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindIfBlockedEngineAStar
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.BasicPositioningEngine
-import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.NeutralAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
@@ -27,10 +26,10 @@ import java.util.concurrent.TimeUnit
 class AutoCruiseAIController(
 	starship: ActiveStarship,
 	var destination: Location,
-	var maxSpeed: Int = -1,
+	private var maxSpeed: Int = -1,
 	aggressivenessLevel: AggressivenessLevel,
 	pilotName: Component?,
-	val combatController: (AIController, AITarget) -> AIController
+	override val combatFactory: AIControllers.AIControllerFactory<*>
 ) : ActiveAIController(starship, "autoCruise", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	NeutralAIController {
 	override var positioningEngine = BasicPositioningEngine(this, destination)
@@ -46,7 +45,7 @@ class AutoCruiseAIController(
 		val nearbyShip = aggressivenessLevel.getNearbyTargets(this)
 
 		// Switch to combat controller if nearby ship meets criteria
-		nearbyShip?.let { starship.controller = combatController(this, it) }
+		nearbyShip?.let { combatMode(this, nearbyShip) }
 	}
 
 	/**
@@ -94,9 +93,5 @@ class AutoCruiseAIController(
 		tickAll()
 
 		super.tick()
-	}
-
-	override fun createCombatController(controller: AIController, target: AITarget): AIController {
-		return combatController(controller, target)
 	}
 }
