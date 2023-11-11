@@ -143,7 +143,7 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		sneakFlyAccelDistance = 5,
-		maxSneakFlyAccel = 5,
+		maxSneakFlyAccel = 3,
 		interdictionRange = 2400,
 		hyperspaceRangeMultiplier = 2.5,
 		menuItemMaterial = Material.DIAMOND_BLOCK,
