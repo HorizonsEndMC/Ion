@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces
 
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
@@ -7,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
@@ -17,8 +19,8 @@ interface CombatAIController : VariableObjectiveController {
 	var target: AITarget?
 
 	// Weapon sets
-	val manualWeaponSets: MutableList<WeaponSet>
-	val autoWeaponSets: MutableList<WeaponSet>
+	val manualWeaponSets: Set<WeaponSet>
+	val autoWeaponSets: Set<WeaponSet>
 
 	// Shield Health indicators
 	val shields get() = starship.shields
@@ -41,7 +43,12 @@ interface CombatAIController : VariableObjectiveController {
 		val (x, y, z) = origin
 		val distance = target.distance(x, y, z)
 
-		val weaponSet = manualWeaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
+		debugAudience.debug("Manual weapon sets: $manualWeaponSets")
+		val weaponSet = manualWeaponSets.firstOrNull {
+			debug("$it, ${it.engagementRange}")
+			it.engagementRange.containsDouble(distance)
+		}?.name
+		debugAudience.debug("Finding weapon sets. Origin: $origin, Distance to target: $distance, weaponSet: $weaponSet")
 		val direction = getDirection(Vec3i(getCenter()), target).normalize()
 
 		directionMod(direction)
@@ -49,6 +56,7 @@ interface CombatAIController : VariableObjectiveController {
 		Tasks.sync {
 			faceDirection?.let { AIControlUtils.faceDirection(this, faceDirection) }
 
+			debugAudience.debug("Firing all weapons: set: $weaponSet")
 			fireHeavyWeapons(direction, target.toVector(), weaponSet = weaponSet)
 			fireLightWeapons(direction, target.toVector(), weaponSet = weaponSet)
 		}
@@ -58,6 +66,7 @@ interface CombatAIController : VariableObjectiveController {
 	fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
 		if (this !is AIController) return
 
+		debugAudience.debug("Firing light weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(this, direction, leftClick = true, target = target, weaponSet = weaponSet)
 	}
 
@@ -65,6 +74,7 @@ interface CombatAIController : VariableObjectiveController {
 	fun fireHeavyWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
 		if (this !is AIController) return
 
+		debugAudience.debug("Firing heavy weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(this, direction, leftClick = false, target = target, weaponSet = weaponSet)
 	}
 

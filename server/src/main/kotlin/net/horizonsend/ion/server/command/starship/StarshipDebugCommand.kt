@@ -5,22 +5,21 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllers
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.FrigateCombatAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.StarfighterCombatAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.TemporaryStarfighterCombatAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -46,6 +45,12 @@ object StarshipDebugCommand : SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("aiSpawners") { _ ->
 			AISpawningManager.spawners.map { it.identifier }
 		}
+
+		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
+			AIControllers.presetControllers.keys
+		}
+
+		manager.commandContexts.registerContext(AIControllers.AIControllerFactory::class.java) { AIControllers[it.popFirstArg()] }
 	}
 
 	@Suppress("Unused")
@@ -130,83 +135,49 @@ object StarshipDebugCommand : SLCommand() {
 	@CommandCompletion("@aiSpawners")
 	fun triggerSpawn(sender: Player, spawner: AISpawner) {
 		sender.success("Triggered spawn for ${spawner.identifier}")
-		spawner.handleSpawn()
+		spawner.trigger()
+	}
+
+	@Suppress("Unused")
+	@Subcommand("dumpcontroller")
+	@CommandCompletion("@autoTurretTargets")
+	fun listController(sender: Player, shipIdentifier: String) {
+		val formatted = if (shipIdentifier.contains(":".toRegex())) shipIdentifier.substringAfter(":") else shipIdentifier
+
+		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
+		sender.information(ship.controller.toString())
 	}
 
 	@Subcommand("ai")
-	fun ai(sender: Player, controller: AI, aggressivenessLevel: AggressivenessLevel, destinationX: Double, destinationY: Double, destinationZ: Double) {
-		val destination = Location(sender.world, destinationX, destinationY, destinationZ)
+	@CommandCompletion("@controllerFactories")
+	fun ai(
+		sender: Player,
+		controller: AIControllers.AIControllerFactory<*>,
+		aggressivenessLevel: AggressivenessLevel,
+		@Optional destinationX: Double?,
+		@Optional destinationY: Double?,
+		@Optional destinationZ: Double?,
+		@Optional manualSets: String?,
+		@Optional autoSets: String?,
+	) {
+		val destination = if (destinationX != null && destinationY != null && destinationZ != null) Location(sender.world, destinationX, destinationY, destinationZ) else null
 		val starship = getStarshipRiding(sender)
 
-		starship.controller = controller.createController(starship, aggressivenessLevel, destination)
+		starship.controller = controller.createController(
+			starship,
+			text("Player Created AI Ship"),
+			null,
+			destination,
+			aggressivenessLevel,
+			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
+			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
+			null
+		)
+
 		NPCFakePilot.add(starship as ActiveControlledStarship, null)
 		starship.removePassenger(sender.uniqueId)
 	}
 
-	enum class AI(val createController: (ActiveStarship, AggressivenessLevel, Location) -> AIController) {
-		STARFIGHTER({ ship, aggressivenessLevel, _ ->
-			StarfighterCombatAIController(
-				starship = ship,
-				target = null,
-				pilotName = text("NPC Ship"),
-				aggressivenessLevel = aggressivenessLevel
-			)
-		}),
-
-		FRIGATE({ ship, aggressivenessLevel, _ ->
-			FrigateCombatAIController(
-				starship = ship,
-				target = null,
-				pilotName = text("NPC Ship"),
-				aggressivenessLevel = aggressivenessLevel,
-				autoWeaponSets = mutableListOf(
-//					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 0.0, 1000.0)
-				),
-				manualWeaponSets = mutableListOf(
-//					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("TT", 100.0, 1000.0),
-//					net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet("Phasers", 0.0, 100.0),
-				)
-			)
-		}),
-
-		AUTO_CRUISE_WITH_SF_FALLBACK(
-			{ ship, aggressivenessLevel, location ->
-				AutoCruiseAIController(
-					ship,
-					location,
-					-1,
-					aggressivenessLevel,
-					text("NPC Ship"),
-				) { controller, nearbyShip ->
-					TemporaryStarfighterCombatAIController(
-						controller.starship,
-						nearbyShip,
-						controller.aggressivenessLevel,
-						controller,
-					)
-				}
-			}
-		),
-
-		AUTO_CRUISE_WITH_FRIGATE_FALLBACK(
-			{ ship, aggressivenessLevel, location ->
-				AutoCruiseAIController(
-					ship,
-					location,
-					-1,
-					aggressivenessLevel,
-					text("NPC Ship"),
-				) { controller, nearbyShip ->
-					FrigateCombatAIController(
-						controller.starship,
-						nearbyShip,
-						controller.pilotName,
-						controller.aggressivenessLevel,
-						mutableListOf(),
-						mutableListOf()
-					)
-				}
-			}
-		)
-	}
+	@Serializable
+	data class WeaponSetsCollection(val sets: MutableSet<AIShipConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf())
 }
