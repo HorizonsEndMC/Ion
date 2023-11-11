@@ -376,7 +376,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		starship.autoTurretTargets[weaponSet] = targeted
 
-		sender.information("Set target of <aqua>$weaponSet</aqua> to <white>${targeted.identifier}")
+		sender.information("Set target of <aqua>$weaponSet</aqua> to <white>${target}")
 	}
 
 	@Suppress("unused")
