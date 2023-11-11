@@ -29,7 +29,8 @@ enum class StarshipType(
 	val poweroverrider: Double = 1.0,
 	val maxMiningLasers: Int = 0,
 	val miningLaserTier: Int = 0,
-	val dynmapIcon: String = "anchor"
+	val dynmapIcon: String = "anchor",
+	val cruiseSpeedMultiplier: Double = 1.0
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -148,7 +149,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.DIAMOND_BLOCK,
 		isWarship = true,
 		color = "#0c5ce8",
-		overridePermission = "ion.ships.override.battlecruiser"
+		overridePermission = "ion.ships.override.battlecruiser",
+		cruiseSpeedMultiplier = 0.875
 
 	),
 	BATTLESHIP(
@@ -165,7 +167,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.MAGMA_BLOCK,
 		isWarship = true,
 		color = "#0c5ce8",
-		overridePermission = "ion.ships.override.battleship"
+		overridePermission = "ion.ships.override.battleship",
+		cruiseSpeedMultiplier = 0.8
 
 	),
 	DREADNOUGHT(
@@ -182,7 +185,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.EMERALD_BLOCK,
 		isWarship = true,
 		color = "#320385",
-		overridePermission = "ion.ships.override.dreadnought"
+		overridePermission = "ion.ships.override.dreadnought",
+		cruiseSpeedMultiplier = 0.7
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
