@@ -7,13 +7,14 @@ import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
 
@@ -54,14 +55,19 @@ object StarshipWeapons {
 		val boostPower = AtomicDouble(0.0)
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
-			ship.debug("we have heavy weapons")
+			debugAudience.debug("we have heavy weapons")
 
-			val heavyWeaponTypes =
-				queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
+			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
 
 			ship.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
 
 			if (heavyWeaponTypes.count() > 1) {
+				debugAudience.debug(
+					""""
+					CANNOT FIRE MORE THAN 1 TYPE OF HEAVY WEAPON
+					Types: ${heavyWeaponTypes.joinToString()}
+					""".trimIndent()
+				)
 				ship.onlinePassengers.forEach { player ->
 					player.userErrorActionMessage(
 						"You can only fire one type of heavy weapon at a time!"
@@ -72,14 +78,14 @@ object StarshipWeapons {
 			}
 
 			val heavyWeaponType = heavyWeaponTypes.single()
-			ship.debug("heavyWeaponType = $heavyWeaponType")
+			debugAudience.debug("heavyWeaponType = $heavyWeaponType")
 
 			val newWarmup = queuedShots
 				.filter { it.weapon is HeavyWeaponSubsystem }
 				.maxOf { (it.weapon as HeavyWeaponSubsystem).boostChargeNanos }
-			ship.debug("newWarmup = $newWarmup")
+			debugAudience.debug("newWarmup = $newWarmup")
 			val output = ship.reactor.heavyWeaponBooster.boost(heavyWeaponType, newWarmup)
-			ship.debug("output = $output")
+			debugAudience.debug("output = $output")
 			boostPower.set(output)
 		}
 
@@ -97,29 +103,29 @@ object StarshipWeapons {
 			val weapon = shot.weapon
 
 			val maxPerShot = weapon.getMaxPerShot()
-			ship.debug("iterating shots, $weapon, $maxPerShot")
+			debugAudience.debug("iterating shots, $weapon, $maxPerShot")
 
 			val firedSet = firedCounts[weapon.name]
-			ship.debug("have we fired those already?")
+			debugAudience.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
-				ship.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
+				debugAudience.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
 
 				continue
 			}
 
-			ship.debug("is resource available?")
+			debugAudience.debug("is resource available?")
 			if (resourcesUnavailable(weapon, ship, boostPower)) {
-				ship.debug("its not, goodbye")
+				debugAudience.debug("its not, goodbye")
 				continue
 			}
 
-			ship.debugRed("shootings!!")
+			debugAudience.debugRed("shootings!!")
 			shot.shoot()
 
-			ship.debug("taking resources")
+			debugAudience.debug("taking resources")
 			consumeResources(weapon, boostPower, ship)
 
-			ship.debug("adding to fired")
+			debugAudience.debug("adding to fired")
 			firedSet.add(weapon)
 		}
 
