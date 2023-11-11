@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWea
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
-import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralOreItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownPumpkinGrenade
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrowableCustomItem
