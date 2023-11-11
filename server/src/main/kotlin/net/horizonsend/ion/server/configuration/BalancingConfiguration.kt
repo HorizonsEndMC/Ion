@@ -524,7 +524,7 @@ data class BalancingConfiguration(
 			volume = 0,
 			pitch = 2.0f,
 			soundName = "starship.weapon.turbolaser.quad.shoot",
-			powerUsage = 4500,
+			powerUsage = 2190,
 			length = 0,
 			angleRadians = 0.0,
 			convergeDistance = 0.0,
