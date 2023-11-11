@@ -29,7 +29,6 @@ class PathfindIfBlockedEngineAStar(
 		val projectedSection = Vec3i(x.shr(4), y.shr(4), z.shr(4))
 
 		return trackedSections
-			.toMutableSet() // Clone
 			.filter { it.position == projectedSection }
 			.any { !it.navigable }
 	}
