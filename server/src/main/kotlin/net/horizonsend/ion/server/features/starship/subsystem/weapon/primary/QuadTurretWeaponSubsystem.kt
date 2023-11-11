@@ -4,6 +4,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.QuadTurretMultiblock
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -22,10 +23,11 @@ class QuadTurretWeaponSubsystem(
 	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.quadTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.quadTurret.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
-	override val maxPerShot = when (starship.type) {
-		StarshipType.BATTLECRUISER -> 3,
-		StarshipType.BATTLESHIP -> 5,
+	override fun getMaxPerShot(): Int = when (starship.type) {
+		StarshipType.BATTLECRUISER -> 3
+		StarshipType.BATTLESHIP -> 5
 		StarshipType.DREADNOUGHT -> 8
+		else -> 0
 	}
 
 	override fun manualFire(

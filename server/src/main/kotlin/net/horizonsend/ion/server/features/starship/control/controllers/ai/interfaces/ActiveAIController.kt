@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.movement.MovementException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.kyori.adventure.text.Component
 
@@ -43,7 +43,7 @@ abstract class ActiveAIController(
 		movementEngine.onMove(movement)
 	}
 
-	override fun onBlocked(movement: StarshipMovement, reason: MovementException, location: Vec3i?) {
+	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
 		positioningEngine.onBlocked(movement, reason, location)
 		pathfindingEngine.onBlocked(movement, reason, location)
 		movementEngine.onBlocked(movement, reason, location)

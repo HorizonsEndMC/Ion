@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
-import net.horizonsend.ion.server.features.starship.movement.MovementException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -71,7 +71,7 @@ class CruiseEngine(
 		stopCruising()
 	}
 
-	override fun onBlocked(movement: StarshipMovement, reason: MovementException, location: Vec3i?) {
+	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
 		debugAudience.debug("$controller is blocked $reason by movement $movement trying to move to ${getDestination()} eventual destination $cruiseDestination")
 	}
 

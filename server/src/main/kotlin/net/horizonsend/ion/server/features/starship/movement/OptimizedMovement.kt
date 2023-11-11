@@ -120,7 +120,7 @@ object OptimizedMovement {
 
 					if (!passThroughBlocks.contains(blockData)) {
 						if (!isHangar(blockData)) {
-							throw BlockedException(Vec3i(x, y, z), blockData)
+							throw StarshipBlockedException(Vec3i(x, y, z), blockData)
 						}
 
 						hangars.add(blockKey)
