@@ -57,7 +57,7 @@ abstract class AIController(
 	}
 
 	class DespawnTask(val controller: AIController) : BukkitRunnable() {
-		private val DESPAWN_TIME: Long = TimeUnit.MINUTES.toMillis(5)
+		private val DESPAWN_TIME: Long = TimeUnit.MINUTES.toMillis(1)
 
 		private val startTime = System.currentTimeMillis()
 		private val starship = controller.starship
