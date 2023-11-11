@@ -82,7 +82,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
 			val all = mutableListOf<String>()
 
-			ActiveStarships.all().mapTo(all) { it.identifier }
+			ActiveStarships.getInWorld(context.player.world).mapTo(all) { it.identifier }
 			all.addAll(IonServer.server.onlinePlayers.map { it.name })
 			all.remove(context.player.name)
 			all
@@ -363,6 +363,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
+
+		println("Command entered: $target")
+		for (ship in ActiveStarships.all()) {
+			println("Iterated: ${ship.identifier}")
+		}
+
 		val targeted =
 			Bukkit.getPlayer(formatted)?.let { AutoTurretTargeting.target(it) } ?:
 			ActiveStarships[formatted]?.let { AutoTurretTargeting.target(it) } ?:
