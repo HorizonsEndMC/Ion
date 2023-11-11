@@ -10,6 +10,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
@@ -69,14 +70,6 @@ class CustomItemListeners : SLEventListener() {
 
 		event.isCancelled = true
 		customItem.handleTertiaryInteract(event.player, itemStack)
-	}
-
-	@EventHandler
-	@Suppress("unused")
-	fun onBlockPlaceEvent(event: BlockPlaceEvent) {
-		event.player.information("${event.itemInHand}")
-		val customItem = event.itemInHand.customItem
-		event.player.information("$customItem")
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
