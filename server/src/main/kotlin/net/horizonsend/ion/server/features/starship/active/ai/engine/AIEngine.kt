@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine
 
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.movement.MovementException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
 import org.slf4j.Logger
@@ -20,7 +20,7 @@ abstract class AIEngine(val controller: ActiveAIController) {
 
 	open fun onMove(movement: StarshipMovement) {}
 
-	open fun onBlocked(movement: StarshipMovement, reason: MovementException, location: Vec3i?) {}
+	open fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {}
 
 	open fun onDamaged(damager: Damager) {}
 
