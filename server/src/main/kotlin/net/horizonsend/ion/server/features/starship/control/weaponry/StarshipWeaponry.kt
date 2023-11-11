@@ -34,7 +34,7 @@ object StarshipWeaponry : IonServerComponent() {
         weaponSet: String?
 	) {
 		debugAudience.debug("Weapon sets: ${starship.weaponSets.asMap().toMap()}")
-		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet.lowercase()]).shuffled(ThreadLocalRandom.current())
+		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 		debugAudience.debug("Weapons: $weapons")
 
 		val fireTask = {
