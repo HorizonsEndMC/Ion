@@ -43,7 +43,7 @@ object AISpawningManager : IonServerComponent(true) {
 		spawners.forEachIndexed { index: Int, spawner: AISpawner ->
 			val delay = averageDelay * index
 
-			Tasks.asyncRepeat(delay, spawner.config.spawnRate) { spawner.handleSpawn() }
+			Tasks.asyncRepeat(delay, spawner.config.spawnRate) { spawner.trigger() }
 		}
 	}
 }

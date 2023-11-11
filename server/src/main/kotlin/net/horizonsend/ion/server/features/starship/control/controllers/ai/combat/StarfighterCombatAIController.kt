@@ -44,8 +44,8 @@ open class StarfighterCombatAIController(
 	final override var pathfindingEngine = CombatAStarPathfindingEngine(this, positioningEngine)
 	final override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, pathfindingEngine)
 
-	override val autoWeaponSets: MutableList<WeaponSet> = mutableListOf()
-	override val manualWeaponSets: MutableList<WeaponSet> = mutableListOf()
+	override val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
+	override val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
 
 	override fun destroy() {
 		shutDownAll()

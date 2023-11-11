@@ -104,6 +104,7 @@ data class AIShipConfiguration(
 		val schematicName: String = "Vesta",
 		val miniMessageName: String = "<red><bold>Vesta",
 		val type: StarshipType = StarshipType.SHUTTLE,
+		val controllerFactory: String = "STARFIGHTER",
 		val aggressivenessLevel: Map<AggressivenessLevel, Int> = mapOf(AggressivenessLevel.EXTREME to 1),
 		val manualWeaponSets: Set<WeaponSet> = setOf(),
 		val autoWeaponSets: Set<WeaponSet> = setOf(),
@@ -116,6 +117,9 @@ data class AIShipConfiguration(
 
 		@Transient
 		val schematicFile: File = IonServer.dataFolder.resolve("aiShips").resolve("$schematicName.schem")
+
+		@Transient
+		val aggressivenessLevelWeightedRandomList: WeightedRandomList<AggressivenessLevel> = WeightedRandomList(aggressivenessLevel)
 
 		fun getSchematic(): Clipboard? = AISpawningManager.schematicCache[identifier].getOrNull()
 

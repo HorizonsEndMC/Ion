@@ -32,6 +32,10 @@ object Configuration {
 		return configuration
 	}
 
+	inline fun <reified T> parse(text: String): T {
+		return json.decodeFromString<T>(text)
+	}
+
 	@OptIn(ExperimentalSerializationApi::class)
 	inline fun <reified T> save(clazz: T, directory: File, fileName: String) {
 		directory.mkdirs()

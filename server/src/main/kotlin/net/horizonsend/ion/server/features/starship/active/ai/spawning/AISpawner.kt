@@ -10,13 +10,11 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllers
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipFactory.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.combat.TemporaryStarfighterCombatAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.navigation.AutoCruiseAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -54,23 +52,10 @@ abstract class AISpawner(val identifier: String) {
 		return IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name
 	}
 
-	/** Sets the initial controller */
-	open val setupController: (ActiveControlledStarship) -> Controller = { NoOpController(it, null) }
-
-	open fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit = {}): Deferred<ActiveControlledStarship> {
-		val (ship, pilotName) = getTemplate(location.world)
-		val deferred = CompletableDeferred<ActiveControlledStarship>()
-
-        createAIShipFromTemplate(ship, location, setupController, pilotName) {
-            deferred.complete(it)
-            callback(it)
-        }
-
-		return deferred
-	}
+	abstract fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit = {}): Deferred<ActiveControlledStarship>
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	fun handleSpawn() {
+	fun trigger() {
 		val loc = findLocation()
 
 		if (loc == null) {
@@ -193,15 +178,32 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
 		return null
 	}
 
-	override val setupController: (ActiveControlledStarship) -> Controller = {
-		val location = it.centerOfMass.toLocation(it.world)
-		val endpoint = findEndpoint(location)
+	override fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit): Deferred<ActiveControlledStarship> {
+		val (ship, pilotName) = getTemplate(location.world)
+		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
-		val aggressivenessLevel = AggressivenessLevel.values().random()
+		val controller: (ActiveControlledStarship) -> Controller = { starship: ActiveControlledStarship ->
+			val factory = AIControllers[ship.controllerFactory]
+			val aggressivenessLevel = ship.aggressivenessLevelWeightedRandomList.random()
+			val endpoint = findEndpoint(location)
 
-		endpoint?.let { _ -> AutoCruiseAIController(it, endpoint, 5, aggressivenessLevel, it.controller.pilotName) { controller, nearbyShip ->
-				TemporaryStarfighterCombatAIController(controller.starship, nearbyShip, controller.aggressivenessLevel, controller)
-			}
-		} ?: super.setupController(it)
+			factory.createController(
+				starship,
+				pilotName,
+				null,
+				endpoint,
+				aggressivenessLevel,
+				ship.manualWeaponSets,
+				ship.autoWeaponSets,
+				null
+			)
+		}
+
+		createAIShipFromTemplate(ship, location, controller, pilotName) {
+			deferred.complete(it)
+			callback(it)
+		}
+
+		return deferred
 	}
 }
