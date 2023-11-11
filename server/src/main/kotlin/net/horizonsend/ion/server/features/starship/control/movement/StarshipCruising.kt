@@ -169,7 +169,7 @@ object StarshipCruising : IonServerComponent() {
 		}
 
 		maxSpeed /= 2
-		if (starship.type == BATTLECRUISER) {
+		if (starship.initialBlockCount > 12000) {
 			maxSpeed = maxSpeed * 7 / 8
 		}
 
