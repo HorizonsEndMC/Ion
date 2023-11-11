@@ -16,10 +16,10 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
-import net.horizonsend.ion.server.features.starship.movement.BlockedException
-import net.horizonsend.ion.server.features.starship.movement.MovementException
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -128,7 +128,6 @@ class ActiveControlledStarship (
 			return CompletableFuture.completedFuture(false)
 		}
 
-
 		val future = CompletableFuture<Boolean>()
 		Tasks.async {
 			val result = executeMovement(movement, pilot)
@@ -145,8 +144,8 @@ class ActiveControlledStarship (
 	private fun executeMovement(movement: StarshipMovement, controller: Controller): Boolean {
 		try {
 			movement.execute()
-		} catch (e: MovementException) {
-			val location = if (e is BlockedException) e.location else null
+		} catch (e: StarshipMovementException) {
+			val location = if (e is StarshipBlockedException) e.location else null
 			controller.onBlocked(movement, e, location)
 			controller.sendMessage(e.formatMessage())
 
