@@ -20,7 +20,7 @@ import kotlin.math.abs
  * Variable destination, it automatically flies towards it.
  *
  * @param shiftFlightType Condition on when to use shift flight
- * @param maximumCruiseDistanceSquared Does not cruise if the target is within this distance.
+ * @param maximumCruiseDistanceSquared Does not cruise if the target is within this distance (squared).
  **/
 class CruiseEngine(
 	controller: ActiveAIController,

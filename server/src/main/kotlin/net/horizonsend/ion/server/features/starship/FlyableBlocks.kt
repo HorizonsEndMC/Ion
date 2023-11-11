@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.miscellaneous.utils.BANNER_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.BED_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.BUTTON_TYPES
@@ -24,11 +23,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.Material.ACACIA_FENCE_GATE
 import org.bukkit.Material.ANVIL
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BEEHIVE
+import org.bukkit.Material.BEETROOTS
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BIRCH_FENCE_GATE
 import org.bukkit.Material.BLAST_FURNACE
@@ -36,6 +37,7 @@ import org.bukkit.Material.BOOKSHELF
 import org.bukkit.Material.BREWING_STAND
 import org.bukkit.Material.BROWN_MUSHROOM_BLOCK
 import org.bukkit.Material.CAMPFIRE
+import org.bukkit.Material.CARROTS
 import org.bukkit.Material.CARTOGRAPHY_TABLE
 import org.bukkit.Material.CAULDRON
 import org.bukkit.Material.CHAIN
@@ -59,6 +61,7 @@ import org.bukkit.Material.ENDER_CHEST
 import org.bukkit.Material.END_PORTAL_FRAME
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.EXPOSED_COPPER
+import org.bukkit.Material.FARMLAND
 import org.bukkit.Material.FLETCHING_TABLE
 import org.bukkit.Material.FLOWER_POT
 import org.bukkit.Material.FURNACE
@@ -94,6 +97,7 @@ import org.bukkit.Material.PEARLESCENT_FROGLIGHT
 import org.bukkit.Material.PISTON
 import org.bukkit.Material.PISTON_HEAD
 import org.bukkit.Material.PLAYER_HEAD
+import org.bukkit.Material.POTATOES
 import org.bukkit.Material.POTTED_AZURE_BLUET
 import org.bukkit.Material.POTTED_BAMBOO
 import org.bukkit.Material.POTTED_BIRCH_SAPLING
@@ -154,6 +158,7 @@ import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
 import org.bukkit.Material.WEATHERED_COPPER
+import org.bukkit.Material.WHEAT
 import org.bukkit.Material.WITHER_SKELETON_SKULL
 import org.bukkit.Material.ZOMBIE_HEAD
 import java.util.EnumSet
@@ -312,7 +317,13 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	LIGHTNING_ROD,
 	NETHERITE_BLOCK,
 
-	TERRACOTTA
+	TERRACOTTA,
+
+	FARMLAND,
+	WHEAT,
+	CARROTS,
+	POTATOES,
+	BEETROOTS,
 
 ).also {
 	it.addAll(CONCRETE_TYPES)
