@@ -169,9 +169,7 @@ object StarshipCruising : IonServerComponent() {
 		}
 
 		maxSpeed /= 2
-		if (starship.type == BATTLECRUISER) {
-			maxSpeed = maxSpeed * 7 / 8
-		}
+		maxSpeed = (maxSpeed * starship.type.cruiseSpeedMultiplier).toInt()
 
 		starship.cruiseData.accel = accel
 		starship.cruiseData.targetSpeed = maxSpeed
