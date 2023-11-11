@@ -43,12 +43,7 @@ interface CombatAIController : VariableObjectiveController {
 		val (x, y, z) = origin
 		val distance = target.distance(x, y, z)
 
-		debugAudience.debug("Manual weapon sets: $manualWeaponSets")
-		val weaponSet = manualWeaponSets.firstOrNull {
-			debug("$it, ${it.engagementRange}")
-			it.engagementRange.containsDouble(distance)
-		}?.name
-		debugAudience.debug("Finding weapon sets. Origin: $origin, Distance to target: $distance, weaponSet: $weaponSet")
+		val weaponSet = manualWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }?.name?.lowercase()
 		val direction = getDirection(Vec3i(getCenter()), target).normalize()
 
 		directionMod(direction)
@@ -56,7 +51,6 @@ interface CombatAIController : VariableObjectiveController {
 		Tasks.sync {
 			faceDirection?.let { AIControlUtils.faceDirection(this, faceDirection) }
 
-			debugAudience.debug("Firing all weapons: set: $weaponSet")
 			fireHeavyWeapons(direction, target.toVector(), weaponSet = weaponSet)
 			fireLightWeapons(direction, target.toVector(), weaponSet = weaponSet)
 		}
@@ -85,7 +79,7 @@ interface CombatAIController : VariableObjectiveController {
 
 		val (x, y, z) = origin
 		val distance = target.getVec3i(true).distance(x, y, z)
-		val weaponSet = autoWeaponSets.shuffled().firstOrNull { it.engagementRange.containsDouble(distance) }?.name
+		val weaponSet = autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }?.name?.lowercase()
 
 		if (weaponSet == null) {
 			AIControlUtils.unSetAllWeapons(this)
