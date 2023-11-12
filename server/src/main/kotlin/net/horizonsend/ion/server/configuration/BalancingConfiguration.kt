@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
-import org.apache.commons.lang.math.Fraction
 
 @Serializable
 data class BalancingConfiguration(
@@ -478,10 +477,10 @@ data class BalancingConfiguration(
 		val heavyTurret: StarshipWeapon = StarshipWeapon(
 			range = 500.0,
 			speed = 200.0,
-			shieldDamageMultiplier = 2,
+			shieldDamageMultiplier = 1,
 			thickness = 0.0,
 			particleThickness = 0.3,
-			explosionPower = 4.0f,
+			explosionPower = 3.0f,
 			volume = 0,
 			pitch = 2.0f,
 			soundName = "starship.weapon.turbolaser.heavy.shoot",
