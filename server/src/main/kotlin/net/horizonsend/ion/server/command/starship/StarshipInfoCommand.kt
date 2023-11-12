@@ -6,6 +6,9 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import org.bukkit.Bukkit
@@ -97,11 +100,16 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			for (shield in ship.shields) {
 				val percent = createPercent(shield.power, shield.maxPower)
-				val shieldClass = shield.multiblock.signText[3]?.let { miniMessage().serialize(it) }
+				val shieldClass = shield.multiblock.signText[3]
 
 				val shieldName = miniMessage().serialize(legacyAmpersand().deserialize(shield.name))
 
-				sender.sendRichMessage("      <gray>$shieldName: <aqua>$percent ($shieldClass)")
+				sender.sendMessage(Component.textOfChildren(
+					text("$shieldName: ", NamedTextColor.GRAY),
+					text("$percent (", NamedTextColor.AQUA),
+					shieldClass ?: text(""),
+					text(")", NamedTextColor.AQUA))
+				)
 			}
 
 			sender.sendRichMessage("   <gray>Shield Regen Efficiency: <aqua>${ship.shieldEfficiency}")
