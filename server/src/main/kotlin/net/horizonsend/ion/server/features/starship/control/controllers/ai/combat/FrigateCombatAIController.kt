@@ -46,7 +46,7 @@ open class FrigateCombatAIController(
 	override val autoWeaponSets: Set<WeaponSet>
 ): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	CombatAIController {
-	final override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
+	final override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  250.0)
 	final override var pathfindingEngine = CombatAStarPathfindingEngine(this, positioningEngine)
 	final override var movementEngine = CruiseEngine(this, pathfindingEngine, target?.getVec3i() ?: getCenterVec3i(), CruiseEngine.ShiftFlightType.ALL).apply {
 		maximumCruiseDistanceSquared = 0.0

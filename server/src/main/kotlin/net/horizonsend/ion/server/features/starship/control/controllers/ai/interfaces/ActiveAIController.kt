@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.PositioningEngine
@@ -18,6 +19,7 @@ abstract class ActiveAIController(
 	damager: Damager,
 	pilotName: Component?,
 	aggressivenessLevel: AggressivenessLevel,
+	vararg val additonalEngines: AIEngine
 ) : AIController(starship, name, damager, pilotName, aggressivenessLevel) {
 	abstract val positioningEngine: PositioningEngine
 	abstract val pathfindingEngine: AStarPathfindingEngine
@@ -27,6 +29,10 @@ abstract class ActiveAIController(
 		positioningEngine.shutDown()
 		pathfindingEngine.shutDown()
 		movementEngine.shutDown()
+
+		for (engine in additonalEngines) {
+			engine.shutDown()
+		}
 	}
 
 	override fun onDamaged(damager: Damager) {
@@ -35,23 +41,39 @@ abstract class ActiveAIController(
 		movementEngine.onDamaged(damager)
 
 		aggressivenessLevel.onDamaged(this, damager)
+
+		for (engine in additonalEngines) {
+			engine.onDamaged(damager)
+		}
 	}
 
 	override fun onMove(movement: StarshipMovement) {
 		positioningEngine.onMove(movement)
 		pathfindingEngine.onMove(movement)
 		movementEngine.onMove(movement)
+
+		for (engine in additonalEngines) {
+			engine.onMove(movement)
+		}
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
 		positioningEngine.onBlocked(movement, reason, location)
 		pathfindingEngine.onBlocked(movement, reason, location)
 		movementEngine.onBlocked(movement, reason, location)
+
+		for (engine in additonalEngines) {
+			engine.onBlocked(movement, reason, location)
+		}
 	}
 
 	fun tickAll() {
 		positioningEngine.tick()
 		pathfindingEngine.tick()
 		movementEngine.tick()
+
+		for (engine in additonalEngines) {
+			engine.tick()
+		}
 	}
 }
