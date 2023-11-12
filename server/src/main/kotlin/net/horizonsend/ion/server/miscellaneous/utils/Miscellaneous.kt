@@ -5,9 +5,9 @@ import net.horizonsend.ion.common.utils.DoubleLocation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.machine.AreaShields
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
-import net.horizonsend.ion.server.features.machine.AreaShields
 import net.milkbowl.vault.economy.Economy
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
@@ -211,7 +211,7 @@ fun Player.showBlockState(position: BlockPos, state: BlockState, blockEntity: Bl
  *
  * @return whether the explosion was cancelled
  **/
-fun regeneratingBlockChange(source: Entity?, origin: Block, changedBlocks: MutableList<Block>, yield: Float, bypassAreaShields: Boolean): Boolean {
+fun regeneratingBlockChange(source: Entity?, origin: Block, changedBlocks: MutableList<Block>, yield: Float, bypassAreaShields: Boolean): BlockExplodeEvent {
 	val world = origin.world
 	val location = origin.location.toCenterLocation()
 	val blockExplodeEvent = BlockExplodeEvent(origin, changedBlocks, yield)
@@ -223,5 +223,5 @@ fun regeneratingBlockChange(source: Entity?, origin: Block, changedBlocks: Mutab
 
 	world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 10f, 0.5f)
 
-	return blockExplodeEvent.callEvent()
+	return blockExplodeEvent
 }
