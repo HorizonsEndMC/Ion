@@ -12,7 +12,7 @@ import org.bukkit.util.Vector
  * This positioning engine seeks out a position at the closest cardinal direction from the target
  * it has a variable holdoff distance
  **/
-open class AxisStandoffPositioningEngine(
+class AxisStandoffPositioningEngine(
 	controller: ActiveAIController,
 	var target: AITarget?,
 	var standoffDistance: Double
@@ -24,7 +24,7 @@ open class AxisStandoffPositioningEngine(
 		val targetLocation = getDestination().toVector()
 
 		val vectors = CARDINAL_BLOCK_FACES.map {
-			val vec = it.direction.multiply(200)
+			val vec = it.direction.multiply(standoffDistance)
 			nearestPointToVector(targetLocation, vec, shipLocation)
 		}
 
