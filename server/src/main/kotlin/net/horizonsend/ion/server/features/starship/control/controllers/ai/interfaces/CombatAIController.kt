@@ -22,6 +22,10 @@ interface CombatAIController : VariableObjectiveController {
 	val manualWeaponSets: Set<WeaponSet>
 	val autoWeaponSets: Set<WeaponSet>
 
+	var shouldFaceTarget: Boolean
+	var turnTicks: Int
+	var turnCooldown: Int
+
 	// Shield Health indicators
 	val shields get() = starship.shields
 	val shieldCount get() = shields.size
@@ -37,7 +41,7 @@ interface CombatAIController : VariableObjectiveController {
 	 *
 	 * Lambda allows modification of the aiming direction
 	 **/
-	fun fireAllWeapons(origin: Vec3i, target: Vec3i, faceDirection: BlockFace? = null, directionMod: (Vector) -> Unit) {
+	fun fireAllWeapons(origin: Vec3i, target: Vec3i, directionMod: (Vector) -> Unit) {
 		if (this !is AIController) return
 
 		val (x, y, z) = origin
@@ -49,11 +53,23 @@ interface CombatAIController : VariableObjectiveController {
 		directionMod(direction)
 
 		Tasks.sync {
-			faceDirection?.let { AIControlUtils.faceDirection(this, faceDirection) }
-
 			fireHeavyWeapons(direction, target.toVector(), weaponSet = weaponSet)
 			fireLightWeapons(direction, target.toVector(), weaponSet = weaponSet)
 		}
+	}
+
+	fun handleRotation(faceDirection: BlockFace) {
+		if (this !is AIController) return
+		if (!shouldFaceTarget) return
+
+		if (turnTicks >= turnCooldown) {
+			turnTicks = 0
+			return
+		}
+
+		turnTicks++
+
+		AIControlUtils.faceDirection(this, faceDirection)
 	}
 
 	/** Fires light weapons (left click) in a direction */

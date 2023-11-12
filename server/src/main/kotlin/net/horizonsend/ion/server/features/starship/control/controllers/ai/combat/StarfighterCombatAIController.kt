@@ -46,7 +46,6 @@ open class StarfighterCombatAIController(
 
 	override val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
 	override val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
-
 	override fun destroy() {
 		shutDownAll()
 		super.destroy()
@@ -173,6 +172,9 @@ open class StarfighterCombatAIController(
 		if (state == State.COMBAT) combatLoop()
 	}
 
+	override var turnTicks: Int = 0
+	override var turnCooldown: Int = 60
+	override var shouldFaceTarget: Boolean = true
 	private fun combatLoop() {
 		val target = this.target ?: return
 
@@ -181,10 +183,11 @@ open class StarfighterCombatAIController(
 
 		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
 
+		handleRotation(faceDirection)
+
 		fireAllWeapons(
 			starship.centerOfMass,
-			target.getVec3i(true),
-			faceDirection = faceDirection
+			target.getVec3i(true)
 		) { direction ->
 			if (aggressivenessLevel.shotDeviation > 0) {
 				val offsetX = randomDouble(-aggressivenessLevel.shotDeviation, aggressivenessLevel.shotDeviation)
