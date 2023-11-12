@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
+import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -331,6 +332,7 @@ class MultiblockShape {
 		fun dispenser() = type(Material.DISPENSER)
 		fun lodestone() = type(Material.LODESTONE)
 		fun noteBlock() = type(Material.NOTE_BLOCK)
+		fun anyTrapdoor() = filteredTypes { it.isTrapdoor }
 
 		fun thrusterBlock() = anyType(
 			Material.OCHRE_FROGLIGHT,
