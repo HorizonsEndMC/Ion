@@ -21,6 +21,8 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
+import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
+import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
@@ -28,6 +30,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -151,7 +154,7 @@ object StarshipDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("ai")
-	@CommandCompletion("@controllerFactories")
+	@CommandCompletion("@controllerFactories EXTREME|HIGH|MEDIUM|LOW|NONE standoffDistance x y z manualSets autoSets @autoTurretTargets ")
 	fun ai(
 		sender: Player,
 		controller: AIControllers.AIControllerFactory<*>,
@@ -162,14 +165,22 @@ object StarshipDebugCommand : SLCommand() {
 		@Optional destinationZ: Double?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
+		@Optional target: String?,
 	) {
 		val destination = if (destinationX != null && destinationY != null && destinationZ != null) Location(sender.world, destinationX, destinationY, destinationZ) else null
 		val starship = getStarshipRiding(sender)
 
+		val aTarget = target?.let {
+			val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
+
+			Bukkit.getPlayer(formatted)?.let { PlayerTarget(it) } ?:
+			ActiveStarships[formatted]?.let { StarshipTarget(it) }
+		}
+
 		starship.controller = controller.createController(
 			starship,
 			text("Player Created AI Ship"),
-			null,
+			aTarget,
 			destination,
 			aggressivenessLevel,
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
