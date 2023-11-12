@@ -12,7 +12,7 @@ import org.bukkit.util.Vector
  * This positioning engine seeks out a position at the closest cardinal direction from the target
  * it has a variable holdoff distance
  **/
-class AxisStandoffPositioningEngine(
+open class AxisStandoffPositioningEngine(
 	controller: ActiveAIController,
 	var target: AITarget?,
 	var standoffDistance: Double

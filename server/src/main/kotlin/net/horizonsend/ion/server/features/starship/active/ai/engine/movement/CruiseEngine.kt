@@ -54,7 +54,7 @@ class CruiseEngine(
 		}
 
 		debugAudience.debug("More than 500 blocks away, cruising")
-		cruiseToVec3i(starshipLocation, cruiseDestination ?: return)
+		cruiseToVec3i(starshipLocation, cruiseDestination)
 	}
 
 	/** Returns true if the destination is sufficiently far that it should cruise */
