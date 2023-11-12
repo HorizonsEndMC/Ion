@@ -49,6 +49,7 @@ object NPCFakePilot : IonServerComponent(true) {
 	}
 
 	fun tickPilots() {
+		return
 		for ((starship, npc) in activeFakePilots) {
 			if (!isActive(starship)) continue
 			if (!isPiloted(starship)) continue
@@ -80,6 +81,7 @@ object NPCFakePilot : IonServerComponent(true) {
 	}
 
 	private fun clearInactive() {
+		return
 		if (!isCitizensLoaded) return
 
 		val iterator = activeFakePilots.iterator()
@@ -105,6 +107,7 @@ object NPCFakePilot : IonServerComponent(true) {
 
 	/** If location is null, one will be generated from the ship computer location */
 	fun add(starship: ActiveControlledStarship, location: Location?, pilotName: Component? = null): NPC? {
+		return null
 		val spawnLoc = location ?: getLocation(starship.data)
 		if (!isCitizensLoaded) return null
 
@@ -130,6 +133,7 @@ object NPCFakePilot : IonServerComponent(true) {
 	}
 
 	fun remove(starship: ActiveStarship) {
+		return
 		if (!isCitizensLoaded) return
 		activeFakePilots.remove(starship)?.destroy()
 	}
@@ -140,6 +144,7 @@ object NPCFakePilot : IonServerComponent(true) {
 	/** If the fake pilot of the starship is destroyed */
 	@EventHandler
 	fun onPilotDestroyed(event: NPCDeathEvent) {
+		return
 		val npc = event.npc
 		if (!isFakePilot(npc)) return
 
@@ -149,6 +154,7 @@ object NPCFakePilot : IonServerComponent(true) {
 
 	@EventHandler
 	fun onPilotDamaged(event: NPCDamageByEntityEvent) {
+		return
 		val damager = event.damager
 		if (damager !is Player) return
 
