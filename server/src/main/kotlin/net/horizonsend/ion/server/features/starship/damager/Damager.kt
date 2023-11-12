@@ -51,6 +51,8 @@ class PlayerDamagerWrapper(override val player: Player, override val starship: A
 	override val color: Color
 		get() = PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: Color.RED
 	override fun getAITarget(): AITarget = PlayerTarget(player)
+
+	override fun toString(): String = "PlayerDamager[${player.name}]"
 }
 
 val noOpDamager = NoOpDamager()
@@ -88,6 +90,8 @@ class AIShipDamager(override val starship: ActiveStarship, override val color: C
 	override fun rewardMoney(credits: Double) {}
 	override fun rewardXP(xp: Int) {}
 	override fun getAITarget(): AITarget = StarshipTarget(starship)
+
+	override fun toString(): String = "AIDamager[${starship.controller}]"
 }
 
 fun addToDamagers(world: World, block: Block, shooter: Entity) {
