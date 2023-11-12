@@ -29,7 +29,7 @@ class RotatingAxisStandoffPositioningEngine(
 
 	fun getBlockFace(): BlockFace {
 		val progress = loopSize.toDouble() / ticks.toDouble()
-		val newIndex = (progress * faces.lastIndex).toInt()
+		val newIndex = minOf((progress * faces.lastIndex).toInt(), faces.lastIndex)
 
 		return faces[newIndex]
 	}
@@ -45,7 +45,7 @@ class RotatingAxisStandoffPositioningEngine(
 		val vectorFar = face.direction.multiply(500.0)
 		val nearest = nearestPointToVector(targetLocation, vectorFar, shipLocation)
 
-		val goal = face.direction.multiply(standoffDistance)
+		val goal = shipLocation.clone().add(face.direction.multiply(standoffDistance))
 
 		return if (shipLocation.distanceSquared(nearest) <= 100.0) goal else nearest
 	}
