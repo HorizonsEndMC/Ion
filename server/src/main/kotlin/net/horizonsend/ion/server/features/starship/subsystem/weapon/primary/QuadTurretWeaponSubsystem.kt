@@ -25,8 +25,8 @@ class QuadTurretWeaponSubsystem(
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
 	override fun getMaxPerShot(): Int = when (starship.type) {
 		StarshipType.BATTLECRUISER -> 3
-		StarshipType.BATTLESHIP -> 5
-		StarshipType.DREADNOUGHT -> 8
+		StarshipType.BATTLESHIP -> 4
+		StarshipType.DREADNOUGHT -> 6
 		else -> 0
 	}
 
