@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
@@ -10,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.PerDamagerCooldown
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.isLava
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import org.bukkit.Location
@@ -33,14 +31,10 @@ object StarshipWeaponry : IonServerComponent() {
         target: Vector,
         weaponSet: String?
 	) {
-		debugAudience.debug("Weapon sets: ${starship.weaponSets.asMap().toMap()}")
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
-		debugAudience.debug("Weapons: $weapons")
 
 		val fireTask = {
-			debugAudience.debug("Queuing shots")
 			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
-			debugAudience.debug("Shots: $queuedShots")
 			StarshipWeapons.fireQueuedShots(queuedShots, starship)
 		}
 
