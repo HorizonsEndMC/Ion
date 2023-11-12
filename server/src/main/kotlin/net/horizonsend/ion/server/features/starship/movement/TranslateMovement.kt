@@ -55,7 +55,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 
 			for (cx in cxRange) {
 				for (cz in czRange) {
-					val chunkFuture = world.getChunkAtAsyncUrgently(cx, cz)
+					val chunkFuture = world.getChunkAtAsync(cx, cz)
 					toLoad.add(chunkFuture)
 				}
 			}
