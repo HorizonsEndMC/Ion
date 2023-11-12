@@ -46,8 +46,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -666,7 +668,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandAlias("download")
+	@CommandAlias("starshipdownload")
 	@Description("Download the ship you're currently piloting")
 	fun onDownload(sender: Player) = asyncCommand(sender) {
 		uploadCooldown.tryExec(sender) {
@@ -680,7 +682,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					return@uploadAsync
 				}
 
-				sender.information("Your schematic has been uploaded. Use $it to download the file.")
+				sender.sendMessage(Component.textOfChildren(
+					text("Your schematic has been uploaded.", NamedTextColor.DARK_GREEN), newline(),
+					text("Click this link to download it", NamedTextColor.GREEN)
+						.hoverEvent(text(it.toString()))
+						.clickEvent(ClickEvent.copyToClipboard(it.toString())),
+				))
 			}
 		}
 	}
