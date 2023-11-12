@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.Subcommand
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
@@ -24,6 +25,7 @@ import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -76,8 +78,25 @@ object StarshipDebugCommand : SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("releaseall")
-	fun onReleaseAll() {
-		ActiveStarships.allControlledStarships().forEach { DeactivatedPlayerStarships.deactivateNow(it) }
+	fun onReleaseAll(sender: Player) {
+		var released = 0
+		ActiveStarships.allControlledStarships().forEach {
+			DeactivatedPlayerStarships.deactivateNow(it)
+			released++
+		}
+
+		sender.success("Released $released ships")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("release")
+	@CommandCompletion("@autoTurretTargets")
+	fun release(sender: Player, identifier: String) {
+		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
+		val starship = ActiveStarships[formatted] ?: fail { "Could not find target $identifier" }
+
+		DeactivatedPlayerStarships.deactivateNow(starship as ActiveControlledStarship)
+		sender.success("Released $identifier")
 	}
 
 	@Suppress("Unused")
@@ -89,6 +108,7 @@ object StarshipDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("testVector")
+	@Suppress("Unused")
 	fun onTestVector(sender: Player, particle: Particle, radius: Double, points: Int, step: Double, length: Double, wavelength: Double, offset: Double) {
 		val dir = sender.location.direction
 		val origin = sender.eyeLocation.clone().add(dir)
@@ -151,6 +171,8 @@ object StarshipDebugCommand : SLCommand() {
 
 		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
+
+		(ship.controller as? CombatAIController)?.let { sender.userError("Target: ${it.target}") }
 	}
 
 	@Subcommand("ai")
