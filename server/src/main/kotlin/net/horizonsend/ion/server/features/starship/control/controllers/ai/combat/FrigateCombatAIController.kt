@@ -7,14 +7,13 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.CombatAStarPathfindingEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.RotatingAxisStandoffPositioningEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
-import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
@@ -49,7 +48,7 @@ open class FrigateCombatAIController(
 	override val autoWeaponSets: Set<WeaponSet>
 ): ActiveAIController(starship, "FrigateCombatMatrix", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	CombatAIController {
-	final override var positioningEngine: RotatingAxisStandoffPositioningEngine = RotatingAxisStandoffPositioningEngine(this, target,  250.0, CARDINAL_BLOCK_FACES.toList())
+	final override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  250.0)
 	final override var pathfindingEngine = CombatAStarPathfindingEngine(this, positioningEngine)
 	final override var movementEngine = CruiseEngine(this, pathfindingEngine, target?.getVec3i() ?: getCenterVec3i(), CruiseEngine.ShiftFlightType.ALL).apply {
 		maximumCruiseDistanceSquared = 0.0
@@ -116,10 +115,10 @@ open class FrigateCombatAIController(
 
 		val distance = distance(location.toVector(), targetLocationVector)
 		locationObjective = targetLocation
-
-		if (distance >= 550) {
-			aggressivenessLevel.findNextTarget(this)
-		}
+//
+//		if (distance >= 550) {
+//			aggressivenessLevel.findNextTarget(this)
+//		}
 
 		return true
 	}
