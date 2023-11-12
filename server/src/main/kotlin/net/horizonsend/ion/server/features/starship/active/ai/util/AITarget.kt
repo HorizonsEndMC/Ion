@@ -38,6 +38,10 @@ class PlayerTarget(val player: Player) : AITarget() {
 	override fun isActive(): Boolean {
 		return player.isOnline
 	}
+
+	override fun toString(): String {
+		return player.name
+	}
 }
 
 class StarshipTarget(val ship: ActiveStarship) : AITarget() {
@@ -61,5 +65,9 @@ class StarshipTarget(val ship: ActiveStarship) : AITarget() {
 
 	override fun isActive(): Boolean {
 		return ActiveStarships.isActive(ship)
+	}
+
+	override fun toString(): String {
+		return ship.identifier
 	}
 }
