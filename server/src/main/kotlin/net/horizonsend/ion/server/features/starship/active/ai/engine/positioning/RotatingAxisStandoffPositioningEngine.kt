@@ -19,7 +19,7 @@ class RotatingAxisStandoffPositioningEngine(
 	var ticks = 0
 
 	override fun tick() {
-		if (ticks == loopSize) {
+		if (ticks >= loopSize) {
 			ticks = 0
 			return
 		}
@@ -28,8 +28,8 @@ class RotatingAxisStandoffPositioningEngine(
 	}
 
 	fun getBlockFace(): BlockFace {
-		val progress = loopSize.toDouble() / ticks.toDouble()
-		val newIndex = minOf((progress * faces.lastIndex).toInt(), faces.lastIndex)
+		val progress = ticks.toDouble() / loopSize.toDouble()
+		val newIndex = minOf((progress * (faces.size - 1)).toInt(), (faces.size - 1))
 
 		return faces[newIndex]
 	}

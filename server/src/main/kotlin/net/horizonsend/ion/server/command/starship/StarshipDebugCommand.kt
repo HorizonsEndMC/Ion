@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIControllers
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.RotatingAxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
@@ -210,6 +211,7 @@ object StarshipDebugCommand : SLCommand() {
 			null
 		).apply {
 			if (this is ActiveAIController)  (this.positioningEngine as? AxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
+			if (this is ActiveAIController)  (this.positioningEngine as? RotatingAxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
 		}
 
 		NPCFakePilot.add(starship as ActiveControlledStarship, null)
