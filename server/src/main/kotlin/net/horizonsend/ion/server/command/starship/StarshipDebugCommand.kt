@@ -17,9 +17,11 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIControllers
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -154,6 +156,7 @@ object StarshipDebugCommand : SLCommand() {
 		sender: Player,
 		controller: AIControllers.AIControllerFactory<*>,
 		aggressivenessLevel: AggressivenessLevel,
+		standoffDistance: Double,
 		@Optional destinationX: Double?,
 		@Optional destinationY: Double?,
 		@Optional destinationZ: Double?,
@@ -172,7 +175,9 @@ object StarshipDebugCommand : SLCommand() {
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
 			null
-		)
+		).apply {
+			if (this is ActiveAIController)  (this.positioningEngine as? AxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
+		}
 
 		NPCFakePilot.add(starship as ActiveControlledStarship, null)
 		starship.removePassenger(sender.uniqueId)
