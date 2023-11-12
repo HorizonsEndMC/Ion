@@ -82,7 +82,6 @@ class ActiveControlledStarship (
 	}
 
 	fun tryRotate(clockwise: Boolean) {
-		try { throw Exception() } catch (e: Throwable) { e.printStackTrace() }
 		pendingRotations.add(PendingRotation(clockwise))
 
 		if (pendingRotations.size > 1) {
