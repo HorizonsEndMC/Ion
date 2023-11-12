@@ -10,8 +10,8 @@ import org.bukkit.util.Vector
 
 class RotatingAxisStandoffPositioningEngine(
 	controller: ActiveAIController,
-	val target: AITarget?,
-	val standoffDistance: Double,
+	var target: AITarget?,
+	var standoffDistance: Double,
 	val faces: List<BlockFace>
 ) : PositioningEngine(controller) {
 	var loopSize = 60 * 20
