@@ -8,14 +8,13 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.MovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.CombatAStarPathfindingEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.RotatingAxisStandoffPositioningEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
-import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
@@ -41,7 +40,7 @@ open class StarfighterCombatAIController(
 	aggressivenessLevel: AggressivenessLevel
 ) : ActiveAIController(starship, "StarfighterCombatMatrix", AIShipDamager(starship), pilotName, aggressivenessLevel),
 	CombatAIController {
-	final override var positioningEngine: RotatingAxisStandoffPositioningEngine = RotatingAxisStandoffPositioningEngine(this, target,  25.0, CARDINAL_BLOCK_FACES.toList())
+	final override var positioningEngine: AxisStandoffPositioningEngine = AxisStandoffPositioningEngine(this, target,  25.0)
 	final override var pathfindingEngine = CombatAStarPathfindingEngine(this, positioningEngine)
 	final override var movementEngine: MovementEngine = ShiftFlightMovementEngine(this, pathfindingEngine)
 
