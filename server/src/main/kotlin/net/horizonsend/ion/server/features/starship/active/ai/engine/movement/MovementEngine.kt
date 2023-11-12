@@ -125,19 +125,19 @@ abstract class MovementEngine(
 		cruiseInDirection(direction)
 	}
 
-	fun cruiseToVec3i(starshipCenter: Vec3i, vec3i: Vec3i) {
+	fun cruiseToVec3i(starshipCenter: Vec3i, vec3i: Vec3i, faceDirection: Boolean = true) {
 		val direction = getVector(starshipCenter.toVector(), vec3i.toVector())
 
 		cruiseInDirection(direction)
 	}
 
-	fun cruiseInDirection(direction: Vector) {
+	fun cruiseInDirection(direction: Vector, faceDirection: Boolean = true) {
 		val starship = controller.starship as ActiveControlledStarship
 		val facing = starship.forward
 
 		val blockFace = vectorToBlockFace(direction)
 
-		if (facing != blockFace) {
+		if (facing != blockFace && faceDirection) {
 			Tasks.sync { AIControlUtils.faceDirection(controller, blockFace) }
 
 			// Can't cruise if not facing the right direction
