@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.getDirection
+import net.horizonsend.ion.server.miscellaneous.utils.leftFace
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -54,6 +56,8 @@ open class FrigateCombatAIController(
 
 	override var locationObjective: Location? = target?.getLocation()
 
+	var ticks = 0
+	var leftFace = false
 	override fun tick() {
 		val ok = checkOnTarget()
 
@@ -73,6 +77,8 @@ open class FrigateCombatAIController(
 			positioningEngine.standoffDistance = 25.0
 		}
 		tickAll()
+
+		ticks++
 
 		handleAutoWeapons(starship.centerOfMass)
 		combatLoop()
@@ -123,7 +129,13 @@ open class FrigateCombatAIController(
 		// Get the closest axis
 		(starship as ActiveControlledStarship).speedLimit = -1
 
-		val faceDirection = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
+		val targetBlockFace = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
+
+		if (ticks % 300 == 0) {
+			leftFace = !leftFace
+		}
+
+		val faceDirection = if (leftFace) targetBlockFace.leftFace else targetBlockFace.rightFace
 
 		fireAllWeapons(
 			starship.centerOfMass,
