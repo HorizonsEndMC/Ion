@@ -125,7 +125,7 @@ open class FrigateCombatAIController(
 
 	override var turnTicks: Int = 0
 	override var turnCooldown: Int = 1200
-	override var shouldFaceTarget: Boolean = true
+	override var shouldFaceTarget: Boolean = false
 	private fun combatLoop() {
 		val target = this.target ?: return
 
