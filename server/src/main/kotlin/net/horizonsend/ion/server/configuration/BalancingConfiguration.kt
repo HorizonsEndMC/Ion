@@ -649,6 +649,26 @@ data class BalancingConfiguration(
 			boostChargeNanos = 0,
 			aimDistance = 0
 		),
+		val aaGun: StarshipWeapon = StarshipWeapon(
+			range = 500.0,
+			speed = 125.0,
+			shieldDamageMultiplier = 3,
+			thickness = 0.0,
+			particleThickness = 0.8,
+			explosionPower = 6f,
+			volume = 0,
+			pitch = 2.0f,
+			soundName = "starship.weapon.turbolaser.tri.shoot",
+			powerUsage = 45000,
+			length = 0,
+			angleRadians = 0.0,
+			convergeDistance = 0.0,
+			extraDistance = 0,
+			fireCooldownNanos = 10,
+			boostChargeNanos = 3,
+			aimDistance = 0,
+			inaccuracyRadians = 3.0
+		),
 	) {
 		@Serializable
 		data class StarshipWeapon(
