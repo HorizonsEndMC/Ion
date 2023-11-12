@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.drills
 
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
@@ -90,7 +91,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 			toDestroy: MutableList<Block>,
 			output: Inventory,
 			player: Player,
-			vararg people: Player = emptyArray()
+			cancel: (Sign) -> Unit
 		): Int {
 			var broken = 0
 
@@ -114,10 +115,7 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 				for (item in drops) {
 					if (!LegacyItemUtils.canFit(output, item)) {
-						player.userError("Not enough space.")
-						people.forEach { it.userError("Not enough space.") }
-
-						setUser(sign, null)
+						cancel(sign)
 
 						return broken
 					}
@@ -260,7 +258,11 @@ abstract class DrillMultiblock(tierText: String, val tierMaterial: Material) :
 
 		val maxBroken = max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
 
-		val broken = breakBlocks(sign, maxBroken, toDestroy, getOutput(sign.block), player)
+		val broken = breakBlocks(sign, maxBroken, toDestroy, getOutput(sign.block), player) {
+			player.userErrorAction("Not enough space.")
+
+			setUser(sign, null)
+		}
 
 		val powerUsage = broken * 10
 		PowerMachines.setPower(sign, power - powerUsage, true)

@@ -3,25 +3,25 @@ package net.horizonsend.ion.server.features.starship.subsystem
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.controllers.Controller
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
-import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
-import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
+import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActivePlayerStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.controllers.Controller
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.kyori.adventure.text.Component.text
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.toLocation
-import org.bukkit.Bukkit.getPlayer
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -254,9 +254,12 @@ class MiningLaserSubsystem(
 			maxBroken = multiblock.maxBroken,
 			toDestroy = blocks,
 			output = multiblock.getOutput(sign),
-			people = starship.passengerIDs.mapNotNull(::getPlayer).toTypedArray(),
 			player = (starship.controller as? PlayerController)?.player ?: lastUser
-		)
+		) {
+			starship.userErrorAction("Not enough space!")
+
+			DrillMultiblock.setUser(sign, null)
+		}
 
 		if (blocksBroken > 0) {
 			PowerMachines.setPower(sign, power - (blockBreakPowerUsage * blocksBroken).toInt(), true)
