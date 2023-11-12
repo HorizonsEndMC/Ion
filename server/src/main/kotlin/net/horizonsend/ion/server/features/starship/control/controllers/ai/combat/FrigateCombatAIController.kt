@@ -132,7 +132,7 @@ open class FrigateCombatAIController(
 
 		val targetBlockFace = vectorToBlockFace(getDirection(Vec3i(getCenter()), target.getVec3i(true)), includeVertical = false)
 
-		if (ticks % 300 == 0) {
+		if (ticks % 900 == 0) {
 			leftFace = !leftFace
 		}
 
