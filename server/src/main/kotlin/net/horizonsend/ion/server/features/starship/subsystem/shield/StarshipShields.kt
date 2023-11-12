@@ -94,21 +94,21 @@ object StarshipShields : IonServerComponent() {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	fun onBlockExplode(event: BlockExplodeEvent) {
 		val block = event.block
-		handleExplosion(block, event.blockList(), event)
+		handleExplosion(block, event.block.location, event.blockList(), event)
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	fun onEntityExplode(event: EntityExplodeEvent) {
 		val location = event.location
 		val block = location.block
-		handleExplosion(block, event.blockList(), event)
+		handleExplosion(block, event.location, event.blockList(), event)
 	}
 
-	private fun handleExplosion(block: Block, blockList: MutableList<Block>, event: Cancellable) {
+	private fun handleExplosion(block: Block, location: Location, blockList: MutableList<Block>, event: Cancellable) {
 		if (ProtectionListener.isProtectedCity(block.location)) return
 		val power = explosionPowerOverride ?: getExplosionPower(block, blockList)
 
-		onShieldImpact(block.location.toCenterLocation(), blockList, power)
+		onShieldImpact(location.toCenterLocation(), blockList, power)
 
 		if (LAST_EXPLOSION_ABSORBED) event.isCancelled = true
 	}
