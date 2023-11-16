@@ -23,10 +23,10 @@ class QuadTurretWeaponSubsystem(
 	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.quadTurret.inaccuracyRadians)
 	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.quadTurret.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
-	override fun getMaxPerShot(): Int = when (starship.type) {
-		StarshipType.BATTLECRUISER -> 3
-		StarshipType.BATTLESHIP -> 4
-		StarshipType.DREADNOUGHT -> 6
+	override fun getMaxPerShot(): Int = when (starship.initialBlockCount) {
+		in 12001..20000 -> 3
+		in 20001..32000 -> 4
+		in 32001..48000 -> 6
 		else -> 0
 	}
 
