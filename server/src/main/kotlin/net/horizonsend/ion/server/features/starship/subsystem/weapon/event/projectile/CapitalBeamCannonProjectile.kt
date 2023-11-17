@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
@@ -15,14 +16,14 @@ class CapitalBeamCannonProjectile(
 	dir: Vector,
 	shooter: Damager
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.balancing.starshipWeapons.capitalBeam.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.capitalBeam.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.capitalBeam.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.capitalBeam.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.capitalBeam.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.capitalBeam.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.capitalBeam.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.capitalBeam.soundName
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.capitalBeam ?: IonServer.starshipBalancing.nonStarshipFired.capitalBeam
+	override val range: Double = balancing.range
+	override var speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val soundName: String = balancing.soundName
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		val vector = dir.clone().normalize().multiply(travel)

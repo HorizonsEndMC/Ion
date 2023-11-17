@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.customitems.throwables.objects
 import org.bukkit.block.Dispenser as DispenserState
 import org.bukkit.block.data.type.Dispenser as DispenserData
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.Throwables.ThrowableBalancing
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwables.ThrowableBalancing
 import net.horizonsend.ion.server.features.customitems.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta

@@ -7,7 +7,7 @@ import org.bukkit.Location
 import org.bukkit.util.Vector
 
 abstract class HitscanProjectile(
-	starship: ActiveStarship,
+	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,

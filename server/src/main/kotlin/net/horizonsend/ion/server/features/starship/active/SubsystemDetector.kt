@@ -168,6 +168,8 @@ object SubsystemDetector {
 				continue
 			}
 
+			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) continue
+
 			if (isDuplicate(starship, subsystem)) {
 				continue
 			}

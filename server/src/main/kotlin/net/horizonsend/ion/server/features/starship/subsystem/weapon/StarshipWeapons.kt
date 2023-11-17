@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
@@ -92,7 +91,7 @@ object StarshipWeapons {
 		val firedCounts = HashMultimap.create<String, WeaponSubsystem>()
 
 		for (shot in queuedShots.shuffled(ThreadLocalRandom.current())) {
-			if (shot.weapon is StarshipCooldownSubsystem) {
+			if (shot.weapon.balancing.applyCooldownToAll) {
 				val clazz = shot.weapon::class.java
 
 				for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
