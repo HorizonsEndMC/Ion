@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Location
@@ -12,7 +12,7 @@ import kotlin.math.sin
 /**
  * Tries to position the ship in a circling pattern around the target
  **/
-class CirclingPositionEngine(controller: ActiveAIController, var target: Vec3i?, var holdOffDistance: Double) : PositioningEngine(controller) {
+class CirclingPositionEngine(controller: AIController, var target: Vec3i?, var holdOffDistance: Double) : PositioningEngine(controller) {
 	private val ticksPerCruise = StarshipCruising.SECONDS_PER_CRUISE * 20.0
 	private var internalDestination: Vec3i? = target
 
@@ -50,11 +50,9 @@ class CirclingPositionEngine(controller: ActiveAIController, var target: Vec3i?,
 
 	/** Returns the percentage the target location should move around the target per tick */
 	private fun getMovePercent(): Double {
-		starship as ActiveControlledStarship
-
 		val circumference = circleCircumference()
 
-		val cruiseSpeed = starship.cruiseData.targetSpeed.toDouble()
+		val cruiseSpeed = (starship as ActiveControlledStarship).cruiseData.targetSpeed.toDouble()
 		val blocksPerTick = cruiseSpeed / ticksPerCruise
 
 		return blocksPerTick/ circumference

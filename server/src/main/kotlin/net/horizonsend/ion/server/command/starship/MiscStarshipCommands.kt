@@ -448,7 +448,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			"Power mode $shieldPct $weaponPct $thrusterPct is not allowed! None can be less than 10% or greater than 50%."
 		}
 
-		getStarshipRiding(sender).updatePower(sender, shieldPct, weaponPct, thrusterPct)
+		getStarshipRiding(sender).updatePower(sender.name, shieldPct, weaponPct, thrusterPct)
 	}
 
 	@Suppress("unused")
