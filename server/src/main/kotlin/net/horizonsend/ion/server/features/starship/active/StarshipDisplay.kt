@@ -96,7 +96,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		val blockCount = starship.initialBlockCount
 		val location = starship.centerOfMass
 
-		val nation: Oid<Nation>? = (starship.controller as? PlayerController)?.player?.let { PlayerCache[it] }?.nationOid
+		val nation: Oid<Nation>? = (starship.controller as? PlayerController)?.player?.let { if (it.isOnline) PlayerCache[it] else null }?.nationOid
 		val cachedNation = nation?.let { NationCache[it] }
 		val colorCSS = cachedNation?.color?.let { "color:${TextColor.color(it).asHexString()};" }
 
