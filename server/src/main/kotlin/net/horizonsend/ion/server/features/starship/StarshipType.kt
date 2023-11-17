@@ -346,7 +346,8 @@ enum class StarshipType(
 		menuItemMaterial = Material.EMERALD_BLOCK,
 		isWarship = true,
 		color = "#d000d0",
-		overridePermission = "ion.ships.aiship"
+		overridePermission = "ion.ships.aiship",
+		cruiseSpeedMultiplier = 1.00
 	);
 
 	val formatted: String get() = "<$color>$displayName</$color>"
