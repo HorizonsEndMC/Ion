@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -24,14 +24,15 @@ class SonicMissileWeaponSubsystem(
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem,
 	PermissionWeaponSubsystem {
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.sonicMissile
 	override val permission: String = "ioncore.eventweapon"
-	override val length: Int = IonServer.balancing.starshipWeapons.sonicMissile.length
-	override val convergeDist: Double = IonServer.balancing.starshipWeapons.sonicMissile.convergeDistance
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.sonicMissile.extraDistance
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.sonicMissile.angleRadians)
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.sonicMissile.powerUsage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.boostChargeNanos)
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.sonicMissile.fireCooldownNanos)
+	override val length: Int = balancing.length
+	override val convergeDist: Double = balancing.convergeDistance
+	override val extraDistance: Int = balancing.extraDistance
+	override val angleRadians: Double = Math.toRadians(balancing.angleRadians)
+	override val powerUsage: Int = balancing.powerUsage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 

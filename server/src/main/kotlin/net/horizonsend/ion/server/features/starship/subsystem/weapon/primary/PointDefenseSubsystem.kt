@@ -1,13 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
@@ -16,9 +15,10 @@ import org.bukkit.util.Vector
 import kotlin.math.sqrt
 
 class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
-	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem, StarshipCooldownSubsystem {
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.pointDefence.powerUsage
-	override val range: Double = IonServer.balancing.starshipWeapons.pointDefence.range
+	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.pointDefence
+	override val powerUsage: Int = balancing.powerUsage
+	override val range: Double = balancing.range
 
 	override fun getMaxPerShot(): Int {
 		return (sqrt(starship.initialBlockCount.toDouble()) / 32).toInt()

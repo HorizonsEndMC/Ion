@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
-import java.util.concurrent.TimeUnit
 
 sealed class QuadTurretMultiblock : TurretMultiblock() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
@@ -18,14 +17,8 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getSign(): Int
 
-	override val cooldownNanos: Long get() = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
-	override val range: Double get() = IonServer.balancing.starshipWeapons.quadTurret.range
-	override val sound: String get() = IonServer.balancing.starshipWeapons.quadTurret.soundName
 
-	override val projectileSpeed: Int get() = IonServer.balancing.starshipWeapons.quadTurret.speed.toInt()
-	override val projectileParticleThickness: Double get() = IonServer.balancing.starshipWeapons.quadTurret.particleThickness
-	override val projectileExplosionPower: Float get() = IonServer.balancing.starshipWeapons.quadTurret.explosionPower
-	override val projectileShieldDamageMultiplier: Int get() = IonServer.balancing.starshipWeapons.quadTurret.shieldDamageMultiplier
+	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.quadTurret
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-2, getSign() * 4, +3), Vec3i(-1, getSign() * 4, +4), Vec3i(1, getSign() * 4, +4), Vec3i(2, getSign() * 4, + 3))
