@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine
 
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -10,10 +10,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /** An executable class containing logic for the positioning, navigation, and control of the starship */
-abstract class AIEngine(val controller: ActiveAIController) {
+abstract class AIEngine(val controller: AIController) {
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
-	val starship = controller.starship
+	val starship get() = controller.starship
 	val world get() = starship.world
 
 	open fun tick() {}
@@ -36,4 +36,6 @@ abstract class AIEngine(val controller: ActiveAIController) {
 	)
 
 	fun adjust(movement: StarshipMovement, location: Location): Location = movement.displaceLocation(location)
+
+	override fun toString(): String { return javaClass.simpleName }
 }
