@@ -14,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
+import java.util.concurrent.ThreadLocalRandom
 
 abstract class PlayerController(
 	val player: Player,
@@ -25,7 +26,10 @@ abstract class PlayerController(
 	override val pitch: Float get() = player.location.pitch
 
 	override val color: Color
-		 get() = PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: super.color
+		 get() = if (!starship.rainbowToggle) PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: super.color else {
+			 val random = ThreadLocalRandom.current()
+			 Color.fromRGB(random.nextInt(50, 255), random.nextInt(50, 255), random.nextInt(50, 255))
+		 }
 
 	override fun canDestroyBlock(block: Block): Boolean = BlockBreakEvent(block, player).callEvent()
 
@@ -35,6 +39,6 @@ abstract class PlayerController(
 	override fun audience(): Audience = player
 
 	override fun toString(): String {
-		return "PlayerController[${player.name}]"
+		return "$name [${player.name}]"
 	}
 }

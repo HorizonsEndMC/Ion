@@ -2,16 +2,16 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.pathfindin
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.PositioningEngine
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import java.util.concurrent.CompletableFuture
 
 class PathfindIfBlockedEngineAStar(
-	controller: ActiveAIController,
+	controller: AIController,
 	destinationSupplier: PositioningEngine
 ) : AStarPathfindingEngine(controller, destinationSupplier) {
 	override var tickInterval: Int = 1
-	override val blocked get() = controller.blocked || predictBlocked()
+	override var blocked = false; get() = controller.hasBeenBlockedWithin() || predictBlocked()
 
 	override fun navigate(): CompletableFuture<*> {
 		if (!blocked) return CompletableFuture.completedFuture(Any())
@@ -22,8 +22,7 @@ class PathfindIfBlockedEngineAStar(
 	/** Check if the projected section is blocked */
 	@Synchronized
 	private fun predictBlocked(): Boolean {
-		starship as ActiveControlledStarship
-		val cruiseDir = starship.cruiseData.velocity
+		val cruiseDir = (starship as ActiveControlledStarship).cruiseData.velocity
 
 		val (x, y, z) = Vec3i(getCenter().clone().add(cruiseDir))
 		val projectedSection = Vec3i(x.shr(4), y.shr(4), z.shr(4))

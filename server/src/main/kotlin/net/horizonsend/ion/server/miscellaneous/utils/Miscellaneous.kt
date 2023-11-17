@@ -100,9 +100,7 @@ fun <T : Entity> World.castSpawnEntity(location: Location, type: org.bukkit.enti
 fun debugHighlightBlock(x: Number, y: Number, z: Number, duration: Long = 5L) = debugAudience.highlightBlock(Vec3i(x.toInt(), y.toInt(), z.toInt()), duration)
 fun debugHighlightBlocks(blocks: Collection<Vec3i>, duration: Long = 5L) = debugAudience.highlightBlocks(blocks, duration)
 
-val debugAudience: ForwardingAudience = object : ForwardingAudience {
-	override fun audiences(): MutableIterable<Audience> = IonCommand.debugEnabledPlayers
-}
+val debugAudience: ForwardingAudience = ForwardingAudience { IonCommand.debugEnabledPlayers }
 
 fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
 	IonCommand.debugEnabledPlayers.mapNotNull { it as? Player }.forEach {

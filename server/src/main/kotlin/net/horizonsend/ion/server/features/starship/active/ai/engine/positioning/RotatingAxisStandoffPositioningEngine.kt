@@ -1,19 +1,21 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.positioning
 
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nearestPointToVector
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import kotlin.math.pow
 
 class RotatingAxisStandoffPositioningEngine(
-	controller: ActiveAIController,
+	controller: AIController,
 	var target: AITarget?,
 	var standoffDistance: Double,
 	val faces: List<BlockFace>
 ) : PositioningEngine(controller) {
+	val standoffBonus = controller.starship.initialBlockCount.toDouble().pow((1.0 / 3.0))
 	var loopSize = 60 * 20
 
 	var ticks = 0
@@ -42,10 +44,10 @@ class RotatingAxisStandoffPositioningEngine(
 		val shipLocation = getCenter().toVector()
 		val targetLocation = getDestination().toVector()
 
-		val vectorFar = face.direction.multiply(500.0)
+		val vectorFar = face.direction.multiply(standoffDistance + standoffBonus)
 		val nearest = nearestPointToVector(targetLocation, vectorFar, shipLocation)
 
-		val goal = shipLocation.clone().add(face.direction.multiply(standoffDistance))
+		val goal = shipLocation.clone().add(face.direction.multiply(standoffDistance + standoffBonus))
 
 		return if (shipLocation.distanceSquared(nearest) <= 100.0) goal else nearest
 	}

@@ -112,7 +112,7 @@ object ShipKillXP : IonServerComponent() {
 		val killedName: Component? = (starship as? ActiveControlledStarship)?.let { getDisplayNameComponent(it.data) }
 
 		processDamagers(starship, dataMap)
-		shipKillMessage(killedPilotName, killedName, starship.type, starship.damagers, arena)
+		shipKillMessage(killedPilotName, killedName, starship.type, starship.initialBlockCount, starship.damagers, arena)
 	}
 
 	private fun processDamagers(
@@ -157,6 +157,7 @@ object ShipKillXP : IonServerComponent() {
 		sunkPilotName: String,
 		sunkShipName: Component?,
 		sunkType: StarshipType,
+		sunkSize: Int,
 		data: MutableMap<Damager, ShipDamageData>,
 		arena: Boolean
 	) {
@@ -173,7 +174,7 @@ object ShipKillXP : IonServerComponent() {
 			?: 16777215 // white // So many null checks, meh, it's not called too often.
 
 		val killedShipHover = text()
-			.append(text(data.size).color(NamedTextColor.WHITE))
+			.append(text(sunkSize).color(NamedTextColor.WHITE))
 			.append(text(" block ").color(NamedTextColor.WHITE))
 			.append(sunkType.component)
 			.build()

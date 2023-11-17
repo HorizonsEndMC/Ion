@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -16,8 +16,8 @@ import org.bukkit.util.Vector
 
 /** Controlling the movement of the starship */
 abstract class MovementEngine(
-	controller: ActiveAIController,
-	val pathfindingEngine: AStarPathfindingEngine
+	controller: AIController,
+	val pathfindingEngine: PathfindingEngine
 ) : AIEngine(controller) {
 	val starshipLocation: Vec3i get() = getCenterVec3i()
 
@@ -31,7 +31,7 @@ abstract class MovementEngine(
 
 	open fun getDestination(): Vec3i {
 		val pathfindingObjective = pathfindingEngine.getFirstNavPoint()
-		val destination = pathfindingEngine.getFallbackPosition()
+		val destination = pathfindingEngine.getDestination()
 
 		// if target is more than 22 blocks away give the pathfinding objective, else the destination
 		return if (distanceSquared(destination, starshipLocation) <= 512) destination else pathfindingObjective

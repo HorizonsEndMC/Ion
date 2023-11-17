@@ -17,7 +17,8 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllers
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting.TargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.RotatingAxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
@@ -25,9 +26,7 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawnin
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.CombatAIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -55,10 +54,10 @@ object StarshipDebugCommand : SLCommand() {
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
-			AIControllers.presetControllers.keys
+			AIControllerFactories.presetControllers.keys
 		}
 
-		manager.commandContexts.registerContext(AIControllers.AIControllerFactory::class.java) { AIControllers[it.popFirstArg()] }
+		manager.commandContexts.registerContext(AIControllerFactories.AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
 	}
 
 	@Suppress("Unused")
@@ -173,15 +172,14 @@ object StarshipDebugCommand : SLCommand() {
 		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? CombatAIController)?.let { sender.userError("Target: ${it.target}") }
+		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.engines["targeting"] as? TargetingEngine)?.findTarget()}") }
 	}
 
 	@Subcommand("ai")
 	@CommandCompletion("@controllerFactories EXTREME|HIGH|MEDIUM|LOW|NONE standoffDistance x y z manualSets autoSets @autoTurretTargets ")
 	fun ai(
 		sender: Player,
-		controller: AIControllers.AIControllerFactory<*>,
-		aggressivenessLevel: AggressivenessLevel,
+		controller: AIControllerFactories.AIControllerFactory,
 		standoffDistance: Double,
 		@Optional destinationX: Double?,
 		@Optional destinationY: Double?,
@@ -205,13 +203,13 @@ object StarshipDebugCommand : SLCommand() {
 			text("Player Created AI Ship"),
 			aTarget,
 			destination,
-			aggressivenessLevel,
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
 			null
 		).apply {
-			if (this is ActiveAIController)  (this.positioningEngine as? AxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
-			if (this is ActiveAIController)  (this.positioningEngine as? RotatingAxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
+			val positioningEngine = engines["positioning"]
+			(positioningEngine as? AxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
+			(positioningEngine as? RotatingAxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
 		}
 
 		NPCFakePilot.add(starship as ActiveControlledStarship, null)

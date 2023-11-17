@@ -23,7 +23,6 @@ import net.horizonsend.ion.server.features.starship.StarshipType.TRANSPORT
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
@@ -161,14 +160,7 @@ object ContactsSidebar {
 
             contactsList.add(
                 ContactsData(
-                    name = (text(starship.identifier)).color(color)
-						.append(
-							(starship.controller as? AIController)?.let {
-								text()
-									.append(text(" "))
-									.append(it.aggressivenessLevel.displayName)
-							} ?: Component.empty()
-						),
+                    name = (text(starship.identifier)).color(color),
 
                     prefix = when (starship.type) {
                         STARFIGHTER -> text("\uE000").font(fontKey)

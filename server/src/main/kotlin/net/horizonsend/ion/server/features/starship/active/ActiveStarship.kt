@@ -339,13 +339,12 @@ abstract class ActiveStarship (
 		}
 	}
 
-	fun updatePower(sender: Player, shield: Int, weapon: Int, thruster: Int) {
+	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
 		reactor.powerDistributor.setDivision(shield / 100.0, weapon / 100.0, thruster / 100.0)
-		val name = sender.name
 
 		onlinePassengers.forEach { player ->
 			player.informationAction(
-				"<green>$name</green> updated the power mode to <aqua>$shield% shield <red>$weapon% weapon <yellow>$thruster% thruster"
+				"<green>$sender</green> updated the power mode to <aqua>$shield% shield <red>$weapon% weapon <yellow>$thruster% thruster"
 			)
 		}
 	}

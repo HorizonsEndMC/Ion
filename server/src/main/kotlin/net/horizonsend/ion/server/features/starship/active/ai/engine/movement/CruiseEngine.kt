@@ -2,9 +2,8 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.movement
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.PathfindingEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -23,8 +22,8 @@ import kotlin.math.abs
  * @param maximumCruiseDistanceSquared Does not cruise if the target is within this distance (squared).
  **/
 class CruiseEngine(
-	controller: ActiveAIController,
-	pathfindingEngine: AStarPathfindingEngine,
+	controller: AIController,
+	pathfindingEngine: PathfindingEngine,
 	var cruiseDestination: Vec3i,
 	var shiftFlightType: ShiftFlightType,
 	var maximumCruiseDistanceSquared: Double = 90000.0,
@@ -33,8 +32,7 @@ class CruiseEngine(
 	var speedLimit = -1
 
 	override fun tick() {
-		starship as ActiveControlledStarship
-		starship.speedLimit = speedLimit
+		(starship as ActiveControlledStarship).speedLimit = speedLimit
 
 		val origin = starshipLocation.toLocation(world)
 
@@ -47,7 +45,7 @@ class CruiseEngine(
 	}
 
 	fun handleCruise() {
-		if (controller.blocked) {
+		if (controller.hasBeenBlockedWithin()) {
 			debugAudience.debug("Blocked, stopping cruising")
 			stopCruising(true)
 			return
@@ -94,20 +92,21 @@ class CruiseEngine(
 		},
 		IF_BLOCKED {
 			override fun handleShiftFlight(engine: CruiseEngine, origin: Location) {
-				val blocked = engine.controller.pathfindingEngine.blocked
+				val pathfindingEngine = engine.controller.engines["pathfinding"] as? PathfindingEngine ?: return
+				val blocked = (pathfindingEngine as? PathfindingEngine)?.blocked ?: engine.controller.hasBeenBlockedWithin()
 
 				if (!blocked) {
 					engine.controller.isShiftFlying = false
 					return
 				}
 
-				engine.controller.pathfindingEngine.triggerTask()
-				engine.shiftFlyToVec3i(origin, engine.controller.pathfindingEngine.getFirstNavPoint(), true)
+				engine.shiftFlyToVec3i(origin, pathfindingEngine.getFirstNavPoint(), true)
 			}
 		},
 		IF_BLOCKED_AND_MATCH_Y {
 			override fun handleShiftFlight(engine: CruiseEngine, origin: Location) {
-				val blocked = engine.controller.pathfindingEngine.blocked
+				val pathfindingEngine = engine.controller.engines["pathfinding"] as? PathfindingEngine ?: return
+				val blocked = (pathfindingEngine as? PathfindingEngine)?.blocked ?: engine.controller.hasBeenBlockedWithin()
 				val yObjective = engine.cruiseDestination.y
 
 				val yDifference = yObjective - origin.y
@@ -125,8 +124,7 @@ class CruiseEngine(
 					return
 				}
 
-				engine.controller.pathfindingEngine.triggerTask()
-				engine.shiftFlyToVec3i(origin, engine.controller.pathfindingEngine.getFirstNavPoint(), true)
+				engine.shiftFlyToVec3i(origin, pathfindingEngine.getFirstNavPoint(), true)
 			}
 		},
 		ALL {
@@ -142,7 +140,7 @@ class CruiseEngine(
 		/** Must be executed sync */
 		open fun handleShiftFlight(engine: CruiseEngine, origin: Location) {}
 		open fun refresh(controller: AIController) {
-			if (!controller.blocked) controller.isShiftFlying = false
+			if (!controller.hasBeenBlockedWithin()) controller.isShiftFlying = false
 		}
 	}
 }

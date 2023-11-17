@@ -16,14 +16,12 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.actionAndMsg
-import net.horizonsend.ion.server.miscellaneous.utils.randomEntry
-import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.entity.TNTPrimed
+import org.bukkit.entity.minecart.ExplosiveMinecart
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
@@ -118,6 +116,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		val entity: Entity = when (val entity = event.entity) {
 			is Projectile -> entity.shooter as? Entity
 			is TNTPrimed -> entity.source
+			is ExplosiveMinecart -> return
 			else -> entity
 		} ?: return
 
