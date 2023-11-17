@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.customitems
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.BalancingConfiguration
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Multishot
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Singleshot
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
@@ -47,23 +47,23 @@ object CustomItems {
 
 	val STANDARD_MAGAZINE =
 		register(
-			object : Magazine<BalancingConfiguration.EnergyWeapons.AmmoStorage>(
+			object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
 				identifier = "STANDARD_MAGAZINE",
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 1,
 				displayName = text("Standard Magazine").decoration(ITALIC, false),
-				balancingSupplier = IonServer.balancing.energyWeapons::standardMagazine
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::standardMagazine
 			) {}
 		)
 
 	val SPECIAL_MAGAZINE =
 		register(
-			object : Magazine<BalancingConfiguration.EnergyWeapons.AmmoStorage>(
+			object : Magazine<PVPBalancingConfiguration.EnergyWeapons.AmmoStorage>(
 				identifier = "SPECIAL_MAGAZINE",
 				material = WARPED_FUNGUS_ON_A_STICK,
 				customModelData = 2,
 				displayName = text("Special Magazine").decoration(ITALIC, false),
-				balancingSupplier = IonServer.balancing.energyWeapons::specialMagazine
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::specialMagazine
 			) {}
 		)
 
@@ -86,7 +86,7 @@ object CustomItems {
 				soundReloadStart = "blaster.pistol.reload.start",
 				soundReloadFinish = "blaster.pistol.reload.finish",
 				explosiveShot = false,
-				balancingSupplier = IonServer.balancing.energyWeapons::pistol
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::pistol
 			) {}
 		)
 
@@ -106,7 +106,7 @@ object CustomItems {
 				soundReloadStart = "blaster.rifle.reload.start",
 				soundReloadFinish = "blaster.rifle.reload.finish",
 				explosiveShot = false,
-				balancingSupplier = IonServer.balancing.energyWeapons::rifle
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::rifle
 			) {}
 		)
 
@@ -126,7 +126,7 @@ object CustomItems {
 				soundReloadStart = "blaster.submachine_blaster.reload.start",
 				soundReloadFinish = "blaster.submachine_blaster.reload.finish",
 				explosiveShot = false,
-				balancingSupplier = IonServer.balancing.energyWeapons::submachineBlaster
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::submachineBlaster
 			) {
 				// Allows fire above 300 rpm
 				override fun handleSecondaryInteract(
@@ -167,7 +167,7 @@ object CustomItems {
 				soundReloadStart = "blaster.shotgun.reload.start",
 				soundReloadFinish = "blaster.shotgun.reload.finish",
 				explosiveShot = false,
-				balancingSupplier = IonServer.balancing.energyWeapons::shotgun
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::shotgun
 			) {
 				override fun fireProjectiles(livingEntity: LivingEntity) {
 					for (i in 1..balancing.shotCount) super.fireProjectiles(livingEntity)
@@ -191,7 +191,7 @@ object CustomItems {
 				soundReloadStart = "blaster.sniper.reload.start",
 				soundReloadFinish = "blaster.sniper.reload.finish",
 				explosiveShot = false,
-				balancingSupplier = IonServer.balancing.energyWeapons::sniper
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::sniper
 			) {}
 		)
 
@@ -211,7 +211,7 @@ object CustomItems {
 				soundReloadStart = "blaster.cannon.reload.start",
 				soundReloadFinish = "blaster.cannon.reload.finish",
 				explosiveShot = true,
-				balancingSupplier = IonServer.balancing.energyWeapons::cannon
+				balancingSupplier = IonServer.pvpBalancing.energyWeapons::cannon
 			) {}
 		)
 
@@ -316,10 +316,10 @@ object CustomItems {
 			identifier = "DETONATOR",
 			customModelData = 1101,
 			text().append(text("Thermal ", RED), text("Detonator", GRAY)).decoration(ITALIC, false).build(),
-			IonServer.balancing.throwables::detonator
+			IonServer.pvpBalancing.throwables::detonator
 		) {
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
-				return ThrownDetonator(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
+				return ThrownDetonator(item, maxTicks, damageSource, IonServer.pvpBalancing.throwables::detonator)
 			}
 		}
 	)
@@ -329,7 +329,7 @@ object CustomItems {
 			identifier = "PUMPKIN_GRENADE",
 			customModelData = 0,
 			text().append(text("Pumpkin ", GOLD), text("Grenade", GREEN)).decoration(ITALIC, false).build(),
-			IonServer.balancing.throwables::detonator
+			IonServer.pvpBalancing.throwables::detonator
 		) {
 			override fun constructItemStack(): ItemStack {
 				return super.constructItemStack().apply {
@@ -338,7 +338,7 @@ object CustomItems {
 			}
 
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
-				return ThrownPumpkinGrenade(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
+				return ThrownPumpkinGrenade(item, maxTicks, damageSource, IonServer.pvpBalancing.throwables::detonator)
 			}
 		}
 	)
@@ -347,10 +347,10 @@ object CustomItems {
 //			identifier = "INCENDIARY_GRENADE",
 //			customModelData = 1102,
 //			text().append(text("Incendiary ", RED), text("Grenade", GOLD)).decoration(ITALIC, false).build(),
-//			IonServer.balancing.throwables::detonator
+//			IonServer.pvpBalancing.throwables::detonator
 //		) {
 //			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem {
-//				return ThrownIncendiaryGrenade(item, maxTicks, damageSource, IonServer.balancing.throwables::detonator)
+//				return ThrownIncendiaryGrenade(item, maxTicks, damageSource, IonServer.pvpBalancing.throwables::detonator)
 //			}
 //		}
 //	)

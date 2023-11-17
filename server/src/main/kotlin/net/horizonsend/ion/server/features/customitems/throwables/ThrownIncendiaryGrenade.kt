@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server.features.customitems.throwables
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.BalancingConfiguration
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Damageable
@@ -16,7 +15,7 @@ class ThrownIncendiaryGrenade(
 	item: Item,
 	maxTicks: Int,
 	damageSource: Entity?,
-	balancingSupplier: Supplier<BalancingConfiguration.Throwables.ThrowableBalancing>
+	balancingSupplier: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>
 ) : ThrownCustomItem(item, maxTicks, damageSource, balancingSupplier) {
 	private var isExploding = false
 
@@ -38,8 +37,6 @@ class ThrownIncendiaryGrenade(
 		item.remove()
 
 		var fireLife = 0
-
-		val (originX, originY, originZ) = Vec3i(location)
 
 		Tasks.bukkitRunnable {
 			fireLife++
