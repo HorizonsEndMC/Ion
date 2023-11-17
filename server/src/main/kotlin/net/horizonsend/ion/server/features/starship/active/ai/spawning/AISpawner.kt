@@ -3,19 +3,16 @@ package net.horizonsend.ion.server.features.starship.active.ai.spawning
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import net.horizonsend.ion.common.utils.text.isVowel
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllers
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipFactory.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.utils.AggressivenessLevel
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -25,8 +22,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
@@ -74,13 +71,11 @@ abstract class AISpawner(val identifier: String) {
 
 			// Wait 1 tick for the controller to update
 			Tasks.sync {
-				val controller = ship.controller as AIController
-
 				AIManager.activeShips.add(ship)
 
 				val spawnMessage = createSpawnMessage(
-					controller.aggressivenessLevel,
 					ship.getDisplayNameComponent(),
+					config.miniMessageSpawnMessage,
 					Vec3i(loc),
 					loc.world
 				)
@@ -91,30 +86,20 @@ abstract class AISpawner(val identifier: String) {
 	}
 
 	open fun createSpawnMessage(
-		aggressivenessLevel: AggressivenessLevel,
 		shipName: Component,
+		message: String,
 		location: Vec3i,
 		world: World
 	): Component {
-		val aAn = if (aggressivenessLevel.name[0].isVowel()) "An " else "A "
-
 		val (x, y, z) = location
 
-		return Component.text()
-			.color(NamedTextColor.GRAY)
-			.append(Component.text(aAn))
-			.append(aggressivenessLevel.displayName)
-			.append(Component.text(" "))
-			.append(shipName)
-			.append(Component.text(" has spawned in "))
-			.append(Component.text(world.name, NamedTextColor.WHITE))
-			.append(Component.text(" at "))
-			.append(Component.text(x, NamedTextColor.WHITE))
-			.append(Component.text(", "))
-			.append(Component.text(y, NamedTextColor.WHITE))
-			.append(Component.text(", "))
-			.append(Component.text(z, NamedTextColor.WHITE))
-			.build()
+		val formatted = message
+			.replace("{x}", x.toString())
+			.replace("{y}", y.toString())
+			.replace("{z}", z.toString())
+			.replace("{shipName}", miniMessage().serialize(shipName))
+
+		return miniMessage().deserialize(formatted)
 	}
 }
 
@@ -183,8 +168,7 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
 		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
 		val controller: (ActiveControlledStarship) -> Controller = { starship: ActiveControlledStarship ->
-			val factory = AIControllers[ship.controllerFactory]
-			val aggressivenessLevel = ship.aggressivenessLevelWeightedRandomList.random()
+			val factory = AIControllerFactories[ship.controllerFactory]
 			val endpoint = findEndpoint(location)
 
 			factory.createController(
@@ -192,7 +176,6 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
 				pilotName,
 				null,
 				endpoint,
-				aggressivenessLevel,
 				ship.manualWeaponSets,
 				ship.autoWeaponSets,
 				null
