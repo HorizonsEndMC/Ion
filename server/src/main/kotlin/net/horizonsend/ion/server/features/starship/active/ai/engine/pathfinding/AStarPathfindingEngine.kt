@@ -4,9 +4,8 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
-import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.PositioningEngine
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.interfaces.ActiveAIController
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -22,10 +21,10 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.RejectedExecutionException
 
 open class AStarPathfindingEngine(
-	controller: ActiveAIController,
-	protected val positioningSupplier: PositioningEngine
-) : AIEngine(controller) {
-	open val blocked get() = controller.blocked
+	controller: AIController,
+	positioningSupplier: PositioningEngine
+) : PathfindingEngine(controller, positioningSupplier) {
+	override var blocked = false; get() = controller.hasBeenBlockedWithin()
 
 	/** How many ticks between the clearing of the tracked sections, -1 to never clear */
 	private var clearInterval: Int = 100
@@ -249,11 +248,11 @@ open class AStarPathfindingEngine(
 	}
 
 	/** Poll at the charted path to get the flight direction to the first objective */
-	open fun getFirstNavPoint(): Vec3i {
-		return getImmediateNavigationObjective()?.center ?: getFallbackPosition()
+	override fun getFirstNavPoint(): Vec3i {
+		return getImmediateNavigationObjective()?.center ?: getDestination()
 	}
 
-	open fun getFallbackPosition(): Vec3i = positioningSupplier.findPositionVec3i()
+	override fun getDestination(): Vec3i = positioningSupplier.findPositionVec3i()
 
 	private var lastCompletedSection = AIPathfinding.SectionNode(world, getSectionPositionOrigin(), true)
 	/** Polls the charted path for the first position in the path */
