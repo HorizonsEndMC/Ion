@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.customitems.throwables
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.BalancingConfiguration
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.features.customitems.throwables.objects.ThrownCustomItem
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
@@ -24,7 +24,7 @@ class ThrownPumpkinGrenade(
 	item: Item,
 	maxTicks: Int,
 	damageSource: Entity?,
-	balancingSupplier: Supplier<BalancingConfiguration.Throwables.ThrowableBalancing>
+	balancingSupplier: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>
 ) : ThrownCustomItem(item, maxTicks, damageSource, balancingSupplier) {
 	var isExploding = false
 
