@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.Color
@@ -14,13 +15,13 @@ class PointDefenseLaserProjectile(
 	override val range: Double,
 	shooter: Damager
 ) : LaserProjectile(starship, loc, dir, shooter) {
-	override val speed: Double = IonServer.balancing.starshipWeapons.pointDefence.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pointDefence.shieldDamageMultiplier
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.pointDefence ?: IonServer.starshipBalancing.nonStarshipFired.pointDefence
+	override val speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
 	override val color: Color = Color.BLUE
-	override val thickness: Double = IonServer.balancing.starshipWeapons.pointDefence.thickness
-	override val particleThickness: Double = IonServer.balancing.starshipWeapons.pointDefence.particleThickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.pointDefence.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.pointDefence.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.pointDefence.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.pointDefence.soundName
+	override val particleThickness: Double = balancing.particleThickness
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val soundName: String = balancing.soundName
 }

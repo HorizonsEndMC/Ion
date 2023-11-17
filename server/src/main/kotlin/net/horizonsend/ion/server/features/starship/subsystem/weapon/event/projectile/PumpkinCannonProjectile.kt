@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.BlockProjectile
@@ -15,11 +16,12 @@ import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
 
 class PumpkinCannonProjectile(
-	starship: ActiveStarship,
+	starship: ActiveStarship?,
 	loc: Location,
 	direction: Vector,
 	shooter: Damager
 ) : BlockProjectile(starship, loc, direction, shooter) {
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.pumpkinCannon ?: IonServer.starshipBalancing.nonStarshipFired.pumpkinCannon
 	override val blockMap: Map<Vec3i, BlockData> = faces
 
 	companion object {
@@ -33,13 +35,12 @@ class PumpkinCannonProjectile(
 		}
 	}
 
-	override val range: Double = IonServer.balancing.starshipWeapons.pumpkinCannon.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.pumpkinCannon.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pumpkinCannon.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.pumpkinCannon.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.pumpkinCannon.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.pumpkinCannon.volume
-	override val soundName: String = IonServer.balancing.starshipWeapons.pumpkinCannon.soundName
+	override val range: Double = balancing.range
+	override var speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val soundName: String = balancing.soundName
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)

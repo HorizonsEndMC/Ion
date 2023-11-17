@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.CachedPlanet
@@ -83,6 +84,7 @@ abstract class ActiveStarship (
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
+	abstract val balancing: StarshipBalancing
 
 	var world: World = world
 		set(value) {

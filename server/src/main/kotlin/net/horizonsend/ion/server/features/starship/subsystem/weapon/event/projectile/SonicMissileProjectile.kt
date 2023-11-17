@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
@@ -9,19 +10,19 @@ import org.bukkit.Particle
 import org.bukkit.util.Vector
 
 class SonicMissileProjectile(
-	starship: ActiveStarship,
+	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.balancing.starshipWeapons.sonicMissile.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.sonicMissile.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.sonicMissile.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.sonicMissile.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.sonicMissile.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.sonicMissile.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.sonicMissile.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.sonicMissile.soundName
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.sonicMissile ?: IonServer.starshipBalancing.nonStarshipFired.sonicMissile
+	override val range: Double = balancing.range
+	override var speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val soundName: String = balancing.soundName
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val offset = 0.0

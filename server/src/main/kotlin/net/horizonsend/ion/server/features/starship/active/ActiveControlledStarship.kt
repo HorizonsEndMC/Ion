@@ -59,7 +59,10 @@ class ActiveControlledStarship (
 	hitbox
 ) {
 	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
+
 	override val type: StarshipType = data.starshipType.actualType
+	override val balancing = type.balancingSupplier.get()
+
 	override val interdictionRange: Int = type.interdictionRange
 
 	var lastUnpilotTime: Long = 0

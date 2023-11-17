@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.Color
@@ -8,19 +9,19 @@ import org.bukkit.Location
 import org.bukkit.util.Vector
 
 class PulseLaserProjectile(
-	starship: ActiveStarship,
+	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
 	override val color: Color,
 	shooter: Damager
 ) : LaserProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.balancing.starshipWeapons.pulseCannon.range
-	override val speed: Double = IonServer.balancing.starshipWeapons.pulseCannon.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.pulseCannon.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.pulseCannon.thickness
-	override val particleThickness: Double = IonServer.balancing.starshipWeapons.pulseCannon.particleThickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.pulseCannon.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.pulseCannon.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.pulseCannon.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.pulseCannon.soundName
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.pulseCannon ?: IonServer.starshipBalancing.nonStarshipFired.pulseCannon
+	override val range: Double = balancing.range
+	override val speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val particleThickness: Double = balancing.particleThickness
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val soundName: String = balancing.soundName
 }

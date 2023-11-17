@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.customitems.throwables.objects
 
-import net.horizonsend.ion.server.configuration.BalancingConfiguration.Throwables.ThrowableBalancing
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwables.ThrowableBalancing
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity

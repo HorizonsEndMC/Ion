@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -21,9 +21,10 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 	DirectionalSubsystem,
 	AutoWeaponSubsystem,
 	PermissionWeaponSubsystem {
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.cthulhuBeam
 	override val permission: String = "ioncore.eventweapon"
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.cthulhuBeam.powerUsage
-	override val range: Double = IonServer.balancing.starshipWeapons.cthulhuBeam.range
+	override val powerUsage: Int = balancing.powerUsage
+	override val range: Double = balancing.range
 
 	override fun getMaxPerShot(): Int {
 		return (sqrt(starship.initialBlockCount.toDouble()) / 32).toInt()

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.StickyParticleProjectile
@@ -16,14 +17,14 @@ class PlagueCannonProjectile(
 	dir: Vector,
 	shooter: Damager
 ) : StickyParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.balancing.starshipWeapons.plagueCannon.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.flameThrower.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.plagueCannon.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.plagueCannon.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.plagueCannon.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.plagueCannon.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.plagueCannon.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.plagueCannon.soundName
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.plagueCannon ?: IonServer.starshipBalancing.nonStarshipFired.plagueCannon
+	override val range: Double = balancing.range
+	override var speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val soundName: String = balancing.soundName
 
 	override fun tickEmbedded() {
 		val embeddedShip = embeddedShip ?: return
@@ -33,7 +34,7 @@ class PlagueCannonProjectile(
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val particle = Particle.REDSTONE
-		val dustOptions = DustOptions(Color.GREEN, thickness.toFloat())
+		val dustOptions = DustOptions(Color.GREEN, balancing.particleThickness.toFloat())
 		loc.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
 	}
 }

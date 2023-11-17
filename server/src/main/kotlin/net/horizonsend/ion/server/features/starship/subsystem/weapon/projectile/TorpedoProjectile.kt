@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -15,15 +16,16 @@ class TorpedoProjectile(
     originalTarget: Vector,
     baseAimDistance: Int
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
-	override val range: Double = IonServer.balancing.starshipWeapons.protonTorpedo.range
-	override val speed: Double = IonServer.balancing.starshipWeapons.protonTorpedo.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.protonTorpedo.shieldDamageMultiplier
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.protonTorpedo ?: IonServer.starshipBalancing.nonStarshipFired.protonTorpedo
+
+	override val range: Double = balancing.range
+	override val speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
 	override val color: Color = Color.fromRGB(255, 0, 255)
-	override val thickness: Double = IonServer.balancing.starshipWeapons.protonTorpedo.thickness
-	override val particleThickness: Double = IonServer.balancing.starshipWeapons.protonTorpedo.particleThickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.protonTorpedo.explosionPower
-	override val maxDegrees: Double = IonServer.balancing.starshipWeapons.protonTorpedo.maxDegrees
-	override val volume: Int = IonServer.balancing.starshipWeapons.protonTorpedo.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.protonTorpedo.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.protonTorpedo.soundName
+	override val particleThickness: Double = balancing.particleThickness
+	override val explosionPower: Float = balancing.explosionPower
+	override val maxDegrees: Double = balancing.maxDegrees
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val soundName: String = balancing.soundName
 }

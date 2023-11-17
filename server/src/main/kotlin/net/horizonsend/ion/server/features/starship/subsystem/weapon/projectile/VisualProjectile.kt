@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.configuration.AntiAirCannonBalancing
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.damager.noOpDamager
 import net.horizonsend.ion.server.miscellaneous.utils.alongVector
 import org.bukkit.Color
@@ -16,6 +18,17 @@ class VisualProjectile(
 	val particleThickness: Float,
 	val extraParticles: Int
 ) : Projectile(null, noOpDamager) {
+	override val balancing: StarshipWeapons.ProjectileBalancing = AntiAirCannonBalancing(
+		range = 0.0,
+		speed = 0.0,
+		shieldDamageMultiplier = 0,
+		particleThickness = 0.0,
+		explosionPower = 0.0f,
+		volume = 0,
+		pitch = 0.0f,
+		soundName = "",
+	)
+
 	private var distance: Double = 0.0
 	private var firedAtNanos: Long = -1
 	private var lastTick: Long = -1

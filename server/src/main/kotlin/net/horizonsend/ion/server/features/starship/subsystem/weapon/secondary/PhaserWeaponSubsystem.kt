@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -26,12 +26,13 @@ class PhaserWeaponSubsystem(
 ) : CannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val length: Int = IonServer.balancing.starshipWeapons.phaser.length
-	override val convergeDist: Double = IonServer.balancing.starshipWeapons.phaser.convergeDistance
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.phaser.extraDistance
-	override val angleRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.phaser.angleRadians) // unrestricted
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.phaser.powerUsage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.phaser.boostChargeNanos)
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.phaser
+	override val length: Int = balancing.length
+	override val convergeDist: Double = balancing.convergeDistance
+	override val extraDistance: Int = balancing.extraDistance
+	override val angleRadians: Double = Math.toRadians(balancing.angleRadians) // unrestricted
+	override val powerUsage: Int = balancing.powerUsage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 

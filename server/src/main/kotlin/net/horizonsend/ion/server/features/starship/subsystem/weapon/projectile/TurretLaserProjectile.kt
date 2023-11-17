@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -17,8 +18,9 @@ class TurretLaserProjectile(
 	override val explosionPower: Float,
 	override val shieldDamageMultiplier: Int,
 	override val soundName: String,
+	override val balancing: StarshipWeapons.ProjectileBalancing?,
 	shooter: Damager
 ) : LaserProjectile(ship, loc, dir, shooter) {
-	override val thickness: Double = 0.3
+
 	override val volume: Int = (range / 16).toInt()
 }

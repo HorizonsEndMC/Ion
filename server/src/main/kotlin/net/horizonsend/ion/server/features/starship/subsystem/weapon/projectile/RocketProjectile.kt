@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -13,11 +14,13 @@ import org.bukkit.block.data.MultipleFacing
 import org.bukkit.entity.Entity
 
 class RocketProjectile(
-	starship: ActiveStarship,
+	starship: ActiveStarship?,
 	loc: Location,
 	face: BlockFace,
 	shooter: Damager
 ) : BlockProjectile(starship, loc, face.direction, shooter) {
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.heavyLaser ?: IonServer.starshipBalancing.nonStarshipFired.heavyLaser
+
 	companion object {
 		private fun getBlockData(
 			down: Boolean,
@@ -104,13 +107,12 @@ class RocketProjectile(
 
 	override val blockMap: Map<Vec3i, BlockData> = blockMaps.getValue(face)
 
-	override val range: Double = IonServer.balancing.starshipWeapons.rocket.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.rocket.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.rocket.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.rocket.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.rocket.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.rocket.volume
-	override val soundName: String = IonServer.balancing.starshipWeapons.rocket.soundName
+	override val range: Double = balancing.range
+	override var speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val soundName: String = balancing.soundName
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.starshipweapon.turret
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Lig
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.block.BlockFace
-import java.util.concurrent.TimeUnit
 
 sealed class LightTurretMultiblock : TurretMultiblock() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
@@ -17,14 +16,7 @@ sealed class LightTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getSign(): Int
 
-	override val cooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.lightTurret.fireCooldownNanos)
-	override val range: Double = IonServer.balancing.starshipWeapons.lightTurret.range
-	override val sound: String = IonServer.balancing.starshipWeapons.lightTurret.soundName
-
-	override val projectileSpeed: Int = IonServer.balancing.starshipWeapons.lightTurret.speed.toInt()
-	override val projectileParticleThickness: Double = IonServer.balancing.starshipWeapons.lightTurret.particleThickness
-	override val projectileExplosionPower: Float = IonServer.balancing.starshipWeapons.lightTurret.explosionPower
-	override val projectileShieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.lightTurret.shieldDamageMultiplier
+	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.lightTurret
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(Vec3i(0, +4 * getSign(), +2))
 

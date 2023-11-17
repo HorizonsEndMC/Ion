@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -21,9 +21,10 @@ class CapitalBeamWeaponSubsystem(
 	ManualWeaponSubsystem,
 	HeavyWeaponSubsystem,
 	PermissionWeaponSubsystem {
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.capitalBeam
 	override val permission: String = "ioncore.eventweapon"
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.capitalBeam.powerUsage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.capitalBeam.boostChargeNanos)
+	override val powerUsage: Int = balancing.powerUsage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.event.PumpkinCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -24,6 +25,7 @@ class PumpkinCannonWeaponSubsystem(
 	ManualWeaponSubsystem,
 	DirectionalSubsystem,
 	PermissionWeaponSubsystem {
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.pumpkinCannon
 	override val permission: String = "ioncore.eventweapon"
 	override val powerUsage: Int = 1000
 

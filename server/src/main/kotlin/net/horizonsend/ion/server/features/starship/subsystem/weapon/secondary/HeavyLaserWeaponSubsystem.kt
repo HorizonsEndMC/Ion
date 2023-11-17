@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
@@ -22,14 +22,15 @@ class HeavyLaserWeaponSubsystem(
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	private val sound = IonServer.balancing.starshipWeapons.heavyLaser.soundName
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.heavyLaser
+	val sound = balancing.soundName
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.heavyLaser.boostChargeNanos)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
-	override val length: Int = IonServer.balancing.starshipWeapons.heavyLaser.length
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.heavyLaser.powerUsage
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.extraDistance
-	override val aimDistance: Int = IonServer.balancing.starshipWeapons.heavyLaser.aimDistance
+	override val length: Int = balancing.length
+	override val powerUsage: Int = balancing.powerUsage
+	override val extraDistance: Int = balancing.extraDistance
+	override val aimDistance: Int = balancing.aimDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector?) {
 		checkNotNull(target)

@@ -2,13 +2,11 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.QuadTurretMultiblock
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.StarshipCooldownSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -19,16 +17,12 @@ class QuadTurretWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace,
     override val multiblock: QuadTurretMultiblock
-) : TurretWeaponSubsystem(ship, pos, face), StarshipCooldownSubsystem {
-	override val inaccuracyRadians: Double get() = Math.toRadians(IonServer.balancing.starshipWeapons.quadTurret.inaccuracyRadians)
-	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.quadTurret.powerUsage
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(IonServer.balancing.starshipWeapons.quadTurret.fireCooldownNanos)
-	override fun getMaxPerShot(): Int = when (starship.type) {
-		StarshipType.BATTLECRUISER -> 3
-		StarshipType.BATTLESHIP -> 4
-		StarshipType.DREADNOUGHT -> 6
-		else -> 0
-	}
+) : TurretWeaponSubsystem(ship, pos, face) {
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.quadTurret
+	override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
+	override val powerUsage: Int get() = balancing.powerUsage
+	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
+	override fun getMaxPerShot(): Int = balancing.maxPerShot
 
 	override fun manualFire(
 		shooter: Damager,

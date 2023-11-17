@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import org.bukkit.Location
@@ -9,19 +10,19 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
-	starship: ActiveStarship,
+	starship: ActiveStarship?,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
 ) : ParticleProjectile(starship, loc, dir, shooter) {
-	override val range: Double = IonServer.balancing.starshipWeapons.phaser.range
-	override var speed: Double = IonServer.balancing.starshipWeapons.phaser.speed
-	override val shieldDamageMultiplier: Int = IonServer.balancing.starshipWeapons.phaser.shieldDamageMultiplier
-	override val thickness: Double = IonServer.balancing.starshipWeapons.phaser.thickness
-	override val explosionPower: Float = IonServer.balancing.starshipWeapons.phaser.explosionPower
-	override val volume: Int = IonServer.balancing.starshipWeapons.phaser.volume
-	override val pitch: Float = IonServer.balancing.starshipWeapons.phaser.pitch
-	override val soundName: String = IonServer.balancing.starshipWeapons.phaser.soundName
+	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.phaser ?: IonServer.starshipBalancing.nonStarshipFired.phaser
+	override val range: Double = balancing.range
+	override var speed: Double = balancing.speed
+	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val explosionPower: Float = balancing.explosionPower
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val soundName: String = balancing.soundName
 
 	private val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
 	private val speedUpSpeed = 1000.0

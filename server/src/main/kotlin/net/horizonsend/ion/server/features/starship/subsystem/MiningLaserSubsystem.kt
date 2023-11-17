@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.mininglasers.MiningLaserMultiblock
@@ -40,6 +41,26 @@ class MiningLaserSubsystem(
     private val face: BlockFace,
     val multiblock: MiningLaserMultiblock,
 ) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
+	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(
+		range = 0.0,
+		speed = 0.0,
+		shieldDamageMultiplier = 0,
+		particleThickness = 0.0,
+		explosionPower = 0.0f,
+		volume = 0,
+		pitch = 0.0f,
+		soundName = "",
+		powerUsage = 0,
+		length = 0,
+		angleRadians = 0.0,
+		convergeDistance = 0.0,
+		extraDistance = 0,
+		fireCooldownMillis = 0,
+		boostChargeSeconds = 0,
+		aimDistance = 0,
+		applyCooldownToAll = false
+	)
+
 	private val firingTasks = mutableListOf<BukkitTask>()
 	private var isFiring = false
 	lateinit var targetedBlock: Vector

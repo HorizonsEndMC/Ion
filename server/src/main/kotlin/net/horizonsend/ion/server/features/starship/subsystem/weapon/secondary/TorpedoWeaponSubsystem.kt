@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
@@ -18,14 +18,15 @@ class TorpedoWeaponSubsystem(
     face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem {
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.protonTorpedo.boostChargeNanos)
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.protonTorpedo
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
-	override fun isForwardOnly(): Boolean = IonServer.balancing.starshipWeapons.protonTorpedo.fowardOnly
+	override fun isForwardOnly(): Boolean = balancing.forwardOnly
 
-	override val length: Int = IonServer.balancing.starshipWeapons.protonTorpedo.length
-	override val powerUsage: Int get() = IonServer.balancing.starshipWeapons.protonTorpedo.powerUsage
-	override val extraDistance: Int = IonServer.balancing.starshipWeapons.protonTorpedo.extraDistance
-	override val aimDistance: Int = IonServer.balancing.starshipWeapons.protonTorpedo.aimDistance
+	override val length: Int = balancing.length
+	override val powerUsage: Int get() = balancing.powerUsage
+	override val extraDistance: Int = balancing.extraDistance
+	override val aimDistance: Int = balancing.aimDistance
 
 	override fun getMaxPerShot() = 2
 

@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.TriTurretMultiblock
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -20,11 +19,12 @@ class TriTurretWeaponSubsystem(
 		override val multiblock: TriTurretMultiblock
 ) : TurretWeaponSubsystem(ship, pos, face),
 	HeavyWeaponSubsystem, AutoWeaponSubsystem {
-	override val inaccuracyRadians: Double = Math.toRadians(IonServer.balancing.starshipWeapons.triTurret.inaccuracyRadians)
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.triTurret.powerUsage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.triTurret.boostChargeNanos)
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.heavyLaser
+	override val inaccuracyRadians: Double = Math.toRadians(balancing.inaccuracyRadians)
+	override val powerUsage: Int = balancing.powerUsage
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
-	override val range: Double get() = multiblock.range
+	override val range: Double get() = multiblock.getRange(starship)
 
 	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {
 		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager)

@@ -32,7 +32,6 @@ abstract class SimpleProjectile(
 	abstract val range: Double
 	abstract val speed: Double
 	abstract val shieldDamageMultiplier: Int
-	abstract val thickness: Double
 	abstract val explosionPower: Float
 	open val volume: Int = 12
 	open val pitch: Float = 1f

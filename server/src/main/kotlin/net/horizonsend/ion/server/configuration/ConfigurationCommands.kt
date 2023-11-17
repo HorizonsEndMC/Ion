@@ -20,13 +20,22 @@ import kotlin.reflect.jvm.javaType
 @CommandPermission("ion.config")
 @Suppress("unused")
 object ConfigurationCommands : SLCommand() {
-	private val turretTypes = BalancingConfiguration.StarshipWeapons::class.memberProperties
-	private val changeableFields = BalancingConfiguration.StarshipWeapons.StarshipWeapon::class.memberProperties
-		.filterIsInstance<KMutableProperty<*>>()
+	private val starshipTypes = StarshipTypeBalancing::class.memberProperties
+	private val starshipBalancingOptions = StarshipBalancing::class.memberProperties
+	private val weaponTypes = StarshipWeapons::class.memberProperties
+	private val changeableFields = StarshipWeapons.StarshipWeapon::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("balancingFields") {
-			turretTypes.map { it.name }
+			starshipTypes.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("balancingOptions") {
+			starshipBalancingOptions.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("weaponTypes") {
+			weaponTypes.map { it.name }
 		}
 
 		manager.commandCompletions.registerCompletion("balancingValues") {
@@ -34,11 +43,11 @@ object ConfigurationCommands : SLCommand() {
 		}
 	}
 
-	@Subcommand("config set")
-	@CommandCompletion("@balancingFields @balancingValues @nothing")
-	fun set(sender: CommandSender, typeName: String, fieldName: String, value: String) {
-		val type = turretTypes.find { it.name == typeName } ?: run {
-			sender.userError("Type not found")
+	@Subcommand("config set starship properties")
+	@CommandCompletion("@balancingFields @balancingOptions @nothing")
+	fun setStarshipProperties(sender: CommandSender, typeName: String, fieldName: String, value: String) {
+		val type = starshipTypes.find { it.name == typeName } ?: run {
+			sender.userError("Starship type $typeName not found")
 			return
 		}
 
@@ -47,41 +56,64 @@ object ConfigurationCommands : SLCommand() {
 			return
 		}
 
-		val obj = type.get(IonServer.balancing.starshipWeapons)
+
+	}
+
+	@Subcommand("config set starship weapons")
+	@CommandCompletion("@balancingFields @weaponTypes @balancingValues @nothing")
+	fun setStarshipWeapons(sender: CommandSender, typeName: String, weaponName: String, fieldName: String, value: String) {
+		val starshipType = starshipTypes.find { it.name == typeName } ?: run {
+			sender.userError("Starship type $typeName not found")
+			return
+		}
+
+		val weaponType = weaponTypes.find { it.name == weaponName } ?: run {
+			sender.userError("Weapon type $weaponName not found")
+			return
+		}
+
+		val field = changeableFields.find { it.name == fieldName } ?: run {
+			sender.userError("Field not found")
+			return
+		}
+
+		val starshipBalancing = (starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapons.StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
+
 		var done = false
-		when (type.returnType) {
+		when (weaponType.returnType) {
 			Int::class.createType() -> {
-				field.setter.call(obj, value.toInt())
+				field.setter.call(weapon, value.toInt())
 				done = true
 			}
 
 			Double::class.createType() -> {
-				field.setter.call(obj, value.toDouble())
+				field.setter.call(weapon, value.toDouble())
 				done = true
 			}
 
 			Float::class.createType() -> {
-				field.setter.call(obj, value.toFloat())
+				field.setter.call(weapon, value.toFloat())
 				done = true
 			}
 
 			Long::class.createType() -> {
-				field.setter.call(obj, value.toLong())
+				field.setter.call(weapon, value.toLong())
 				done = true
 			}
 
 			Boolean::class.createType() -> {
-				field.setter.call(obj, value.toBooleanStrict())
+				field.setter.call(weapon, value.toBooleanStrict())
 				done = true
 			}
 
 			String::class.createType() -> {
-				field.setter.call(obj, value)
+				field.setter.call(weapon, value)
 				done = true
 			}
 
 			else -> {
-				sender.userError("type is: ${type.returnType.javaType.typeName}, to add in the switch case")
+				sender.userError("type is: ${weaponType.returnType.javaType.typeName}, to add in the switch case")
 			}
 		}
 
@@ -91,28 +123,29 @@ object ConfigurationCommands : SLCommand() {
 			sender.userError("type error, value isn't what the field accepts or read above")
 	}
 
-	@Subcommand("config get")
-	@CommandCompletion("@balancingFields @balancingValues")
-	fun set(sender: CommandSender, typeName: String, fieldName: String) {
-		val type = turretTypes.find { it.name == typeName } ?: run {
-			sender.userError("Type not found")
-			return
-		}
-
-		val field = changeableFields.find { it.name == fieldName } ?: run {
-			sender.userError("Field not found")
-			return
-		}
-
-		val obj =
-			field.getter.call(type.get(IonServer.balancing.starshipWeapons) as BalancingConfiguration.StarshipWeapons.StarshipWeapon)
-		sender.success("Value $fieldName of $typeName: $obj")
-	}
+//	@Subcommand("config get")
+//	@CommandCompletion("@balancingFields @balancingValues")
+//	fun set(sender: CommandSender, typeName: String, fieldName: String) {
+//		val type = starshipTypes.find { it.name == typeName } ?: run {
+//			sender.userError("Type not found")
+//			return
+//		}
+//
+//		val field = changeableFields.find { it.name == fieldName } ?: run {
+//			sender.userError("Field not found")
+//			return
+//		}
+//
+//		val obj =
+//			field.getter.call(type.get(balancing) as StarshipWeapons.StarshipWeapon)
+//		sender.success("Value $fieldName of $typeName: $obj")
+//	}
 
 	@Subcommand("config save")
 	fun configSave(sender: CommandSender) {
 		Configuration.save(IonServer.configuration, IonServer.dataFolder, "server.json")
-		Configuration.save(IonServer.balancing, IonServer.dataFolder, "server.json")
+		Configuration.save(IonServer.pvpBalancing, IonServer.dataFolder, "server.json")
+		Configuration.save(IonServer.starshipBalancing, IonServer.dataFolder, "server.json")
 
 		sender.success("Saved configs with current runtime values.")
 	}
@@ -120,8 +153,11 @@ object ConfigurationCommands : SLCommand() {
 	@Subcommand("config reload")
 	fun onConfigReload(sender: CommandSender) {
 		IonServer.configuration = Configuration.load(IonServer.dataFolder, "server.json")
-		IonServer.balancing = Configuration.load(IonServer.dataFolder, "balancing.json")
 		IonServer.gassesConfiguration = Configuration.load(IonServer.dataFolder, "gasses.json")
+		IonServer.tradeConfiguration = Configuration.load(IonServer.dataFolder, "trade.json")
+		IonServer.aiShipConfiguration = Configuration.load(IonServer.dataFolder, "aiships.json")
+		IonServer.pvpBalancing = Configuration.load(IonServer.dataFolder, "pvpbalancing.json")
+		IonServer.starshipBalancing = Configuration.load(IonServer.dataFolder, "starshipbalancing.json")
 
 		reloadOthers()
 
