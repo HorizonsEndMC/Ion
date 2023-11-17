@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.heavy.RocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -30,9 +30,10 @@ class RocketWeaponSubsystem(
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val powerUsage: Int = IonServer.balancing.starshipWeapons.rocket.powerUsage
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.rocket
+	override val powerUsage: Int = balancing.powerUsage
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(IonServer.balancing.starshipWeapons.rocket.boostChargeNanos)
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true

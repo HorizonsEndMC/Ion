@@ -9,9 +9,10 @@ import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
-import net.horizonsend.ion.server.configuration.BalancingConfiguration
 import net.horizonsend.ion.server.configuration.GassesConfiguration
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
@@ -34,13 +35,14 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
 val LegacySettings get() = IonServer.legacySettings
-val BalancingConfiguration get() = IonServer.balancing
 val ServerConfiguration get() = IonServer.configuration
 
 val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
 
 object IonServer : JavaPlugin() {
-	var balancing: BalancingConfiguration = Configuration.load(dataFolder, "balancing.json")
+	var pvpBalancing: PVPBalancingConfiguration = Configuration.load(dataFolder, "pvpbalancing.json")
+	var starshipBalancing: StarshipTypeBalancing = Configuration.load(dataFolder, "starshipbalancing.json")
+
 	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
 	var gassesConfiguration: GassesConfiguration = Configuration.load(dataFolder, "gasses.json")
 	var tradeConfiguration: TradeConfiguration = Configuration.load(dataFolder, "trade.json")
@@ -67,9 +69,6 @@ object IonServer : JavaPlugin() {
 	private fun internalEnable() {
 		CommonConfig.init(IonServer.dataFolder) // DB Configs
 
-		balancing = Configuration.load(dataFolder, "balancing.json") // Balancing Settings
-		configuration = Configuration.load(dataFolder, "server.json") // Server Settings
-		legacySettings = loadConfig(IonServer.dataFolder, "config") // Legacy Settings
 		prefixProvider = { // Audience extensions
 			when (it) {
 				is Player -> "to ${it.name}: "
