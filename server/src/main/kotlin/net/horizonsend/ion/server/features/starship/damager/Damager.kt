@@ -47,7 +47,9 @@ interface PlayerDamager : Damager {
 }
 
 /** Wrapper class for players not in starships **/
-class PlayerDamagerWrapper(override val player: Player, override val starship: ActiveStarship?) : PlayerDamager {
+class PlayerDamagerWrapper(override val player: Player) : PlayerDamager {
+	override val starship: ActiveStarship? get() = ActiveStarships.findByPassenger(player)
+
 	override val color: Color
 		get() = PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: Color.RED
 	override fun getAITarget(): AITarget = PlayerTarget(player)
@@ -63,11 +65,9 @@ val entityDamagerCache: LoadingCache<Entity, Damager> = CacheBuilder.newBuilder(
 
 fun Entity.damager(): Damager = entityDamagerCache[this]
 
-fun getDamager(entity: Entity, starship: ActiveStarship? = null) : Damager {
-	if (entity is Player) {
-		val foundShip = starship ?: ActiveStarships.findByPassenger(entity)
-		return PlayerDamagerWrapper(entity, foundShip)
-	}
+fun getDamager(entity: Entity) : Damager {
+	if (entity is Player) return PlayerDamagerWrapper(entity)
+
 	return EntityDamager(entity)
 }
 
