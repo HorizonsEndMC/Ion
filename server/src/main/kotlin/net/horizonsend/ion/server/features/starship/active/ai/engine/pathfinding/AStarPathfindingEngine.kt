@@ -11,8 +11,7 @@ import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
+import net.horizonsend.ion.server.miscellaneous.utils.debugHighlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlocks
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -67,7 +66,7 @@ open class AStarPathfindingEngine(
 	 * Gets a destination node location
 	 * */
 	fun getDestinationNode(): AIPathfinding.SectionNode {
-		debugAudience.debug("Finding destination node")
+		starship.debug("Finding destination node")
 		val origin = getOriginNode()
 
 		val destination = positioningSupplier.findPositionVec3i()
@@ -75,7 +74,7 @@ open class AStarPathfindingEngine(
 
 		// If the destination node is already tracked, return it
 		AIPathfinding.SectionNode.get(trackedSections, destinationNodePosition)?.let {
-			debugAudience.debug("Destination already tracked")
+			starship.debug("Destination already tracked")
 			return it
 		}
 
@@ -88,7 +87,7 @@ open class AStarPathfindingEngine(
 
 		// If its present and navigable, return it
 		if (newDestination?.navigable == true) {
-			debugAudience.debug("Found it within range of tracked nodes")
+			starship.debug("Found it within range of tracked nodes")
 			return newDestination
 		}
 
@@ -103,7 +102,7 @@ open class AStarPathfindingEngine(
 				val closerDestination = AIPathfinding.SectionNode.get(trackedSections, origin.position + Vec3i(newVector))
 
 				if (closerDestination?.navigable == true) {
-					debugAudience.debug("Found closer destination at new distance $newDistance")
+					starship.debug("Found closer destination at new distance $newDistance")
 					return closerDestination
 				}
 
@@ -113,13 +112,13 @@ open class AStarPathfindingEngine(
 
 		// If it's still null, something's wrong.
 		if (newDestination?.navigable == null) {
-			debugAudience.debug("Still couldn't find destination")
+			starship.debug("Still couldn't find destination")
 			return origin
 		}
 
 		// At this point the destination is non-null, but unnavigable. Just find the nearest navigable node
 		newDestination.getNeighbors(trackedSections).values.firstOrNull { it.navigable }?.let {
-			debugAudience.debug("Destination was unnavigable")
+			starship.debug("Destination was unnavigable")
 			return it
 		}
 
@@ -127,12 +126,12 @@ open class AStarPathfindingEngine(
 		newDestination.getNeighbors(trackedSections).values.firstNotNullOfOrNull { immediateNeighbors ->
 			immediateNeighbors.getNeighbors(trackedSections).values.firstOrNull { neighborNeighbors -> neighborNeighbors.navigable }
 		}?.let {
-			debugAudience.debug("Destination still was unnavigable")
+			starship.debug("Destination still was unnavigable")
 			return it
 		}
 
 		// Give up
-		debugAudience.debug("Gave up finding destination")
+		starship.debug("Gave up finding destination")
 		return origin
 	}
 
@@ -142,28 +141,24 @@ open class AStarPathfindingEngine(
 	/** General update task for pathfinding */
 	fun updatePathfinding() {
 		val newCenter = getSectionPositionOrigin()
-		debugAudience.debug("Updating pathfinding")
+		starship.debug("Updating pathfinding")
 
 		// It has not left the old section center, return
 		if (shouldNotPathfind(newCenter)) {
-			debugAudience.debug("Returning because ship has not moved")
+			starship.debug("Returning because ship has not moved")
 			return
 		}
 
 		// Mark the center as the new center
 		center = newCenter
 
-//		debugAudience.audiences().filterIsInstance<Player>().forEach {
-//			player -> trackedSections.filter { !it.navigable }.forEach { it.highlight(player) }
-//		}
-
 		AIPathfinding.adjustTrackedSections(this, false)
 
 		// Update the path
-		debugAudience.debug("Updating Charted path")
+		starship.debug("Updating Charted path")
 		updateChartedPath()
 		chartedPath.removeAll { it.position == newCenter }
-		debugAudience.debug("Updated Charted path")
+		starship.debug("Updated Charted path")
 	}
 
 	/** A queue containing the section nodes along the charted path */
@@ -171,19 +166,19 @@ open class AStarPathfindingEngine(
 
 	/** Updates the stored path with  */
 	private fun updateChartedPath() {
-		debugAudience.debug("Updating Charted Path")
+		starship.debug("Updating Charted Path")
 
 		// This list is created with the closest node at the first index, and the destination as its final.
 		// When put into the list queue, the closest will be first.
 		val points = AIPathfinding.pathfind(this)
 
-		debugAudience.audiences().filterIsInstance<Player>().forEach { player -> points.forEach { point -> point.node.highlight(player, 200L) } }
-		debugAudience.debug("Found points: $points")
+		starship.audiences().filterIsInstance<Player>().forEach { player -> points.forEach { point -> point.node.highlight(player, 200L) } }
+		starship.debug("Found points: $points")
 
 		chartedPath.clear()
 
 		for (point in points) {
-			debugAudience.highlightBlock(point.node.center, 500L)
+			debugHighlightBlock(point.node.center, 500L)
 			chartedPath.offer(point.node)
 		}
 	}
@@ -206,7 +201,7 @@ open class AStarPathfindingEngine(
 		if (ticks % tickInterval != 0) return
 
 		if (!previousTask.isDone) {
-			debugAudience.debug("Previous task is not completed")
+			starship.debug("Previous task is not completed")
 			uncompletedTicks++
 
 			if (uncompletedTicks >= 50) {
@@ -226,7 +221,7 @@ open class AStarPathfindingEngine(
 
 	/** Main navigation loop */
 	open fun navigate(): CompletableFuture<*> = submitTask {
-		debugAudience.debug("Navigating")
+		starship.debug("Navigating")
 
 		val run = runCatching {
 			// See if the objective has changed
@@ -234,11 +229,11 @@ open class AStarPathfindingEngine(
 				trackedSections.clear()
 			}
 
-			debugAudience.debug("Updating pathfinding")
+			starship.debug("Updating pathfinding")
 			updatePathfinding()
-			debugAudience.debug("Updating pathfinding completed")
+			starship.debug("Updating pathfinding completed")
 
-			debugAudience.highlightBlocks(chartedPath.map { it.center }, 5L)
+			starship.highlightBlocks(chartedPath.map { it.center }, 5L)
 		}
 
 		val exception = run.exceptionOrNull() ?: return@submitTask

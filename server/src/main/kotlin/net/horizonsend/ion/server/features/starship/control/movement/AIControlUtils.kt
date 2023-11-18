@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
-import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -8,7 +7,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
@@ -148,7 +146,6 @@ object AIControlUtils {
 			StarshipWeaponry.rightClickTimes.remove(damager)
 		}
 
-		debugAudience.debug("Manual firing with left click $leftClick")
 		StarshipWeaponry.manualFire(
 			controller.damager,
 			controller.starship,

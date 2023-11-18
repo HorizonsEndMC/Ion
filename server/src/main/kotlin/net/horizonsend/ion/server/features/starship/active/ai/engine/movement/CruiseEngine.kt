@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
@@ -46,12 +45,12 @@ class CruiseEngine(
 
 	fun handleCruise() {
 		if (controller.hasBeenBlockedWithin()) {
-			debugAudience.debug("Blocked, stopping cruising")
+			starship.debug("Blocked, stopping cruising")
 			stopCruising(true)
 			return
 		}
 
-		debugAudience.debug("More than 500 blocks away, cruising")
+		starship.debug("More than 500 blocks away, cruising")
 		cruiseToVec3i(starshipLocation, cruiseDestination)
 	}
 
@@ -70,7 +69,7 @@ class CruiseEngine(
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
-		debugAudience.debug("$controller is blocked $reason by movement $movement trying to move to ${getDestination()} eventual destination $cruiseDestination")
+		starship.debug("$controller is blocked $reason by movement $movement trying to move to ${getDestination()} eventual destination $cruiseDestination")
 	}
 
 	enum class ShiftFlightType {

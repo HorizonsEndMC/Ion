@@ -98,6 +98,7 @@ fun <T : Entity> World.castSpawnEntity(location: Location, type: org.bukkit.enti
 	this.spawnEntity(location, type) as T
 
 fun debugHighlightBlock(x: Number, y: Number, z: Number, duration: Long = 5L) = debugAudience.highlightBlock(Vec3i(x.toInt(), y.toInt(), z.toInt()), duration)
+fun debugHighlightBlock(pos: Vec3i, duration: Long = 5L) = debugAudience.highlightBlock(pos, duration)
 fun debugHighlightBlocks(blocks: Collection<Vec3i>, duration: Long = 5L) = debugAudience.highlightBlocks(blocks, duration)
 
 val debugAudience: ForwardingAudience = ForwardingAudience { IonCommand.debugEnabledPlayers }

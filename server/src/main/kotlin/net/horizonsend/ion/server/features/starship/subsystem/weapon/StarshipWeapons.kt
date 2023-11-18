@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
 
@@ -54,14 +53,14 @@ object StarshipWeapons {
 		val boostPower = AtomicDouble(0.0)
 
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
-			debugAudience.debug("we have heavy weapons")
+			ship.debug("we have heavy weapons")
 
 			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
 
 			ship.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
 
 			if (heavyWeaponTypes.count() > 1) {
-				debugAudience.debug(
+				ship.debug(
 					""""
 					CANNOT FIRE MORE THAN 1 TYPE OF HEAVY WEAPON
 					Types: ${heavyWeaponTypes.joinToString()}
@@ -77,14 +76,14 @@ object StarshipWeapons {
 			}
 
 			val heavyWeaponType = heavyWeaponTypes.single()
-			debugAudience.debug("heavyWeaponType = $heavyWeaponType")
+			ship.debug("heavyWeaponType = $heavyWeaponType")
 
 			val newWarmup = queuedShots
 				.filter { it.weapon is HeavyWeaponSubsystem }
 				.maxOf { (it.weapon as HeavyWeaponSubsystem).boostChargeNanos }
-			debugAudience.debug("newWarmup = $newWarmup")
+			ship.debug("newWarmup = $newWarmup")
 			val output = ship.reactor.heavyWeaponBooster.boost(heavyWeaponType, newWarmup)
-			debugAudience.debug("output = $output")
+			ship.debug("output = $output")
 			boostPower.set(output)
 		}
 
@@ -102,29 +101,29 @@ object StarshipWeapons {
 			val weapon = shot.weapon
 
 			val maxPerShot = weapon.getMaxPerShot()
-			debugAudience.debug("iterating shots, $weapon, $maxPerShot")
+			ship.debug("iterating shots, $weapon, $maxPerShot")
 
 			val firedSet = firedCounts[weapon.name]
-			debugAudience.debug("have we fired those already?")
+			ship.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
-				debugAudience.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
+				ship.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
 
 				continue
 			}
 
-			debugAudience.debug("is resource available?")
+			ship.debug("is resource available?")
 			if (resourcesUnavailable(weapon, ship, boostPower)) {
-				debugAudience.debug("its not, goodbye")
+				ship.debug("its not, goodbye")
 				continue
 			}
 
-			debugAudience.debugRed("shootings!!")
+			ship.debugRed("shootings!!")
 			shot.shoot()
 
-			debugAudience.debug("taking resources")
+			ship.debug("taking resources")
 			consumeResources(weapon, boostPower, ship)
 
-			debugAudience.debug("adding to fired")
+			ship.debug("adding to fired")
 			firedSet.add(weapon)
 		}
 

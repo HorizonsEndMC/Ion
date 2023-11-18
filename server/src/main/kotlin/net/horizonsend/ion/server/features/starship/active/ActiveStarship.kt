@@ -46,7 +46,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
@@ -381,7 +380,7 @@ abstract class ActiveStarship (
 		data.points.incrementAndGet()
 		data.lastDamaged = System.currentTimeMillis()
 
-		debugAudience.debug("$damager added to damagers")
+		debug("$damager added to damagers")
 		damager.debug("$damager added to $identifier's damagers")
 
 		controller.onDamaged(damager)
