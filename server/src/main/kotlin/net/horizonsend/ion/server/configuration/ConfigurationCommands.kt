@@ -23,10 +23,11 @@ object ConfigurationCommands : SLCommand() {
 	private val starshipTypes = StarshipTypeBalancing::class.memberProperties
 	private val starshipBalancingOptions = StarshipBalancing::class.memberProperties
 	private val weaponTypes = StarshipWeapons::class.memberProperties
-	private val changeableFields = StarshipWeapons.StarshipWeapon::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
+	private val weaponFields = StarshipWeapons.StarshipWeapon::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
+	private val starshipFields = StarshipBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 
 	override fun onEnable(manager: PaperCommandManager) {
-		manager.commandCompletions.registerCompletion("balancingFields") {
+		manager.commandCompletions.registerCompletion("starshipTypes") {
 			starshipTypes.map { it.name }
 		}
 
@@ -39,31 +40,39 @@ object ConfigurationCommands : SLCommand() {
 		}
 
 		manager.commandCompletions.registerCompletion("balancingValues") {
-			changeableFields.map { it.name }
+			weaponFields.map { it.name }
+		}
+
+		manager.commandCompletions.registerCompletion("starshipValues") {
+			starshipFields.map { it.name }
 		}
 	}
 
 	@Subcommand("config set starship properties")
-	@CommandCompletion("@balancingFields @balancingOptions @nothing")
-	fun setStarshipProperties(sender: CommandSender, typeName: String, fieldName: String, value: String) {
-		val type = starshipTypes.find { it.name == typeName } ?: run {
-			sender.userError("Starship type $typeName not found")
+	@CommandCompletion("@starshipTypes @starshipValues @nothing")
+	fun setStarshipProperties(sender: CommandSender, starshipTypeName: String, fieldName: String, value: String) {
+		val starshipType = starshipTypes.find { it.name == starshipTypeName } ?: run {
+			sender.userError("Starship type $starshipTypeName not found")
 			return
 		}
 
-		val field = changeableFields.find { it.name == fieldName } ?: run {
+		val field = starshipFields.find { it.name == fieldName } ?: run {
 			sender.userError("Field not found")
 			return
 		}
 
+		val starshipBalancing = starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
+		try { setField(field, starshipBalancing, value) } catch (e: Throwable) { return sender.userError("Error: ${e.message}") }
+
+		sender.success("Set $starshipTypeName's $fieldName to $value")
 	}
 
-	@Subcommand("config set starship weapons")
-	@CommandCompletion("@balancingFields @weaponTypes @balancingValues @nothing")
-	fun setStarshipWeapons(sender: CommandSender, typeName: String, weaponName: String, fieldName: String, value: String) {
-		val starshipType = starshipTypes.find { it.name == typeName } ?: run {
-			sender.userError("Starship type $typeName not found")
+	@Subcommand("config set starship weapon")
+	@CommandCompletion("@starshipTypes @weaponTypes @balancingValues @nothing")
+	fun setStarshipWeapons(sender: CommandSender, starshipTypeName: String, weaponName: String, fieldName: String, value: String) {
+		val starshipType = starshipTypes.find { it.name == starshipTypeName } ?: run {
+			sender.userError("Starship type $starshipTypeName not found")
 			return
 		}
 
@@ -72,7 +81,7 @@ object ConfigurationCommands : SLCommand() {
 			return
 		}
 
-		val field = changeableFields.find { it.name == fieldName } ?: run {
+		val field = weaponFields.find { it.name == fieldName } ?: run {
 			sender.userError("Field not found")
 			return
 		}
@@ -80,47 +89,39 @@ object ConfigurationCommands : SLCommand() {
 		val starshipBalancing = (starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
 		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapons.StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
-		var done = false
-		when (weaponType.returnType) {
+		try { setField(field, weapon, value) } catch (e: Throwable) { return sender.userError("Error: ${e.message}") }
+
+		sender.success("Set $starshipTypeName's $weaponName's $fieldName to $value")
+	}
+
+	private fun setField(field: KMutableProperty<*>, containing: Any, value: String) {
+		when (field.returnType) {
 			Int::class.createType() -> {
-				field.setter.call(weapon, value.toInt())
-				done = true
+				field.setter.call(containing, value.toInt())
 			}
 
 			Double::class.createType() -> {
-				field.setter.call(weapon, value.toDouble())
-				done = true
+				field.setter.call(containing, value.toDouble())
 			}
 
 			Float::class.createType() -> {
-				field.setter.call(weapon, value.toFloat())
-				done = true
+				field.setter.call(containing, value.toFloat())
 			}
 
 			Long::class.createType() -> {
-				field.setter.call(weapon, value.toLong())
-				done = true
+				field.setter.call(containing, value.toLong())
 			}
 
 			Boolean::class.createType() -> {
-				field.setter.call(weapon, value.toBooleanStrict())
-				done = true
+				field.setter.call(containing, value.toBooleanStrict())
 			}
 
 			String::class.createType() -> {
-				field.setter.call(weapon, value)
-				done = true
+				field.setter.call(containing, value)
 			}
 
-			else -> {
-				sender.userError("type is: ${weaponType.returnType.javaType.typeName}, to add in the switch case")
-			}
+			else -> throw NotImplementedError("type is: ${field.returnType.javaType.typeName}, to add in the switch case")
 		}
-
-		if (done)
-			sender.success("changed balancing value")
-		else
-			sender.userError("type error, value isn't what the field accepts or read above")
 	}
 
 //	@Subcommand("config get")
