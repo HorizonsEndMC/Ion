@@ -28,7 +28,7 @@ class FrigateCombatEngine(controller: AIController, targetingEngine: TargetingEn
 
 		val faceDirection = if (leftFace) targetBlockFace.leftFace else targetBlockFace.rightFace
 
-		if (ticks % 900 == 0) {
+		if (ticks % turnCooldown == 0) {
 			leftFace = !leftFace
 		}
 

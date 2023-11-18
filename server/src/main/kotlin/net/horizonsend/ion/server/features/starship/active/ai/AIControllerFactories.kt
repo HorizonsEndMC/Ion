@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.active.ai
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.AggroUponDamageEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.TemporaryControllerEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat.FrigateCombatEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat.StarfighterCombatEngine
@@ -40,7 +41,7 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
 
 					engines["targeting"] = targeting
 					engines["combat"] = StarfighterCombatEngine(this, targeting)
@@ -76,7 +77,7 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
 
 					engines["targeting"] = targeting
 					engines["combat"] = StarfighterCombatEngine(this, targeting)
@@ -141,10 +142,12 @@ object AIControllerFactories : IonServerComponent() {
 				).apply {
 					this.starship.updatePower(name, 10, 50, 40)
 
-					val targeting = ClosestTargetingEngine(this, 5000.0).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
 
 					engines["targeting"] = targeting
-					engines["combat"] = StarfighterCombatEngine(this, targeting)
+					val combatEngine = StarfighterCombatEngine(this, targeting)
+					engines["combat"] = combatEngine
+					engines["aggro"] = AggroUponDamageEngine(this, combatEngine)
 
 					val positioning = AxisStandoffPositioningEngine(this, targeting, 40.0)
 					engines["positioning"] = positioning
@@ -177,17 +180,25 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
 
 					engines["targeting"] = targeting
-					engines["combat"] = FrigateCombatEngine(this, targeting)
+					val combatEngine = FrigateCombatEngine(this, targeting)
+					engines["combat"] = combatEngine
+					engines["aggro"] = AggroUponDamageEngine(this, combatEngine)
 
 					val positioning = AxisStandoffPositioningEngine(this, targeting, 240.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
-					engines["pathfinding"] = pathfinding
-					engines["movement"] = ShiftFlightMovementEngine(this, pathfinding)
+					val pathfindingEngine = CombatAStarPathfindingEngine(this, positioning)
+					engines["pathfinding"] = pathfindingEngine
+					engines["movement"] = CruiseEngine(
+						this,
+						pathfindingEngine,
+						target?.getVec3i() ?: getCenterVec3i(),
+						CruiseEngine.ShiftFlightType.ALL,
+						0.0
+					)
 				}
 			}
 		}
@@ -213,7 +224,7 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets,
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
 
 					engines["targeting"] = targeting
 					engines["combat"] = FrigateCombatEngine(this, targeting)
