@@ -182,7 +182,7 @@ object ContactsSidebar {
                         return@run this.color(RelationCache[viewerNation, pilotNation].color)
                     } as TextComponent,
 
-                    suffix = if (starship.isInterdicting && distance <= starship.type.interdictionRange) {
+                    suffix = if (starship.isInterdicting && distance <= starship.balancing.interdictionRange) {
                         text("\uE033")
                             .font(fontKey).color(RED) as TextComponent
                     } else if (starship.isInterdicting) {
