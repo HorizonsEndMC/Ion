@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -373,9 +374,9 @@ object BazaarCommand : SLCommand() {
 				.append(text(" of "))
 				.append(item.displayNameComponent)
 				.append(text(" for "))
-				.append(text(price.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(price.toCreditComponent())
 				.append(text(" (+ "))
-				.append(text(tax.toCreditsString()).color(NamedTextColor.GOLD))
+				.append(price.toCreditComponent())
 				.append(text(" tax"))
 		)
 

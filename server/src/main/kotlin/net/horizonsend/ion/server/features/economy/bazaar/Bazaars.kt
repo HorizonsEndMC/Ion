@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.features.customitems.CustomItems
@@ -312,7 +313,7 @@ object Bazaars : IonServerComponent() {
 
 				buyMessage
 					.append(text(" for "))
-					.append(text(cost.toCreditsString()).color(NamedTextColor.GOLD))
+					.append(cost.toCreditComponent())
 
 				if (priceMult > 1) {
 					buyMessage
