@@ -6,8 +6,14 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 
 class ClosestTargetingEngine(
 	controller: AIController,
-	val maxRange: Double
-	) : TargetingEngine(controller) {
+	val maxRange: Double,
+	existingTarget: AITarget? = null
+) : TargetingEngine(controller) {
+
+	init {
+		lastTarget = existingTarget
+	}
+
 	override fun searchForTarget(): AITarget? {
 		return controller.getNearbyTargetsInRadius(0.0, maxRange) { if (it is StarshipTarget) { it.ship.controller !is AIController } else true }.firstOrNull()
 	}

@@ -43,7 +43,9 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 	}
 
 	private fun sendGameMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
-		val message = component(sinkMessage, newline(), *assists.values.toTypedArray())
+		val sinkPrefix = if (assists.isNotEmpty()) text(", assisted by:", GOLD) else empty()
+
+		val message = component(sinkMessage, newline(), sinkPrefix, *assists.values.toTypedArray())
 
 		if (arena) Bukkit.getServer().sendMessage(message) else Notify.online(message)
 	}
@@ -77,9 +79,7 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 	}
 
 	private fun getSinkMessage(arena: Boolean, killerDamager: Damager): Component {
-
-		val killedShipHover = component(text("${sunkShip.initialBlockCount} block ", NamedTextColor.WHITE), sunkShip.type.displayNameComponent)
-		val killedShipText = formatName(sunkShip).hoverEvent(killedShipHover)
+		val killedShipText = formatName(sunkShip)
 
 		val killerName = formatName(killerDamager)
 		val sunkMessage = component(text(" was sunk by ", GOLD), killerName)
@@ -122,6 +122,8 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 	}
 
 	private fun formatName(starship: ActiveControlledStarship): Component {
+		val hover = component(text("${starship.initialBlockCount} block ", NamedTextColor.WHITE), starship.type.displayNameComponent)
+
 		val nameFormat = if (starship.data.name == null) component(
 			text("A ", GOLD),
 			text(starship.initialBlockCount),
@@ -136,6 +138,6 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
 		)
 
-		return component(nameFormat, text(", piloted by ", GOLD), starship.controller.pilotName)
+		return component(nameFormat, text(", piloted by ", GOLD), starship.controller.pilotName).hoverEvent(hover)
 	}
 }
