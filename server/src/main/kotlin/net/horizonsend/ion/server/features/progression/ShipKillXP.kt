@@ -63,8 +63,7 @@ object ShipKillXP : IonServerComponent() {
 		val killedStarship = ActiveStarships.findByPilot(killed) ?: return
 
 		if (killer is Player) {
-			val starship = ActiveStarships.findByPassenger(killer) ?: return
-			val damager = PlayerDamagerWrapper(killer, starship)
+			val damager = PlayerDamagerWrapper(killer)
 
 			killedStarship.addToDamagers(damager)
 		}

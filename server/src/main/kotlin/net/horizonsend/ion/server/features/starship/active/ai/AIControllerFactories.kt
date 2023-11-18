@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat.StarfighterCombatEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting.ClosestTargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.ShiftFlightMovementEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.CombatAStarPathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
@@ -51,7 +50,13 @@ object AIControllerFactories : IonServerComponent() {
 
 					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
 					engines["pathfinding"] = pathfinding
-					engines["movement"] = ShiftFlightMovementEngine(this, pathfinding)
+					engines["movement"] = CruiseEngine(
+						this,
+						pathfinding,
+						target?.getVec3i() ?: getCenterVec3i(),
+						CruiseEngine.ShiftFlightType.ALL,
+						0.0
+					)
 				}
 			}
 		}
@@ -87,7 +92,13 @@ object AIControllerFactories : IonServerComponent() {
 
 					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
 					engines["pathfinding"] = pathfinding
-					engines["movement"] = ShiftFlightMovementEngine(this, pathfinding)
+					engines["movement"] = CruiseEngine(
+						this,
+						pathfinding,
+						target?.getVec3i() ?: getCenterVec3i(),
+						CruiseEngine.ShiftFlightType.ALL,
+						0.0
+					)
 
 					engines["fallback"] = TemporaryControllerEngine(this, previousController!!)
 				}
@@ -154,7 +165,13 @@ object AIControllerFactories : IonServerComponent() {
 
 					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
 					engines["pathfinding"] = pathfinding
-					engines["movement"] = ShiftFlightMovementEngine(this, pathfinding)
+					engines["movement"] = CruiseEngine(
+						this,
+						pathfinding,
+						target?.getVec3i() ?: getCenterVec3i(),
+						CruiseEngine.ShiftFlightType.ALL,
+						0.0
+					)
 				}
 			}
 		}
