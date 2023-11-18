@@ -121,6 +121,17 @@ class AIController(
 			.keys
 
 	override fun toString(): String {
-		return "$name [${starship.identifier}] {${engines.entries.joinToString { (key, value) -> "$key : $value" }}}"
+		return """
+			Controller: $name
+			Starship: ${starship.identifier}
+
+			Is Shift Flying: $isShiftFlying
+			Movement Pitch: $pitch
+			Movement Yaw: $yaw
+
+			Last Rotated: $lastRotation
+
+			Engines: ${engines.entries.joinToString { (key, value) -> "$key : $value" }}
+		""".trimIndent()
 	}
 }
