@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.PositioningEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIPathfinding
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
@@ -18,10 +17,11 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.RejectedExecutionException
+import java.util.function.Supplier
 
 open class AStarPathfindingEngine(
 	controller: AIController,
-	positioningSupplier: PositioningEngine
+	positioningSupplier: Supplier<Vec3i>
 ) : PathfindingEngine(controller, positioningSupplier) {
 	override var blocked = false; get() = controller.hasBeenBlockedWithin()
 
@@ -69,7 +69,7 @@ open class AStarPathfindingEngine(
 		starship.debug("Finding destination node")
 		val origin = getOriginNode()
 
-		val destination = positioningSupplier.findPositionVec3i()
+		val destination = positioningSupplier.get()
 		val destinationNodePosition = realToSectionPos(destination)
 
 		// If the destination node is already tracked, return it
@@ -247,7 +247,7 @@ open class AStarPathfindingEngine(
 		return getImmediateNavigationObjective()?.center ?: getDestination()
 	}
 
-	override fun getDestination(): Vec3i = positioningSupplier.findPositionVec3i()
+	override fun getDestination(): Vec3i = positioningSupplier.get()
 
 	private var lastCompletedSection = AIPathfinding.SectionNode(world, getSectionPositionOrigin(), true)
 	/** Polls the charted path for the first position in the path */
