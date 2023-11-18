@@ -40,20 +40,20 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = false }
 
 					engines["targeting"] = targeting
-					engines["combat"] = StarfighterCombatEngine(this, targeting)
+					engines["combat"] = StarfighterCombatEngine(this, targeting::findTarget)
 
-					val positioning = AxisStandoffPositioningEngine(this, targeting, 25.0)
+					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 25.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
+					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
 						pathfinding,
-						target?.getVec3i() ?: getCenterVec3i(),
+						pathfinding::getFirstNavPoint,
 						CruiseEngine.ShiftFlightType.ALL,
 						0.0
 					)
@@ -82,20 +82,20 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = false }
 
 					engines["targeting"] = targeting
-					engines["combat"] = StarfighterCombatEngine(this, targeting)
+					engines["combat"] = StarfighterCombatEngine(this, targeting::findTarget).apply { shouldFaceTarget = true }
 
-					val positioning = AxisStandoffPositioningEngine(this, targeting, 25.0)
+					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 25.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
+					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
 						pathfinding,
-						target?.getVec3i() ?: getCenterVec3i(),
+						pathfinding::getFirstNavPoint,
 						CruiseEngine.ShiftFlightType.ALL,
 						0.0
 					)
@@ -153,22 +153,22 @@ object AIControllerFactories : IonServerComponent() {
 				).apply {
 					this.starship.updatePower(name, 10, 50, 40)
 
-					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = false }
 
 					engines["targeting"] = targeting
-					val combatEngine = StarfighterCombatEngine(this, targeting)
+					val combatEngine = StarfighterCombatEngine(this, targeting::findTarget).apply { shouldFaceTarget = true }
 					engines["combat"] = combatEngine
 					engines["aggro"] = AggroUponDamageEngine(this, combatEngine)
 
-					val positioning = AxisStandoffPositioningEngine(this, targeting, 40.0)
+					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 40.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
+					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
 						pathfinding,
-						target?.getVec3i() ?: getCenterVec3i(),
+						pathfinding::getFirstNavPoint,
 						CruiseEngine.ShiftFlightType.ALL,
 						0.0
 					)
@@ -197,22 +197,22 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = false }
 
 					engines["targeting"] = targeting
-					val combatEngine = FrigateCombatEngine(this, targeting)
+					val combatEngine = FrigateCombatEngine(this, targeting::findTarget).apply { shouldFaceTarget = false }
 					engines["combat"] = combatEngine
 					engines["aggro"] = AggroUponDamageEngine(this, combatEngine)
 
-					val positioning = AxisStandoffPositioningEngine(this, targeting, 240.0)
+					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 240.0)
 					engines["positioning"] = positioning
 
-					val pathfindingEngine = CombatAStarPathfindingEngine(this, positioning)
-					engines["pathfinding"] = pathfindingEngine
+					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
-						pathfindingEngine,
-						target?.getVec3i() ?: getCenterVec3i(),
+						pathfinding,
+						pathfinding::getFirstNavPoint,
 						CruiseEngine.ShiftFlightType.ALL,
 						0.0
 					)
@@ -241,17 +241,17 @@ object AIControllerFactories : IonServerComponent() {
 					manualWeaponSets,
 					autoWeaponSets,
 				).apply {
-					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = true }
+					val targeting = ClosestTargetingEngine(this, 5000.0, target).apply { sticky = false }
 
 					engines["targeting"] = targeting
-					engines["combat"] = FrigateCombatEngine(this, targeting)
+					engines["combat"] = FrigateCombatEngine(this, targeting::findTarget).apply { shouldFaceTarget = false }
 
-					val positioning = AxisStandoffPositioningEngine(this, targeting, 240.0)
+					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 240.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning)
+					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
-					engines["movement"] = CruiseEngine(this, pathfinding, starship.centerOfMass, CruiseEngine.ShiftFlightType.ALL)
+					engines["movement"] = CruiseEngine(this, pathfinding, pathfinding::getFirstNavPoint, CruiseEngine.ShiftFlightType.ALL)
 
 					engines["fallback"] = TemporaryControllerEngine(this, previousController!!)
 				}
