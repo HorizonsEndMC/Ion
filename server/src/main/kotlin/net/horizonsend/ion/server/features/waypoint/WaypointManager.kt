@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -355,7 +354,7 @@ object WaypointManager : IonServerComponent() {
         val navComp = Hyperspace.findNavComp(starship) ?: return -1
         Hyperspace.findHyperdrive(starship) ?: return -1
 
-        val maxRange = (navComp.multiblock.baseRange * starship.data.starshipType.actualType.hyperspaceRangeMultiplier)
+        val maxRange = (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier)
 
         return if (edge.hyperspaceEdge) 1
         else ceil(playerGraphs[player.uniqueId]!!.getEdgeWeight(edge) / maxRange).toInt()
