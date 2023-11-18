@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -13,6 +14,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -100,7 +102,8 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			for (shield in ship.shields) {
 				val percent = createPercent(shield.power, shield.maxPower)
-				val shieldClass = shield.multiblock.signText[3]
+				val (x, y, z) = shield.pos
+				val shieldClass = (getBlockIfLoaded(ship.world, x, y, z)?.state as? Sign)?.line(3)
 
 				val shieldName = miniMessage().serialize(legacyAmpersand().deserialize(shield.name))
 
