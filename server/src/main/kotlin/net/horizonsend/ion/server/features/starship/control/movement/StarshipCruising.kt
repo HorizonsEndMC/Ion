@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipType.BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -169,7 +168,7 @@ object StarshipCruising : IonServerComponent() {
 		}
 
 		maxSpeed /= 2
-		maxSpeed = (maxSpeed * starship.type.cruiseSpeedMultiplier).toInt()
+		maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
 
 		starship.cruiseData.accel = accel
 		starship.cruiseData.targetSpeed = maxSpeed

@@ -62,7 +62,7 @@ object Interdiction : IonServerComponent() {
 		when (starship.isInterdicting) {
 			true -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),
-				starship.type.interdictionRange.toDouble()
+				starship.balancing.interdictionRange.toDouble()
 			)) {
 				player.playSound(
 					Sound.sound(
@@ -76,7 +76,7 @@ object Interdiction : IonServerComponent() {
 
 			false -> for (player in starship.world.getNearbyPlayers(
 				starship.centerOfMass.toLocation(starship.world),
-				starship.type.interdictionRange.toDouble()
+				starship.balancing.interdictionRange.toDouble()
 			)) {
 				player.playSound(
 					Sound.sound(
@@ -134,7 +134,7 @@ object Interdiction : IonServerComponent() {
 			val controlLoc = cruisingShip.playerPilot?.location ?: starship.centerOfMass.toLocation(starship.world)
 
 			if (controlLoc.world != sign.world) continue
-			if (controlLoc.distance(sign.location) > starship.type.interdictionRange) {
+			if (controlLoc.distance(sign.location) > starship.balancing.interdictionRange) {
 				continue
 			}
 

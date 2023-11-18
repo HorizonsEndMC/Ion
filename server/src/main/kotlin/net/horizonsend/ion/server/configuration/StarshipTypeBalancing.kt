@@ -8,21 +8,81 @@ data class StarshipTypeBalancing(
 	val antiAirCannon: AntiAirCannonBalancing = AntiAirCannonBalancing(),
 	val nonStarshipFired: StarshipWeapons = StarshipWeapons(),
 
-	val speeder: StarshipBalancing = StarshipBalancing(),
+	val speeder: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 3,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 10,
+		hyperspaceRangeMultiplier = 3.0
+	),
 
 
-	val shuttle: StarshipBalancing = StarshipBalancing(),
-	val transport: StarshipBalancing = StarshipBalancing(),
-	val lightFreighter: StarshipBalancing = StarshipBalancing(),
-	val mediumFreighter: StarshipBalancing = StarshipBalancing(),
-	val heavyFreighter: StarshipBalancing = StarshipBalancing(),
-	val starfighter: StarshipBalancing = StarshipBalancing(),
+	val shuttle: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 300,
+		hyperspaceRangeMultiplier = 1.2,
+	),
+	val transport: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 600,
+		hyperspaceRangeMultiplier = 1.25,
+	),
+	val lightFreighter: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 900,
+		hyperspaceRangeMultiplier = 1.3,
+	),
+	val mediumFreighter: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 1200,
+		hyperspaceRangeMultiplier = 1.35,
+	),
+	val heavyFreighter: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 1500,
+		hyperspaceRangeMultiplier = 1.4,
+	),
 
-	val gunship: StarshipBalancing = StarshipBalancing(),
-	val corvette: StarshipBalancing = StarshipBalancing(),
-	val frigate: StarshipBalancing = StarshipBalancing(),
-	val destroyer: StarshipBalancing = StarshipBalancing(),
+	val starfighter: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 4,
+		maxSneakFlyAccel = 4,
+		interdictionRange = 600,
+		hyperspaceRangeMultiplier = 1.5
+	),
+	val gunship: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 1200,
+		hyperspaceRangeMultiplier = 1.6
+	),
+	val corvette: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 6,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 1800,
+		hyperspaceRangeMultiplier = 1.7
+	),
+	val frigate: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 6,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 2400,
+		hyperspaceRangeMultiplier = 1.8,
+	),
+	val destroyer: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 3000,
+		hyperspaceRangeMultiplier = 1.9,
+	),
 	val battlecruiser: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 2400,
+		hyperspaceRangeMultiplier = 2.5,
+		cruiseSpeedMultiplier = 0.875,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -48,6 +108,11 @@ data class StarshipTypeBalancing(
 		)
 	),
 	val battleship: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 5,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 2800,
+		hyperspaceRangeMultiplier = 2.6,
+		cruiseSpeedMultiplier = 0.8,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -73,6 +138,11 @@ data class StarshipTypeBalancing(
 		)
 	),
 	val dreadnought: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 2,
+		interdictionRange = 3200,
+		hyperspaceRangeMultiplier = 2.7,
+		cruiseSpeedMultiplier = 0.7,
 		weapons = StarshipWeapons(
 			quadTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -98,24 +168,39 @@ data class StarshipTypeBalancing(
 		)
 	),
 
+	val aiShuttle: StarshipBalancing = shuttle,
+	val aiTransport: StarshipBalancing = transport,
+	val aiLightFreighter: StarshipBalancing = lightFreighter,
+	val aiMediumFreighter: StarshipBalancing = mediumFreighter,
+	val aiHeavyFreighter: StarshipBalancing = heavyFreighter,
 
-	val aiShuttle: StarshipBalancing = StarshipBalancing(),
-	val aiTransport: StarshipBalancing = StarshipBalancing(),
-	val aiLightFreighter: StarshipBalancing = StarshipBalancing(),
-	val aiMediumFreighter: StarshipBalancing = StarshipBalancing(),
-	val aiHeavyFreighter: StarshipBalancing = StarshipBalancing(),
+	val aiStarfighter: StarshipBalancing = starfighter,
+	val aiGunship: StarshipBalancing = gunship,
+	val aiCorvette: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 20,
+		maxSneakFlyAccel = 20,
+		interdictionRange = 1800,
+		hyperspaceRangeMultiplier = 1.7,
+		weapons = corvette.weapons
+	),
+	val aiFrigate: StarshipBalancing = frigate,
+	val aiDestroyer: StarshipBalancing = destroyer,
+	val aiBattlecruiser: StarshipBalancing = battlecruiser,
+	val aiBattleship: StarshipBalancing = battleship,
+	val aiDreadnought: StarshipBalancing = dreadnought,
 
-	val aiStarfighter: StarshipBalancing = StarshipBalancing(),
-	val aiGunship: StarshipBalancing = StarshipBalancing(),
-	val aiCorvette: StarshipBalancing = StarshipBalancing(),
-	val aiFrigate: StarshipBalancing = StarshipBalancing(),
-	val aiDestroyer: StarshipBalancing = StarshipBalancing(),
-	val aiBattlecruiser: StarshipBalancing = StarshipBalancing(weapons = StarshipWeapons(quadTurret = battlecruiser.weapons.quadTurret)),
-	val aiBattleship: StarshipBalancing = StarshipBalancing(weapons = StarshipWeapons(quadTurret = battleship.weapons.quadTurret)),
-	val aiDreadnought: StarshipBalancing = StarshipBalancing(weapons = StarshipWeapons(quadTurret = dreadnought.weapons.quadTurret)),
-
-	val platformBalancing: StarshipBalancing = StarshipBalancing(),
-	val eventShipBalancing: StarshipBalancing = StarshipBalancing(),
+	val platformBalancing: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 0,
+		maxSneakFlyAccel = 0,
+		interdictionRange = 0,
+		hyperspaceRangeMultiplier = 0.0
+	),
+	val eventShipBalancing: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 10,
+		maxSneakFlyAccel = 3,
+		interdictionRange = 2000,
+		hyperspaceRangeMultiplier = 10.0
+	)
 )
 
 @Serializable
@@ -137,6 +222,12 @@ data class StarshipBalancing(
 	var accelMultiplier: Double = 1.0,
 	var maxSpeedMultiplier: Double = 1.0,
 	var weapons: StarshipWeapons = StarshipWeapons(),
+
+	val sneakFlyAccelDistance: Int,
+	val maxSneakFlyAccel: Int,
+	val interdictionRange: Int,
+	val hyperspaceRangeMultiplier: Double,
+	val cruiseSpeedMultiplier: Double = 1.0,
 )
 
 @Serializable
