@@ -25,8 +25,8 @@ object ShipData : IonPacketHandler() {
 				return@forEach
 			}
 
-			val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.formatted)
-			val type = MiniMessage.miniMessage().deserialize(ship.type.formatted)
+			val name = MiniMessage.miniMessage().deserialize(ship.data.name ?: ship.type.displayNameMiniMessage)
+			val type = MiniMessage.miniMessage().deserialize(ship.type.displayNameMiniMessage)
 			val pm = ship.reactor.powerDistributor
 			val targets = ship.autoTurretTargets.mapValues { it.value.identifier }
 			val hull = ship.hullIntegrity().times(100).roundToInt()
