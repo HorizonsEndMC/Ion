@@ -17,14 +17,14 @@ import org.bukkit.util.Vector
 abstract class CombatEngine(controller: AIController, val targetingSupplier: TargetingEngine) : AIEngine(controller) {
 	var shotDeviation: Double = 0.025
 
-	var shouldFaceTarget: Boolean = false
+	open var shouldFaceTarget: Boolean = false
 
 	// Turn cooldown adjustment
 	private var turnTicks: Int = 0
 	var turnCooldown: Int = 20 * 3
 
 	/** Rotate to face a specified blockface */
-	fun handleRotation(faceDirection: BlockFace) {
+	protected fun handleRotation(faceDirection: BlockFace) {
 		if (!shouldFaceTarget) return
 		if (!CARDINAL_BLOCK_FACES.contains(faceDirection)) throw IllegalArgumentException("Ships can only face cardinal directions!")
 
@@ -43,7 +43,7 @@ abstract class CombatEngine(controller: AIController, val targetingSupplier: Tar
 	 *
 	 * Lambda allows modification of the aiming direction
 	 **/
-	fun fireAllWeapons(origin: Vec3i, target: Vector, direction: Vector) {
+	protected fun fireAllWeapons(origin: Vec3i, target: Vector, direction: Vector) {
 		if (shotDeviation > 0) {
 			val offsetX = randomDouble(-shotDeviation, shotDeviation)
 			val offsetY = randomDouble(-shotDeviation, shotDeviation)
@@ -63,19 +63,19 @@ abstract class CombatEngine(controller: AIController, val targetingSupplier: Tar
 	}
 
 	/** Fires light weapons (left click) in a direction */
-	fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
+	protected fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
 		debugAudience.debug("Firing light weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(controller, direction, leftClick = true, target = target, weaponSet = weaponSet)
 	}
 
 	/** Fires heavy weapons (right click) in a direction */
-	fun fireHeavyWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
+	protected fun fireHeavyWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
 		debugAudience.debug("Firing heavy weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(controller, direction, leftClick = false, target = target, weaponSet = weaponSet)
 	}
 
 	/** Updates all auto weapons,that are in range, to fire on the target */
-	fun handleAutoWeapons(origin: Vec3i, target: AITarget) {
+	protected fun handleAutoWeapons(origin: Vec3i, target: AITarget) {
 		val (x, y, z) = origin
 		val distance = target.getVec3i(false).distance(x, y, z)
 		val weaponSet = controller.autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }?.name?.lowercase()

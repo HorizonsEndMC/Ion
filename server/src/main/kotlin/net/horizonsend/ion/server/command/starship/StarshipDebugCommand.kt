@@ -176,7 +176,7 @@ object StarshipDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("ai")
-	@CommandCompletion("@controllerFactories EXTREME|HIGH|MEDIUM|LOW|NONE standoffDistance x y z manualSets autoSets @autoTurretTargets ")
+	@CommandCompletion("@controllerFactories standoffDistance x y z manualSets autoSets @autoTurretTargets ")
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactories.AIControllerFactory,
