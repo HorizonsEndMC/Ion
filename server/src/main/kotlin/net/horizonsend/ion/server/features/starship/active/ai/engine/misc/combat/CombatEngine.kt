@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.control.movement.AIControlUt
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
@@ -64,13 +63,13 @@ abstract class CombatEngine(controller: AIController, val targetingSupplier: Tar
 
 	/** Fires light weapons (left click) in a direction */
 	protected fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
-		debugAudience.debug("Firing light weapons: Set: $weaponSet")
+		starship.debug("Firing light weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(controller, direction, leftClick = true, target = target, weaponSet = weaponSet)
 	}
 
 	/** Fires heavy weapons (right click) in a direction */
 	protected fun fireHeavyWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null) {
-		debugAudience.debug("Firing heavy weapons: Set: $weaponSet")
+		starship.debug("Firing heavy weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(controller, direction, leftClick = false, target = target, weaponSet = weaponSet)
 	}
 

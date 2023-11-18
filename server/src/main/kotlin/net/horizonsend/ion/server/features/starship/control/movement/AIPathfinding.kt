@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.highlightRegion
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -246,10 +245,8 @@ object AIPathfinding {
 	 **/
 	@Synchronized
 	fun adjustTrackedSections(engine: AStarPathfindingEngine, loadChunks: Boolean = false) {
-		debugAudience.debug("Adjusting tracked sections 1")
 		val currentlyTracked = engine.trackedSections.map { it.position }
 		val new = getSurroundingSectionPositions(engine)
-		debugAudience.debug("Adjusting tracked sections 2")
 
 		val toRemove = currentlyTracked.toMutableList() // clone
 		toRemove.removeAll(new) // Get a list of all the old
@@ -259,7 +256,6 @@ object AIPathfinding {
 
 		engine.trackedSections.removeAll { toRemove.contains(it.position) }
 		engine.trackedSections.addAll(newSections)
-		debugAudience.debug("Adjusting tracked sections 3")
 	}
 
 	/**
@@ -289,30 +285,26 @@ object AIPathfinding {
 		val originNodeWrapper = PathfindingNodeWrapper(originNode, 0f, false, null, null)
 		openSet += originNodeWrapper
 
-		debugAudience.debug("Beginning A*, Origin: $originNode, destination: $destinationNode")
+		engine.starship.debug("Beginning A*, Origin: $originNode, destination: $destinationNode")
 		iterateNeighbors(originNodeWrapper, navigableList, trackedNodes, openSet, closedSet, destinationNode, originNode)
 
 		var iterations = 0
 		while (iterations <= 1000) {
 			iterations++
 
-//			debugAudience.debug("Open size: ${openSet.size}, Closed size: ${closedSet.size}")
 			val currentNode = openSet.minBy { it.fCost }
-//			debugAudience.debug("Current node: $currentNode")
-//			debugAudience.audiences().filterIsInstance<Player>().forEach { player -> currentNode.node.highlight(player, 50L) }
 
 			openSet.remove(currentNode)
 			closedSet += currentNode
 
 			if (currentNode.node.position == destinationNode.position) {
-				debugAudience.debug("Found destination: $destinationNode")
 				return currentNode.getChain()
 			}
 
 			iterateNeighbors(currentNode, navigableList, trackedNodes, openSet, closedSet, destinationNode, originNode)
 		}
 
-		debugAudience.debug("COULD NOT FIND DESTINATION, GAVE UP")
+		engine.starship.debug("COULD NOT FIND DESTINATION, GAVE UP")
 		return openSet.minBy { it.fCost }.getChain()
 	}
 
@@ -326,33 +318,26 @@ object AIPathfinding {
 		destinationNode: SectionNode,
 		originNode: SectionNode
 	) {
-//		debugAudience.debug("Iterating neighbors")
 		val neighbors = currentNode.node.getNeighbors(navigableNodes)
 
 		for ((relation: Adjacent, neighborNode: SectionNode) in neighbors) {
 			if (closedSet.any { it.node == neighborNode }) {
-//				debugAudience.debug("Closed nodes contained $neighborNode")
 				continue
 			}
 
-//			debugAudience.debug("parent F cost $parentFCost")
 			var shouldContinue = false
 
 			// Handle an existing node
 			openSet.firstOrNull { it.node.position == neighborNode.position }?.let { existingNeighbor: PathfindingNodeWrapper ->
-//				debugAudience.debug("Open nodes contained $neighborNode")
 				// Should not add it to the list now
 				shouldContinue = true
 
 				val newFCost = neighborNode.getFCost(relation, destinationNode, allNodes, currentNode)
-//				debugAudience.debug("New F Cost: $newFCost, existing F Cost: ${existingNeighbor.fCost}")
 
 				// If the new F cost is lower, set its parent to this node, and the new, lower, F cost
 				if (newFCost < existingNeighbor.fCost) {
 					existingNeighbor.parent = currentNode
 					existingNeighbor.fCost = newFCost
-
-//					debugAudience.debug("Set parent and F cost to new values: $existingNeighbor")
 				}
 			}
 
