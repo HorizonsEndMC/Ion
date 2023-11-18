@@ -544,8 +544,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
-			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayNameComponent(it) } ?: starship.type.component
-			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.formatted).asHoverEvent()
+			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayNameComponent(it) } ?: starship.type.displayNameComponent
+			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.displayNameMiniMessage).asHoverEvent()
 
 			val pilotName = starship.controller.pilotName
 

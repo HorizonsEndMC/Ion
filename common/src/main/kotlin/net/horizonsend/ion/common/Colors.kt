@@ -48,7 +48,7 @@ object Colors {
 	}
 
 	/** Wrapper enum for the 16 colors of minecraft **/
-	enum class Color(val kyori: NamedTextColor, val rgb: Int) {
+	enum class DefaultColor(val kyori: NamedTextColor, val rgb: Int) {
 		BLACK(NamedTextColor.BLACK, BLACK.rgb),
 		DARK_BLUE(NamedTextColor.DARK_BLUE, DARK_BLUE.rgb),
 		DARK_GREEN(NamedTextColor.DARK_GREEN, DARK_GREEN.rgb),
