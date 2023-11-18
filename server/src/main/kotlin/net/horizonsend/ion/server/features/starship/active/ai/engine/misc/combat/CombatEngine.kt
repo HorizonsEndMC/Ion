@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.misc.comba
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting.TargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -12,8 +11,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import java.util.function.Supplier
 
-abstract class CombatEngine(controller: AIController, val targetingSupplier: TargetingEngine) : AIEngine(controller) {
+abstract class CombatEngine(controller: AIController, val targetingSupplier: Supplier<AITarget?>) : AIEngine(controller) {
 	var shotDeviation: Double = 0.025
 
 	open var shouldFaceTarget: Boolean = false
@@ -23,7 +23,7 @@ abstract class CombatEngine(controller: AIController, val targetingSupplier: Tar
 	var turnCooldown: Int = 20 * 3
 
 	/** Rotate to face a specified blockface */
-	protected fun handleRotation(faceDirection: BlockFace) {
+	protected fun rotateToFace(faceDirection: BlockFace) {
 		if (!shouldFaceTarget) return
 		if (!CARDINAL_BLOCK_FACES.contains(faceDirection)) throw IllegalArgumentException("Ships can only face cardinal directions!")
 
