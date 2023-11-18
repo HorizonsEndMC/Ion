@@ -65,7 +65,7 @@ class ActiveControlledStarship (
 	override val type: StarshipType = data.starshipType.actualType
 	override val balancing = type.balancingSupplier.get()
 
-	override val interdictionRange: Int = type.interdictionRange
+	override val interdictionRange: Int = balancing.interdictionRange
 
 	var lastUnpilotTime: Long = 0
 	val minutesUnpiloted = if (isPiloted(this) || controller is NoOpController) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
