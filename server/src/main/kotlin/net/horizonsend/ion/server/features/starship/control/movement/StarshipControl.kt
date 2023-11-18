@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportati
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -241,8 +240,8 @@ object StarshipControl : IonServerComponent() {
 
 		val sneakMovements = starship.sneakMovements
 
-		val maxAccel = starship.data.starshipType.actualType.maxSneakFlyAccel
-		val accelDistance = starship.data.starshipType.actualType.sneakFlyAccelDistance
+		val maxAccel = starship.balancing.maxSneakFlyAccel
+		val accelDistance = starship.balancing.sneakFlyAccelDistance
 
 		val yawRadians = Math.toRadians(controller.yaw.toDouble())
 		val pitchRadians = Math.toRadians(controller.pitch.toDouble())
