@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
+import java.util.function.Supplier
 import kotlin.math.abs
 
 /**
@@ -23,7 +24,7 @@ import kotlin.math.abs
 class CruiseEngine(
 	controller: AIController,
 	pathfindingEngine: PathfindingEngine,
-	var cruiseDestination: Vec3i,
+	val cruiseDestination: Supplier<Vec3i?>,
 	var shiftFlightType: ShiftFlightType,
 	var maximumCruiseDistanceSquared: Double = 90000.0,
 ) : MovementEngine(controller, pathfindingEngine) {
@@ -50,8 +51,8 @@ class CruiseEngine(
 			return
 		}
 
-		starship.debug("More than 500 blocks away, cruising")
-		cruiseToVec3i(starshipLocation, cruiseDestination)
+		starship.debug("More than sqrt($maximumCruiseDistanceSquared) blocks away, cruising")
+		cruiseToVec3i(starshipLocation, getDestination())
 	}
 
 	/** Returns true if the destination is sufficiently far that it should cruise */
@@ -104,9 +105,10 @@ class CruiseEngine(
 		},
 		IF_BLOCKED_AND_MATCH_Y {
 			override fun handleShiftFlight(engine: CruiseEngine, origin: Location) {
+				val destination = engine.cruiseDestination.get() ?: return
 				val pathfindingEngine = engine.controller.engines["pathfinding"] as? PathfindingEngine ?: return
 				val blocked = (pathfindingEngine as? PathfindingEngine)?.blocked ?: engine.controller.hasBeenBlockedWithin()
-				val yObjective = engine.cruiseDestination.y
+				val yObjective = destination.y
 
 				val yDifference = yObjective - origin.y
 
@@ -143,5 +145,5 @@ class CruiseEngine(
 		}
 	}
 
-	override fun toString(): String = "CruiseEngine[destination: ${cruiseDestination}, shiftFlightType: $shiftFlightType, ]"
+	override fun toString(): String = "CruiseEngine[destination: ${cruiseDestination}, shiftFlightType: $shiftFlightType]"
 }

@@ -221,15 +221,15 @@ object StarshipCruising : IonServerComponent() {
 	fun isCruising(starship: ActiveControlledStarship) = starship.cruiseData.targetDir != null
 
 	enum class Diagonal {
-		DIAGONAL_LEFT { override fun face(forward: BlockFace): BlockFace { return forward.leftFace } },
-		DIAGONAL_RIGHT { override fun face(forward: BlockFace): BlockFace { return forward.rightFace } }
+		DIAGONAL_LEFT { override fun getRightFace(forward: BlockFace): BlockFace { return forward.leftFace } },
+		DIAGONAL_RIGHT { override fun getRightFace(forward: BlockFace): BlockFace { return forward.rightFace } }
 
 		;
 
-		abstract fun face(forward: BlockFace): BlockFace
+		abstract fun getRightFace(forward: BlockFace): BlockFace
 
 		fun vector(forward: BlockFace): Vector {
-			return forward.direction.add(face(forward).direction).normalize()
+			return forward.direction.add(getRightFace(forward).direction).normalize()
 		}
 	}
 }

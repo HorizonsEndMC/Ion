@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding
 
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.PositioningEngine
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import java.util.function.Supplier
 
 class SteeringPathfindingEngine(
 	controller: AIController,
-	positioningSupplier: PositioningEngine
+	positioningSupplier: Supplier<Vec3i>
 ) : PathfindingEngine(controller, positioningSupplier) {
 	val blockedPositions: ArrayDeque<Vec3i> = ArrayDeque(50)
 	override var blocked: Boolean = false

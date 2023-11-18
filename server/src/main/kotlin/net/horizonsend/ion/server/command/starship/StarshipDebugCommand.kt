@@ -30,6 +30,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
@@ -118,6 +119,18 @@ object StarshipDebugCommand : SLCommand() {
 		helixAroundVector(origin, direction, radius, points, step = step, wavelength = wavelength, offsetRadians = offset).forEach {
 			sender.world.spawnParticle(particle, it, 1, 0.0, 0.0, 0.0, 0.0, null)
 		}
+	}
+
+	@Subcommand("ride")
+	@Suppress("Unused")
+	fun onRide(sender: Player) {
+		val starships = ActiveStarships.getInWorld(sender.world)
+
+		val (x, y, z) = Vec3i(sender.location).below(1)
+
+		val starship = starships.firstOrNull { it.contains(x, y, z) } ?: return sender.userError("You're not standing on a starship!")
+
+		starship.addPassenger(sender.uniqueId)
 	}
 
 	@Suppress("Unused")
