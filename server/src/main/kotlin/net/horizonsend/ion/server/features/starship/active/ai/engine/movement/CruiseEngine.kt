@@ -143,4 +143,6 @@ class CruiseEngine(
 			if (!controller.hasBeenBlockedWithin()) controller.isShiftFlying = false
 		}
 	}
+
+	override fun toString(): String = "CruiseEngine[destination: ${cruiseDestination}, shiftFlightType: $shiftFlightType, ]"
 }

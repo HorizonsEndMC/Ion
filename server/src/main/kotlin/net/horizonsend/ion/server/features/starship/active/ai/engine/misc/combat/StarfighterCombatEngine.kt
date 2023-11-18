@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.getDirection
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 
 class StarfighterCombatEngine(controller: AIController, targetingEngine: TargetingEngine) : CombatEngine(controller, targetingEngine) {
+	override var shouldFaceTarget: Boolean = true
+
 	override fun tick() {
 		val target = targetingSupplier.findTarget() ?: return
 
