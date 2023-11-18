@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
 import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -635,11 +635,11 @@ enum class StarshipType(
 		balancingSupplier = IonServer.starshipBalancing::eventShipBalancing
 	);
 
-	val formatted: String get() = "<$color>$displayName</$color>"
-	val component: Component get() = Component.text(displayName).color(TextColor.fromHexString(color))
+	val displayNameMiniMessage: String get() = "<$color>$displayName</$color>"
+	val displayNameComponent: Component get() = text(displayName, TextColor.fromHexString(color))
 
 	val menuItem: ItemStack = ItemStack(menuItemMaterial)
-		.setDisplayNameAndGet(MiniMessage.miniMessage().deserialize(displayName))
+		.setDisplayNameAndGet(displayNameComponent)
 		.setLoreAndGet(
 			listOf(
 				"Min Block Count: $minSize",

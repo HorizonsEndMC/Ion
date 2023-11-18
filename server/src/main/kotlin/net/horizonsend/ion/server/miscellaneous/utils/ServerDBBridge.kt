@@ -60,7 +60,7 @@ fun Blueprint.canAccess(player: Player): Boolean {
 	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
 }
 
-fun Colors.Color.bukkit() = Color.fromRGB(rgb)
+fun Colors.DefaultColor.bukkit() = Color.fromRGB(rgb)
 
 class Vec3i: DBVec3i {
 	constructor(a: DBVec3i) : super(a.x, a.y, a.z)

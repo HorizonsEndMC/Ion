@@ -142,7 +142,7 @@ object Bounties : IonServerComponent() {
 				.append(text("For sinking ", NamedTextColor.RED))
 				.append(text(victim.name, NamedTextColor.DARK_RED))
 				.append(text("'s ", NamedTextColor.RED))
-				.append(event.starship.type.component)
+				.append(event.starship.type.displayNameComponent)
 				.append(text(", ", NamedTextColor.RED))
 				.append(text(killer.name, NamedTextColor.DARK_RED))
 				.append(text("'s bounty was increased by $money! It is now ", NamedTextColor.RED))

@@ -36,3 +36,26 @@ inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
 fun <K> Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V> Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
 fun <K, V : Comparable<V>> Map<K, V>.keysSortedByValue(): List<K> = this.keys.sortedBy { this[it]!! }
+fun <T> List<T>.safeSubList(fromIndex: Int, toIndex: Int): List<T> = this.subList(fromIndex.coerceAtLeast(this.size), toIndex.coerceAtMost(this.size))
+
+/**
+ * Returns a [List] containing all key-value pairs.
+ */
+fun <K, V> Map<out K, V>.toMutableList(): MutableList<Pair<K, V>> {
+	if (isEmpty()) return mutableListOf()
+
+	val iterator = entries.iterator()
+	if (!iterator.hasNext()) return mutableListOf()
+
+	val first = iterator.next()
+	if (!iterator.hasNext()) return mutableListOf(first.toPair())
+
+	val result = ArrayList<Pair<K, V>>(size)
+	result.add(first.toPair())
+
+	do {
+		result.add(iterator.next().toPair())
+	} while (iterator.hasNext())
+
+	return result
+}

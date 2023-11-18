@@ -60,7 +60,7 @@ object MassShadows {
 			dist = sqrt(dist)
 
 			val interdictingShip = otherShip as? ActiveControlledStarship
-			val interdictingShipName = interdictingShip?.data?.let { getDisplayNameComponent(it) } ?: otherShip.type.component
+			val interdictingShipName = interdictingShip?.data?.let { getDisplayNameComponent(it) } ?: otherShip.type.displayNameComponent
 
 			return MassShadowInfo(
 				text()

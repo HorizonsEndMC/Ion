@@ -80,7 +80,6 @@ abstract class ActiveStarship (
 	var centerOfMass: Vec3i,
 	private val hitbox: ActiveStarshipHitbox
 ) : ForwardingAudience {
-
 	override fun audiences(): Iterable<Audience> = onlinePassengers
 
 	abstract val type: StarshipType
@@ -389,10 +388,10 @@ abstract class ActiveStarship (
 	}
 
 	/** Gets the minimessage display name of this starship */
-	open fun getDisplayName(): String = type.formatted
+	open fun getDisplayName(): String = type.displayNameMiniMessage
 
 		/** Gets the component display name of this starship */
-	open fun getDisplayNameComponent(): Component = type.component
+	open fun getDisplayNameComponent(): Component = type.displayNameComponent
 
 	/** Gets the plain text serialized version of this starship's display name */
 	open fun getDisplayNamePlain(): String = type.displayName

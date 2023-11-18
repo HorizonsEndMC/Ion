@@ -432,12 +432,10 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun getDisplayName(data: StarshipData): String {
-		return data.name ?: data.starshipType.actualType.formatted
+		return data.name ?: data.starshipType.actualType.displayNameMiniMessage
 	}
 
-	fun getDisplayNameComponent(data: StarshipData): Component = data.name?.let {
-		MiniMessage.miniMessage().deserialize(it)
-	} ?: MiniMessage.miniMessage().deserialize(data.starshipType.actualType.formatted)
+	fun getDisplayNameComponent(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
 
 	fun getRawDisplayName(data: StarshipData): String {
 		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()
