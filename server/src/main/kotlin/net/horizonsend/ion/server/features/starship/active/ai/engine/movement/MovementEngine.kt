@@ -46,8 +46,8 @@ abstract class MovementEngine(
 
 		val destination = getDestination()
 
-		// If within 9 blocks of destination, don't bother moving
-		if (distanceSquared(destination, starshipLocation) <= 81) return@sync
+		// If within 10 blocks of destination, don't bother moving
+		if (distanceSquared(destination, starshipLocation) <= 100) return@sync
 
 		AIControlUtils.shiftFlyToLocation(controller, starshipLocation, destination)
 	}
@@ -128,7 +128,7 @@ abstract class MovementEngine(
 	fun cruiseToVec3i(starshipCenter: Vec3i, vec3i: Vec3i, faceDirection: Boolean = true) {
 		val direction = getVector(starshipCenter.toVector(), vec3i.toVector())
 
-		cruiseInDirection(direction)
+		cruiseInDirection(direction, faceDirection)
 	}
 
 	fun cruiseInDirection(direction: Vector, faceDirection: Boolean = true) {

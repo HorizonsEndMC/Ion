@@ -117,7 +117,7 @@ object StarshipWeapons {
 				continue
 			}
 
-			ship.debugRed("shootings!!")
+			ship.debugRed("shooting")
 			shot.shoot()
 
 			ship.debug("taking resources")
