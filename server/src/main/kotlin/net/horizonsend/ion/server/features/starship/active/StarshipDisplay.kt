@@ -92,7 +92,7 @@ object StarshipDisplay : IonServerComponent(true) {
 
 		val pilotNamePlain = starship.controller.pilotName.plainText()
 
-		val type = starship.type.component.plainText()
+		val type = starship.type.displayNameComponent.plainText()
 		val blockCount = starship.initialBlockCount
 		val location = starship.centerOfMass
 
