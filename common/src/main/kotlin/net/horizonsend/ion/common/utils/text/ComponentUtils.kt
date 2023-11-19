@@ -14,7 +14,8 @@ import java.util.regex.Pattern
 
 fun String.miniMessage() = MiniMessage.miniMessage().deserialize(this)
 fun ComponentLike.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this.asComponent())
-fun children(vararg children: ComponentLike) = Component.textOfChildren(*children)
+
+fun ofChildren(vararg children: ComponentLike) = Component.textOfChildren(*children)
 
 /**
  * Formats the number into credit format, so it is rounded to the nearest hundredth,
