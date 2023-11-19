@@ -5,12 +5,15 @@ import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import java.util.regex.Pattern
 
 fun String.miniMessage() = MiniMessage.miniMessage().deserialize(this)
-fun Component.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this)
+fun ComponentLike.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this.asComponent())
 fun children(vararg children: ComponentLike) = Component.textOfChildren(*children)
 
 /**
@@ -24,29 +27,42 @@ fun Component.plusAssign(other: ComponentLike): Component = this.append(other)
 
 fun template(
 	message: String,
-	color: NamedTextColor,
-	paramColor: NamedTextColor = NamedTextColor.WHITE,
+	color: TextColor,
+	paramColor: TextColor = NamedTextColor.WHITE,
 	vararg parameters: Any
 ): Component {
-	val builder = text()
+	val messageComponent = text(message, color)
 
-	// Get the non-templated text
-	val split = message.split(regex = Regex("\\{([0-9]*?)}"))
-	val paramIterator = parameters.iterator()
+	var index = 0
 
-	// Interpolate message -> param -> message -> param
-	for (subString in split) {
-		builder.append(text(subString, color))
+	val replacement = TextReplacementConfig.builder()
+		.match(Pattern.compile("\\{([0-9]*?)}"))
+		.times(parameters.size)
+		.replacement { built ->
+			val param = parameters[index]
 
-		if (paramIterator.hasNext()) {
-			val paramComponent = when (val param = paramIterator.next()) {
+			index++
+
+			return@replacement when (param) {
 				is ComponentLike -> param
 				is Number -> text(param.toString(), paramColor)
 				else -> text("\"$param\"", paramColor)
 			}
-
-			builder.append(paramComponent)
 		}
+		.build()
+
+	return messageComponent.replaceText(replacement)
+}
+
+fun Iterable<ComponentLike>.join(separator: Component = text(", ")): Component {
+	val iterator = this.iterator()
+
+	val builder = text()
+
+	while (iterator.hasNext()) {
+		builder.append(iterator.next())
+
+		if (iterator.hasNext()) builder.append(separator)
 	}
 
 	return builder.build()

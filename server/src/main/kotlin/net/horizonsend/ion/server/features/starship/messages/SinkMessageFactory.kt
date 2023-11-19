@@ -6,6 +6,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.children
+import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -45,7 +46,7 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 	private fun sendGameMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
 		val assistPrefix = if (assists.isNotEmpty()) children(text(", assisted by:", GOLD), newline()) else empty()
 
-		val message = children(sinkMessage, assistPrefix, *assists.values.toTypedArray())
+		val message = children(sinkMessage, assistPrefix, assists.values.join(separator = newline()))
 
 		if (arena) Bukkit.getServer().sendMessage(message) else Notify.online(message)
 	}
