@@ -23,16 +23,4 @@ class QuadTurretWeaponSubsystem(
 	override val powerUsage: Int get() = balancing.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 	override fun getMaxPerShot(): Int = balancing.maxPerShot
-
-	override fun manualFire(
-		shooter: Damager,
-		dir: Vector,
-		target: Vector,
-	) {
-		if (starship.initialBlockCount < 16000) {
-			starship.userError("You can't fire quad turrets on a ship smaller than 16000 blocks!")
-			return
-		}
-		super.manualFire(shooter, dir, target)
-	}
 }

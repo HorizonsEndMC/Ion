@@ -77,9 +77,9 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.9,
 	),
 	val battlecruiser: StarshipBalancing = StarshipBalancing(
-		sneakFlyAccelDistance = 5,
+		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
-		interdictionRange = 2400,
+		interdictionRange = 3200,
 		hyperspaceRangeMultiplier = 2.5,
 		cruiseSpeedMultiplier = 0.875,
 		weapons = StarshipWeapons(
@@ -94,7 +94,7 @@ data class StarshipTypeBalancing(
 				volume = 0,
 				pitch = 2.0f,
 				soundName = "starship.weapon.turbolaser.quad.shoot",
-				powerUsage = 2190,
+				powerUsage = 3000,
 				length = 0,
 				angleRadians = 0.0,
 				convergeDistance = 0.0,
@@ -108,9 +108,9 @@ data class StarshipTypeBalancing(
 		)
 	),
 	val battleship: StarshipBalancing = StarshipBalancing(
-		sneakFlyAccelDistance = 5,
+		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
-		interdictionRange = 2800,
+		interdictionRange = 3500,
 		hyperspaceRangeMultiplier = 2.6,
 		cruiseSpeedMultiplier = 0.8,
 		weapons = StarshipWeapons(
@@ -125,7 +125,7 @@ data class StarshipTypeBalancing(
 				volume = 0,
 				pitch = 2.0f,
 				soundName = "starship.weapon.turbolaser.quad.shoot",
-				powerUsage = 2190,
+				powerUsage = 3000,
 				length = 0,
 				angleRadians = 0.0,
 				convergeDistance = 0.0,
@@ -139,9 +139,9 @@ data class StarshipTypeBalancing(
 		)
 	),
 	val dreadnought: StarshipBalancing = StarshipBalancing(
-		sneakFlyAccelDistance = 10,
+		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 2,
-		interdictionRange = 3200,
+		interdictionRange = 3800,
 		hyperspaceRangeMultiplier = 2.7,
 		cruiseSpeedMultiplier = 0.7,
 		weapons = StarshipWeapons(
@@ -156,7 +156,7 @@ data class StarshipTypeBalancing(
 				volume = 0,
 				pitch = 2.0f,
 				soundName = "starship.weapon.turbolaser.quad.shoot",
-				powerUsage = 2190,
+				powerUsage = 3000,
 				length = 0,
 				angleRadians = 0.0,
 				convergeDistance = 0.0,
@@ -339,7 +339,8 @@ class StarshipWeapons(
 		fireCooldownMillis = 10,
 		boostChargeSeconds = 3,
 		aimDistance = 0,
-		applyCooldownToAll = false
+		applyCooldownToAll = false,
+		maxBlockCount = 12000
 	),
 
 	val protonTorpedo: StarshipWeapon = StarshipWeapon(
@@ -406,7 +407,8 @@ class StarshipWeapons(
 		fireCooldownMillis = 250,
 		aimDistance = 0,
 		inaccuracyRadians = 2.0,
-		applyCooldownToAll = true
+		applyCooldownToAll = true,
+		maxBlockCount = 12000
 	),
 
 	val heavyTurret: StarshipWeapon = StarshipWeapon(
@@ -427,7 +429,8 @@ class StarshipWeapons(
 		fireCooldownMillis = 500,
 		boostChargeSeconds = 0,
 		applyCooldownToAll = true,
-		aimDistance = 0
+		aimDistance = 0,
+		maxBlockCount = 12000
 	),
 
 	val triTurret: StarshipWeapon = StarshipWeapon(
@@ -463,7 +466,7 @@ class StarshipWeapons(
 		volume = 0,
 		pitch = 2.0f,
 		soundName = "starship.weapon.turbolaser.quad.shoot",
-		powerUsage = 2190,
+		powerUsage = 3000,
 		length = 0,
 		angleRadians = 0.0,
 		convergeDistance = 0.0,
@@ -472,7 +475,8 @@ class StarshipWeapons(
 		aimDistance = 0,
 		inaccuracyRadians = 2.0,
 		maxPerShot = 3,
-		applyCooldownToAll = true
+		applyCooldownToAll = true,
+		minBlockCount = 18500
 	),
 
 	val pointDefence: StarshipWeapon = StarshipWeapon(
