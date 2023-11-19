@@ -13,6 +13,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
+import org.joml.Vector3f
 import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.acos
@@ -307,6 +308,8 @@ fun BlockPos.toVector() = Vector(this.x, this.y, this.z)
 fun BlockPos.toLocation(world: World?) = Location(world, this.x.toDouble(), this.y.toDouble(), this.z.toDouble())
 
 fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
+
+fun Location.toVector3f(): Vector3f = Vector3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat())
 
 operator fun BlockPos.component1(): Int = this.x
 
