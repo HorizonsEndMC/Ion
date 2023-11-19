@@ -163,7 +163,7 @@ class ActiveControlledStarship (
 		return true
 	}
 
-	val dataId: Oid<*> = data._id
+	val dataId: Oid<out StarshipData> = data._id
 
 	// manual move is sneak/direct control
 	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
