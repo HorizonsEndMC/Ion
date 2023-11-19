@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -46,11 +44,6 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
         shooter: Damager,
         target: Vector?
 	) {
-		if (starship.type != StarshipType.GUNSHIP || starship.initialBlockCount < 1000) {
-			starship.controller.userError("You can only use Pulse Cannons above 1000 blocks on Gunships!")
-			return
-		}
-
 		PulseLaserProjectile(starship, loc, dir, color, shooter).fire()
 	}
 }
