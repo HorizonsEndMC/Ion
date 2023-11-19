@@ -145,5 +145,5 @@ class CruiseEngine(
 		}
 	}
 
-	override fun toString(): String = "CruiseEngine[destination: ${cruiseDestination}, shiftFlightType: $shiftFlightType]"
+	override fun toString(): String = "CruiseEngine[destination: ${cruiseDestination.get()}, shiftFlightType: $shiftFlightType]"
 }
