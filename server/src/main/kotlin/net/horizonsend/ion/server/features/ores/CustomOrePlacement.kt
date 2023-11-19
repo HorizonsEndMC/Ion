@@ -4,7 +4,7 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.Region
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.OrePlacementConfig
 import net.horizonsend.ion.server.miscellaneous.utils.Position
@@ -14,6 +14,7 @@ import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -27,18 +28,22 @@ TODO: Ore logic should be separated from the Listener, and the Async code should
 */
 
 @Suppress("Unused")
-object CustomOrePlacement : SLEventListener() {
+object CustomOrePlacement : IonServerComponent(true) {
+	lateinit var worldContainsOres: Map<World, OrePlacementConfig?>
+
+	override fun onEnable() {
+		worldContainsOres = Bukkit.getWorlds().associateWith {
+			try { OrePlacementConfig.valueOf(it.name) } catch (_: IllegalArgumentException) { null }
+		}
+	}
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onChunkLoad(event: ChunkLoadEvent) {
 		placeOres(event.chunk)
 	}
 
 	fun placeOres(chunk: Chunk) {
-		val placementConfiguration = try {
-			OrePlacementConfig.valueOf(chunk.world.name)
-		} catch (_: IllegalArgumentException) {
-			return
-		}
+		val placementConfiguration = worldContainsOres[chunk.world] ?: return
 
 		val chunkOreVersion = chunk.persistentDataContainer.get(NamespacedKeys.ORE_CHECK, PersistentDataType.INTEGER)
 
