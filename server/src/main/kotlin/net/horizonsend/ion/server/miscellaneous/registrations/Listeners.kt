@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.customitems.blasters.BlasterListeners
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.multiblock.misc.TractorBeamMultiblock
-import net.horizonsend.ion.server.features.ores.CustomOrePlacement
 import net.horizonsend.ion.server.features.screens.listeners.InventoryClickListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryCloseListener
 import net.horizonsend.ion.server.features.screens.listeners.InventoryDragListener
@@ -65,7 +64,6 @@ val listeners: List<Listener> = listOf(
 	// Ion
 	BlasterListeners(),
 	CancelListeners(),
-	CustomOrePlacement,
 	CustomItemListeners(),
 	EdenFixer9000(),
 	GameplayTweaksListeners(),
