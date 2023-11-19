@@ -29,8 +29,8 @@ class QuadTurretWeaponSubsystem(
 		dir: Vector,
 		target: Vector,
 	) {
-		if (starship.initialBlockCount < 16000) {
-			starship.userError("You can't fire quad turrets on a ship smaller than 16000 blocks!")
+		if (starship.initialBlockCount < 18500) {
+			starship.userError("You can't fire quad turrets on a ship smaller than 18500 blocks!")
 			return
 		}
 		super.manualFire(shooter, dir, target)
