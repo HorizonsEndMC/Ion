@@ -27,21 +27,6 @@ class LightTurretWeaponSubsystem(
 	override val range: Double get() = multiblock.getRange(starship)
 
 	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {
-    	if (starship.initialBlockCount > 12000) {
-			starship.userError("You can't fire light turrets on a ship larger than 12000 blocks!")
-			return
-		}
 		multiblock.shoot(starship.world, pos, face, dir, starship, starship.controller.damager)
-	}
-	override fun manualFire(
-			shooter: Damager,
-			dir: Vector,
-			target: Vector,
-	) {
-		if (starship.initialBlockCount > 12000) {
-			starship.userError("You can't fire light turrets on a ship larger than 12000 blocks!")
-			return
-		}
-		super.manualFire(shooter, dir, target)
 	}
 }

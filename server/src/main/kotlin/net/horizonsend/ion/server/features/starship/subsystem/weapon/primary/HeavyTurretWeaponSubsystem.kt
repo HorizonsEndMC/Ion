@@ -21,16 +21,4 @@ class HeavyTurretWeaponSubsystem(
 	override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
 	override val powerUsage: Int get() = balancing.powerUsage / 3
 
-	override fun manualFire(
-        shooter: Damager,
-        dir: Vector,
-        target: Vector
-	) {
-		if (starship.initialBlockCount < 6500 || starship.initialBlockCount > 12000) {
-			starship.userError("You can't fire heavy turrets on a ship smaller than 6500 blocks or larger than 12000 blocks!")
-			return
-		}
-
-		super.manualFire(shooter, dir, target)
-	}
 }
