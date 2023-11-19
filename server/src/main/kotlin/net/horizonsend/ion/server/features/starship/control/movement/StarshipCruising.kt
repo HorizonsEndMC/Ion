@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
+import net.horizonsend.ion.common.Colors
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -19,6 +21,9 @@ import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor.color
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.math.abs
@@ -92,8 +97,15 @@ object StarshipCruising : IonServerComponent() {
 			// velocity has changed
 			val targetSpeed = starship.cruiseData.targetSpeed
 
-			starship.onlinePassengers.forEach { passenger ->
-				passenger.informationAction("Cruise Speed: ${"<aqua>" + speed.roundToHundredth()}<gray>/</gray><dark_aqua>$targetSpeed")
+			starship.sendActionBar(ofChildren(
+				text("Cruise Speed: ", color(Colors.INFORMATION)),
+				text(speed.roundToHundredth(), NamedTextColor.AQUA),
+				text("/", NamedTextColor.GRAY),
+				text(targetSpeed, NamedTextColor.DARK_AQUA)
+			))
+
+			if (starship.isInterdicting) {
+				starship.setIsInterdicting(false)
 			}
 		}
 

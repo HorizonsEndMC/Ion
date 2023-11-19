@@ -5,8 +5,8 @@ import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
 import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.utils.text.MessageFactory
-import net.horizonsend.ion.common.utils.text.children
 import net.horizonsend.ion.common.utils.text.join
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -44,9 +44,9 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 	}
 
 	private fun sendGameMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
-		val assistPrefix = if (assists.isNotEmpty()) children(text(", assisted by:", GOLD), newline()) else empty()
+		val assistPrefix = if (assists.isNotEmpty()) ofChildren(text(", assisted by:", GOLD), newline()) else empty()
 
-		val message = children(sinkMessage, assistPrefix, assists.values.join(separator = newline()))
+		val message = ofChildren(sinkMessage, assistPrefix, assists.values.join(separator = newline()))
 
 		if (arena) Bukkit.getServer().sendMessage(message) else Notify.online(message)
 	}
@@ -83,15 +83,15 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 		val killedShipText = formatName(sunkShip)
 
 		val killerName = formatName(killerDamager)
-		val sunkMessage = children(text(" was sunk by ", GOLD), killerName)
+		val sunkMessage = ofChildren(text(" was sunk by ", GOLD), killerName)
 
-		val arenaText = if (arena) children(
+		val arenaText = if (arena) ofChildren(
 			text("[", TextColor.color(85, 85, 85)),
 			text("Space Arena", TextColor.color(255, 255, 102)),
 			text("] ", TextColor.color(85, 85, 85))
 		) else empty()
 
-		return children(arenaText, killedShipText, sunkMessage)
+		return ofChildren(arenaText, killedShipText, sunkMessage)
 	}
 
 	private fun getAssists(sortedByTime: Iterator<Map.Entry<Damager, ShipKillXP.ShipDamageData>>) : Map<Damager, Component> {
@@ -123,15 +123,15 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 	}
 
 	private fun formatName(starship: ActiveControlledStarship): Component {
-		val hover = children(text("${starship.initialBlockCount} block ", NamedTextColor.WHITE), starship.type.displayNameComponent)
+		val hover = ofChildren(text("${starship.initialBlockCount} block ", NamedTextColor.WHITE), starship.type.displayNameComponent)
 
-		val nameFormat = if (starship.data.name == null) children(
+		val nameFormat = if (starship.data.name == null) ofChildren(
 			text("A ", GOLD),
 			text(starship.initialBlockCount),
 			text(" block ", GOLD),
 			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
 		)
-		else children(
+		else ofChildren(
 			starship.getDisplayNameComponent(),
 			text(", a ", GOLD),
 			text(starship.initialBlockCount),
@@ -139,6 +139,6 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
 		)
 
-		return children(nameFormat, text(", piloted by ", GOLD), starship.controller.pilotName).hoverEvent(hover)
+		return ofChildren(nameFormat, text(", piloted by ", GOLD), starship.controller.pilotName).hoverEvent(hover)
 	}
 }
