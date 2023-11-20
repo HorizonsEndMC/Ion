@@ -15,7 +15,6 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 3.0
 	),
 
-
 	val shuttle: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 2,
@@ -88,7 +87,8 @@ data class StarshipTypeBalancing(
 				canFire = true,
 				range = 500.0,
 				speed = 80.0,
-				shieldDamageMultiplier = 6,
+				areaShieldDamageMultiplier = 6.0,
+				starshipShieldDamageMultiplier = 6.0,
 				particleThickness = 0.6,
 				explosionPower = 5f,
 				volume = 0,
@@ -118,7 +118,8 @@ data class StarshipTypeBalancing(
 				canFire = true,
 				range = 500.0,
 				speed = 80.0,
-				shieldDamageMultiplier = 6,
+				areaShieldDamageMultiplier = 6.0,
+				starshipShieldDamageMultiplier = 6.0,
 				particleThickness = 0.6,
 				explosionPower = 5f,
 				volume = 0,
@@ -148,7 +149,8 @@ data class StarshipTypeBalancing(
 				canFire = true,
 				range = 500.0,
 				speed = 80.0,
-				shieldDamageMultiplier = 6,
+				areaShieldDamageMultiplier = 6.0,
+				starshipShieldDamageMultiplier = 6.0,
 				particleThickness = 0.6,
 				explosionPower = 5f,
 				volume = 0,
@@ -207,7 +209,8 @@ data class StarshipTypeBalancing(
 data class AntiAirCannonBalancing(
 	override var range: Double = 500.0,
 	override var speed: Double = 125.0,
-	override var shieldDamageMultiplier: Int = 3,
+	override var areaShieldDamageMultiplier: Double = 1.0,
+	override var starshipShieldDamageMultiplier: Double = 3.0,
 	override var particleThickness: Double = 0.8,
 	override var explosionPower: Float = 6f,
 	override var volume: Int = 0,
@@ -236,7 +239,8 @@ class StarshipWeapons(
 	val plasmaCannon: StarshipWeapon = StarshipWeapon(
 		range = 160.0,
 		speed = 400.0,
-		shieldDamageMultiplier = 3,
+		areaShieldDamageMultiplier = 3.0,
+		starshipShieldDamageMultiplier = 3.0,
 		particleThickness = .5,
 		explosionPower = 4.0f,
 		volume = 10,
@@ -257,7 +261,8 @@ class StarshipWeapons(
 	val laserCannon: StarshipWeapon = StarshipWeapon(
 		range = 200.0,
 		speed = 250.0,
-		shieldDamageMultiplier = 1,
+		areaShieldDamageMultiplier = 1.0,
+		starshipShieldDamageMultiplier = 1.0,
 		particleThickness = 0.44,
 		explosionPower = 2.0f,
 		volume = 10,
@@ -276,7 +281,8 @@ class StarshipWeapons(
 	val pulseCannon: StarshipWeapon = StarshipWeapon(
 		range = 180.0,
 		speed = 600.0,
-		shieldDamageMultiplier = 2,
+		areaShieldDamageMultiplier = 2.0,
+		starshipShieldDamageMultiplier = 2.0,
 		particleThickness = 0.4,
 		explosionPower = 2.5f,
 		volume = 10,
@@ -296,7 +302,8 @@ class StarshipWeapons(
 	val heavyLaser: StarshipWeapon = StarshipWeapon(
 		range = 200.0,
 		speed = 50.0,
-		shieldDamageMultiplier = 2,
+		areaShieldDamageMultiplier = 2.0,
+		starshipShieldDamageMultiplier = 2.0,
 		particleThickness = 1.0,
 		explosionPower = 12.0f,
 		volume = 10,
@@ -317,7 +324,8 @@ class StarshipWeapons(
 	val phaser: StarshipWeapon = StarshipWeapon(
 		range = 140.0,
 		speed = 1.0,
-		shieldDamageMultiplier = 55,
+		areaShieldDamageMultiplier = 5.0,
+		starshipShieldDamageMultiplier = 55.0,
 		particleThickness = 0.0,
 		explosionPower = 2.0f,
 		volume = 10,
@@ -337,7 +345,8 @@ class StarshipWeapons(
 	val protonTorpedo: StarshipWeapon = StarshipWeapon(
 		range = 100.0,
 		speed = 70.0,
-		shieldDamageMultiplier = 2,
+		areaShieldDamageMultiplier = 2.0,
+		starshipShieldDamageMultiplier = 2.0,
 		particleThickness = 1.0,
 		explosionPower = 6.0f,
 		volume = 10,
@@ -360,7 +369,8 @@ class StarshipWeapons(
 	val rocket: StarshipWeapon = StarshipWeapon(
 		range = 300.0,
 		speed = 5.0,
-		shieldDamageMultiplier = 5,
+		areaShieldDamageMultiplier = 5.0,
+		starshipShieldDamageMultiplier = 5.0,
 		particleThickness = 0.0,
 		explosionPower = 10.0f,
 		volume = 10,
@@ -381,7 +391,8 @@ class StarshipWeapons(
 	val lightTurret: StarshipWeapon = StarshipWeapon(
 		range = 200.0,
 		speed = 250.0,
-		shieldDamageMultiplier = 2,
+		areaShieldDamageMultiplier = 2.0,
+		starshipShieldDamageMultiplier = 2.0,
 		particleThickness = 0.3,
 		explosionPower = 4.0f,
 		volume = 10,
@@ -401,7 +412,8 @@ class StarshipWeapons(
 	val heavyTurret: StarshipWeapon = StarshipWeapon(
 		range = 500.0,
 		speed = 200.0,
-		shieldDamageMultiplier = 1,
+		areaShieldDamageMultiplier = 1.0,
+		starshipShieldDamageMultiplier = 1.0,
 		particleThickness = 0.3,
 		explosionPower = 3.0f,
 		volume = 0,
@@ -421,10 +433,11 @@ class StarshipWeapons(
 	val triTurret: StarshipWeapon = StarshipWeapon(
 		range = 500.0,
 		speed = 125.0,
-		shieldDamageMultiplier = 3,
+		areaShieldDamageMultiplier = 3.0,
+		starshipShieldDamageMultiplier = 3.0,
 		particleThickness = 0.8,
 		explosionPower = 6f,
-		volume = 0,
+		volume = 1,
 		pitch = 2.0f,
 		soundName = "starship.weapon.turbolaser.tri.shoot",
 		powerUsage = 45000,
@@ -443,7 +456,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 500.0,
 		speed = 80.0,
-		shieldDamageMultiplier = 6,
+		areaShieldDamageMultiplier = 6.0,
+		starshipShieldDamageMultiplier = 6.0,
 		particleThickness = 0.6,
 		explosionPower = 5f,
 		volume = 0,
@@ -464,7 +478,8 @@ class StarshipWeapons(
 	val pointDefence: StarshipWeapon = StarshipWeapon(
 		range = 120.0,
 		speed = 150.0,
-		shieldDamageMultiplier = 0,
+		areaShieldDamageMultiplier = 2.0,
+		starshipShieldDamageMultiplier = 0.0,
 		particleThickness = 0.35,
 		explosionPower = 0.0f,
 		volume = 10,
@@ -486,7 +501,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 64.0,
 		speed = 1.0,
-		shieldDamageMultiplier = 10,
+		areaShieldDamageMultiplier = 10.0,
+		starshipShieldDamageMultiplier = 10.0,
 		particleThickness = 0.0,
 		explosionPower = 1.0f,
 		volume = 0,
@@ -507,7 +523,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 340.0,
 		speed = 250.0,
-		shieldDamageMultiplier = 55,
+		areaShieldDamageMultiplier = 5.0,
+		starshipShieldDamageMultiplier = 5.0,
 		particleThickness = 0.0,
 		explosionPower = 2.0f,
 		volume = 10,
@@ -527,7 +544,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 500.0,
 		speed = 125.0,
-		shieldDamageMultiplier = 3,
+		areaShieldDamageMultiplier = 3.0,
+		starshipShieldDamageMultiplier = 3.0,
 		particleThickness = 0.8,
 		explosionPower = 6f,
 		volume = 0,
@@ -548,7 +566,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 200.0,
 		speed = 250.0,
-		shieldDamageMultiplier = 1,
+		areaShieldDamageMultiplier = 1.0,
+		starshipShieldDamageMultiplier = 1.0,
 		particleThickness = 0.44,
 		explosionPower = 2.0f,
 		volume = 10,
@@ -568,7 +587,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 200.0,
 		speed = 600.0,
-		shieldDamageMultiplier = 1,
+		areaShieldDamageMultiplier = 1.0,
+		starshipShieldDamageMultiplier = 1.0,
 		particleThickness = 0.0, // not applicable
 		explosionPower = 2f,
 		volume = 10,
@@ -589,7 +609,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 500.0,
 		speed = PI * 50,
-		shieldDamageMultiplier = 0,
+		areaShieldDamageMultiplier = 0.0,
+		starshipShieldDamageMultiplier = 0.0,
 		particleThickness = 0.44,
 		explosionPower = 20.0f,
 		volume = 10,
@@ -610,7 +631,8 @@ class StarshipWeapons(
 		canFire = false,
 		range = 300.0,
 		speed = 200.0,
-		shieldDamageMultiplier = 10,
+		areaShieldDamageMultiplier = 10.0,
+		starshipShieldDamageMultiplier = 10.0,
 		particleThickness = 0.0,
 		explosionPower = 15.0f,
 		volume = 10,
@@ -636,7 +658,7 @@ class StarshipWeapons(
 	 * @param speed The speed of this weapon's projectile.
 	 *
 	 * @param explosionPower The power of the impact explosion of this projectile.
-	 * @param shieldDamageMultiplier The amount the explosion damage is multiplied when damaging a shield.
+	 * @param areaShieldDamageMultiplier The amount the explosion damage is multiplied when damaging a shield.
 	 *
 	 * @param particleThickness The thickness of the particles. Not always used.
 	 *
@@ -680,7 +702,9 @@ class StarshipWeapons(
 		override var speed: Double,
 
 		override var explosionPower: Float,
-		override var shieldDamageMultiplier: Int,
+
+		override var starshipShieldDamageMultiplier: Double,
+		override var areaShieldDamageMultiplier: Double,
 
 		override var particleThickness: Double,
 
@@ -712,7 +736,10 @@ class StarshipWeapons(
 	sealed interface ProjectileBalancing {
 		var range: Double
 		var speed: Double
-		var shieldDamageMultiplier: Int
+
+		var starshipShieldDamageMultiplier: Double
+		var areaShieldDamageMultiplier: Double
+
 		var particleThickness: Double
 		var explosionPower: Float
 		var volume: Int
