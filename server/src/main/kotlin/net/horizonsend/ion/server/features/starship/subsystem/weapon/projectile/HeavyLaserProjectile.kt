@@ -18,7 +18,8 @@ class HeavyLaserProjectile(
     sound: String
 ) : TrackingLaserProjectile(starship, loc, dir, shooter, originalTarget, baseAimDistance) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.heavyLaser ?: IonServer.starshipBalancing.nonStarshipFired.heavyLaser
-	override val shieldDamageMultiplier = balancing.shieldDamageMultiplier
+	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
+	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
 	override val maxDegrees: Double = balancing.maxDegrees
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed
