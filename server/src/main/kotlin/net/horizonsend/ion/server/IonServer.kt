@@ -40,14 +40,16 @@ val ServerConfiguration get() = IonServer.configuration
 val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
 
 object IonServer : JavaPlugin() {
-	var pvpBalancing: PVPBalancingConfiguration = Configuration.load(dataFolder, "pvpbalancing.json")
-	var starshipBalancing: StarshipTypeBalancing = Configuration.load(dataFolder, "starshipbalancing.json")
+	val configurationFolder = dataFolder.resolve("configuration").apply { mkdirs() }
 
-	var configuration: ServerConfiguration = Configuration.load(dataFolder, "server.json")
-	var gassesConfiguration: GassesConfiguration = Configuration.load(dataFolder, "gasses.json")
-	var tradeConfiguration: TradeConfiguration = Configuration.load(dataFolder, "trade.json")
-	var aiShipConfiguration: AIShipConfiguration = Configuration.load(dataFolder, "aiships.json")
-	var legacySettings: LegacyConfig = loadConfig(IonServer.dataFolder, "config") // Setting
+	var pvpBalancing: PVPBalancingConfiguration = Configuration.load(configurationFolder, "pvpbalancing.json")
+	var starshipBalancing: StarshipTypeBalancing = Configuration.load(configurationFolder, "starshipbalancing.json")
+
+	var configuration: ServerConfiguration = Configuration.load(configurationFolder, "server.json")
+	var gassesConfiguration: GassesConfiguration = Configuration.load(configurationFolder, "gasses.json")
+	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
+	var aiShipConfiguration: AIShipConfiguration = Configuration.load(configurationFolder, "aiships.json")
+	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
 
 	override fun onEnable(): Unit =
 		runCatching(::internalEnable).fold(
