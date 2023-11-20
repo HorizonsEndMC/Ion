@@ -16,7 +16,8 @@ class TurretLaserProjectile(
 	override val range: Double,
 	override val particleThickness: Double,
 	override val explosionPower: Float,
-	override val shieldDamageMultiplier: Int,
+	override val starshipShieldDamageMultiplier: Double,
+	override val areaShieldDamageMultiplier: Double,
 	override val soundName: String,
 	override val balancing: StarshipWeapons.ProjectileBalancing?,
 	shooter: Damager
