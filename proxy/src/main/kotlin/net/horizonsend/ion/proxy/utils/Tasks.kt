@@ -9,8 +9,7 @@ object ProxyTask {
 	inline fun sync(crossinline block: () -> Unit): ScheduledTask = PLUGIN.proxy.scheduler.schedule(
 			PLUGIN,
 			{ block() },
-			0,
-			0,
+		0,
 			TimeUnit.SECONDS
 		)
 
