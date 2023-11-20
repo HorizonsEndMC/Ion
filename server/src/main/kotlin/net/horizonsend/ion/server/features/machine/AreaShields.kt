@@ -31,6 +31,7 @@ import kotlin.math.sqrt
 
 object AreaShields : IonServerComponent(true) {
 	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()
+	private var explosionPowerOverride: Double? = null
 
 	override fun onEnable() {
 		loadData()
@@ -106,6 +107,15 @@ object AreaShields : IonServerComponent(true) {
 		return@filter shieldLoc.world == location.world && shieldLoc.isInRange(location, radius)
 	}
 
+	fun withExplosionPowerOverride(value: Double, block: () -> Unit) {
+		try {
+			explosionPowerOverride = value
+			block()
+		} finally {
+			explosionPowerOverride = null
+		}
+	}
+
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	fun onBlockExplode(event: BlockExplodeEvent) {
 		if (bypassShieldEvents.remove(event)) return
@@ -121,6 +131,8 @@ object AreaShields : IonServerComponent(true) {
 	private fun handleExplosion(location: Location, blockList: MutableList<Block>, yield: Float, event: Cancellable) {
 		if (yield == 0.123f) return
 
+		val power = explosionPowerOverride ?: yield
+
 		var distance = 0.0
 
 		for (block in blockList) distance = max(distance, block.location.distanceSquared(location))
@@ -131,7 +143,8 @@ object AreaShields : IonServerComponent(true) {
 			location,
 			blockList,
 			distance,
-			yield != 0.10203f
+			// I think this is a remnant from some jank micle did to prevent friendly fire from drawing power, idk if removing it will break anything so I'm keeping it
+			power != 0.10203f
 		)
 
 		if (blockList.isEmpty()) event.isCancelled = true

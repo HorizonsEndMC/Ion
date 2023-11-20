@@ -50,7 +50,8 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	fun getProjectileSpeed(starship: ActiveStarship) = getBalancing(starship).speed
 	fun getParticleThickness(starship: ActiveStarship) = getBalancing(starship).particleThickness
 	fun getExplosionPower(starship: ActiveStarship) = getBalancing(starship).explosionPower
-	fun getShieldDamageMultiplier(starship: ActiveStarship) = getBalancing(starship).shieldDamageMultiplier
+	fun getStarshipShieldDamageMultiplier(starship: ActiveStarship) = getBalancing(starship).starshipShieldDamageMultiplier
+	fun getAreaShieldDamageMultiplier(starship: ActiveStarship) = getBalancing(starship).areaShieldDamageMultiplier
 
 	protected abstract fun buildFirePointOffsets(): List<Vec3i>
 	protected abstract fun getPilotOffset(): Vec3i
@@ -259,7 +260,8 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 				getRange(starship),
 				getParticleThickness(starship),
 				getExplosionPower(starship),
-				getShieldDamageMultiplier(starship),
+				getStarshipShieldDamageMultiplier(starship),
+				getAreaShieldDamageMultiplier(starship),
 				getSound(starship),
 				starship.balancing.weapons.heavyTurret, // Not used by anything
 				shooter
