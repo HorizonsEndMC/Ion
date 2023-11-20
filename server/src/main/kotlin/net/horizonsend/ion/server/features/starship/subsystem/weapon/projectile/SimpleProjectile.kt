@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -31,7 +32,8 @@ abstract class SimpleProjectile(
 ) : Projectile(starship, shooter) {
 	abstract val range: Double
 	abstract val speed: Double
-	abstract val shieldDamageMultiplier: Int
+	abstract val starshipShieldDamageMultiplier: Double
+	abstract val areaShieldDamageMultiplier: Double
 	abstract val explosionPower: Float
 	open val volume: Int = 12
 	open val pitch: Float = 1f
@@ -142,28 +144,30 @@ abstract class SimpleProjectile(
 			"armorBlastResist = $armorBlastResist, \n" +
 			"impactedBlastResist = $impactedBlastResist, \n" +
 			"fraction = $fraction, \n" +
-			"shieldDamageMultiplier = $shieldDamageMultiplier, \n" +
-			"result = ${fraction * explosionPower * shieldDamageMultiplier}"
+			"shieldDamageMultiplier = $starshipShieldDamageMultiplier, \n" +
+			"result = ${fraction * explosionPower * starshipShieldDamageMultiplier}"
 		)
 
-		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * shieldDamageMultiplier) {
-			if (!hasHit) {
-				world.createExplosion(newLoc, explosionPower)
+		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier) {
+			AreaShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier) {
+				if (!hasHit) {
+					world.createExplosion(newLoc, explosionPower)
 
-				world.spawnParticle(
-					Particle.FLASH,
-					newLoc.x,
-					newLoc.y,
-					newLoc.z,
-					explosionPower.toInt(),
-					explosionPower.toDouble() / 2,
-					explosionPower.toDouble() / 2,
-					explosionPower.toDouble() / 2,
-					0.0,
-					null,
-					true
-				)
-				hasHit = true
+					world.spawnParticle(
+						Particle.FLASH,
+						newLoc.x,
+						newLoc.y,
+						newLoc.z,
+						explosionPower.toInt(),
+						explosionPower.toDouble() / 2,
+						explosionPower.toDouble() / 2,
+						explosionPower.toDouble() / 2,
+						0.0,
+						null,
+						true
+					)
+					hasHit = true
+				}
 			}
 		}
 
