@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.sortedByValue
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.World
@@ -117,6 +118,7 @@ class AIController(
 	/** Gets and filters targets within the starship's world in the specified radius */
 	fun getNearbyTargetsInRadius(minRange: Double, maxRange: Double, filter: (AITarget) -> Boolean): Set<AITarget> = getNearbyTargets(filter)
 			.associateWith { it.getVec3i().distance(starship.centerOfMass) }
+			.sortedByValue()
 			.filter { it.value in minRange..maxRange }
 			.keys
 
