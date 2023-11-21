@@ -41,7 +41,6 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
@@ -244,7 +243,7 @@ object PilotedStarships : IonServerComponent() {
 
 			activePlayerStarship.sendMessage(
 				Component.text("Activated and piloted ").color(NamedTextColor.GREEN)
-					.append(getDisplayNameComponent(data))
+					.append(getDisplayName(data))
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
 
@@ -400,7 +399,7 @@ object PilotedStarships : IonServerComponent() {
 
 			player.sendMessage(
 				Component.text("Activated and piloted ").color(NamedTextColor.GREEN)
-					.append(getDisplayNameComponent(data))
+					.append(activePlayerStarship.getDisplayName())
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
 
@@ -427,17 +426,9 @@ object PilotedStarships : IonServerComponent() {
 		for (nearbyPlayer in starship.world.getNearbyPlayers(starship.centerOfMass.toLocation(starship.world), 500.0)) {
 			nearbyPlayer.playSound(Sound.sound(Key.key("minecraft:block.beacon.deactivate"), Sound.Source.AMBIENT, 5f, 0.05f))
 		}
-		starship.controller.successActionMessage("Released ${getDisplayName(starship.data)}")
+		starship.controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")
 		return true
 	}
 
-	fun getDisplayName(data: StarshipData): String {
-		return data.name ?: data.starshipType.actualType.displayNameMiniMessage
-	}
-
-	fun getDisplayNameComponent(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
-
-	fun getRawDisplayName(data: StarshipData): String {
-		return (MiniMessage.miniMessage().deserialize(getDisplayName(data)) as TextComponent).content()
-	}
+	fun getDisplayName(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
 }

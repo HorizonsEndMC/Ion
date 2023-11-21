@@ -74,7 +74,7 @@ abstract class AISpawner(val identifier: String) {
 				AIManager.activeShips.add(ship)
 
 				val spawnMessage = createSpawnMessage(
-					ship.getDisplayNameComponent(),
+					ship.getDisplayName(),
 					config.miniMessageSpawnMessage,
 					Vec3i(loc),
 					loc.world
