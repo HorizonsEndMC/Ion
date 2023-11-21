@@ -2,20 +2,29 @@ package net.horizonsend.ion.common.utils.text
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_DARK_GRAY
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import java.util.regex.MatchResult
 import java.util.regex.Pattern
 
+// Serialization shortland
 fun String.miniMessage() = MiniMessage.miniMessage().deserialize(this)
 fun ComponentLike.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this.asComponent())
 
+operator fun Component.plus(other: ComponentLike): Component = this.append(other)
+
 fun ofChildren(vararg children: ComponentLike) = Component.textOfChildren(*children)
+
+// Utility functions
+fun Any.toComponent(): Component = text(toString())
 
 /**
  * Formats the number into credit format, so it is rounded to the nearest hundredth,
@@ -23,8 +32,7 @@ fun ofChildren(vararg children: ComponentLike) = Component.textOfChildren(*child
  * and "C" is placed at the beginning of the string.
  */
 fun Number.toCreditComponent(): Component = text("C${toDouble().roundToHundredth().toText()}", NamedTextColor.GOLD)
-
-fun Component.plusAssign(other: ComponentLike): Component = this.append(other)
+fun lineBreak(width: Int, color: TextColor = HE_DARK_GRAY, vararg decorations: TextDecoration) = text(repeatString("=", width), color, TextDecoration.STRIKETHROUGH, *decorations)
 
 fun template(
 	message: String,
@@ -34,17 +42,12 @@ fun template(
 ): Component {
 	val messageComponent = text(message, color)
 
-	var index = 0
-
 	val replacement = TextReplacementConfig.builder()
 		.match(Pattern.compile("\\{([0-9]*?)}"))
-		.times(parameters.size)
-		.replacement { built ->
-			val param = parameters[index]
+		.replacement { matched: MatchResult, _ ->
+			val index = matched.group().subStringBetween('{', '}').toInt()
 
-			index++
-
-			return@replacement when (param) {
+			return@replacement when (val param = parameters[index]) {
 				is ComponentLike -> param
 				is Number -> text(param.toString(), paramColor)
 				else -> text("\"$param\"", paramColor)
@@ -54,6 +57,8 @@ fun template(
 
 	return messageComponent.replaceText(replacement)
 }
+
+fun bracketed(value: Component, startChar: Char = '[', endChar: Char = ']', bracketColor: TextColor = HE_DARK_GRAY) = ofChildren(text(startChar, bracketColor), value, text(endChar, bracketColor))
 
 fun Iterable<ComponentLike>.join(separator: Component = text(", ")): Component {
 	val iterator = this.iterator()

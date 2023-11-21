@@ -86,7 +86,7 @@ open class NoOpDamager : Damager {
 }
 
 class AIShipDamager(override val starship: ActiveStarship, override val color: Color = Color.RED): Damager {
-	override fun getDisplayName(): Component = starship.getDisplayNameComponent()
+	override fun getDisplayName(): Component = starship.getDisplayName()
 	override fun rewardMoney(credits: Double) {}
 	override fun rewardXP(xp: Int) {}
 	override fun getAITarget(): AITarget = StarshipTarget(starship)
