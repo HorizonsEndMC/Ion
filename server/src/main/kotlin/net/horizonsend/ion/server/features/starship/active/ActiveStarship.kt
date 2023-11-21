@@ -387,10 +387,10 @@ abstract class ActiveStarship (
 	}
 
 	/** Gets the minimessage display name of this starship */
-	open fun getDisplayName(): String = type.displayNameMiniMessage
+	open fun getDisplayNameMiniMessage(): String = type.displayNameMiniMessage
 
-		/** Gets the component display name of this starship */
-	open fun getDisplayNameComponent(): Component = type.displayNameComponent
+	/** Gets the component display name of this starship */
+	open fun getDisplayName(): Component = type.displayNameComponent
 
 	/** Gets the plain text serialized version of this starship's display name */
 	open fun getDisplayNamePlain(): String = type.displayName
