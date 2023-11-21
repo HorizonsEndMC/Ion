@@ -15,22 +15,26 @@ import java.util.function.Supplier
 
 enum class StarshipType(
 	val displayName: String,
+	val color: String,
+	val dynmapIcon: String = "anchor",
+
 	val minSize: Int,
 	val maxSize: Int,
+
 	val minLevel: Int,
+	val overridePermission: String,
+
 	val containerPercent: Double,
 	val concretePercent: Double = 0.3,
 	val crateLimitMultiplier: Double,
 
 	menuItemMaterial: Material,
 	val isWarship: Boolean,
-	val color: String,
-	val overridePermission: String,
 	val eventship: Boolean = false,
 	val poweroverrider: Double = 1.0,
+
 	val maxMiningLasers: Int = 0,
 	val miningLaserTier: Int = 0,
-	val dynmapIcon: String = "anchor",
 
 	val balancingSupplier: Supplier<StarshipBalancing>
 ) {
