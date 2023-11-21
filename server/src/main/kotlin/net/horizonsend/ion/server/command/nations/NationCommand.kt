@@ -519,7 +519,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val message = text().color(TextColor.fromHexString("#b8e0d4"))
 
 		val lineWidth = 45
-		val lineBreak = text(repeatString("=", lineWidth)).decorate(TextDecoration.STRIKETHROUGH).color(NamedTextColor.DARK_GRAY)
+		val lineBreak = net.horizonsend.ion.common.utils.text.lineBreak(lineWidth)
 
 		val data = Nation.findById(nationId) ?: fail { "Failed to load data" }
 		val cached = NationCache[nationId]

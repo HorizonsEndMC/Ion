@@ -33,3 +33,5 @@ fun String.isAlphanumeric(includeSpaces: Boolean = false): Boolean {
 
 	return matches("^[a-zA-Z0-9]*$".toRegex())
 }
+
+fun String.subStringBetween(start: Char, end: Char) = substringAfter(start).substringBefore(end)

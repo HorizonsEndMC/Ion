@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -236,7 +237,13 @@ class ActiveControlledStarship (
 		super.clearPassengers()
 	}
 
-	override fun getDisplayName(): String = PilotedStarships.getDisplayName(this.data)
-	override fun getDisplayNameComponent(): Component = PilotedStarships.getDisplayNameComponent(this.data)
-	override fun getDisplayNamePlain(): String = PilotedStarships.getRawDisplayName(this.data)
+	override fun getDisplayNameMiniMessage(): String = this.data.name ?: this.type.displayNameMiniMessage
+
+	override fun getDisplayName(): Component {
+		val name = this.data.name ?: return type.displayNameComponent
+
+		return miniMessage().deserialize(name)
+	}
+
+	override fun getDisplayNamePlain(): String = getDisplayName().plainText()
 }

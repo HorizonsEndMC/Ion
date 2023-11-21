@@ -30,7 +30,7 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val size = ship.initialBlockCount
 
 		sender.sendRichMessage(
-			"<aqua>${ship.getDisplayName()} <white>(${
+			"<aqua>${ship.getDisplayNameMiniMessage()} <white>(${
 				ship.data.starshipType.actualType.displayName}) ($size blocks)\n" +
 				"   <gray>Mass:<white> ${"%.2f".format(ship.mass)}\n" +
 				"   <gray>World:<white> ${ship.world.name}\n" +

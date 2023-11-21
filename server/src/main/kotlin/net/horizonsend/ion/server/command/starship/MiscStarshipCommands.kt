@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -18,9 +17,15 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_BLUE
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.multiblock.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.space.Space
@@ -29,7 +34,6 @@ import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Interdiction.toggleGravityWell
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayNameComponent
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -51,15 +55,13 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import org.litote.kmongo.eq
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
@@ -537,6 +539,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		var totalShips = 0
 		var totalBlocks = 0
 
+		sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(45))
+
 		for (starship in ActiveStarships.all()) {
 			val pilot: Player? = starship.playerPilot
 			totalShips++
@@ -544,53 +548,30 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
-			val name = (starship as? ActiveControlledStarship)?.data?.let { getDisplayNameComponent(it) } ?: starship.type.displayNameComponent
-			val hoverName = MiniMessage.miniMessage().deserialize(starship.type.displayNameMiniMessage).asHoverEvent()
-
-			val pilotName = starship.controller.pilotName
-
-			val pilotNationID = pilot?.let { PlayerCache[pilot].nationOid }
-
-			val senderNationID = PlayerCache[sender.player!!].nationOid
-
-			val pilotNationRelation = senderNationID?.let {
-				pilotNationID?.let {
-					NationRelation.col.find(NationRelation::nation eq senderNationID)
-						.firstOrNull { it.other == pilotNationID }
-				}
-			}
-
-			val pilotRelationColor = (pilotNationRelation?.actual ?: NationRelation.Level.NONE).color
-
 			var worldName = starship.world.key.toString().substringAfterLast(":")
 				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
 			if (worldName == "Overworld") {
-				worldName = starship.world.name
-					.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+				worldName = starship.world.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 			}
 
-			val line = text()
-				.hoverEvent(hoverName)
-				.color(TextColor.fromHexString("#b8e0d4"))
-				.append(name)
-				.append(text(" piloted by "))
-				.append(pilotName.color(pilotRelationColor))
-
-			if (pilot?.hasProtection() == true) line
-				.append(text(" ★", NamedTextColor.GOLD))
-
-			line
-				.append(text(" of size "))
-				.append(text(size, NamedTextColor.WHITE))
-				.append(text(" in "))
-				.append(text(worldName, NamedTextColor.WHITE))
+			val line = template(
+				"{0}{1} piloted by {2} {3} in {4}",
+				color = HE_LIGHT_GRAY,
+				paramColor = WHITE,
+				if (pilot?.hasProtection() == true) text(" ★", NamedTextColor.GOLD) else Component.empty(),
+				starship.getDisplayName(),
+				starship.controller.pilotName,
+				bracketed(text(starship.initialBlockCount, WHITE)),
+				worldName
+			)
 
 			sender.sendMessage(line)
 		}
 
-		sender.sendRichMessage("<gray>Total Ships<dark_gray>:<aqua> $totalShips")
-		sender.sendRichMessage("<gray>Total Blocks in all ships<dark_gray>:<aqua> $totalBlocks")
+		sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(45))
+		sender.sendMessage(ofChildren(text("Total Ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
+		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
 	}
 
 	@Suppress("unused")

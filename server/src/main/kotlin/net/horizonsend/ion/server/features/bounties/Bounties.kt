@@ -8,6 +8,8 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -21,6 +23,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -138,16 +142,16 @@ object Bounties : IonServerComponent() {
 
 			val killerBounty = PlayerCache[killer].bounty
 
-			val reason = text()
-				.append(text("For sinking ", NamedTextColor.RED))
-				.append(text(victim.name, NamedTextColor.DARK_RED))
-				.append(text("'s ", NamedTextColor.RED))
-				.append(event.starship.type.displayNameComponent)
-				.append(text(", ", NamedTextColor.RED))
-				.append(text(killer.name, NamedTextColor.DARK_RED))
-				.append(text("'s bounty was increased by $money! It is now ", NamedTextColor.RED))
-				.append(text((killerBounty + money).toCreditsString(), NamedTextColor.GOLD))
-				.build()
+			val reason = template(
+				"For sinking {0}'s {1}, {2}'s bounty was increased by {3}! It is now {4}.",
+				color = RED,
+				paramColor = DARK_RED,
+				victim.displayName(),
+				event.starship.type.displayNameComponent,
+				killer.displayName(),
+				money.toCreditComponent(),
+				(killerBounty + money).toCreditComponent()
+			)
 
 			increaseBounty(killer, money, reason)
 		}

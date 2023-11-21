@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
-import co.aikar.commands.ACFBukkitUtil
+import com.github.stefvanschie.inventoryframework.adventuresupport.ComponentHolder
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
@@ -9,6 +9,7 @@ import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,7 +18,9 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
 object MenuHelper {
-	fun gui(rows: Int, title: String) = ChestGui(rows, ACFBukkitUtil.color(title)).apply {
+	fun gui(rows: Int, title: String) = gui(rows, legacyAmpersand().deserialize(title))
+
+	fun gui(rows: Int, title: Component) = ChestGui(rows, ComponentHolder.of(title)).apply {
 		setOnGlobalClick { event: InventoryClickEvent ->
 			val item = event.currentItem
 			if (item?.type?.isAir != false) {

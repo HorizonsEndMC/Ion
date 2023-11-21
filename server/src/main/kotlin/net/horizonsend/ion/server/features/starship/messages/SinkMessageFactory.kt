@@ -19,7 +19,7 @@ import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import java.time.Instant
@@ -44,7 +44,7 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 	}
 
 	private fun sendGameMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
-		val assistPrefix = if (assists.isNotEmpty()) ofChildren(text(", assisted by:", GOLD), newline()) else empty()
+		val assistPrefix = if (assists.isNotEmpty()) ofChildren(text(", assisted by:", RED), newline()) else empty()
 
 		val message = ofChildren(sinkMessage, assistPrefix, assists.values.join(separator = newline()))
 
@@ -83,7 +83,7 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 		val killedShipText = formatName(sunkShip)
 
 		val killerName = formatName(killerDamager)
-		val sunkMessage = ofChildren(text(" was sunk by ", GOLD), killerName)
+		val sunkMessage = ofChildren(text(" was sunk by ", RED), killerName)
 
 		val arenaText = if (arena) ofChildren(
 			text("[", TextColor.color(85, 85, 85)),
@@ -106,7 +106,7 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 			val assist = text()
 				.append(assistName)
 
-			if (sortedByTime.hasNext()) assist.append(text(",", GOLD))
+			if (sortedByTime.hasNext()) assist.append(text(",", RED))
 
 			components[assistDamager] = assist.build()
 		}
@@ -126,19 +126,19 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 		val hover = ofChildren(text("${starship.initialBlockCount} block ", NamedTextColor.WHITE), starship.type.displayNameComponent)
 
 		val nameFormat = if (starship.data.name == null) ofChildren(
-			text("A ", GOLD),
+			text("A ", RED),
 			text(starship.initialBlockCount),
-			text(" block ", GOLD),
+			text(" block ", RED),
 			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
 		)
 		else ofChildren(
-			starship.getDisplayNameComponent(),
-			text(", a ", GOLD),
+			starship.getDisplayName(),
+			text(", a ", RED),
 			text(starship.initialBlockCount),
-			text(" block ", GOLD),
+			text(" block ", RED),
 			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
 		)
 
-		return ofChildren(nameFormat, text(", piloted by ", GOLD), starship.controller.pilotName).hoverEvent(hover)
+		return ofChildren(nameFormat, text(", piloted by ", RED), starship.controller.pilotName).hoverEvent(hover)
 	}
 }

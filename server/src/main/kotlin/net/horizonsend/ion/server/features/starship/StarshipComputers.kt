@@ -210,7 +210,7 @@ object StarshipComputers : IonServerComponent() {
 				e.isCancelled = true
 			}
 
-			gui(1, getDisplayName(data).replace("<[^>]*>".toRegex(), "")).withPane(pane).show(player)
+			gui(1, getDisplayName(data)).withPane(pane).show(player)
 		}
 	}
 
