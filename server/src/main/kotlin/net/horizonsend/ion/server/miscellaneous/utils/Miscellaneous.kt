@@ -131,7 +131,7 @@ fun highlightBlock(bukkitPlayer: Player, pos: BlockPos, duration: Long) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
 	val shulker =
-		Shulker(EntityType.SHULKER, player.level).apply {
+		Shulker(EntityType.SHULKER_BULLET, player.level).apply {
 			setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
 			setGlowingTag(true)
 			isInvisible = true
