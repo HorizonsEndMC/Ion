@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.DbObjectCompanion
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.ProjectedResults
 import net.horizonsend.ion.common.database.projected
+import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -44,20 +45,23 @@ typealias SLPlayerId = StringId<SLPlayer>
  * @param snowflake Their discord unique id
  **/
 data class SLPlayer(
-    override val _id: SLPlayerId,
-    var lastKnownName: String,
-    var lastSeen: Date = Date.from(Instant.now()),
+	override val _id: SLPlayerId,
+	var lastKnownName: String,
+	var lastSeen: Date = Date.from(Instant.now()),
 
-    var xp: Int = 0,
-    val level: Int = 1,
+	var xp: Int = 0,
+	val level: Int = 1,
 
-    var settlement: Oid<Settlement>? = null,
-    var nation: Oid<Nation>? = null,
+	var settlement: Oid<Settlement>? = null,
+	var nation: Oid<Nation>? = null,
 
-    var snowflake: Long? = null,
-    var wasKilled: Boolean = false,
+	var snowflake: Long? = null,
 
-    var achievements: Set<String> = setOf(),
+	var cryopods: Set<Oid<Cryopod>> = setOf(),
+	var selectedCryopod: Oid<Cryopod>? = null,
+	var wasKilled: Boolean = false,
+
+	var achievements: Set<String> = setOf(),
 	var bounty: Double = 0.0,
 
 	var contactsEnabled: Boolean = true,
