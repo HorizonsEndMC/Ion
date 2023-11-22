@@ -20,7 +20,8 @@ class SteeringPathfindingEngine(
 	}
 
 	override fun getFirstNavPoint(): Vec3i {
-		return blockedPositions.firstOrNull() ?: getCenterVec3i()
+		return positioningSupplier.get()
+//		return blockedPositions.firstOrNull() ?: getCenterVec3i()
 	}
 
 	override fun getDestination(): Vec3i {

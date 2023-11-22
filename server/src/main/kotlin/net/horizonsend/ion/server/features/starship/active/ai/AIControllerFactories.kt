@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat.StarfighterCombatEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting.ClosestTargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.movement.CruiseEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.CombatAStarPathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.SteeringPathfindingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -48,7 +48,8 @@ object AIControllerFactories : IonServerComponent() {
 					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 25.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+//					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+					val pathfinding = SteeringPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
@@ -90,7 +91,8 @@ object AIControllerFactories : IonServerComponent() {
 					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 25.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+//					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+					val pathfinding = SteeringPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
@@ -163,7 +165,8 @@ object AIControllerFactories : IonServerComponent() {
 					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 40.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+//					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+					val pathfinding = SteeringPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
@@ -207,7 +210,8 @@ object AIControllerFactories : IonServerComponent() {
 					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 240.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+//					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+					val pathfinding = SteeringPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(
 						this,
@@ -249,7 +253,8 @@ object AIControllerFactories : IonServerComponent() {
 					val positioning = AxisStandoffPositioningEngine(this, targeting::findTarget, 240.0)
 					engines["positioning"] = positioning
 
-					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+//					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
+					val pathfinding = SteeringPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
 					engines["movement"] = CruiseEngine(this, pathfinding, pathfinding::getFirstNavPoint, CruiseEngine.ShiftFlightType.ALL, 256.0)
 
