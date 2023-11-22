@@ -121,7 +121,7 @@ public class BlockPlacementRaw {
 				world.getChunkAtAsync(cx, cz).thenAccept(chunk -> {
 					actuallyPlaceChunk(world, onComplete, start, placedChunks, placed, chunkCount, blocks, cx, cz, false, chunk);
 				});
-				return;
+				continue;
 			}
 
 			org.bukkit.Chunk chunk = world.getChunkAt(cx, cz);
