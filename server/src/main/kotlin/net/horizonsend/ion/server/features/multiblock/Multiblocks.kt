@@ -270,8 +270,7 @@ object Multiblocks : IonServerComponent() {
 
 		val cached: Multiblock? = multiblockCache[location]
 		if (cached != null) {
-			val matchesSign =
-				if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
+			val matchesSign = if (pdc != null) pdc == cached::class.simpleName else cached.matchesSign(sign.lines().toTypedArray())
 
 			// one was already cached before
 			if (matchesSign && (!checkStructure || cached.signMatchesStructure(sign, loadChunks = loadChunks))) {
