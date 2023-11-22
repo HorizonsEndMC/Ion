@@ -41,7 +41,8 @@ class MiningLaserSubsystem(
 	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(
 		range = 0.0,
 		speed = 0.0,
-		shieldDamageMultiplier = 0,
+		areaShieldDamageMultiplier = 0.0,
+		starshipShieldDamageMultiplier = 0.0,
 		particleThickness = 0.0,
 		explosionPower = 0.0f,
 		volume = 0,

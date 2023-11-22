@@ -19,7 +19,8 @@ class CapitalBeamCannonProjectile(
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.capitalBeam ?: IonServer.starshipBalancing.nonStarshipFired.capitalBeam
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed
-	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
+	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
 	override val explosionPower: Float = balancing.explosionPower
 	override val volume: Int = balancing.volume
 	override val pitch: Float = balancing.pitch

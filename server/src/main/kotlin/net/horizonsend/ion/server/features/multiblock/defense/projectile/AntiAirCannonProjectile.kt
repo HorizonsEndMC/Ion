@@ -25,13 +25,14 @@ class AntiAirCannonProjectile(
 	playerShooter.damager()
 ) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = IonServer.starshipBalancing.antiAirCannon
-	override val volume: Int = IonServer.starshipBalancing.antiAirCannon.volume
-	override val pitch: Float = IonServer.starshipBalancing.antiAirCannon.pitch
-	override val speed = IonServer.starshipBalancing.antiAirCannon.speed
-	override val range = IonServer.starshipBalancing.antiAirCannon.range
-	override val explosionPower = IonServer.starshipBalancing.antiAirCannon.explosionPower
-	override val shieldDamageMultiplier = IonServer.starshipBalancing.antiAirCannon.shieldDamageMultiplier
-	override val soundName = IonServer.starshipBalancing.antiAirCannon.soundName
+	override val volume: Int = balancing.volume
+	override val pitch: Float = balancing.pitch
+	override val speed = balancing.speed
+	override val range = balancing.range
+	override val explosionPower = balancing.explosionPower
+	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
+	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
+	override val soundName = balancing.soundName
 
 	private fun getColor(shooter: Player): Color {
 		val nation: Oid<Nation>? = PlayerCache[shooter].nationOid

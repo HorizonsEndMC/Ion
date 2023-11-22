@@ -17,7 +17,8 @@ class CannonLaserProjectile(
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.laserCannon ?: IonServer.starshipBalancing.nonStarshipFired.laserCannon
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed
-	override val shieldDamageMultiplier: Int = balancing.shieldDamageMultiplier
+	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
+	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
 	override val color: Color = Color.YELLOW
 	override val particleThickness: Double = balancing.particleThickness
 	override val explosionPower: Float = balancing.explosionPower

@@ -36,6 +36,15 @@ inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> =
 fun <K> Collection<Pair<K, *>>.firsts(): List<K> = this.map { it.first }
 fun <V> Collection<Pair<*, V>>.seconds(): List<V> = this.map { it.second }
 fun <K, V : Comparable<V>> Map<K, V>.keysSortedByValue(): List<K> = this.keys.sortedBy { this[it]!! }
+
+fun <K, V: Comparable<V>> Map<K, V>.sortedByValue(): Map<K, V> {
+	return this.entries.sortedBy { it.value }.toMap()
+}
+
+fun <K, V> Collection<Map.Entry<K, V>>.toMap(): Map<K, V> {
+	return mutableMapOf(*this.map { it.toPair() }.toTypedArray())
+}
+
 fun <T> List<T>.safeSubList(fromIndex: Int, toIndex: Int): List<T> = this.subList(fromIndex.coerceAtLeast(this.size), toIndex.coerceAtMost(this.size))
 
 /**

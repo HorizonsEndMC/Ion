@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayNameComponent
+import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
@@ -60,7 +60,7 @@ object MassShadows {
 			dist = sqrt(dist)
 
 			val interdictingShip = otherShip as? ActiveControlledStarship
-			val interdictingShipName = interdictingShip?.data?.let { getDisplayNameComponent(it) } ?: otherShip.type.displayNameComponent
+			val interdictingShipName = interdictingShip?.data?.let { getDisplayName(it) } ?: otherShip.type.displayNameComponent
 
 			return MassShadowInfo(
 				text()
