@@ -476,7 +476,8 @@ class StarshipWeapons(
 		boostChargeSeconds = 0,
 		applyCooldownToAll = true,
 		aimDistance = 0,
-		maxBlockCount = 12000
+		maxBlockCount = 12000,
+		minBlockCount = 6500
 	),
 
 	val triTurret: StarshipWeapon = StarshipWeapon(
