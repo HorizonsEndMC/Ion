@@ -16,7 +16,7 @@ import org.bukkit.World
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConfiguration.spawners.CARGO_MISSION, ) {
+class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConfiguration.spawners::CARGO_MISSION) {
 
 	fun findLocation(): Location? {
 		val worldConfig = configuration.worldWeightedRandomList.random()

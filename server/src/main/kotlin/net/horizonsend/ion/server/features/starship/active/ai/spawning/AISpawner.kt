@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
 import org.slf4j.LoggerFactory
+import java.util.function.Supplier
 
 /**
  * This class is a definable AI spawner
@@ -31,12 +32,13 @@ import org.slf4j.LoggerFactory
  * The abstract method, AISpawner#triggerSpawn is used to control the behavior of the spawner.
  *
  * @param identifier The identifier of the spawner, used for configuration and locating the spawner.
- * @param configuration The defined ships for this spawner.
+ * @param configurationSupplier The defined ships for this spawner.
  **/
 abstract class AISpawner(
 	val identifier: String,
-	val configuration: AIShipConfiguration.AISpawnerConfiguration
+	private val configurationSupplier: Supplier<AIShipConfiguration.AISpawnerConfiguration>
 ) {
+	val configuration get() = configurationSupplier.get()
 	protected val log = LoggerFactory.getLogger(javaClass)
 
 	fun AIStarshipTemplate.getName(): Component = miniMessage().deserialize(miniMessageName)
