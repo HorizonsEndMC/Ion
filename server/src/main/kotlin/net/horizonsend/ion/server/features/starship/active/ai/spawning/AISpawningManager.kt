@@ -4,12 +4,16 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.test.BasicCargoMissionSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
@@ -17,6 +21,8 @@ import java.util.Optional
 import java.util.concurrent.TimeUnit
 
 object AISpawningManager : IonServerComponent(true) {
+	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
 	val config = IonServer.aiShipConfiguration
 
 	/**
@@ -53,12 +59,12 @@ object AISpawningManager : IonServerComponent(true) {
 	}
 
 	private fun enableSpawners() {
-		val averageDelay = (spawners.sumOf { it.config.spawnRate } / spawners.size) / spawners.size
+		val averageDelay = (spawners.sumOf { it.configuration.spawnRate } / spawners.size) / spawners.size
 
 		spawners.forEachIndexed { index: Int, spawner: AISpawner ->
 			val delay = averageDelay * index
 
-			Tasks.asyncRepeat(delay, spawner.config.spawnRate) { spawner.trigger() }
+			Tasks.asyncRepeat(delay, spawner.configuration.spawnRate) { spawner.trigger(context) }
 		}
 	}
 

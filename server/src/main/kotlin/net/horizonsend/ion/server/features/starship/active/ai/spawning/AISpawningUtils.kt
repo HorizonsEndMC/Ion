@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.active.ai
+package net.horizonsend.ion.server.features.starship.active.ai.spawning
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServerComponent
@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.Spawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -27,7 +26,7 @@ object AISpawningUtils : IonServerComponent() {
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
 		val schematic = template.getSchematic() ?: throw
-			Spawner.SpawningException(
+			AISpawner.SpawningException(
 				"Schematic not found for ${template.identifier} at ${template.schematicFile.toURI()}",
 				location.world,
 				Vec3i(location)
@@ -64,7 +63,7 @@ object AISpawningUtils : IonServerComponent() {
 					createController,
 					callback
 				)
-			} catch (e: Spawner.SpawningException) {
+			} catch (e: AISpawner.SpawningException) {
 				e.blockLocations = it
 
 				throw e
@@ -84,7 +83,7 @@ object AISpawningUtils : IonServerComponent() {
 		val block = world.getBlockAt(x, y, z)
 
 		if (block.type != StarshipComputers.COMPUTER_TYPE) {
-			throw Spawner.SpawningException("${block.type} at $origin was not a starship computer, failed to pilot", world, origin)
+			throw AISpawner.SpawningException("${block.type} at $origin was not a starship computer, failed to pilot", world, origin)
 		}
 
 		DeactivatedPlayerStarships.createAIShipAsync(block.world, block.x, block.y, block.z, type, name) { data ->
@@ -96,7 +95,7 @@ object AISpawningUtils : IonServerComponent() {
 
 					Tasks.sync { PilotedStarships.activateWithoutPilot(debugAudience, data, createController, callback) }
 				} catch (e: StarshipDetection.DetectionFailedException) {
-					throw Spawner.SpawningException("Detection failed: ${e.message}", world, origin)
+					throw AISpawner.SpawningException("Detection failed: ${e.message}", world, origin)
 				}
 			}
 		}

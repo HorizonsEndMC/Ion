@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.apache.commons.lang.math.DoubleRange
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -49,6 +51,16 @@ data class AIShipConfiguration(
 		fun getWorld(world: World) = worldSettings.firstOrNull { it.world == world.name }
 
 		fun getTier(identifier: String) = tiers.first { it.identifier == identifier }
+
+		fun formatSpawnMessage(world: World, x: Int, y: Int, z: Int, shipName: Component): Component {
+			val formatted = miniMessageSpawnMessage
+				.replace("{x}", x.toString())
+				.replace("{y}", y.toString())
+				.replace("{z}", z.toString())
+				.replace("{shipName}", MiniMessage.miniMessage().serialize(shipName))
+
+			return MiniMessage.miniMessage().deserialize(formatted)
+		}
 	}
 
 	/**
