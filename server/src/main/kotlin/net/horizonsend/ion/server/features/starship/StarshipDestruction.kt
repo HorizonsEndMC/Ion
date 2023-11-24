@@ -33,12 +33,22 @@ import kotlin.random.Random
 object StarshipDestruction {
 	const val MAX_SAFE_HULL_INTEGRITY = 0.8
 
-	fun vanish(starship: ActiveStarship) {
+	/**
+	 * 1984 the ship
+	 *
+	 * If urgent, all will be done on the main thread.
+	 **/
+	fun vanish(starship: ActiveStarship, urgent: Boolean = false) {
 		if (starship.isExploding) {
 			return
 		}
 
 		starship.isExploding = true
+
+		if (urgent) {
+			vanishShip(starship)
+			return
+		}
 
 		if (starship is ActiveControlledStarship) {
 			DeactivatedPlayerStarships.deactivateAsync(starship) {

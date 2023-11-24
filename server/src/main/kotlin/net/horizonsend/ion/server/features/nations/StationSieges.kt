@@ -15,6 +15,9 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
+import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
@@ -31,7 +34,6 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -94,12 +96,30 @@ object StationSieges : IonServerComponent() {
 		log.info("Siege quarter change: $lastQuarter -> $newQuarter")
 		lastQuarter = newQuarter
 		lastStations.forEach { lastStationName ->
-			IonServer.server.broadcastMessage("&7Space Station &b$lastStationName&7's siege quarter has ended.".colorize())
+			val message = template(
+				"Siege Station {0}'s siege hour has ended.",
+				color = HEColorScheme.HE_MEDIUM_GRAY,
+				paramColor = HEColorScheme.HE_LIGHT_BLUE,
+				lastStationName
+			)
+
+			IonServer.server.sendMessage(message)
+			if (IonServer.legacySettings.master) Notify.sendDiscord(Notify.getChannel("global"), message.plainText())
 		}
+
 		val stations = Regions.getAllOf<RegionCapturableStation>()
 			.filter { station -> station.siegeTimeFrame == lastQuarter }
+
 		for (station in stations) {
-			IonServer.server.broadcastMessage("&7Space Station &b${station.name}&7's siege quarter has began! It can be besieged for the rest of the hour with /siege".colorize())
+			val message = template(
+				"Siege Station {0}'s siege hour has began! It can be besieged for the rest of the hour with /siege!.",
+				color = HEColorScheme.HE_MEDIUM_GRAY,
+				paramColor = HEColorScheme.HE_LIGHT_BLUE,
+				station.name
+			).hoverEvent(text("${station.world} : (${station.x}, ${station.z})"))
+
+			IonServer.server.sendMessage(message)
+			if (IonServer.legacySettings.master) Notify.sendDiscord(Notify.getChannel("global"), message.plainText())
 		}
 		lastStations = stations.map { it.name }
 	}

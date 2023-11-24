@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTe
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.AIManager
 import net.horizonsend.ion.server.features.starship.active.ai.AISpawningUtils.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -106,13 +105,7 @@ abstract class Spawner(
 			val airQueue = Long2ObjectOpenHashMap<BlockState>(blockKeys.size)
 			val air = Blocks.AIR.defaultBlockState()
 
-			val iterator = blockKeys.iterator()
-
-			while (iterator.hasNext()) {
-				val key = iterator.nextLong()
-
-				airQueue[key] = air
-			}
+			blockKeys.associateWithTo(airQueue) { air }
 
 			placeImmediate(exception.world, airQueue)
 		}
@@ -170,8 +163,6 @@ abstract class AISpawner(
 
 			// Wait 1 tick for the controller to update
 			Tasks.sync {
-				AIManager.activeShips.add(ship)
-
 				val spawnMessage = createSpawnMessage(
 					ship.getDisplayName(),
 					config.miniMessageSpawnMessage,
