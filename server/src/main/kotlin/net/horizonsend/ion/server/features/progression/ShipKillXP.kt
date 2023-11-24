@@ -34,20 +34,16 @@ object ShipKillXP : IonServerComponent() {
 		var lastDamaged: Long = System.currentTimeMillis()
 	)
 
-	val damagerExpiration = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)
+	private val damagerExpiration get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onStarshipExplode(event: StarshipExplodeEvent) {
-		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true)
-
-		onShipKill(event.starship, event.starship.controller.pilotName.plainText(), arena)
+		onShipKill(event.starship)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onCombatNPCKill(event: CombatNPCKillEvent) {
-		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true)
-
-		onPlayerKilled(event.id, event.name, event.killer, arena)
+		onPlayerKilled(event.id, event.killer)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -56,10 +52,10 @@ object ShipKillXP : IonServerComponent() {
 		val killer: Player? = player.killer
 		val arena = IonServer.configuration.serverName.equals("creative", ignoreCase = true)
 
-		onPlayerKilled(player.uniqueId, player.name, killer, arena)
+		onPlayerKilled(player.uniqueId, killer)
 	}
 
-	private fun onPlayerKilled(killed: UUID, killedName: String, killer: Entity?, arena: Boolean) {
+	private fun onPlayerKilled(killed: UUID, killer: Entity?) {
 		val killedStarship = ActiveStarships.findByPilot(killed) ?: return
 
 		if (killer is Player) {
@@ -68,14 +64,16 @@ object ShipKillXP : IonServerComponent() {
 			killedStarship.addToDamagers(damager)
 		}
 
-		onShipKill(killedStarship, killedName, arena)
+		onShipKill(killedStarship)
 	}
 
-	private fun onShipKill(starship: ActiveStarship, killedPilotName: String, arena: Boolean) {
+	private fun onShipKill(starship: ActiveStarship) {
 		log.info(
-			"ship killed at ${starship.centerOfMass}. " +
-				"Pilot: ${starship.controller}. " +
-				"Damagers: ${starship.damagers}"
+			"""
+				ship killed at ${starship.centerOfMass}.
+				Pilot: ${starship.controller}.
+				Damagers: ${starship.damagers.entries.joinToString { "(Damager: ${it.key}, Points: ${it.value.points})" }}
+			""".trimIndent()
 		)
 
 		val dataMap = starship.damagers
