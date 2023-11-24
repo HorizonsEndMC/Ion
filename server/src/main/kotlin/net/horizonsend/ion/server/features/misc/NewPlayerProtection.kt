@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.city.CityNPCs.isNpc
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.luckperms.api.node.types.PermissionNode
 import net.luckperms.api.node.types.SuffixNode
@@ -86,7 +87,7 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 	}
 
 	fun Player.hasProtection(): Boolean {
-		if (this.isNpc()) return false
+		if (isCitizensLoaded && this.isNpc()) return false
 
 		val player = PlayerCache[this]
 		val playerLevel = PlayerXPLevelCache[this]
