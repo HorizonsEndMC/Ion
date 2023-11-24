@@ -59,7 +59,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechani
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.StarshipDisplay
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
-import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
@@ -189,7 +188,6 @@ val components: List<IonComponent> = listOf(
 	AISpawningManager,
 	AIManager,
 	StarshipDisplay,
-	AIStarshipMechanics,
 	NPCFakePilot,
 
 	AntiAirCannons,
