@@ -18,6 +18,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.inc
 import org.litote.kmongo.setValue
 
+@Subcommand("bountyadmin")
 object BountyAdminCommand : SLCommand() {
 	@Subcommand("set")
 	@CommandPermission("ion.bounty.modify")
