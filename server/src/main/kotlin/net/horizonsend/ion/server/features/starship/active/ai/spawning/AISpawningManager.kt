@@ -28,9 +28,7 @@ object AISpawningManager : IonServerComponent(true) {
 	/**
 	 * For variety, the spawners are defined in the code, but they get their ship configuration and spawn rates, etc. from configuration files.
 	 **/
-	val spawners = listOf<AISpawner>(
-		BasicCargoMissionSpawner()
-	)
+	val spawners = mutableListOf<AISpawner>()
 
 	val templates: MutableMap<String, AIStarshipTemplate> = mutableMapOf()
 
@@ -59,6 +57,8 @@ object AISpawningManager : IonServerComponent(true) {
 	}
 
 	private fun enableSpawners() {
+		spawners += BasicCargoMissionSpawner()
+
 		val averageDelay = (spawners.sumOf { it.configuration.spawnRate } / spawners.size) / spawners.size
 
 		spawners.forEachIndexed { index: Int, spawner: AISpawner ->
