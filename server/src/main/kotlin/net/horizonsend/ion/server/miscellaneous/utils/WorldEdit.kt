@@ -29,6 +29,7 @@ import com.sk89q.worldedit.util.nbt.LongBinaryTag
 import com.sk89q.worldedit.util.nbt.ShortBinaryTag
 import com.sk89q.worldedit.util.nbt.StringBinaryTag
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.minecraft.nbt.ByteArrayTag
 import net.minecraft.nbt.ByteTag
@@ -88,7 +89,7 @@ fun placeSchematicEfficiently(
     world: World,
     target: Vec3i,
     ignoreAir: Boolean,
-    callback: () -> Unit = {}
+    callback: (LongOpenHashSet) -> Unit = {}
 ) {
 	Tasks.async {
 		val queue = Long2ObjectOpenHashMap<MinecraftBlockState>()
@@ -110,7 +111,8 @@ fun placeSchematicEfficiently(
 
 		BlockPlacement.placeQueueEfficiently(world, queue) { world ->
 			schematic.paste(world, target.x, target.y, target.z, ignoreAir)
-			callback()
+
+			callback(LongOpenHashSet(queue.keys))
 		}
 	}
 }

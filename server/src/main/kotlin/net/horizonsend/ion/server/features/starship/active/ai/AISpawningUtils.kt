@@ -10,38 +10,34 @@ import net.horizonsend.ion.server.features.starship.StarshipDealers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.Spawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
-import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.World
 
-object AIStarshipFactory : IonServerComponent() {
+object AISpawningUtils : IonServerComponent() {
 	fun createAIShipFromTemplate(
 		template: AIShipConfiguration.AIStarshipTemplate,
 		location: Location,
 		createController: (ActiveControlledStarship) -> Controller,
-		pilotName: Component?,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
-		val schematic = template.getSchematic()
-
-		if (schematic == null) {
-			log.warn("Schematic not found for ${template.identifier} at ${template.schematicFile.toURI()}")
-			return
-		}
+		val schematic = template.getSchematic() ?: throw
+			Spawner.SpawningException(
+				"Schematic not found for ${template.identifier} at ${template.schematicFile.toURI()}",
+				location.world,
+				Vec3i(location)
+			)
 
 		createFromClipboard(
 			location,
 			schematic,
 			template.type,
 			template.miniMessageName,
-			pilotName,
 			createController,
 			callback
 		)
@@ -52,7 +48,6 @@ object AIStarshipFactory : IonServerComponent() {
 		clipboard: Clipboard,
 		type: StarshipType,
 		starshipName: String,
-		pilotName: Component?,
 		createController: (ActiveControlledStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
@@ -60,11 +55,19 @@ object AIStarshipFactory : IonServerComponent() {
 		val vec3i = Vec3i(target)
 
 		placeSchematicEfficiently(clipboard, location.world, vec3i, true) {
-			tryPilotWithController(location.world, vec3i, type, starshipName, createController) {
-				pilotName?.let { _ -> (it.controller as AIController).pilotName = pilotName }
-				callback(it)
+			try {
+				tryPilotWithController(
+					location.world,
+					vec3i,
+					type,
+					starshipName,
+					createController,
+					callback
+				)
+			} catch (e: Spawner.SpawningException) {
+				e.blockLocations = it
 
-				NPCFakePilot.add(it, null, pilotName)
+				throw e
 			}
 		}
 	}
@@ -77,11 +80,11 @@ object AIStarshipFactory : IonServerComponent() {
 		createController: (ActiveControlledStarship) -> Controller,
 		callback: (ActiveControlledStarship) -> Unit = {}
 	) {
-		val block = world.getBlockAtKey(origin.toBlockKey())
+		val (x, y, z) = origin
+		val block = world.getBlockAt(x, y, z)
 
 		if (block.type != StarshipComputers.COMPUTER_TYPE) {
-			warnDetectionFailure("${block.type} at $origin was not a starship computer, failed to pilot", origin)
-			return
+			throw Spawner.SpawningException("${block.type} at $origin was not a starship computer, failed to pilot", world, origin)
 		}
 
 		DeactivatedPlayerStarships.createAIShipAsync(block.world, block.x, block.y, block.z, type, name) { data ->
@@ -93,14 +96,9 @@ object AIStarshipFactory : IonServerComponent() {
 
 					Tasks.sync { PilotedStarships.activateWithoutPilot(debugAudience, data, createController, callback) }
 				} catch (e: StarshipDetection.DetectionFailedException) {
-					warnDetectionFailure("Detection failed: ${e.message}", origin)
+					throw Spawner.SpawningException("Detection failed: ${e.message}", world, origin)
 				}
 			}
 		}
 	}
-
-	fun warnDetectionFailure(reason: String, computerLoc: Long) = warnDetectionFailure(reason, Vec3i(computerLoc))
-
-	fun warnDetectionFailure(reason: String, computerLoc: Vec3i) =
-		log.warn("Could not activate AI ship at ${computerLoc}! " + reason)
 }

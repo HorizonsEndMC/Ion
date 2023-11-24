@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipFactory.warnDetectionFailure
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.Spawner
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.NoOpController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -209,12 +209,7 @@ object PilotedStarships : IonServerComponent() {
 	): Boolean {
 		val world: World = data.bukkitWorld()
 
-		val state: StarshipState? = DeactivatedPlayerStarships.getSavedState(data)
-
-		if (state == null) {
-			warnDetectionFailure("Not detected.", data.blockKey)
-			return false
-		}
+		val state: StarshipState = DeactivatedPlayerStarships.getSavedState(data) ?: throw Spawner.SpawningException("Not detected.", world, Vec3i(data.blockKey))
 
 		for ((key: Long, blockData: BlockData) in state.blockMap) {
 			val x: Int = blockKeyX(key)
@@ -226,14 +221,20 @@ object PilotedStarships : IonServerComponent() {
 				val expected: String = blockData.material.name
 				val found: String = foundData.material.name
 
-				warnDetectionFailure("Block at $x, $y, $z does not match! Expected $expected but found $found", data.blockKey)
-				return false
+				throw Spawner.SpawningException(
+					"Block at $x, $y, $z does not match! Expected $expected but found $found",
+					world,
+					Vec3i(data.blockKey)
+				)
 			}
 
 			if (foundData.material == StarshipComputers.COMPUTER_TYPE) {
 				if (ActiveStarships.getByComputerLocation(world, x, y, z) != null) {
-					warnDetectionFailure("Block at $x, $y, $z is the computer of a piloted ship!", data.blockKey)
-					return false
+					throw Spawner.SpawningException(
+						"Block at $x, $y, $z is the computer of a piloted ship!",
+						world,
+						Vec3i(data.blockKey)
+					)
 				}
 			}
 		}
