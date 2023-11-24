@@ -7,9 +7,14 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.starship.StarshipDestruction
+import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import java.util.Optional
+import java.util.concurrent.TimeUnit
 
 object AISpawningManager : IonServerComponent(true) {
 	val config = IonServer.aiShipConfiguration
@@ -35,9 +40,19 @@ object AISpawningManager : IonServerComponent(true) {
 
 	override fun onEnable() {
 		enableSpawners()
+
+		Tasks.syncRepeat(60L, 60L, ::despawnAIShips)
 	}
 
-	fun enableSpawners() {
+	override fun onDisable() {
+		for (starship in ActiveStarships.all()) {
+			if (starship.controller !is AIController) continue
+
+			StarshipDestruction.vanish(starship)
+		}
+	}
+
+	private fun enableSpawners() {
 		val averageDelay = (spawners.sumOf { it.config.spawnRate } / spawners.size) / spawners.size
 
 		spawners.forEachIndexed { index: Int, spawner: AISpawner ->
@@ -45,5 +60,36 @@ object AISpawningManager : IonServerComponent(true) {
 
 			Tasks.asyncRepeat(delay, spawner.config.spawnRate) { spawner.trigger() }
 		}
+	}
+
+	// The AI ship must be at least 30 minutes old
+	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
+	// And not damaged within the last 15 minutes
+	val lastDamagedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(7)
+
+	fun despawnAIShips() {
+		for (starship in ActiveStarships.all()) {
+			starship as ActiveControlledStarship
+
+			if (meetsDespawnCriteria(starship)) {
+				despawn(starship)
+			}
+		}
+	}
+
+	private fun meetsDespawnCriteria(starship: ActiveControlledStarship): Boolean {
+		val controller = starship.controller
+
+		if (controller !is AIController) return false
+
+		val mostRecentDamager = starship.damagers.entries.sortedBy { it.value.lastDamaged }.firstOrNull()
+
+		if (mostRecentDamager != null && mostRecentDamager.value.lastDamaged > lastDamagedRequirement) return false
+
+		return starship.creationTime <= timeLivedRequirement
+	}
+
+	private fun despawn(starship: ActiveControlledStarship) {
+		StarshipDestruction.vanish(starship)
 	}
 }
