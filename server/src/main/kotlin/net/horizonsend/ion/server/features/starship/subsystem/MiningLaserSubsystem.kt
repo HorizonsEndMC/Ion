@@ -13,16 +13,12 @@ import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.horizonsend.ion.server.miscellaneous.utils.toLocation
-import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.FluidCollisionMode
@@ -38,9 +34,9 @@ import org.bukkit.util.Vector
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
     pos: Vec3i,
-    private val face: BlockFace,
+    override var face: BlockFace,
     val multiblock: MiningLaserMultiblock,
-) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem {
+) : WeaponSubsystem(starship, pos), ManualWeaponSubsystem, DirectionalSubsystem {
 	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(
 		range = 0.0,
 		speed = 0.0,
@@ -66,9 +62,6 @@ class MiningLaserSubsystem(
 	private var isFiring = false
 	lateinit var targetedBlock: Vector
 
-	// Const disabled sign text
-	private val disabled = text("[DISABLED]").color(NamedTextColor.RED)
-
 	// Starship power usage, 0
 	override val powerUsage: Int = 0
 
@@ -87,25 +80,18 @@ class MiningLaserSubsystem(
 		return firePos.toVector().add(vector.clone().normalize().multiply(multiblock.range))
 	}
 
-	private fun setUser(sign: Sign, player: String?) {
-		val line3 = player?.let { text(player) } ?: disabled
-		sign.line(3, line3)
-		sign.update(false, false)
-	}
-
 	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return !starship.isInternallyObstructed(getFirePos(), dir)
 	}
 
 	private fun getFirePos(): Vec3i {
 		val (x, y, z) = multiblock.getFirePointOffset()
-		val facing = getSign()?.getFacing() ?: face
-		val right = facing.rightFace
+		val right = face.rightFace
 
 		return Vec3i(
-			x = (right.modX * x) + (facing.modX * z),
+			x = (right.modX * x) + (face.modX * z),
 			y = y,
-			z = (right.modZ * x) + (facing.modZ * z)
+			z = (right.modZ * x) + (face.modZ * z)
 		)
 	}
 
@@ -117,21 +103,18 @@ class MiningLaserSubsystem(
 	}
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
-		if (shooter !is PlayerDamager) return //TODO
-		val sign = getSign() ?: return
-
 		// Calculate a vector in the direction from the fire point to the targeted block
 		val vectorToTarget =
 			target.clone().subtract((getFirePos() + pos).toVector()).normalize().multiply(multiblock.range)
 
 		// Add this vector to the fire position to find the position in the direction at max range.
 		this.targetedBlock = (getFirePos() + pos).toVector().add(vectorToTarget)
-		setFiring(!isFiring, sign, shooter)
+		setFiring(!isFiring)
 
 		// If it is within range, the raycast will move it forward.
 	}
 
-	private fun setFiring(firing: Boolean, sign: Sign, user: PlayerDamager? = null) {
+	private fun setFiring(firing: Boolean) {
 		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
 
 		when (firing) {
@@ -139,7 +122,6 @@ class MiningLaserSubsystem(
 				// Less than but not equal to because it will increase by 1
 				if (alreadyFiring < starship.type.maxMiningLasers) {
 					isFiring = true
-					setUser(sign, user!!.player.name)
 					starship.information("Enabled mining laser at $pos")
 					startFiringSequence()
 				} else {
@@ -150,7 +132,6 @@ class MiningLaserSubsystem(
 
 			false -> {
 				isFiring = false
-				setUser(sign, null)
 				starship.information("Disabled mining laser at $pos")
 				starship
 				cancelTask()
@@ -220,8 +201,8 @@ class MiningLaserSubsystem(
 		val sign = getSign() ?: return cancelTask()
 		val controller = starship.controller
 
-		if (!ActiveStarships.isActive(starship) || controller == null) {
-			setFiring(false, sign)
+		if (!ActiveStarships.isActive(starship)) {
+			setFiring(false)
 			return
 		}
 
@@ -231,7 +212,7 @@ class MiningLaserSubsystem(
 			starship.sendMessage(
 				text("The Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} wasn't able to initialize its gravitational collection beam and was disabled! (Move to a space world)")
 			)
-			return setFiring(false, sign, null)
+			return setFiring(false)
 		}
 
 		val power = PowerMachines.getPower(sign, true)
@@ -239,7 +220,7 @@ class MiningLaserSubsystem(
 		if (power == 0) {
 			starship.alert("Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} ran out of power and was disabled!")
 
-			setFiring(false, sign)
+			setFiring(false)
 			return
 		}
 
@@ -269,14 +250,14 @@ class MiningLaserSubsystem(
 					"Mining Laser at ${sign.block.x}, ${sign.block.y}, ${sign.block.z} became obstructed and was disabled!"
 				).color(NamedTextColor.RED)
 			)
-			return setFiring(false, sign, null)
+			return setFiring(false)
 		}
 
 		val blocksBroken = DrillMultiblock.breakBlocks(
 			sign = sign,
 			maxBroken = multiblock.maxBroken,
 			toDestroy = blocks,
-			output = multiblock.getOutput(sign)
+			output = multiblock.getOutput(sign),
 			{
 				val event = StarshipBreakBlockEvent(
 					controller,
@@ -287,8 +268,6 @@ class MiningLaserSubsystem(
 			},
 			{
 				starship.userErrorAction("Not enough space!")
-
-				DrillMultiblock.setUser(sign, null)
 			}
 		)
 
