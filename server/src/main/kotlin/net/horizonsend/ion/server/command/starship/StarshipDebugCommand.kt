@@ -173,7 +173,7 @@ object StarshipDebugCommand : SLCommand() {
 	@CommandCompletion("@aiSpawners")
 	fun triggerSpawn(sender: Player, spawner: AISpawner) {
 		sender.success("Triggered spawn for ${spawner.identifier}")
-		spawner.trigger()
+		spawner.trigger(AISpawningManager.context)
 	}
 
 	@Suppress("Unused")
