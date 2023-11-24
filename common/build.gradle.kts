@@ -30,7 +30,7 @@ dependencies {
 	api("org.litote.kmongo:kmongo:4.10.0")
 	api("com.fasterxml.jackson.core:jackson-databind:2.16.0")
 
-	api("redis.clients:jedis:5.0.2")
+	api("redis.clients:jedis:5.1.0")
 }
 
 kotlin.jvmToolchain(17)
