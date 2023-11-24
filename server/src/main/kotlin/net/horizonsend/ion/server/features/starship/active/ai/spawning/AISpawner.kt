@@ -1,21 +1,26 @@
 package net.horizonsend.ion.server.features.starship.active.ai.spawning
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.AIManager
-import net.horizonsend.ion.server.features.starship.active.ai.AIStarshipFactory.createAIShipFromTemplate
+import net.horizonsend.ion.server.features.starship.active.ai.AISpawningUtils.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement.placeImmediate
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
@@ -24,6 +29,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
@@ -31,10 +38,102 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.random.Random
 
-abstract class AISpawner(val identifier: String) {
-	protected val log: Logger = LoggerFactory.getLogger(javaClass)
+/**
+ * This class is a definable AI spawner
+ *
+ * The spawner is executed via AISpawner#trigger
+ *
+ * The abstract method, AISpawner#triggerSpawn is used to control the behavior of the spawner.
+ *
+ * @param identifier The identifier of the spawner, used for configuration and locating the spawner.
+ * @param configuration The defined ships for this spawner.
+ **/
+abstract class Spawner(
+	val identifier: String,
+	val configuration: AIShipConfiguration.AISpawnerConfiguration
+) {
+	protected val log = LoggerFactory.getLogger(javaClass)
 
-	abstract val config: AIShipConfiguration.AISpawnerConfiguration
+	fun AIStarshipTemplate.getName(): Component = miniMessage().deserialize(miniMessageName)
+
+	/** Entry point for the spawner, spawns the ship and handles any exceptions */
+	fun trigger(context: CoroutineScope) = context.launch {
+		try { triggerSpawn() }
+		catch (e: SpawningException) { handleException(e) }
+		catch (e: Throwable) {
+			log.error("An error occurred when attempting to execute spawner: $identifier: ${e.message}")
+			e.printStackTrace()
+		}
+	}
+
+	/** The spawning logic, do as you wish */
+	protected abstract suspend fun triggerSpawn()
+
+	/**
+	 * Spawns the specified at the provided location
+	 *
+	 * @param template, The template for the starship it will attempt to place
+	 * @param location, The location where it will attempt to place the starship, may vary if obstructed
+	 * @param controller, The provided function to create the controller from the active starship
+	 *
+	 * The returned deferred is completed once the ship has been piloted.
+	 **/
+	fun spawnAIStarship(
+		template: AIStarshipTemplate,
+		location: Location,
+		controller: (ActiveStarship) -> Controller,
+		callback: (ActiveControlledStarship) -> Unit = {}
+	) : Deferred<ActiveControlledStarship> {
+		val deferred = CompletableDeferred<ActiveControlledStarship>()
+
+		// Use the template to populate as much information as possible
+		createAIShipFromTemplate(template, location, controller) {
+			deferred.complete(it)
+			callback(it)
+		}
+
+		return deferred
+	}
+
+	/** Handle any exceptions with spawning */
+	private fun handleException(exception: SpawningException) {
+		log.warn(exception.message)
+
+		val blockKeys = exception.blockLocations
+
+		// Delete a ship that did not detect properly
+		if (blockKeys.isNotEmpty()) {
+			val airQueue = Long2ObjectOpenHashMap<BlockState>(blockKeys.size)
+			val air = Blocks.AIR.defaultBlockState()
+
+			val iterator = blockKeys.iterator()
+
+			while (iterator.hasNext()) {
+				val key = iterator.nextLong()
+
+				airQueue[key] = air
+			}
+
+			placeImmediate(exception.world, airQueue)
+		}
+	}
+
+	/** An exception relating to a cause of a failed spawn. */
+	class SpawningException(
+		message: String,
+		val world: World,
+		val spawningLocation: Vec3i?,
+	): Throwable(message) {
+		/** The locations of any placed blocks. Will be empty if the error occured before any were placed. */
+		var blockLocations: LongOpenHashSet = LongOpenHashSet()
+	}
+}
+
+abstract class AISpawner(
+	val config: AIShipConfiguration.AISpawnerConfiguration,
+	val identifier: String
+) {
+	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	abstract fun findLocation(): Location?
 
@@ -103,8 +202,7 @@ abstract class AISpawner(val identifier: String) {
 	}
 }
 
-class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
-	override val config: AIShipConfiguration.AISpawnerConfiguration get() = IonServer.aiShipConfiguration.spawners.CARGO_MISSION
+class BasicCargoMissionSpawner : AISpawner(IonServer.aiShipConfiguration.spawners.CARGO_MISSION, "CARGO_MISSION") {
 
 	override fun findLocation(): Location? {
 		val worldConfig = config.worldWeightedRandomList.random()
@@ -164,29 +262,6 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION") {
 	}
 
 	override fun spawn(location: Location, callback: (ActiveControlledStarship) -> Unit): Deferred<ActiveControlledStarship> {
-		val (ship, pilotName) = getTemplate(location.world)
-		val deferred = CompletableDeferred<ActiveControlledStarship>()
-
-		val controller: (ActiveControlledStarship) -> Controller = { starship: ActiveControlledStarship ->
-			val factory = AIControllerFactories[ship.controllerFactory]
-			val endpoint = findEndpoint(location)
-
-			factory.createController(
-				starship,
-				pilotName,
-				null,
-				endpoint,
-				ship.manualWeaponSets,
-				ship.autoWeaponSets,
-				null
-			)
-		}
-
-		createAIShipFromTemplate(ship, location, controller, pilotName) {
-			deferred.complete(it)
-			callback(it)
-		}
-
-		return deferred
+		return CompletableDeferred()
 	}
 }
