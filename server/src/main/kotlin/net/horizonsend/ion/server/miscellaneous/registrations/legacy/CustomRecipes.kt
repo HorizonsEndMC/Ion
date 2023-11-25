@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
-import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_BLUE
@@ -156,21 +156,21 @@ object CustomRecipes : IonServerComponent() {
 		createRecipe(
 			CustomItems.BATTERY_SMALL, "aba", "aba", "aba",
 			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM),
+				'a' to customItemChoice(ALUMINUM_INGOT),
 				'b' to materialChoice(GLOWSTONE_DUST)
 			)
 		)
 		createRecipe(
 			BATTERY_MEDIUM, "aba", "aba", "aba",
 			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM),
+				'a' to customItemChoice(ALUMINUM_INGOT),
 				'b' to materialChoice(REDSTONE)
 			)
 		)
 		createRecipe(
 			BATTERY_LARGE, "aba", "aba", "aba",
 			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM),
+				'a' to customItemChoice(ALUMINUM_INGOT),
 				'b' to materialChoice(SEA_LANTERN)
 			)
 		)
@@ -178,7 +178,7 @@ object CustomRecipes : IonServerComponent() {
 
 	private fun registerArmorRecipes() {
 		val items = mapOf(
-			'*' to customItemChoice(TITANIUM),
+			'*' to customItemChoice(TITANIUM_INGOT),
 			'b' to legacyCustomItemChoice(BATTERY_LARGE)
 		)
 
@@ -189,7 +189,7 @@ object CustomRecipes : IonServerComponent() {
 	}
 
 	private fun registerModuleRecipes() = mapOf(
-		POWER_MODULE_SHOCK_ABSORBING to customItemChoice(TITANIUM),
+		POWER_MODULE_SHOCK_ABSORBING to customItemChoice(TITANIUM_INGOT),
 		POWER_MODULE_SPEED_BOOSTING to materialChoice(FEATHER),
 		POWER_MODULE_ROCKET_BOOSTING to materialChoice(FIREWORK_ROCKET),
 		POWER_MODULE_NIGHT_VISION to materialChoice(SPIDER_EYE),
@@ -199,7 +199,7 @@ object CustomRecipes : IonServerComponent() {
 		createRecipe(
 			piece, "aga", "g*g", "aga",
 			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM),
+				'a' to customItemChoice(ALUMINUM_INGOT),
 				'g' to materialChoice(GLASS_PANE),
 				'*' to center
 			)
@@ -217,10 +217,10 @@ object CustomRecipes : IonServerComponent() {
 		createRecipe(
 			sword, "aga", "a*a", "ata",
 			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM),
+				'a' to customItemChoice(ALUMINUM_INGOT),
 				'g' to materialChoice(GLASS_PANE),
 				'*' to specialItem,
-				't' to customItemChoice(TITANIUM)
+				't' to customItemChoice(TITANIUM_INGOT)
 			)
 		)
 	}
@@ -231,7 +231,7 @@ object CustomRecipes : IonServerComponent() {
 			ingredients = mapOf(
 				'i' to materialChoice(IRON_INGOT),
 				'b' to legacyCustomItemChoice(BATTERY_MEDIUM),
-				't' to customItemChoice(TITANIUM),
+				't' to customItemChoice(TITANIUM_INGOT),
 				's' to materialChoice(STICK)
 			)
 		)
@@ -239,10 +239,10 @@ object CustomRecipes : IonServerComponent() {
 		createRecipe(
 			POWER_TOOL_CHAINSAW, "ai ", "ibt", " ts",
 			ingredients = mapOf(
-				'a' to customItemChoice(ALUMINUM),
+				'a' to customItemChoice(ALUMINUM_INGOT),
 				'i' to materialChoice(IRON_INGOT),
 				'b' to legacyCustomItemChoice(BATTERY_MEDIUM),
-				't' to customItemChoice(TITANIUM),
+				't' to customItemChoice(TITANIUM_INGOT),
 				's' to materialChoice(STICK)
 			)
 		)
