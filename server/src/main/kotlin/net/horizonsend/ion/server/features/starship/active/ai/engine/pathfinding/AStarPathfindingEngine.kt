@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugHighlightBlock
 import net.horizonsend.ion.server.miscellaneous.utils.highlightBlocks
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.LinkedBlockingQueue
@@ -243,8 +244,8 @@ open class AStarPathfindingEngine(
 	}
 
 	/** Poll at the charted path to get the flight direction to the first objective */
-	override fun getFirstNavPoint(): Vec3i {
-		return getImmediateNavigationObjective()?.center ?: getDestination()
+	override fun getMovementVector(): Vector {
+		return (getImmediateNavigationObjective()?.center ?: getDestination()).toVector().subtract(getCenter().toVector())
 	}
 
 	override fun getDestination(): Vec3i = positioningSupplier.get()

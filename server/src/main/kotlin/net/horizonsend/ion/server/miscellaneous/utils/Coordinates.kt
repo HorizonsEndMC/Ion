@@ -467,3 +467,25 @@ fun helixAroundVector(
 
 	return  points
 }
+
+fun Collection<Vector>.average(): Vector {
+	if (isEmpty()) return Vector()
+
+	val entries = size.toDouble()
+
+	var sumX = 0.0
+	var sumY = 0.0
+	var sumZ = 0.0
+
+	for (vector in this) {
+		sumX += vector.x
+		sumY += vector.y
+		sumZ += vector.z
+	}
+
+	sumX /= entries
+	sumY /= entries
+	sumZ /= entries
+
+	return Vector(sumX, sumY, sumZ)
+}
