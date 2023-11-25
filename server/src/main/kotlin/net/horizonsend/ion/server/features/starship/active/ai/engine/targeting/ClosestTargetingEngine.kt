@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting
+package net.horizonsend.ion.server.features.starship.active.ai.engine.targeting
 
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget

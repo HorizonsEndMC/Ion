@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat
+package net.horizonsend.ion.server.features.starship.active.ai.engine.combat
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
