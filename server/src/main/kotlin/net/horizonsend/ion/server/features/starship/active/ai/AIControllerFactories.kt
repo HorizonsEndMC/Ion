@@ -54,7 +54,7 @@ object AIControllerFactories : IonServerComponent() {
 					engines["movement"] = CruiseEngine(
 						this,
 						pathfinding,
-						pathfinding::getFirstNavPoint,
+						pathfinding::getDestination,
 						CruiseEngine.ShiftFlightType.ALL,
 						256.0
 					)
@@ -97,7 +97,7 @@ object AIControllerFactories : IonServerComponent() {
 					engines["movement"] = CruiseEngine(
 						this,
 						pathfinding,
-						pathfinding::getFirstNavPoint,
+						pathfinding::getDestination,
 						CruiseEngine.ShiftFlightType.ALL,
 						256.0
 					)
@@ -171,7 +171,7 @@ object AIControllerFactories : IonServerComponent() {
 					engines["movement"] = CruiseEngine(
 						this,
 						pathfinding,
-						pathfinding::getFirstNavPoint,
+						pathfinding::getDestination,
 						CruiseEngine.ShiftFlightType.ALL,
 						256.0
 					)
@@ -216,7 +216,7 @@ object AIControllerFactories : IonServerComponent() {
 					engines["movement"] = CruiseEngine(
 						this,
 						pathfinding,
-						pathfinding::getFirstNavPoint,
+						pathfinding::getDestination,
 						CruiseEngine.ShiftFlightType.ALL,
 						256.0
 					)
@@ -256,7 +256,13 @@ object AIControllerFactories : IonServerComponent() {
 //					val pathfinding = CombatAStarPathfindingEngine(this, positioning::findPositionVec3i)
 					val pathfinding = SteeringPathfindingEngine(this, positioning::findPositionVec3i)
 					engines["pathfinding"] = pathfinding
-					engines["movement"] = CruiseEngine(this, pathfinding, pathfinding::getFirstNavPoint, CruiseEngine.ShiftFlightType.ALL, 256.0)
+					engines["movement"] = CruiseEngine(
+						this,
+						pathfinding,
+						pathfinding::getDestination,
+						CruiseEngine.ShiftFlightType.ALL,
+						256.0
+					)
 
 					engines["fallback"] = TemporaryControllerEngine(this, previousController!!)
 				}

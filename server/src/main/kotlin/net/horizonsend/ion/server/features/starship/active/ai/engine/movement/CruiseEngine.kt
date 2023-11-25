@@ -70,7 +70,15 @@ class CruiseEngine(
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
-		starship.debug("$controller is blocked $reason by movement $movement trying to move to ${getDestination()} eventual destination $cruiseDestination")
+		starship.debug("""
+			Controller $controller
+
+			is blocked: $reason
+
+			by $movement
+
+			trying to move to ${getDestination()}
+		""".trimIndent())
 	}
 
 	enum class ShiftFlightType {
@@ -100,7 +108,7 @@ class CruiseEngine(
 					return
 				}
 
-				engine.shiftFlyToVec3i(origin, pathfindingEngine.getFirstNavPoint(), true)
+				engine.shiftFlyInDirection(pathfindingEngine.getMovementVector(), true)
 			}
 		},
 		IF_BLOCKED_AND_MATCH_Y {
@@ -125,7 +133,7 @@ class CruiseEngine(
 					return
 				}
 
-				engine.shiftFlyToVec3i(origin, pathfindingEngine.getFirstNavPoint(), true)
+				engine.shiftFlyInDirection(pathfindingEngine.getMovementVector(), true)
 			}
 		},
 		ALL {
