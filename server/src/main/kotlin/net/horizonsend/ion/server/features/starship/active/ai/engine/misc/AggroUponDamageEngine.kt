@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.active.ai.engine.misc
 
-import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.combat.CombatEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting.TargetingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.combat.CombatEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.targeting.TargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
