@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
-import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
-import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
@@ -180,7 +180,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("blaster_barrel", GUN_BARREL.constructItemStack()) {
 			shape("tct", "ppp", "tct")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('p', PRISMARINE_CRYSTALS)
 		}
@@ -189,7 +189,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("pistol_receiver", PISTOL_RECEIVER.constructItemStack()) {
 			shape("xxx", "irt", "xxx")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('r', REDSTONE_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
@@ -199,7 +199,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("rifle_receiver", RIFLE_RECEIVER.constructItemStack()) {
 			shape("xtx", "igt", "xtx")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('g', GOLD_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
@@ -209,7 +209,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("smb_receiver", SMB_RECEIVER.constructItemStack()) {
 			shape("xtx", "idx", "xtx")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('d', DIAMOND_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
@@ -219,7 +219,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("sniper_receiver", SNIPER_RECEIVER.constructItemStack()) {
 			shape("xtx", "ieb", "xtx")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
 			setIngredient('b', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('i', IRON_TRAPDOOR)
@@ -230,7 +230,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("shotgun_receiver", SHOTGUN_RECEIVER.constructItemStack()) {
 			shape("xxx", "icb", "xtx")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('c', COPPER_BLOCK)
 			setIngredient('b', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('i', IRON_TRAPDOOR)
@@ -241,7 +241,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("cannon_receiver", CANNON_RECEIVER.constructItemStack()) {
 			shape("xxx", "xba", "gxx")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('b', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
 			setIngredient('g', GOLD_INGOT)
 			setIngredient('x', AIR)
@@ -251,7 +251,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("pistol", PISTOL.constructItemStack()) {
 			shape("xxx", "apb", "cxx")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', PISTOL_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -262,7 +262,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("rifle", RIFLE.constructItemStack()) {
 			shape("xxx", "apb", "acx")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', RIFLE_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -273,7 +273,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("submachine_blaster", SUBMACHINE_BLASTER.constructItemStack()) {
 			shape("xxx", "apb", "acx")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', SMB_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -284,7 +284,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("sniper", CustomItems.SNIPER.constructItemStack()) {
 			shape("xgx", "apb", "acx")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', SNIPER_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -296,7 +296,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
 			shape("xxb", "apb", "acx")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', SHOTGUN_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -306,19 +306,19 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
 			shape("xax", "xcb", "pxx")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('p', CANNON_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
 			setIngredient('x', AIR)
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 		}
 
 		// Circuitry Crafting 1
 		itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
 			shape("qdq", "arg", "ccc")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('q', QUARTZ)
 			setIngredient('g', GOLD_INGOT)
@@ -330,7 +330,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("circuitry_2", CIRCUITRY.constructItemStack()) {
 			shape("qdq", "gra", "ccc")
 
-			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('a', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('q', QUARTZ)
 			setIngredient('g', GOLD_INGOT)
@@ -342,7 +342,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
 			shape("xxx", "rlr", "ttt")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('l', LAPIS_BLOCK)
 			setIngredient('r', REDSTONE)
 			setIngredient('x', AIR)
@@ -352,7 +352,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("special_magazine", SPECIAL_MAGAZINE.constructItemStack()) {
 			shape("xxx", "rer", "ttt")
 
-			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
+			setIngredient('t', ExactChoice(TITANIUM_INGOT.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
 			setIngredient('r', REDSTONE)
 			setIngredient('x', AIR)
@@ -362,7 +362,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("empty_gas_canister", GAS_CANISTER_EMPTY.constructItemStack()) {
 			shape("xix", "igi", "xix")
 
-			setIngredient('i', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('i', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
 			setIngredient('g', GLASS_PANE)
 			setIngredient('x', AIR)
 		}
@@ -372,17 +372,17 @@ object Crafting : IonServerComponent() {
 			shape(" r ", "tut", " t ",)
 
 			setIngredient('r', REDSTONE)
-			setIngredient('t', TITANIUM.constructItemStack())
+			setIngredient('t', TITANIUM_INGOT.constructItemStack())
 			setIngredient('u', URANIUM.constructItemStack())
 		}
 
 		// Aluminum Block Crafting
 		itemStackShapelessRecipe("aluminumBlock", ALUMINUM_BLOCK.constructItemStack()) {
-			addIngredient(ALUMINUM.constructItemStack().asQuantity(9))
+			addIngredient(ALUMINUM_INGOT.constructItemStack().asQuantity(9))
 		}
 
 		// Aluminum Crafting
-		itemStackShapelessRecipe("aluminum", ALUMINUM.constructItemStack().asQuantity(9)) {
+		itemStackShapelessRecipe("aluminum", ALUMINUM_INGOT.constructItemStack().asQuantity(9)) {
 			addIngredient(ALUMINUM_BLOCK.constructItemStack())
 		}
 
@@ -398,11 +398,11 @@ object Crafting : IonServerComponent() {
 
 		// Titanium Block Crafting
 		itemStackShapelessRecipe("titaniumBlock", TITANIUM_BLOCK.constructItemStack()) {
-			addIngredient(TITANIUM.constructItemStack().asQuantity(9))
+			addIngredient(TITANIUM_INGOT.constructItemStack().asQuantity(9))
 		}
 
 		// Titanium Crafting
-		itemStackShapelessRecipe("titanium", TITANIUM.constructItemStack().asQuantity(9)) {
+		itemStackShapelessRecipe("titanium", TITANIUM_INGOT.constructItemStack().asQuantity(9)) {
 			addIngredient(TITANIUM_BLOCK.constructItemStack())
 		}
 
