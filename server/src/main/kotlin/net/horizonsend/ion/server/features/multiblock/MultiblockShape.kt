@@ -240,7 +240,7 @@ class MultiblockShape {
 		}
 
 		fun customBlock(customBlock: CustomBlock) {
-			complete(customBlock.blockData) { block, _ -> CustomBlocks.getByBlock(block) === customBlock }
+			complete(customBlock.blockData) { block, _, _ -> CustomBlocks.getByBlock(block) === customBlock }
 		}
 
 		fun anyType(types: Iterable<Material>) = anyType(*types.toList().toTypedArray())
