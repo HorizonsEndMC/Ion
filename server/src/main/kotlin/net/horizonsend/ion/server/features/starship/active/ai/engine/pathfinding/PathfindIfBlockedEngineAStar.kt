@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.active.ai.engine.pathfindin
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
 
@@ -32,7 +33,7 @@ class PathfindIfBlockedEngineAStar(
 			.any { !it.navigable }
 	}
 
-	override fun getFirstNavPoint(): Vec3i {
-		return if (blocked) super.getFirstNavPoint() else positioningSupplier.get()
+	override fun getMovementVector(): Vector {
+		return if (blocked) super.getMovementVector() else positioningSupplier.get().toVector().subtract(getCenter().toVector()).normalize()
 	}
 }

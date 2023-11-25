@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.starship.control.movement.AIControlUt
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
@@ -17,7 +16,7 @@ import org.bukkit.util.Vector
 /** Controlling the movement of the starship */
 abstract class MovementEngine(
 	controller: AIController,
-	val pathfindingEngine: PathfindingEngine
+	protected val directionSupplier: PathfindingEngine
 ) : AIEngine(controller) {
 	val starshipLocation: Vec3i get() = getCenterVec3i()
 
@@ -30,11 +29,7 @@ abstract class MovementEngine(
 	fun getDistance(origin: Vector, destination: Vector) = getVector(origin, destination, normalized = false).length()
 
 	open fun getDestination(): Vec3i {
-		val pathfindingObjective = pathfindingEngine.getFirstNavPoint()
-		val destination = pathfindingEngine.getDestination()
-
-		// if target is more than 22 blocks away give the pathfinding objective, else the destination
-		return if (distanceSquared(destination, starshipLocation) <= 512) destination else pathfindingObjective
+		return directionSupplier.getDestination()
 	}
 
 	open fun shiftFly(
@@ -44,12 +39,12 @@ abstract class MovementEngine(
 		val starship = controller.starship as ActiveControlledStarship
 		if (stopCruising) StarshipCruising.stopCruising(controller, starship)
 
-		val destination = getDestination()
+		val direction = directionSupplier.getMovementVector()
 
 		// If within 10 blocks of destination, don't bother moving
-		if (distanceSquared(destination, starshipLocation) <= 100) return@sync
+		if (direction.length() <= 0.01) return@sync
 
-		AIControlUtils.shiftFlyToLocation(controller, starshipLocation, destination)
+		AIControlUtils.shiftFlyInDirection(controller, direction)
 	}
 
 	open fun shiftFlyTowardsBlockFace(
