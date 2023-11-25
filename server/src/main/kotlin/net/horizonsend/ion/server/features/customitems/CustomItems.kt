@@ -306,12 +306,12 @@ object CustomItems {
 		) {}
 	)
 
-	val ALUMINUM = register(
+	val ALUMINUM_INGOT = register(
 		object : MineralItem(
-			identifier = "ALUMINUM",
+			identifier = "ALUMINUM_INGOT",
 			material = IRON_INGOT,
 			customModelData = 1,
-			displayName = text("Aluminum").decoration(ITALIC, false)
+			displayName = text("Aluminum Ingot").decoration(ITALIC, false)
 		) {}
 	)
 
@@ -364,12 +364,12 @@ object CustomItems {
 		) {}
 	)
 
-	val TITANIUM = register(
+	val TITANIUM_INGOT = register(
 		object : MineralItem(
-			identifier = "TITANIUM",
+			identifier = "TITANIUM_INGOT",
 			material = IRON_INGOT,
 			customModelData = 3,
-			displayName = text("Titanium").decoration(ITALIC, false)
+			displayName = text("Titanium Ingot").decoration(ITALIC, false)
 		) {}
 	)
 
