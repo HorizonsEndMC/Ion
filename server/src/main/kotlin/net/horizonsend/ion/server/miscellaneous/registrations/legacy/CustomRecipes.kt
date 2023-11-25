@@ -2,9 +2,52 @@ package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_LARGE
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.BATTERY_MEDIUM
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_BLUE
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_GREEN
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_ORANGE
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_PURPLE
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_RED
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.ENERGY_SWORD_YELLOW
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_BOOTS
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_CHESTPLATE
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_HELMET
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_ARMOR_LEGGINGS
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_ENVIRONMENT
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_NIGHT_VISION
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_PRESSURE_FIELD
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_ROCKET_BOOSTING
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SHOCK_ABSORBING
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_MODULE_SPEED_BOOSTING
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_TOOL_CHAINSAW
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.POWER_TOOL_DRILL
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Material.CHAINMAIL_HELMET
+import org.bukkit.Material.COAL
+import org.bukkit.Material.COPPER_INGOT
+import org.bukkit.Material.DIAMOND
+import org.bukkit.Material.EMERALD
+import org.bukkit.Material.ENDER_PEARL
+import org.bukkit.Material.END_PORTAL_FRAME
+import org.bukkit.Material.END_ROD
+import org.bukkit.Material.END_STONE
+import org.bukkit.Material.FEATHER
+import org.bukkit.Material.FIREWORK_ROCKET
+import org.bukkit.Material.GLASS_PANE
+import org.bukkit.Material.GLOWSTONE_DUST
+import org.bukkit.Material.IRON_INGOT
+import org.bukkit.Material.PRISMARINE_CRYSTALS
+import org.bukkit.Material.REDSTONE
+import org.bukkit.Material.SEA_LANTERN
+import org.bukkit.Material.SPIDER_EYE
+import org.bukkit.Material.STICK
+import org.bukkit.Material.WARPED_PLANKS
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
@@ -15,7 +58,6 @@ import org.bukkit.inventory.ShapelessRecipe
 object CustomRecipes : IonServerComponent() {
 	override fun onEnable() {
 		Tasks.syncDelay(1) {
-			registerMineralRecipes()
 			registerBatteryRecipes()
 			registerArmorRecipes()
 			registerModuleRecipes()
@@ -98,8 +140,12 @@ object CustomRecipes : IonServerComponent() {
 		amount: Int = 1
 	): ShapelessRecipe = registerShapelessRecipe(item.id, item.itemStack(amount), *ingredients)
 
-	private fun customItemChoice(customItem: CustomItem): RecipeChoice {
+	private fun legacyCustomItemChoice(customItem: CustomItem): RecipeChoice {
 		return RecipeChoice.ExactChoice(customItem.singleItem())
+	}
+
+	private fun customItemChoice(customItem: net.horizonsend.ion.server.features.customitems.CustomItem): RecipeChoice {
+		return RecipeChoice.ExactChoice(customItem.constructItemStack())
 	}
 
 	private fun materialChoice(material: Material): RecipeChoice {
@@ -110,112 +156,94 @@ object CustomRecipes : IonServerComponent() {
 		createRecipe(
 			CustomItems.BATTERY_SMALL, "aba", "aba", "aba",
 			ingredients = mapOf(
-				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-				'b' to materialChoice(Material.GLOWSTONE_DUST)
+				'a' to customItemChoice(ALUMINUM),
+				'b' to materialChoice(GLOWSTONE_DUST)
 			)
 		)
 		createRecipe(
-			CustomItems.BATTERY_MEDIUM, "aba", "aba", "aba",
+			BATTERY_MEDIUM, "aba", "aba", "aba",
 			ingredients = mapOf(
-				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-				'b' to materialChoice(Material.REDSTONE)
+				'a' to customItemChoice(ALUMINUM),
+				'b' to materialChoice(REDSTONE)
 			)
 		)
 		createRecipe(
-			CustomItems.BATTERY_LARGE, "aba", "aba", "aba",
+			BATTERY_LARGE, "aba", "aba", "aba",
 			ingredients = mapOf(
-				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-				'b' to materialChoice(Material.SEA_LANTERN)
+				'a' to customItemChoice(ALUMINUM),
+				'b' to materialChoice(SEA_LANTERN)
 			)
-		)
-	}
-
-	private fun registerMineralRecipes() = listOf(
-// 		CustomItems.MINERAL_COPPER,
-		CustomItems.MINERAL_ALUMINUM,
-		CustomItems.MINERAL_TITANIUM,
-		CustomItems.MINERAL_URANIUM,
-		CustomItems.MINERAL_CHETHERITE
-// 		CustomItems.MINERAL_ORIOMIUM
-	).forEach { mineral: CustomItems.MineralCustomItem ->
-		createShapelessRecipe(
-			mineral,
-			customItemChoice(mineral.fullBlock),
-			amount = 9
-		)
-		createRecipe(
-			mineral.fullBlock, "aaa", "aaa", "aaa", ingredients = mapOf('a' to customItemChoice(mineral))
 		)
 	}
 
 	private fun registerArmorRecipes() {
 		val items = mapOf(
-			'*' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-			'b' to customItemChoice(CustomItems.BATTERY_LARGE)
+			'*' to customItemChoice(TITANIUM),
+			'b' to legacyCustomItemChoice(BATTERY_LARGE)
 		)
 
-		createRecipe(CustomItems.POWER_ARMOR_HELMET, "*b*", "* *", ingredients = items)
-		createRecipe(CustomItems.POWER_ARMOR_CHESTPLATE, "* *", "*b*", "***", ingredients = items)
-		createRecipe(CustomItems.POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *", ingredients = items)
-		createRecipe(CustomItems.POWER_ARMOR_BOOTS, "* *", "*b*", ingredients = items)
+		createRecipe(POWER_ARMOR_HELMET, "*b*", "* *", ingredients = items)
+		createRecipe(POWER_ARMOR_CHESTPLATE, "* *", "*b*", "***", ingredients = items)
+		createRecipe(POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *", ingredients = items)
+		createRecipe(POWER_ARMOR_BOOTS, "* *", "*b*", ingredients = items)
 	}
 
 	private fun registerModuleRecipes() = mapOf(
-		CustomItems.POWER_MODULE_SHOCK_ABSORBING to customItemChoice(CustomItems.MINERAL_TITANIUM),
-		CustomItems.POWER_MODULE_SPEED_BOOSTING to materialChoice(Material.FEATHER),
-		CustomItems.POWER_MODULE_ROCKET_BOOSTING to materialChoice(Material.FIREWORK_ROCKET),
-		CustomItems.POWER_MODULE_NIGHT_VISION to materialChoice(Material.SPIDER_EYE),
-		CustomItems.POWER_MODULE_ENVIRONMENT to materialChoice(Material.CHAINMAIL_HELMET),
-		CustomItems.POWER_MODULE_PRESSURE_FIELD to RecipeChoice.ExactChoice(net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY.constructItemStack())
+		POWER_MODULE_SHOCK_ABSORBING to customItemChoice(TITANIUM),
+		POWER_MODULE_SPEED_BOOSTING to materialChoice(FEATHER),
+		POWER_MODULE_ROCKET_BOOSTING to materialChoice(FIREWORK_ROCKET),
+		POWER_MODULE_NIGHT_VISION to materialChoice(SPIDER_EYE),
+		POWER_MODULE_ENVIRONMENT to materialChoice(CHAINMAIL_HELMET),
+		POWER_MODULE_PRESSURE_FIELD to RecipeChoice.ExactChoice(net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY.constructItemStack())
 	).forEach { (piece, center) ->
 		createRecipe(
 			piece, "aga", "g*g", "aga",
 			ingredients = mapOf(
-				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-				'g' to materialChoice(Material.GLASS_PANE),
+				'a' to customItemChoice(ALUMINUM),
+				'g' to materialChoice(GLASS_PANE),
 				'*' to center
 			)
 		)
 	}
 
 	private fun registerSwordRecipes() = mapOf(
-		CustomItems.ENERGY_SWORD_BLUE to materialChoice(Material.DIAMOND),
-		CustomItems.ENERGY_SWORD_RED to materialChoice(Material.REDSTONE),
-		CustomItems.ENERGY_SWORD_YELLOW to materialChoice(Material.COAL),
-		CustomItems.ENERGY_SWORD_GREEN to materialChoice(Material.EMERALD),
-		CustomItems.ENERGY_SWORD_PURPLE to customItemChoice(CustomItems.MINERAL_CHETHERITE),
-		CustomItems.ENERGY_SWORD_ORANGE to materialChoice(Material.COPPER_INGOT)
+		ENERGY_SWORD_BLUE to materialChoice(DIAMOND),
+		ENERGY_SWORD_RED to materialChoice(REDSTONE),
+		ENERGY_SWORD_YELLOW to materialChoice(COAL),
+		ENERGY_SWORD_GREEN to materialChoice(EMERALD),
+		ENERGY_SWORD_PURPLE to customItemChoice(CHETHERITE),
+		ENERGY_SWORD_ORANGE to materialChoice(COPPER_INGOT)
 	).forEach { (sword, specialItem) ->
 		createRecipe(
 			sword, "aga", "a*a", "ata",
 			ingredients = mapOf(
-				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-				'g' to materialChoice(Material.GLASS_PANE),
+				'a' to customItemChoice(ALUMINUM),
+				'g' to materialChoice(GLASS_PANE),
 				'*' to specialItem,
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM)
+				't' to customItemChoice(TITANIUM)
 			)
 		)
 	}
 
 	private fun registerPowerToolRecipes() {
 		createRecipe(
-			CustomItems.POWER_TOOL_DRILL, "i  ", " bt", " ts",
+			POWER_TOOL_DRILL, "i  ", " bt", " ts",
 			ingredients = mapOf(
-				'i' to materialChoice(Material.IRON_INGOT),
-				'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-				's' to materialChoice(Material.STICK)
+				'i' to materialChoice(IRON_INGOT),
+				'b' to legacyCustomItemChoice(BATTERY_MEDIUM),
+				't' to customItemChoice(TITANIUM),
+				's' to materialChoice(STICK)
 			)
 		)
 
 		createRecipe(
-			CustomItems.POWER_TOOL_CHAINSAW, "ai ", "ibt", " ts",
+			POWER_TOOL_CHAINSAW, "ai ", "ibt", " ts",
 			ingredients = mapOf(
-				'a' to customItemChoice(CustomItems.MINERAL_ALUMINUM),
-				'i' to materialChoice(Material.IRON_INGOT),
-				'b' to customItemChoice(CustomItems.BATTERY_MEDIUM),
-				't' to customItemChoice(CustomItems.MINERAL_TITANIUM),
-				's' to materialChoice(Material.STICK)
+				'a' to customItemChoice(ALUMINUM),
+				'i' to materialChoice(IRON_INGOT),
+				'b' to legacyCustomItemChoice(BATTERY_MEDIUM),
+				't' to customItemChoice(TITANIUM),
+				's' to materialChoice(STICK)
 			)
 		)
 	}
@@ -223,9 +251,9 @@ object CustomRecipes : IonServerComponent() {
 	private fun registerWireRecipe() {
 		registerShapedRecipe(
 			"end_rod",
-			ItemStack(Material.END_ROD, 16), "ccc",
+			ItemStack(END_ROD, 16), "ccc",
 			ingredients = mapOf(
-				'c' to materialChoice(Material.COPPER_INGOT)
+				'c' to materialChoice(COPPER_INGOT)
 			)
 		)
 	}
@@ -233,23 +261,23 @@ object CustomRecipes : IonServerComponent() {
 	private fun registerSeaLanternRecipe() {
 		registerShapelessRecipe(
 			"sea_lantern",
-			ItemStack(Material.SEA_LANTERN, 1),
-			materialChoice(Material.PRISMARINE_CRYSTALS),
-			materialChoice(Material.PRISMARINE_CRYSTALS),
-			materialChoice(Material.PRISMARINE_CRYSTALS),
-			materialChoice(Material.PRISMARINE_CRYSTALS)
+			ItemStack(SEA_LANTERN, 1),
+			materialChoice(PRISMARINE_CRYSTALS),
+			materialChoice(PRISMARINE_CRYSTALS),
+			materialChoice(PRISMARINE_CRYSTALS),
+			materialChoice(PRISMARINE_CRYSTALS)
 		)
 	}
 
 	private fun registerEndPortalFrameRecipe() {
 		registerShapedRecipe(
 			"end_portal_frame",
-			ItemStack(Material.END_PORTAL_FRAME, 1),
+			ItemStack(END_PORTAL_FRAME, 1),
 			"wow", "sss",
 			ingredients = mapOf(
-				'w' to materialChoice(Material.WARPED_PLANKS),
-				'o' to materialChoice(Material.ENDER_PEARL),
-				's' to materialChoice(Material.END_STONE)
+				'w' to materialChoice(WARPED_PLANKS),
+				'o' to materialChoice(ENDER_PEARL),
+				's' to materialChoice(END_STONE)
 			)
 		)
 	}
