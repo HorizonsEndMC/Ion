@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting.TargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.RotatingAxisStandoffPositioningEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
@@ -222,7 +221,6 @@ object StarshipDebugCommand : SLCommand() {
 		).apply {
 			val positioningEngine = engines["positioning"]
 			(positioningEngine as? AxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
-			(positioningEngine as? RotatingAxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
 		}
 
 		NPCFakePilot.add(starship as ActiveControlledStarship, null)
