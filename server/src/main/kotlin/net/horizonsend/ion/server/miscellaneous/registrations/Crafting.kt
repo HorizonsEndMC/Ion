@@ -3,7 +3,11 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CANNON_RECEIVER
+import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.features.customitems.CustomItems.CIRCUITRY
 import net.horizonsend.ion.server.features.customitems.CustomItems.DETONATOR
 import net.horizonsend.ion.server.features.customitems.CustomItems.GAS_CANISTER_EMPTY
@@ -18,9 +22,10 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.SNIPER_RECEIV
 import net.horizonsend.ion.server.features.customitems.CustomItems.SPECIAL_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.STANDARD_MAGAZINE
 import net.horizonsend.ion.server.features.customitems.CustomItems.SUBMACHINE_BLASTER
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.MINERAL_ALUMINUM
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.MINERAL_TITANIUM
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems.MINERAL_URANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_BLOCK
+import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
+import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM_BLOCK
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Material.AIR
@@ -175,7 +180,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("blaster_barrel", GUN_BARREL.constructItemStack()) {
 			shape("tct", "ppp", "tct")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('p', PRISMARINE_CRYSTALS)
 		}
@@ -184,7 +189,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("pistol_receiver", PISTOL_RECEIVER.constructItemStack()) {
 			shape("xxx", "irt", "xxx")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('r', REDSTONE_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
@@ -194,7 +199,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("rifle_receiver", RIFLE_RECEIVER.constructItemStack()) {
 			shape("xtx", "igt", "xtx")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('g', GOLD_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
@@ -204,7 +209,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("smb_receiver", SMB_RECEIVER.constructItemStack()) {
 			shape("xtx", "idx", "xtx")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('d', DIAMOND_BLOCK)
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
@@ -214,9 +219,9 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("sniper_receiver", SNIPER_RECEIVER.constructItemStack()) {
 			shape("xtx", "ieb", "xtx")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
-			setIngredient('b', ExactChoice(MINERAL_TITANIUM.fullBlock.singleItem()))
+			setIngredient('b', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
 		}
@@ -225,9 +230,9 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("shotgun_receiver", SHOTGUN_RECEIVER.constructItemStack()) {
 			shape("xxx", "icb", "xtx")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('c', COPPER_BLOCK)
-			setIngredient('b', ExactChoice(MINERAL_TITANIUM.fullBlock.singleItem()))
+			setIngredient('b', ExactChoice(TITANIUM_BLOCK.constructItemStack()))
 			setIngredient('i', IRON_TRAPDOOR)
 			setIngredient('x', AIR)
 		}
@@ -236,8 +241,8 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("cannon_receiver", CANNON_RECEIVER.constructItemStack()) {
 			shape("xxx", "xba", "gxx")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
-			setIngredient('b', ExactChoice(MINERAL_ALUMINUM.fullBlock.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
+			setIngredient('b', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
 			setIngredient('g', GOLD_INGOT)
 			setIngredient('x', AIR)
 		}
@@ -246,7 +251,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("pistol", PISTOL.constructItemStack()) {
 			shape("xxx", "apb", "cxx")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('p', PISTOL_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -257,7 +262,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("rifle", RIFLE.constructItemStack()) {
 			shape("xxx", "apb", "acx")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('p', RIFLE_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -268,7 +273,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("submachine_blaster", SUBMACHINE_BLASTER.constructItemStack()) {
 			shape("xxx", "apb", "acx")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('p', SMB_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -279,7 +284,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("sniper", CustomItems.SNIPER.constructItemStack()) {
 			shape("xgx", "apb", "acx")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('p', SNIPER_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -291,7 +296,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("shotgun", CustomItems.SHOTGUN.constructItemStack()) {
 			shape("xxb", "apb", "acx")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('p', SHOTGUN_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
@@ -301,19 +306,19 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("cannon", CustomItems.CANNON.constructItemStack()) {
 			shape("xax", "xcb", "pxx")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('p', CANNON_RECEIVER.constructItemStack())
 			setIngredient('b', GUN_BARREL.constructItemStack())
 			setIngredient('c', CIRCUITRY.constructItemStack())
 			setIngredient('x', AIR)
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 		}
 
 		// Circuitry Crafting 1
 		itemStackShapeRecipe("circuitry_1", CIRCUITRY.constructItemStack()) {
 			shape("qdq", "arg", "ccc")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('q', QUARTZ)
 			setIngredient('g', GOLD_INGOT)
@@ -325,7 +330,7 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("circuitry_2", CIRCUITRY.constructItemStack()) {
 			shape("qdq", "gra", "ccc")
 
-			setIngredient('a', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('a', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('c', COPPER_INGOT)
 			setIngredient('q', QUARTZ)
 			setIngredient('g', GOLD_INGOT)
@@ -337,35 +342,78 @@ object Crafting : IonServerComponent() {
 		itemStackShapeRecipe("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
 			shape("xxx", "rlr", "ttt")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('l', LAPIS_BLOCK)
 			setIngredient('r', REDSTONE)
 			setIngredient('x', AIR)
 		}
 
+		// Special Magazine Crafting
 		itemStackShapeRecipe("special_magazine", SPECIAL_MAGAZINE.constructItemStack()) {
 			shape("xxx", "rer", "ttt")
 
-			setIngredient('t', ExactChoice(MINERAL_TITANIUM.singleItem()))
+			setIngredient('t', ExactChoice(TITANIUM.constructItemStack()))
 			setIngredient('e', EMERALD_BLOCK)
 			setIngredient('r', REDSTONE)
 			setIngredient('x', AIR)
 		}
 
+		// Empty Gas Canister Crafting
 		itemStackShapeRecipe("empty_gas_canister", GAS_CANISTER_EMPTY.constructItemStack()) {
 			shape("xix", "igi", "xix")
 
-			setIngredient('i', ExactChoice(MINERAL_ALUMINUM.singleItem()))
+			setIngredient('i', ExactChoice(ALUMINUM.constructItemStack()))
 			setIngredient('g', GLASS_PANE)
 			setIngredient('x', AIR)
 		}
 
+		// Detonator Crafting
 		itemStackShapeRecipe("detonator", DETONATOR.constructItemStack()) {
 			shape(" r ", "tut", " t ",)
 
 			setIngredient('r', REDSTONE)
-			setIngredient('t', MINERAL_TITANIUM.singleItem())
-			setIngredient('u', MINERAL_URANIUM.singleItem())
+			setIngredient('t', TITANIUM.constructItemStack())
+			setIngredient('u', URANIUM.constructItemStack())
+		}
+
+		// Aluminum Block Crafting
+		itemStackShapelessRecipe("aluminumBlock", ALUMINUM_BLOCK.constructItemStack()) {
+			addIngredient(ALUMINUM.constructItemStack().asQuantity(9))
+		}
+
+		// Aluminum Crafting
+		itemStackShapelessRecipe("aluminum", ALUMINUM.constructItemStack().asQuantity(9)) {
+			addIngredient(ALUMINUM_BLOCK.constructItemStack())
+		}
+
+		// Chetherite Block Crafting
+		itemStackShapelessRecipe("chetheriteBlock", CHETHERITE_BLOCK.constructItemStack()) {
+			addIngredient(CHETHERITE.constructItemStack().asQuantity(9))
+		}
+
+		// Chetherite Crafting
+		itemStackShapelessRecipe("chetherite", CHETHERITE.constructItemStack().asQuantity(9)) {
+			addIngredient(CHETHERITE_BLOCK.constructItemStack())
+		}
+
+		// Titanium Block Crafting
+		itemStackShapelessRecipe("titaniumBlock", TITANIUM_BLOCK.constructItemStack()) {
+			addIngredient(TITANIUM.constructItemStack().asQuantity(9))
+		}
+
+		// Titanium Crafting
+		itemStackShapelessRecipe("titanium", TITANIUM.constructItemStack().asQuantity(9)) {
+			addIngredient(TITANIUM_BLOCK.constructItemStack())
+		}
+
+		// Uranium Block Crafting
+		itemStackShapelessRecipe("uraniumBlock", URANIUM_BLOCK.constructItemStack()) {
+			addIngredient(URANIUM.constructItemStack().asQuantity(9))
+		}
+
+		// Uranium Crafting
+		itemStackShapelessRecipe("uranium", URANIUM.constructItemStack().asQuantity(9)) {
+			addIngredient(URANIUM_BLOCK.constructItemStack())
 		}
 	}
 
@@ -384,6 +432,12 @@ object Crafting : IonServerComponent() {
 	private fun shapelessRecipe(name: String, result: ItemStack, ingredients: Array<Material>) {
 		val recipe = ShapelessRecipe(NamespacedKey(IonServer, name), result)
 		for (ingredient in ingredients) recipe.addIngredient(ingredient)
+		Bukkit.addRecipe(recipe)
+	}
+
+	private fun itemStackShapelessRecipe(name: String, result: ItemStack, execute: ShapelessRecipe.() -> Unit) {
+		val recipe = ShapelessRecipe(NamespacedKey(IonServer, name), result)
+		execute(recipe)
 		Bukkit.addRecipe(recipe)
 	}
 }

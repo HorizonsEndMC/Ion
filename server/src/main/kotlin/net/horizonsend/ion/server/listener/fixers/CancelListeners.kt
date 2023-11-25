@@ -1,7 +1,13 @@
 package net.horizonsend.ion.server.listener.fixers
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlocks
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -103,27 +109,35 @@ class CancelListeners : SLEventListener() {
 	fun onAlchemy(event: PrepareItemCraftEvent) {
 		if (event.isRepair) return
 
-		// Crafting different types of custom blocks together turns them into an iron block
-		if (event.inventory.result?.type != Material.IRON_BLOCK) return
+		val player = event.view.player
 
-		val customItems = mutableListOf<CustomItems.MineralCustomItem>()
-
-		// Store one of them, if they're not all this one, cancel the event
-		lateinit var mineralType: ItemStack
-
-		for (itemStack in event.inventory.matrix) {
-			itemStack ?: return
-			val customItem = CustomItems[itemStack] ?: continue
-
-			if (customItem !is CustomItems.MineralCustomItem) continue
-
-			customItems.add(customItem)
-			mineralType = itemStack
+		// disable crafting for legacy MineralCustomItems or CustomBlockItem
+		// (There is no way to get the CustomBlockItems, so hard code for iron ingot uncraft
+		if (event.inventory.matrix.any {
+			it != null &&
+					CustomItems[it] != null &&
+					// if the custom item is a mineral item, or the crafting recipe will result in 9 iron ingots or an anvil
+					(CustomItems[it] is CustomItems.MineralCustomItem ||
+							(event.inventory.result == ItemStack(Material.IRON_INGOT).asQuantity(9) ||
+									event.inventory.result == ItemStack(Material.ANVIL))) &&
+					it.customItem == null
+			}) {
+			player.userError("Legacy mineral item detected; use the /convert command to transfer legacy items.")
+			event.inventory.result = ItemStack(Material.AIR)
 		}
 
-		if (customItems.isEmpty()) return
-
-		if (!event.inventory.matrix.all { it == mineralType }) event.inventory.result = ItemStack(Material.AIR)
+		// disable crafting if any item is a new CustomItem and the result is not a new or legacy CustomItem
+		else if (event.inventory.matrix.any {
+			// any item is in the matrix and not a new custom item
+			it != null &&
+					it.customItem != null &&
+					// the result exists and is neither a new nor legacy CustomItem
+					event.inventory.result != null &&
+					event.inventory.result!!.customItem == null &&
+					CustomItems[event.inventory.result] == null
+			}) {
+			event.inventory.result = ItemStack(Material.AIR)
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)

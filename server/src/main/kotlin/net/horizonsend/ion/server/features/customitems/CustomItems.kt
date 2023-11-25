@@ -398,7 +398,7 @@ object CustomItems {
 			identifier = "URANIUM",
 			material = IRON_INGOT,
 			customModelData = 4,
-			displayName = text("Uranium")
+			displayName = text("Uranium").decoration(ITALIC, false),
 		) {}
 	)
 
