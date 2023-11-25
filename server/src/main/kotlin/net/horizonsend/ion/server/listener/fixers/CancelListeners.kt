@@ -118,8 +118,7 @@ class CancelListeners : SLEventListener() {
 					CustomItems[it] != null &&
 					// if the custom item is a mineral item, or the crafting recipe will result in 9 iron ingots or an anvil
 					(CustomItems[it] is CustomItems.MineralCustomItem ||
-							(event.inventory.result == ItemStack(Material.IRON_INGOT).asQuantity(9) ||
-									event.inventory.result == ItemStack(Material.ANVIL))) &&
+							CustomItems[it] is CustomBlockItem) &&
 					it.customItem == null
 			}) {
 			player.userError("Legacy mineral item detected; use the /convert command to transfer legacy items.")
