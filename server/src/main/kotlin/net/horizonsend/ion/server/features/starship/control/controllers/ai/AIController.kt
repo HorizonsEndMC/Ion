@@ -110,7 +110,7 @@ class AIController(
 		val targets = mutableSetOf<AITarget>()
 
 		targets += ActiveStarships.getInWorld(starship.world).map { StarshipTarget(it) }.filter(filter)
-//		targets += starship.world.players.map { PlayerTarget(it) }.filter(filter) TODO uncomment this
+//		targets += starship.world.players.map { PlayerTarget(it) }.filter(filter) // TODO uncomment this
 
 		return targets
 	}
