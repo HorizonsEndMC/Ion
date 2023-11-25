@@ -18,8 +18,8 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
-import net.horizonsend.ion.server.features.starship.active.ai.engine.misc.targeting.TargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
+import net.horizonsend.ion.server.features.starship.active.ai.engine.targeting.TargetingEngine
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
