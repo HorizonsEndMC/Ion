@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.achievements
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.progression.SLXP
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.get
 import net.horizonsend.ion.server.miscellaneous.utils.vaultEconomy
@@ -27,7 +27,7 @@ fun Player.rewardAchievement(achievement: Achievement) = Tasks.async {
 	SLXP.addAsync(this@rewardAchievement, achievement.experienceReward, false)
 
 	if (achievement.chetheriteReward > 0) {
-		inventory.addItem(CustomItems.MINERAL_CHETHERITE.itemStack(achievement.chetheriteReward))
+		inventory.addItem(CHETHERITE.constructItemStack().asQuantity(achievement.chetheriteReward))
 	}
 
 	showTitle(

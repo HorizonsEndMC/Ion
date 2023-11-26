@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem
 
+import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.multiblock.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.inventory.ItemStack
@@ -43,8 +44,8 @@ class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: Hype
 	}
 
 	fun restoreFuel(): Unit = getHoppers().forEach { hopper ->
-		hopper.inventory.addItem(CustomItems.MINERAL_CHETHERITE.itemStack(Hyperspace.HYPERMATTER_AMOUNT))
+		hopper.inventory.addItem(CHETHERITE.constructItemStack().asQuantity(Hyperspace.HYPERMATTER_AMOUNT))
 	}
 
-	private fun isHypermatter(item: ItemStack) = CustomItems[item] == CustomItems.MINERAL_CHETHERITE
+	private fun isHypermatter(item: ItemStack) = item.customItem == CHETHERITE
 }

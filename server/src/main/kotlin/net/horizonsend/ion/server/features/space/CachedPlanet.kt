@@ -77,7 +77,7 @@ class CachedPlanet(
 	var orbitProgress: Double = orbitProgress; private set
 
 	val planetIcon: CustomItem = CustomItems["planet_icon_${name.lowercase(Locale.getDefault()).replace(" ", "")}"]
-		?: CustomItems.MINERAL_URANIUM
+		?: CustomItems.MINERAL_URANIUM // TODO: When porting over planet icons, change the legacy uranium icon too
 
 	init {
 		require(size > 0 && size <= 1)

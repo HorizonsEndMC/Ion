@@ -166,6 +166,7 @@ object ShipmentManager : IonServerComponent() {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
 		val planetId = destinationWorld.lowercase(Locale.getDefault()).replace(" ", "")
+		// TODO: When porting over planet icons, change the legacy uranium icon too
 		val planetIcon = CustomItems["planet_icon_$planetId"] ?: CustomItems.MINERAL_URANIUM
 		return guiButton(planetIcon.itemStack(1))
 	}
