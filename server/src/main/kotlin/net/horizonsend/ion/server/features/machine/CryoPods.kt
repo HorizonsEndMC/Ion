@@ -20,7 +20,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.litote.kmongo.and
-import org.litote.kmongo.descending
+import org.litote.kmongo.ascending
 import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
 import java.time.Instant
@@ -56,7 +56,7 @@ object CryoPods: SLEventListener() {
 	fun onPlayerRespawn(event: PlayerRespawnEvent) {
 		val player = event.player
 
-		val cryopods = Cryopod.find(Cryopod::owner eq player.slPlayerId).sort(descending(Cryopod::lastSelectedAt))
+		val cryopods = Cryopod.find(Cryopod::owner eq player.slPlayerId).sort(ascending(Cryopod::lastSelectedAt))
 
 		for (possibleCryopod in cryopods) {
 			val world = Bukkit.getWorld(possibleCryopod.worldName)
