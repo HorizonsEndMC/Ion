@@ -124,23 +124,50 @@ object ConfigurationCommands : SLCommand() {
 		}
 	}
 
-//	@Subcommand("config get")
-//	@CommandCompletion("@balancingFields @balancingValues")
-//	fun set(sender: CommandSender, typeName: String, fieldName: String) {
-//		val type = starshipTypes.find { it.name == typeName } ?: run {
-//			sender.userError("Type not found")
-//			return
-//		}
-//
-//		val field = changeableFields.find { it.name == fieldName } ?: run {
-//			sender.userError("Field not found")
-//			return
-//		}
-//
-//		val obj =
-//			field.getter.call(type.get(balancing) as StarshipWeapons.StarshipWeapon)
-//		sender.success("Value $fieldName of $typeName: $obj")
-//	}
+
+	@Subcommand("config set starship properties")
+	@CommandCompletion("@starshipTypes @starshipValues @nothing")
+	fun getStarshipProperties(sender: CommandSender, starshipTypeName: String, fieldName: String) {
+		val starshipType = starshipTypes.find { it.name == starshipTypeName } ?: run {
+			sender.userError("Starship type $starshipTypeName not found")
+			return
+		}
+
+		val field = starshipFields.find { it.name == fieldName } ?: run {
+			sender.userError("Field not found")
+			return
+		}
+
+		val starshipBalancing = starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing ?: return sender.userError("$starshipType is not StarshipBalancing!")
+
+		val fieldValue = field.getter.call(starshipBalancing)
+		sender.success("$starshipTypeName's $fieldName is $fieldValue")
+	}
+
+	@Subcommand("config get starship weapon")
+	@CommandCompletion("@starshipTypes @weaponTypes @balancingValues @nothing")
+	fun getStarshipWeapons(sender: CommandSender, starshipTypeName: String, weaponName: String, fieldName: String) {
+		val starshipType = starshipTypes.find { it.name == starshipTypeName } ?: run {
+			sender.userError("Starship type $starshipTypeName not found")
+			return
+		}
+
+		val weaponType = weaponTypes.find { it.name == weaponName } ?: run {
+			sender.userError("Weapon type $weaponName not found")
+			return
+		}
+
+		val field = weaponFields.find { it.name == fieldName } ?: run {
+			sender.userError("Field not found")
+			return
+		}
+
+		val starshipBalancing = (starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapons.StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
+
+		val fieldValue = field.getter.call(weapon)
+		sender.success("$starshipTypeName's $weaponName's $fieldName is $fieldValue")
+	}
 
 	@Subcommand("config save")
 	fun configSave(sender: CommandSender) {
