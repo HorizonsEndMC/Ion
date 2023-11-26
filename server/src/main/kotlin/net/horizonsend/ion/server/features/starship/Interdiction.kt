@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.space.SpaceWorlds
@@ -11,7 +12,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.starship.control.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -111,7 +112,7 @@ object Interdiction : IonServerComponent() {
 
 		val input = GravityWellMultiblock.getInput(sign)
 
-		if (LegacyItemUtils.getTotalItems(input, CustomItems.MINERAL_CHETHERITE.singleItem()) < 2) {
+		if (LegacyItemUtils.getTotalItems(input, CHETHERITE.constructItemStack()) < 2) {
 			player.userError(
 				"Not enough hypermatter in the dropper. Two chetherite shards are required!"
 			)
@@ -144,7 +145,7 @@ object Interdiction : IonServerComponent() {
 			}
 		}
 
-		input.removeItem(CustomItems.MINERAL_CHETHERITE.itemStack(2))
+		input.removeItem(CHETHERITE.constructItemStack().asQuantity(2))
 		starship.onlinePassengers.forEach { passenger ->
 			passenger.alert("Gravity pulse has been invoked by ${player.name}.")
 		}
