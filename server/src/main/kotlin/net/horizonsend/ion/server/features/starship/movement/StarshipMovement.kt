@@ -29,6 +29,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Animals
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
@@ -141,6 +142,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 				is Player -> if (starship.isWithinHitbox(entity) && ActiveStarships.findByPassenger(entity) == null) passengers.add(entity)
 
 				is Animals -> if (starship.isWithinHitbox(entity)) passengers.add(entity)
+
+				is Item -> if (starship.isWithinHitbox(entity)) passengers.add(entity)
 			}
 		}
 
