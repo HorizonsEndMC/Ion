@@ -33,7 +33,19 @@ fun Any.toComponent(): Component = text(toString())
  * and "C" is placed at the beginning of the string.
  */
 fun Number.toCreditComponent(): Component = text("C${toDouble().roundToHundredth().toText()}", NamedTextColor.GOLD)
+
+fun lineBreakWithCenterText(value: Component) = bracketed(
+	value,
+	text().append(lineBreak(15)).append(text("« ", HE_DARK_GRAY)).build(),
+	text().append(text(" »", HE_DARK_GRAY)).append(lineBreak(15)).build()
+)
+
 fun lineBreak(width: Int, color: TextColor = HE_DARK_GRAY, vararg decorations: TextDecoration) = text(repeatString("=", width), color, TextDecoration.STRIKETHROUGH, *decorations)
+
+fun bracketed(value: Component, leftBracket: Char = '[', rightBracket: Char = ']', bracketColor: TextColor = HE_DARK_GRAY) =
+	ofChildren(text(leftBracket, bracketColor), value, text(rightBracket, bracketColor))
+
+fun bracketed(value: Component, leftBracket: Component, rightBracket: Component) = ofChildren(leftBracket, value, rightBracket)
 
 fun templateMiniMessage(
 	message: String,
@@ -75,8 +87,6 @@ fun template(
 
 	return message.replaceText(replacement)
 }
-
-fun bracketed(value: Component, startChar: Char = '[', endChar: Char = ']', bracketColor: TextColor = HE_DARK_GRAY) = ofChildren(text(startChar, bracketColor), value, text(endChar, bracketColor))
 
 fun Iterable<ComponentLike>.join(separator: Component = text(", ")): Component {
 	val iterator = this.iterator()
