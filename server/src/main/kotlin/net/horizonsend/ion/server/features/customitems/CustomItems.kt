@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWea
 import net.horizonsend.ion.server.configuration.BalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
+import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.customitems.minerals.objects.MineralItem
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownDetonator
 import net.horizonsend.ion.server.features.customitems.throwables.ThrownPumpkinGrenade
@@ -315,14 +316,14 @@ object CustomItems {
 		) {}
 	)
 
-	val ALUMINUM_ORE = register(
+	val ALUMINUM_ORE : CustomBlockItem = register(
 		object : CustomBlockItem(
 			identifier = "ALUMINUM_ORE",
 			material = IRON_ORE,
 			customModelData = 1,
 			displayName = text("Aluminum Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "ALUMINUM_ORE"
-		) {}
+		), Smeltable { override val smeltResultIdentifier: String = "ALUMINUM_INGOT" }
 	)
 
 	val ALUMINUM_BLOCK = register(
@@ -344,14 +345,14 @@ object CustomItems {
 		) {}
 	)
 
-	val CHETHERITE_ORE = register(
+	val CHETHERITE_ORE : CustomBlockItem = register(
 		object : CustomBlockItem(
 			identifier = "CHETHERITE_ORE",
 			material = IRON_ORE,
 			customModelData = 2,
 			displayName = text("Chetherite Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "CHETHERITE_ORE"
-		) {}
+		), Smeltable { override val smeltResultIdentifier: String = "CHETHERITE" }
 	)
 
 	val CHETHERITE_BLOCK = register(
@@ -373,14 +374,14 @@ object CustomItems {
 		) {}
 	)
 
-	val TITANIUM_ORE = register(
+	val TITANIUM_ORE : CustomBlockItem = register(
 		object : CustomBlockItem(
 			identifier = "TITANIUM_ORE",
 			material = IRON_ORE,
 			customModelData = 3,
 			displayName = text("Titanium Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "TITANIUM_ORE"
-		) {}
+		), Smeltable { override val smeltResultIdentifier: String = "TITANIUM_INGOT" }
 	)
 
 	val TITANIUM_BLOCK = register(
@@ -402,14 +403,14 @@ object CustomItems {
 		) {}
 	)
 
-	val URANIUM_ORE = register(
+	val URANIUM_ORE : CustomBlockItem = register(
 		object : CustomBlockItem(
 			identifier = "URANIUM_ORE",
 			material = IRON_ORE,
 			customModelData = 4,
 			displayName = text("Uranium Ore").decoration(ITALIC, false),
 			customBlockIdentifier = "URANIUM_ORE"
-		) {}
+		), Smeltable { override val smeltResultIdentifier: String = "URANIUM" }
 	)
 
 	val URANIUM_BLOCK = register(
