@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
@@ -84,15 +85,17 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConf
 
 		val deferred = spawnAIStarship(template, loc, createController(template, pilotName))
 
+		val (x, y, z) = Vec3i(loc)
+
 		deferred.invokeOnCompletion {
 			IonServer.server.sendMessage(templateMiniMessage(
 				configuration.miniMessageSpawnMessage,
 				paramColor = HEColorScheme.HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
 				template.getName(),
-				loc.x,
-				loc.y,
-				loc.z,
+				x,
+				y,
+				z,
 				loc.world.name
 			))
 		}
