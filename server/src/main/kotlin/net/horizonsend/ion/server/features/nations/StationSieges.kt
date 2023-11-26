@@ -100,6 +100,7 @@ object StationSieges : IonServerComponent() {
 				"Siege Station {0}'s siege hour has ended.",
 				color = HEColorScheme.HE_MEDIUM_GRAY,
 				paramColor = HEColorScheme.HE_LIGHT_BLUE,
+				useQuotesAroundObjects = false,
 				lastStationName
 			)
 
@@ -115,6 +116,7 @@ object StationSieges : IonServerComponent() {
 				"Siege Station {0}'s siege hour has began! It can be besieged for the rest of the hour with /siege!.",
 				color = HEColorScheme.HE_MEDIUM_GRAY,
 				paramColor = HEColorScheme.HE_LIGHT_BLUE,
+				useQuotesAroundObjects = false,
 				station.name
 			).hoverEvent(text("${station.world} : (${station.x}, ${station.z})"))
 
