@@ -559,6 +559,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				"{0}{1} piloted by {2} {3} in {4}",
 				color = HE_LIGHT_GRAY,
 				paramColor = WHITE,
+				useQuotesAroundObjects = true,
 				if (pilot?.hasProtection() == true) text(" ★", NamedTextColor.GOLD) else Component.empty(),
 				starship.getDisplayName(),
 				starship.controller.pilotName,
@@ -571,7 +572,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(45))
 		sender.sendMessage(ofChildren(text("Total Ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
-		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
+		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalBlocks, HE_LIGHT_BLUE)))
 	}
 
 	@Suppress("unused")

@@ -146,6 +146,7 @@ object Bounties : IonServerComponent() {
 				"For sinking {0}'s {1}, {2}'s bounty was increased by {3}! It is now {4}.",
 				color = RED,
 				paramColor = DARK_RED,
+				useQuotesAroundObjects = true,
 				victim.displayName(),
 				event.starship.type.displayNameComponent,
 				killer.displayName(),

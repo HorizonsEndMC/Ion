@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import java.util.regex.MatchResult
 import java.util.regex.Pattern
@@ -34,14 +35,31 @@ fun Any.toComponent(): Component = text(toString())
 fun Number.toCreditComponent(): Component = text("C${toDouble().roundToHundredth().toText()}", NamedTextColor.GOLD)
 fun lineBreak(width: Int, color: TextColor = HE_DARK_GRAY, vararg decorations: TextDecoration) = text(repeatString("=", width), color, TextDecoration.STRIKETHROUGH, *decorations)
 
+fun templateMiniMessage(
+	message: String,
+	paramColor: TextColor = NamedTextColor.WHITE,
+	useQuotesAroundObjects: Boolean = true,
+	vararg parameters: Any
+): Component {
+	return template(miniMessage().deserialize(message), paramColor, useQuotesAroundObjects, *parameters)
+}
+
 fun template(
 	message: String,
 	color: TextColor,
 	paramColor: TextColor = NamedTextColor.WHITE,
+	useQuotesAroundObjects: Boolean = true,
 	vararg parameters: Any
 ): Component {
-	val messageComponent = text(message, color)
+	return template(text(message, color), paramColor, useQuotesAroundObjects, *parameters)
+}
 
+fun template(
+	message: Component,
+	paramColor: TextColor = NamedTextColor.WHITE,
+	useQuotesAroundObjects: Boolean = true,
+	vararg parameters: Any
+): Component {
 	val replacement = TextReplacementConfig.builder()
 		.match(Pattern.compile("\\{([0-9]*?)}"))
 		.replacement { matched: MatchResult, _ ->
@@ -50,12 +68,12 @@ fun template(
 			return@replacement when (val param = parameters[index]) {
 				is ComponentLike -> param
 				is Number -> text(param.toString(), paramColor)
-				else -> text("\"$param\"", paramColor)
+				else -> text(if (useQuotesAroundObjects) { "\"$param\"" } else param.toString(), paramColor)
 			}
 		}
 		.build()
 
-	return messageComponent.replaceText(replacement)
+	return message.replaceText(replacement)
 }
 
 fun bracketed(value: Component, startChar: Char = '[', endChar: Char = ']', bracketColor: TextColor = HE_DARK_GRAY) = ofChildren(text(startChar, bracketColor), value, text(endChar, bracketColor))
