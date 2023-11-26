@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomBlockItem
+import net.horizonsend.ion.server.features.customitems.CustomItems
+import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
+import net.horizonsend.ion.server.features.customitems.minerals.Smeltable
 import net.horizonsend.ion.server.features.multiblock.FurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -51,10 +53,11 @@ object FurnaceListener : SLEventListener() {
 	@EventHandler
 	fun onFurnaceSmeltCustomOre(event: FurnaceSmeltEvent) {
 		val source: ItemStack = event.source
-		val item = CustomItems[source]
+		val item = source.customItem
 
-		if (item is CustomBlockItem && item.id.endsWith("_ore")) {
-			event.result = CustomItems[item.id.replace("_ore", "")]!!.itemStack(1)
+		// if customItem has the Smeltable interface, get the smeltable customItem result
+		if (item is CustomBlockItem && item is Smeltable) {
+			event.result = CustomItems.getByIdentifier(item.smeltResultIdentifier)?.constructItemStack() ?: return
 			return
 		}
 
@@ -74,7 +77,7 @@ object FurnaceListener : SLEventListener() {
 		}
 
 		val result: ItemStack = event.result
-		if (result.type == Material.DEAD_BUSH || result.type == Material.DANDELION || CustomItems[source] != null) {
+		if (result.type == Material.DEAD_BUSH || result.type == Material.DANDELION || source.customItem != null) {
 			event.isCancelled = true
 		}
 	}
