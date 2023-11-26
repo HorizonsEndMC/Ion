@@ -21,8 +21,10 @@ import java.util.Optional
 import java.util.concurrent.TimeUnit
 
 object AISpawningManager : IonServerComponent(true) {
+	// The coroutine context in which the heavy spawning work will be handled
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+	// General AI configuration
 	val config = IonServer.aiShipConfiguration
 
 	/**
@@ -30,6 +32,7 @@ object AISpawningManager : IonServerComponent(true) {
 	 **/
 	val spawners = mutableListOf<AISpawner>()
 
+	// The templates, matched to their identifiers
 	val templates: MutableMap<String, AIStarshipTemplate> = mutableMapOf()
 
 	val schematicCache: LoadingCache<String, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
@@ -43,8 +46,9 @@ object AISpawningManager : IonServerComponent(true) {
 	operator fun get(identifier: String) = spawners.firstOrNull { it.identifier == identifier }
 
 	override fun onEnable() {
-		enableSpawners()
+		registerSpawners()
 
+		Tasks.syncRepeat(0L, 0L, ::tickSpawners)
 		Tasks.syncRepeat(60L, 60L, ::despawnAIShips)
 	}
 
@@ -56,17 +60,14 @@ object AISpawningManager : IonServerComponent(true) {
 		}
 	}
 
-	private fun enableSpawners() {
+	/** Register all the spawners after the server has been initialized */
+	private fun registerSpawners() {
+		// Register spawners
 		spawners += BasicCargoMissionSpawner()
-
-		val averageDelay = (spawners.sumOf { it.configuration.spawnRate } / spawners.size) / spawners.size
-
-		spawners.forEachIndexed { index: Int, spawner: AISpawner ->
-			val delay = averageDelay * index
-
-			Tasks.asyncRepeat(delay, spawner.configuration.spawnRate) { spawner.trigger(context) }
-		}
 	}
+
+	/** Ticks all the spawners, increasing points and maybe triggering an execution */
+	private fun tickSpawners() = spawners.forEach(AISpawner::tickPoints)
 
 	// The AI ship must be at least 30 minutes old
 	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)

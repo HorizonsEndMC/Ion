@@ -23,6 +23,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.slf4j.LoggerFactory
 import java.util.function.Supplier
+import kotlin.random.Random
 
 /**
  * This class is a definable AI spawner
@@ -36,14 +37,37 @@ import java.util.function.Supplier
  **/
 abstract class AISpawner(
 	val identifier: String,
-	private val configurationSupplier: Supplier<AIShipConfiguration.AISpawnerConfiguration>
+	private val configurationSupplier: Supplier<AIShipConfiguration.AISpawnerConfiguration>,
+	private val pointChance: Double,
+	private val pointThreshold: Int
 ) {
 	val configuration get() = configurationSupplier.get()
 	protected val log = LoggerFactory.getLogger(javaClass)
 
+	private var points: Int = 0
+	private var lastTriggered: Long = 0
+
+	/** Tick points, possibly trigger a spawn */
+	fun tickPoints() {
+		handleSuccess()
+
+		if (Random.nextDouble() < pointChance) return
+
+		points++
+	}
+
+	private fun handleSuccess() {
+		if (points < pointThreshold) return
+
+		points = 0
+
+		lastTriggered = System.currentTimeMillis()
+		trigger(AISpawningManager.context)
+	}
+
 	fun AIStarshipTemplate.getName(): Component = miniMessage().deserialize(miniMessageName)
 
-	/** Entry point for the spawner, spawns the ship and handles any exceptions */
+	/** Entry point for the spawning mechanics, spawns the ship and handles any exceptions */
 	fun trigger(context: CoroutineScope) = context.launch {
 		try { triggerSpawn() }
 		catch (e: SpawningException) { handleException(e) }
@@ -87,13 +111,13 @@ abstract class AISpawner(
 	 *
 	 * @return A function used to create the controller for the starship
 	 **/
-	open fun createController(template: AIStarshipTemplate): (ActiveStarship) -> Controller {
+	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
 		val factory = AIControllerFactories[template.controllerFactory]
 
 		return { starship ->
 			factory.createController(
 				starship,
-				miniMessage().deserialize(template.miniMessageName),
+				pilotName,
 				null,
 				null,
 				template.manualWeaponSets,
