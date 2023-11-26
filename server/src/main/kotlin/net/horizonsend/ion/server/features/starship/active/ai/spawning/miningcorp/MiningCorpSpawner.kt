@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.starship.active.ai.spawning.miningcorp
 
+import net.horizonsend.ion.common.utils.text.HEColorScheme
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.AsteroidFeature
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.World
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
@@ -55,6 +57,8 @@ abstract class StandardTransportOperation(
 	}
 
 	companion object {
-
+		val MINING_CORP_LIGHT_ORANGE = HEColorScheme.HE_LIGHT_ORANGE
+		val MINING_CORP_DARK_ORANGE = TextColor.fromHexString("#D98507")
+		val MINING_CORP_MEDIUM_ORANGE = HEColorScheme.HE_MEDIUM_GRAY
 	}
 }
