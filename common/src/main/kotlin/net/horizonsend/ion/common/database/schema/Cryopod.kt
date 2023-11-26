@@ -12,7 +12,6 @@ import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
-import java.time.Instant
 import java.util.Date
 
 /**
@@ -34,7 +33,7 @@ data class Cryopod(
     val worldName: String,
     val owner: SLPlayerId,
 
-	val lastSelectedAt: Date = Date.from(Instant.now())
+	val lastSelectedAt: Date = Date(0)
 ) : DbObject {
 	companion object : OidDbObjectCompanion<Cryopod>(Cryopod::class, setup = {
 		ensureIndex(Cryopod::owner)
