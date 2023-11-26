@@ -20,8 +20,10 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
@@ -539,7 +541,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		var totalShips = 0
 		var totalBlocks = 0
 
-		sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(45))
+		sender.sendMessage(lineBreakWithCenterText(text("Active Starships", HE_LIGHT_ORANGE)))
 
 		for (starship in ActiveStarships.all()) {
 			val pilot: Player? = starship.playerPilot
@@ -570,7 +572,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			sender.sendMessage(line)
 		}
 
-		sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(45))
+		sender.sendMessage(net.horizonsend.ion.common.utils.text.lineBreak(47))
 		sender.sendMessage(ofChildren(text("Total Ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalShips, HE_LIGHT_BLUE)))
 		sender.sendMessage(ofChildren(text("Total Blocks in all ships", HE_MEDIUM_GRAY), text(": ", HE_DARK_GRAY), text(totalBlocks, HE_LIGHT_BLUE)))
 	}
