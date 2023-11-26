@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.command.misc
 
+import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
@@ -18,7 +19,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.inc
 import org.litote.kmongo.setValue
 
-@Subcommand("bountyadmin")
+@CommandAlias("bountyadmin")
 object BountyAdminCommand : SLCommand() {
 	@Subcommand("set")
 	@CommandPermission("ion.bounty.modify")
