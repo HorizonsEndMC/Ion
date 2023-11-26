@@ -3,9 +3,13 @@ package net.horizonsend.ion.server.features.achievements
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
+import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
+import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
+import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -32,10 +36,10 @@ class AchievementListeners : SLEventListener() {
 	fun onPlayerAttemptPickupItemEvent(event: PlayerAttemptPickupItemEvent) {
 		event.player.rewardAchievement(
 			when (event.item.itemStack) {
-				CustomItems.MINERAL_TITANIUM.singleItem() -> Achievement.ACQUIRE_TITANIUM
-				CustomItems.MINERAL_ALUMINUM.singleItem() -> Achievement.ACQUIRE_ALUMINIUM
-				CustomItems.MINERAL_CHETHERITE.singleItem() -> Achievement.ACQUIRE_CHETHERITE
-				CustomItems.MINERAL_URANIUM.singleItem() -> Achievement.ACQUIRE_URANIUM
+				TITANIUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_TITANIUM
+				ALUMINUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_ALUMINIUM
+				CHETHERITE.constructItemStack() -> Achievement.ACQUIRE_CHETHERITE
+				URANIUM.constructItemStack() -> Achievement.ACQUIRE_URANIUM
 				else -> return
 			}
 		)
@@ -49,10 +53,10 @@ class AchievementListeners : SLEventListener() {
 
 		player.rewardAchievement(
 			when (item) {
-				CustomItems.MINERAL_TITANIUM.singleItem() -> Achievement.ACQUIRE_TITANIUM
-				CustomItems.MINERAL_ALUMINUM.singleItem() -> Achievement.ACQUIRE_ALUMINIUM
-				CustomItems.MINERAL_CHETHERITE.singleItem() -> Achievement.ACQUIRE_CHETHERITE
-				CustomItems.MINERAL_URANIUM.singleItem() -> Achievement.ACQUIRE_URANIUM
+				TITANIUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_TITANIUM
+				ALUMINUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_ALUMINIUM
+				CHETHERITE.constructItemStack() -> Achievement.ACQUIRE_CHETHERITE
+				URANIUM.constructItemStack() -> Achievement.ACQUIRE_URANIUM
 				else -> return
 			}
 		)
