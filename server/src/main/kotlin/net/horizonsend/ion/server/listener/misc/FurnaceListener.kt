@@ -50,13 +50,14 @@ object FurnaceListener : SLEventListener() {
 	}
 
 	// something with custom ores
-	// TODO: Use FurnaceRecipe to remove the unstable "replace" implementation here
+	// NVM: Use FurnaceRecipe to remove the unstable "replace" implementation here
+	// (FurnaceRecipe only uses Material for the source :skull:)
 	@EventHandler
 	fun onFurnaceSmeltCustomOre(event: FurnaceSmeltEvent) {
 		val source: ItemStack = event.source
 		val item = source.customItem
 
-		// Disable legacy custom item smelting
+		// Legacy custom item smelting
 		if (net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems[source] is
 					net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem &&
 			item == null
@@ -72,7 +73,7 @@ object FurnaceListener : SLEventListener() {
 		}
 
 		// If customItem has the Smeltable interface, get the smeltable customItem result
-		if (item is CustomBlockItem && item is Smeltable) {
+		if (item is Smeltable) {
 			event.result = CustomItems.getByIdentifier(item.smeltResultIdentifier)?.constructItemStack() ?: return
 			return
 		}
