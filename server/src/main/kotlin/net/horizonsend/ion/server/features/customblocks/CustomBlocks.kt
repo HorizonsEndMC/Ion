@@ -34,7 +34,7 @@ object CustomBlocks {
         identifier = "ALUMINUM_ORE",
         blockData = mushroomBlockData(setOf(NORTH, UP)),
         tool = "pickaxe",
-        drops = customItemDrop("ALUMINUM_ORE")
+        drops = customItemDrop("RAW_ALUMINUM")
     ))
 
     val ALUMINUM_BLOCK = register(CustomBlock(
@@ -62,7 +62,7 @@ object CustomBlocks {
         identifier = "TITANIUM_ORE",
         blockData = mushroomBlockData(setOf(UP, WEST)),
         tool = "pickaxe",
-        drops = customItemDrop("TITANIUM_ORE")
+        drops = customItemDrop("RAW_TITANIUM")
     ))
 
     val TITANIUM_BLOCK = register(CustomBlock(
@@ -76,7 +76,7 @@ object CustomBlocks {
         identifier = "URANIUM_ORE",
         blockData = mushroomBlockData(setOf(UP)),
         tool = "pickaxe",
-        drops = customItemDrop("URANIUM_ORE")
+        drops = customItemDrop("RAW_URANIUM")
     ))
 
     val URANIUM_BLOCK = register(CustomBlock(
