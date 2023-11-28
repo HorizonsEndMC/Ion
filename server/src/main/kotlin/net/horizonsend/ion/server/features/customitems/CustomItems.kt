@@ -33,6 +33,7 @@ import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_HOE
 import org.bukkit.Material.IRON_INGOT
 import org.bukkit.Material.IRON_ORE
+import org.bukkit.Material.RAW_IRON
 import org.bukkit.Material.WARPED_FUNGUS_ON_A_STICK
 import org.bukkit.block.Dispenser
 import org.bukkit.entity.Entity
@@ -316,6 +317,15 @@ object CustomItems {
 		) {}
 	)
 
+	val RAW_ALUMINUM : MineralItem = register(
+		object : MineralItem(
+			identifier = "RAW_ALUMINUM",
+			material = RAW_IRON,
+			customModelData = 1,
+			displayName = text("Raw Aluminum").decoration(ITALIC, false)
+		), Smeltable { override val smeltResultIdentifier: String = "ALUMINUM_INGOT" }
+	)
+
 	val ALUMINUM_ORE : CustomBlockItem = register(
 		object : CustomBlockItem(
 			identifier = "ALUMINUM_ORE",
@@ -374,6 +384,15 @@ object CustomItems {
 		) {}
 	)
 
+	val RAW_TITANIUM : MineralItem = register(
+		object : MineralItem(
+			identifier = "RAW_TITANIUM",
+			material = RAW_IRON,
+			customModelData = 3,
+			displayName = text("Raw Titanium").decoration(ITALIC, false)
+		), Smeltable { override val smeltResultIdentifier: String = "TITANIUM_INGOT" }
+	)
+
 	val TITANIUM_ORE : CustomBlockItem = register(
 		object : CustomBlockItem(
 			identifier = "TITANIUM_ORE",
@@ -401,6 +420,15 @@ object CustomItems {
 			customModelData = 4,
 			displayName = text("Uranium").decoration(ITALIC, false),
 		) {}
+	)
+
+	val RAW_URANIUM : MineralItem = register(
+		object : MineralItem(
+			identifier = "RAW_URANIUM",
+			material = RAW_IRON,
+			customModelData = 4,
+			displayName = text("Raw Uranium").decoration(ITALIC, false)
+		), Smeltable { override val smeltResultIdentifier: String = "URANIUM" }
 	)
 
 	val URANIUM_ORE : CustomBlockItem = register(
