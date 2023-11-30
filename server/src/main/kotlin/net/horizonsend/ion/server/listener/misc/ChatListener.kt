@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.horizonsend.ion.server.features.misc.NewPlayerProtection.updateProtection
+import net.horizonsend.ion.common.utils.Mutes
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
+import net.horizonsend.ion.server.features.misc.NewPlayerProtection.updateProtection
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -45,7 +46,10 @@ object ChatListener : SLEventListener() {
 		event.player.updateProtection()
 
 		val channel = when {
-			event.message.startsWith("!") -> ChatChannel.GLOBAL
+			event.message.startsWith("!") -> {
+				if (Mutes.muteCache[event.player.uniqueId]) return
+				ChatChannel.GLOBAL
+			}
 			else -> ChannelSelections[event.player]
 		}
 
