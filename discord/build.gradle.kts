@@ -13,9 +13,14 @@ repositories {
 }
 
 dependencies {
-//	implementation(project(":common"))
+	implementation(project(":common"))
 
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
+
+	implementation("org.slf4j:slf4j-api:1.7.5")
+	implementation("org.slf4j:slf4j-simple:1.7.5")
+
 	implementation("net.dv8tion:JDA:5.0.0-beta.13") { exclude("opus-java") }
 }
 
@@ -28,8 +33,12 @@ tasks.register<Wrapper>("wrapper") {
 }
 
 tasks.shadowJar {
-	dependsOn(tasks.jar)
-
 	destinationDirectory.set(layout.buildDirectory.get())
 	archiveFileName.set("IonDiscordBot.jar")
 }
+
+tasks.build {
+	dependsOn(tasks.shadowJar)
+}
+
+kotlin.jvmToolchain(17)
