@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
@@ -109,6 +110,8 @@ class IonProxy : Plugin() {
 				discord.presence.setPresence(ONLINE, playing("with ${proxy.onlineCount} players!"))
 			}, 0, 5, TimeUnit.SECONDS)
 		}
+
+		DBManager.INITIALIZATION_COMPLETE = true
 	}
 
 	private val endTime = System.currentTimeMillis()
