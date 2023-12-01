@@ -2,7 +2,7 @@ package net.horizonsend.ion.common.utils.text
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
-import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike

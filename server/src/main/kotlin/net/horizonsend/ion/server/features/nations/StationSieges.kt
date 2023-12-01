@@ -15,7 +15,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
-import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer

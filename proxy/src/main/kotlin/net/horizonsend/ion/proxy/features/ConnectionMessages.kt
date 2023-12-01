@@ -1,56 +1,74 @@
 package net.horizonsend.ion.proxy.features
 
-import net.horizonsend.ion.proxy.IonProxyComponent
+import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.discord.Channel
 import net.horizonsend.ion.proxy.PLUGIN
+import net.horizonsend.ion.proxy.messageEmbed
+import net.horizonsend.ion.proxy.utils.RedisActions
 import net.horizonsend.ion.proxy.utils.isBanned
-import net.horizonsend.ion.proxy.utils.messageEmbed
-import net.horizonsend.ion.proxy.utils.sendRichMessage
+import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.config.ServerInfo
-import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.api.event.PlayerDisconnectEvent
+import net.md_5.bungee.api.event.ServerConnectEvent
+import net.md_5.bungee.api.event.ServerConnectedEvent
+import net.md_5.bungee.event.EventHandler
+import net.md_5.bungee.event.EventPriority
 
-object ConnectionMessages : IonProxyComponent() {
-	fun onLogin(player: ProxiedPlayer, serverInfo: ServerInfo) { // This event is only called when logging into the server the first time
-		if (player.isBanned()) return
+object ConnectionMessages : IonComponent() {
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun onLogin(event: ServerConnectedEvent) { // This event is only called when logging into the server the first time
+		val info = event.server.info
 
-		PLUGIN.proxy.sendRichMessage("<dark_gray>[<green>+ <gray>${serverInfo.name}<dark_gray>] <white>${player.name}")
+		PLUGIN.proxy.information("<dark_gray>[<green>+ <gray>${info.name}<dark_gray>] <white>${event.player.name}")
 
+		RedisActions.discord_action.publish(Channel.GLOBAL to )
 		PLUGIN.discord?.let { jda ->
 			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 			globalChannel.sendMessageEmbeds(
 				messageEmbed(
-					description = "[+ ${serverInfo.name}] ${player.name.replace("_", "\\_")}",
+					description = "[+ ${info.name}] ${event.player.name.replace("_", "\\_")}",
 					color = ChatColor.GREEN.color.rgb
 				)
 			).queue()
 		}
 	}
 
-	fun onSwitchServer(player: ProxiedPlayer, serverInfo: ServerInfo) {
-		PLUGIN.proxy.sendRichMessage("<dark_gray>[<blue>> <gray>${serverInfo.name}<dark_gray>] <white>${player.name}")
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun onSwitchServer(event: ServerConnectEvent) {
+		if (event.isCancelled) return
+		if (event.reason == ServerConnectEvent.Reason.JOIN_PROXY) return
+
+		val player = WrappedPlayer(event.player)
+		PLUGIN.proxy.information("<dark_gray>[<blue>> <gray>${event.target.name}<dark_gray>] <white>${player.name}")
 
 		PLUGIN.discord?.let { jda ->
 			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 			globalChannel.sendMessageEmbeds(
 				messageEmbed(
-					description = "[> ${serverInfo.name}] ${player.name.replace("_", "\\_")}",
+					description = "[> ${event.target.name}] ${player.name.replace("_", "\\_")}",
 					color = ChatColor.BLUE.color.rgb
 				)
 			).queue()
 		}
 	}
 
-	fun onPlayerDisconnect(player: ProxiedPlayer, serverInfo: ServerInfo) {
-		PLUGIN.proxy.sendRichMessage("<dark_gray>[<red>- <gray>${serverInfo.name}<dark_gray>] <white>${player.displayName}")
+	@EventHandler(priority = EventPriority.LOWEST)
+	fun onPlayerDisconnect(event: PlayerDisconnectEvent) {
+		val serverName = PLUGIN.playerServerMap.remove(event.player.uniqueId)!!.name
+
+		if (event.player.isBanned()) return
+
+		PLUGIN.proxy.information("<dark_gray>[<red>- <gray>$serverName<dark_gray>] <white>${event.player.displayName}")
 
 		PLUGIN.discord?.let { jda ->
 			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
 
 			globalChannel.sendMessageEmbeds(
 				messageEmbed(
-					description = "[- ${serverInfo.name}] ${player.name.replace("_", "\\_")}",
+					description = "[- $serverName] ${event.player.name.replace("_", "\\_")}",
 					color = ChatColor.RED.color.rgb
 				)
 			).queue()
