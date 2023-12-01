@@ -1,37 +1,18 @@
 package net.horizonsend.ion.proxy
 
 import co.aikar.commands.BungeeCommandManager
-import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.OnlineStatus.ONLINE
-import net.dv8tion.jda.api.entities.Activity.playing
-import net.dv8tion.jda.api.requests.GatewayIntent
-import net.dv8tion.jda.api.utils.ChunkingFilter
-import net.dv8tion.jda.api.utils.MemberCachePolicy
-import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.CommonConfig
-import net.horizonsend.ion.common.IonComponent
-import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
-import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordNationInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.DiscordSettlementInfoCommand
-import net.horizonsend.ion.proxy.commands.discord.IonDiscordCommand.Companion.ASYNC_COMMAND_THREAD
-import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
-import net.horizonsend.ion.proxy.commands.waterfall.BungeeInfoCommand
-import net.horizonsend.ion.proxy.commands.waterfall.MessageCommand
-import net.horizonsend.ion.proxy.commands.waterfall.ReplyCommand
-import net.horizonsend.ion.proxy.managers.ReminderManager
-import net.horizonsend.ion.proxy.utils.ProxyTask
+import net.horizonsend.ion.proxy.commands.BungeeInfoCommand
+import net.horizonsend.ion.proxy.commands.MessageCommand
+import net.horizonsend.ion.proxy.commands.ReplyCommand
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.horizonsend.ion.proxy.wrappers.WrappedProxy
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
 import net.md_5.bungee.api.config.ServerInfo
-import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.api.plugin.Plugin
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
 lateinit var PLUGIN: IonProxy private set
 
@@ -44,19 +25,6 @@ class IonProxy : Plugin() {
 	val adventure = BungeeAudiences.create(this)
 
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
-
-	val discord = try {
-		JDABuilder.createLight(configuration.discordBotToken)
-			.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
-			.setMemberCachePolicy(MemberCachePolicy.ALL)
-			.setChunkingFilter(ChunkingFilter.ALL)
-			.disableCache(CacheFlag.values().toList())
-			.setEnableShutdownHook(false)
-			.build()
-	} catch (exception: Exception) {
-		slF4JLogger.warn("Failed to start JDA", exception)
-		null
-	}
 
 	val playerServerMap = mutableMapOf<UUID, ServerInfo>()
 
@@ -73,19 +41,11 @@ class IonProxy : Plugin() {
 
 		CommonConfig.init(dataFolder)
 
-		ReminderManager.scheduleReminders()
-
 		proxy.pluginManager.apply {
 			for (component in components) {
-				if (component is IonProxyComponent) {
-					registerListener(this@IonProxy, component)
+				if (component is IonProxyComponent) registerListener(this@IonProxy, component)
 
-					if (component.runAfterTick) {
-						ProxyTask.sync { component.onEnable() }
-					} else component.onEnable()
-				} else {
-					component.onEnable()
-				}
+				component.onEnable()
 			}
 		}
 
@@ -95,22 +55,6 @@ class IonProxy : Plugin() {
 			registerCommand(ReplyCommand())
 		}
 
-		discord?.let {
-			JDACommandManager(discord, configuration).apply {
-				registerGuildCommand(DiscordInfoCommand)
-				registerGuildCommand(PlayerListCommand)
-				registerGlobalCommand(DiscordPlayerInfoCommand)
-				registerGlobalCommand(DiscordSettlementInfoCommand)
-				registerGlobalCommand(DiscordNationInfoCommand)
-
-				build()
-			}
-
-			proxy.scheduler.schedule(this, {
-				discord.presence.setPresence(ONLINE, playing("with ${proxy.onlineCount} players!"))
-			}, 0, 5, TimeUnit.SECONDS)
-		}
-
 		DBManager.INITIALIZATION_COMPLETE = true
 	}
 
@@ -118,16 +62,8 @@ class IonProxy : Plugin() {
 
 	init { slF4JLogger.info("Loaded in %,3dms".format(endTime - startTime)) }
 
-	override fun onEnable() {}
-
 	override fun onDisable() {
 		adventure.close()
-		discord?.shutdown()
-
-		ASYNC_COMMAND_THREAD.shutdown()
 	}
 }
 
-abstract class IonProxyComponent(
-	val runAfterTick: Boolean = false
-) : Listener, IonComponent()
