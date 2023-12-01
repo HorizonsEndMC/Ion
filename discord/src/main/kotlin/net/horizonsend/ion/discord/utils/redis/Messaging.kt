@@ -5,8 +5,8 @@ import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.extensions.CommonPlayer
 import net.horizonsend.ion.common.utils.discord.Channel
-import net.horizonsend.ion.common.utils.redis.RedisPubSubAction
-import net.horizonsend.ion.common.utils.redis.RedisPubSubActionReply
+import net.horizonsend.ion.common.utils.redis.actions.RedisPubSubAction
+import net.horizonsend.ion.common.utils.redis.actions.RedisResponseAction
 import net.horizonsend.ion.discord.utils.Messages
 
 object Messaging : IonComponent() {
@@ -24,8 +24,7 @@ object Messaging : IonComponent() {
 		}
 	}
 
-	val getPlayersAction = object : RedisPubSubActionReply<String, List<CommonPlayer>>(
-		sendPlayersAction,
+	val getPlayersAction = object : RedisResponseAction<String, List<CommonPlayer>>(
 		"get-players",
 		object : TypeToken<Collection<String>>() {}.type,
 		false

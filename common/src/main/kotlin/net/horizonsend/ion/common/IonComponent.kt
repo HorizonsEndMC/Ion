@@ -1,7 +1,7 @@
 package net.horizonsend.ion.common
 
 import net.horizonsend.ion.common.utils.redis.RedisActions
-import net.horizonsend.ion.common.utils.redis.RedisPubSubAction
+import net.horizonsend.ion.common.utils.redis.actions.RedisPubSubAction
 
 abstract class IonComponent {
 	protected val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(javaClass)
