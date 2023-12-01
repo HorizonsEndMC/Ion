@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.luckPerms
-import net.horizonsend.ion.common.utils.redisaction.RedisAction
+import net.horizonsend.ion.common.utils.redis.RedisPubSubAction
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -267,7 +267,7 @@ enum class ChatChannel(val displayName: String, val commandAliases: List<String>
 			}
 		}.registerRedisAction("chat-global", runSync = false)
 
-		private fun simpleCrossServerChannelAction(name: String): RedisAction<NormalChatMessage> {
+		private fun simpleCrossServerChannelAction(name: String): RedisPubSubAction<NormalChatMessage> {
 			return { message: NormalChatMessage ->
 				val component = message.buildChatComponent()
 				for (player in Bukkit.getOnlinePlayers()) {

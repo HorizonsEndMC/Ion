@@ -1,7 +1,7 @@
 package net.horizonsend.ion.common.database.cache.nations
 
-import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
 import net.horizonsend.ion.common.database.oid
@@ -11,7 +11,6 @@ import net.horizonsend.ion.common.database.string
 import java.util.concurrent.ConcurrentHashMap
 
 object NationCache : ManualCache() {
-
 	data class NationData(
 		val id: Oid<Nation>,
 		var name: String,

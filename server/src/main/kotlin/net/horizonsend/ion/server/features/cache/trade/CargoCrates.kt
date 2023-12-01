@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.cache.trade
 
 import com.google.gson.Gson
-import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
+import net.horizonsend.ion.common.utils.redis.RedisActions
+import net.horizonsend.ion.common.utils.redis.RedisPubSubAction
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateItems
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
-import net.horizonsend.ion.common.utils.redisaction.RedisAction
-import net.horizonsend.ion.common.utils.redisaction.RedisActions
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
 import org.bukkit.inventory.ItemStack
@@ -23,7 +23,7 @@ import java.util.Date
 import java.util.Locale
 
 object CargoCrates : ManualCache() {
-	private lateinit var refreshGlobal: RedisAction<Long>
+	private lateinit var refreshGlobal: RedisPubSubAction<Long>
 
 	override fun load() {
 		refreshGlobal = RedisActions.register("trade-reload-all-crate-data", runSync = false) { time: Long ->
