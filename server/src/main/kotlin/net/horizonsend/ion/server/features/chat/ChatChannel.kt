@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.luckPerms
-import net.horizonsend.ion.common.utils.redis.RedisPubSubAction
+import net.horizonsend.ion.common.utils.redis.actions.RedisPubSubAction
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.features.cache.PlayerCache

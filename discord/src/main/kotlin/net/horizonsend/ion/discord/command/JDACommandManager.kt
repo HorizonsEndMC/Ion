@@ -214,7 +214,7 @@ class JDACommandManager(private val jda: JDA, private val configuration: Discord
 	}
 
 	override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
-		IonDiscordScheduler.async {
+		IonDiscordScheduler.run {
 			val commandList = if (event.isGlobalCommand) globalCommands else guildCommands
 			val commandClass = commandList.find { it::class.commandAlias == event.name }!!
 
@@ -224,9 +224,9 @@ class JDACommandManager(private val jda: JDA, private val configuration: Discord
 			// Current param of the slash command
 			val focusedField = event.focusedOption
 			// Function param matching focused field
-			val param = method.parameters.firstOrNull { it.name == focusedField.name } ?: return@async
+			val param = method.parameters.firstOrNull { it.name == focusedField.name } ?: return@run
 
-			val completionForParam = param.completions ?: return@async
+			val completionForParam = param.completions ?: return@run
 			val entered = event.focusedOption.value
 
 			val results = commandCompletions

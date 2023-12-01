@@ -6,13 +6,15 @@ import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager.jedisPool
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.utils.redis.actions.RedisListener
+import net.horizonsend.ion.common.utils.redis.actions.RedisPubSubAction
+import net.horizonsend.ion.common.utils.redis.actions.RedisResponseAction
 import net.horizonsend.ion.common.utils.redis.gson.OidJsonSerializer
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Type
 import java.util.UUID
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import java.util.concurrent.ThreadFactory
 
 object RedisActions : IonComponent() {
@@ -20,7 +22,7 @@ object RedisActions : IonComponent() {
 		.registerTypeAdapter(Oid::class.java, OidJsonSerializer)
 		.create()
 
-	private val idActionMap = mutableMapOf<String, RedisPubSubAction<*>>()
+	private val idActionMap = mutableMapOf<String, RedisListener<*>>()
 
 	private lateinit var channel: String
 	private lateinit var pubSub: JedisPubSub
@@ -79,16 +81,14 @@ object RedisActions : IonComponent() {
 		}
 	})
 
-	fun <Data> publish(messageId: String, data: Data, type: Type) : Future<Long?> {
+	fun <Data> publish(messageId: String, data: Data, type: Type) : UUID {
 		val content = gson.toJson(data, type)
-		val message = "$serverId:$messageId:$content"
+		val messageUuid = UUID.randomUUID()
+		val message = "$serverId:$messageId:$messageUuid:$content"
 
-		@Suppress("UNCHECKED_CAST")
-		val id: Future<Long?> = executor.submit {
-			jedisPool.resource.use { it.publish(channel, message) }
-		} as Future<Long?>
+		executor.execute { jedisPool.resource.use { it.publish(channel, message) } }
 
-		return id
+		return messageUuid
 	}
 
 	private object IonPubSubListener : JedisPubSub() {
@@ -101,7 +101,14 @@ object RedisActions : IonComponent() {
 			val messageInfo = Message.breakMessage(message)
 
 			if (messageInfo.serverId == serverId.toString()) return // ignore if it came from us
-			val pluginMessage = idActionMap[messageInfo.actionId]
+
+			val invoke: (RedisListener<*>, Any) -> Unit = if (messageInfo.actionId.endsWith("_reply")) {{ pluginMessage, data ->
+				(pluginMessage as RedisResponseAction<*, *>).castAndReceiveResponse(RedisResponseAction.Response(messageInfo.messageId, data))
+			}} else {{ pluginMessage, data ->
+				pluginMessage.castAndReceive(data)
+			}}
+
+			val pluginMessage = idActionMap[messageInfo.actionId.removeSuffix("_reply")]
 
 			if (pluginMessage == null) {
 				log.warn("Unknown message ${messageInfo.actionId}. Full contents: $message")
@@ -118,7 +125,7 @@ object RedisActions : IonComponent() {
 			}
 
 			try {
-				pluginMessage.castAndReceive(data)
+				invoke(pluginMessage, data)
 			} catch (exception: Exception) {
 				log.error("Error while executing redis action $message", exception)
 			}
@@ -128,6 +135,7 @@ object RedisActions : IonComponent() {
 	data class Message(
 		val serverId: String,
 		val actionId: String,
+		val messageId: String,
 		val jsonMessage: String
 	) {
 		companion object {
@@ -137,11 +145,14 @@ object RedisActions : IonComponent() {
 
 				val actionId = split[1]
 
+				val messageId = split[2]
+
 				val content: String = message
 					.removePrefix(split[0]).removePrefix(":")
 					.removePrefix(split[1]).removePrefix(":")
+					.removePrefix(split[2]).removePrefix(":")
 
-				return Message(serverId, actionId, content)
+				return Message(serverId, actionId, messageId, content)
 			}
 		}
 	}
