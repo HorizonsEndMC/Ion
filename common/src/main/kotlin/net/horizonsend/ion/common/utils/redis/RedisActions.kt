@@ -56,7 +56,7 @@ object RedisActions : IonComponent() {
 	}
 
 	// Actions
-	fun <T : RedisPubSubAction<*>> register(message: T) {
+	fun <T : RedisListener<*>> register(message: T) {
 		check(!idActionMap.containsKey(message.id)) { "Duplicate message ${message.id}" }
 		idActionMap[message.id] = message
 	}
@@ -86,6 +86,8 @@ object RedisActions : IonComponent() {
 		val messageUuid = UUID.randomUUID()
 		val message = "$serverId:$messageId:$messageUuid:$content"
 
+		log.info("Published redis message: $message")
+
 		executor.execute { jedisPool.resource.use { it.publish(channel, message) } }
 
 		return messageUuid
@@ -98,9 +100,14 @@ object RedisActions : IonComponent() {
 			// however, we still need to listen immediately so we don't miss any updates
 			if (!enabled) return
 
+			log.info("Received redis message: $channel | $message")
+
 			val messageInfo = Message.breakMessage(message)
 
-			if (messageInfo.serverId == serverId.toString()) return // ignore if it came from us
+			if (messageInfo.serverId == serverId.toString()) {
+				log.info("Received redis message ignored, same server")
+				return
+			}// ignore if it came from us
 
 			val invoke: (RedisListener<*>, Any) -> Unit = if (messageInfo.actionId.endsWith("_reply")) {{ pluginMessage, data ->
 				(pluginMessage as RedisResponseAction<*, *>).castAndReceiveResponse(RedisResponseAction.Response(messageInfo.messageId, data))
@@ -112,6 +119,7 @@ object RedisActions : IonComponent() {
 
 			if (pluginMessage == null) {
 				log.warn("Unknown message ${messageInfo.actionId}. Full contents: $message")
+				log.warn("Current listeners ${idActionMap.keys.joinToString()}")
 				return
 			}
 
