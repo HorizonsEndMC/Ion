@@ -19,7 +19,7 @@ class TriTurretWeaponSubsystem(
 		override val multiblock: TriTurretMultiblock
 ) : TurretWeaponSubsystem(ship, pos, face),
 	HeavyWeaponSubsystem, AutoWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.triTurrt
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.triTurret
 	override val inaccuracyRadians: Double = Math.toRadians(balancing.inaccuracyRadians)
 	override val powerUsage: Int = balancing.powerUsage
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
