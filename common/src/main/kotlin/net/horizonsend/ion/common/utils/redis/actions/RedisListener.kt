@@ -4,6 +4,7 @@ import java.lang.reflect.Type
 
 interface RedisListener<Data> {
 	val type: Type
+	val id: String
 
 	fun onReceive(data: Data)
 
