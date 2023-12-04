@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.GameMode
 import org.bukkit.Material.CHAINMAIL_BOOTS
 import org.bukkit.Material.CHAINMAIL_CHESTPLATE
@@ -84,11 +85,13 @@ class ResourcePackListener : SLEventListener() {
 			}
 		}
 
-		val (url, hash) = getURLAndHash() ?: let {
-			event.player.serverError("Unable to provide resource pack. This error may correct itself within 10 minutes, if not, contact an administrator.")
-			return
-		}
+		Tasks.async {
+			val (url, hash) = getURLAndHash() ?: let {
+				event.player.serverError("Unable to provide resource pack. This error may correct itself within 10 minutes, if not, contact an administrator.")
+				return@async
+			}
 
-		event.player.setResourcePack(url, hash)
+			Tasks.sync { event.player.setResourcePack(url, hash) }
+		}
 	}
 }
