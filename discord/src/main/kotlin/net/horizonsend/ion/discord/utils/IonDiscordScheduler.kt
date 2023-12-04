@@ -7,11 +7,7 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 
 object IonDiscordScheduler : IonComponent() {
-	lateinit var thread: ScheduledExecutorService
-
-	override fun onEnable() {
-		thread = Executors.newSingleThreadScheduledExecutor(namedThreadFactory("ion-scheduler"))
-	}
+	val thread: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(namedThreadFactory("ion-scheduler"))
 
 	/**  */
 	inline fun run(crossinline function: () -> Unit) {

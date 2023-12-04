@@ -16,8 +16,8 @@ import net.horizonsend.ion.discord.command.annotations.CommandAlias
 import net.horizonsend.ion.discord.command.annotations.Default
 import net.horizonsend.ion.discord.command.annotations.Description
 import net.horizonsend.ion.discord.command.annotations.ParamCompletion
+import net.horizonsend.ion.discord.features.redis.Messaging.getPlayers
 import net.horizonsend.ion.discord.utils.messageEmbed
-import net.horizonsend.ion.discord.utils.redis.Messaging.getPlayers
 
 @CommandAlias("playerinfo")
 @Description("Get information about a player.")
