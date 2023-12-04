@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
+import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.utils.getUpdateMessage
@@ -114,6 +115,8 @@ object IonServer : JavaPlugin() {
 		}
 
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB
+
+		BazaarItem.replaceLegacyMinerals()
 	}
 
 	override fun onDisable() {

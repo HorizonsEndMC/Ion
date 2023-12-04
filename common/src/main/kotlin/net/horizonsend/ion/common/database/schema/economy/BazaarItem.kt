@@ -107,5 +107,31 @@ data class BazaarItem(
 			col.updateMany(sess, BazaarItem::seller eq seller, org.litote.kmongo.setValue(BazaarItem::balance, 0.0))
 			return@trx total
 		}
+
+		fun replaceLegacyMinerals(): Unit = trx { sess ->
+			val replacements = mutableMapOf(
+				"aluminum" to "ALUMINUM_INGOT",
+				"aluminum_ore" to "ALUMINUM_ORE",
+				"aluminum_block" to "ALUMINUM_BLOCK",
+				"chetherite" to "CHETHERITE",
+				"chetherite_ore" to "CHETHERITE_ORE",
+				"chetherite_block" to "CHETHERITE_BLOCK",
+				"titanium" to "TITANIUM_INGOT",
+				"titanium_ore" to "TITANIUM_ORE",
+				"titanium_block" to "TITANIUM_BLOCK",
+				"uranium" to "URANIUM",
+				"uranium_ore" to "URANIUM_ORE",
+				"uranium_block" to "URANIUM_BLOCK",
+			)
+
+			for (entry in BazaarItem.all())
+			{
+				if (!replacements.containsKey(entry.itemString)) continue
+
+				val replacement = replacements[entry.itemString]!!
+
+				BazaarItem.updateById(entry._id, org.litote.kmongo.setValue(BazaarItem::itemString, replacement))
+			}
+		}
 	}
 }
