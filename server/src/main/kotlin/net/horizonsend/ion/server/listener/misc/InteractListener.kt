@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.PowerStoringMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlockItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomItems
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
@@ -20,6 +21,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
@@ -107,7 +109,6 @@ object InteractListener : SLEventListener() {
 		}
 	}
 
-	/*
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	fun onBlockPlace(event: BlockPlaceEvent) {
 		val player = event.player
@@ -118,5 +119,4 @@ object InteractListener : SLEventListener() {
 
 		event.block.location.block.setBlockData(item.customBlock.blockData, true)
 	}
-	 */
 }
