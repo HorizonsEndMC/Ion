@@ -10,7 +10,6 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.common.utils.redis.RedisAction
 import net.horizonsend.ion.common.utils.text.addSpace
 import net.horizonsend.ion.common.utils.text.bracketed
@@ -19,6 +18,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.LegacySettings
+import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
@@ -55,19 +55,13 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 	GLOBAL(text("Global", DARK_GREEN), listOf("global", "g"), WHITE) {
 		override fun onChat(player: Player, event: AsyncChatEvent) {
 			if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) {
-				player.userErrorAction(
-					"You can't use global chat in this world! " +
-						"<italic>(If you need assistance, please use /msg)"
-				)
+				player.userErrorAction("You can't use global chat in this world! <italic>(If you need assistance, please use /msg)")
 			}
 
-			val group = luckPerms.groupManager.getGroup("noglobal")
+			if (GToggleCommand.noGlobalInheritanceNode != null) {
+				val user = player.common().getUser()
 
-			if (group != null) {
-				val node = luckPerms.nodeBuilderRegistry.forInheritance().group(group).value(true).build()
-				val user = luckPerms.userManager.getUser(player.uniqueId)
-
-				if (user?.data()?.contains(node, NodeEqualityPredicate.IGNORE_EXPIRY_TIME)?.asBoolean() == true) {
+				if (user.data().contains(GToggleCommand.noGlobalInheritanceNode, NodeEqualityPredicate.IGNORE_EXPIRY_TIME).asBoolean()) {
 					player.userErrorAction("You have gtoggle on! Use /gtoggle to disable.")
 					return
 				}
@@ -294,17 +288,13 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		private val globalAction = { message: NormalChatMessage ->
 			val component = message.buildChatComponent()
 
-			val node = luckPerms.groupManager.getGroup("noglobal")?.let {
-				luckPerms.nodeBuilderRegistry.forInheritance().group(it).value(true).build()
-			}
-
 			for (player in Bukkit.getOnlinePlayers()) {
-				if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) {
-					continue
-				}
-				if (node != null) {
-					val user = luckPerms.userManager.getUser(player.uniqueId)
-					if (user?.data()?.contains(node, NodeEqualityPredicate.IGNORE_EXPIRY_TIME)?.asBoolean() == true) {
+				if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) continue
+
+				if (GToggleCommand.noGlobalInheritanceNode != null) {
+					val user = player.common().getUser()
+
+					if (user.data().contains(GToggleCommand.noGlobalInheritanceNode, NodeEqualityPredicate.IGNORE_EXPIRY_TIME).asBoolean()) {
 						continue
 					}
 				}
@@ -315,16 +305,18 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		private fun simpleCrossServerChannelAction(name: String): RedisAction<NormalChatMessage> {
 			return { message: NormalChatMessage ->
 				val component = message.buildChatComponent()
+
 				for (player in Bukkit.getOnlinePlayers()) {
-					if (player.hasPermission("chat.channel.$name")) {
-						player.sendMessage(component)
-					}
+					if (player.hasPermission("chat.channel.$name")) player.sendMessage(component)
 				}
 			}.registerRedisAction("chat-$name", runSync = false)
 		}
 
 		private val adminAction = simpleCrossServerChannelAction("admin")
+
+		// Keeping this as a relic
 		private val pumpkinAction = simpleCrossServerChannelAction("pumpkin")
+
 		private val staffAction = simpleCrossServerChannelAction("staff")
 		private val modAction = simpleCrossServerChannelAction("mod")
 		private val devAction = simpleCrossServerChannelAction("dev")
