@@ -18,13 +18,15 @@ import net.horizonsend.ion.discord.command.annotations.Description
 import net.horizonsend.ion.discord.command.annotations.ParamCompletion
 import net.horizonsend.ion.discord.features.PlayerTracking.getAllPlayers
 import net.horizonsend.ion.discord.utils.messageEmbed
+import org.litote.kmongo.gte
+import java.util.Date
 
 @CommandAlias("playerinfo")
 @Description("Get information about a player.")
 object DiscordPlayerInfoCommand : IonDiscordCommand() {
 	override fun onEnable(commandManager: JDACommandManager) {
-		commandManager.registerCommandCompletion("onlinePlayers") { listOf() }
-		commandManager.registerCommandCompletion("allPlayers") { SLPlayer.all().map { it.lastKnownName } }
+		commandManager.registerCommandCompletion("onlinePlayers") { getAllPlayers().map { it.name } }
+		commandManager.registerCommandCompletion("allPlayers") { SLPlayer.findProps(SLPlayer::lastSeen gte Date(0), SLPlayer::lastKnownName).map { it[SLPlayer::lastKnownName] }.toList() }
 	}
 
 	@Default

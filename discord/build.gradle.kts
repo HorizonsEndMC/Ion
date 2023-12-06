@@ -37,8 +37,8 @@ tasks.register<Wrapper>("wrapper") {
 }
 
 tasks.shadowJar {
-	destinationDirectory.set(layout.buildDirectory.get())
-	archiveFileName.set("IonDiscordBot.jar")
+//	destinationDirectory.set(layout.buildDirectory.get())
+	archiveFileName.set("../../../build/IonDiscordBot.jar")
 }
 
 tasks.build {
