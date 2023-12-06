@@ -1,60 +1,40 @@
 package net.horizonsend.ion.server.listener.misc
 
+import io.papermc.paper.event.player.AsyncChatEvent
 import net.horizonsend.ion.common.utils.Mutes
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.updateProtection
-import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
-import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.vaultChat
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.player.AsyncPlayerChatEvent
 
 object ChatListener : SLEventListener() {
 	override fun supportsVanilla(): Boolean {
 		return true
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
-	fun onAsyncPlayerChatEventA(event: AsyncPlayerChatEvent) {
-		event.player.updateProtection()
-		val prefix = vaultChat.getPlayerPrefix(event.player)
-		val suffix = vaultChat.getPlayerSuffix(event.player)
-		event.format = "$prefix%s$suffix ${SLTextStyle.DARK_GRAY}» ${SLTextStyle.RESET}%s".colorize()
-
-		if (!event.message.startsWith("!")) {
-			val channel = ChannelSelections[event.player]
-			event.message = "${channel.messageColor}${event.message}"
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGH)
-	fun onAsyncPlayerChatEventB(event: AsyncPlayerChatEvent) {
-		event.player.updateProtection()
-		event.format = "&8[&b${Levels[event.player]}&8]&7 ".colorize() + event.format
-	}
-
 	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onAsyncPlayerChatEventC(event: AsyncPlayerChatEvent) {
+	fun onAsyncPlayerChatEventC(event: AsyncChatEvent) {
 		if (event.isCancelled) return
 
 		event.isCancelled = true
 
+		if (Mutes.muteCache[event.player.uniqueId]) return
+
 		event.player.updateProtection()
 
+		val plainText = event.signedMessage().message()
+
 		val channel = when {
-			event.message.startsWith("!") -> {
-				if (Mutes.muteCache[event.player.uniqueId]) return
-				ChatChannel.GLOBAL
-			}
+			plainText.startsWith("!") -> ChatChannel.GLOBAL
 			else -> ChannelSelections[event.player]
 		}
 
-		event.message = event.message.removePrefix("!").trim()
-		if (event.message.isBlank()) return
+		// For some reason the replace function returns a copy, no other adventure method does this
+		event.message(event.message().replaceText { builder -> builder.matchLiteral("!").once().replacement("") })
+		if (event.message().plainText().isEmpty()) return
 
 		channel.onChat(event.player, event)
 	}
