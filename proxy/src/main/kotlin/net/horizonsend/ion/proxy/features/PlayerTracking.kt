@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit
 
 object PlayerTracking : IonProxyComponent() {
 	override fun onEnable() {
-		PLUGIN.proxy.scheduler.repeat(1000L, 1000L, TimeUnit.MILLISECONDS) {
-			broadcastPlayersAction(CommonPlayerDataContainer(Server.DISCORD_BOT, getPlayers()))
-		}
+		PLUGIN.proxy.scheduler.repeat(1000L, 1000L, TimeUnit.MILLISECONDS) { broadcastPlayers() }
 	}
+
+	private fun broadcastPlayers() = broadcastPlayersAction(CommonPlayerDataContainer(Server.PROXY, getPlayers()))
 
 	private fun getPlayers(): List<CommonPlayer> = PLUGIN.proxy.players
 
