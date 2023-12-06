@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils.redis.gson
+package net.horizonsend.ion.common.utils.redis.serialization
 
 import com.google.gson.InstanceCreator
 import com.google.gson.JsonDeserializationContext
@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.database.Oid
 import org.bson.types.ObjectId
 import java.lang.reflect.Type
 
-object OidJsonSerializer : JsonSerializer<Oid<*>>, JsonDeserializer<Oid<*>>, InstanceCreator<Oid<*>> {
+object OidSerializer : JsonSerializer<Oid<*>>, JsonDeserializer<Oid<*>>, InstanceCreator<Oid<*>> {
 	override fun serialize(src: Oid<*>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
 		return JsonPrimitive(src.toString())
 	}
