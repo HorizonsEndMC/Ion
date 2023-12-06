@@ -60,6 +60,7 @@ object RedisActions : IonComponent() {
 	}
 
 	fun <T : RedisAction<*>> register(message: T) {
+		log.info("Registered Redis Action ${message.id}")
 		check(!idActionMap.containsKey(message.id)) { "Duplicate message ${message.id}" }
 		idActionMap[message.id] = message
 	}
