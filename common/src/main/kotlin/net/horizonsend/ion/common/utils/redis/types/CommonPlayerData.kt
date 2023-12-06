@@ -21,4 +21,3 @@ data class CommonPlayerDataContainer(
 	val server: Server,
 	val players: List<CommonPlayer>
 )
-

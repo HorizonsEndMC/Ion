@@ -115,7 +115,7 @@ object RedisActions : IonComponent() {
 			if (!formatted.targetServers.contains(CommonConfig.common.serverType)) return
 
 			// ignore if it came from the server it was sent from
-			if (formatted.serverId == serverId.toString()) return log.info("Received redis message ignored, same server")
+			if (formatted.serverId == serverId.toString()) return
 
 			val receiver = idActionMap[formatted.actionId] ?: return log.warn("Unknown redis action: ${formatted.actionId}, full contents: $formatted")
 
