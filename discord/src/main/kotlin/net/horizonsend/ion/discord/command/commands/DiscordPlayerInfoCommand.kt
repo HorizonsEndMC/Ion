@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
 import net.horizonsend.ion.discord.command.InvalidCommandArgument
 import net.horizonsend.ion.discord.command.IonDiscordCommand
@@ -15,6 +16,7 @@ import net.horizonsend.ion.discord.command.annotations.CommandAlias
 import net.horizonsend.ion.discord.command.annotations.Default
 import net.horizonsend.ion.discord.command.annotations.Description
 import net.horizonsend.ion.discord.command.annotations.ParamCompletion
+import net.horizonsend.ion.discord.features.PlayerTracking.getAllPlayers
 import net.horizonsend.ion.discord.utils.messageEmbed
 
 @CommandAlias("playerinfo")
@@ -75,7 +77,7 @@ object DiscordPlayerInfoCommand : IonDiscordCommand() {
 
 		val time: Long = System.currentTimeMillis() - slPlayer.lastSeen.time
 		val prefix: String = when {
-//			getPlayers("proxy").any { it.uniqueId == slPlayer._id.uuid }  -> "Online"
+			getAllPlayers().any { it.uniqueId == slPlayer._id.uuid }  -> "Online"
 			else -> "Offline"
 		}
 		val onlineField = MessageEmbed.Field(
