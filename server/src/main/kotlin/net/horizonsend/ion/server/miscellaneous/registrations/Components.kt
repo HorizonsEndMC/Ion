@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.redis.RedisActions
 import net.horizonsend.ion.server.features.bounties.Bounties
 import net.horizonsend.ion.server.features.cache.Caches
 import net.horizonsend.ion.server.features.chat.ChannelSelections
+import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.client.whereisit.mod.ModNetworking
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -162,7 +163,10 @@ val components: List<IonComponent> = listOf(
 	StarshipDealers,
 	ShipKillXP,
 	Decomposers,
+
+	ChatChannel.ChannelActions,
 	ChannelSelections,
+
 	LastPilotedStarship,
 
 	DutyModeMonitor,

@@ -1,15 +1,12 @@
 package net.horizonsend.ion.common.utils.redis
 
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager.jedisPool
-import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.utils.redis.actions.RedisListener
-import net.horizonsend.ion.common.utils.redis.actions.RedisPubSubAction
-import net.horizonsend.ion.common.utils.redis.actions.RedisResponseAction
-import net.horizonsend.ion.common.utils.redis.gson.OidJsonSerializer
+import net.horizonsend.ion.common.utils.Server
+import net.horizonsend.ion.common.utils.redis.messaging.MessageWrapper
+import net.horizonsend.ion.common.utils.redis.serialization.RedisSerialization
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPubSub
 import java.lang.reflect.Type
@@ -18,17 +15,11 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 
 object RedisActions : IonComponent() {
-	private val gson = GsonBuilder()
-		.registerTypeAdapter(Oid::class.java, OidJsonSerializer)
-		.create()
-
-	private val idActionMap = mutableMapOf<String, RedisListener<*>>()
+	var enabled = false
 
 	private lateinit var channel: String
 	private lateinit var pubSub: JedisPubSub
 	private lateinit var subscriber: Jedis
-
-	var enabled = false
 
 	override fun onEnable() {
 		connect()
@@ -56,19 +47,21 @@ object RedisActions : IonComponent() {
 	}
 
 	// Actions
-	fun <T : RedisListener<*>> register(message: T) {
-		check(!idActionMap.containsKey(message.id)) { "Duplicate message ${message.id}" }
-		idActionMap[message.id] = message
-	}
+	private val idActionMap = mutableMapOf<String, RedisAction<*>>()
 
-	inline fun <reified T, B> register(id: String, runSync: Boolean, noinline function: (T) -> B): RedisPubSubAction<T> {
-		val action = object : RedisPubSubAction<T>(id, object : TypeToken<T>() {}.type, runSync) {
+	inline fun <reified T, B> register(id: String, runSync: Boolean, noinline function: (T) -> B): RedisAction<T> {
+		val action = object : RedisAction<T>(id, object : TypeToken<T>() {}.type, runSync) {
 			override fun onReceive(data: T) {
 				function.invoke(data)
 			}
 		}
 		register(action)
 		return action
+	}
+
+	fun <T : RedisAction<*>> register(message: T) {
+		check(!idActionMap.containsKey(message.id)) { "Duplicate message ${message.id}" }
+		idActionMap[message.id] = message
 	}
 
 	private val serverId = UUID.randomUUID()
@@ -81,12 +74,26 @@ object RedisActions : IonComponent() {
 		}
 	})
 
-	fun <Data> publish(messageId: String, data: Data, type: Type) : UUID {
-		val content = gson.toJson(data, type)
-		val messageUuid = UUID.randomUUID()
-		val message = "$serverId:$messageId:$messageUuid:$content"
+	val wrapperType: Type = object : TypeToken<MessageWrapper>() {}.type
 
-		log.info("Published redis message: $message")
+	fun <Data> publishMessage(
+		actionId: String,
+		content: Data,
+		type: Type,
+		targetServers: List<Server> = listOf(Server.SURVIVAL, Server.CREATIVE, Server.PROXY, Server.DISCORD_BOT)
+	) : UUID {
+		val messageUuid = UUID.randomUUID()
+		val serializedContent = RedisSerialization.serialize(data = content, type = type)
+
+		val wrapper = MessageWrapper(
+			actionId = actionId,
+			messageId = messageUuid.toString(),
+			serverId = serverId.toString(),
+			message = serializedContent,
+			targetServers = targetServers
+		)
+
+		val message = RedisSerialization.serialize(wrapper, wrapperType)
 
 		executor.execute { jedisPool.resource.use { it.publish(channel, message) } }
 
@@ -94,74 +101,26 @@ object RedisActions : IonComponent() {
 	}
 
 	private object IonPubSubListener : JedisPubSub() {
-		/** Upon receiving a message */
 		override fun onMessage(channel: String, message: String) {
 			// to prevent weird things from happening, delay all update handling till initialization is complete
 			// however, we still need to listen immediately so we don't miss any updates
 			if (!enabled) return
 
-			log.info("Received redis message: $channel | $message")
-
-			val messageInfo = Message.breakMessage(message)
-
-			if (messageInfo.serverId == serverId.toString()) {
-				log.info("Received redis message ignored, same server")
-				return
-			}// ignore if it came from us
-
-			val invoke: (RedisListener<*>, Any) -> Unit = if (messageInfo.actionId.endsWith("_reply")) {{ pluginMessage, data ->
-				(pluginMessage as RedisResponseAction<*, *>).castAndReceiveResponse(RedisResponseAction.Response(messageInfo.messageId, data))
-			}} else {{ pluginMessage, data ->
-				pluginMessage.castAndReceive(data)
-			}}
-
-			val pluginMessage = idActionMap[messageInfo.actionId.removeSuffix("_reply")]
-
-			if (pluginMessage == null) {
-				log.warn("Unknown message ${messageInfo.actionId}. Full contents: $message")
-				log.warn("Current listeners ${idActionMap.keys.joinToString()}")
-				return
+			val formatted = try { RedisSerialization.readTyped<MessageWrapper>(message, wrapperType) } catch (e: Exception) {
+				return log.warn("Could not deserialize redis message. Full contents: $message")
 			}
 
-			val content: String = messageInfo.jsonMessage
+			// Ignore messages not intended for this server
+			if (!formatted.targetServers.contains(CommonConfig.common.serverType)) return
 
-			val data = try {
-				gson.fromJson<Any>(content, pluginMessage.type)
-			} catch (exception: Exception) {
-				log.error("Error while reading redis message $message", exception)
-				return
-			}
+			// ignore if it came from the server it was sent from
+			if (formatted.serverId == serverId.toString()) return log.info("Received redis message ignored, same server")
 
-			try {
-				invoke(pluginMessage, data)
-			} catch (exception: Exception) {
-				log.error("Error while executing redis action $message", exception)
-			}
-		}
-	}
+			val receiver = idActionMap[formatted.actionId] ?: return log.warn("Unknown redis action: ${formatted.actionId}, full contents: $formatted")
 
-	data class Message(
-		val serverId: String,
-		val actionId: String,
-		val messageId: String,
-		val jsonMessage: String
-	) {
-		companion object {
-			fun breakMessage(message: String): Message {
-				val split = message.split(":")
-				val serverId = split[0]
+			val data = RedisSerialization.read(formatted.message, receiver.type)
 
-				val actionId = split[1]
-
-				val messageId = split[2]
-
-				val content: String = message
-					.removePrefix(split[0]).removePrefix(":")
-					.removePrefix(split[1]).removePrefix(":")
-					.removePrefix(split[2]).removePrefix(":")
-
-				return Message(serverId, actionId, messageId, content)
-			}
+			receiver.castAndReceive(data)
 		}
 	}
 }

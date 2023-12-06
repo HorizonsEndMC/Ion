@@ -1,13 +1,17 @@
 package net.horizonsend.ion.server.features.chat
 
-import net.horizonsend.ion.common.extensions.informationAction
-import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.redis
 import net.horizonsend.ion.common.utils.Mutes.muteCache
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -16,7 +20,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.Collections
-import java.util.Locale
 import java.util.UUID
 
 object ChannelSelections : IonServerComponent() {
@@ -26,12 +29,7 @@ object ChannelSelections : IonServerComponent() {
 
 	private fun refreshCache(playerId: UUID) {
 		redis {
-			localCache[playerId] = get(
-				redisKey(
-					playerId
-				)
-			)?.let { enumValueOfOrNull<ChatChannel>(it) }
-				?: ChatChannel.GLOBAL
+			localCache[playerId] = get(redisKey(playerId))?.let { enumValueOfOrNull<ChatChannel>(it) } ?: ChatChannel.GLOBAL
 		}
 	}
 
@@ -81,17 +79,23 @@ object ChannelSelections : IonServerComponent() {
 				}
 
 				if (oldChannel == channel) {
-					player.userErrorAction(
-						"<red>You're already in chat ${channel.displayName.uppercase(Locale.getDefault())}<red>! " +
-							"<italic>(Hint: To get back to global, use /global)"
-					)
+					player.sendActionBar(template(
+						message = ofChildren(text("You're already in chat {0}! ", RED), text("(Hint: To get back to global, use /global)", RED, TextDecoration.ITALIC)),
+						paramColor = WHITE,
+						useQuotesAroundObjects = true,
+						channel.displayName
+					))
+
 					return@listen
 				} else {
 					localCache[playerID] = channel
-					val info: String =
-						"<white><bold>Switched to ${channel.displayName.uppercase(Locale.getDefault())}<white><bold> chat! " +
-							"<white><bold>To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'"
-					player.informationAction(info)
+
+					player.sendActionBar(template(
+						message = text("Switched to {0} chat! To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'", WHITE, TextDecoration.BOLD),
+						paramColor = WHITE,
+						useQuotesAroundObjects = true,
+						channel.displayName
+					))
 				}
 
 				Tasks.async {

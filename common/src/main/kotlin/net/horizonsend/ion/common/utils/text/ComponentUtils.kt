@@ -101,3 +101,11 @@ fun Iterable<ComponentLike>.join(separator: Component = text(", ")): Component {
 
 	return builder.build()
 }
+
+fun Component.addSpace(prefix: Boolean): Component {
+	val plainText = plainText()
+
+	if (plainText.isEmpty()) return this
+
+	return if (prefix) ofChildren(text(" "), this) else ofChildren(this, text(" "))
+}
