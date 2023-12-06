@@ -1,10 +1,7 @@
 package net.horizonsend.ion.discord.features
 
-import net.dv8tion.jda.api.OnlineStatus
-import net.dv8tion.jda.api.entities.Activity
+//import net.horizonsend.ion.discord.features.redis.Messaging.getPlayers
 import net.horizonsend.ion.common.IonComponent
-import net.horizonsend.ion.discord.IonDiscordBot
-import net.horizonsend.ion.discord.features.redis.Messaging.getPlayers
 import net.horizonsend.ion.discord.utils.IonDiscordScheduler
 
 object PresenceManager : IonComponent() {
@@ -13,6 +10,6 @@ object PresenceManager : IonComponent() {
 	}
 
 	private fun updatePresence() {
-		IonDiscordBot.discord.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${getPlayers("proxy").count()} players!"))
+//		IonDiscordBot.discord.presence.setPresence(OnlineStatus.ONLINE, Activity.playing("with ${getPlayers("proxy").count()} players!"))
 	}
 }

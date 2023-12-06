@@ -17,12 +17,11 @@ object ReminderManager : IonComponent() {
 
 	private fun scheduleReminders() {
 		 for (message in scheduledMessages) {
-		 	PLUGIN.proxy.scheduler.schedule(
-		 		PLUGIN,
-		 		message,
+		 	PLUGIN.proxy.scheduler.repeat(
+				delay,
 		 		(delay / scheduledMessages.size.toLong()) * scheduledMessages.indexOf(message),
-		 		delay,
-		 		TimeUnit.SECONDS
+		 		TimeUnit.SECONDS,
+				message
 		 	)
 		 }
 	}
