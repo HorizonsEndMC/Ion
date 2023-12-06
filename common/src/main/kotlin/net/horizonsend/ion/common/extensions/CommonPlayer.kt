@@ -6,6 +6,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.lega
 import net.luckperms.api.model.user.User
 import java.util.UUID
 
+/** Represents all the common information between different implementations of Players */
 interface CommonPlayer {
 	val uniqueId: UUID
 
