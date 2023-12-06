@@ -26,15 +26,13 @@ object PlayerCache : AbstractPlayerCache(), Listener {
 	@EventHandler
 	fun login(event: ServerConnectedEvent) {
 		if (!PlayerCache.PLAYER_DATA.containsKey(event.player.uniqueId)) {
-			PLUGIN.proxy.scheduler.schedule(
-				PLUGIN,
-				{
-					callOnPreLogin(event.player.uniqueId)
-					callOnLoginLow(event.player.uniqueId)
-				},
+			PLUGIN.proxy.scheduler.delay(
 				1L,
 				TimeUnit.SECONDS
-			)
+			) {
+				callOnPreLogin(event.player.uniqueId)
+				callOnLoginLow(event.player.uniqueId)
+			}
 		}
 	}
 
