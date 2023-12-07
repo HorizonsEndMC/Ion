@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.command.qol
 
-import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default

@@ -45,18 +45,23 @@ typealias SLPlayerId = StringId<SLPlayer>
  * @param snowflake Their discord unique id
  **/
 data class SLPlayer(
-    override val _id: SLPlayerId,
-    var lastKnownName: String,
-    var lastSeen: Date = Date.from(Instant.now()),
-    var xp: Int = 0,
-    val level: Int = 1,
-    var settlement: Oid<Settlement>? = null,
-    var nation: Oid<Nation>? = null,
-    var snowflake: Long? = null,
-    var wasKilled: Boolean = false,
-    var cryopods: Set<Oid<Cryopod>> = setOf(),
-    var selectedCryopod: Oid<Cryopod>? = null,
-    var achievements: Set<String> = setOf(),
+	override val _id: SLPlayerId,
+	var lastKnownName: String,
+	var lastSeen: Date = Date.from(Instant.now()),
+
+	var xp: Int = 0,
+	val level: Int = 1,
+
+	var settlement: Oid<Settlement>? = null,
+	var nation: Oid<Nation>? = null,
+
+	var snowflake: Long? = null,
+
+	var cryopods: Set<Oid<Cryopod>> = setOf(),
+	var selectedCryopod: Oid<Cryopod>? = null,
+	var wasKilled: Boolean = false,
+
+	var achievements: Set<String> = setOf(),
 	var bounty: Double = 0.0,
 
 	var contactsEnabled: Boolean = true,
@@ -65,7 +70,6 @@ data class SLPlayer(
 	var planetsEnabled: Boolean = true,
 	var starsEnabled: Boolean = true,
 	var beaconsEnabled: Boolean = true,
-
 	var waypointsEnabled: Boolean = true,
 	var compactWaypoints: Boolean = true,
 ) : DbObject {
@@ -75,7 +79,6 @@ data class SLPlayer(
 			ensureIndex(SLPlayer::settlement)
 			ensureIndex(SLPlayer::nation)
 			ensureIndex(SLPlayer::snowflake)
-			ensureIndex(SLPlayer::cryopods)
 		}
 	) {
 		operator fun get(uuid: UUID): SLPlayer? = col.findOneById(uuid.slPlayerId.toString())

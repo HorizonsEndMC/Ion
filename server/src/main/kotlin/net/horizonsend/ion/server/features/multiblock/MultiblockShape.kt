@@ -12,7 +12,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
+import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isButton
@@ -41,8 +43,8 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-/** Parameters: block, inward */
-private typealias BlockRequirement = (Block, BlockFace) -> Boolean
+/** Parameters: block, inward, load chunks */
+private typealias BlockRequirement = (Block, BlockFace, Boolean) -> Boolean
 
 class MultiblockShape {
 	// Cache of direction to requirement, so it doesn't need to be calculated every time based on the direction
@@ -180,19 +182,18 @@ class MultiblockShape {
 	}
 
 	fun checkRequirementsSpecific(origin: Block, face: BlockFace, loadChunks: Boolean, particles: Boolean): Boolean {
-		return getRequirementMap(face).all { (coords, requirementMap) ->
+		return getRequirementMap(face).all { (offset, requirementMap) ->
 			val (_, requirement) = requirementMap
-
-			val x = coords.x
-			val y = coords.y
-			val z = coords.z
+			val x = offset.x
+			val y = offset.y
+			val z = offset.z
 			val relative: Block = if (loadChunks) {
 				origin.getRelative(x, y, z)
 			} else {
 				origin.getRelativeIfLoaded(x, y, z) ?: return@all false
 			}
 
-			val requirementMet = requirement(relative, face)
+			val requirementMet = requirement(relative, face, loadChunks)
 
 			if (!requirementMet && particles) {
 				val location = relative.location.toCenterLocation().add(0.0, 0.4, 0.0)
@@ -226,16 +227,18 @@ class MultiblockShape {
 		private fun complete(type: BlockData, requirement: BlockRequirement) = shape.addRequirement(right, upward, inward, type, requirement)
 
 		fun type(type: Material) {
-			complete(type.createBlockData()) { block, _ -> block.getTypeSafe() == type }
+			complete(type.createBlockData()) { block, _, _ -> block.getTypeSafe() == type }
 		}
 
 		fun anyType(vararg types: Material) {
 			val typeSet = EnumSet.copyOf(types.toList())
-			complete(types.first().createBlockData()) { block, _ -> typeSet.contains(block.getTypeSafe()) }
+			complete(types.first().createBlockData()) { block, _, loadChunks ->
+				typeSet.contains(if (loadChunks) block.type else block.getTypeSafe())
+			}
 		}
 
 		fun customBlock(customBlock: CustomBlock) {
-			complete(customBlock.blockData) { block, _ -> CustomBlocks[block] === customBlock }
+			complete(customBlock.blockData) { block, _, _ -> CustomBlocks[block] === customBlock }
 		}
 
 		fun anyType(types: Iterable<Material>) = anyType(*types.toList().toTypedArray())
@@ -265,8 +268,8 @@ class MultiblockShape {
 				this as Slab
 				this.type = Slab.Type.DOUBLE
 			}
-		) { block, _ ->
-			val blockData = block.blockData
+		) { block, _, loadChunks ->
+			val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
 			return@complete blockData is Slab && blockData.type == Slab.Type.DOUBLE
 		}
 
@@ -344,8 +347,10 @@ class MultiblockShape {
 
 		fun lightningRod() = type(Material.LIGHTNING_ROD)
 
-		fun machineFurnace() = complete(Material.FURNACE.createBlockData()) { block, inward ->
-			val blockData = block.getNMSBlockData()
+		fun machineFurnace() = complete(Material.FURNACE.createBlockData()) { block, inward, loadChunks ->
+			val blockData = if (loadChunks) block.getNMSBlockData() else
+				getNMSBlockDataSafe(block.world, block.x, block.y, block.z) ?: return@complete false
+
 			if (blockData.bukkitMaterial != Material.FURNACE) return@complete false
 			val facing = blockData.getValue(AbstractFurnaceBlock.FACING).blockFace
 			return@complete facing == inward.oppositeFace

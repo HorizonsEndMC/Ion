@@ -9,13 +9,13 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
-import net.minecraft.core.BlockPos
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.highlightBlock
+import net.minecraft.core.BlockPos
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -61,7 +61,7 @@ object MultiblockCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 			val relative: Block = if (!lastMatch.shape.signCentered) oldRelative.getRelative(face) else oldRelative
 
-			val requirementMet = requirement(relative, face)
+			val requirementMet = requirement(relative, face, false)
 
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)

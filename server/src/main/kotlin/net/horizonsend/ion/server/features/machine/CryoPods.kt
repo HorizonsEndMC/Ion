@@ -1,65 +1,93 @@
 package net.horizonsend.ion.server.features.machine
 
 import net.horizonsend.ion.common.database.schema.Cryopod
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.trx
-import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.server.features.multiblock.Multiblocks
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitLocation
-import net.horizonsend.ion.server.miscellaneous.utils.get
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerRespawnEvent
-import org.litote.kmongo.addToSet
+import org.litote.kmongo.and
+import org.litote.kmongo.descending
+import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
-import java.util.UUID
+import java.time.Instant
+import java.util.Date
 
 object CryoPods: SLEventListener() {
-	fun setCryoPod(playerID: UUID, worldName: String, pos: Vec3i) = trx { session ->
-		val slPlayer = SLPlayer[playerID] ?: return@trx
+	fun updateOrCreate(player: Player, worldName: String, pos: Vec3i) = Tasks.async {
+		val (x, y, z) = pos
 
-		val newCryoPod = Cryopod.create(slPlayer, pos, worldName)
+		val existing = Cryopod.findOne(and(Cryopod::x eq x, Cryopod::y eq y, Cryopod::z eq z))
 
-		SLPlayer.updateById(
-			session,
-			slPlayer._id,
-			addToSet(SLPlayer::cryopods, newCryoPod),
-			setValue(SLPlayer::selectedCryopod, newCryoPod)
-		)
-	}
+		// Update existing cryopod
+		if (existing != null) {
+			if (existing.owner != player.slPlayerId) {
+				player.userError("That's not your cryopod!")
+				return@async
+			}
 
-	fun removeCryoPod(playerID: UUID) = SLPlayer[playerID]?.selectedCryopod?.let { Cryopod.delete(it) }
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onPlayerRespawnSetLocationToCryoPod(event: PlayerRespawnEvent) {
-		val player = event.player
-		val cryoPod = SLPlayer[event.player].selectedCryopod?.let { Cryopod.findById(it) } ?: return
-
-		Bukkit.getWorld(cryoPod.worldName)
-			?: return player.serverError("World ${cryoPod.worldName} is missing")
-
-		val pos = cryoPod.bukkitLocation()
-		val sign = pos.block.state as? Sign
-			?: return player.alert("Cryo pod sign at $pos is missing")
-
-		if (Multiblocks[sign, true, true] !is CryoPodMultiblock) {
-			return player.alert("Cryo pod at $pos is not intact")
+			Cryopod.updateById(existing._id, setValue(Cryopod::lastSelectedAt, Date.from(Instant.now())))
+			player.success("Selected Cryopod")
+			return@async
 		}
 
-		event.respawnLocation = pos.add(0.5, -1.0, 0.5)
+		Cryopod.create(player.slPlayerId, pos, IonServer.configuration.serverName ?: "Survival", worldName)
+		player.success("Set Cryopod")
+	}
+
+	private fun removeCryoPod(world: World, location: Vec3i) {
+		Cryopod.delete(location, world.name)
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	fun onPlayerRespawn(event: PlayerRespawnEvent) {
+		val player = event.player
+
+		val cryopods = Cryopod.find(Cryopod::owner eq player.slPlayerId).sort(descending(Cryopod::lastSelectedAt))
+
+		for (possibleCryopod in cryopods) {
+			val world = Bukkit.getWorld(possibleCryopod.worldName)
+
+			if (world == null) {
+				player.serverError("World ${possibleCryopod.worldName} is missing!")
+				continue
+			}
+
+			val signPosition = possibleCryopod.bukkitLocation()
+			val sign = signPosition.block.state as? Sign
+
+			if (sign == null) {
+				player.serverError("Cryopod sign at ${possibleCryopod.x}, ${possibleCryopod.y}, ${possibleCryopod.z} is missing!")
+				continue
+			}
+
+			if (!CryoPodMultiblock.signMatchesStructure(sign, loadChunks = true)) {
+				player.serverError("Cryopod at ${possibleCryopod.x}, ${possibleCryopod.y}, ${possibleCryopod.z} is not intact!!")
+				continue
+			}
+
+			event.respawnLocation = signPosition.add(0.5, -1.0, 0.5)
+			break
+		}
 	}
 
 	@EventHandler
 	fun onBlockBreak(event: BlockBreakEvent) {
-		val sign = event.block.state as? Sign ?: return
+		if (event.block.state !is Sign) return
 
-		Cryopod[Vec3i(sign.location), sign.world.name]?.let { Cryopod.delete(it._id) }
+		removeCryoPod(event.block.world, Vec3i(event.block.location))
 	}
 }

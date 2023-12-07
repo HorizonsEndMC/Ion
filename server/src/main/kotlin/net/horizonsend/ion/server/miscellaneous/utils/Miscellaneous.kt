@@ -14,7 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePa
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.monster.Shulker
+import net.minecraft.world.entity.monster.Slime
 import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.level.chunk.ChunkStatus
 import net.minecraft.world.level.chunk.LevelChunk
@@ -130,17 +130,17 @@ fun areaDebugMessage(x: Number, y: Number, z: Number, msg: String) {
 fun highlightBlock(bukkitPlayer: Player, pos: BlockPos, duration: Long) {
 	val player = bukkitPlayer.minecraft
 	val conn = player.connection
-	val shulker =
-		Shulker(EntityType.SHULKER, player.level).apply {
+	val slime =
+		Slime(EntityType.SLIME, player.level).apply {
 			setPos(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
 			setGlowingTag(true)
 			isInvisible = true
 		}
 
-	conn.send(ClientboundAddEntityPacket(shulker))
-	shulker.entityData.refresh(player)
+	conn.send(ClientboundAddEntityPacket(slime))
+	slime.entityData.refresh(player)
 
-	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(shulker.id)) }
+	Tasks.syncDelayTask(duration) { conn.send(ClientboundRemoveEntitiesPacket(slime.id)) }
 }
 
 fun repeatString(string: String, count: Int): String {
