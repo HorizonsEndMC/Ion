@@ -51,6 +51,7 @@ import net.luckperms.api.node.NodeEqualityPredicate
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
+@Suppress("UNUSED") // They're used
 enum class ChatChannel(val displayName: Component, val commandAliases: List<String>, val messageColor: TextColor) {
 	GLOBAL(text("Global", DARK_GREEN), listOf("global", "g"), WHITE) {
 		override fun onChat(player: Player, event: AsyncChatEvent) {

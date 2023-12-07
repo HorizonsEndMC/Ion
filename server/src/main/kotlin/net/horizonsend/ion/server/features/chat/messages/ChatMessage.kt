@@ -19,8 +19,8 @@ abstract class ChatMessage {
 	fun buildChatComponent(): Component = ofChildren(
 		prefix.addSpace(false),
 		playerPrefix.addSpace(false),
-		playerDisplayName.addSpace(false),
-		playerSuffix.addSpace(false),
+		playerDisplayName,
+		playerSuffix.addSpace(true),
 		text("» ", HEColorScheme.HE_DARK_GRAY),
 		message.color(color),
 	).hoverEvent(playerInfo)
