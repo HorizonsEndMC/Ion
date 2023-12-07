@@ -145,7 +145,7 @@ object OptimizedMovement {
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>
 	) {
-		val lightEngine = world1.minecraft.lightEngine
+		val lightModule = world1.minecraft.lightEngine
 		val air = Blocks.AIR.defaultBlockState()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
@@ -174,7 +174,7 @@ object OptimizedMovement {
 					nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
 					section.setBlockState(localX, localY, localZ, air, false)
 
-					lightEngine.checkBlock(BlockPos(x, y, z)) // Lighting is not cringe
+					lightModule.checkBlock(BlockPos(x, y, z)) // Lighting is not cringe
 				}
 			}
 
@@ -192,7 +192,7 @@ object OptimizedMovement {
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		blockDataTransform: (BlockState) -> BlockState
 	) {
-		val lightEngine = world2.minecraft.lightEngine
+		val lightModule = world2.minecraft.lightEngine
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
 			val chunk = world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
@@ -214,7 +214,7 @@ object OptimizedMovement {
 					val data = blockDataTransform(capturedStates[index])
 					nmsChunk.playerChunk?.blockChanged(BlockPos(x, y, z))
 					section.setBlockState(localX, localY, localZ, data, false)
-					lightEngine.checkBlock(BlockPos(x, y, z))
+					lightModule.checkBlock(BlockPos(x, y, z))
 				}
 			}
 

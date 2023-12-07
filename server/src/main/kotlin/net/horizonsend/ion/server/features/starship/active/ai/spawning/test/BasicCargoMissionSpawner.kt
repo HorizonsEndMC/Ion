@@ -5,7 +5,12 @@ import net.horizonsend.ion.common.utils.text.templateMiniMessage
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.getLocationNear
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.getNonProtectedPlayer
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
@@ -20,31 +25,30 @@ import org.bukkit.util.Vector
 import kotlin.random.Random
 
 class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConfiguration.spawners::CARGO_MISSION, 0.5, 2500) {
-
 	fun findLocation(): Location? {
+		// Get a random world based on the weight in the config
 		val worldConfig = configuration.worldWeightedRandomList.random()
 		val world = worldConfig.getWorld()
+
+		val player = getNonProtectedPlayer(world) ?: return null
 
 		var iterations = 0
 
 		val border = world.worldBorder
-		val spawnRadius = (border.size / 2.0) * 0.9 // 90% of the way to world border
-		val center = border.center
+
+		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 		// max 10 iterations
 		while (iterations <= 15) {
 			iterations++
 
-			val randomX = Random.nextDouble(-spawnRadius, +spawnRadius) + center.x
-			val randomZ = Random.nextDouble(-spawnRadius, +spawnRadius) + center.z
+			val loc = player.getLocationNear(minDistanceFromPlayer, maxDistanceFromPlayer)
 
-			val origin = Vector(randomX, 192.0, randomZ)
+			if (!border.isInside(loc)) continue
 
-			val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+			if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
 
-			if (planets.any { it.distance(origin) < 500.0 }) continue
-
-			return Location(world, randomX, 192.0, randomZ)
+			return loc
 		}
 
 		return null
@@ -78,14 +82,19 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConf
 		return null
 	}
 
+	override fun spawningConditionsMet(world: World, x: Int, y: Int, z: Int): Boolean {
+		return true // No restrictions
+	}
+
 	override suspend fun triggerSpawn() {
 		val loc = findLocation() ?: return
+		val (x, y, z) = Vec3i(loc)
+
+		if (!spawningConditionsMet(loc.world, x, y, z)) return
 
 		val (template, pilotName) = getStarshipTemplate(loc.world)
 
 		val deferred = spawnAIStarship(template, loc, createController(template, pilotName))
-
-		val (x, y, z) = Vec3i(loc)
 
 		deferred.invokeOnCompletion {
 			IonServer.server.sendMessage(templateMiniMessage(
@@ -98,6 +107,25 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConf
 				z,
 				loc.world.name
 			))
+		}
+	}
+
+	override fun createController(template: AIShipConfiguration.AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
+		val factory = AIControllerFactories[template.controllerFactory]
+
+		return { starship ->
+			val world = starship.world
+			val center = world.worldBorder.center
+
+			factory.createController(
+				starship,
+				pilotName,
+				null,
+				center,
+				template.manualWeaponSets,
+				template.autoWeaponSets,
+				null // No previous
+			)
 		}
 	}
 
