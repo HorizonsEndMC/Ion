@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isConcretePowder
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isGlazedTerracotta
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
+import net.horizonsend.ion.server.miscellaneous.utils.isNormalTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isWool
 import org.bukkit.Color
 import org.bukkit.DyeColor
@@ -47,7 +47,7 @@ object DyeCommand : net.horizonsend.ion.server.command.SLCommand() {
 			(item.itemMeta as? DyeableArmorItem)?.setColor(nmsItem, newDyeColor.color.asRGB())
 			return DyeColor.getByColor(Color.fromRGB(oldDyeColor)) ?: DyeColor.PINK
 		}
-		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.isGlass || item.type.isGlassPane || item.type.isStainedTerracotta || item.type.isGlazedTerracotta || item.type.isCarpet || item.type.isBed)) {
+		if (!(item.type.isConcrete || item.type.isConcretePowder || item.type.isWool || item.type.isGlass || item.type.isGlassPane || item.type.isNormalTerracotta || item.type.isGlazedTerracotta || item.type.isCarpet || item.type.isBed)) {
 			fail { "This item can not be dyed." }
 		}
 
