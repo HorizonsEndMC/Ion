@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isGlazedTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
-import net.horizonsend.ion.server.miscellaneous.utils.isStainedTerracotta
+import net.horizonsend.ion.server.miscellaneous.utils.isNormalTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isWall
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -337,7 +337,7 @@ object ShipFactoryMaterialCosts {
 					0.1
 				} else if (data.material.isStairs) {
 					0.1
-				} else if (data.material.isStainedTerracotta) {
+				} else if (data.material.isNormalTerracotta) {
 					0.1
 				} else if (data.material.isGlazedTerracotta) {
 					0.1
