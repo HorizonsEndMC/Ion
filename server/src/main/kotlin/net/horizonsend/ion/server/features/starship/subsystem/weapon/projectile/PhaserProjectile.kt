@@ -29,10 +29,6 @@ class PhaserProjectile(
 	private val speedUpSpeed = 1000.0
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		println("Old location: $oldLocation")
-		println("New location: $newLocation")
-		println("Travel: $travel")
-
 		super.moveVisually(oldLocation, newLocation, travel)
 
 		if (System.nanoTime() - this.firedAtNanos > this.speedUpTime) {
