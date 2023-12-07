@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isButton
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isDaylightSensor
 import net.horizonsend.ion.server.miscellaneous.utils.isDoor
+import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
@@ -336,6 +337,7 @@ class MultiblockShape {
 		fun lodestone() = type(Material.LODESTONE)
 		fun noteBlock() = type(Material.NOTE_BLOCK)
 		fun anyTrapdoor() = filteredTypes { it.isTrapdoor }
+		fun anyFroglight() = filteredTypes { it.isFroglight }
 
 		fun thrusterBlock() = anyType(
 			Material.OCHRE_FROGLIGHT,
