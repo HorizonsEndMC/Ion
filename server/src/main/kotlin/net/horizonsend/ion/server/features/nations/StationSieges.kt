@@ -14,15 +14,16 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
-import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -105,7 +106,9 @@ object StationSieges : IonServerComponent() {
 			)
 
 			IonServer.server.sendMessage(message)
-			if (IonServer.legacySettings.master) Notify.sendDiscord(Notify.getChannel("global"), message.plainText())
+			if (IonServer.legacySettings.master) ServerDiscordMessaging.globalEmbed(Embed(
+				title = "Siege Station $lastStationName's siege hour has ended."
+			))
 		}
 
 		val stations = Regions.getAllOf<RegionCapturableStation>()
@@ -121,7 +124,9 @@ object StationSieges : IonServerComponent() {
 			).hoverEvent(text("${station.world} : (${station.x}, ${station.z})"))
 
 			IonServer.server.sendMessage(message)
-			if (IonServer.legacySettings.master) Notify.sendDiscord(Notify.getChannel("global"), message.plainText())
+			if (IonServer.legacySettings.master) ServerDiscordMessaging.globalEmbed(Embed(
+				title = "Siege Station ${station.name}'s siege hour has began! It can be besieged for the rest of the hour with /siege!."
+			))
 		}
 		lastStations = stations.map { it.name }
 	}
@@ -151,8 +156,8 @@ object StationSieges : IonServerComponent() {
 		val playerName = SLPlayer.getName(siege.siegerId) ?: "UNKNOWN"
 		val stationName = CapturableStation.findPropById(siege.stationId, CapturableStation::name) ?: "??NULL??"
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<gold>Siege of Space Station $stationName by $playerName has failed!"))
-		Notify.eventsChannel("Siege of Space Station **$stationName** by **$playerName** has failed!")
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>Siege of Space Station $stationName by $playerName has failed!"))
+		ServerDiscordMessaging.eventsMessage(text("Siege of Space Station **$stationName** by **$playerName** has failed!"))
 	}
 
 	fun beginSiege(player: Player) = asyncLocked {
@@ -246,8 +251,8 @@ object StationSieges : IonServerComponent() {
 		val nationName = NationCache[nation].name
 		val oldNationName = NationCache[oldNation].name
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)"))
-		Notify.eventsChannel("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)"))
+		ServerDiscordMessaging.eventsMessage(text("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}"))
 
 		player.rewardAchievement(Achievement.SIEGE_STATION)
 	}
@@ -320,9 +325,9 @@ object StationSieges : IonServerComponent() {
 			val nowCaptured = CapturableStation.count(CapturableStation::nation eq playerNation)
 			val playerName = player.name
 
-			Notify online MiniMessage.miniMessage().deserialize("<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
-				" $nationName now has $nowCaptured stations!")
-			Notify eventsChannel "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"
+			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
+				" $nationName now has $nowCaptured stations!"))
+			ServerDiscordMessaging.eventsMessage(text("Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"))
 
 			SLXP.addAsync(player, NATIONS_BALANCE.capturableStation.siegerXP)
 
@@ -393,7 +398,7 @@ object StationSieges : IonServerComponent() {
 		val newSieger = allies.firstOrNull() ?: return tryEndSiege(event.player)
 
 		siege.siegerId = newSieger.slPlayerId
-		Notify.online(text("Sieger ${player.name} disconnected, so the siege was transferred to ${newSieger.name}"))
+		Notify.chatAndGlobal(text("Sieger ${player.name} disconnected, so the siege was transferred to ${newSieger.name}"))
 	}
 
 	@EventHandler

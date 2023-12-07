@@ -1,5 +1,6 @@
 package net.horizonsend.ion.common.utils.redis
 
+import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
 abstract class RedisAction<Data>(val id: String, val type: Type, val runSync: Boolean) {
@@ -13,5 +14,12 @@ abstract class RedisAction<Data>(val id: String, val type: Type, val runSync: Bo
 	operator fun invoke(data: Data) {
 		onReceive(data)
 		RedisActions.publishMessage(id, data, type)
+	}
+
+	companion object {
+		fun <Data> noOpAction(id: String): RedisAction<Data> = object : RedisAction<Data>(id, object : TypeToken<Data>() {}.type, false) {
+			// Do nothing
+			override fun onReceive(data: Data) {}
+		}
 	}
 }

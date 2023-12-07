@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager.jedisPool
 import net.horizonsend.ion.common.utils.Server
-import net.horizonsend.ion.common.utils.redis.messaging.MessageWrapper
+import net.horizonsend.ion.common.utils.redis.messaging.ChatMessageWrapper
 import net.horizonsend.ion.common.utils.redis.serialization.RedisSerialization
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPubSub
@@ -49,14 +49,19 @@ object RedisActions : IonComponent() {
 	// Actions
 	private val idActionMap = mutableMapOf<String, RedisAction<*>>()
 
-	inline fun <reified T, B> register(id: String, runSync: Boolean, noinline function: (T) -> B): RedisAction<T> {
+	inline fun <reified T, B> createAction(id: String, runSync: Boolean, noinline function: (T) -> B): RedisAction<T> {
 		val action = object : RedisAction<T>(id, object : TypeToken<T>() {}.type, runSync) {
 			override fun onReceive(data: T) {
 				function.invoke(data)
 			}
 		}
-		register(action)
+
 		return action
+	}
+
+	fun <T> RedisAction<T>.register(): RedisAction<T> {
+		register(this)
+		return this
 	}
 
 	fun <T : RedisAction<*>> register(message: T) {
@@ -75,7 +80,7 @@ object RedisActions : IonComponent() {
 		}
 	})
 
-	val wrapperType: Type = object : TypeToken<MessageWrapper>() {}.type
+	val wrapperType: Type = object : TypeToken<ChatMessageWrapper>() {}.type
 
 	fun <Data> publishMessage(
 		actionId: String,
@@ -86,7 +91,7 @@ object RedisActions : IonComponent() {
 		val messageUuid = UUID.randomUUID()
 		val serializedContent = RedisSerialization.serialize(data = content, type = type)
 
-		val wrapper = MessageWrapper(
+		val wrapper = ChatMessageWrapper(
 			actionId = actionId,
 			messageId = messageUuid.toString(),
 			serverId = serverId.toString(),
@@ -107,7 +112,7 @@ object RedisActions : IonComponent() {
 			// however, we still need to listen immediately so we don't miss any updates
 			if (!enabled) return
 
-			val formatted = try { RedisSerialization.readTyped<MessageWrapper>(message, wrapperType) } catch (e: Exception) {
+			val formatted = try { RedisSerialization.readTyped<ChatMessageWrapper>(message, wrapperType) } catch (e: Exception) {
 				return log.warn("Could not deserialize redis message. Full contents: $message")
 			}
 

@@ -49,7 +49,7 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 
 		val message = ofChildren(sinkMessage, assistPrefix, assists.values.join(separator = newline()))
 
-		if (arena) Bukkit.getServer().sendMessage(message) else Notify.online(message)
+		if (arena) Bukkit.getServer().sendMessage(message) else Notify.chatAndGlobal(message)
 	}
 
 	private fun sendDiscordMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {

@@ -76,7 +76,7 @@ object NationsMasterTasks : IonServerComponent() {
 		if (sendMessage) {
 			val message = "<red>Settlement $name on ${territory.world} at ${territory.centerX}, ${territory.centerZ} " +
 				"was purged for ${NATIONS_BALANCE.settlement.inactivityDays}+ days of complete inactivity."
-			Notify all MiniMessage.miniMessage().deserialize(message)
+			Notify.chatAndEvents(MiniMessage.miniMessage().deserialize(message))
 		}
 	}
 
@@ -87,7 +87,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 		if (sendMessage) {
 			val message = "<red>Nation ${nation.name} had its capital settlement purge and was purged itself!"
-			Notify all MiniMessage.miniMessage().deserialize(message)
+			Notify.chatAndEvents(MiniMessage.miniMessage().deserialize(message))
 		}
 	}
 
@@ -109,7 +109,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 			if (stationIncome > 0) {
 				Nation.deposit(nationId, stationIncome)
-				Notify.nation(
+				Notify.nationCrossServer(
 					nationId,
 					MiniMessage.miniMessage().deserialize(
 						"<gold>Your nation received <yellow>${stationIncome.toCreditsString()}<gold> credits " +
@@ -125,7 +125,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 			if (activityCredits > 0) {
 				Nation.deposit(nationId, activityCredits)
-				Notify.player(
+				Notify.playerCrossServer(
 					nation.leader.uuid,
 					MiniMessage.miniMessage().deserialize(
 						"<dark_green>Your nation received <gold>${activityCredits.toCreditsString()}<dark_green> " +
@@ -145,7 +145,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 			if (activityCredits > 0) {
 				Settlement.deposit(settlementId, activityCredits)
-				Notify.player(
+				Notify.playerCrossServer(
 					settlement.leader.uuid,
 					MiniMessage.miniMessage().deserialize(
 						"<dark_aqua>Your settlement received <gold>${activityCredits.toCreditsString()}<dark_aqua> " +
@@ -179,12 +179,12 @@ object NationsMasterTasks : IonServerComponent() {
 				Settlement.withdraw(settlementId, tax)
 
 				if (!isActive) {
-					Notify.online(MiniMessage.miniMessage().deserialize("<dark_green>Player Trade City $name has paid its hourly tax of $taxCredits, so it's protected!"))
+					Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<dark_green>Player Trade City $name has paid its hourly tax of $taxCredits, so it's protected!"))
 				}
 			} else {
 				val message = "<red>Player Trade City $name failed to pay its hourly tax of $taxCredits! " +
 					"Until it pays its tax, it does not have settlement city protection."
-				Notify.online(MiniMessage.miniMessage().deserialize(message))
+				Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(message))
 			}
 
 			if (willBeActive) {
@@ -193,7 +193,7 @@ object NationsMasterTasks : IonServerComponent() {
 				)
 
 				if (activeMembers < NATIONS_BALANCE.settlement.cityMinActive) {
-					Notify.online(MiniMessage.miniMessage().deserialize("<red>Player Trade City $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection."))
+					Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<red>Player Trade City $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection."))
 					willBeActive = false
 				}
 			}
@@ -215,14 +215,14 @@ object NationsMasterTasks : IonServerComponent() {
 			val offlinePlayer = Bukkit.getOfflinePlayer(owner.uuid)
 
 			if (!VAULT_ECO.has(offlinePlayer, rent.toDouble())) {
-				Notify.settlement(zone.settlement, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
+				Notify.settlementCrossServer(zone.settlement, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
 				continue
 			}
 
 			VAULT_ECO.withdrawPlayer(offlinePlayer, rent.toDouble())
 			Settlement.deposit(zone.settlement, rent)
 
-			Notify.player(owner.uuid, MiniMessage.miniMessage().deserialize(
+			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize(
 				"Paid ${rent.toCreditsString()} rent for zone ${zone.id}"
 				)
 			)

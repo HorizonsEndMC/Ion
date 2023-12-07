@@ -59,7 +59,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		var failed = false
 		fun fail() {
-			Notify.online(text("${event.player.name}: \"Aaaaaaaaaaaahhhhhh!\""))
+			Notify.chatAndGlobal(text("${event.player.name}: \"Aaaaaaaaaaaahhhhhh!\""))
 
 			event.player.world.castSpawnEntity<Fireball>(
 				event.player.location.clone().add(0.0, 30.0, 0.0),

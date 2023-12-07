@@ -6,7 +6,7 @@ import net.horizonsend.ion.discord.command.commands.DiscordPlayerInfoCommand
 import net.horizonsend.ion.discord.command.commands.DiscordSettlementInfoCommand
 import net.horizonsend.ion.discord.command.commands.PlayerListCommand
 
-val discordCommands = listOf<IonDiscordCommand>(
+val discordCommands = listOf(
 	DiscordInfoCommand,
 	DiscordNationInfoCommand,
 	DiscordPlayerInfoCommand,
