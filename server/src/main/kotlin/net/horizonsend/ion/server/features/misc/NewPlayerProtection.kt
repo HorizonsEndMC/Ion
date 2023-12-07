@@ -68,6 +68,28 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		sender.success("Removed new player protection from $target.")
 	}
 
+	@CommandPermission("ion.core.protection.giveothers")
+	@CommandAlias("giveprotection")
+	fun onGiveProtection(sender: Player, target: String) {
+		val lpUser = lpUserManager.getUser(target)
+
+		if (lpUser == null) {
+			sender.userError(
+				"Unable to give new player protection to $target, the player does not exist."
+			)
+			return
+		}
+
+		lpUser.data().run {
+			remove(removeProtectionPermission)
+			add(protectionIndicator)
+		}
+
+		lpUserManager.saveUser(lpUser)
+
+		sender.success("Gave new player protection to $target.")
+	}
+
 	fun Player.updateProtection() {
 		if (!LegacySettings.master) return
 
