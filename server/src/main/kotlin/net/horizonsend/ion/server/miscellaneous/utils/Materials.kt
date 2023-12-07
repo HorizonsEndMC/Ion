@@ -64,7 +64,7 @@ val GLAZED_TERRACOTTA_TYPES = getMatchingMaterials { it.name.endsWith("_GLAZED_T
 val Material.isGlazedTerracotta: Boolean get() = GLAZED_TERRACOTTA_TYPES.contains(this)
 
 val NORMAL_TERRACOTTA_TYPES = getMatchingMaterials { it.name.endsWith("TERRACOTTA") && !it.isGlazedTerracotta } //no underscore for normal terracotta inclusion
-val Material.isNormalTerracotta: Boolean get() = STAINED_TERRACOTTA_TYPES.contains(this)
+val Material.isNormalTerracotta: Boolean get() = NORMAL_TERRACOTTA_TYPES.contains(this)
 
 val NETHER_WART_TYPES = getMatchingMaterials { it.name.endsWith(("_WART_BLOCK")) }
 val Material.isNetherWart: Boolean get() = NETHER_WART_TYPES.contains(this)
