@@ -333,7 +333,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 		blueprint.trustedPlayers.add(slPlayerId)
 		saveBlueprint(blueprint)
-		Notify.player(playerId, MiniMessage.miniMessage().deserialize("<aqua>${sender.name} <gray>trusted you to their blueprint <aqua>$name"))
+		Notify.playerCrossServer(playerId, MiniMessage.miniMessage().deserialize("<aqua>${sender.name} <gray>trusted you to their blueprint <aqua>$name"))
 		sender.success("Trusted $player to blueprint $name")
 	}
 
@@ -349,7 +349,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 		blueprint.trustedPlayers.remove(slPlayerId)
 		saveBlueprint(blueprint)
-		Notify.player(playerId, MiniMessage.miniMessage().deserialize("<aqua>${sender.name} <gray>un-trusted you from their blueprint <aqua>$name"))
+		Notify.playerCrossServer(playerId, MiniMessage.miniMessage().deserialize("<aqua>${sender.name} <gray>un-trusted you from their blueprint <aqua>$name"))
 		sender.success("Un-trusted $player from blueprint $name")
 	}
 

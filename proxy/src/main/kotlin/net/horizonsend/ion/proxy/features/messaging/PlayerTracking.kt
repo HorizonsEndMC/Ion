@@ -1,35 +1,26 @@
 package net.horizonsend.ion.proxy.features.messaging
 
+import net.horizonsend.ion.common.extensions.CommonPlayer
+import net.horizonsend.ion.common.utils.Server
+import net.horizonsend.ion.common.utils.redis.RedisAction
+import net.horizonsend.ion.common.utils.redis.RedisActions
+import net.horizonsend.ion.common.utils.redis.types.CommonPlayerDataContainer
 import net.horizonsend.ion.proxy.IonProxyComponent
-import net.horizonsend.ion.proxy.features.ConnectionMessages
-import net.md_5.bungee.api.config.ServerInfo
-import net.md_5.bungee.api.event.PlayerDisconnectEvent
-import net.md_5.bungee.api.event.ServerConnectEvent
-import net.md_5.bungee.event.EventHandler
-import net.md_5.bungee.event.EventPriority
-import java.util.UUID
+import net.horizonsend.ion.proxy.PLUGIN
+import java.util.concurrent.TimeUnit
 
 object PlayerTracking : IonProxyComponent() {
-	val playerServerMap = mutableMapOf<UUID, ServerInfo>()
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onServerConnectEvent(event: ServerConnectEvent) {
-		if (event.isCancelled) return
-		val alreadyConnected = playerServerMap[event.player.uniqueId]
-
-		playerServerMap[event.player.uniqueId] = event.target
-
-		if (alreadyConnected == null) {
-			ConnectionMessages.onLogin(event.player, event.target)
-		} else {
-			ConnectionMessages.onSwitchServer(event.player, event.target)
-		}
+	override fun onEnable() {
+		PLUGIN.proxy.scheduler.repeat(1000L, 1000L, TimeUnit.MILLISECONDS) { broadcastPlayers() }
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	fun onServerDisconnectEvent(event: PlayerDisconnectEvent) {
-		val serverInfo = playerServerMap.remove(event.player.uniqueId) ?: return
+	private fun broadcastPlayers() = broadcastPlayersAction(CommonPlayerDataContainer(Server.PROXY, getPlayers()))
 
-		ConnectionMessages.onPlayerDisconnect(event.player, serverInfo)
+	private fun getPlayers(): List<CommonPlayer> = PLUGIN.proxy.players
+
+	val broadcastPlayersAction = RedisAction.noOpAction<CommonPlayerDataContainer>("player-communication")
+
+	init {
+		RedisActions.register(broadcastPlayersAction)
 	}
 }

@@ -21,8 +21,8 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.Settlemen
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.misc.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
@@ -227,7 +227,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val station = SpaceStations.spaceStationCache[name].get()
 
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
-		Notify.all(MiniMessage.miniMessage().deserialize(
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize(
 			"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>established space station <aqua>$name <gray>in ${world.name}")
 		)
 	}
@@ -257,7 +257,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		SpaceStations.reload()
 
-		Notify.all(
+		Notify.chatAndEvents(
 			MiniMessage.miniMessage().deserialize(
 				"<gray>${station.ownershipType} <light_purple>${station.ownerName} <gray>abandoned space station <aqua>${station.name}"
 			)
@@ -348,7 +348,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		station.invalidate()
 
 		sender.sendRichMessage("<gray> Added <aqua>$playerName<gray> to <aqua>$stationName")
-		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted add settlement")
@@ -373,7 +373,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		station.invalidate()
 
 		sender.sendRichMessage("<gray> Added <aqua>$settlement<gray> to <aqua>$stationName")
-		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted add nation")
@@ -398,7 +398,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		station.invalidate()
 
 		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$stationName")
-		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was added to station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted remove player")
@@ -422,7 +422,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		station.invalidate()
 
 		sender.sendRichMessage("<gray> Removed <aqua>$playerName<gray> from <aqua>$stationName")
-		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 
@@ -448,7 +448,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		station.invalidate()
 
 		sender.sendRichMessage("<gray> Removed <aqua>$settlement<gray> from <aqua>$stationName")
-		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted remove nation")
@@ -473,7 +473,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		station.invalidate()
 
 		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$stationName")
-		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your nation was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
+		Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your nation was removed from station <aqua>$stationName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("set name")
@@ -491,7 +491,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		SpaceStations.reload()
 
 		sender.sendRichMessage("<gray> Renamed <aqua>${station.name}<gray> to <aqua>$newName")
-		Notify.online(MiniMessage.miniMessage().deserialize("<gray>Space station <aqua>${station.name}<gray> has been renamed to <aqua>$newName<gray> by <aqua>${sender.name}"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gray>Space station <aqua>${station.name}<gray> has been renamed to <aqua>$newName<gray> by <aqua>${sender.name}"))
 	}
 }
 

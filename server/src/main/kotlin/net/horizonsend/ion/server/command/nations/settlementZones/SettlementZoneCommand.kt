@@ -394,7 +394,7 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 		sender msg "&aDeleted settlement zone ${zone.name}"
 
 		if (owner != null) {
-			Notify.player(
+			Notify.playerCrossServer(
 				owner.uuid,
 				MiniMessage.miniMessage().deserialize("Your settlement zone ${zone.name} was deleted by ${sender.name}")
 			)
@@ -465,6 +465,6 @@ internal object SettlementZoneCommand : net.horizonsend.ion.server.command.SLCom
 
 		val message = MiniMessage.miniMessage()
 			.deserialize("<gray>${sender.name} reclaimed your plot ${zone.name} in ${getSettlementName(settlement)}")
-		Notify.player(owner.uuid, message)
+		Notify.playerCrossServer(owner.uuid, message)
 	}
 }

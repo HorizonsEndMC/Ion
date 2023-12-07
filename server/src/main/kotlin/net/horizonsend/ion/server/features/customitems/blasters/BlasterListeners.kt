@@ -71,7 +71,7 @@ class BlasterListeners : SLEventListener() {
 		} else {
 			event.deathMessage(null)
 
-			if (IonServer.configuration.serverName == "survival") Notify.online(newMessage) else IonServer.server.sendMessage(newMessage)
+			if (IonServer.configuration.serverName == "survival") Notify.chatAndGlobal(newMessage) else IonServer.server.sendMessage(newMessage)
 		}
 	}
 

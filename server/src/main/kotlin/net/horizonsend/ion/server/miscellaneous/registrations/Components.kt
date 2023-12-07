@@ -30,8 +30,9 @@ import net.horizonsend.ion.server.features.misc.DutyModeMonitor
 import net.horizonsend.ion.server.features.misc.EventLogger
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.PacketHandler
-import net.horizonsend.ion.server.features.misc.PlayerTracking
 import net.horizonsend.ion.server.features.misc.Shuttles
+import net.horizonsend.ion.server.features.misc.messaging.PlayerTracking
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -199,5 +200,7 @@ val components: List<IonComponent> = listOf(
 
 	AntiAirCannons,
 	CustomOrePlacement,
-	PlayerTracking
+
+	PlayerTracking,
+	ServerDiscordMessaging
 )

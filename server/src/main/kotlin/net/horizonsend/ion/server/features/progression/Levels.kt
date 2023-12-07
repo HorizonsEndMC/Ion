@@ -1,14 +1,20 @@
 package net.horizonsend.ion.server.features.progression
 
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
-import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.sharedDataFolder
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.UUID
@@ -82,16 +88,16 @@ object Levels : IonServerComponent() {
 		// if this is the last level up then announce it
 		if (!doLevelUp(newLevel, currentXP - cost, playerID, player, name, previousCost + cost)) {
 			Tasks.sync {
-				player.title(darkPurple("LEVEL UP!").bold(), gold("Level $newLevel").italic())
+				player.showTitle(Title.title(text("LEVEL UP!", DARK_PURPLE, TextDecoration.BOLD), text("Level $newLevel", GOLD, TextDecoration.ITALIC)))
+				player.sendMessage(template(text("Leveled up to level {0} for {1} SLXP"), GOLD, newLevel, previousCost + cost))
 
-				player msg lightPurple("Leveled up to level $newLevel for ${previousCost + cost} SLXP").italic()
+				val message = template(
+						text("{0} leveled up to {1}!", GREEN),
+						text("name", GOLD),
+						text("Level $newLevel", DARK_PURPLE)
+					)
 
-				Notify online Component.text().color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
-					.append(Component.text(name).color(NamedTextColor.GOLD))
-					.append(Component.text(" leveled up to "))
-					.append(Component.text("Level $newLevel").color(NamedTextColor.DARK_PURPLE))
-					.append(Component.text("!"))
-					.build()
+				Notify.chatAndGlobal(message)
 
 				when (newLevel) {
 					10 -> Achievement.LEVEL_10
