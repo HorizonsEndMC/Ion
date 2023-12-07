@@ -25,8 +25,8 @@ import org.bukkit.inventory.ItemStack
 object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMultiblock {
 	override val name: String = "splitter"
 
-	val RIGHT = text("<-----", NamedTextColor.AQUA)
-	val LEFT = text("----->", NamedTextColor.AQUA)
+	val RIGHT = text("[-]   ----->   [+]", NamedTextColor.AQUA)
+	val LEFT = text("[+]   <-----   [-]", NamedTextColor.AQUA)
 
 	val BLACKLIST_OLD = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
 	val WHITELIST_OLD = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
@@ -34,7 +34,7 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	override val signText: Array<Component?> = arrayOf(
 		text("Item Splitter", NamedTextColor.GOLD),
 		null,
-		null,
+		text(".:[Matching items]:;", NamedTextColor.GRAY),
 		RIGHT
 	)
 
@@ -84,11 +84,11 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		migrateFrom(sign)
 
-		if (isBlacklist(sign)) {
-			player.success("Switched sorter to whitelist!")
+		if (isWhitelist(sign)) {
+			player.success("Switched sorter to move matching items to the left!")
 			sign.line(3, LEFT)
 		} else {
-			player.success("Switched sorter to blacklist!")
+			player.success("Switched sorter to move matching items to the right!")
 			sign.line(3, RIGHT)
 		}
 
@@ -110,15 +110,15 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		val filter = getBlacklist(sign)
+		val filter = getWhitelist(sign)
 
-		val isBlacklist = isBlacklist(sign)
+		val isWhitelist = isWhitelist(sign)
 
 		val inputInventory = getStorage(sign, inputInventory) ?: return
 		val filteredInventory = getStorage(sign, filteredInventory) ?: return
 		val remainderInventory = getStorage(sign, remainderInventory) ?: return
 
-		if (isBlacklist) {
+		if (isWhitelist) {
 			doFilter(inputInventory, filteredInventory, remainderInventory) { it?.filterContains(filter) == false }
 		} else {
 			doFilter(inputInventory, filteredInventory, remainderInventory) { it?.filterContains(filter) == true }
@@ -177,7 +177,7 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 		return getStateIfLoaded(sign.world, absoluteX, absoluteY, absoluteZ) as? Container
 	}
 
-	private fun getBlacklist(sign: Sign): Collection<ItemStack> {
+	private fun getWhitelist(sign: Sign): Collection<ItemStack> {
 		val items = getStorage(sign, filterInventory)?.inventory ?: return listOf()
 
 		return items.contents.mapNotNull { it }
@@ -191,7 +191,7 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 
 	private val filteredInventory: Vec3i = Vec3i(2, 1, -2)
 
-	private fun isBlacklist(sign: Sign): Boolean {
+	private fun isWhitelist(sign: Sign): Boolean {
 		return sign.line(3) == RIGHT
 	}
 }
