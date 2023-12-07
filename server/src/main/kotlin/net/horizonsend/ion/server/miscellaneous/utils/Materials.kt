@@ -63,7 +63,7 @@ val Material.isSign: Boolean get() = SIGN_TYPES.contains(this)
 val GLAZED_TERRACOTTA_TYPES = getMatchingMaterials { it.name.endsWith("_GLAZED_TERRACOTTA") }
 val Material.isGlazedTerracotta: Boolean get() = GLAZED_TERRACOTTA_TYPES.contains(this)
 
-val STAINED_TERRACOTTA_TYPES = getMatchingMaterials { it.name.endsWith("_TERRACOTTA") && !it.isGlazedTerracotta }
+val STAINED_TERRACOTTA_TYPES = getMatchingMaterials { it.name.endsWith("TERRACOTTA") && !it.isGlazedTerracotta }
 val Material.isStainedTerracotta: Boolean get() = STAINED_TERRACOTTA_TYPES.contains(this)
 
 val NETHER_WART_TYPES = getMatchingMaterials { it.name.endsWith(("_WART_BLOCK")) }
