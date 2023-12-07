@@ -133,7 +133,7 @@ object Pipes : IonServerComponent() {
 
 	fun isPipedInventory(material: Material): Boolean = inventoryTypes.contains(material)
 
-	fun isAnyPipe(material: Material): Boolean = material.isGlass || material.isGlassPane
+	fun isAnyPipe(material: Material): Boolean = material.isGlass || material.isGlassPane || material == Material.TINTED_GLASS
 
 	private fun isDirectionalPipe(material: Material): Boolean = material.isGlassPane
 
@@ -515,7 +515,7 @@ object Pipes : IonServerComponent() {
 	}
 
 	private val colorMap = EnumMap(
-		MATERIALS.filter { it.isGlass || it.isGlassPane }.associateWith {
+		MATERIALS.filter { it.isGlass || it.isGlassPane || it == Material.TINTED_GLASS }.associateWith {
 			return@associateWith when {
 				it == Material.GLASS_PANE -> Material.GLASS
 				it.isStainedGlassPane -> Material.getMaterial(it.name.removeSuffix("_PANE"))!!
