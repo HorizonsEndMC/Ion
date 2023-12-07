@@ -151,7 +151,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
 
-		Notify all MiniMessage.miniMessage().deserialize("<yellow>${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<yellow>${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!"))
 	}
 
 	@Suppress("unused")
@@ -166,7 +166,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Nation.delete(nation)
 
-		Notify all MiniMessage.miniMessage().deserialize("<yellow>The nation $nationName has been disbanded by its leader ${sender.name}!")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<yellow>The nation $nationName has been disbanded by its leader ${sender.name}!"))
 	}
 
 	@Suppress("unused")
@@ -187,7 +187,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		if (!Nation.isInvited(nationId, settlementId)) {
 			Nation.addInvite(nationId, settlementId)
 			sender.success("Invited settlement ${getSettlementName(settlementId)} to your nation")
-			Notify.player(
+			Notify.playerCrossServer(
 				player = leaderId,
 				message = MiniMessage.miniMessage().deserialize("<aqua>Your settlement is invited to the nation $nationName by ${sender.name}! " +
 						"To accept, use <yellow><italic>/nation join $nationName")
@@ -195,7 +195,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		} else {
 			Nation.removeInvite(nationId, settlementId)
 			sender.success("Cancelled invite for settlement $settlementId to your nation")
-			Notify.player(
+			Notify.playerCrossServer(
 				player = leaderId,
 				message = MiniMessage.miniMessage().deserialize("<yellow>Your settlement's invite to the nation $nationName has been revoked by ${sender.name}")
 			)
@@ -230,7 +230,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Nation.removeInvite(nationId, settlementId)
 		Settlement.joinNation(settlementId, nationId)
 
-		Notify all MiniMessage.miniMessage().deserialize("<light_purple>Settlement <aqua>$settlementName<light_purple> joined the nation <red>$nationName<light_purple>!")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<light_purple>Settlement <aqua>$settlementName<light_purple> joined the nation <red>$nationName<light_purple>!"))
 	}
 
 	@Suppress("unused")
@@ -247,7 +247,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify all MiniMessage.miniMessage().deserialize("<yellow>Settlement <dark_green>${getSettlementName(settlementId)}<yellow> seceded from the nation <red>$nationName<yellow>!")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<yellow>Settlement <dark_green>${getSettlementName(settlementId)}<yellow> seceded from the nation <red>$nationName<yellow>!"))
 	}
 
 	@Suppress("unused")
@@ -267,7 +267,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify all MiniMessage.miniMessage().deserialize("<gold>${sender.name}<yellow> kicked settlement $settlementName from the nation ${getNationName(nationId)}")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<yellow> kicked settlement $settlementName from the nation ${getNationName(nationId)}"))
 	}
 
 	@Suppress("unused")
@@ -293,7 +293,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Nation.setName(nationId, newName)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> renamed their nation <red>$oldName<light_purple> to <>$newName<light_purple>!"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> renamed their nation <red>$oldName<light_purple> to <>$newName<light_purple>!"))
 	}
 
 	@Suppress("unused")
@@ -325,7 +325,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Nation.setCapital(nationId, settlementId)
 
-		Notify all MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> changed the capital of their nation ${getNationName(nationId)} to $settlementName!")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> changed the capital of their nation ${getNationName(nationId)} to $settlementName!"))
 	}
 
 	@Suppress("unused")
@@ -357,7 +357,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
-		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> claimed the territory <dark_green>${territory.name}<light_purple> for their nation <red>$nationName<light_purple>!"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> claimed the territory <dark_green>${territory.name}<light_purple> for their nation <red>$nationName<light_purple>!"))
 	}
 
 	@Suppress("unused")
@@ -378,7 +378,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Territory.setNation(regionTerritory.id, null)
 
 		val nationName = getNationName(nationId)
-		Notify.online(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> unclaimed the territory <dark_green>$territoryName<light_purple> from their nation <red>$nationName<light_purple>!"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> unclaimed the territory <dark_green>$territoryName<light_purple> from their nation <red>$nationName<light_purple>!"))
 	}
 
 	@Suppress("unused")

@@ -422,7 +422,7 @@ object ShipmentManager : IonServerComponent() {
 
 			if (tax > 0) {
 				Settlement.deposit(settlementId, tax)
-				Notify.settlement(
+				Notify.settlementCrossServer(
 					settlementId = settlementId,
 					message = MiniMessage.miniMessage().deserialize(
 						"<gold>Your settlement received <yellow>${tax.toCreditsString()} <gold>from <aqua>$playerName's <gold>completion of a shipment to it."

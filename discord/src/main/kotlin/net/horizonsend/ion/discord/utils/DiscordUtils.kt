@@ -19,6 +19,4 @@ inline fun messageEmbed(
 	footer: MessageEmbed.Footer? = null,
 	image: MessageEmbed.ImageInfo? = null,
 	fields: List<MessageEmbed.Field>? = null
-) = MessageEmbed(
-	url, title, description, type, timestamp, color, thumbnail, siteProvider, author, videoInfo, footer, image, fields
-)
+) = MessageEmbed(url, title, description, type, timestamp, color, thumbnail, siteProvider, author, videoInfo, footer, image, fields)

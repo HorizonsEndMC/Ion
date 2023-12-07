@@ -177,7 +177,7 @@ object Bounties : IonServerComponent() {
 			.append(text(".", NamedTextColor.RED))
 			.build()
 
-		Notify.online(message)
+		Notify.chatAndGlobal(message)
 		VAULT_ECO.depositPlayer(hunter, bounty)
 		// Maybe play a sound?
 		hunter.sendMessage(
@@ -201,7 +201,7 @@ object Bounties : IonServerComponent() {
 			.build()
 
 		Tasks.sync {
-			Notify.online(reason ?: defaultReason)
+			Notify.chatAndGlobal(reason ?: defaultReason)
 		}
 	}
 

@@ -1,13 +1,16 @@
 package net.horizonsend.ion.server.listener.misc
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.Component.text
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
@@ -50,13 +53,15 @@ object JoinLeaveListener : SLEventListener() {
 				)
 				log.info("Registered $name in the database for the first time, join time $now")
 
-				val welcomeMessage = Component.text().color(NamedTextColor.GOLD)
-					.append(Component.text("Welcome "))
-					.append(Component.text(name, NamedTextColor.WHITE))
-					.append(Component.text(" to the server!"))
-					.build()
+				val message = template(text("Welcome {0} to the server!",  HEColorScheme.HE_LIGHT_ORANGE), name)
 
-				Notify online welcomeMessage
+				Notify.notifyOnlineAction(message)
+				ServerDiscordMessaging.globalEmbed(Embed(
+					title = "New player!",
+					description = "Welcome $name to the server!",
+					color = HEColorScheme.HE_LIGHT_ORANGE.rgb()
+				))
+
 				return
 			}
 

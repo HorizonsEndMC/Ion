@@ -66,10 +66,13 @@ fun template(
 	return template(text(message, color), paramColor, useQuotesAroundObjects, *parameters)
 }
 
+fun template(message: Component, vararg parameters: Any) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, paramColor: TextColor, vararg parameters: Any) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
+
 fun template(
 	message: Component,
-	paramColor: TextColor = NamedTextColor.WHITE,
-	useQuotesAroundObjects: Boolean = true,
+	paramColor: TextColor,
+	useQuotesAroundObjects: Boolean,
 	vararg parameters: Any
 ): Component {
 	val replacement = TextReplacementConfig.builder()

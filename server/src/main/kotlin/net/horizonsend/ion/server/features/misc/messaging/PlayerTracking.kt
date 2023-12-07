@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.misc
+package net.horizonsend.ion.server.features.misc.messaging
 
 import com.google.gson.reflect.TypeToken
 import net.horizonsend.ion.common.CommonConfig

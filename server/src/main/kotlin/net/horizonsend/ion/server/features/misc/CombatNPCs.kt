@@ -183,7 +183,7 @@ object CombatNPCs : IonServerComponent(true) {
 			SLPlayer.updateById(playerId.slPlayerId, setValue(SLPlayer::wasKilled, true))
 			Tasks.async {
 				val name: String = SLPlayer.getName(playerId.slPlayerId) ?: "UNKNOWN"
-				Notify.all(
+				Notify.chatAndEvents(
 					MiniMessage.miniMessage().deserialize("<red>Combat NPC of $name was slain by ${killer?.name}")
 				)
 				Tasks.sync {

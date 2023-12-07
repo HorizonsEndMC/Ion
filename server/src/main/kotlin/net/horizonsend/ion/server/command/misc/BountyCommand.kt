@@ -88,7 +88,7 @@ object BountyCommand : SLCommand() {
 		Tasks.sync {
 			VAULT_ECO.withdrawPlayer(sender, amount)
 
-			Notify.online(
+			Notify.chatAndGlobal(
 				text()
 					.append(text(sender.name, NamedTextColor.DARK_RED))
 					.append(text(" has placed a bounty of ", NamedTextColor.RED))

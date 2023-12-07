@@ -103,7 +103,7 @@ internal object SettlementCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_SETTLEMENT)
 
-		Notify all MiniMessage.miniMessage().deserialize("<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!"))
 
 		// No manual territory cache update is needed as settlement creation should automatically trigger that
 	}
@@ -121,7 +121,7 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.delete(settlement)
 
-		Notify all MiniMessage.miniMessage().deserialize("<yellow>${sender.name} has disbanded their settlement $settlementName!")
+		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} has disbanded their settlement $settlementName!"))
 
 		// No manual territory cache update is needed as settlement removal from territory should automatically trigger that
 		// Additionally, all members of the settlement should be updated as their player cache will be updated,
@@ -146,11 +146,11 @@ internal object SettlementCommand : SLCommand() {
 		if (Settlement.isInvitedTo(settlementId, slPlayerId)) {
 			Settlement.removeInvite(settlementId, slPlayerId)
 			sender msg "&bRemoved $player's invite to your settlement."
-			Notify.player(playerId, MiniMessage.miniMessage().deserialize("<yellow>You were un-invited from $settlementName by ${sender.name}"))
+			Notify.playerCrossServer(playerId, MiniMessage.miniMessage().deserialize("<yellow>You were un-invited from $settlementName by ${sender.name}"))
 		} else {
 			Settlement.addInvite(settlementId, slPlayerId)
 			sender msg "&bInvited $player to your settlement."
-			Notify.player(
+			Notify.playerCrossServer(
 				playerId,
 				MiniMessage.miniMessage().deserialize("<aqua>You were invited to $settlementName by ${sender.name}. " +
 						"To join, use <italic>/s join $settlementName")
@@ -180,7 +180,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.joinSettlement(sender.slPlayerId, settlementId)
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<green>${sender.name} joined the settlement $settlementName!"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<green>${sender.name} joined the settlement $settlementName!"))
 
 		// No manual territory cache updating is needed, as the player is added to the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -196,7 +196,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(sender.slPlayerId)
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} left the settlement $settlementName!"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} left the settlement $settlementName!"))
 
 		// No manual territory cache updating is needed, as the player is removed from the settlement/nation, thus
 		// automatically triggering the player cache update, which triggers the territory cache update
@@ -224,7 +224,7 @@ internal object SettlementCommand : SLCommand() {
 
 		SLPlayer.leaveSettlement(slPlayerId)
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} kicked $player from settlement $settlementName!"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<yellow>${sender.name} kicked $player from settlement $settlementName!"))
 	}
 
 	@Subcommand("set name")
@@ -249,7 +249,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.setName(settlementId, newName)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.online(MiniMessage.miniMessage().deserialize("<aqua>${sender.name} renamed their settlement $oldName to $newName!"))
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<aqua>${sender.name} renamed their settlement $oldName to $newName!"))
 	}
 
 	@Subcommand("set leader")
@@ -266,7 +266,7 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.setLeader(settlementId, slPlayerId)
 
-		Notify.settlement(settlementId, text("${sender.name} changed your settlement's leader to $player"))
+		Notify.settlementCrossServer(settlementId, text("${sender.name} changed your settlement's leader to $player"))
 
 		// leader update automatically triggers entire settlement access cache update in CacheHelper
 	}
@@ -280,7 +280,7 @@ internal object SettlementCommand : SLCommand() {
 
 		Settlement.setMinBuildAccess(settlementId, accessLevel)
 
-		Notify.settlement(settlementId, text("${sender.name} changed your settlement's min build access to $accessLevel"))
+		Notify.settlementCrossServer(settlementId, text("${sender.name} changed your settlement's min build access to $accessLevel"))
 		val description = when (accessLevel) {
 			Settlement.ForeignRelation.NONE -> "Anyone, even nationless and settlementless people (should probably NEVER select this)"
 			Settlement.ForeignRelation.ALLY -> "Anyone who is a nation ally, nation member, or settlement member"
@@ -687,7 +687,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.trustPlayer(settlementId, playerId)
 
 		sender.sendRichMessage("<gray> Added <aqua>$playerName<gray> to <aqua>$settlementName")
-		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>You were trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted add settlement")
@@ -712,7 +712,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.trustSettlement(ownerSettlementId, settlementId)
 
 		sender.sendRichMessage("<gray> Added <aqua>$settlement<gray> to <aqua>$settlementName")
-		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted add nation")
@@ -737,7 +737,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.trustNation(ownerSettlementId, nationId)
 
 		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$settlementName")
-		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+		Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your settlement was trusted to settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted remove player")
@@ -761,7 +761,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.unTrustPlayer(ownerSettlementId, playerId)
 
 		sender.sendRichMessage("<gray> Removed <aqua>$playerName<gray> from <aqua>$settlementName")
-		Notify.player(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+		Notify.playerCrossServer(playerId.uuid, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
 	}
 
 
@@ -787,7 +787,7 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.unTrustSettlement(ownerSettlementId, settlementId)
 
 		sender.sendRichMessage("<gray> Removed <aqua>$settlement<gray> from <aqua>$settlementName")
-		Notify.settlement(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+		Notify.settlementCrossServer(settlementId, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
 	}
 
 	@Subcommand("trusted remove nation")
@@ -812,6 +812,6 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.unTrustNation(ownerSettlementId, nationId)
 
 		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$settlementName")
-		Notify.nation(nationId, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+		Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
 	}
 }

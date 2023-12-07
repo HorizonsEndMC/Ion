@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -22,10 +23,10 @@ import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
-import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -58,7 +59,7 @@ object IonServer : JavaPlugin() {
 				slF4JLogger.info(message)
 
 				try {
-					Notify.changelogChannel("${configuration.serverName} $message")
+					ServerDiscordMessaging.changelogMessage(text("${configuration.serverName} $message"))
 				} catch (_: Exception) {
 				}
 			},
