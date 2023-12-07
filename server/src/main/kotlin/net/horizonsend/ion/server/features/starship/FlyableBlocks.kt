@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.SIGN_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SLAB_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.NORMAL_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
@@ -143,7 +143,6 @@ import org.bukkit.Material.SPRUCE_FENCE_GATE
 import org.bukkit.Material.STICKY_PISTON
 import org.bukkit.Material.STONECUTTER
 import org.bukkit.Material.TARGET
-import org.bukkit.Material.TERRACOTTA
 import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.VERDANT_FROGLIGHT
@@ -310,16 +309,15 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	WARPED_FENCE_GATE,
 
 	LIGHTNING_ROD,
-	NETHERITE_BLOCK,
+	NETHERITE_BLOCK
 
-	TERRACOTTA
-
+	
 ).also {
 	it.addAll(CONCRETE_TYPES)
 	it.addAll(SLAB_TYPES)
 	it.addAll(STAIR_TYPES)
 	it.addAll(GLAZED_TERRACOTTA_TYPES)
-	it.addAll(STAINED_TERRACOTTA_TYPES)
+	it.addAll(NORMAL_TERRACOTTA_TYPES)
 	it.addAll(WOOL_TYPES)
 	it.addAll(CARPET_TYPES)
 	it.addAll(STAINED_GLASS_TYPES)
