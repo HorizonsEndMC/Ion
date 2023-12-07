@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.specialAction
-import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Material
@@ -45,7 +44,7 @@ class HeadListener : SLEventListener() {
 	fun onPlayerDeathEvent(event: PlayerDeathEvent) {
 		val victim = event.player
 
-		if (NPCFakePilot.isFakePilot(victim)) return
+//		if (NPCFakePilot.isFakePilot(victim)) return
 
 		// Player Head Drops
 		val headDropCooldownEnd = coolDowns.getOrDefault(victim.uniqueId, 0)

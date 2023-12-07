@@ -18,11 +18,10 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
-import net.horizonsend.ion.server.features.starship.active.ai.engine.positioning.AxisStandoffPositioningEngine
-import net.horizonsend.ion.server.features.starship.active.ai.engine.targeting.TargetingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.module.positioning.AxisStandoffPositioningModule
+import net.horizonsend.ion.server.features.starship.active.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
-import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -184,7 +183,7 @@ object StarshipDebugCommand : SLCommand() {
 		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.engines["targeting"] as? TargetingEngine)?.findTarget()}") }
+		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.modules["targeting"] as? TargetingModule)?.findTarget()}") }
 	}
 
 	@Subcommand("ai")
@@ -219,11 +218,11 @@ object StarshipDebugCommand : SLCommand() {
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
 			null
 		).apply {
-			val positioningEngine = engines["positioning"]
-			(positioningEngine as? AxisStandoffPositioningEngine)?.let { it.standoffDistance = standoffDistance }
+			val positioningEngine = modules["positioning"]
+			(positioningEngine as? AxisStandoffPositioningModule)?.let { it.standoffDistance = standoffDistance }
 		}
 
-		NPCFakePilot.add(starship as ActiveControlledStarship, null)
+//		NPCFakePilot.add(starship as ActiveControlledStarship, null)
 		starship.removePassenger(sender.uniqueId)
 	}
 

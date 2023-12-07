@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.engine.pathfinding.AStarPathfindingEngine
+import net.horizonsend.ion.server.features.starship.active.ai.module.pathfinding.AStarPathfindingModule
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
@@ -218,9 +218,9 @@ object AIPathfinding {
 
 	/** Gets the chunks that should be searched for pathfinding */
 	@Synchronized
-	private fun getSurroundingSectionPositions(engine: AStarPathfindingEngine): List<Vec3i> {
-		val radius = engine.chunkSearchRadius
-		val center = engine.getSectionPositionOrigin()
+	private fun getSurroundingSectionPositions(module: AStarPathfindingModule): List<Vec3i> {
+		val radius = module.chunkSearchRadius
+		val center = module.getSectionPositionOrigin()
 
 		val centerChunkX = center.x
 		val centerSectionY = center.y
@@ -244,18 +244,18 @@ object AIPathfinding {
 	 * Saves time by not searching existing sections, and maintains inhabited time of currently tracked sections
 	 **/
 	@Synchronized
-	fun adjustTrackedSections(engine: AStarPathfindingEngine, loadChunks: Boolean = false) {
-		val currentlyTracked = engine.trackedSections.map { it.position }
-		val new = getSurroundingSectionPositions(engine)
+	fun adjustTrackedSections(module: AStarPathfindingModule, loadChunks: Boolean = false) {
+		val currentlyTracked = module.trackedSections.map { it.position }
+		val new = getSurroundingSectionPositions(module)
 
 		val toRemove = currentlyTracked.toMutableList() // clone
 		toRemove.removeAll(new) // Get a list of all the old
 
 		val unTracked = new.toMutableList()
-		val newSections = searchSections(engine.starship, engine.world, unTracked, loadChunks)
+		val newSections = searchSections(module.starship, module.world, unTracked, loadChunks)
 
-		engine.trackedSections.removeAll { toRemove.contains(it.position) }
-		engine.trackedSections.addAll(newSections)
+		module.trackedSections.removeAll { toRemove.contains(it.position) }
+		module.trackedSections.addAll(newSections)
 	}
 
 	/**
@@ -264,12 +264,12 @@ object AIPathfinding {
 	 * TODO insert explainer of how A* works
 	 **/
 	@Synchronized
-	fun pathfind(engine: AStarPathfindingEngine): Collection<PathfindingNodeWrapper> {
-		val trackedNodes = engine.trackedSections
-		if (trackedNodes.isEmpty()) adjustTrackedSections(engine, false)
+	fun pathfind(module: AStarPathfindingModule): Collection<PathfindingNodeWrapper> {
+		val trackedNodes = module.trackedSections
+		if (trackedNodes.isEmpty()) adjustTrackedSections(module, false)
 
-		val originNode = engine.getOriginNode()
-		val destinationNode = engine.getDestinationNode()
+		val originNode = module.getOriginNode()
+		val destinationNode = module.getDestinationNode()
 
 		// All nodes available for pathfinding
 		val navigableList = ConcurrentLinkedQueue<SectionNode>()
@@ -285,7 +285,7 @@ object AIPathfinding {
 		val originNodeWrapper = PathfindingNodeWrapper(originNode, 0f, false, null, null)
 		openSet += originNodeWrapper
 
-		engine.starship.debug("Beginning A*, Origin: $originNode, destination: $destinationNode")
+		module.starship.debug("Beginning A*, Origin: $originNode, destination: $destinationNode")
 		iterateNeighbors(originNodeWrapper, navigableList, trackedNodes, openSet, closedSet, destinationNode, originNode)
 
 		var iterations = 0
@@ -304,7 +304,7 @@ object AIPathfinding {
 			iterateNeighbors(currentNode, navigableList, trackedNodes, openSet, closedSet, destinationNode, originNode)
 		}
 
-		engine.starship.debug("COULD NOT FIND DESTINATION, GAVE UP")
+		module.starship.debug("COULD NOT FIND DESTINATION, GAVE UP")
 		return openSet.minBy { it.fCost }.getChain()
 	}
 

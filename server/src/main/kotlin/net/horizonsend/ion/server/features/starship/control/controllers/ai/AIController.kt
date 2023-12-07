@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ai.engine.AIEngine
+import net.horizonsend.ion.server.features.starship.active.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
  * @param manualWeaponSets: The manual weapon sets, and their ranges. This value is stored here to allow easier transition between controllers.
  * @param autoWeaponSets: The auto weapon sets. See manual weapon sets.
  *
- * @param engines: AI engines are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more.
+ * @param modules: AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more.
  **/
 class AIController(
 	starship: ActiveStarship,
@@ -45,7 +45,7 @@ class AIController(
 	val manualWeaponSets: Set<AIShipConfiguration.AIStarshipTemplate.WeaponSet> = setOf(),
 	val autoWeaponSets: Set<AIShipConfiguration.AIStarshipTemplate.WeaponSet> = setOf(),
 
-	val engines: MutableMap<String, AIEngine> = mutableMapOf()
+	val modules: MutableMap<String, AIModule> = mutableMapOf()
 ) : Controller(damager, starship, name) {
 	// Control variables
 	override var isShiftFlying: Boolean = false
@@ -76,32 +76,32 @@ class AIController(
 	val averageHealth get() = shields.sumOf { it.powerRatio } / shieldCount.toDouble()
 
 	override fun tick() {
-		for ((_, engine) in engines) {
-			engine.tick()
+		for ((_, module) in modules) {
+			module.tick()
 		}
 	}
 
 	override fun destroy() {
-		for ((_, engine) in engines) {
-			engine.shutDown()
+		for ((_, module) in modules) {
+			module.shutDown()
 		}
 	}
 
 	override fun onDamaged(damager: Damager) {
-		for ((_, engine) in engines) {
-			engine.onDamaged(damager)
+		for ((_, module) in modules) {
+			module.onDamaged(damager)
 		}
 	}
 
 	override fun onMove(movement: StarshipMovement) {
-		for ((_, engine) in engines) {
-			engine.onMove(movement)
+		for ((_, module) in modules) {
+			module.onMove(movement)
 		}
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
-		for ((_, engine) in engines) {
-			engine.onBlocked(movement, reason, location)
+		for ((_, module) in modules) {
+			module.onBlocked(movement, reason, location)
 		}
 	}
 
@@ -133,7 +133,7 @@ class AIController(
 
 			Last Rotated: $lastRotation
 
-			Engines: ${engines.entries.joinToString { (key, value) -> "$key : $value" }}
+			Modules: ${modules.entries.joinToString { (key, value) -> "$key : $value" }}
 		""".trimIndent()
 	}
 }

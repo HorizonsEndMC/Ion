@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTe
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningUtils.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement.placeImmediate
@@ -47,6 +46,9 @@ abstract class AISpawner(
 	private var points: Int = 0
 	private var lastTriggered: Long = 0
 
+	open val minDistanceFromPlayer: Double = 1500.0
+	open val maxDistanceFromPlayer: Double = 3500.0
+
 	/** Tick points, possibly trigger a spawn */
 	fun tickPoints() {
 		handleSuccess()
@@ -68,7 +70,7 @@ abstract class AISpawner(
 	fun AIStarshipTemplate.getName(): Component = miniMessage().deserialize(miniMessageName)
 
 	/** Entry point for the spawning mechanics, spawns the ship and handles any exceptions */
-	fun trigger(context: CoroutineScope) = context.launch {
+	fun trigger(scope: CoroutineScope) = scope.launch {
 		try { triggerSpawn() }
 		catch (e: SpawningException) { handleException(e) }
 		catch (e: Throwable) {
@@ -76,6 +78,9 @@ abstract class AISpawner(
 			e.printStackTrace()
 		}
 	}
+
+	/** Checks if the position of the spawn is valid */
+	abstract fun spawningConditionsMet(world: World, x: Int, y: Int, z: Int): Boolean
 
 	/** The spawning logic, do as you wish */
 	protected abstract suspend fun triggerSpawn()

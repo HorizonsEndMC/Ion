@@ -14,6 +14,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import org.joml.Vector3f
+import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.acos
@@ -488,4 +489,15 @@ fun Collection<Vector>.average(): Vector {
 	sumZ /= entries
 
 	return Vector(sumX, sumY, sumZ)
+}
+
+/** Returns <x, y> pair */
+fun getRadialRandomPoint(minimumDistance: Double, maximumDistance: Double): Pair<Double, Double> {
+	// Get a random radian for a polar position
+	val radians = ThreadLocalRandom.current().nextDouble(0.0, 2 * PI)
+
+	// Get a point representing the distance from the center
+	val distance = ThreadLocalRandom.current().nextDouble(minimumDistance, maximumDistance)
+
+	return cos(radians) * distance to sin(radians) * distance
 }
