@@ -48,6 +48,8 @@ class IonProxy : Plugin() {
 
 				component.onEnable()
 			}
+
+			for (listener in listeners) registerListener(this@IonProxy, listener)
 		}
 
 		val commandManager = BungeeCommandManager(this).apply {

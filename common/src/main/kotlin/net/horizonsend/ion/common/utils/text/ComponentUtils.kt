@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_D
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -106,6 +107,8 @@ fun Iterable<ComponentLike>.join(separator: Component = text(", ")): Component {
 }
 
 fun Component.addSpace(prefix: Boolean): Component {
+	if ((this as? TextComponent)?.content()?.isEmpty() == true) return this
+
 	val plainText = plainText()
 
 	if (plainText.isEmpty()) return this

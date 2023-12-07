@@ -9,12 +9,13 @@ data class Embed(
 	val title: String? = null,
 	val description: String? = null,
 	val color: Int? = null,
-	val fields: ArrayList<Field>? = null,
+	val fields: List<Field>? = null,
 	val image: String? = null,
 	val thumbnail: String? = null,
 	val author: Author? = null,
 	val footer: Footer? = null,
-	val url: String? = null
+	val url: String? = null,
+	val timestamp: Long? = null,
 ) {
 	data class Field(
 		val name: String,

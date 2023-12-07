@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed.AuthorInfo
 import net.dv8tion.jda.api.entities.MessageEmbed.Field
 import net.dv8tion.jda.api.entities.MessageEmbed.Footer
 import net.horizonsend.ion.common.utils.discord.Embed
+import java.time.Instant
 
 fun Embed.jda(): MessageEmbed {
 	val builder = EmbedBuilder()
@@ -19,6 +20,7 @@ fun Embed.jda(): MessageEmbed {
 	author?.let { builder.setAuthor(it.name, it.url, it.icon_url) }
 	footer?.let { builder.setFooter(it.text, it.icon_url) }
 	url?.let { builder.setUrl(url) }
+	timestamp?.let { builder.setTimestamp(Instant.ofEpochMilli(it)) }
 
 	return builder.build()
 }

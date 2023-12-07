@@ -1,34 +1,33 @@
 package net.horizonsend.ion.proxy.features
 
-import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
+import net.horizonsend.ion.proxy.features.messaging.ProxyDiscordMessaging
 import net.horizonsend.ion.proxy.utils.isBanned
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
+import net.kyori.adventure.text.format.NamedTextColor
 import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.event.ServerConnectEvent
 import net.md_5.bungee.api.event.ServerConnectedEvent
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
-object ConnectionMessages : IonComponent() {
+object ConnectionMessages : IonProxyComponent() {
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onLogin(event: ServerConnectedEvent) { // This event is only called when logging into the server the first time
 		val info = event.server.info
 
+		if (event.player.isBanned()) return
+		if (PLUGIN.playerServerMap.containsKey(event.player.uniqueId)) return
+
 		PLUGIN.proxy.information("<dark_gray>[<green>+ <gray>${info.name}<dark_gray>] <white>${event.player.name}")
 
-//		RedisActions.discord_action.publish(Channel.GLOBAL to )
-//		PLUGIN.discord?.let { jda ->
-//			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
-//
-//			globalChannel.sendMessageEmbeds(
-//				messageEmbed(
-//					description = "[+ ${info.name}] ${event.player.name.replace("_", "\\_")}",
-//					color = ChatColor.GREEN.color.rgb
-//				)
-//			).queue()
-//		}
+		ProxyDiscordMessaging.globalEmbed(Embed(
+			description = "[+ ${info.name}] ${event.player.name.replace("_", "\\_")}",
+			color = NamedTextColor.GREEN.value()
+		))
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -39,16 +38,10 @@ object ConnectionMessages : IonComponent() {
 		val player = WrappedPlayer(event.player)
 		PLUGIN.proxy.information("<dark_gray>[<blue>> <gray>${event.target.name}<dark_gray>] <white>${player.name}")
 
-//		PLUGIN.discord?.let { jda ->
-//			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
-//
-//			globalChannel.sendMessageEmbeds(
-//				messageEmbed(
-//					description = "[> ${event.target.name}] ${player.name.replace("_", "\\_")}",
-//					color = ChatColor.BLUE.color.rgb
-//				)
-//			).queue()
-//		}
+		ProxyDiscordMessaging.globalEmbed(Embed(
+			description = "[> ${event.target.name}] ${player.name.replace("_", "\\_")}",
+			color = NamedTextColor.BLUE.value()
+		))
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -56,18 +49,13 @@ object ConnectionMessages : IonComponent() {
 		val serverName = PLUGIN.playerServerMap.remove(event.player.uniqueId)!!.name
 
 		if (event.player.isBanned()) return
+		if (PLUGIN.playerServerMap.containsKey(event.player.uniqueId)) return
 
 		PLUGIN.proxy.information("<dark_gray>[<red>- <gray>$serverName<dark_gray>] <white>${event.player.displayName}")
-//
-//		PLUGIN.discord?.let { jda ->
-//			val globalChannel = jda.getTextChannelById(PLUGIN.configuration.globalChannel) ?: return@let
-//
-//			globalChannel.sendMessageEmbeds(
-//				messageEmbed(
-//					description = "[- $serverName] ${event.player.name.replace("_", "\\_")}",
-//					color = ChatColor.RED.color.rgb
-//				)
-//			).queue()
-//		}
+
+		ProxyDiscordMessaging.globalEmbed(Embed(
+			description = "[- $serverName] ${event.player.name.replace("_", "\\_")}",
+			color = NamedTextColor.RED.value()
+		))
 	}
 }

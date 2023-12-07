@@ -12,18 +12,19 @@ import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.api.event.ServerConnectedEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
+import net.md_5.bungee.event.EventPriority
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 object PlayerCache : AbstractPlayerCache(), Listener {
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	fun preLogin(event: PreLoginEvent) {
 		if (PLUGIN.proxy.players.any { it.uniqueId == event.connection.uniqueId }) return
 
 		callOnPreLogin(event.connection.uniqueId)
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	fun login(event: ServerConnectedEvent) {
 		if (!PlayerCache.PLAYER_DATA.containsKey(event.player.uniqueId)) {
 			PLUGIN.proxy.scheduler.delay(
@@ -42,8 +43,7 @@ object PlayerCache : AbstractPlayerCache(), Listener {
 	override fun onlinePlayerIds(): List<SLPlayerId> = PLUGIN.proxy.players.map { it.uniqueId.slPlayerId }
 
 	override fun kickUUID(uuid: UUID, msg: String) {
-		PLUGIN.getProxy().getPlayer(uuid)?.disconnect(*BungeeComponentSerializer.get()
-			.serialize(MiniMessage.miniMessage().deserialize(msg)))
+		PLUGIN.getProxy().getPlayer(uuid)?.disconnect(*BungeeComponentSerializer.get().serialize(MiniMessage.miniMessage().deserialize(msg)))
 	}
 
 	override fun getColoredTag(nameColorPair: Pair<String, String>?): String? {

@@ -1,13 +1,11 @@
 package net.horizonsend.ion.server.features.starship.modules
 
-import github.scarsz.discordsrv.DiscordSRV
-import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
-import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
-import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
+import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -23,7 +21,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
-import java.time.Instant
 
 class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
 	override fun execute() {
@@ -54,29 +51,30 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 
 	private fun sendDiscordMessage(arena: Boolean, sinkMessage: Component, assists: Map<Damager, Component>) {
 		if (arena) return
-		if (!Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) return
 
 		Tasks.async {
-			val channel: TextChannel = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("events") ?: return@async
-
 			// Formatting the messages
 			val sunkPlayer = (sunkShip.controller as? PlayerController)?.player
 			val headURL = sunkPlayer?.name?.let { "https://minotar.net/avatar/$sunkPlayer" }
 
 			val killedNationColor = sunkShip.controller.damager.color.asRGB()
 
-			val embed = EmbedBuilder()
-				.setTitle("Ship Kill") // Title at top
-				.setTimestamp(Instant.now()) // Timestamp at the bottom
-				.setColor(killedNationColor) // Color bar on the side is the killed player's nation's color
-				.setThumbnail(headURL) // Head of the killed player
-				.addField(MessageEmbed.Field(sinkMessage.plainText(), "", false))
+			val fields = mutableListOf(Embed.Field(name = sinkMessage.plainText(), value = "", inline = false))
 
 			if (assists.isNotEmpty()) {
-				embed.addField(MessageEmbed.Field("Assisted By:", assists.map { formatName(it.key).plainText() }.joinToString("\n"), false))
+				fields.add(Embed.Field("Assisted By:", assists.map { formatName(it.key).plainText() }.joinToString("\n"), false))
 			}
 
-			channel.sendMessageEmbeds(embed.build()).queue()
+			val embed = Embed(
+				title = "Ship Kill",
+				timestamp = System.currentTimeMillis(),
+				color = killedNationColor,
+				thumbnail = headURL,
+				fields = fields
+			)
+
+			ServerDiscordMessaging.eventsEmbed(embed)
+			ServerDiscordMessaging.globalEmbed(embed)
 		}
 	}
 
