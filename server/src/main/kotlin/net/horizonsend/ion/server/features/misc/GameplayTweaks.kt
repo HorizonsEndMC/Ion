@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.GLAZED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SLAB_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.NORMAL_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
@@ -106,7 +106,7 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.QUARTZ_STAIRS, 6.0f)
 		setBlastResistance(Material.SANDSTONE_STAIRS, 6.0f)
 		setBlastResistance(Material.RED_SANDSTONE_STAIRS, 6.0f)
-		STAINED_TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
+		NORMAL_TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		GLAZED_TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		SLAB_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAIR_TYPES.forEach { setBlastResistance(it, 6.0f) }
