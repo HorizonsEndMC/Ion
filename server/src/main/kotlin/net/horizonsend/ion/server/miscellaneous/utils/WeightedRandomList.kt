@@ -4,7 +4,7 @@ import java.util.Random
 import java.util.concurrent.ThreadLocalRandom
 
 // This was fun to learn
-class WeightedRandomList<T : Any>() {
+class WeightedRandomList<T : Any>() : Collection<T> {
 	private val weightedEntryList = arrayListOf<WeightedEntry<T>>()
 
 	constructor(vararg constructorEntries: Pair<T, Int>): this() {
@@ -16,12 +16,30 @@ class WeightedRandomList<T : Any>() {
 	}
 
 	var rollingWeight = 0
-	val size = weightedEntryList.size
+	override val size = weightedEntryList.size
+
+	override fun isEmpty(): Boolean {
+		return weightedEntryList.isEmpty()
+	}
+
+	override fun iterator(): Iterator<T> {
+		return keys().iterator()
+	}
+
+	override fun containsAll(elements: Collection<T>): Boolean {
+		return keys().containsAll(elements)
+	}
+
+	override fun contains(element: T): Boolean {
+		return keys().contains(element)
+	}
 
 	private data class WeightedEntry<T>(
 		val parent: T,
 		val weight: Int
 	)
+
+	fun keys(): Set<T> = weightedEntryList.mapTo(mutableSetOf()) { it.parent }
 
 	fun addEntry(entry: T, weight: Int): WeightedRandomList<T> {
 		rollingWeight += weight
