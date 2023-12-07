@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomBlock
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.NORMAL_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
@@ -246,7 +246,7 @@ class MultiblockShape {
 		fun filteredTypes(filter: (Material) -> Boolean) = anyType(MATERIALS.filter(filter))
 
 		fun carbyne() = anyType(CONCRETE_TYPES)
-		fun stainedTerracotta() = anyType(STAINED_TERRACOTTA_TYPES)
+		fun stainedTerracotta() = anyType(NORMAL_TERRACOTTA_TYPES)
 
 		fun glass() = type(Material.GLASS)
 		fun stainedGlass() = filteredTypes { it.isStainedGlass }
