@@ -41,6 +41,12 @@ fun lineBreakWithCenterText(value: Component) = bracketed(
 	text().append(text(" »", HE_DARK_GRAY)).append(lineBreak(15)).build()
 )
 
+fun lineBreakWithCenterText(value: Component, width: Int = 15) = bracketed(
+	value,
+	text().append(lineBreak(width)).append(text("« ", HE_DARK_GRAY)).build(),
+	text().append(text(" »", HE_DARK_GRAY)).append(lineBreak(width)).build()
+)
+
 fun lineBreak(width: Int, color: TextColor = HE_DARK_GRAY, vararg decorations: TextDecoration) = text(repeatString("=", width), color, TextDecoration.STRIKETHROUGH, *decorations)
 
 fun bracketed(value: Component, leftBracket: Char = '[', rightBracket: Char = ']', bracketColor: TextColor = HE_DARK_GRAY) =
@@ -68,6 +74,7 @@ fun template(
 }
 
 fun template(message: Component, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, useQuotesAroundObjects: Boolean = true, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = useQuotesAroundObjects, *parameters)
 fun template(message: Component, paramColor: TextColor, vararg parameters: Any?) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
 
 fun template(
