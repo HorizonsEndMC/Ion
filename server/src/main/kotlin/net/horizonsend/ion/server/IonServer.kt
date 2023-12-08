@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
+import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -117,6 +119,8 @@ object IonServer : JavaPlugin() {
 			}
 		}
 
+		// Checkmark is not an emoji?
+		ServerDiscordMessaging.globalEmbed(Embed(title = "✅ ${configuration.serverName} has started", color = NamedTextColor.GREEN.value()))
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB
 	}
 

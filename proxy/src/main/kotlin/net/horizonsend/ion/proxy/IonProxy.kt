@@ -63,6 +63,12 @@ class IonProxy : Plugin() {
 
 	override fun onDisable() {
 		adventure.close()
+
+		for (component in components.asReversed()) try {
+			component.onDisable()
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
 	}
 }
 
