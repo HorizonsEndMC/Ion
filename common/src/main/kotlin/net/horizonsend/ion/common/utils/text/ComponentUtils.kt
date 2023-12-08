@@ -52,7 +52,7 @@ fun templateMiniMessage(
 	message: String,
 	paramColor: TextColor = NamedTextColor.WHITE,
 	useQuotesAroundObjects: Boolean = true,
-	vararg parameters: Any
+	vararg parameters: Any?
 ): Component {
 	return template(miniMessage().deserialize(message), paramColor, useQuotesAroundObjects, *parameters)
 }
@@ -62,19 +62,19 @@ fun template(
 	color: TextColor,
 	paramColor: TextColor = NamedTextColor.WHITE,
 	useQuotesAroundObjects: Boolean = true,
-	vararg parameters: Any
+	vararg parameters: Any?
 ): Component {
 	return template(text(message, color), paramColor, useQuotesAroundObjects, *parameters)
 }
 
-fun template(message: Component, vararg parameters: Any) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
-fun template(message: Component, paramColor: TextColor, vararg parameters: Any) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, paramColor: TextColor, vararg parameters: Any?) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
 
 fun template(
 	message: Component,
 	paramColor: TextColor,
 	useQuotesAroundObjects: Boolean,
-	vararg parameters: Any
+	vararg parameters: Any?
 ): Component {
 	val replacement = TextReplacementConfig.builder()
 		.match(Pattern.compile("\\{([0-9]*?)}"))
