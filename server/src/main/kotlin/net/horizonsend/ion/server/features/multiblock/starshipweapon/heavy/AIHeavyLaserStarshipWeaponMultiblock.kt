@@ -15,17 +15,17 @@ object AIHeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<A
 	}
 
 	override fun MultiblockShape.buildStructure() {
-		z(+9) {
+		z(+6) {
 			y(+0) {
 				x(+0).pistonBase()
 			}
 		}
-		z(+1) {
+		z(+5) {
 			y(+0) {
 				x(+0).type(Material.GRINDSTONE)
 			}
 		}
-		z(+2) {
+		z(+4) {
 			y(+0) {
 				x(+0).furnace()
 			}
@@ -35,17 +35,17 @@ object AIHeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<A
 				x(+0).furnace()
 			}
 		}
-		z(+4) {
+		z(+2) {
 			y(+0) {
 				x(+0).thrusterBlock()
 			}
 		}
-		z(+5) {
+		z(+1) {
 			y(+0) {
 				x(+0).thrusterBlock()
 			}
 		}
-		z(+6) {
+		z(+0) {
 			y(+0) {
 				x(+0).thrusterBlock()
 			}
