@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.miscellaneous.utils
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.redis.messaging.Notifications
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.kyori.adventure.text.Component
@@ -14,7 +16,7 @@ import java.util.UUID
 object Notify : Notifications() {
 	fun chatAndGlobal(message: Component) {
 		notifyOnlineAction(message)
-		ServerDiscordMessaging.globalMessage(message)
+		ServerDiscordMessaging.globalEmbed(Embed(title = message.plainText(), color = message.color()?.value()))
 	}
 
 	override val notifyOnlineAction = { message: Component ->
