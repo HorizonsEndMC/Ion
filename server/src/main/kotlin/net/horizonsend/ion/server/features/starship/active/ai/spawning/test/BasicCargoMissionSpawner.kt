@@ -18,13 +18,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConfiguration.spawners::CARGO_MISSION, 0.5, 2500) {
+class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConfiguration.spawners::CARGO_MISSION) {
 	fun findLocation(): Location? {
 		// Get a random world based on the weight in the config
 		val worldConfig = configuration.worldWeightedRandomList.random()
@@ -127,19 +126,5 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConf
 				null // No previous
 			)
 		}
-	}
-
-	fun getStarshipTemplate(world: World): Pair<AIShipConfiguration.AIStarshipTemplate, Component> {
-		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
-		val worldConfig = configuration.getWorld(world)!!
-		val tierIdentifier = worldConfig.tierWeightedRandomList.random()
-		val tier = configuration.getTier(tierIdentifier)
-		val shipIdentifier = tier.shipsWeightedList.random()
-		val name = MiniMessage.miniMessage().deserialize(tier.namesWeightedList.random())
-
-		println("selected name:")
-		IonServer.server.consoleSender.sendMessage(name)
-
-		return IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name
 	}
 }

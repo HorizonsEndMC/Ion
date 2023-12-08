@@ -6,6 +6,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -37,9 +38,10 @@ import kotlin.random.Random
 abstract class AISpawner(
 	val identifier: String,
 	private val configurationSupplier: Supplier<AIShipConfiguration.AISpawnerConfiguration>,
-	private val pointChance: Double,
-	private val pointThreshold: Int
 ) {
+	private val pointChance: Double = configuration.pointChance
+	private val pointThreshold: Int = configuration.pointThreshold
+
 	val configuration get() = configurationSupplier.get()
 	protected val log = LoggerFactory.getLogger(javaClass)
 
@@ -134,7 +136,7 @@ abstract class AISpawner(
 
 	/** Handle any exceptions with spawning */
 	private fun handleException(exception: SpawningException) {
-		log.warn(exception.message)
+		log.warn("AI spawning encountered an issue: ${exception.message}, attempting to spawn a ship at ${exception.spawningLocation}")
 
 		val blockKeys = exception.blockLocations
 
@@ -157,5 +159,19 @@ abstract class AISpawner(
 	): Throwable(message) {
 		/** The locations of any placed blocks. Will be empty if the error occured before any were placed. */
 		var blockLocations: LongOpenHashSet = LongOpenHashSet()
+	}
+
+	/** Selects a starship template off of the configuration, picks, and serializes a name */
+	open fun getStarshipTemplate(world: World): Pair<AIStarshipTemplate, Component> {
+		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
+		val worldConfig = configuration.getWorld(world)!!
+		val tierIdentifier = worldConfig.tierWeightedRandomList.random()
+		val tier = configuration.getTier(tierIdentifier)
+		val shipIdentifier = tier.shipsWeightedList.random()
+		val name = miniMessage().deserialize(tier.namesWeightedList.random())
+
+		IonServer.server.consoleSender.sendMessage(name)
+
+		return IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name
 	}
 }
