@@ -23,7 +23,7 @@ abstract class StandardTransportOperation(
 	name: String,
 	pointChance: Double,
 	pointThreshold: Int
-) : AISpawner("MINING_CORP_$name", config, pointChance, pointThreshold) {
+) : AISpawner("MINING_CORP_$name", config) {
 	protected fun getAsteroidBelts(world: World): Collection<AsteroidFeature> {
 		val generator = SpaceGenerationManager.getGenerator(world.minecraft) ?: return listOf()
 
