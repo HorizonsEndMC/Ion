@@ -2,15 +2,25 @@ package net.horizonsend.ion.discord.features
 
 import com.google.gson.reflect.TypeToken
 import dev.vankka.mcdiscordreserializer.discord.DiscordSerializer
+import dev.vankka.mcdiscordreserializer.discord.DiscordSerializerOptions
 import net.horizonsend.ion.common.utils.redis.RedisAction
 import net.horizonsend.ion.common.utils.redis.messaging.DiscordMessages
 import net.horizonsend.ion.discord.IonDiscordBot
 import net.horizonsend.ion.discord.utils.getChannel
 import net.horizonsend.ion.discord.utils.jda
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.KeybindComponent
+import net.kyori.adventure.text.TranslatableComponent
 
 object DiscordMessages : DiscordMessages() {
-	fun asDiscord(component: Component): String = DiscordSerializer.INSTANCE.serialize(component)
+	private val serializer = DiscordSerializer(DiscordSerializerOptions(
+		true,
+		false,
+		KeybindComponent::keybind,
+		TranslatableComponent::key
+	))
+
+	fun asDiscord(component: Component): String = serializer.serialize(component)
 
 	override val notifyAction: RedisAction<DiscordMessage> = object : RedisAction<DiscordMessage>(
 		"notify-discord",
