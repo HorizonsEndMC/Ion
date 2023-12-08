@@ -56,9 +56,8 @@ abstract class StandardTransportOperation(
 		)
 	}
 
-	companion object {
+	companion object MiningCorpColorScheme {
 		val MINING_CORP_LIGHT_ORANGE = HEColorScheme.HE_LIGHT_ORANGE
 		val MINING_CORP_DARK_ORANGE = TextColor.fromHexString("#D98507")
-		val MINING_CORP_MEDIUM_ORANGE = HEColorScheme.HE_MEDIUM_GRAY
 	}
 }
