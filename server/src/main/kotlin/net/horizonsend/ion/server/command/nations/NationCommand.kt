@@ -18,18 +18,20 @@ import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.nations.utils.cmd
-import net.horizonsend.ion.server.features.nations.utils.hover
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
@@ -39,11 +41,13 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -56,7 +60,10 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
-internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
+internal object NationCommand : SLCommand() {
+	private val nationsMessageColor = TextColor.fromHexString("#FF6060")
+	private fun nationMessageFormat(text: String, vararg args: Any?) = template(text(text, nationsMessageColor), *args)
+
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "member_settlements") { c ->
 			val player = c.player ?: throw InvalidCommandArgument("Players only")
@@ -151,7 +158,12 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
 
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<yellow>${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!"))
+		Notify.chatAndEvents(nationMessageFormat(
+			"{0}, leader of the settlement {1}, founded the nation {2}!",
+			sender.name,
+			getSettlementName(settlement),
+			name
+		))
 	}
 
 	@Suppress("unused")
@@ -166,7 +178,11 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Nation.delete(nation)
 
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<yellow>The nation $nationName has been disbanded by its leader ${sender.name}!"))
+		Notify.chatAndEvents(nationMessageFormat(
+			"The nation {0} has been disbanded by its leader {1}",
+			nationName,
+			sender.name
+		))
 	}
 
 	@Suppress("unused")
@@ -187,17 +203,29 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		if (!Nation.isInvited(nationId, settlementId)) {
 			Nation.addInvite(nationId, settlementId)
 			sender.success("Invited settlement ${getSettlementName(settlementId)} to your nation")
+
 			Notify.playerCrossServer(
 				player = leaderId,
-				message = MiniMessage.miniMessage().deserialize("<aqua>Your settlement is invited to the nation $nationName by ${sender.name}! " +
-						"To accept, use <yellow><italic>/nation join $nationName")
+				message = nationMessageFormat(
+					"Your settlement has been invited to the nation {0} by {1}! To accept, use {2}",
+					nationName,
+					sender.name,
+					text("/nation join $nationName", YELLOW, TextDecoration.ITALIC)
+						.hoverEvent(text("Click to run /nation join $nationName"))
+						.clickEvent(ClickEvent.runCommand("/nation join $nationName"))
+				)
 			)
 		} else {
 			Nation.removeInvite(nationId, settlementId)
 			sender.success("Cancelled invite for settlement $settlementId to your nation")
+
 			Notify.playerCrossServer(
 				player = leaderId,
-				message = MiniMessage.miniMessage().deserialize("<yellow>Your settlement's invite to the nation $nationName has been revoked by ${sender.name}")
+				message = nationMessageFormat(
+					"Your settlement's invitation to join the nation {0} has been revoked by {1}",
+					nationName,
+					sender.name,
+				)
 			)
 		}
 	}
@@ -209,7 +237,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		requireNationPermission(sender, nationId, NationRole.Permission.SETTLEMENT_INVITE)
 
 		val invitedSettlements = Nation.findPropById(nationId, Nation::invites)
-		sender msg "&7Invited Settlements:&b ${invitedSettlements?.joinToString { SettlementCache[it].name }}"
+		sender.sendMessage(nationMessageFormat("Invited Settlements: {0}", invitedSettlements?.joinToString { SettlementCache[it].name }))
 	}
 
 	@Suppress("unused")
@@ -230,7 +258,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Nation.removeInvite(nationId, settlementId)
 		Settlement.joinNation(settlementId, nationId)
 
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<light_purple>Settlement <aqua>$settlementName<light_purple> joined the nation <red>$nationName<light_purple>!"))
+		Notify.chatAndEvents(nationMessageFormat("Settlement {0} joined the nation {1}", settlementName, nationName))
 	}
 
 	@Suppress("unused")
@@ -241,13 +269,14 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		requireSettlementLeader(sender, settlementId)
 		val nationId = requireNationIn(sender)
 		val nationName = getNationName(nationId)
+
 		requireNotCapital(settlementId, action = "leave the nation")
 
 		failIf(nationName != nation) { "You need to confirm using the name of the nation. Run the command: /n leave $nationName" }
 
 		Settlement.leaveNation(settlementId)
 
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<yellow>Settlement <dark_green>${getSettlementName(settlementId)}<yellow> seceded from the nation <red>$nationName<yellow>!"))
+		Notify.chatAndEvents(nationMessageFormat("Settlement {0} seceded from the nation {1}!", getSettlementName(settlementId), nationName))
 	}
 
 	@Suppress("unused")
@@ -267,7 +296,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<yellow> kicked settlement $settlementName from the nation ${getNationName(nationId)}"))
+		Notify.chatAndEvents(nationMessageFormat("{0} kicked settlement {1} from the nation {2}!", sender.name, settlementName, getNationName(nationId)))
 	}
 
 	@Suppress("unused")
@@ -293,7 +322,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Nation.setName(nationId, newName)
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
-		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> renamed their nation <red>$oldName<light_purple> to <>$newName<light_purple>!"))
+		Notify.chatAndEvents(nationMessageFormat("{0} renamed their nation {1} to {2}!", sender.name, oldName, newName))
 	}
 
 	@Suppress("unused")
@@ -306,7 +335,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Nation.setColor(nationId, color.asRGB())
 
-		sender.information("Updated nation color.")
+		sender.sendMessage(nationMessageFormat("Updated nation color to ", text("████████████", color(red, green, blue))))
 	}
 
 	@Suppress("unused")
@@ -325,7 +354,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Nation.setCapital(nationId, settlementId)
 
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> changed the capital of their nation ${getNationName(nationId)} to $settlementName!"))
+		Notify.chatAndEvents(nationMessageFormat("{0} changed the capital of their nation {1} to {2}", sender.name, getNationName(nationId), settlementName))
 	}
 
 	@Suppress("unused")
@@ -357,7 +386,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
-		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> claimed the territory <dark_green>${territory.name}<light_purple> for their nation <red>$nationName<light_purple>!"))
+		Notify.chatAndEvents(nationMessageFormat("{0} claimed the territory {1} for their nation {2}!", sender.name, territory.name, nationName))
 	}
 
 	@Suppress("unused")
@@ -378,15 +407,15 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		Territory.setNation(regionTerritory.id, null)
 
 		val nationName = getNationName(nationId)
-		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${sender.name}<light_purple> unclaimed the territory <dark_green>$territoryName<light_purple> from their nation <red>$nationName<light_purple>!"))
+		Notify.chatAndEvents(nationMessageFormat("{0} unclaimed the territory {1} from their nation {2}!", sender.name, territoryName, nationName))
 	}
 
 	@Suppress("unused")
 	@Subcommand("top|list")
 	@Description("View the top nations on Star Legacy")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
-		val lines = mutableListOf<TextComponent>()
-		lines += lineBreak().fromLegacy()
+		val message = text()
+			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations\n")))
 
 		val nations = Nation.allIds()
 
@@ -417,23 +446,24 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			toIndex = min(index * linesPerPage + linesPerPage, sortedNations.size)
 		)
 
-		val nameColor = SLTextStyle.GOLD
-		val leaderColor = SLTextStyle.AQUA
-		val membersColor = SLTextStyle.BLUE
-		val activeColor = SLTextStyle.GREEN
-		val semiActiveColor = SLTextStyle.GRAY
-		val inactiveColor = SLTextStyle.RED
-		val settlementsColor = SLTextStyle.DARK_AQUA
-		val outpostsColor = SLTextStyle.YELLOW
-		val split = "&8|"
+		val nameColor = NamedTextColor.GOLD
+		val leaderColor = NamedTextColor.AQUA
+		val membersColor = NamedTextColor.BLUE
+		val activeColor = NamedTextColor.GREEN
+		val semiActiveColor = NamedTextColor.GRAY
+		val inactiveColor = NamedTextColor.RED
+		val settlementsColor = DARK_AQUA
+		val outpostsColor = YELLOW
+		val split = text("|", HEColorScheme.HE_MEDIUM_GRAY)
 
-		lines += (
-			"${nameColor}Name " +
-				"$split ${leaderColor}Leader " +
-				"$split ${membersColor}Members " +
-				"$split ${settlementsColor}Settlements " +
-				"$split ${outpostsColor}Outposts"
-			).fromLegacy()
+		message.append(ofChildren(
+			text("Name", nameColor),
+			split, text("Name", nameColor),
+			split, text("Leader", leaderColor),
+			split, text("Members", membersColor),
+			split, text("Settlements", settlementsColor),
+			split, text("Outposts", outpostsColor)
+		))
 
 		for (nation in nationsOnPage) {
 			val data: NationCache.NationData = NationCache[nation]
@@ -453,47 +483,62 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 				}
 			}
 
-			val line = TextComponent()
-
 			val name = data.name
 			val leaderName = SLPlayer.getName(data.leader)!!
 
-			line.addExtra("    $name ".style(nameColor).cmd("/n info $name").hover("Click for more info"))
-			line.addExtra(leaderName.style(leaderColor))
-			line.addExtra(" ${members.count()}".style(membersColor))
-			line.addExtra(darkGray(" ["))
-			line.addExtra("$active ".style(activeColor))
-			line.addExtra("$semiActive ".style(semiActiveColor))
-			line.addExtra("$inactive ".style(inactiveColor))
-			line.addExtra(darkGray("]"))
-			line.addExtra(" ${SettlementCache.all().count { it.nation == nation }}".style(settlementsColor))
-			line.addExtra(" ${Regions.getAllOf<RegionTerritory>().count { it.nation == nation }}".style(outpostsColor))
+			val line = text()
+				.hoverEvent(text("Click for more info"))
+				.clickEvent(ClickEvent.runCommand("/n info $name"))
 
-			lines += line
+				.append(text("    $name ", nameColor))
+				.append(text(leaderName, leaderColor))
+				.append(text(" ${members.count()}", membersColor))
+				.append(ofChildren(
+					text(" [", HEColorScheme.HE_MEDIUM_GRAY),
+					text("$active ", activeColor),
+					text("$semiActive ", semiActiveColor),
+					text("$inactive ", inactiveColor),
+					text("]", HEColorScheme.HE_MEDIUM_GRAY),
+				))
+				.append(text(" ${SettlementCache.all().count { it.nation == nation }}", settlementsColor))
+				.append(text(" ${Regions.getAllOf<RegionTerritory>().count { it.nation == nation }}", outpostsColor))
+				.build()
+
+			message.append(line)
 		}
 
-		val pageLine = TextComponent()
+		val pageLine = text()
 
 		if (index > 0) {
-			pageLine.addExtra(darkGreen(" ["))
-			pageLine.addExtra(white("<--").cmd("/nation top $index").hover("Click to see previous page"))
-			pageLine.addExtra(darkGreen("]"))
+			pageLine.append(ofChildren(
+				text(" [", DARK_GREEN),
+				text("<--", WHITE)
+					.clickEvent(ClickEvent.runCommand("/nation top $index"))
+					.hoverEvent(text("Click to see previous page")),
+				text("]", DARK_GREEN),
+			))
 		}
 
-		pageLine.addExtra(darkAqua(" Page "))
-		pageLine.addExtra(gray("${index + 1}/$pages "))
+		pageLine.append(ofChildren(
+			text(" Page ", DARK_AQUA),
+			text("${index + 1}/$pages ", HEColorScheme.HE_MEDIUM_GRAY),
+		))
 
 		if (index < pages - 1) {
-			pageLine.addExtra(darkGreen(" ["))
-			pageLine.addExtra(white("-->").cmd("/nation top ${index + 2}").hover("Click to see next page"))
-			pageLine.addExtra(darkGreen("]"))
+			pageLine.append(ofChildren(
+				text(" [", DARK_GREEN),
+				text("-->", WHITE)
+					.clickEvent(ClickEvent.runCommand("/nation top ${index + 2}"))
+					.hoverEvent(text("Click to see next page")),
+				text("]", DARK_GREEN),
+			))
 		}
 
-		lines += pageLine
+		message
+			.append(pageLine.build())
+			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations\n")))
 
-		lines += lineBreak().fromLegacy()
-
-		lines.forEach(sender::msg)
+		sender.sendMessage(message)
 	}
 
 	@Suppress("unused")
@@ -552,7 +597,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val outposts: List<RegionTerritory> = Regions.getAllOf<RegionTerritory>().filter { it.nation == nationId }
 		val outpostsText = text()
 			.append(text("Outposts ("))
-			.append(text(outposts.size).color(NamedTextColor.WHITE))
+			.append(text(outposts.size).color(WHITE))
 			.append(text("): "))
 
 		for (outpost in outposts) {
@@ -560,12 +605,12 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			val hoverText = text().color(TextColor.fromHexString("#b8e0d4"))
 				.append(text(outpost.name).color(NamedTextColor.AQUA))
 				.append(newline())
-				.append(text("Planet: ").append(text(outpost.world).color(NamedTextColor.WHITE)))
+				.append(text("Planet: ").append(text(outpost.world).color(WHITE)))
 				.append(newline())
 				.append(text("Centered at ")
-					.append(text(outpost.centerX).color(NamedTextColor.WHITE))
+					.append(text(outpost.centerX).color(WHITE))
 					.append(text(", "))
-					.append(text(outpost.centerZ).color(NamedTextColor.WHITE))
+					.append(text(outpost.centerZ).color(WHITE))
 				)
 				.build()
 				.asHoverEvent()
@@ -575,7 +620,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			outpostBuilder.append(
 				text(outpost.name)
 					.hoverEvent(hoverText)
-					.color(NamedTextColor.WHITE)
+					.color(WHITE)
 			)
 
 			if (!isLast) outpostBuilder.append(text(", "))
@@ -592,7 +637,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val settlementsText = text()
 			.append(text("Settlements ("))
-			.append(text(settlements.size).color(NamedTextColor.WHITE))
+			.append(text(settlements.size).color(WHITE))
 			.append(text("): "))
 
 		for (settlement in settlements) {
@@ -605,7 +650,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 				.append(newline())
 				.append(text("Led By: ").append(text(getPlayerName(cachedSettlement.leader)).color(NamedTextColor.AQUA)))
 				.append(newline())
-				.append(text(memberCount).color(NamedTextColor.WHITE)).append(text(" members"))
+				.append(text(memberCount).color(WHITE)).append(text(" members"))
 				.append(newline())
 
 			if (cachedSettlement.cityState != null) hoverTextBuilder
@@ -613,12 +658,12 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 				.append(newline())
 
 			hoverTextBuilder
-				.append(text("Planet: ").append(text(cachedTerritory.world).color(NamedTextColor.WHITE)))
+				.append(text("Planet: ").append(text(cachedTerritory.world).color(WHITE)))
 				.append(newline())
 				.append(text("Centered at ")
-					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+					.append(text(cachedTerritory.centerX).color(WHITE))
 					.append(text(", "))
-					.append(text(cachedTerritory.centerX).color(NamedTextColor.WHITE))
+					.append(text(cachedTerritory.centerX).color(WHITE))
 				)
 
 			val settlementBuilder = text()
@@ -626,7 +671,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 					text(cachedSettlement.name)
 						.hoverEvent(hoverTextBuilder.build().asHoverEvent())
 						.clickEvent(ClickEvent.runCommand("/s info ${cachedSettlement.name}"))
-						.color(NamedTextColor.WHITE)
+						.color(WHITE)
 				)
 
 			val isLast: Boolean = settlements.indexOf(settlement) == (settlements.size - 1)
@@ -639,23 +684,21 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		message.append(settlementsText)
 		message.append(newline())
-		message.append(text("Balance: ").append(text(data.balance).color(NamedTextColor.WHITE)))
+		message.append(text("Balance: ").append(text(data.balance).color(WHITE)))
 		message.append(newline())
 
 		val leaderRole = NationRole.getHighestRole(cached.leader)
 		val leaderRoleComp = leaderRole?.let { leader ->
-			text(leader.name).color(
-				color(
-					leader.color.actualStyle.wrappedColor.color.red,
-					leader.color.actualStyle.wrappedColor.color.green,
-					leader.color.actualStyle.wrappedColor.color.blue
-				)
-			)
+			text(leader.name).color(color(
+				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.red,
+				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.green,
+				@Suppress("Deprecation") leader.color.actualStyle.wrappedColor.color.blue
+			))
 		} ?: text()
 		val leaderText = text("Leader: ")
 			.append(leaderRoleComp)
 			.append(text(" "))
-			.append(text(getPlayerName(cached.leader)).color(NamedTextColor.WHITE))
+			.append(text(getPlayerName(cached.leader)).color(WHITE))
 
 		message.append(leaderText)
 		message.append(newline())
@@ -696,7 +739,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		val playerCountBuilder = text().color(TextColor.fromHexString("#b8e0d4"))
 			.append(text("Members ("))
-			.append(text(members.size).color(NamedTextColor.WHITE))
+			.append(text(members.size).color(WHITE))
 			.append(text("): ("))
 			.append(text("$active Active").color(NamedTextColor.GREEN))
 			.append(text(" $semiActive Semi-Active").color(NamedTextColor.GRAY))
@@ -727,7 +770,7 @@ internal object NationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		if (names.size > limit) {
 			namesList.append(text("...").color(TextColor.fromHexString("#b8e0d4")))
-			namesList.append(text(" [Hover for full member list]").color(NamedTextColor.DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
+			namesList.append(text(" [Hover for full member list]").color(DARK_AQUA)).hoverEvent(fullNamesList.asComponent().asHoverEvent())
 		}
 
 		message.append(namesList)
