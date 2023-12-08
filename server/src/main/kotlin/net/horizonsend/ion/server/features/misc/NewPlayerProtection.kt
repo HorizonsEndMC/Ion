@@ -32,7 +32,7 @@ import kotlin.math.pow
 object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Listener {
 	private val lpUserManager = luckPerms.userManager
 
-	private val protectionIndicator = SuffixNode.builder(" &6★ &r", 0).build()
+	private val protectionIndicator = SuffixNode.builder("&6★&r", 0).build()
 	private val removeProtectionPermission = PermissionNode.builder("ion.core.protection.removed").build()
 
 	override fun onEnable(manager: PaperCommandManager) {

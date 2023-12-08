@@ -11,9 +11,7 @@ import net.horizonsend.ion.proxy.commands.ReplyCommand
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.horizonsend.ion.proxy.wrappers.WrappedProxy
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences
-import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.plugin.Plugin
-import java.util.UUID
 
 lateinit var PLUGIN: IonProxy private set
 
@@ -26,8 +24,6 @@ class IonProxy : Plugin() {
 	val adventure = BungeeAudiences.create(this)
 
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
-
-	val playerServerMap = mutableMapOf<UUID, ServerInfo>()
 
 	val proxy = WrappedProxy(getProxy())
 
