@@ -19,6 +19,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.ChunkLoadEvent
+import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.persistence.PersistentDataType
 import kotlin.random.Random
 
@@ -29,12 +30,11 @@ TODO: Ore logic should be separated from the Listener, and the Async code should
 
 @Suppress("Unused")
 object CustomOrePlacement : IonServerComponent(true) {
-	lateinit var worldContainsOres: Map<World, OrePlacementConfig?>
+	val worldContainsOres: MutableMap<World, OrePlacementConfig?> = mutableMapOf()
 
-	override fun onEnable() {
-		worldContainsOres = Bukkit.getWorlds().associateWith {
-			try { OrePlacementConfig.valueOf(it.name) } catch (_: IllegalArgumentException) { null }
-		}
+	@EventHandler
+	fun onWorldInit(event: WorldInitEvent) {
+		worldContainsOres[event.world] = try { OrePlacementConfig.valueOf(event.world.name) } catch (_: IllegalArgumentException) { null }
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

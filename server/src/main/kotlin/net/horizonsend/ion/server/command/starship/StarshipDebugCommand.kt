@@ -45,7 +45,7 @@ import org.bukkit.util.Vector
 object StarshipDebugCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandContexts.registerContext(AISpawner::class.java) { context ->
-			AISpawningManager.spawners.firstOrNull { it.identifier == context.popFirstArg() } ?: throw InvalidCommandArgument("No such spawner: ${context.popFirstArg()}")
+			AISpawningManager.spawners.firstOrNull { it.identifier == context.firstArg } ?: throw InvalidCommandArgument("No such spawner: ${context.firstArg}")
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("aiSpawners") { _ ->

@@ -24,12 +24,13 @@ data class AIShipConfiguration(
 
 	@Serializable
 	data class AISpawners(
-		val CARGO_MISSION: AISpawnerConfiguration = AISpawnerConfiguration()
+		val CARGO_MISSION: AISpawnerConfiguration = AISpawnerConfiguration(),
+		val PRIVATEER_PATROL: AISpawnerConfiguration = AISpawnerConfiguration()
 	)
 
 	/**
 	 * @param miniMessageSpawnMessage The custom message to send when this spawner spawns a ship, uses string templates {0}, {1}, etc.
-	 * @param spawnChance Chance for a ship to spawn whenever this spawner is triggered.
+	 * @param pointChance Chance for a ship to spawn whenever this spawner is triggered.
 	 * @param worldSettings each contains a list of defined AI ship template identifiers, and their number of rolls when this world is selected.
 	 *
 	 * @see AIStarshipTemplate
@@ -38,8 +39,8 @@ data class AIShipConfiguration(
 	@Serializable
 	data class AISpawnerConfiguration(
 		val miniMessageSpawnMessage: String = "",
-		val spawnChance: Double = 1.0,
-		val spawnRate: Long = 20 * 60 * 15,
+		val pointChance: Double = 1.0,
+		val pointThreshold: Int = 20 * 60 * 15,
 		val tiers: List<AISpawnerTier> = listOf(AISpawnerTier()),
 		val worldSettings: List<AIWorldSettings> = listOf(AIWorldSettings())
 	) {
