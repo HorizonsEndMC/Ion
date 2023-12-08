@@ -62,7 +62,7 @@ import kotlin.math.roundToInt
 @CommandAlias("nation|n")
 internal object NationCommand : SLCommand() {
 	private val nationsMessageColor = TextColor.fromHexString("#FF6060")
-	private fun nationMessageFormat(text: String, vararg args: Any?) = template(text(text, nationsMessageColor), *args)
+	private fun nationMessageFormat(text: String, vararg args: Any?) = template(text(text, nationsMessageColor), false, *args)
 
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "member_settlements") { c ->
@@ -335,7 +335,7 @@ internal object NationCommand : SLCommand() {
 
 		Nation.setColor(nationId, color.asRGB())
 
-		sender.sendMessage(nationMessageFormat("Updated nation color to ", text("████████████", color(red, green, blue))))
+		sender.sendMessage(nationMessageFormat("Updated nation color to {0}", text("████████████", color(red, green, blue))))
 	}
 
 	@Suppress("unused")
@@ -415,7 +415,7 @@ internal object NationCommand : SLCommand() {
 	@Description("View the top nations on Star Legacy")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
 		val message = text()
-			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations\n")))
+			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations\n", 13)))
 
 		val nations = Nation.allIds()
 
@@ -536,7 +536,7 @@ internal object NationCommand : SLCommand() {
 
 		message
 			.append(pageLine.build())
-			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations\n")))
+			.append(net.horizonsend.ion.common.utils.text.lineBreak(47))
 
 		sender.sendMessage(message)
 	}

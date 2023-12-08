@@ -32,7 +32,7 @@ object ConnectionMessages : IonProxyComponent() {
 	}
 
 	fun onPlayerDisconnect(player: ProxiedPlayer, serverInfo: ServerInfo) {
-		PLUGIN.proxy.sendRichMessage("<dark_gray>[<red>- <gray>$serverInfo<dark_gray>] <white>${player.displayName}")
+		PLUGIN.proxy.sendRichMessage("<dark_gray>[<red>- <gray>${serverInfo.name}<dark_gray>] <white>${player.displayName}")
 
 		ProxyDiscordMessaging.globalEmbed(Embed(
 			description = "[- ${serverInfo.name}] ${player.name.replace("_", "\\_")}",
