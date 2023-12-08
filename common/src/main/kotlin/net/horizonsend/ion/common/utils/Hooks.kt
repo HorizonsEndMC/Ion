@@ -25,6 +25,7 @@ object Mutes: IonComponent() {
 		.build(
 			CacheLoader.from { uuid ->
 				if (!isLitebansEnabled) return@from false
+				log.warn("Could not check for mute, LiteBans not enabled!")
 				playerIsMuted(uuid)
 			}
 		)
@@ -34,6 +35,7 @@ object Mutes: IonComponent() {
 		.build(
 			CacheLoader.from { uuid ->
 				if (!isLitebansEnabled) return@from false
+				log.warn("Could not check for ban, LiteBans not enabled!")
 				playerIsBanned(uuid)
 			}
 		)

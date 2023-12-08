@@ -21,7 +21,7 @@ abstract class ChatMessage {
 		playerPrefix.addSpace(false),
 		playerDisplayName,
 		playerSuffix.addSpace(true),
-		text("» ", HEColorScheme.HE_DARK_GRAY),
+		text(" » ", HEColorScheme.HE_DARK_GRAY),
 		message.color(color),
 	).hoverEvent(playerInfo)
 }
