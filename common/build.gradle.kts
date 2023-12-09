@@ -23,7 +23,7 @@ dependencies {
 	api(kotlin("reflect"))
 	api(kotlin("stdlib"))
 
-	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
+	api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 	api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	api("com.googlecode.cqengine:cqengine:3.6.0")
 
