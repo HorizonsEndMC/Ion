@@ -171,21 +171,21 @@ object ConfigurationCommands : SLCommand() {
 
 	@Subcommand("config save")
 	fun configSave(sender: CommandSender) {
-		Configuration.save(IonServer.configuration, IonServer.dataFolder, "server.json")
-		Configuration.save(IonServer.pvpBalancing, IonServer.dataFolder, "server.json")
-		Configuration.save(IonServer.starshipBalancing, IonServer.dataFolder, "server.json")
+		Configuration.save(IonServer.configuration, IonServer.configurationFolder, "server.json")
+		Configuration.save(IonServer.pvpBalancing, IonServer.configurationFolder, "server.json")
+		Configuration.save(IonServer.starshipBalancing, IonServer.configurationFolder, "server.json")
 
 		sender.success("Saved configs with current runtime values.")
 	}
 
 	@Subcommand("config reload")
 	fun onConfigReload(sender: CommandSender) {
-		IonServer.configuration = Configuration.load(IonServer.dataFolder, "server.json")
-		IonServer.gassesConfiguration = Configuration.load(IonServer.dataFolder, "gasses.json")
-		IonServer.tradeConfiguration = Configuration.load(IonServer.dataFolder, "trade.json")
-		IonServer.aiShipConfiguration = Configuration.load(IonServer.dataFolder, "aiships.json")
-		IonServer.pvpBalancing = Configuration.load(IonServer.dataFolder, "pvpbalancing.json")
-		IonServer.starshipBalancing = Configuration.load(IonServer.dataFolder, "starshipbalancing.json")
+		IonServer.configuration = Configuration.load(IonServer.configurationFolder, "server.json")
+		IonServer.gassesConfiguration = Configuration.load(IonServer.configurationFolder, "gasses.json")
+		IonServer.tradeConfiguration = Configuration.load(IonServer.configurationFolder, "trade.json")
+		IonServer.aiShipConfiguration = Configuration.load(IonServer.configurationFolder, "aiships.json")
+		IonServer.pvpBalancing = Configuration.load(IonServer.configurationFolder, "pvpbalancing.json")
+		IonServer.starshipBalancing = Configuration.load(IonServer.configurationFolder, "starshipbalancing.json")
 
 		reloadOthers()
 
