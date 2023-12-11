@@ -54,6 +54,8 @@ import net.horizonsend.ion.server.command.starship.StarshipDebugCommand
 import net.horizonsend.ion.server.command.starship.StarshipInfoCommand
 import net.horizonsend.ion.server.command.starship.Starships
 import net.horizonsend.ion.server.command.starship.TutorialStartStopCommand
+import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
+import net.horizonsend.ion.server.command.starship.ai.AIStarshipTemplateBuilderCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
 import net.horizonsend.ion.server.features.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.client.whereisit.SearchCommand
@@ -114,6 +116,8 @@ val commands: List<SLCommand> = listOf(
 	MiscStarshipCommands,
 	BlueprintCommand,
 	StarshipDebugCommand,
+	AIDebugCommand,
+	AIStarshipTemplateBuilderCommand,
 	TutorialStartStopCommand,
 	StarshipInfoCommand,
 
