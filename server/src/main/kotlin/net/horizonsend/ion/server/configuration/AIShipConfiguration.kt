@@ -106,6 +106,8 @@ data class AIShipConfiguration(
 		var miniMessageName: String = "<red><bold>Vesta",
 		var type: StarshipType = StarshipType.SHUTTLE,
 		var controllerFactory: String = "STARFIGHTER",
+		var xpMultiplier: Double = 1.0,
+		var creditReward: Double = 100.0,
 		val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val mobs: MutableSet<MobSpawner> = mutableSetOf()
