@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.active
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
+import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloted
@@ -16,7 +17,9 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipMoveEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotateEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
-import net.horizonsend.ion.server.features.starship.messages.SinkMessageFactory
+import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.starship.modules.SinkMessageFactory
+import net.horizonsend.ion.server.features.starship.modules.StandardRewardsProvider
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -60,11 +63,12 @@ class ActiveControlledStarship (
 	centerOfMass,
 	hitbox
 ) {
-	var sinkMessageFactory = SinkMessageFactory(this)
 	val carriedShips: MutableMap<StarshipData, LongOpenHashSet> = carriedShips.toMutableMap()
 
 	override val type: StarshipType = data.starshipType.actualType
 	override val balancing = type.balancingSupplier.get()
+	override var rewardsProvider: RewardsProvider = StandardRewardsProvider(this)
+	override var sinkMessageFactory: MessageFactory = SinkMessageFactory(this)
 
 	override val interdictionRange: Int = balancing.interdictionRange
 
