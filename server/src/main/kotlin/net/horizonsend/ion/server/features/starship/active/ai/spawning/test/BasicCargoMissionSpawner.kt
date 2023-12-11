@@ -113,17 +113,11 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConf
 		val factory = AIControllerFactories[template.controllerFactory]
 
 		return { starship ->
-			val world = starship.world
-			val center = world.worldBorder.center
-
-			factory.createController(
+			factory(
 				starship,
 				pilotName,
-				null,
-				center,
 				template.manualWeaponSets,
-				template.autoWeaponSets,
-				null // No previous
+				template.autoWeaponSets
 			)
 		}
 	}

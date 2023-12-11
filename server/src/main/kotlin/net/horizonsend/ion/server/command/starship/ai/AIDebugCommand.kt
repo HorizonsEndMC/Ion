@@ -12,16 +12,12 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.active.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
-import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
-import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
 import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.entity.Player
 
 @CommandPermission("ion.aidebug")
@@ -40,7 +36,7 @@ object AIDebugCommand : SLCommand() {
 			AIControllerFactories.presetControllers.keys
 		}
 
-		manager.commandContexts.registerContext(AIControllerFactories.AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
+		manager.commandContexts.registerContext(AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
 	}
 
 
@@ -56,33 +52,18 @@ object AIDebugCommand : SLCommand() {
 	@CommandCompletion("@controllerFactories standoffDistance x y z manualSets autoSets @autoTurretTargets ")
 	fun ai(
 		sender: Player,
-		controller: AIControllerFactories.AIControllerFactory,
+		controller: AIControllerFactory,
 		standoffDistance: Double,
-		@Optional destinationX: Double?,
-		@Optional destinationY: Double?,
-		@Optional destinationZ: Double?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
-		@Optional target: String?,
 	) {
-		val destination = if (destinationX != null && destinationY != null && destinationZ != null) Location(sender.world, destinationX, destinationY, destinationZ) else null
 		val starship = getStarshipRiding(sender)
 
-		val aTarget = target?.let {
-			val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
-
-			Bukkit.getPlayer(formatted)?.let { PlayerTarget(it) } ?:
-			ActiveStarships[formatted]?.let { StarshipTarget(it) }
-		}
-
-		starship.controller = controller.createController(
+		starship.controller = controller(
 			starship,
 			Component.text("Player Created AI Ship"),
-			aTarget,
-			destination,
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
-			null
 		).apply {
 			val positioningEngine = modules["positioning"]
 			(positioningEngine as? AxisStandoffPositioningModule)?.let { it.standoffDistance = standoffDistance }
