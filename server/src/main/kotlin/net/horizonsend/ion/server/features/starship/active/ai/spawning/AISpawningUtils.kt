@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.modules.AIRewardsProvider
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -40,9 +41,11 @@ fun createAIShipFromTemplate(
 		schematic,
 		template.type,
 		template.miniMessageName,
-		createController,
-		callback
-	)
+		createController
+	) {
+		it.rewardsProvider = AIRewardsProvider(it, template)
+		callback(it)
+	}
 }
 
 fun createFromClipboard(
