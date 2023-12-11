@@ -121,17 +121,7 @@ abstract class AISpawner(
 	open fun createController(template: AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
 		val factory = AIControllerFactories[template.controllerFactory]
 
-		return { starship ->
-			factory.createController(
-				starship,
-				pilotName,
-				null,
-				null,
-				template.manualWeaponSets,
-				template.autoWeaponSets,
-				null // No previous
-			)
-		}
+		return { starship -> factory(starship, pilotName, template.manualWeaponSets, template.autoWeaponSets) }
 	}
 
 	/** Handle any exceptions with spawning */
