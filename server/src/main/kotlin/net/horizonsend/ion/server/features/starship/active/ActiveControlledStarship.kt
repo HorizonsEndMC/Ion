@@ -48,7 +48,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
-class ActiveControlledStarship (
+class ActiveControlledStarship(
 	val data: StarshipData,
 	blocks: LongOpenHashSet,
 	mass: Double,
