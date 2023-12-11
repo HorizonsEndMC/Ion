@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
 import org.bukkit.Bukkit
@@ -17,7 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Registration and spawning parameters of AI ships **/
 @Serializable
 data class AIShipConfiguration(
-	val templates: List<AIStarshipTemplate> = listOf(AIStarshipTemplate()),
+	val templates: MutableList<AIStarshipTemplate> = mutableListOf(AIStarshipTemplate()),
 	val spawners: AISpawners = AISpawners()
 ) {
 	fun getShipTemplate(identifier: String) = templates.first { it.identifier == identifier }
@@ -101,12 +102,13 @@ data class AIShipConfiguration(
 	@Serializable
 	data class AIStarshipTemplate(
 		val identifier: String = "VESTA",
-		val schematicName: String = "Vesta",
-		val miniMessageName: String = "<red><bold>Vesta",
-		val type: StarshipType = StarshipType.SHUTTLE,
-		val controllerFactory: String = "STARFIGHTER",
-		val manualWeaponSets: Set<WeaponSet> = setOf(),
-		val autoWeaponSets: Set<WeaponSet> = setOf(),
+		var schematicName: String = "Vesta",
+		var miniMessageName: String = "<red><bold>Vesta",
+		var type: StarshipType = StarshipType.SHUTTLE,
+		var controllerFactory: String = "STARFIGHTER",
+		val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
+		val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
+		val mobs: MutableSet<MobSpawner> = mutableSetOf()
 	) {
 		init {
 			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique!")
@@ -124,5 +126,10 @@ data class AIShipConfiguration(
 			@Transient
 			val engagementRange = DoubleRange(engagementRangeMin, engagementRangeMax)
 		}
+
+		data class MobSpawner(
+			val entityLocations: Set<Vec3i>,
+			val entity: ServerConfiguration.PlanetSpawnConfig.Mob
+		)
 	}
 }
