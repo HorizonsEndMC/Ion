@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.messages
+package net.horizonsend.ion.server.features.starship.modules
 
 import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -24,8 +25,8 @@ import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import java.time.Instant
 
-class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : MessageFactory {
-	override fun createAndSend() {
+class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory {
+	override fun execute() {
 		val arena = sunkShip.world.name.contains("arena", ignoreCase = true) // TODO manager later
 		val data = sunkShip.damagers
 
@@ -122,10 +123,10 @@ class SinkMessageFactory(private val sunkShip: ActiveControlledStarship) : Messa
 		return formatName(starship)
 	}
 
-	private fun formatName(starship: ActiveControlledStarship): Component {
+	private fun formatName(starship: ActiveStarship): Component {
 		val hover = ofChildren(text("${starship.initialBlockCount} block ", NamedTextColor.WHITE), starship.type.displayNameComponent)
 
-		val nameFormat = if (starship.data.name == null) ofChildren(
+		val nameFormat = if ((starship as? ActiveControlledStarship)?.data?.name == null) ofChildren(
 			text("A ", RED),
 			text(starship.initialBlockCount),
 			text(" block ", RED),

@@ -82,7 +82,7 @@ data class AIShipConfiguration(
 	 *
 	 * @param world The bukkit world's name.
 	 * @param rolls then number of rolls for this world.
-	 * @param ships Map of AI ship templates to their number of rolls.
+	 * @param tiers Map of AI ship templates to their number of rolls.
 	 *
 	 * @see AISpawnerConfiguration
 	 * @see AIStarshipTemplate
@@ -127,6 +127,7 @@ data class AIShipConfiguration(
 			val engagementRange = DoubleRange(engagementRangeMin, engagementRangeMax)
 		}
 
+		@Serializable
 		data class MobSpawner(
 			val entityLocations: Set<Vec3i>,
 			val entity: ServerConfiguration.PlanetSpawnConfig.Mob
