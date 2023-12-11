@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit
  *
  * @param manualWeaponSets: The manual weapon sets, and their ranges. This value is stored here to allow easier transition between controllers.
  * @param autoWeaponSets: The auto weapon sets. See manual weapon sets.
- *
- * @param modules: AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more.
  **/
 class AIController(
 	starship: ActiveStarship,
@@ -42,11 +40,24 @@ class AIController(
 
 	override var pilotName: Component,
 
-	val manualWeaponSets: Set<AIShipConfiguration.AIStarshipTemplate.WeaponSet> = setOf(),
-	val autoWeaponSets: Set<AIShipConfiguration.AIStarshipTemplate.WeaponSet> = setOf(),
-
-	val modules: MutableMap<String, AIModule> = mutableMapOf()
+	val manualWeaponSets: Set<WeaponSet> = setOf(),
+	val autoWeaponSets: Set<WeaponSet> = setOf(),
 ) : Controller(damager, starship, name) {
+	constructor(
+		starship: ActiveStarship,
+		name: String,
+		damager: Damager,
+		pilotName: Component,
+		manualWeaponSets: Set<WeaponSet>,
+		autoWeaponSets: Set<WeaponSet>,
+		createModules: Map<String, (AIController) -> AIModule>
+	) : this(starship, name, damager, pilotName, manualWeaponSets, autoWeaponSets) {
+		modules.putAll(createModules.map { it.key to it.value(this) })
+	}
+
+	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
+	val modules: MutableMap<String, AIModule> = mutableMapOf()
+
 	// Control variables
 	override var isShiftFlying: Boolean = false
 	override var pitch: Float = 0f

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active.ai.module.misc
 
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.active.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
  **/
 class CombatModeModule(
 	controller: AIController,
-	private val combatController: AIControllerFactories.AIControllerFactory,
+	private val combatController: AIControllerFactory,
 	private val minRange: Double,
 	private val targetFilter: (AITarget) -> Boolean
 ) : AIModule(controller) {
@@ -21,16 +21,11 @@ class CombatModeModule(
 	}
 
 	private fun switchToCombatMode(target: AITarget) {
-		val previousController = controller
-
-		starship.controller = combatController.createController(
+		starship.controller = combatController(
 			starship,
 			controller.pilotName,
-			target,
-			null,
 			controller.manualWeaponSets,
-			controller.autoWeaponSets,
-			previousController
+			controller.autoWeaponSets
 		)
 	}
 }
