@@ -61,8 +61,10 @@ import kotlin.math.roundToInt
 
 @CommandAlias("nation|n")
 internal object NationCommand : SLCommand() {
-	private val nationsMessageColor = TextColor.fromHexString("#FF6060")
+	private val nationsMessageColor = TextColor.fromHexString("#FC3200")
+	private val nationsImportantMessageColor = TextColor.fromHexString("#FC9300")
 	private fun nationMessageFormat(text: String, vararg args: Any?) = template(text(text, nationsMessageColor), false, *args)
+	private fun nationImportantMessageFormat(text: String, vararg args: Any?) = template(text(text, nationsImportantMessageColor), false, *args)
 
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "member_settlements") { c ->
@@ -158,7 +160,7 @@ internal object NationCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
 
-		Notify.chatAndEvents(nationMessageFormat(
+		Notify.chatAndEvents(nationImportantMessageFormat(
 			"{0}, leader of the settlement {1}, founded the nation {2}!",
 			sender.name,
 			getSettlementName(settlement),
@@ -178,7 +180,7 @@ internal object NationCommand : SLCommand() {
 
 		Nation.delete(nation)
 
-		Notify.chatAndEvents(nationMessageFormat(
+		Notify.chatAndEvents(nationImportantMessageFormat(
 			"The nation {0} has been disbanded by its leader {1}",
 			nationName,
 			sender.name
@@ -206,7 +208,7 @@ internal object NationCommand : SLCommand() {
 
 			Notify.playerCrossServer(
 				player = leaderId,
-				message = nationMessageFormat(
+				message = nationImportantMessageFormat(
 					"Your settlement has been invited to the nation {0} by {1}! To accept, use {2}",
 					nationName,
 					sender.name,
@@ -221,7 +223,7 @@ internal object NationCommand : SLCommand() {
 
 			Notify.playerCrossServer(
 				player = leaderId,
-				message = nationMessageFormat(
+				message = nationImportantMessageFormat(
 					"Your settlement's invitation to join the nation {0} has been revoked by {1}",
 					nationName,
 					sender.name,
@@ -258,7 +260,7 @@ internal object NationCommand : SLCommand() {
 		Nation.removeInvite(nationId, settlementId)
 		Settlement.joinNation(settlementId, nationId)
 
-		Notify.chatAndEvents(nationMessageFormat("Settlement {0} joined the nation {1}", settlementName, nationName))
+		Notify.chatAndEvents(nationImportantMessageFormat("Settlement {0} joined the nation {1}", settlementName, nationName))
 	}
 
 	@Suppress("unused")
@@ -276,7 +278,7 @@ internal object NationCommand : SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify.chatAndEvents(nationMessageFormat("Settlement {0} seceded from the nation {1}!", getSettlementName(settlementId), nationName))
+		Notify.chatAndEvents(nationImportantMessageFormat("Settlement {0} seceded from the nation {1}!", getSettlementName(settlementId), nationName))
 	}
 
 	@Suppress("unused")
@@ -296,7 +298,7 @@ internal object NationCommand : SLCommand() {
 
 		Settlement.leaveNation(settlementId)
 
-		Notify.chatAndEvents(nationMessageFormat("{0} kicked settlement {1} from the nation {2}!", sender.name, settlementName, getNationName(nationId)))
+		Notify.chatAndEvents(nationImportantMessageFormat("{0} kicked settlement {1} from the nation {2}!", sender.name, settlementName, getNationName(nationId)))
 	}
 
 	@Suppress("unused")
@@ -354,7 +356,7 @@ internal object NationCommand : SLCommand() {
 
 		Nation.setCapital(nationId, settlementId)
 
-		Notify.chatAndEvents(nationMessageFormat("{0} changed the capital of their nation {1} to {2}", sender.name, getNationName(nationId), settlementName))
+		Notify.chatAndEvents(nationImportantMessageFormat("{0} changed the capital of their nation {1} to {2}", sender.name, getNationName(nationId), settlementName))
 	}
 
 	@Suppress("unused")
@@ -386,7 +388,7 @@ internal object NationCommand : SLCommand() {
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
 		val nationName = getNationName(nationId)
-		Notify.chatAndEvents(nationMessageFormat("{0} claimed the territory {1} for their nation {2}!", sender.name, territory.name, nationName))
+		Notify.chatAndEvents(nationImportantMessageFormat("{0} claimed the territory {1} for their nation {2}!", sender.name, territory.name, nationName))
 	}
 
 	@Suppress("unused")
@@ -407,7 +409,7 @@ internal object NationCommand : SLCommand() {
 		Territory.setNation(regionTerritory.id, null)
 
 		val nationName = getNationName(nationId)
-		Notify.chatAndEvents(nationMessageFormat("{0} unclaimed the territory {1} from their nation {2}!", sender.name, territoryName, nationName))
+		Notify.chatAndEvents(nationImportantMessageFormat("{0} unclaimed the territory {1} from their nation {2}!", sender.name, territoryName, nationName))
 	}
 
 	@Suppress("unused")
