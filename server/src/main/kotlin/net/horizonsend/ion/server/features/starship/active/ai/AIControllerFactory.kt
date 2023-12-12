@@ -11,7 +11,7 @@ import java.util.function.Supplier
 
 class AIControllerFactory private constructor(
 	private val name: String,
-	private val modules: Map<String, (AIController) -> AIModule>,
+	private val modules: (AIController) -> Builder.ModuleBuilder,
 	private val vec3iSupplier: Supplier<Vec3i>
 ) {
 	/** Build the controller */
@@ -37,17 +37,25 @@ class AIControllerFactory private constructor(
 	class Builder {
 		private var name: String = "AI_Controller"
 		private var vec3iSupplier: Supplier<Vec3i> = Supplier { Vec3i(0, 0, 0) }
-
-		private val modules: MutableMap<String, (AIController) -> AIModule> = mutableMapOf()
+		private var modules: (AIController) -> ModuleBuilder = { ModuleBuilder() }
 
 		fun setControllerTypeName(name: String) = apply { this.name = name }
 
-		fun addModule(name: String, moduleBuilder: (AIController) -> AIModule) = apply { modules[name] = moduleBuilder }
-
-//		fun addModules(name: String, moduleBuilder: (AIController) -> Map<String, AIModule>) = apply { modules.putAll(moduleBuilder) }
+		fun setModuleBuilder(moduleBuilder: (AIController) -> ModuleBuilder) = apply { modules = moduleBuilder }
 
 		fun addLocationSupplier(supplier: Supplier<Vec3i>) = apply { vec3iSupplier = supplier }
 
 		fun build(): AIControllerFactory = AIControllerFactory(name, modules, vec3iSupplier)
+
+		class ModuleBuilder {
+			private val modules: MutableMap<String, AIModule> = mutableMapOf()
+
+			fun <T: AIModule> addModule(name: String, module: T): T {
+				modules[name] = module
+				return module
+			}
+
+			fun build(): Map<String, AIModule> = modules
+		}
 	}
 }
