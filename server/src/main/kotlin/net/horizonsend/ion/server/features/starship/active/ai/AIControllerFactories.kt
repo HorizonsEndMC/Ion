@@ -1,39 +1,71 @@
 package net.horizonsend.ion.server.features.starship.active.ai
 
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.starship.active.ai.module.combat.CombatModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.combat.FrigateCombatModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.combat.StarfighterCombatModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.misc.AggroUponDamageModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.movement.CruiseModule
-import net.horizonsend.ion.server.features.starship.active.ai.module.pathfinding.PathfindingModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.positioning.CirclingPositionModule
-import net.horizonsend.ion.server.features.starship.active.ai.module.positioning.PositioningModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.positioning.StandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.active.ai.module.targeting.ClosestTargetingModule
-import net.horizonsend.ion.server.features.starship.active.ai.module.targeting.TargetingModule
 
+@Suppress("unused") // Entry points
 object AIControllerFactories : IonServerComponent() {
 	val presetControllers = mutableMapOf<String, AIControllerFactory>()
 
 	val starfighter = registerFactory("STARFIGHTER") {
 		setControllerTypeName("Starfighter")
 
-		addModule("targeting") { ClosestTargetingModule(it, 5000.0, null).apply { sticky = false } }
-		addModule("combat") { StarfighterCombatModule(it, (it.modules["targeting"] as TargetingModule)::findTarget) }
-		addModule("aggro") { AggroUponDamageModule(it, (it.modules["targeting"] as StarfighterCombatModule)) }
-		addModule("positioning") { AxisStandoffPositioningModule(it, (it.modules["targeting"] as TargetingModule)::findTarget, 25.0) }
-		addModule("pathfinding") { SteeringPathfindingModule(it, (it.modules["positioning"] as PositioningModule)::findPositionVec3i) }
-		addModule("movement") {
-			CruiseModule(
-				it,
-				it.modules["pathfinding"] as PathfindingModule,
-				(it.modules["pathfinding"] as PathfindingModule)::getDestination,
-				CruiseModule.ShiftFlightType.ALL,
-				256.0
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
+			val combat = builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+			builder.addModule("aggro", AggroUponDamageModule(it, combat))
+			val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+			builder.addModule(
+				"movement",
+				CruiseModule(
+					it,
+					pathfinding,
+					pathfinding::getDestination,
+					CruiseModule.ShiftFlightType.ALL,
+					256.0
+				)
 			)
+
+			builder
+		}
+
+		build()
+	}
+
+	val gunship = registerFactory("GUNSHIP") {
+		setControllerTypeName("Gunship")
+
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
+			val combat = builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+			builder.addModule("aggro", AggroUponDamageModule(it, combat))
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 40.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+			builder.addModule(
+				"movement",
+				CruiseModule(
+					it,
+					pathfinding,
+					pathfinding::getDestination,
+					CruiseModule.ShiftFlightType.ALL,
+					256.0
+				)
+			)
+
+			builder
 		}
 
 		build()
@@ -42,19 +74,26 @@ object AIControllerFactories : IonServerComponent() {
 	val corvette = registerFactory("CORVETTE") {
 		setControllerTypeName("Corvette")
 
-		addModule("targeting") { ClosestTargetingModule(it, 5000.0, null).apply { sticky = false } }
-		addModule("combat") { StarfighterCombatModule(it, (it.modules["targeting"] as TargetingModule)::findTarget) }
-		addModule("aggro") { AggroUponDamageModule(it, (it.modules["targeting"] as CombatModule)) }
-		addModule("positioning") { StandoffPositioningModule(it, (it.modules["targeting"] as TargetingModule)::findTarget, 40.0) }
-		addModule("pathfinding") { SteeringPathfindingModule(it, (it.modules["positioning"] as PositioningModule)::findPositionVec3i) }
-		addModule("movement") {
-			CruiseModule(
-				it,
-				it.modules["pathfinding"] as PathfindingModule,
-				(it.modules["pathfinding"] as PathfindingModule)::getDestination,
-				CruiseModule.ShiftFlightType.ALL,
-				256.0
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
+			val combat = builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+			builder.addModule("aggro", AggroUponDamageModule(it, combat))
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 40.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+			builder.addModule(
+				"movement",
+				CruiseModule(
+					it,
+					pathfinding,
+					pathfinding::getDestination,
+					CruiseModule.ShiftFlightType.ALL,
+					256.0
+				)
 			)
+
+			builder
 		}
 
 		build()
@@ -63,19 +102,26 @@ object AIControllerFactories : IonServerComponent() {
 	val frigate = registerFactory("FRIGATE") {
 		setControllerTypeName("Frigate")
 
-		addModule("targeting") { ClosestTargetingModule(it, 5000.0, null).apply { sticky = false } }
-		addModule("combat") { FrigateCombatModule(it, (it.modules["targeting"] as TargetingModule)::findTarget).apply { shouldFaceTarget = false } }
-		addModule("aggro") { AggroUponDamageModule(it, (it.modules["targeting"] as CombatModule)) }
-		addModule("positioning") { CirclingPositionModule(it, (it.modules["targeting"] as TargetingModule)::findTarget, 40.0) }
-		addModule("pathfinding") { SteeringPathfindingModule(it, (it.modules["positioning"] as PositioningModule)::findPositionVec3i) }
-		addModule("movement") {
-			CruiseModule(
-				it,
-				it.modules["pathfinding"] as PathfindingModule,
-				(it.modules["pathfinding"] as PathfindingModule)::getDestination,
-				CruiseModule.ShiftFlightType.ALL,
-				256.0
+		setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = false })
+			val combat = builder.addModule("combat", FrigateCombatModule(it, targeting::findTarget).apply { shouldFaceTarget = false })
+			builder.addModule("aggro", AggroUponDamageModule(it, combat))
+			val positioning = builder.addModule("positioning", CirclingPositionModule(it, targeting::findTarget, 40.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+			builder.addModule(
+				"movement",
+				CruiseModule(
+					it,
+					pathfinding,
+					pathfinding::getDestination,
+					CruiseModule.ShiftFlightType.ALL,
+					256.0
+				)
 			)
+
+			builder
 		}
 
 		build()

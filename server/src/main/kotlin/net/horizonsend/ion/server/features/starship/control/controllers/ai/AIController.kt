@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTe
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.active.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
@@ -50,9 +51,9 @@ class AIController(
 		pilotName: Component,
 		manualWeaponSets: Set<WeaponSet>,
 		autoWeaponSets: Set<WeaponSet>,
-		createModules: Map<String, (AIController) -> AIModule>
+		createModules: (AIController) -> AIControllerFactory.Builder.ModuleBuilder
 	) : this(starship, name, damager, pilotName, manualWeaponSets, autoWeaponSets) {
-		modules.putAll(createModules.map { it.key to it.value(this) })
+		modules.putAll(createModules(this).build())
 	}
 
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
