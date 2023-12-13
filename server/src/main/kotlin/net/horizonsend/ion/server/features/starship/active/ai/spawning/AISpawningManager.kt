@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerPatrolSpawner
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.test.BasicCargoMissionSpawner
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicCargoMissionSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
