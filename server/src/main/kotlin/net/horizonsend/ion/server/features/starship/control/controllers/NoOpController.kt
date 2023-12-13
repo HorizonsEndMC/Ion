@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 
-class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Controller(previousDamager ?: noOpDamager, starship, "idle") {
+class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Controller(previousDamager ?: noOpDamager, starship, "Idle") {
 	// Can't move
 	override val isShiftFlying: Boolean = false
 	override val selectedDirectControlSpeed: Int = 0

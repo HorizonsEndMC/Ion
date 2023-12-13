@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 
-class UnpilotedController(oldPilot: Player, starship: ActiveStarship) : PlayerController(oldPilot, starship, "unpiloted") {
+class UnpilotedController(oldPilot: Player, starship: ActiveStarship) : PlayerController(oldPilot, starship, "Unpiloted") {
 	// Can't move
 	override val isShiftFlying: Boolean = false
 	override val selectedDirectControlSpeed: Int = 0
