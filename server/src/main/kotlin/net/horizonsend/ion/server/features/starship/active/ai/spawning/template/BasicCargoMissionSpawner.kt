@@ -1,30 +1,20 @@
-package net.horizonsend.ion.server.features.starship.active.ai.spawning.test
+package net.horizonsend.ion.server.features.starship.active.ai.spawning.template
 
-import net.horizonsend.ion.common.utils.text.HEColorScheme
-import net.horizonsend.ion.common.utils.text.templateMiniMessage
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.getLocationNear
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.getNonProtectedPlayer
-import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
-import net.kyori.adventure.text.Component
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConfiguration.spawners::CARGO_MISSION) {
-	fun findLocation(): Location? {
+class BasicCargoMissionSpawner : BasicSpawner("CARGO_MISSION", IonServer.aiShipConfiguration.spawners::CARGO_MISSION) {
+	override fun findSpawnLocation(): Location? {
 		// Get a random world based on the weight in the config
 		val worldConfig = configuration.worldWeightedRandomList.random()
 		val world = worldConfig.getWorld()
@@ -79,46 +69,5 @@ class BasicCargoMissionSpawner : AISpawner("CARGO_MISSION", IonServer.aiShipConf
 		}
 
 		return null
-	}
-
-	override fun spawningConditionsMet(world: World, x: Int, y: Int, z: Int): Boolean {
-		return true // No restrictions
-	}
-
-	override suspend fun triggerSpawn() {
-		val loc = findLocation() ?: return
-		val (x, y, z) = Vec3i(loc)
-
-		if (!spawningConditionsMet(loc.world, x, y, z)) return
-
-		val (template, pilotName) = getStarshipTemplate(loc.world)
-
-		val deferred = spawnAIStarship(template, loc, createController(template, pilotName))
-
-		deferred.invokeOnCompletion {
-			IonServer.server.sendMessage(templateMiniMessage(
-				configuration.miniMessageSpawnMessage,
-				paramColor = HEColorScheme.HE_LIGHT_GRAY,
-				useQuotesAroundObjects = false,
-				template.getName(),
-				x,
-				y,
-				z,
-				loc.world.name
-			))
-		}
-	}
-
-	override fun createController(template: AIShipConfiguration.AIStarshipTemplate, pilotName: Component): (ActiveStarship) -> Controller {
-		val factory = AIControllerFactories[template.controllerFactory]
-
-		return { starship ->
-			factory(
-				starship,
-				pilotName,
-				template.manualWeaponSets,
-				template.autoWeaponSets
-			)
-		}
 	}
 }

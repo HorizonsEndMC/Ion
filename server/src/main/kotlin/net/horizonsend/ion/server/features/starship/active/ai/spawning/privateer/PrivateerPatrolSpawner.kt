@@ -4,10 +4,18 @@ import net.horizonsend.ion.common.utils.text.HEColorScheme
 import net.horizonsend.ion.common.utils.text.templateMiniMessage
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.getLocationNear
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.getNonProtectedPlayer
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerUtils.bulwark
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerUtils.contractor
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerUtils.dagger
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicSpawner
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import org.bukkit.Location
 import org.bukkit.World
 
-object PrivateerPatrolSpawner : PrivateerSpawner(
+object PrivateerPatrolSpawner : BasicSpawner(
 	"PRIVATEER_PATROL",
 	IonServer.aiShipConfiguration.spawners::PRIVATEER_PATROL,
 ) {
@@ -15,8 +23,37 @@ object PrivateerPatrolSpawner : PrivateerSpawner(
 		return true
 	}
 
+	override fun findSpawnLocation(): Location? {
+		// Get a random world based on the weight in the config
+		val worldConfig = configuration.worldWeightedRandomList.random()
+		val world = worldConfig.getWorld()
+
+		val player = getNonProtectedPlayer(world) ?: return null
+
+		var iterations = 0
+
+		val border = world.worldBorder
+
+		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+
+		// max 10 iterations
+		while (iterations <= 15) {
+			iterations++
+
+			val loc = player.getLocationNear(minDistanceFromPlayer, maxDistanceFromPlayer)
+
+			if (!border.isInside(loc)) continue
+
+			if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
+
+			return loc
+		}
+
+		return null
+	}
+
 	override suspend fun triggerSpawn() {
-		val loc = findLocation() ?: return
+		val loc = findSpawnLocation() ?: return
 		val (x, y, z) = Vec3i(loc)
 
 		if (!spawningConditionsMet(loc.world, x, y, z)) return
