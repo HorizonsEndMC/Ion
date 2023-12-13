@@ -6,11 +6,11 @@ import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 
-class AggroUponDamageModule(controller: AIController, val combatModule: CombatModule, existingTarget: AITarget? = null) : TargetingModule(controller) {
+class AggroUponDamageModule(
+	controller: AIController,
+	private val combatModule: (AIController, TargetingModule) -> CombatModule
+) : TargetingModule(controller) {
 	var damagedBy: AITarget? = null
-	init {
-		lastTarget = existingTarget
-	}
 
 	override fun searchForTarget(): AITarget? {
 		return damagedBy
@@ -19,7 +19,7 @@ class AggroUponDamageModule(controller: AIController, val combatModule: CombatMo
 	override fun onDamaged(damager: Damager) {
 		val combatController = controller.modules["combat"] as? CombatModule
 
-		if (combatController == null) controller.modules["combat"] = combatModule
+		if (combatController == null) controller.modules["combat"] = combatModule(controller, this)
 
 		if (damagedBy != null) return
 

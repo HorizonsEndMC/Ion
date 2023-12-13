@@ -65,7 +65,7 @@ object AISpawningManager : IonServerComponent(true) {
 	private fun registerSpawners() {
 		// Register spawners
 		spawners += BasicCargoMissionSpawner()
-		spawners += PrivateerPatrolSpawner()
+		spawners += PrivateerPatrolSpawner
 	}
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */
