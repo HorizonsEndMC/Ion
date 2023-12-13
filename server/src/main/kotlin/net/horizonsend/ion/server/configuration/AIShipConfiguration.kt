@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerPatrolSpawner
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
@@ -26,7 +27,7 @@ data class AIShipConfiguration(
 	@Serializable
 	data class AISpawners(
 		val CARGO_MISSION: AISpawnerConfiguration = AISpawnerConfiguration(),
-		val PRIVATEER_PATROL: AISpawnerConfiguration = AISpawnerConfiguration()
+		val PRIVATEER_PATROL: AISpawnerConfiguration = PrivateerPatrolSpawner.defaultConfiguration
 	)
 
 	/**

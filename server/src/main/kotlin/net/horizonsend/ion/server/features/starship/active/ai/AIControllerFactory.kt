@@ -39,6 +39,14 @@ class AIControllerFactory private constructor(
 		private var vec3iSupplier: Supplier<Vec3i> = Supplier { Vec3i(0, 0, 0) }
 		private var modules: (AIController) -> ModuleBuilder = { ModuleBuilder() }
 
+		constructor()
+
+		constructor(factory: AIControllerFactory) {
+			name = factory.name
+			vec3iSupplier = factory.vec3iSupplier
+			modules = factory.modules
+		}
+
 		fun setControllerTypeName(name: String) = apply { this.name = name }
 
 		fun setModuleBuilder(moduleBuilder: (AIController) -> ModuleBuilder) = apply { modules = moduleBuilder }
