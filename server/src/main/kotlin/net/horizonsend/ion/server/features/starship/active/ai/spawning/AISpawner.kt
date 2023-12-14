@@ -82,7 +82,7 @@ abstract class AISpawner(
 	}
 
 	/** Checks if the position of the spawn is valid */
-	abstract fun spawningConditionsMet(world: World, x: Int, y: Int, z: Int): Boolean
+	protected abstract fun spawningConditionsMet(world: World, x: Int, y: Int, z: Int): Boolean
 
 	/** The spawning logic, do as you wish */
 	protected abstract suspend fun triggerSpawn()
@@ -152,7 +152,7 @@ abstract class AISpawner(
 	}
 
 	/** Selects a starship template off of the configuration, picks, and serializes a name */
-	open fun getStarshipTemplate(world: World): Pair<AIStarshipTemplate, Component> {
+	open fun getStarshipTemplates(world: World): Collection<Pair<AIStarshipTemplate, Component>> {
 		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
 		val worldConfig = configuration.getWorld(world)!!
 		val tierIdentifier = worldConfig.tierWeightedRandomList.random()
@@ -160,8 +160,6 @@ abstract class AISpawner(
 		val shipIdentifier = tier.shipsWeightedList.random()
 		val name = miniMessage().deserialize(tier.namesWeightedList.random())
 
-		IonServer.server.consoleSender.sendMessage(name)
-
-		return IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name
+		return listOf(IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name)
 	}
 }
