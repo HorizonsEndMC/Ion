@@ -13,8 +13,8 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTe
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.explorer.ExplorerSpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerPatrolSpawner
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicCargoMissionSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
@@ -64,7 +64,7 @@ object AISpawningManager : IonServerComponent(true) {
 	/** Register all the spawners after the server has been initialized */
 	private fun registerSpawners() {
 		// Register spawners
-		spawners += BasicCargoMissionSpawner()
+		spawners += ExplorerSpawner
 		spawners += PrivateerPatrolSpawner
 	}
 

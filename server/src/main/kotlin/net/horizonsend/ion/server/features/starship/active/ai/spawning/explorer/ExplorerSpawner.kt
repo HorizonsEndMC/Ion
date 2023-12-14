@@ -1,10 +1,17 @@
 package net.horizonsend.ion.server.features.starship.active.ai.spawning.explorer
 
-import net.kyori.adventure.text.format.TextColor
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicSpawner
+import org.bukkit.Location
 
-class ExplorerSpawner {
-	companion object ExplorerColorScheme {
-		val EXPLORER_LIGHT_CYAN = TextColor.fromHexString("#1F5651")
-		val EXPLORER_DARK_CYAN = TextColor.fromHexString("#3AA198")
-	}
+object ExplorerSpawner : BasicSpawner(
+	"EXPLORATION_VESSEL",
+	IonServer.aiShipConfiguration.spawners::explorationVessel,
+) {
+	override fun findSpawnLocation(): Location? = ExplorerUtils.findSpawnLocation()
+
+	val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(
+
+	)
 }
