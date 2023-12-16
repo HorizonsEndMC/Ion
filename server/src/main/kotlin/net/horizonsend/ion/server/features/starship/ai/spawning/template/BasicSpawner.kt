@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.template
 
-import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.templateMiniMessage
 import net.horizonsend.ion.server.IonServer
@@ -33,7 +33,7 @@ abstract class BasicSpawner(
 		if (!spawningConditionsMet(loc.world, x, y, z)) return
 
 		spawnMessage?.let {
-			Notify.online(template(
+			Notify.chatAndGlobal(template(
 				message = it,
 				paramColor = HEColorScheme.HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
