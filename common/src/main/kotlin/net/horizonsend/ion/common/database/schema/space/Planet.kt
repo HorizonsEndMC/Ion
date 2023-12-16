@@ -52,7 +52,8 @@ data class Planet(
     val cloudDensityNoise: Double = 0.1,
     val cloudThreshold: Double = 0.1,
     val cloudNoise: Double = 0.1,
-    val cloudMaterials: List<String> = listOf()
+    val cloudMaterials: List<String> = listOf(),
+	val description: String = "",
 ) : DbObject {
 	companion object : OidDbObjectCompanion<Planet>(Planet::class, setup = {
 		ensureUniqueIndex(Planet::name)
@@ -121,6 +122,9 @@ data class Planet(
 
 		fun setCrustMaterials(id: Oid<Planet>, crustMaterials: List<String>): UpdateResult =
 			col.updateOneById(id, setValue(Planet::crustMaterials, crustMaterials))
+
+		fun setDescription(id: Oid<Planet>, description: String): UpdateResult =
+			col.updateOneById(id, setValue(Planet::description, description))
 
 		fun delete(id: Oid<Planet>): DeleteResult {
 			return col.deleteOneById(id)
