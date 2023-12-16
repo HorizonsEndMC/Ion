@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.module.misc
 
-import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.starship.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController

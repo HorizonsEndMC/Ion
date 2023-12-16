@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.template
 
-import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.templateMiniMessage
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
