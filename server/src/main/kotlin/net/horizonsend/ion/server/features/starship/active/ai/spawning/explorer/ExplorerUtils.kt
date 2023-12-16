@@ -129,9 +129,9 @@ object ExplorerUtils {
 		null
 	}
 
-	fun findSpawnLocation(): Location? {
+	fun findSpawnLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location? {
 		// Get a random world based on the weight in the config
-		val worldConfig = ExplorerSpawner.configuration.worldWeightedRandomList.random()
+		val worldConfig = configuration.worldWeightedRandomList.random()
 		val world = worldConfig.getWorld()
 
 		val player = getNonProtectedPlayer(world) ?: return null
@@ -146,7 +146,7 @@ object ExplorerUtils {
 		while (iterations <= 15) {
 			iterations++
 
-			val loc = player.getLocationNear(ExplorerSpawner.minDistanceFromPlayer, ExplorerSpawner.maxDistanceFromPlayer)
+			val loc = player.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
 
 			if (!border.isInside(loc)) continue
 

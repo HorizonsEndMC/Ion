@@ -128,9 +128,9 @@ object PrivateerUtils {
 		creditReward = 100.0
 	)
 
-	fun findLocation(): Location?  {
+	fun findLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location?  {
 		// Get a random world based on the weight in the config
-		val worldConfig = PrivateerPatrolSpawner.configuration.worldWeightedRandomList.random()
+		val worldConfig = configuration.worldWeightedRandomList.random()
 		val world = worldConfig.getWorld()
 
 		val player = getNonProtectedPlayer(world) ?: return null
@@ -145,7 +145,7 @@ object PrivateerUtils {
 		while (iterations <= 15) {
 			iterations++
 
-			val loc = player.getLocationNear(PrivateerPatrolSpawner.minDistanceFromPlayer, PrivateerPatrolSpawner.maxDistanceFromPlayer)
+			val loc = player.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
 
 			if (!border.isInside(loc)) continue
 

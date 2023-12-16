@@ -48,8 +48,8 @@ abstract class AISpawner(
 	private var points: Int = 0
 	private var lastTriggered: Long = 0
 
-	open val minDistanceFromPlayer: Double = 1500.0
-	open val maxDistanceFromPlayer: Double = 3500.0
+	val minDistanceFromPlayer: Double get() = configuration.minDistanceFromPlayer
+	val maxDistanceFromPlayer: Double get() = configuration.maxDistanceFromPlayer
 
 	/** Tick points, possibly trigger a spawn */
 	fun tickPoints() {

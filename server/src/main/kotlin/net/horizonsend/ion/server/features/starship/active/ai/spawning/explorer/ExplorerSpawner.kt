@@ -5,13 +5,15 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicSpawner
 import org.bukkit.Location
 
-object ExplorerSpawner : BasicSpawner(
+class ExplorerSpawner : BasicSpawner(
 	"EXPLORATION_VESSEL",
 	IonServer.aiShipConfiguration.spawners::explorationVessel,
 ) {
-	override fun findSpawnLocation(): Location? = ExplorerUtils.findSpawnLocation()
+	override fun findSpawnLocation(): Location? = ExplorerUtils.findSpawnLocation(configuration)
 
-	val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(
+	companion object {
+		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(
 
-	)
+		) // TODO
+	}
 }
