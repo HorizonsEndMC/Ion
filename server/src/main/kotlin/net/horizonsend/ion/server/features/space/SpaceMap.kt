@@ -50,18 +50,22 @@ object SpaceMap : IonServerComponent(true) {
 			val serverName = IonServer.configuration.serverName
 			val link = "https://$serverName.horizonsend.net/?worldname=${planet.planetWorldName}"
 
+			val planetDescription = "${planet.name} \n \n ${planet.description}"
+
 			// planet icon
-			markerSet.createMarker(
-				planet.id,
-				wrapStyle(createHtmlLink(planet.name, link, "#FFFFFF"), "h3", "font-size:30"),
+			val planetMarker = markerSet.createMarker(
+				planet.id, // Marker ID
+				wrapStyle(createHtmlLink(planet.name, link, "#FFFFFF"), "h3", "font-size:30"), // Markup icon name
 				true, // use HTML markup
-				planet.spaceWorldName,
-				planet.location.x.toDouble(),
-				planet.location.y.toDouble(),
-				planet.location.z.toDouble(),
-				markerAPI.getMarkerIcon(planet.name.lowercase()),
-				false // persistent
+				planet.spaceWorldName, // World
+				planet.location.x.toDouble(), // x
+				planet.location.y.toDouble(), // y
+				planet.location.z.toDouble(), // z
+				markerAPI.getMarkerIcon(planet.name.lowercase()), // Icon
+				false // not persistent
 			)
+
+			planetMarker.description = planetDescription
 
 			// planet ring
 			markerSet.createCircleMarker(

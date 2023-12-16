@@ -297,6 +297,17 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("set description")
+	@CommandCompletion("@planets @nothing")
+	fun onSetDescription(sender: CommandSender, planet: CachedPlanet, newDescription: String) {
+		val oldDescription = planet.description
+		planet.changeDescription(newDescription)
+		SpaceMap.refresh()
+
+		sender.success("Updated description from $oldDescription to $newDescription, and updated the space map.")
+	}
+
+	@Suppress("Unused")
 	@Subcommand("getpos")
 	@CommandCompletion("@planets")
 	fun onGetPos(sender: CommandSender, planet: CachedPlanet) {
@@ -322,7 +333,8 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 				"  <gray>Atmosphere Radius: <aqua>${planet.atmosphereRadius}\n" +
 				"  <gray>Atmosphere Materials: <aqua>${planet.cloudMaterials}\n" +
 				"  <gray>Crust Radius: <aqua>${planet.crustRadius}\n" +
-				"  <gray>Crust Materials: <aqua>${planet.crustMaterials}"
+				"  <gray>Crust Materials: <aqua>${planet.crustMaterials}" +
+				"  <gray>Description: <aqua>${planet.description}"
 		)
 	}
 

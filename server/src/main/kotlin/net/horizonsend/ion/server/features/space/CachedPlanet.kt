@@ -40,7 +40,8 @@ class CachedPlanet(
     val cloudMaterials: List<BlockData>,
     val cloudDensityNoise: Double,
     val cloudThreshold: Double,
-    val cloudNoise: Double
+    val cloudNoise: Double,
+	var description: String,
 ) : CelestialBody(sun.spaceWorldName, calculateOrbitLocation(sun, orbitDistance, orbitProgress)), NamedCelestialBody {
 	companion object {
 		private const val CRUST_RADIUS_MAX = 180
@@ -126,6 +127,12 @@ class CachedPlanet(
 		orbitDistance = newDistance
 
 		Planet.setOrbitDistance(databaseId, newDistance)
+	}
+
+	fun changeDescription(newDescription: String) {
+		description = newDescription
+
+		Planet.setDescription(databaseId, newDescription)
 	}
 
 
