@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.listener.misc.InteractListener
 import net.horizonsend.ion.server.listener.misc.InventoryListener
 import net.horizonsend.ion.server.listener.misc.JoinLeaveListener
 import net.horizonsend.ion.server.listener.misc.MiscListeners
+import net.horizonsend.ion.server.listener.misc.PlayerDeathListener
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.listener.misc.ResourcePackListener
 import net.horizonsend.ion.server.listener.nations.FriendlyFireListener
@@ -84,6 +85,7 @@ val listeners: List<Listener> = listOf(
 	CryoPods,
 	BiomeFixer9001(),
 	TractorBeamMultiblock,
+	PlayerDeathListener,
 
 	// Achievement Listeners
 	AchievementListeners(),
