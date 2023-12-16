@@ -23,6 +23,7 @@ import org.bukkit.util.Vector
 @Serializable
 data class ServerConfiguration(
 	val serverName: String? = null,
+	val crossServerDeathMessages: Boolean = false,
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
