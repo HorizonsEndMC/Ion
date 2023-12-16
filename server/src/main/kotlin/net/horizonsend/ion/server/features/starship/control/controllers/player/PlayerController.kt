@@ -20,8 +20,6 @@ abstract class PlayerController(
 	val player: Player,
 	starship: ActiveStarship, name: String
 ) : Controller(player.damager(), starship, name) {
-	override val pilotName: Component = player.displayName()
-
 	override val yaw: Float get() = player.location.yaw
 	override val pitch: Float get() = player.location.pitch
 
@@ -41,4 +39,6 @@ abstract class PlayerController(
 	override fun toString(): String {
 		return "$name [${player.name}]"
 	}
+
+	override fun getPilotName(): Component = player.displayName()
 }

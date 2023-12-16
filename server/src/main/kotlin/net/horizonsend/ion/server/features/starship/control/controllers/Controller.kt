@@ -17,10 +17,6 @@ abstract class Controller(
 	val starship: ActiveStarship,
 	val name: String
 ) : ForwardingAudience.Single {
-	abstract val pilotName: Component
-
-	abstract val isShiftFlying: Boolean
-
 	/** Current vertical direction **/
 	abstract val pitch: Float
 	/** Current horizontal direction **/
@@ -52,4 +48,10 @@ abstract class Controller(
 
 	/** Checks weather or not the controller can place a specific block **/
 	abstract fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean
+
+	/** Return the display name of the controller */
+	abstract fun getPilotName(): Component
+
+	/** Checks whether the controller is sneak flying */
+	abstract fun isSneakFlying(): Boolean
 }

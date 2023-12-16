@@ -140,6 +140,6 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 			starship.type.displayNameComponent.color(NamedTextColor.WHITE)
 		)
 
-		return ofChildren(nameFormat, text(", piloted by ", RED), starship.controller.pilotName).hoverEvent(hover)
+		return ofChildren(nameFormat, text(", piloted by ", RED), starship.controller.getPilotName()).hoverEvent(hover)
 	}
 }
