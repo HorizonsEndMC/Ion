@@ -114,6 +114,8 @@ object Space : IonServerComponent() {
 				val cloudThreshold = mongoPlanet.cloudThreshold
 				val cloudNoise = mongoPlanet.cloudNoise
 
+				val description = mongoPlanet.description
+
 				planets += CachedPlanet(
 					databaseId = planetId,
 					name = planetName,
@@ -133,7 +135,8 @@ object Space : IonServerComponent() {
 					cloudMaterials = cloudMaterials,
 					cloudDensityNoise = cloudDensityNoise,
 					cloudThreshold = cloudThreshold,
-					cloudNoise = cloudNoise
+					cloudNoise = cloudNoise,
+					description = description
 				)
 			}
 		}
