@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
  * @param name: The name of the controller.
  * @param damager: The damager of this starship. If transferring to a new controller, preserve this value, otherwise duplicate entries may appear on damage trackers.
  *
- * @param pilotName: The display name of the controller. Used in place of a player's name.
+ * @param displayName: The display name of the controller. Used in place of a player's name.
  *
  * @param manualWeaponSets: The manual weapon sets, and their ranges. This value is stored here to allow easier transition between controllers.
  * @param autoWeaponSets: The auto weapon sets. See manual weapon sets.
@@ -39,7 +39,7 @@ class AIController(
 	name: String,
 	damager: Damager,
 
-	override var pilotName: Component,
+	private var displayName: Component,
 
 	val manualWeaponSets: Set<WeaponSet> = setOf(),
 	val autoWeaponSets: Set<WeaponSet> = setOf(),
@@ -59,8 +59,13 @@ class AIController(
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
 	val modules: MutableMap<String, AIModule> = mutableMapOf()
 
+	override fun getPilotName(): Component = displayName
+
 	// Control variables
-	override var isShiftFlying: Boolean = false
+	private var isShiftFlying: Boolean = false
+	override fun isSneakFlying(): Boolean = isShiftFlying
+	fun setShiftFlying(value: Boolean) { isShiftFlying = value }
+
 	override var pitch: Float = 0f
 	override var yaw: Float = 0f
 

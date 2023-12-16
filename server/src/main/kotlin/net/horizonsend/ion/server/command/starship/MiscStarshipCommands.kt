@@ -564,7 +564,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				useQuotesAroundObjects = true,
 				if (pilot?.hasProtection() == true) text(" ★", NamedTextColor.GOLD) else Component.empty(),
 				starship.getDisplayName(),
-				starship.controller.pilotName,
+				starship.controller.getPilotName(),
 				bracketed(text(starship.initialBlockCount, WHITE)),
 				worldName
 			)

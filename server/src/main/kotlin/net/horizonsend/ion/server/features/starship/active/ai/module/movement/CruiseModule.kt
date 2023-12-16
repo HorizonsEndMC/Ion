@@ -89,7 +89,7 @@ class CruiseModule(
 
 				val difference = origin.y - destination.y
 				if (abs(difference) < 5) {
-					module.controller.isShiftFlying = false
+					module.controller.setShiftFlying(false)
 					return
 				}
 
@@ -104,7 +104,7 @@ class CruiseModule(
 				val blocked = (pathfindingModule as? PathfindingModule)?.blocked ?: module.controller.hasBeenBlockedWithin()
 
 				if (!blocked) {
-					module.controller.isShiftFlying = false
+					module.controller.setShiftFlying(false)
 					return
 				}
 
@@ -129,7 +129,7 @@ class CruiseModule(
 				}
 
 				if (!blocked) {
-					module.controller.isShiftFlying = false
+					module.controller.setShiftFlying(false)
 					return
 				}
 
@@ -149,7 +149,7 @@ class CruiseModule(
 		/** Must be executed sync */
 		open fun handleShiftFlight(module: CruiseModule, origin: Location) {}
 		open fun refresh(controller: AIController) {
-			if (!controller.hasBeenBlockedWithin()) controller.isShiftFlying = false
+			if (!controller.hasBeenBlockedWithin()) controller.setShiftFlying(false)
 		}
 	}
 

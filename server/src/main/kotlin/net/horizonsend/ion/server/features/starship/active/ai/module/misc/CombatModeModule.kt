@@ -23,7 +23,7 @@ class CombatModeModule(
 	private fun switchToCombatMode(target: AITarget) {
 		starship.controller = combatController(
 			starship,
-			controller.pilotName,
+			controller.getPilotName(),
 			controller.manualWeaponSets,
 			controller.autoWeaponSets
 		)
