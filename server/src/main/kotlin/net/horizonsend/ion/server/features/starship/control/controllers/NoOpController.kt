@@ -11,14 +11,14 @@ import org.bukkit.block.BlockState
 
 class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Controller(previousDamager ?: noOpDamager, starship, "Idle") {
 	// Can't move
-	override val isShiftFlying: Boolean = false
 	override val selectedDirectControlSpeed: Int = 0
 	override val yaw: Float = 0f
 	override val pitch: Float = 0f
-	override var pilotName: Component = text("idle")
+	override fun isSneakFlying(): Boolean = false
 
 	// Shouldn't be treated like they're still piloting it
 	override fun audience(): Audience = Audience.empty()
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
+	override fun getPilotName(): Component = text("idle")
 }

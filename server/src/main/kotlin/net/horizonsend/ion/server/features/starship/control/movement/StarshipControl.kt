@@ -57,7 +57,7 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		if (controller.isShiftFlying) {
+		if (controller.isSneakFlying()) {
 			processSneakFlight(controller, starship)
 		}
 	}
@@ -102,7 +102,7 @@ object StarshipControl : IonServerComponent() {
 		dz += (targetSpeed * direction.modZ)
 
 		// Boost if shift flying
-		if (controller.isShiftFlying) {
+		if (controller.isSneakFlying()) {
 			dx *= 2
 			dz *= 2
 		}
@@ -230,7 +230,7 @@ object StarshipControl : IonServerComponent() {
 			return
 		}
 
-		if (!controller.isShiftFlying) return
+		if (!controller.isSneakFlying()) return
 
 		val now = System.currentTimeMillis()
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return

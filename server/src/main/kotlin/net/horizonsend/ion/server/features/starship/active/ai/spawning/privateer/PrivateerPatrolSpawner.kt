@@ -25,11 +25,13 @@ object PrivateerPatrolSpawner : BasicSpawner(
 				nameList = mapOf(
 					"Basic Privateer Pilot 1" to 2,
 					"Basic Privateer Pilot 2" to 2,
-					"Basic Privateer Pilot 3" to 2,),
+					"Basic Privateer Pilot 3" to 2
+				),
 				ships = mapOf(
 					bulwark.identifier to 2,
 					contractor.identifier to 2,
-					dagger.identifier to 2,)
+					dagger.identifier to 2
+				)
 			),
 			AIShipConfiguration.AISpawnerTier(
 				identifier = "ADVANCED",
@@ -37,11 +39,13 @@ object PrivateerPatrolSpawner : BasicSpawner(
 				nameList = mapOf(
 					"Advanced Privateer Pilot 1" to 2,
 					"Advanced Privateer Pilot 2" to 2,
-					"Advanced Privateer Pilot 3" to 2,),
+					"Advanced Privateer Pilot 3" to 2
+				),
 				ships = mapOf(
 					bulwark.identifier to 2,
 					contractor.identifier to 2,
-					dagger.identifier to 2,)
+					dagger.identifier to 2
+				)
 			),
 			AIShipConfiguration.AISpawnerTier(
 				identifier = "EXPERT",
@@ -49,11 +53,13 @@ object PrivateerPatrolSpawner : BasicSpawner(
 				nameList = mapOf(
 					"Expert Privateer Pilot 1" to 2,
 					"Expert Privateer Pilot 2" to 2,
-					"Expert Privateer Pilot 3" to 2,),
+					"Expert Privateer Pilot 3" to 2
+				),
 				ships = mapOf(
 					bulwark.identifier to 2,
 					contractor.identifier to 2,
-					dagger.identifier to 2,)
+					dagger.identifier to 2
+				)
 			)
 		),
 		worldSettings = listOf(
