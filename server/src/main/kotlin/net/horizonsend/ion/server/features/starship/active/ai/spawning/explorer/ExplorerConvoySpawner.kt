@@ -8,13 +8,11 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.World
 
-object ExplorerConvoySpawner : BasicSpawner(
+class ExplorerConvoySpawner : BasicSpawner(
 	"EXPLORER_CONVOY",
 	IonServer.aiShipConfiguration.spawners::explorationConvoy,
 ) {
-	val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration()
-
-	override fun findSpawnLocation(): Location? = ExplorerUtils.findSpawnLocation()
+	override fun findSpawnLocation(): Location? = ExplorerUtils.findSpawnLocation(configuration)
 
 	override fun getStarshipTemplates(world: World): Collection<Pair<AIShipConfiguration.AIStarshipTemplate, Component>> {
 		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
@@ -29,5 +27,9 @@ object ExplorerConvoySpawner : BasicSpawner(
 			IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name,
 			IonServer.aiShipConfiguration.getShipTemplate(shipIdentifier) to name
 		)
+	}
+
+	companion object {
+		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration() // TODO
 	}
 }

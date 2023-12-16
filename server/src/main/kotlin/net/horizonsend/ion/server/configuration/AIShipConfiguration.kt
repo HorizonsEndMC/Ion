@@ -48,6 +48,8 @@ data class AIShipConfiguration(
 		val miniMessageSpawnMessage: String = "",
 		val pointChance: Double = 1.0,
 		val pointThreshold: Int = 20 * 60 * 15,
+		val minDistanceFromPlayer: Double = 1500.0,
+		val maxDistanceFromPlayer: Double = 3500.0,
 		val tiers: List<AISpawnerTier> = listOf(AISpawnerTier()),
 		val worldSettings: List<AIWorldSettings> = listOf(AIWorldSettings())
 	) {
