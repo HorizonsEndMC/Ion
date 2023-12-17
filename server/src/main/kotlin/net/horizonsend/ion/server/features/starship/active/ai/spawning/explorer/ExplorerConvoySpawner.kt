@@ -10,9 +10,9 @@ import org.bukkit.World
 
 class ExplorerConvoySpawner : BasicSpawner(
 	"EXPLORER_CONVOY",
-	IonServer.aiShipConfiguration.spawners::explorationConvoy,
+	IonServer.aiShipConfiguration.spawners::tsaiiRaid,
 ) {
-	override fun findSpawnLocation(): Location? = ExplorerUtils.findSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? = findExplorerSpawnLocation(configuration)
 
 	override fun getStarshipTemplates(world: World): Collection<Pair<AIShipConfiguration.AIStarshipTemplate, Component>> {
 		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.

@@ -9,7 +9,7 @@ class PrivateerFleetSpawner : BasicSpawner(
 	"PRIVATEER_FLEET",
 	IonServer.aiShipConfiguration.spawners::privateerFleet,
 ) {
-	override fun findSpawnLocation(): Location? = PrivateerUtils.findLocation(configuration)
+	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
 	companion object {
 		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration() // TODO

@@ -9,8 +9,14 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.explorer.ExplorerConvoySpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.explorer.ExplorerSpawner
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.miningcorp.MiningCorpEscort
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.miningcorp.StandardTransportOperation
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.pirate.PirateFleetSpawner
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.pirate.SinglePirateSpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerFleetSpawner
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerPatrolSpawner
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.tsaii.TsaiiAttackSpawner
+import net.horizonsend.ion.server.features.starship.active.ai.spawning.tsaii.TsaiiRaidSpawner
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
@@ -29,10 +35,16 @@ data class AIShipConfiguration(
 
 	@Serializable
 	data class AISpawners(
+		val miningCorpTransport: AISpawnerConfiguration = StandardTransportOperation.defaultConfiguration,
+		val miningCorpEscort: AISpawnerConfiguration = MiningCorpEscort.defaultConfiguration,
 		val privateerPatrol: AISpawnerConfiguration = PrivateerPatrolSpawner.defaultConfiguration,
 		val privateerFleet: AISpawnerConfiguration = PrivateerFleetSpawner.defaultConfiguration,
 		val explorationVessel: AISpawnerConfiguration = ExplorerSpawner.defaultConfiguration,
-		val explorationConvoy: AISpawnerConfiguration = ExplorerConvoySpawner.defaultConfiguration
+		val explorationConvoy: AISpawnerConfiguration = ExplorerConvoySpawner.defaultConfiguration,
+		val singlePirate: AISpawnerConfiguration = SinglePirateSpawner.defaultConfiguration,
+		val pirateFleet: AISpawnerConfiguration = PirateFleetSpawner.defaultConfiguration,
+		val tsaiiAttack: AISpawnerConfiguration = TsaiiAttackSpawner.defaultConfiguration,
+		val tsaiiRaid: AISpawnerConfiguration = TsaiiRaidSpawner.defaultConfiguration,
 	)
 
 	/**

@@ -9,7 +9,7 @@ class ExplorerSpawner : BasicSpawner(
 	"EXPLORATION_VESSEL",
 	IonServer.aiShipConfiguration.spawners::explorationVessel,
 ) {
-	override fun findSpawnLocation(): Location? = ExplorerUtils.findSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? = findExplorerSpawnLocation(configuration)
 
 	companion object {
 		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(
