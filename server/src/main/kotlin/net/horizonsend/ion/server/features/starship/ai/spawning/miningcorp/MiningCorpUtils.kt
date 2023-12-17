@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp
 
-import net.horizonsend.ion.common.utils.text.HEColorScheme
-import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
