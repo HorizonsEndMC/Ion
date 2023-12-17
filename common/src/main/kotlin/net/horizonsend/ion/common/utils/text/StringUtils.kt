@@ -35,3 +35,4 @@ fun String.isAlphanumeric(includeSpaces: Boolean = false): Boolean {
 }
 
 fun String.subStringBetween(start: Char, end: Char) = substringAfter(start).substringBefore(end)
+fun String.subStringBetween(start: String, end: String) = substringAfter(start).substringBefore(end)
