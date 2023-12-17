@@ -2,9 +2,6 @@ package net.horizonsend.ion.server.features.starship.active.ai.spawning.privatee
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerUtils.bulwark
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerUtils.contractor
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer.PrivateerUtils.dagger
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicSpawner
 import org.bukkit.Location
 
@@ -12,7 +9,7 @@ class PrivateerPatrolSpawner : BasicSpawner(
 	"PRIVATEER_PATROL",
 	IonServer.aiShipConfiguration.spawners::privateerPatrol,
 ) {
-	override fun findSpawnLocation(): Location? = PrivateerUtils.findLocation(configuration)
+	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
 	companion object {
 		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.active.ai.spawning.miningcorp
+package net.horizonsend.ion.server.features.starship.active.ai.spawning.tsaii
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicSpawner
 import org.bukkit.Location
 
-class StandardTransportOperation  : BasicSpawner(
-	"MINING_CORP_TRANSPORT",
-	IonServer.aiShipConfiguration.spawners::miningCorpTransport,
+class TsaiiRaidSpawner : BasicSpawner(
+	"TSAII_FLEET",
+	IonServer.aiShipConfiguration.spawners::tsaiiRaid,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
