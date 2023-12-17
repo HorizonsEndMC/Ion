@@ -28,6 +28,9 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	val RIGHT = text("[-]   ----->   [+]", NamedTextColor.AQUA)
 	val LEFT = text("[+]   <-----   [-]", NamedTextColor.AQUA)
 
+	val RIGHT_OLD = text("<-----", NamedTextColor.AQUA)
+	val LEFT_OLD = text("----->", NamedTextColor.AQUA)
+
 	val BLACKLIST_OLD = text("BLACKLIST", NamedTextColor.BLACK, TextDecoration.BOLD)
 	val WHITELIST_OLD = text("WHITELIST", NamedTextColor.WHITE, TextDecoration.BOLD)
 
@@ -98,15 +101,17 @@ object ItemSplitterMultiblock : Multiblock(), FurnaceMultiblock, InteractableMul
 	private fun migrateFrom(sign: Sign) {
 		val line = sign.line(3)
 
-		if (line == BLACKLIST_OLD) {
+		if (line == BLACKLIST_OLD || line == RIGHT_OLD) {
 			sign.line(3, RIGHT)
 			sign.update()
 		}
 
-		if (line == WHITELIST_OLD) {
+		if (line == WHITELIST_OLD || line == LEFT_OLD) {
 			sign.line(3, LEFT)
 			sign.update()
 		}
+
+		sign.line(2, text(".:[Matching items]:;", NamedTextColor.GRAY))
 	}
 
 	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
