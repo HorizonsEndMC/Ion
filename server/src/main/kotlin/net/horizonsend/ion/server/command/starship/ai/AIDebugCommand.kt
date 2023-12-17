@@ -12,11 +12,10 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactories
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.starship.active.ai.module.positioning.AxisStandoffPositioningModule
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawner
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
+import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
+import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
@@ -33,10 +32,10 @@ object AIDebugCommand : SLCommand() {
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
-			AIControllerFactories.presetControllers.keys
+			net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.presetControllers.keys
 		}
 
-		manager.commandContexts.registerContext(AIControllerFactory::class.java) { AIControllerFactories[it.popFirstArg()] }
+		manager.commandContexts.registerContext(AIControllerFactory::class.java) { net.horizonsend.ion.server.features.starship.ai.AIControllerFactories[it.popFirstArg()] }
 	}
 
 

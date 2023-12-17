@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ai.module.pathfinding.AStarPathfindingModule
+import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.AStarPathfindingModule
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2

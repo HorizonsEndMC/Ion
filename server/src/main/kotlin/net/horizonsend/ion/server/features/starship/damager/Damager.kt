@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.active.ai.util.PlayerTarget
-import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
+import net.horizonsend.ion.server.features.starship.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.ai.util.PlayerTarget
+import net.horizonsend.ion.server.features.starship.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
