@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.explorer
 
-import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType

@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Blaster
 import net.horizonsend.ion.server.features.customitems.blasters.objects.Magazine
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -25,7 +24,7 @@ import kotlin.math.roundToInt
 
 class BlasterListeners : SLEventListener() {
 	@Suppress("Unused")
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	fun onDeath(event: PlayerDeathEvent) {
 		val victim = event.player
 		val killer = event.entity.killer ?: return
@@ -66,13 +65,7 @@ class BlasterListeners : SLEventListener() {
 			)
 			.append(blaster)
 
-		if (victim.world.name.contains("arena", ignoreCase = true)) {
-			event.deathMessage(newMessage)
-		} else {
-			event.deathMessage(null)
-
-			if (IonServer.configuration.serverName == "survival") Notify.chatAndGlobal(newMessage) else IonServer.server.sendMessage(newMessage)
-		}
+		event.deathMessage(newMessage)
 	}
 
 	@EventHandler
