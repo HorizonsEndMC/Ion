@@ -6,11 +6,11 @@ import net.horizonsend.ion.server.features.starship.active.ai.spawning.privateer
 import net.horizonsend.ion.server.features.starship.active.ai.spawning.template.BasicSpawner
 import org.bukkit.Location
 
-class StandardTransportOperation  : BasicSpawner(
-	"MINING_CORP_TRANSPORT",
-	IonServer.aiShipConfiguration.spawners::miningCorpTransport,
+class MiningCorpEscort : BasicSpawner(
+	"MINING_CORP_SPAWNER",
+	IonServer.aiShipConfiguration.spawners::miningCorpEscort,
 ) {
-	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration) // TODO
 
 	companion object {
 		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration() // TODO
