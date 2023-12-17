@@ -129,6 +129,36 @@ val dagger = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
+val daybreak = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "DAYBREAK",
+	schematicName = "Daybreak",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Daybreak",
+	type = StarshipType.AI_CORVETTE,
+	controllerFactory = "PRIVATEER_CORVETTE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val patroller = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "PATROLLER",
+	schematicName = "Patroller",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Patroller",
+	type = StarshipType.AI_GUNSHIP,
+	controllerFactory = "PRIVATEER_GUNSHIP",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val protector = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "PROTECTOR",
+	schematicName = "Protector",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Protector",
+	type = StarshipType.AI_STARFIGHTER,
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
 fun findPrivateerSpawnLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location?  {
 	// Get a random world based on the weight in the config
 	val worldConfig = configuration.worldWeightedRandomList.random()
