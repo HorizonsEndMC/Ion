@@ -58,9 +58,9 @@ import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.active.StarshipDisplay
-import net.horizonsend.ion.server.features.starship.active.ai.AIManager
-import net.horizonsend.ion.server.features.starship.active.ai.spawning.AISpawningManager
-import net.horizonsend.ion.server.features.starship.active.ai.util.NPCFakePilot
+import net.horizonsend.ion.server.features.starship.ai.AIManager
+import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
+import net.horizonsend.ion.server.features.starship.ai.util.NPCFakePilot
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising

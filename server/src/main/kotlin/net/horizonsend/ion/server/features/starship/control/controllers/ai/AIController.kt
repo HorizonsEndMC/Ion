@@ -4,10 +4,10 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTe
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.active.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.starship.active.ai.module.AIModule
-import net.horizonsend.ion.server.features.starship.active.ai.util.AITarget
-import net.horizonsend.ion.server.features.starship.active.ai.util.StarshipTarget
+import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
+import net.horizonsend.ion.server.features.starship.ai.module.AIModule
+import net.horizonsend.ion.server.features.starship.ai.util.AITarget
+import net.horizonsend.ion.server.features.starship.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
