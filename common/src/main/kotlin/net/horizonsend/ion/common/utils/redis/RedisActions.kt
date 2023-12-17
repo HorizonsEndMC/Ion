@@ -108,25 +108,29 @@ object RedisActions : IonComponent() {
 
 	private object IonPubSubListener : JedisPubSub() {
 		override fun onMessage(channel: String, message: String) {
-			// to prevent weird things from happening, delay all update handling till initialization is complete
-			// however, we still need to listen immediately so we don't miss any updates
-			if (!enabled) return
+			try {
+				// to prevent weird things from happening, delay all update handling till initialization is complete
+				// however, we still need to listen immediately so we don't miss any updates
+				if (!enabled) return
 
-			val formatted = try { RedisSerialization.readTyped<ChatMessageWrapper>(message, wrapperType) } catch (e: Exception) {
-				return log.warn("Could not deserialize redis message. Full contents: $message")
-			}
+				val formatted = try {
+					RedisSerialization.readTyped<ChatMessageWrapper>(message, wrapperType)
+				} catch (e: Exception) {
+					return log.warn("Could not deserialize redis message. Full contents: $message")
+				}
 
-			// Ignore messages not intended for this server
-			if (!formatted.targetServers.contains(CommonConfig.common.serverType)) return
+				// Ignore messages not intended for this server
+				if (!formatted.targetServers.contains(CommonConfig.common.serverType)) return
 
-			// ignore if it came from the server it was sent from
-			if (formatted.serverId == serverId.toString()) return
+				// ignore if it came from the server it was sent from
+				if (formatted.serverId == serverId.toString()) return
 
-			val receiver = idActionMap[formatted.actionId] ?: return log.warn("Unknown redis action: ${formatted.actionId}, full contents: $formatted")
+				val receiver = idActionMap[formatted.actionId] ?: return log.warn("Unknown redis action: ${formatted.actionId}, full contents: $formatted")
 
-			val data = RedisSerialization.read(formatted.message, receiver.type)
+				val data = RedisSerialization.read(formatted.message, receiver.type)
 
-			receiver.castAndReceive(data)
+				receiver.castAndReceive(data)
+			} catch (e: Throwable) { log.warn("Exception in redis messaging: $e") }
 		}
 	}
 }
