@@ -159,6 +159,46 @@ val protector = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
+val veteran = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "VETERAN",
+	schematicName = "Veteran",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Veteran",
+	type = StarshipType.AI_GUNSHIP,
+	controllerFactory = "PRIVATEER_GUNSHIP",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val teneta = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "TENETA",
+	schematicName = "Teneta",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Teneta",
+	type = StarshipType.AI_STARFIGHTER,
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val furious = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "FURIOUS",
+	schematicName = "Furious",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Furious",
+	type = StarshipType.AI_STARFIGHTER,
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val inflict = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "INFLICT",
+	schematicName = "Inflict",
+	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Inflict",
+	type = StarshipType.AI_STARFIGHTER,
+	controllerFactory = "PRIVATEER_STARFIGHTER",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
 fun findPrivateerSpawnLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location?  {
 	// Get a random world based on the weight in the config
 	val worldConfig = configuration.worldWeightedRandomList.random()
