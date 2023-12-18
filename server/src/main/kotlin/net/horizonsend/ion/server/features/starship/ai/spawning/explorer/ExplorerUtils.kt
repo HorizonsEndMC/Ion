@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.explorer
 
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -57,11 +58,11 @@ val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 	build()
 }
 
-val bulwark = AIShipConfiguration.AIStarshipTemplate(
+val wayfinder = AIShipConfiguration.AIStarshipTemplate(
 	identifier = "WAYFINDER",
 	schematicName = "Wayfinder",
 	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Wayfinder",
-	type = StarshipType.AI_CORVETTE,
+	type = StarshipType.AI_TRANSPORT,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
@@ -78,7 +79,7 @@ val sriker = AIShipConfiguration.AIStarshipTemplate(
 	identifier = "SRIKER",
 	schematicName = "Sriker",
 	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Sriker",
-	type = StarshipType.AI_GUNSHIP,
+	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
@@ -94,10 +95,54 @@ val nimble = AIShipConfiguration.AIStarshipTemplate(
 	identifier = "NIMBLE",
 	schematicName = "Nimble",
 	miniMessageName = "<${EXPLORER_LIGHT_CYAN.asHexString()}>Nimble",
-	type = StarshipType.AI_STARFIGHTER,
+	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
+)
+
+val oreTransporter = AIShipConfiguration.AIStarshipTemplate( //TODO(Name)
+	identifier = "ORE_TRANSPORTER",
+	schematicName = "OreTransporter",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Ore <${HE_LIGHT_GRAY.asHexString()}>Transporter",
+	type = StarshipType.AI_LIGHT_FREIGHTER,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0,
+	manualWeaponSets = mutableSetOf(
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
+	),
+	autoWeaponSets = mutableSetOf(
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "tt1", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
+	)
+)
+
+val cargoCrateTransporter = AIShipConfiguration.AIStarshipTemplate( //TODO(Name)
+	identifier = "CARGO_CRATE_TRANSPORTER",
+	schematicName = "CargoCrateTransporter",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Cargo Crate <${HE_LIGHT_GRAY.asHexString()}>Transporter",
+	type = StarshipType.AI_SHUTTLE,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val multiCargoCrateTransporter = AIShipConfiguration.AIStarshipTemplate( //TODO(Name)
+	identifier = "MULTI_CARGO_CRATE_TRANSPORTER",
+	schematicName = "MultiCargoCrateTransporter",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Multi Cargo Crate <${HE_LIGHT_GRAY.asHexString()}>Transporter",
+	type = StarshipType.AI_TRANSPORT,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0,
+	manualWeaponSets = mutableSetOf(
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
+	),
+	autoWeaponSets = mutableSetOf(
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "tt1", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
+	)
 )
 
 val cruiseEndpoint: (AIController) -> Location? = lambda@{ controller: AIController ->
