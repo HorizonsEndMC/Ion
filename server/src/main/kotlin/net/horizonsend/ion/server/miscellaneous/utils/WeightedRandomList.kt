@@ -139,4 +139,14 @@ class WeightedRandomList<T : Any>() : Collection<T> {
 	override fun toString(): String {
 		return "WeightedRandomList $weightedEntryList"
 	}
+
+	fun filterTo(destination: WeightedRandomList<T>, predicate: (T) -> Boolean): WeightedRandomList<T> {
+		for (weightedEntry in weightedEntryList) {
+			if (!predicate(weightedEntry.parent)) continue
+
+			destination.addEntry(weightedEntry.parent, weightedEntry.weight)
+		}
+
+		return destination
+	}
 }

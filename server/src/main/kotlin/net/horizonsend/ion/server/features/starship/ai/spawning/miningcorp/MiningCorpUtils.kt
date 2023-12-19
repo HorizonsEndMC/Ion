@@ -5,9 +5,15 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.component1
+import net.horizonsend.ion.server.miscellaneous.utils.component2
+import net.horizonsend.ion.server.miscellaneous.utils.component3
+import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
@@ -52,8 +58,16 @@ fun ServerConfiguration.AsteroidConfig.AsteroidFeature.randomPosition(): Vector 
 	)
 }
 
-fun findSpawnPosition(config: AIShipConfiguration.AISpawnerConfiguration) {
+fun findSpawnPosition(configuration: AIShipConfiguration.AISpawnerConfiguration): Location? {
+	val locationNearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
 
+	val (world, x, y, z) = locationNearPlayer
+
+	val belts = getAsteroidBelts(world)
+
+	if (!belts.any { it.contains(x, y, z) }) return null
+
+	return locationNearPlayer
 }
 
 val ostrich = AIShipConfiguration.AIStarshipTemplate(

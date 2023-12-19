@@ -19,7 +19,6 @@ class PrivateerPatrolSpawner : BasicSpawner(
 			tiers = listOf(
 				AIShipConfiguration.AISpawnerTier(
 					identifier = "BASIC",
-					rolls = 1,
 					nameList = mapOf(
 						"Basic Privateer Pilot 1" to 2,
 						"Basic Privateer Pilot 2" to 2,
@@ -33,7 +32,6 @@ class PrivateerPatrolSpawner : BasicSpawner(
 				),
 				AIShipConfiguration.AISpawnerTier(
 					identifier = "ADVANCED",
-					rolls = 1,
 					nameList = mapOf(
 						"Advanced Privateer Pilot 1" to 2,
 						"Advanced Privateer Pilot 2" to 2,
@@ -47,7 +45,6 @@ class PrivateerPatrolSpawner : BasicSpawner(
 				),
 				AIShipConfiguration.AISpawnerTier(
 					identifier = "EXPERT",
-					rolls = 1,
 					nameList = mapOf(
 						"Expert Privateer Pilot 1" to 2,
 						"Expert Privateer Pilot 2" to 2,

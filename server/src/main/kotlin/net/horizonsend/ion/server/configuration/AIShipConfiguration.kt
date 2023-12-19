@@ -9,8 +9,8 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerConvoySpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpEscort
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.StandardTransportOperation
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpMulti
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingle
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateFleetSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.SinglePirateSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerFleetSpawner
@@ -35,8 +35,8 @@ data class AIShipConfiguration(
 
 	@Serializable
 	data class AISpawners(
-		val miningCorpTransport: AISpawnerConfiguration = StandardTransportOperation.defaultConfiguration,
-		val miningCorpEscort: AISpawnerConfiguration = MiningCorpEscort.defaultConfiguration,
+		val miningCorpSingle: AISpawnerConfiguration = MiningCorpSingle.defaultConfiguration,
+		val miningCorpMulti: AISpawnerConfiguration = MiningCorpMulti.defaultConfiguration,
 		val privateerPatrol: AISpawnerConfiguration = PrivateerPatrolSpawner.defaultConfiguration,
 		val privateerFleet: AISpawnerConfiguration = PrivateerFleetSpawner.defaultConfiguration,
 		val explorationVessel: AISpawnerConfiguration = ExplorerSpawner.defaultConfiguration,
@@ -77,7 +77,6 @@ data class AIShipConfiguration(
 	 * Each world has a number of rolls for selection when a ship spawns
 	 *
 	 * @param identifier, the tier of this identifier
-	 * @param rolls then number of rolls for this world.
 	 * @param ships Map of AI ship templates to their number of rolls.
 	 *
 	 * @see AISpawnerConfiguration
@@ -86,7 +85,6 @@ data class AIShipConfiguration(
 	@Serializable
 	data class AISpawnerTier(
 		val identifier: String = "BASIC",
-		val rolls: Int = 1,
 		val nameList: Map<String, Int> = mapOf("<Red><Bold>Level 1 thug" to 1),
 		val ships: Map<String, Int> = mapOf("VESTA" to 1),
 	) {
