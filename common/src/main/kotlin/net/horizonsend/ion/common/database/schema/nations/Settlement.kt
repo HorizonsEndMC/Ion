@@ -71,6 +71,8 @@ data class Settlement(
 	var trustedSettlements: Set<Oid<Settlement>> = mutableSetOf(),
 	var trustedPlayers: Set<SLPlayerId> = mutableSetOf(),
 
+	var motd: String? = null,
+
     val needsRefund: Boolean = true
 ) : DbObject, MoneyHolder {
 	enum class CityState { UNPAID, ACTIVE }
@@ -271,6 +273,10 @@ data class Settlement(
 
 		fun unTrustNation(settlementId: Oid<Settlement>, nation: Oid<Nation>) {
 			updateById(settlementId, pull(Settlement::trustedNations, nation))
+		}
+
+		fun setMotd(settlementId: Oid<Settlement>, motd: String?) {
+			updateById(settlementId, setValue(Settlement::motd, motd))
 		}
 	}
 

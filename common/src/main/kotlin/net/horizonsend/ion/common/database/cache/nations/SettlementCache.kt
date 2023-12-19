@@ -32,7 +32,9 @@ object SettlementCache : ManualCache() {
 
 		var trustedNations: Set<Oid<Nation>>,
 		var trustedSettlements: Set<Oid<Settlement>>,
-		var trustedPlayers: Set<SLPlayerId>
+		var trustedPlayers: Set<SLPlayerId>,
+
+		var motd: String?
 	)
 
 	val SETTLEMENT_DATA = ConcurrentHashMap<Oid<Settlement>, SettlementData>()
@@ -53,6 +55,7 @@ object SettlementCache : ManualCache() {
 			val trustedNations = settlement.trustedNations
 			val trustedSettlements = settlement.trustedSettlements
 			val trustedPlayers = settlement.trustedPlayers
+			val motd = settlement.motd
 
 			val data = SettlementData(
 				id,
@@ -65,7 +68,8 @@ object SettlementCache : ManualCache() {
 				tax,
 				trustedNations,
 				trustedSettlements,
-				trustedPlayers
+				trustedPlayers,
+				motd
 			)
 
 			SETTLEMENT_DATA[id] = data
@@ -128,6 +132,10 @@ object SettlementCache : ManualCache() {
 
 				change[Settlement::trustedNations]?.let { bson ->
 					data.trustedNations = bson.array().mappedSet { it.oid() }
+				}
+
+				change[Settlement::motd]?.let { bson ->
+					data.motd = bson.nullable()?.string()
 				}
 			}
 		}

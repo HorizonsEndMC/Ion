@@ -417,7 +417,8 @@ internal object NationCommand : SLCommand() {
 	@Description("View the top nations on Star Legacy")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
 		val message = text()
-			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations\n", 13)))
+			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations"), 17))
+			.append(newline())
 
 		val nations = Nation.allIds()
 
@@ -451,20 +452,17 @@ internal object NationCommand : SLCommand() {
 		val nameColor = NamedTextColor.GOLD
 		val leaderColor = NamedTextColor.AQUA
 		val membersColor = NamedTextColor.BLUE
-		val activeColor = NamedTextColor.GREEN
-		val semiActiveColor = NamedTextColor.GRAY
-		val inactiveColor = NamedTextColor.RED
 		val settlementsColor = DARK_AQUA
 		val outpostsColor = YELLOW
-		val split = text("|", HEColorScheme.HE_MEDIUM_GRAY)
+		val split = text(" | ", HEColorScheme.HE_MEDIUM_GRAY)
 
 		message.append(ofChildren(
 			text("Name", nameColor),
-			split, text("Name", nameColor),
 			split, text("Leader", leaderColor),
 			split, text("Members", membersColor),
 			split, text("Settlements", settlementsColor),
-			split, text("Outposts", outpostsColor)
+			split, text("Outposts", outpostsColor),
+			newline()
 		))
 
 		for (nation in nationsOnPage) {
@@ -495,15 +493,10 @@ internal object NationCommand : SLCommand() {
 				.append(text("    $name ", nameColor))
 				.append(text(leaderName, leaderColor))
 				.append(text(" ${members.count()}", membersColor))
-				.append(ofChildren(
-					text(" [", HEColorScheme.HE_MEDIUM_GRAY),
-					text("$active ", activeColor),
-					text("$semiActive ", semiActiveColor),
-					text("$inactive ", inactiveColor),
-					text("]", HEColorScheme.HE_MEDIUM_GRAY),
-				))
+				.append(SettlementCommand.formatActive(active, semiActive, inactive))
 				.append(text(" ${SettlementCache.all().count { it.nation == nation }}", settlementsColor))
 				.append(text(" ${Regions.getAllOf<RegionTerritory>().count { it.nation == nation }}", outpostsColor))
+				.append(newline())
 				.build()
 
 			message.append(line)

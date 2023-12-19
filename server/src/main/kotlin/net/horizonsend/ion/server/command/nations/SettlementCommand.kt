@@ -20,7 +20,11 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
@@ -29,8 +33,6 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.nations.utils.cmd
-import net.horizonsend.ion.server.features.nations.utils.hover
 import net.horizonsend.ion.server.features.nations.utils.isActive
 import net.horizonsend.ion.server.features.nations.utils.isInactive
 import net.horizonsend.ion.server.features.nations.utils.isSemiActive
@@ -40,10 +42,14 @@ import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -58,6 +64,12 @@ import kotlin.math.roundToInt
 @Suppress("unused")
 @CommandAlias("settlement|s")
 internal object SettlementCommand : SLCommand() {
+	private val settlementMessageColor = TextColor.fromHexString("#00C4C4")
+	private val settlementImportantMessageColor = TextColor.fromHexString("#FC9300")
+
+	private fun settlementMessageFormat(text: String, vararg args: Any?) = template(text(text, settlementMessageColor), false, *args)
+	private fun settlementImportantMessageFormat(text: String, vararg args: Any?) = template(text(text, settlementImportantMessageColor), false, *args)
+
 	private fun validateName(name: String, settlementId: Oid<Settlement>?) {
 		if (!"\\w*".toRegex().matches(name)) {
 			throw InvalidCommandArgument("Name must be alphanumeric")
@@ -103,7 +115,13 @@ internal object SettlementCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_SETTLEMENT)
 
-		Notify.chatAndEvents(MiniMessage.miniMessage().deserialize("<green>${sender.name} has founded the settlement $name in ${territory.name} on ${territory.world}!"))
+		Notify.chatAndEvents(settlementMessageFormat(
+			"{0} has founded the settlement {1} in {2} on {3}",
+			sender.displayName(),
+			name,
+			territory.name,
+			territory.world,
+		))
 
 		// No manual territory cache update is needed as settlement creation should automatically trigger that
 	}
@@ -145,16 +163,25 @@ internal object SettlementCommand : SLCommand() {
 
 		if (Settlement.isInvitedTo(settlementId, slPlayerId)) {
 			Settlement.removeInvite(settlementId, slPlayerId)
-			sender msg "&bRemoved $player's invite to your settlement."
-			Notify.playerCrossServer(playerId, MiniMessage.miniMessage().deserialize("<yellow>You were un-invited from $settlementName by ${sender.name}"))
+			sender.success("Removed $player's invite to your settlement.")
+
+			Notify.playerCrossServer(playerId, settlementImportantMessageFormat(
+				"Your invitation to {0} has been revoked by {1}",
+				settlementName,
+				sender.displayName()
+			))
 		} else {
 			Settlement.addInvite(settlementId, slPlayerId)
-			sender msg "&bInvited $player to your settlement."
-			Notify.playerCrossServer(
-				playerId,
-				MiniMessage.miniMessage().deserialize("<aqua>You were invited to $settlementName by ${sender.name}. " +
-						"To join, use <italic>/s join $settlementName")
-			)
+			sender.success("Invited $player to your settlement.")
+
+			Notify.playerCrossServer(playerId, settlementMessageFormat(
+				"You were invited to {0} by {1}. To join, use {2}",
+				settlementName,
+				sender.displayName(),
+				text("/s join $settlementName", NamedTextColor.WHITE, TextDecoration.ITALIC)
+					.hoverEvent(text("/s join $settlementName"))
+					.clickEvent(ClickEvent.runCommand("/s join $settlementName"))
+			))
 		}
 	}
 
@@ -164,7 +191,8 @@ internal object SettlementCommand : SLCommand() {
 		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.INVITE)
 
 		val invitedPlayers = Settlement.findPropById(settlementId, Settlement::invites)
-		sender msg "&7Invited Settlements:&b ${invitedPlayers?.joinToString { getPlayerName(it) }}"
+
+		sender.sendMessage(settlementMessageFormat("Invited Settlements: ", invitedPlayers?.joinToString { getPlayerName(it) }))
 	}
 
 	@Subcommand("join")
@@ -288,7 +316,8 @@ internal object SettlementCommand : SLCommand() {
 			Settlement.ForeignRelation.SETTLEMENT_MEMBER -> "Anyone who is a settlement member"
 			Settlement.ForeignRelation.STRICT -> "No default permission, only people with explicit access from e.g. a role"
 		}
-		sender msg "&aChanged min build access to $accessLevel. Description: $description"
+
+		sender.success("Changed min build access to $accessLevel. Description: $description")
 	}
 
 	@Subcommand("set tax")
@@ -309,11 +338,13 @@ internal object SettlementCommand : SLCommand() {
 		sender.success("Set tax to $newTax")
 	}
 
+	@Suppress("unused")
 	@Subcommand("top|list")
 	@Description("View the top settlements on Horizon's End")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
-		val lines = mutableListOf<TextComponent>()
-		lines += lineBreak().fromLegacy()
+		val message = text()
+			.append(lineBreakWithCenterText(settlementImportantMessageFormat("Top Settlements"), 15))
+			.append(newline())
 
 		val settlements = SettlementCache.allIds()
 
@@ -344,21 +375,22 @@ internal object SettlementCommand : SLCommand() {
 			toIndex = min(index * linesPerPage + linesPerPage, sortedSettlements.size)
 		)
 
-		val nameColor = SLTextStyle.GOLD
-		val leaderColor = SLTextStyle.AQUA
-		val membersColor = SLTextStyle.BLUE
-		val activeColor = SLTextStyle.GREEN
-		val semiActiveColor = SLTextStyle.GRAY
-		val inactiveColor = SLTextStyle.RED
-		val nationColor = SLTextStyle.YELLOW
-		val split = "&8|"
+		val nameColor = NamedTextColor.GOLD
+		val leaderColor = NamedTextColor.AQUA
+		val membersColor = NamedTextColor.BLUE
+		val nationColor = YELLOW
 
-		lines += (
-			"${nameColor}Name " +
-				"$split ${leaderColor}Leader " +
-				"$split ${membersColor}Members &2(${activeColor}Active ${semiActiveColor}Semi-Active ${inactiveColor}Inactive&2) " +
-				"$split ${nationColor}Nation"
-			).fromLegacy()
+		val activityBreakdown = template(text("({0} {1} {2})", DARK_GREEN), text("ACTIVE", GREEN), text("ACTIVE", GRAY), text("ACTIVE", RED))
+
+		message.append(template(
+			text("{0} | {1} | {2} {3} | {4}", HEColorScheme.HE_MEDIUM_GRAY),
+			text("Name", nameColor),
+			text("Leader", leaderColor),
+			text("Members", membersColor),
+			activityBreakdown,
+			text("Nation", nationColor),
+			newline()
+		))
 
 		for (settlement in settlementsOnPage) {
 			val data: SettlementCache.SettlementData = SettlementCache[settlement]
@@ -378,50 +410,63 @@ internal object SettlementCommand : SLCommand() {
 				}
 			}
 
-			val line = TextComponent()
-
 			val name = data.name
 			val leaderName = SLPlayer.getName(data.leader)!!
 
-			line.addExtra("    $name ".style(nameColor).cmd("/s info $name").hover("Click for more info"))
-			line.addExtra(leaderName.style(leaderColor))
-			line.addExtra(" ${members.count()}".style(membersColor))
-			line.addExtra(" [".style(SLTextStyle.DARK_GRAY))
-			line.addExtra("$active ".style(activeColor))
-			line.addExtra("$semiActive ".style(semiActiveColor))
-			line.addExtra("$inactive ".style(inactiveColor))
-			line.addExtra("]".style(SLTextStyle.DARK_GRAY))
+			val line = text()
+				.hoverEvent(text("Click for more info"))
+				.clickEvent(ClickEvent.runCommand("/s info $name"))
+				.append(text("    $name ", nameColor))
+				.append(text(leaderName, leaderColor))
+				.append(text(" ${members.count()} ", membersColor))
+				.append(formatActive(active, semiActive, inactive))
+				.append(text(" ${data.nation?.let { getNationName(it) } ?: ""}", nationColor))
+				.append(newline())
+				.build()
 
-			data.nation?.let { nation: Oid<Nation> ->
-				line.addExtra(" ${getNationName(nation)}".style(nationColor))
-			}
-
-			lines += line
+			message.append(line)
 		}
 
-		val pageLine = TextComponent()
+		val pageLine = text()
 
 		if (index > 0) {
-			pageLine.addExtra(darkGreen(" ["))
-			pageLine.addExtra(white("<--").cmd("/settlement top $index").hover("Click to see previous page"))
-			pageLine.addExtra(darkGreen("]"))
+			pageLine.append(ofChildren(
+				text(" [", DARK_GREEN),
+				text("<--", NamedTextColor.WHITE)
+					.clickEvent(ClickEvent.runCommand("/settlement top $index"))
+					.hoverEvent(text("Click to see previous page")),
+				text("]", DARK_GREEN),
+			))
 		}
 
-		pageLine.addExtra(darkAqua(" Page "))
-		pageLine.addExtra(gray("${index + 1}/$pages "))
+		pageLine.append(ofChildren(
+			text(" Page ", NamedTextColor.DARK_AQUA),
+			text("${index + 1}/$pages ", HEColorScheme.HE_MEDIUM_GRAY),
+		))
 
 		if (index < pages - 1) {
-			pageLine.addExtra(darkGreen(" ["))
-			pageLine.addExtra(white("-->").cmd("/settlement top ${index + 2}").hover("Click to see next page"))
-			pageLine.addExtra(darkGreen("]"))
+			pageLine.append(ofChildren(
+				text(" [", DARK_GREEN),
+				text("-->", NamedTextColor.WHITE)
+					.clickEvent(ClickEvent.runCommand("/settlement top ${index + 2}"))
+					.hoverEvent(text("Click to see next page")),
+				text("]", DARK_GREEN),
+			))
 		}
 
-		lines += pageLine
+		message
+			.append(pageLine.build())
+			.append(net.horizonsend.ion.common.utils.text.lineBreak(47))
 
-		lines += lineBreak().fromLegacy()
-
-		lines.forEach(sender::msg)
+		sender.sendMessage(message)
 	}
+
+	fun formatActive(active: Int, semiActive: Int, inactive: Int): Component = template(
+		text("[{0} {1} {2}]", HEColorScheme.HE_MEDIUM_GRAY),
+		text(active, GREEN),
+		text(semiActive, GRAY),
+		text(inactive, RED)
+	)
 
 	@Subcommand("info")
 	@CommandCompletion("@settlements")
@@ -461,6 +506,10 @@ internal object SettlementCommand : SLCommand() {
 				.color(NamedTextColor.AQUA)
 				.decorate(TextDecoration.BOLD)
 		)
+		message.append(newline())
+
+		cached.motd?.let { message.append(text(it, YELLOW)) }
+
 		message.append(newline())
 
 		data.nation?.let { nationId ->
@@ -546,9 +595,9 @@ internal object SettlementCommand : SLCommand() {
 		message.append(leaderText)
 		message.append(newline())
 
-		val activeStyle = NamedTextColor.GREEN
-		val semiActiveStyle = NamedTextColor.GRAY
-		val inactiveStyle = NamedTextColor.RED
+		val activeStyle = GREEN
+		val semiActiveStyle = GRAY
+		val inactiveStyle = RED
 		val members: List<Triple<SLPlayerId, String, Date>> = SLPlayer
 			.findProps(SLPlayer::settlement eq settlementId, SLPlayer::lastKnownName, SLPlayer::lastSeen)
 			.map { Triple(it[SLPlayer::_id], it[SLPlayer::lastKnownName], it[SLPlayer::lastSeen]) }
@@ -584,9 +633,9 @@ internal object SettlementCommand : SLCommand() {
 			.append(text("Members ("))
 			.append(text(members.size).color(NamedTextColor.WHITE))
 			.append(text("): ("))
-			.append(text("$active Active").color(NamedTextColor.GREEN))
-			.append(text(" $semiActive Semi-Active").color(NamedTextColor.GRAY))
-			.append(text(" $inactive Inactive").color(NamedTextColor.RED))
+			.append(text("$active Active").color(GREEN))
+			.append(text(" $semiActive Semi-Active").color(GRAY))
+			.append(text(" $inactive Inactive").color(RED))
 			.append(text(")"))
 
 		message.append(playerCountBuilder.build())
@@ -813,5 +862,29 @@ internal object SettlementCommand : SLCommand() {
 
 		sender.sendRichMessage("<gray> Added <aqua>$nation<gray> to <aqua>$settlementName")
 		Notify.nationCrossServer(nationId, MiniMessage.miniMessage().deserialize("<gray>Your trust was removed from settlement <aqua>$settlementName<gray> by <aqua>${sender.name}"))
+	}
+
+	@Subcommand("motd set")
+	@Description("Set the message of the day of your settlement")
+	@Suppress("unused")
+	fun onSetMOTD(sender: Player, newMotd: String) {
+		val ownerSettlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		Settlement.setMotd(ownerSettlementId, newMotd)
+
+		sender.success("Success: The motd was set.")
+	}
+
+	@Subcommand("motd clear")
+	@Description("Clear the message of the day of your settlement")
+	@Suppress("unused")
+	fun onclearMOTD(sender: Player) {
+		val ownerSettlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, ownerSettlementId, SettlementRole.Permission.MANAGE_ROLES)
+
+		Settlement.setMotd(ownerSettlementId, null)
+
+		sender.success("Success: The motd was cleared.")
 	}
 }
