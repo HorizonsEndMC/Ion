@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.modules.AIRewardsProvider
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getRadialRandomPoint
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
@@ -125,4 +126,37 @@ fun Player.getLocationNear(minDistance: Double, maxDistance: Double): Location {
 	val loc = location.clone()
 
 	return loc.add(x, 0.0, z)
+}
+
+fun findSpawnLocationNearPlayer(
+	configuration: AIShipConfiguration.AISpawnerConfiguration,
+	playerFilter: (Player) -> Boolean = { !it.hasProtection() }
+): Location?  {
+	// Get a random world based on the weight in the config
+	val filteredList = WeightedRandomList<AIShipConfiguration.AIWorldSettings>()
+	val occupiedWorlds = configuration.worldWeightedRandomList.filterTo(filteredList) { isSystemOccupied(it.getWorld()) }
+	val world = (occupiedWorlds.randomOrNull() ?: return null).getWorld()
+
+	val player = world.players.filter(playerFilter).randomOrNull() ?: return null
+
+	var iterations = 0
+
+	val border = world.worldBorder
+
+	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+
+	// max 10 iterations
+	while (iterations <= 15) {
+		iterations++
+
+		val loc = player.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
+
+		if (!border.isInside(loc)) continue
+
+		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
+
+		return loc
+	}
+
+	return null
 }
