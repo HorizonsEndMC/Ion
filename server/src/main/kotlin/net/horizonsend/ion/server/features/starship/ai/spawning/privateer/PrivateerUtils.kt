@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship.ai.spawning.privateer
 
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
-import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.registerFactory
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
@@ -13,8 +12,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseMod
 import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.StandoffPositioningModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.getLocationNear
-import net.horizonsend.ion.server.features.starship.ai.spawning.getNonProtectedPlayer
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Location
@@ -200,30 +198,9 @@ val inflict = AIShipConfiguration.AIStarshipTemplate(
 )
 
 fun findPrivateerSpawnLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location?  {
-	// Get a random world based on the weight in the config
-	val worldConfig = configuration.worldWeightedRandomList.random()
-	val world = worldConfig.getWorld()
+	val nearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
 
-	val player = getNonProtectedPlayer(world) ?: return null
+//	val world: World = nearPlayer.world
 
-	var iterations = 0
-
-	val border = world.worldBorder
-
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
-
-	// max 10 iterations
-	while (iterations <= 15) {
-		iterations++
-
-		val loc = player.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
-
-		if (!border.isInside(loc)) continue
-
-		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
-
-		return loc
-	}
-
-	return null
+	return nearPlayer
 }

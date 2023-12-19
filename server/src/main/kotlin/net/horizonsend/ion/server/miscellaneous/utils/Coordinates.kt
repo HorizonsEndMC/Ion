@@ -34,7 +34,7 @@ fun Location.add(x: Int, y: Int, z: Int): Location = add(x.toDouble(), y.toDoubl
 fun Location.add(trio: Vec3i): Location = add(trio.x.toDouble(), trio.y.toDouble(), trio.z.toDouble())
 fun Location.add(face: BlockFace): Location = add(face.modX, face.modY, face.modZ)
 
-operator fun Location.component1(): World? = this.world
+operator fun Location.component1(): World = this.world
 operator fun Location.component2(): Double = this.x
 operator fun Location.component3(): Double = this.y
 operator fun Location.component4(): Double = this.z
