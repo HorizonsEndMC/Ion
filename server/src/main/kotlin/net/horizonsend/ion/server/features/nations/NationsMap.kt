@@ -1,11 +1,12 @@
 package net.horizonsend.ion.server.features.nations
 
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.get
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
@@ -18,6 +19,7 @@ import org.dynmap.markers.AreaMarker
 import org.dynmap.markers.CircleMarker
 import org.dynmap.markers.Marker
 import org.dynmap.markers.MarkerAPI
+import org.litote.kmongo.eq
 import java.io.Closeable
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -102,13 +104,13 @@ object NationsMap : IonServerComponent(true) {
 			val yPoints = polygon.ypoints ?: error("Null y points for ${territory.name} in ${territory.world}")
 
 			markerSet.createAreaMarker(
-				territory.id.toString(),
-				territory.name,
-				false,
-				world.name,
+				territory.id.toString(), // Id
+				territory.name, // Label
+				true, // Markup label
+				world.name, // World
 				xPoints.map { it.toDouble() }.toDoubleArray(),
 				yPoints.map { it.toDouble() }.toDoubleArray(),
-				false
+				false // Persistent
 			)
 
 			updateTerritory(territory)
@@ -142,12 +144,24 @@ object NationsMap : IonServerComponent(true) {
 
 		val settlement: Settlement? = territory.settlement?.let(Settlement.Companion::findById)
 
-		marker.label = territory.name
+		val nation: Nation? = settlement?.nation?.let(Nation.Companion::findById) ?: territory.nation?.let(Nation.Companion::findById)
 
 		if (settlement != null) {
-			marker.label += " (${settlement.name})"
+			val rgb = nation?.color ?: Color.BLUE.asRGB()
 
-			val rgb: Int = Color.BLUE.asRGB()
+			val hex = "#${Integer.toHexString(rgb)}"
+
+			val members = SLPlayer.findProps(SLPlayer::settlement eq settlement._id, SLPlayer::lastKnownName).map { it[SLPlayer::lastKnownName] }
+
+			marker.setLabel(
+				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
+				"\n<h3 style=\"text-align: center; color: $hex;\">Settlement: ${settlement.name}</h3>" +
+				(if (nation == null) "" else "\n<h3 style=\"text-align: center; color: $hex;\">Nation: ${nation.name}</h3>") +
+				"\n<p style=\"padding-top: 0;\">\"${settlement.motd}\"</p>" +
+				"\n<p style=\"padding-top: 0;\">Leader: ${SLPlayer.getName(settlement.leader)}</p>" +
+				"\n<p style=\"padding-top: 0;\">Members: ${members.joinToString()}</p>",
+				true
+			)
 
 			fillRGB = rgb
 			lineOpacity = 0.5
@@ -158,7 +172,13 @@ object NationsMap : IonServerComponent(true) {
 
 		if (npcOwner != null) {
 			val name = npcOwner.name
-			marker.label += " ($name)"
+
+			if (settlement == null) marker.setLabel(
+				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
+				"\n<h4 style=\"text-align: center;\">NPC Trade Outpost: $name</h4>",
+				true
+			)
+
 			val rgb = npcOwner.color
 			fillOpacity = 0.3
 			fillRGB = rgb
@@ -167,15 +187,20 @@ object NationsMap : IonServerComponent(true) {
 			lineThickness = 5
 		}
 
-		val nation: Nation? = settlement?.nation?.let(Nation.Companion::findById) ?: territory.nation?.let(Nation.Companion::findById)
-
 		if (nation != null) {
 			val rgb = nation.color
 			fillOpacity = 0.2
 			fillRGB = rgb
 			lineOpacity = 0.5
 			lineRGB = rgb
-			marker.label += " (${nation.name})"
+
+			// for nation outposts only
+			if (settlement == null) marker.setLabel(
+				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
+				"\n<h3 style=\"text-align: center;\">Owner: ${nation.name}</h3>" +
+				"\n<p style=\"padding-top: 0;\">${territory.name} is an outpost of the nation ${nation.name}</p>",
+				true
+			)
 		}
 
 		// special colors for settlement cities
@@ -200,7 +225,11 @@ object NationsMap : IonServerComponent(true) {
 		}
 
 		if (settlement == null && nation == null && npcOwner == null) {
-			marker.label += "\nCost: ${territory.cost}C"
+			marker.setLabel(
+				"<h3 style=\"text-align: center; padding-bottom: 0\">${territory.name}</h3>" +
+				"\n<p style=\"padding-top: 0;\">This territory is unclaimed. It can be claimed for: ${territory.cost}C</p>",
+				true
+			)
 		}
 
 		marker.setFillStyle(fillOpacity, fillRGB)
