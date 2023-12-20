@@ -1,7 +1,6 @@
 package net.horizonsend.ion.common.utils.redis.messaging
 
 import net.horizonsend.ion.common.IonComponent
-import net.horizonsend.ion.common.utils.discord.Channel
 import net.horizonsend.ion.common.utils.redis.RedisAction
 import net.horizonsend.ion.common.utils.redis.RedisActions
 import net.kyori.adventure.text.Component
@@ -23,9 +22,4 @@ abstract class Notifications : IonComponent() {
 		RedisActions.register(notifySettlementAction)
 		RedisActions.register(notifyNationAction)
 	}
-
-	data class DiscordMessage(
-		val channel: Channel,
-		val message: Component
-	)
 }
