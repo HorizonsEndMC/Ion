@@ -19,6 +19,9 @@ abstract class Notifications : IonComponent() {
 
 	override fun onEnable() {
 		RedisActions.register(notifyOnlineAction)
+		RedisActions.register(notifyPlayerAction)
+		RedisActions.register(notifySettlementAction)
+		RedisActions.register(notifyNationAction)
 	}
 
 	data class DiscordMessage(
