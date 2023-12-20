@@ -319,7 +319,7 @@ data class BalancingConfiguration(
 			shieldDamageMultiplier = 2,
 			thickness = 0.2,
 			particleThickness = 0.4,
-			explosionPower = 2.5f,
+			explosionPower = 1.875f,
 			volume = 10,
 			pitch = 0.5f,
 			soundName = "entity.firework_rocket.blast_far",
