@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import org.bukkit.Location
 
-class ExplorerSpawner : BasicSpawner(
+class ExplorerSingleSpawner : BasicSpawner(
 	"EXPLORATION_VESSEL",
 	IonServer.aiShipConfiguration.spawners::explorationVessel,
 ) {

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
@@ -16,15 +17,36 @@ import net.horizonsend.ion.server.features.starship.modules.AIRewardsProvider
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getRadialRandomPoint
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.slf4j.Logger
 
+/** Handle any exceptions with spawning */
+fun handleException(logger: Logger, exception: AISpawner.SpawningException) {
+	logger.warn("AI spawning encountered an issue: ${exception.message}, attempting to spawn a ship at ${exception.spawningLocation}")
+
+	val blockKeys = exception.blockLocations
+
+	// Delete a ship that did not detect properly
+	if (blockKeys.isNotEmpty()) {
+		val airQueue = Long2ObjectOpenHashMap<BlockState>(blockKeys.size)
+		val air = Blocks.AIR.defaultBlockState()
+
+		blockKeys.associateWithTo(airQueue) { air }
+
+		BlockPlacement.placeImmediate(exception.world, airQueue)
+	}
+}
 
 fun createAIShipFromTemplate(
+	logger: Logger,
 	template: AIShipConfiguration.AIStarshipTemplate,
 	location: Location,
 	createController: (ActiveControlledStarship) -> Controller,
@@ -38,6 +60,7 @@ fun createAIShipFromTemplate(
 	)
 
 	createFromClipboard(
+		logger,
 		location,
 		schematic,
 		template.type,
@@ -50,6 +73,7 @@ fun createAIShipFromTemplate(
 }
 
 fun createFromClipboard(
+	logger: Logger,
 	location: Location,
 	clipboard: Clipboard,
 	type: StarshipType,
@@ -63,6 +87,7 @@ fun createFromClipboard(
 	placeSchematicEfficiently(clipboard, location.world, vec3i, true) {
 		try {
 			tryPilotWithController(
+				logger,
 				location.world,
 				vec3i,
 				type,
@@ -78,6 +103,7 @@ fun createFromClipboard(
 }
 
 private fun tryPilotWithController(
+	logger: Logger,
 	world: World,
 	origin: Vec3i,
 	type: StarshipType,
@@ -100,8 +126,11 @@ private fun tryPilotWithController(
 				DeactivatedPlayerStarships.updateState(data, state)
 
 				Tasks.sync { PilotedStarships.activateWithoutPilot(debugAudience, data, createController, callback) }
-			} catch (e: StarshipDetection.DetectionFailedException) {
-				throw AISpawner.SpawningException("Detection failed: ${e.message}", world, origin)
+			}
+			catch (e: AISpawner.SpawningException) { handleException(logger, e) }
+			catch (e: Throwable) {
+				logger.error("An error occurred when attempting to pilot starship ${e.message}")
+				e.printStackTrace()
 			}
 		}
 	}

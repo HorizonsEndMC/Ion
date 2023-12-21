@@ -8,7 +8,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.World
 
-class ExplorerConvoySpawner : BasicSpawner(
+class ExplorerMultiSpawner : BasicSpawner(
 	"EXPLORER_CONVOY",
 	IonServer.aiShipConfiguration.spawners::tsaiiRaid,
 ) {

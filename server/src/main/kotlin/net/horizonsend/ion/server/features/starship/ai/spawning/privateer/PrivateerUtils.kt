@@ -17,21 +17,22 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Location
 
+val PRIVATEER_LIGHTER_TEAL = TextColor.fromHexString("#48e596")!!
 val PRIVATEER_LIGHT_TEAL = TextColor.fromHexString("#5DD097")!!
 val PRIVATEER_MEDIUM_TEAL = TextColor.fromHexString("#79B698")!!
 val PRIVATEER_DARK_TEAL = TextColor.fromHexString("#639f77")!!
 
 private val smackTalkList = arrayOf(
-	text(""),
-	text(""),
-	text(""),
-	text(""),
-	text(""),
-	text(""),
-	text("")
+	text("Message 1"),
+	text("Message 2"),
+	text("Message 3"),
+	text("Message 4"),
+	text("Message 5"),
+	text("Message 6"),
+	text("Message 7")
 )
 
-val smackPrefix = text("Receiving transmission from privateer vessel: ", PRIVATEER_LIGHT_TEAL)
+val smackPrefix = text("Receiving transmission from privateer vessel: ", PRIVATEER_LIGHTER_TEAL)
 
 // Privateer controllers passive, only becoming aggressive if fired upon
 val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {
@@ -39,7 +40,7 @@ val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) })
+		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) }.apply { sticky = true })
 		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
@@ -51,12 +52,12 @@ val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {
 }
 
 // Privateer controllers passive, only becoming aggressive if fired upon
-val privateerGunship = registerFactory("PRIVATEER_STARFIGHTER") {
+val privateerGunship = registerFactory("PRIVATEER_GUNSHIP") {
 	setControllerTypeName("Starfighter")
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) })
+		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) }.apply { sticky = true })
 		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
@@ -73,7 +74,7 @@ val privateerCorvette = registerFactory("PRIVATEER_CORVETTE") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) })
+		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) }.apply { sticky = true })
 		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))

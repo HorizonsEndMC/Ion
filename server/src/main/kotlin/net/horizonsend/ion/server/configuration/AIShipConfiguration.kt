@@ -7,16 +7,25 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerConvoySpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpMulti
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingle
-import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateFleetSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.SinglePirateSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerFleetSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerPatrolSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiAttackSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiRaidSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.bulwark
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.contractor
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.dagger
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.furious
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.inflict
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.patroller
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.protector
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.teneta
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.veteran
+import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSingleSpawner
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
@@ -28,23 +37,43 @@ import kotlin.jvm.optionals.getOrNull
 /** Registration and spawning parameters of AI ships **/
 @Serializable
 data class AIShipConfiguration(
-	val templates: MutableList<AIStarshipTemplate> = mutableListOf(AIStarshipTemplate()),
+	val templates: MutableList<AIStarshipTemplate> = mutableListOf(
+		// Privateer Start
+		bulwark,
+		contractor,
+		dagger,
+		patroller,
+		protector,
+		veteran,
+		teneta,
+		furious,
+		inflict,
+		// Privateer End
+		// Pirate Start
+		// Pirate End
+		// Tsaii Start
+		// Tsaii End
+		// Explorer Start
+		// Explorer End
+		// Mining Corp Start
+		// Mining Corp End
+	),
 	val spawners: AISpawners = AISpawners()
 ) {
 	fun getShipTemplate(identifier: String) = templates.first { it.identifier == identifier }
 
 	@Serializable
 	data class AISpawners(
-		val miningCorpSingle: AISpawnerConfiguration = MiningCorpSingle.defaultConfiguration,
-		val miningCorpMulti: AISpawnerConfiguration = MiningCorpMulti.defaultConfiguration,
-		val privateerPatrol: AISpawnerConfiguration = PrivateerPatrolSpawner.defaultConfiguration,
-		val privateerFleet: AISpawnerConfiguration = PrivateerFleetSpawner.defaultConfiguration,
-		val explorationVessel: AISpawnerConfiguration = ExplorerSpawner.defaultConfiguration,
-		val explorationConvoy: AISpawnerConfiguration = ExplorerConvoySpawner.defaultConfiguration,
-		val singlePirate: AISpawnerConfiguration = SinglePirateSpawner.defaultConfiguration,
-		val pirateFleet: AISpawnerConfiguration = PirateFleetSpawner.defaultConfiguration,
-		val tsaiiAttack: AISpawnerConfiguration = TsaiiAttackSpawner.defaultConfiguration,
-		val tsaiiRaid: AISpawnerConfiguration = TsaiiRaidSpawner.defaultConfiguration,
+		val miningCorpSingleSpawner: AISpawnerConfiguration = MiningCorpSingleSpawner.defaultConfiguration,
+		val miningCorpMultiSpawner: AISpawnerConfiguration = MiningCorpMultiSpawner.defaultConfiguration,
+		val privateerMulti: AISpawnerConfiguration = PrivateerMultiSpawner.defaultConfiguration,
+		val privateerSingle: AISpawnerConfiguration = PrivateerSingleSpawner.defaultConfiguration,
+		val explorationVessel: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
+		val explorationConvoy: AISpawnerConfiguration = ExplorerMultiSpawner.defaultConfiguration,
+		val singlePirate: AISpawnerConfiguration = PirateSingleSpawner.defaultConfiguration,
+		val pirateFleet: AISpawnerConfiguration = PirateMultiSpawner.defaultConfiguration,
+		val tsaiiAttack: AISpawnerConfiguration = TsaiiSingleSpawner.defaultConfiguration,
+		val tsaiiRaid: AISpawnerConfiguration = TsaiiMultiSpawner.defaultConfiguration,
 	)
 
 	/**
@@ -70,7 +99,7 @@ data class AIShipConfiguration(
 
 		fun getWorld(world: World) = worldSettings.firstOrNull { it.world == world.name }
 
-		fun getTier(identifier: String) = tiers.first { it.identifier == identifier }
+		fun getTier(identifier: String) = tiers.firstOrNull { it.identifier == identifier } ?: throw NoSuchElementException("Tier $identifier not found!")
 	}
 
 	/**
@@ -111,7 +140,7 @@ data class AIShipConfiguration(
 		val rolls: Int = 1,
 		val tiers: Map<String, Int> = mapOf("BASIC" to 1),
 	) {
-		fun getWorld(): World = Bukkit.getWorld(world)!!
+		fun getWorld(): World = Bukkit.getWorld(world) ?: throw NullPointerException("World $world not found!")
 
 		@Transient
 		val tierWeightedRandomList: WeightedRandomList<String> = WeightedRandomList(tiers)
@@ -131,7 +160,7 @@ data class AIShipConfiguration(
 		val mobs: MutableSet<MobSpawner> = mutableSetOf()
 	) {
 		init {
-			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique!")
+//			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique! $identifier already exists!")
 
 			AISpawningManager.templates[identifier] = this
 		}

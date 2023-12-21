@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.ai.spawning.tsaii
+package net.horizonsend.ion.server.features.starship.ai.spawning.pirate
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
@@ -6,13 +6,14 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.findPr
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import org.bukkit.Location
 
-class TsaiiRaidSpawner : BasicSpawner(
-	"TSAII_FLEET",
-	IonServer.aiShipConfiguration.spawners::tsaiiRaid,
+class PirateSingleSpawner : BasicSpawner(
+	"PIRATE_SINGLE",
+	IonServer.aiShipConfiguration.spawners::singlePirate,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
 	companion object {
-		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration() // TODO
+		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(
+		)
 	}
 }
