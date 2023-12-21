@@ -73,7 +73,7 @@ fun findSpawnPosition(configuration: AIShipConfiguration.AISpawnerConfiguration)
 val ostrich = AIShipConfiguration.AIStarshipTemplate(
 	identifier = "OSTRICH",
 	schematicName = "Ostrich",
-	miniMessageName = "<${MINING_CORP_DARK_ORANGE.asHexString()}>Ostrich",
+	miniMessageName = "<${MINING_CORP_DARK_ORANGE.toString()}>Ostrich",
 	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,

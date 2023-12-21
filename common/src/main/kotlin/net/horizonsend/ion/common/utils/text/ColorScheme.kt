@@ -11,6 +11,8 @@ class HEColorScheme(override val adventure: TextColor): PresetColor {
 		val HE_MEDIUM_GRAY = HEColorScheme(TextColor.fromHexString("#768A8A")!!)
 		val HE_DARK_GRAY = HEColorScheme(TextColor.fromHexString("#414C4C")!!)
 	}
+
+	override fun toString(): String = asHexString()
 }
 
 interface PresetColor : TextColor {
