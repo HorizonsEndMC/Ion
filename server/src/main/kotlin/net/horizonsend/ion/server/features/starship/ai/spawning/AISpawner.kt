@@ -100,6 +100,8 @@ abstract class AISpawner(
 	) : Deferred<ActiveControlledStarship> {
 		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
+		log.info("Attempting to spawn AI starship ${template.identifier}")
+
 		// Use the template to populate as much information as possible
 		createAIShipFromTemplate(log, template, location, controller) {
 			deferred.complete(it)
