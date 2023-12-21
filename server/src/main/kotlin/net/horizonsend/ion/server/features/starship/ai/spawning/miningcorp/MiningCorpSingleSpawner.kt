@@ -17,7 +17,7 @@ class MiningCorpSingleSpawner  : BasicSpawner(
 
 	companion object {
 		val defaultConfiguration = AISpawnerConfiguration(
-			miniMessageSpawnMessage = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {2}, {3}, in {4}",
+			miniMessageSpawnMessage = "<${MINING_CORP_LIGHT_ORANGE}>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {2}, {3}, in {4}",
 			pointChance = 1.0,
 			pointThreshold = 2500,
 			minDistanceFromPlayer = 1000.0,

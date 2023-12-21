@@ -1,9 +1,14 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.privateer
 
 import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.templateMiniMessage
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 
 class PrivateerSingleSpawner : BasicSpawner(
@@ -11,10 +16,45 @@ class PrivateerSingleSpawner : BasicSpawner(
 	IonServer.aiShipConfiguration.spawners::privateerSingle,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+	private fun patrolTriggerMessage(location: Location) = ofChildren(
+		Component.text(location.world.name, HEColorScheme.HE_LIGHT_GRAY),
+		Component.text(" System Defense Forces ", PRIVATEER_LIGHT_TEAL),
+		Component.text("have started a patrol.", HEColorScheme.HE_LIGHT_GRAY)
+	)
+
+	override suspend fun triggerSpawn() {
+		val loc = findSpawnLocation() ?: return
+		val (x, y, z) = Vec3i(loc)
+
+		if (!spawningConditionsMet(loc.world, x, y, z)) return
+
+		val ships = getStarshipTemplates(loc.world)
+
+		Notify.online(patrolTriggerMessage(loc))
+
+		for ((template, pilotName) in ships) {
+			val deferred = spawnAIStarship(template, loc, createController(template, pilotName))
+
+			deferred.invokeOnCompletion {
+				IonServer.server.sendMessage(
+					templateMiniMessage(
+						message = configuration.miniMessageSpawnMessage,
+						paramColor = HEColorScheme.HE_LIGHT_GRAY,
+						useQuotesAroundObjects = false,
+						template.getName(),
+						x,
+						y,
+						z,
+						loc.world.name
+					)
+				)
+			}
+		}
+	}
 
 	companion object {
 		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(
-			miniMessageSpawnMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {2}, {3}, in {4}",
+			miniMessageSpawnMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY.asHexString()}>operation vessel {0} spawned at {1}, {2}, {3}, in {4}",
 			pointChance = 0.5,
 			pointThreshold = 20 * 60 * 15,
 			tiers = listOf(
