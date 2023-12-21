@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.findPr
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import org.bukkit.Location
 
-class MiningCorpSingle  : BasicSpawner(
+class MiningCorpSingleSpawner  : BasicSpawner(
 	"MINING_CORP_TRANSPORT",
-	IonServer.aiShipConfiguration.spawners::miningCorpSingle,
+	IonServer.aiShipConfiguration.spawners::miningCorpSingleSpawner,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 

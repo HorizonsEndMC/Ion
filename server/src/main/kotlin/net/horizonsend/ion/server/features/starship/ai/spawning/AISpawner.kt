@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -14,11 +13,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement.placeImmediate
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
 import org.slf4j.LoggerFactory
@@ -74,7 +70,7 @@ abstract class AISpawner(
 	/** Entry point for the spawning mechanics, spawns the ship and handles any exceptions */
 	fun trigger(scope: CoroutineScope) = scope.launch {
 		try { triggerSpawn() }
-		catch (e: SpawningException) { handleException(e) }
+		catch (e: SpawningException) { handleException(log, e) }
 		catch (e: Throwable) {
 			log.error("An error occurred when attempting to execute spawner: $identifier: ${e.message}")
 			e.printStackTrace()
@@ -105,7 +101,7 @@ abstract class AISpawner(
 		val deferred = CompletableDeferred<ActiveControlledStarship>()
 
 		// Use the template to populate as much information as possible
-		createAIShipFromTemplate(template, location, controller) {
+		createAIShipFromTemplate(log, template, location, controller) {
 			deferred.complete(it)
 			callback(it)
 		}
@@ -122,23 +118,6 @@ abstract class AISpawner(
 		val factory = AIControllerFactories[template.controllerFactory]
 
 		return { starship -> factory(starship, pilotName, template.manualWeaponSets, template.autoWeaponSets) }
-	}
-
-	/** Handle any exceptions with spawning */
-	private fun handleException(exception: SpawningException) {
-		log.warn("AI spawning encountered an issue: ${exception.message}, attempting to spawn a ship at ${exception.spawningLocation}")
-
-		val blockKeys = exception.blockLocations
-
-		// Delete a ship that did not detect properly
-		if (blockKeys.isNotEmpty()) {
-			val airQueue = Long2ObjectOpenHashMap<BlockState>(blockKeys.size)
-			val air = Blocks.AIR.defaultBlockState()
-
-			blockKeys.associateWithTo(airQueue) { air }
-
-			placeImmediate(exception.world, airQueue)
-		}
 	}
 
 	/** An exception relating to a cause of a failed spawn. */

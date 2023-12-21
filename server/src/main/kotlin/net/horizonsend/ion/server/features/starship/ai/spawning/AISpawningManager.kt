@@ -13,10 +13,10 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTe
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerConvoySpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerFleetSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerPatrolSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSingleSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
@@ -66,10 +66,10 @@ object AISpawningManager : IonServerComponent(true) {
 	/** Register all the spawners after the server has been initialized */
 	private fun registerSpawners() {
 		// Register spawners
-		spawners += ExplorerSpawner()
-		spawners += ExplorerConvoySpawner()
-		spawners += PrivateerPatrolSpawner()
-		spawners += PrivateerFleetSpawner()
+		spawners += ExplorerSingleSpawner()
+		spawners += ExplorerMultiSpawner()
+		spawners += PrivateerMultiSpawner()
+		spawners += PrivateerSingleSpawner()
 	}
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */

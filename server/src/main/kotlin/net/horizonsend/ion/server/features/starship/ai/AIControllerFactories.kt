@@ -122,7 +122,7 @@ object AIControllerFactories : IonServerComponent() {
         build()
     }
 
-	operator fun get(identifier: String) = presetControllers[identifier]!!
+	operator fun get(identifier: String) = presetControllers[identifier] ?: throw NoSuchElementException("Controller factory $identifier does not exist!")
 
 	fun registerFactory(
 		identifier: String,
