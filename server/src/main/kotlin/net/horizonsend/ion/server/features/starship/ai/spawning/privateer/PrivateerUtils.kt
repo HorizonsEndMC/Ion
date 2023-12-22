@@ -6,14 +6,16 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.registerFactory
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.ai.module.combat.StarfighterCombatModule
-import net.horizonsend.ion.server.features.starship.ai.module.misc.AggroUponDamageModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.RadiusMessageModule
 import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
 import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseModule
 import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.StandoffPositioningModule
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Location
 
@@ -40,11 +42,18 @@ val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) }.apply { sticky = true })
+		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+
 		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
+
+		builder.addModule("warning", RadiusMessageModule(it, mapOf(
+			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
+			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", RED)
+		)))
 
 		builder
 	}
@@ -57,11 +66,18 @@ val privateerGunship = registerFactory("PRIVATEER_GUNSHIP") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) }.apply { sticky = true })
+		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+
 		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
+
+		builder.addModule("warning", RadiusMessageModule(it, mapOf(
+			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
+			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", RED)
+		)))
 
 		builder
 	}
@@ -74,11 +90,18 @@ val privateerCorvette = registerFactory("PRIVATEER_CORVETTE") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val targeting = builder.addModule("aggro", AggroUponDamageModule(it) { aiController, aggroEngine -> StarfighterCombatModule(aiController, aggroEngine::findTarget) }.apply { sticky = true })
+		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+
 		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
+
+		builder.addModule("warning", RadiusMessageModule(it, mapOf(
+			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
+			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", RED)
+		)))
 
 		builder
 	}
@@ -152,7 +175,7 @@ val protector = AIShipConfiguration.AIStarshipTemplate(
 	identifier = "PROTECTOR",
 	schematicName = "Protector",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Protector",
-	type = StarshipType.AI_STARFIGHTER,
+	type = StarshipType.AI_SHUTTLE, // TODO go back to SF
 	controllerFactory = "PRIVATEER_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
@@ -172,7 +195,7 @@ val teneta = AIShipConfiguration.AIStarshipTemplate(
 	identifier = "TENETA",
 	schematicName = "Teneta",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Teneta",
-	type = StarshipType.AI_STARFIGHTER,
+	type = StarshipType.AI_SHUTTLE, // TODO go back to SF
 	controllerFactory = "PRIVATEER_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
@@ -182,7 +205,7 @@ val furious = AIShipConfiguration.AIStarshipTemplate(
 	identifier = "FURIOUS",
 	schematicName = "Furious",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Furious",
-	type = StarshipType.AI_STARFIGHTER,
+	type = StarshipType.AI_SHUTTLE, // TODO go back to SF
 	controllerFactory = "PRIVATEER_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0

@@ -22,9 +22,8 @@ class AxisStandoffPositioningModule(
 ) : PositioningModule(controller) {
 	val targetStandoffBonus = (target.get() as? StarshipTarget)?.ship?.initialBlockCount?.toDouble()?.pow((1.0 / 3.0)) ?: 0.0
 	val standoffBonus = controller.starship.initialBlockCount.toDouble().pow((1.0 / 3.0))
-	private fun getAxisPoint(): Vector {
-		target ?: return controller.getCenter().toVector()
 
+	private fun getAxisPoint(): Vector {
 		val shipLocation = getCenter().toVector()
 		val targetLocation = getDestination().toVector()
 
