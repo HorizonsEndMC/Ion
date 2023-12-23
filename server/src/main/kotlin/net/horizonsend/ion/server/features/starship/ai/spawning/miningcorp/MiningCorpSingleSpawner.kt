@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration.AISpawnerTie
 import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIWorldSettings
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.findPrivateerSpawnLocation
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 
 class MiningCorpSingleSpawner  : BasicSpawner(
@@ -14,6 +15,8 @@ class MiningCorpSingleSpawner  : BasicSpawner(
 	IonServer.aiShipConfiguration.spawners::miningCorpSingleSpawner,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+
+	override val spawnMessage: Component? = null
 
 	companion object {
 		val defaultConfiguration = AISpawnerConfiguration(

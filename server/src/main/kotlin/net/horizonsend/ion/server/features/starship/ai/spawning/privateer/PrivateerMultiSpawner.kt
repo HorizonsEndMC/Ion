@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.configuration.AIShipConfiguration
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 
@@ -17,6 +18,8 @@ class PrivateerMultiSpawner : BasicSpawner(
 	IonServer.aiShipConfiguration.spawners::privateerMulti,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+
+	override val spawnMessage: Component? = null
 
 	private fun patrolTriggerMessage(location: Location) = ofChildren(
 		text(location.world.name, HE_LIGHT_GRAY),
