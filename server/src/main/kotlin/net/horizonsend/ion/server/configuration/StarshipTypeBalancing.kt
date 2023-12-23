@@ -323,8 +323,8 @@ class StarshipWeapons(
 	),
 
 	val pulseCannon: StarshipWeapon = StarshipWeapon(
-		range = 180.0,
-		speed = 600.0,
+		range = 130.0,
+		speed = 250.0,
 		areaShieldDamageMultiplier = 2.0,
 		starshipShieldDamageMultiplier = 2.0,
 		particleThickness = 0.4,
@@ -332,7 +332,7 @@ class StarshipWeapons(
 		volume = 10,
 		pitch = 0.5f,
 		soundName = "entity.firework_rocket.blast_far",
-		powerUsage = 1984,
+		powerUsage = 2200,
 		length = 2,
 		angleRadians = 180.0,
 		convergeDistance = 16.0,
