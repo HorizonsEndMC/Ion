@@ -83,6 +83,8 @@ object IonServer : JavaPlugin() {
 		for (world in server.worlds) IonWorld.register(world.minecraft)
 
 		for (component in components) { // Components
+			val start = System.nanoTime()
+
 			if (component is IonServerComponent) {
 				if (component.runAfterTick)
 					Tasks.sync { component.onEnable() }
@@ -90,6 +92,10 @@ object IonServer : JavaPlugin() {
 
 				IonServer.server.pluginManager.registerEvents(component, IonServer)
 			} else component.onEnable()
+
+			val end = System.nanoTime()
+
+			slF4JLogger.info("Enabled ${component.javaClass.simpleName} om ${end - start}ns")
 		}
 
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.

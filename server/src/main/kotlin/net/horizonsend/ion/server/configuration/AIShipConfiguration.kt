@@ -9,6 +9,13 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.dessle
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.exotranChetherite
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.exotranRedstone
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.exotranTitanium
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulCheth
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulRedstone
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulTitanium
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateMultiSpawner
@@ -54,6 +61,13 @@ data class AIShipConfiguration(
 		// Tsaii Start
 		// Tsaii End
 		// Explorer Start
+		minhaulCheth,
+		minhaulRedstone,
+		minhaulTitanium,
+//		exotranChetherite,
+//		exotranRedstone,
+//		exotranTitanium,
+//		dessle,
 		// Explorer End
 		// Mining Corp Start
 		// Mining Corp End

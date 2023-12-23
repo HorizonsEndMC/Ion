@@ -14,6 +14,8 @@ class ExplorerMultiSpawner : BasicSpawner(
 ) {
 	override fun findSpawnLocation(): Location? = findExplorerSpawnLocation(configuration)
 
+	override val spawnMessage: Component? = null
+
 	override fun getStarshipTemplates(world: World): Collection<Pair<AIShipConfiguration.AIStarshipTemplate, Component>> {
 		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.
 		val worldConfig = configuration.getWorld(world)!!
