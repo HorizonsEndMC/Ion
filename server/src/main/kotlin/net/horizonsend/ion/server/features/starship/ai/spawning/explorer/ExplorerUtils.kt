@@ -6,10 +6,13 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
+import net.horizonsend.ion.server.features.starship.ai.module.combat.DefensiveCombatModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
 import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseModule
 import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.BasicPositioningModule
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.getLocationNear
 import net.horizonsend.ion.server.features.starship.ai.spawning.getNonProtectedPlayer
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -18,10 +21,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
+import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Location
 import org.bukkit.util.Vector
+import java.util.Optional
 import kotlin.random.Random
 
 val EXPLORER_LIGHT_CYAN = TextColor.fromHexString("#59E3D7")!!
@@ -40,6 +45,35 @@ private val smackTalkList = arrayOf(
 
 val smackPrefix = text("Receiving transmission from civilian vessel: ", EXPLORER_LIGHT_CYAN)
 
+val cruiseEndpoint: (AIController) -> Optional<Location> = lambda@{ controller: AIController ->
+	var iterations = 0
+	val origin = controller.getCenter()
+	val (world, originX, originY, originZ) = origin
+
+	while (iterations < 15) {
+		iterations++
+
+		val endPointX = if (originX > 0) Random.nextDouble(-originX, 0.0) else Random.nextDouble(0.0, -originX)
+		val endPointZ = if (originZ > 0) Random.nextDouble(-originZ, 0.0) else Random.nextDouble(0.0, -originZ)
+		val endPoint = Vector(endPointX, originY, endPointZ)
+
+		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+
+		val minDistance = planets.minOfOrNull {
+			val direction = endPoint.clone().subtract(origin.toVector())
+
+			distanceToVector(origin.toVector(), direction, it)
+		}
+
+		// If there are planets, and the distance to any of them along the path of travel is less than 500, discard
+		if (minDistance != null && minDistance <= 500.0) continue
+
+		return@lambda Optional.of(Location(world, endPointX, originY, endPointZ))
+	}
+
+	Optional.empty()
+}
+
 // Privateer controllers passive, only becoming aggressive if fired upon
 val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 	setControllerTypeName("Starfighter")
@@ -48,11 +82,20 @@ val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 	setModuleBuilder {
 		val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val positioning = builder.addModule("positioning", BasicPositioningModule(it, getLocationSupplier().invoke(it) ?: Location(it.getWorld(), 0.0, 0.0, 0.0)))
+		// Combat handling
+		val targeting = builder.addModule("targeting", HighestDamagerTargetingModule(it))
+		builder.addModule("combat", DefensiveCombatModule(it, targeting::findTarget))
+
+		// Movement handling
+		val positioning = builder.addModule("positioning", BasicPositioningModule(it, getLocationSupplier().invoke(it).orNull() ?: Location(it.getWorld(), 0.0, 0.0, 0.0)))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
-		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination))
+		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+		// Messaging
 		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
-			builder
+
+		builder
 	}
 
 	build()
@@ -101,78 +144,87 @@ val nimble = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val oreTransporter = AIShipConfiguration.AIStarshipTemplate( //TODO(Name)
-	identifier = "ORE_TRANSPORTER",
-	schematicName = "OreTransporter",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Ore <${HE_LIGHT_GRAY.asHexString()}>Transporter",
+val dessle = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "DESSLE",
+	schematicName = "Dessle",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Dessle <${HE_LIGHT_GRAY.asHexString()}>Ore Transporter",
 	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
-	manualWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
-	),
 	autoWeaponSets = mutableSetOf(
 		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "tt1", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
 	)
 )
 
-val cargoCrateTransporter = AIShipConfiguration.AIStarshipTemplate( //TODO(Name)
-	identifier = "CARGO_CRATE_TRANSPORTER",
-	schematicName = "CargoCrateTransporter",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Cargo Crate <${HE_LIGHT_GRAY.asHexString()}>Transporter",
+val minhaulCheth = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "MINHAUL_CHETHERITE",
+	schematicName = "Minhaul_chetherite",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<light_purple>Chetherite<${HE_LIGHT_GRAY.asHexString()}>]",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
 
-val multiCargoCrateTransporter = AIShipConfiguration.AIStarshipTemplate( //TODO(Name)
-	identifier = "MULTI_CARGO_CRATE_TRANSPORTER",
-	schematicName = "MultiCargoCrateTransporter",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Multi Cargo Crate <${HE_LIGHT_GRAY.asHexString()}>Transporter",
+val minhaulRedstone = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "MINHAUL_REDSTONE",
+	schematicName = "Minhaul_redstone",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<red>Redstone<${HE_LIGHT_GRAY.asHexString()}>]",
+	type = StarshipType.AI_SHUTTLE,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val minhaulTitanium = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "MINHAUL_TITANIUM",
+	schematicName = "Minhaul_titanium",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]",
+	type = StarshipType.AI_SHUTTLE,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0
+)
+
+val exotranTitanium = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "EXOTRAN_TITANIUM",
+	schematicName = "Exotran_titanium",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]Transporter",
 	type = StarshipType.AI_TRANSPORT,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
-	manualWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
-	),
 	autoWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "tt1", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
 	)
 )
 
-val cruiseEndpoint: (AIController) -> Location? = lambda@{ controller: AIController ->
-	var iterations = 0
-	val origin = controller.getCenter()
-	val (world, originX, originY, originZ) = origin
+val exotranChetherite = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "EXOTRAN_CHETHERITE",
+	schematicName = "Exotran_chetherite",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<light_purple>Chetherite<${HE_LIGHT_GRAY.asHexString()}>]",
+	type = StarshipType.AI_TRANSPORT,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0,
+	autoWeaponSets = mutableSetOf(
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
+	)
+)
 
-	while (iterations < 15) {
-		iterations++
-
-		val endPointX = if (originX > 0) Random.nextDouble(-originX, 0.0) else Random.nextDouble(0.0, -originX)
-		val endPointZ = if (originZ > 0) Random.nextDouble(-originZ, 0.0) else Random.nextDouble(0.0, -originZ)
-		val endPoint = Vector(endPointX, originY, endPointZ)
-
-		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
-
-		val minDistance = planets.minOfOrNull {
-			val direction = endPoint.clone().subtract(origin.toVector())
-
-			distanceToVector(origin.toVector(), direction, it)
-		}
-
-		// If there are planets, and the distance to any of them along the path of travel is less than 500, discard
-		if (minDistance != null && minDistance <= 500.0) continue
-
-		return@lambda Location(world, endPointX, originY, endPointZ)
-	}
-
-	null
-}
+val exotranRedstone = AIShipConfiguration.AIStarshipTemplate(
+	identifier = "EXOTRAN_REDSTONE",
+	schematicName = "Exotran_redstone",
+	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<red>Redstone<${HE_LIGHT_GRAY.asHexString()}>]",
+	type = StarshipType.AI_TRANSPORT,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0,
+	autoWeaponSets = mutableSetOf(
+		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
+	)
+)
 
 fun findExplorerSpawnLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location? {
 	// Get a random world based on the weight in the config
