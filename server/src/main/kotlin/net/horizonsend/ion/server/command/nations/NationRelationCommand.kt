@@ -3,10 +3,16 @@ package net.horizonsend.ion.server.command.nations
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -58,13 +64,23 @@ internal object NationRelationCommand : SLCommand() {
 		val actual = NationRelation.changeRelationWish(senderNation, otherNation, wish)
 
 		Bukkit.getOnlinePlayers().forEach { player ->
-			player.sendRichMessage(
-				"<yellow>${sender.name} of ${getNationName(senderNation)} " +
-					"has made the relation wish <reset>${wish.coloredName}<yellow> " +
-					"with the nation ${getNationName(otherNation)}. " +
-					"Their wish is <reset>${otherWish.coloredName}<yellow>, " +
-					"so their relation is <reset>${actual.coloredName}<yellow>!"
+			val message = template(
+				text("{0} of {1} has made the relation wish {2} with the nation {3}. Their wish is {4}, so their relation is {5}", YELLOW),
+				paramColor = YELLOW,
+				useQuotesAroundObjects = false,
+				sender.name,
+				wish.component,
+				getNationName(otherNation),
+				otherWish.component,
+				actual.component
 			)
+
+			player.sendMessage(message)
+
+			ServerDiscordMessaging.globalEmbed(Embed(
+				description = message.plainText(),
+				color = wish.color.value()
+			))
 		}
 	}
 
@@ -77,8 +93,8 @@ internal object NationRelationCommand : SLCommand() {
 			val otherName = getNationName(other)
 			val otherWish = NationRelation.getRelationWish(other, nation)
 			sender.sendRichMessage(
-				"<yellow>$otherName<dark_gray>: ${relation.actual.coloredName} " +
-					"<dark_gray>(<gray>Your wish: ${relation.wish.coloredName}<gray>, their wish: ${otherWish.coloredName}<dark_gray>)"
+				"<yellow>$otherName<dark_gray>: ${relation.actual.miniMessage} " +
+					"<dark_gray>(<gray>Your wish: ${relation.wish.miniMessage}<gray>, their wish: ${otherWish.miniMessage}<dark_gray>)"
 			)
 		}
 	}
