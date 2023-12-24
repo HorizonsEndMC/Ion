@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.trx
-import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
@@ -83,7 +83,7 @@ data class NationRelation(
 			else -> other
 		}
 
-		val coloredName = "<$textStyle>$name</$textStyle>"
-		val component = Component.text(name, color)
+		val miniMessage = "<$textStyle>$name</$textStyle>"
+		val component = text(name, color)
 	}
 }
