@@ -19,6 +19,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
@@ -29,6 +30,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -160,12 +162,19 @@ internal object NationCommand : SLCommand() {
 
 		sender.rewardAchievement(Achievement.CREATE_NATION)
 
-		Notify.chatAndEvents(nationImportantMessageFormat(
+		Notify.chatAndGlobal(nationImportantMessageFormat(
 			"{0}, leader of the settlement {1}, founded the nation {2}!",
 			sender.name,
 			getSettlementName(settlement),
 			name
 		))
+
+		val embed = Embed(
+			title = "${sender.name}, leader of the settlement ${getSettlementName(settlement)}, founded the nation $name!",
+			color = color.asRGB(),
+		)
+
+		ServerDiscordMessaging.eventsEmbed(embed)
 	}
 
 	@Suppress("unused")
