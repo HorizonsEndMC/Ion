@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.customitems.CustomItems.ALUMINUM_INGO
 import net.horizonsend.ion.server.features.customitems.CustomItems.CHETHERITE
 import net.horizonsend.ion.server.features.customitems.CustomItems.TITANIUM_INGOT
 import net.horizonsend.ion.server.features.customitems.CustomItems.URANIUM
-import net.horizonsend.ion.server.features.starship.controllers.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectEvent
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.Bukkit.getPlayer
