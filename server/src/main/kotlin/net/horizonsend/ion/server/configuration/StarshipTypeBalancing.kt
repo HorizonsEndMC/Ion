@@ -57,6 +57,29 @@ data class StarshipTypeBalancing(
 		maxSneakFlyAccel = 2,
 		interdictionRange = 1200,
 		hyperspaceRangeMultiplier = 1.6
+		weapons = StarshipWeapons(
+			lightTurret = StarshipWeapons.StarshipWeapon (
+				range = 200.0,
+				speed = 250.0,
+				areaShieldDamageMultiplier = 2.0,
+				starshipShieldDamageMultiplier = 2.0,
+				particleThickness = 0.3,
+				explosionPower = 4.0f,
+				volume = 10,
+				pitch = 2.0f,
+				soundName = "starship.weapon.turbolaser.light.shoot",
+				powerUsage = 4500,
+				length = 0,
+				angleRadians = 0.0,
+				convergeDistance = 0.0,
+				extraDistance = 0,
+				fireCooldownMillis = 250,
+				aimDistance = 0,
+				inaccuracyRadians = 2.0,
+				applyCooldownToAll = true,
+				maxBlockCount = 12000
+			)
+		)
 	),
 	val corvette: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 6,
@@ -105,8 +128,8 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false
-	),
-	),
+			),
+		),
 	),
 	val frigate: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 6,
@@ -324,15 +347,15 @@ class StarshipWeapons(
 
 	val pulseCannon: StarshipWeapon = StarshipWeapon(
 		range = 180.0,
-		speed = 600.0,
+		speed = 350.0,
 		areaShieldDamageMultiplier = 2.0,
 		starshipShieldDamageMultiplier = 2.0,
-		particleThickness = 0.4,
+		particleThickness = 0.6,
 		explosionPower = 1.875f,
 		volume = 10,
 		pitch = 0.5f,
 		soundName = "entity.firework_rocket.blast_far",
-		powerUsage = 1984,
+		powerUsage = 2400,
 		length = 2,
 		angleRadians = 180.0,
 		convergeDistance = 16.0,
