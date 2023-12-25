@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
-import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.Cryopod
@@ -59,7 +58,6 @@ fun Blueprint.canAccess(player: Player): Boolean {
 	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
 }
 
-@Serializable
 class Vec3i: DBVec3i {
 	constructor(a: DBVec3i) : super(a.x, a.y, a.z)
 	constructor(x: Int, y: Int, z: Int) : super(x, y, z)
