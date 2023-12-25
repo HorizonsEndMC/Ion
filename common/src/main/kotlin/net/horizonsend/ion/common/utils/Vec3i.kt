@@ -1,8 +1,5 @@
 package net.horizonsend.ion.common.utils
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 open class DBVec3i(val x: Int, val y: Int, val z: Int) {
 	operator fun component1() = x
 	operator fun component2() = y
