@@ -46,7 +46,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Registration and spawning parameters of AI ships **/
 @Serializable
-data class AIShipConfiguration(
+data class AISpawningConfiguration(
 	val templates: MutableList<AIStarshipTemplate> = mutableListOf(
 		// Privateer Start
 		bulwark,
@@ -84,16 +84,16 @@ data class AIShipConfiguration(
 
 	@Serializable
 	data class AISpawners(
-		val miningCorpSingleSpawner: AISpawnerConfiguration = MiningCorpSingleSpawner.defaultConfiguration,
 		val miningCorpMultiSpawner: AISpawnerConfiguration = MiningCorpMultiSpawner.defaultConfiguration,
+		val miningCorpSingleSpawner: AISpawnerConfiguration = MiningCorpSingleSpawner.defaultConfiguration,
 		val privateerMulti: AISpawnerConfiguration = PrivateerMultiSpawner.defaultConfiguration,
 		val privateerSingle: AISpawnerConfiguration = PrivateerSingleSpawner.defaultConfiguration,
-		val explorationVessel: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
-		val explorationConvoy: AISpawnerConfiguration = ExplorerMultiSpawner.defaultConfiguration,
-		val singlePirate: AISpawnerConfiguration = PirateSingleSpawner.defaultConfiguration,
-		val pirateFleet: AISpawnerConfiguration = PirateMultiSpawner.defaultConfiguration,
-		val tsaiiAttack: AISpawnerConfiguration = TsaiiSingleSpawner.defaultConfiguration,
-		val tsaiiRaid: AISpawnerConfiguration = TsaiiMultiSpawner.defaultConfiguration,
+		val explorerMulti: AISpawnerConfiguration = ExplorerMultiSpawner.defaultConfiguration,
+		val explorerSingle: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
+		val pirateMulti: AISpawnerConfiguration = PirateMultiSpawner.defaultConfiguration,
+		val pirateSingle: AISpawnerConfiguration = PirateSingleSpawner.defaultConfiguration,
+		val tsaiiMulti: AISpawnerConfiguration = TsaiiMultiSpawner.defaultConfiguration,
+		val tsaiiSingle: AISpawnerConfiguration = TsaiiSingleSpawner.defaultConfiguration,
 	)
 
 	/**

@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp
 
 import net.horizonsend.ion.common.utils.text.HEColorScheme
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.AIShipConfiguration.AISpawnerConfiguration
-import net.horizonsend.ion.server.configuration.AIShipConfiguration.AISpawnerTier
-import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIWorldSettings
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AISpawnerConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AISpawnerTier
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIWorldSettings
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.findPrivateerSpawnLocation
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.kyori.adventure.text.Component
@@ -12,7 +12,7 @@ import org.bukkit.Location
 
 class MiningCorpSingleSpawner  : BasicSpawner(
 	"MINING_CORP_TRANSPORT",
-	IonServer.aiShipConfiguration.spawners::miningCorpSingleSpawner,
+	IonServer.aiSpawningConfiguration.spawners::miningCorpSingleSpawner,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 

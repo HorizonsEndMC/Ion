@@ -56,9 +56,9 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 2,
 		interdictionRange = 1200,
-		hyperspaceRangeMultiplier = 1.6
+		hyperspaceRangeMultiplier = 1.6,
 		weapons = StarshipWeapons(
-			lightTurret = StarshipWeapons.StarshipWeapon (
+			lightTurret = StarshipWeapons.StarshipWeapon(
 				range = 200.0,
 				speed = 250.0,
 				areaShieldDamageMultiplier = 2.0,
@@ -87,7 +87,7 @@ data class StarshipTypeBalancing(
 		interdictionRange = 1800,
 		hyperspaceRangeMultiplier = 1.7,
 		weapons = StarshipWeapons(
-			lightTurret = StarshipWeapons.StarshipWeapon (
+			lightTurret = StarshipWeapons.StarshipWeapon(
 				range = 200.0,
 				speed = 250.0,
 				areaShieldDamageMultiplier = 2.0,
@@ -107,8 +107,8 @@ data class StarshipTypeBalancing(
 				inaccuracyRadians = 2.0,
 				applyCooldownToAll = true,
 				maxBlockCount = 12000
-				),
-			triTurret = StarshipWeapons.StarshipWeapon (
+			),
+			triTurret = StarshipWeapons.StarshipWeapon(
 				range = 500.0,
 				speed = 125.0,
 				areaShieldDamageMultiplier = 3.0,
@@ -128,8 +128,8 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false
-			),
-		),
+			)
+		)
 	),
 	val frigate: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 6,

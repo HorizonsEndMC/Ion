@@ -3,14 +3,14 @@ package net.horizonsend.ion.server.features.starship.ai.spawning.privateer
 import net.horizonsend.ion.common.utils.text.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 
 class PrivateerSingleSpawner : BasicSpawner(
 	"PRIVATEER_SINGLE",
-	IonServer.aiShipConfiguration.spawners::privateerSingle,
+	IonServer.aiSpawningConfiguration.spawners::privateerSingle,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
@@ -21,12 +21,12 @@ class PrivateerSingleSpawner : BasicSpawner(
 	)
 
 	companion object {
-		val defaultConfiguration = AIShipConfiguration.AISpawnerConfiguration(
+		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
 			miniMessageSpawnMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY.asHexString()}>operation vessel {0} spawned at {1}, {2}, {3}, in {4}",
 			pointChance = 0.5,
 			pointThreshold = 20 * 60 * 15,
 			tiers = listOf(
-				AIShipConfiguration.AISpawnerTier(
+				AISpawningConfiguration.AISpawnerTier(
 					identifier = "EASY",
 					nameList = mapOf(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Rookie" to 5,
@@ -39,7 +39,7 @@ class PrivateerSingleSpawner : BasicSpawner(
 						inflict.identifier to 2
 					)
 				),
-				AIShipConfiguration.AISpawnerTier(
+				AISpawningConfiguration.AISpawnerTier(
 					identifier = "NORMAL",
 					nameList = mapOf(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Rookie" to 2,
@@ -53,7 +53,7 @@ class PrivateerSingleSpawner : BasicSpawner(
 						patroller.identifier to 1
 					)
 				),
-				AIShipConfiguration.AISpawnerTier(
+				AISpawningConfiguration.AISpawnerTier(
 					identifier = "MODERATE",
 					nameList = mapOf(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Pilot" to 5,
@@ -66,7 +66,7 @@ class PrivateerSingleSpawner : BasicSpawner(
 						patroller.identifier to 2
 					)
 				),
-				AIShipConfiguration.AISpawnerTier(
+				AISpawningConfiguration.AISpawnerTier(
 					identifier = "ADVANCED",
 					nameList = mapOf(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Veteran" to 5,
@@ -80,7 +80,7 @@ class PrivateerSingleSpawner : BasicSpawner(
 						patroller.identifier to 2
 					)
 				),
-				AIShipConfiguration.AISpawnerTier(
+				AISpawningConfiguration.AISpawnerTier(
 					identifier = "EXPERT",
 					nameList = mapOf(
 						"<${PRIVATEER_MEDIUM_TEAL}>Expert Privateer <${PRIVATEER_LIGHT_TEAL}>Ace" to 5,
@@ -94,37 +94,37 @@ class PrivateerSingleSpawner : BasicSpawner(
 				)
 			),
 			worldSettings = listOf(
-				AIShipConfiguration.AIWorldSettings(world = "Asteri", rolls = 7, tiers = mapOf(
+				AISpawningConfiguration.AIWorldSettings(world = "Asteri", rolls = 7, tiers = mapOf(
 					"EASY" to 2,
 					"NORMAL" to 2,
 					"MODERATE" to 2
 				)),
-				AIShipConfiguration.AIWorldSettings(world = "Sirius", rolls = 10, tiers = mapOf(
+				AISpawningConfiguration.AIWorldSettings(world = "Sirius", rolls = 10, tiers = mapOf(
 					"EASY" to 2,
 					"NORMAL" to 2,
 					"MODERATE" to 2
 				)),
-				AIShipConfiguration.AIWorldSettings(world = "Regulus", rolls = 15, tiers = mapOf(
+				AISpawningConfiguration.AIWorldSettings(world = "Regulus", rolls = 15, tiers = mapOf(
 					"NORMAL" to 2,
 					"MODERATE" to 2,
 					"ADVANCED" to 2
 				)),
-				AIShipConfiguration.AIWorldSettings(world = "Ilios", rolls = 5, tiers = mapOf(
+				AISpawningConfiguration.AIWorldSettings(world = "Ilios", rolls = 5, tiers = mapOf(
 					"NORMAL" to 2,
 					"MODERATE" to 2,
 					"ADVANCED" to 2
 				)),
-				AIShipConfiguration.AIWorldSettings(world = "Horizon", rolls = 5, tiers = mapOf(
+				AISpawningConfiguration.AIWorldSettings(world = "Horizon", rolls = 5, tiers = mapOf(
 					"MODERATE" to 4,
 					"ADVANCED" to 4,
 					"EXPERT" to 2
 				)),
-				AIShipConfiguration.AIWorldSettings(world = "Trench", rolls = 2, tiers = mapOf(
+				AISpawningConfiguration.AIWorldSettings(world = "Trench", rolls = 2, tiers = mapOf(
 					"MODERATE" to 2,
 					"ADVANCED" to 2,
 					"EXPERT" to 2
 				)),
-				AIShipConfiguration.AIWorldSettings(world = "AU-0821", rolls = 2, tiers = mapOf(
+				AISpawningConfiguration.AIWorldSettings(world = "AU-0821", rolls = 2, tiers = mapOf(
 					"MODERATE" to 2,
 					"ADVANCED" to 4,
 					"EXPERT" to 4
