@@ -36,7 +36,6 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.teneta
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.veteran
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSingleSpawner
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
 import org.bukkit.Bukkit
@@ -198,7 +197,9 @@ data class AISpawningConfiguration(
 
 		@Serializable
 		data class MobSpawner(
-			val entityLocations: Set<Vec3i>,
+			val offsetX: Int,
+			val offsetY: Int,
+			val offsetZ: Int,
 			val entity: ServerConfiguration.PlanetSpawnConfig.Mob
 		)
 	}
