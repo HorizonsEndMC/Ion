@@ -78,6 +78,27 @@ data class StarshipTypeBalancing(
 				inaccuracyRadians = 2.0,
 				applyCooldownToAll = true,
 				maxBlockCount = 12000
+			),
+			pulseCannon = StarshipWeapons.StarshipWeapon(
+				range = 180.0,
+				speed = 400.0,
+				areaShieldDamageMultiplier = 2.0,
+				starshipShieldDamageMultiplier = 2.0,
+				particleThickness = 0.6,
+				explosionPower = 1.6875f,
+				volume = 10,
+				pitch = 0.5f,
+				soundName = "entity.firework_rocket.blast_far",
+				powerUsage = 2400,
+				length = 2,
+				angleRadians = 180.0,
+				convergeDistance = 16.0,
+				extraDistance = 2,
+				fireCooldownMillis = 250,
+				aimDistance = 0,
+				applyCooldownToAll = true,
+				minBlockCount = 1000,
+				maxBlockCount = 4000
 			)
 		)
 	),
@@ -124,7 +145,7 @@ data class StarshipTypeBalancing(
 				convergeDistance = 0.0,
 				extraDistance = 0,
 				fireCooldownMillis = 10,
-				boostChargeSeconds = 5,
+				boostChargeSeconds = 7,
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false
@@ -347,10 +368,10 @@ class StarshipWeapons(
 
 	val pulseCannon: StarshipWeapon = StarshipWeapon(
 		range = 180.0,
-		speed = 350.0,
+		speed = 400.0,
 		areaShieldDamageMultiplier = 2.0,
 		starshipShieldDamageMultiplier = 2.0,
-		particleThickness = 0.6,
+		particleThickness = 0.4,
 		explosionPower = 1.875f,
 		volume = 10,
 		pitch = 0.5f,
