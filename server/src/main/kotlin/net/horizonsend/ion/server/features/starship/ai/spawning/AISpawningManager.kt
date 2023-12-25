@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -28,7 +28,7 @@ object AISpawningManager : IonServerComponent(true) {
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	// General AI configuration
-	val config = IonServer.aiShipConfiguration
+	val config = IonServer.aiSpawningConfiguration
 
 	/**
 	 * For variety, the spawners are defined in the code, but they get their ship configuration and spawn rates, etc. from configuration files.

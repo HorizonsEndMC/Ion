@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.GassesConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -48,7 +48,7 @@ object IonServer : JavaPlugin() {
 	var configuration: ServerConfiguration = Configuration.load(configurationFolder, "server.json")
 	var gassesConfiguration: GassesConfiguration = Configuration.load(configurationFolder, "gasses.json")
 	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
-	var aiShipConfiguration: AIShipConfiguration = Configuration.load(configurationFolder, "aiships.json")
+	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
 	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
 
 	override fun onEnable(): Unit =
@@ -83,7 +83,7 @@ object IonServer : JavaPlugin() {
 		for (world in server.worlds) IonWorld.register(world.minecraft)
 
 		for (component in components) { // Components
-			val start = System.nanoTime()
+			val start = System.currentTimeMillis()
 
 			if (component is IonServerComponent) {
 				if (component.runAfterTick)
@@ -93,9 +93,9 @@ object IonServer : JavaPlugin() {
 				IonServer.server.pluginManager.registerEvents(component, IonServer)
 			} else component.onEnable()
 
-			val end = System.nanoTime()
+			val end = System.currentTimeMillis()
 
-			slF4JLogger.info("Enabled ${component.javaClass.simpleName} om ${end - start}ns")
+			slF4JLogger.info("Enabled ${component.javaClass.simpleName} in ${end - start}ms")
 		}
 
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp
 
 import net.horizonsend.ion.common.utils.text.HEColorScheme
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.generation.SpaceGenerationManager
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -58,7 +58,7 @@ fun ServerConfiguration.AsteroidConfig.AsteroidFeature.randomPosition(): Vector 
 	)
 }
 
-fun findSpawnPosition(configuration: AIShipConfiguration.AISpawnerConfiguration): Location? {
+fun findSpawnPosition(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location? {
 	val locationNearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
 
 	val (world, x, y, z) = locationNearPlayer
@@ -70,7 +70,7 @@ fun findSpawnPosition(configuration: AIShipConfiguration.AISpawnerConfiguration)
 	return locationNearPlayer
 }
 
-val ostrich = AIShipConfiguration.AIStarshipTemplate(
+val ostrich = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "OSTRICH",
 	schematicName = "Ostrich",
 	miniMessageName = "<${MINING_CORP_DARK_ORANGE.toString()}>Ostrich",
@@ -80,7 +80,7 @@ val ostrich = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val woodpecker = AIShipConfiguration.AIStarshipTemplate(
+val woodpecker = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "WOODPECKER",
 	schematicName = "Woodpecker",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Woodpecker",
@@ -90,7 +90,7 @@ val woodpecker = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val beaver = AIShipConfiguration.AIStarshipTemplate(
+val beaver = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BEAVER",
 	schematicName = "Beaver",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Beaver",
@@ -100,7 +100,7 @@ val beaver = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val badger = AIShipConfiguration.AIStarshipTemplate(
+val badger = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BADGER",
 	schematicName = "Badger",
 	miniMessageName = "<${MINING_CORP_DARK_ORANGE.asHexString()}>Badger",
@@ -110,7 +110,7 @@ val badger = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val typeV11 = AIShipConfiguration.AIStarshipTemplate(
+val typeV11 = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TYPE_V-11",
 	schematicName = "typeV11",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Type <${HEColorScheme.HE_LIGHT_GRAY.asHexString()}>V-11",
@@ -120,7 +120,7 @@ val typeV11 = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val typeA21b = AIShipConfiguration.AIStarshipTemplate(
+val typeA21b = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TYPE_A-21B",
 	schematicName = "typeA21b",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Type <${HEColorScheme.HE_LIGHT_GRAY.asHexString()}>A-21b",
@@ -130,7 +130,7 @@ val typeA21b = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val typeI41 = AIShipConfiguration.AIStarshipTemplate(
+val typeI41 = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TYPE_I-41",
 	schematicName = "typeI41",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Type <${HEColorScheme.HE_LIGHT_GRAY.asHexString()}>I-41",

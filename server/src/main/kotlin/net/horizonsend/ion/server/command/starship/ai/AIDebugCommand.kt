@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
@@ -73,5 +73,5 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Serializable
-	data class WeaponSetsCollection(val sets: MutableSet<AIShipConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf())
+	data class WeaponSetsCollection(val sets: MutableSet<AISpawningConfiguration.AIStarshipTemplate.WeaponSet> = mutableSetOf())
 }

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.tsaii
 
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.kyori.adventure.text.format.TextColor
@@ -13,7 +13,7 @@ val tsaiiCorvette: AIControllerFactory = TODO()
 val tsaiiGunship: AIControllerFactory = TODO()
 val tsaiiStarfighter: AIControllerFactory = TODO()
 
-val bastion = AIShipConfiguration.AIStarshipTemplate(
+val bastion = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BASTION",
 	schematicName = "Bastion",
 	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Bastion",
@@ -23,7 +23,7 @@ val bastion = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val reaver = AIShipConfiguration.AIStarshipTemplate(
+val reaver = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "REAVER",
 	schematicName = "Reaver",
 	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Reaver",
@@ -33,7 +33,7 @@ val reaver = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val raider = AIShipConfiguration.AIStarshipTemplate(
+val raider = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "RAIDER",
 	schematicName = "Raider",
 	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Raider",
@@ -43,7 +43,7 @@ val raider = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val scythe = AIShipConfiguration.AIStarshipTemplate(
+val scythe = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "SCYTHE",
 	schematicName = "Scythe",
 	miniMessageName = "<${TSAII_LIGHT_ORANGE.asHexString()}>Scythe",
@@ -53,7 +53,7 @@ val scythe = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val swarmer = AIShipConfiguration.AIStarshipTemplate(
+val swarmer = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "SWARMER",
 	schematicName = "Swarmer",
 	miniMessageName = "<${TSAII_LIGHT_ORANGE.asHexString()}>Swarmer",

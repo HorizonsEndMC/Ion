@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.pirate
 
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.kyori.adventure.text.format.TextColor
 
@@ -8,7 +8,7 @@ val PIRATE_LIGHT_RED = TextColor.fromHexString("#A06363")!!
 val PIRATE_SATURATED_RED = TextColor.fromHexString("#C63F3F")!!
 val PIRATE_DARK_RED = TextColor.fromHexString("#732525")!!
 
-val iskat = AIShipConfiguration.AIStarshipTemplate(
+val iskat = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "ISKAT",
 	schematicName = "Iskat",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Iskat",
@@ -18,7 +18,7 @@ val iskat = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val voss = AIShipConfiguration.AIStarshipTemplate(
+val voss = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "VOSS",
 	schematicName = "Voss",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Voss",
@@ -28,7 +28,7 @@ val voss = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val hector = AIShipConfiguration.AIStarshipTemplate(
+val hector = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "HECTOR",
 	schematicName = "Hector",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Hector",
@@ -38,7 +38,7 @@ val hector = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val hiro = AIShipConfiguration.AIStarshipTemplate(
+val hiro = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "HIRO",
 	schematicName = "Hiro",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Hiro",
@@ -48,7 +48,7 @@ val hiro = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val wasp = AIShipConfiguration.AIStarshipTemplate(
+val wasp = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "WASP",
 	schematicName = "Wasp",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Wasp",
@@ -58,7 +58,7 @@ val wasp = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val frenz = AIShipConfiguration.AIStarshipTemplate(
+val frenz = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "FRENZ",
 	schematicName = "Frenz",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Frenz",
@@ -68,7 +68,7 @@ val frenz = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val tempest = AIShipConfiguration.AIStarshipTemplate(
+val tempest = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TEMPEST",
 	schematicName = "Tempest",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Tempest",
@@ -78,7 +78,7 @@ val tempest = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val velasco = AIShipConfiguration.AIStarshipTemplate(
+val velasco = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "VELASCO",
 	schematicName = "Velasco",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Velasco",
@@ -88,7 +88,7 @@ val velasco = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val anaan = AIShipConfiguration.AIStarshipTemplate(
+val anaan = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "ANAAN",
 	schematicName = "Anaan",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Anaan",
@@ -98,7 +98,7 @@ val anaan = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val vendetta = AIShipConfiguration.AIStarshipTemplate(
+val vendetta = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "VENDETTA",
 	schematicName = "Vendetta",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Vendetta",
@@ -108,7 +108,7 @@ val vendetta = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val cormorant = AIShipConfiguration.AIStarshipTemplate(
+val cormorant = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "CORMORANT",
 	schematicName = "Cormorant",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Cormorant",
@@ -118,7 +118,7 @@ val cormorant = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val mantis = AIShipConfiguration.AIStarshipTemplate(
+val mantis = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "MANTIS",
 	schematicName = "Mantis",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Mantis",
@@ -128,7 +128,7 @@ val mantis = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val hernstein = AIShipConfiguration.AIStarshipTemplate(
+val hernstein = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "HERNSTEIN",
 	schematicName = "Hernstein",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein",
@@ -138,7 +138,7 @@ val hernstein = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val fyr = AIShipConfiguration.AIStarshipTemplate(
+val fyr = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "FYR",
 	schematicName = "Fyr",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Fyr",
@@ -148,7 +148,7 @@ val fyr = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val bloodStar = AIShipConfiguration.AIStarshipTemplate(
+val bloodStar = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BLOODSTAR",
 	schematicName = "Fyr",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Bloodstar",

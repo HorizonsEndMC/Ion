@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.explorer
 
 import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_GRAY
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseMod
 import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.BasicPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.getLocationNear
 import net.horizonsend.ion.server.features.starship.ai.spawning.getNonProtectedPlayer
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -89,7 +91,7 @@ val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 		// Movement handling
 		val positioning = builder.addModule("positioning", BasicPositioningModule(it, getLocationSupplier().invoke(it).orNull() ?: Location(it.getWorld(), 0.0, 0.0, 0.0)))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
-		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination))
+		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting))
 		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 		// Messaging
@@ -101,137 +103,148 @@ val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 	build()
 }
 
-val wayfinder = AIShipConfiguration.AIStarshipTemplate(
+val wayfinder = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "WAYFINDER",
 	schematicName = "Wayfinder",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Wayfinder",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Wayfinder",
 	type = StarshipType.AI_TRANSPORT,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
 	manualWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
 	),
 	autoWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "tt1", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "tt1", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
 	)
 )
 
-val sriker = AIShipConfiguration.AIStarshipTemplate(
-	identifier = "SRIKER",
-	schematicName = "Sriker",
-	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Sriker",
+val striker = AISpawningConfiguration.AIStarshipTemplate(
+	identifier = "STRIKER",
+	schematicName = "Striker",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Striker",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
 	manualWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
 	),
 	autoWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
 	)
 )
 
-val nimble = AIShipConfiguration.AIStarshipTemplate(
+val nimble = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "NIMBLE",
 	schematicName = "Nimble",
-	miniMessageName = "<${EXPLORER_LIGHT_CYAN.asHexString()}>Nimble",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Nimble",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
 
-val dessle = AIShipConfiguration.AIStarshipTemplate(
+val dessle = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "DESSLE",
 	schematicName = "Dessle",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Dessle <${HE_LIGHT_GRAY.asHexString()}>Ore Transporter",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Dessle <${HE_LIGHT_GRAY.asHexString()}>Ore Transporter",
 	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
 	autoWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
 	)
 )
 
-val minhaulCheth = AIShipConfiguration.AIStarshipTemplate(
+val minhaulCheth = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "MINHAUL_CHETHERITE",
 	schematicName = "Minhaul_chetherite",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<light_purple>Chetherite<${HE_LIGHT_GRAY.asHexString()}>]",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<light_purple>Chetherite<${HE_LIGHT_GRAY.asHexString()}>]",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
 
-val minhaulRedstone = AIShipConfiguration.AIStarshipTemplate(
+val minhaulRedstone = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "MINHAUL_REDSTONE",
 	schematicName = "Minhaul_redstone",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<red>Redstone<${HE_LIGHT_GRAY.asHexString()}>]",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<red>Redstone<${HE_LIGHT_GRAY.asHexString()}>]",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
 
-val minhaulTitanium = AIShipConfiguration.AIStarshipTemplate(
+val minhaulTitanium = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "MINHAUL_TITANIUM",
 	schematicName = "Minhaul_titanium",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Minhaul <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
 
-val exotranTitanium = AIShipConfiguration.AIStarshipTemplate(
+val exotranTitanium = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "EXOTRAN_TITANIUM",
 	schematicName = "Exotran_titanium",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]Transporter",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]Transporter",
 	type = StarshipType.AI_TRANSPORT,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
 	autoWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
 	)
 )
 
-val exotranChetherite = AIShipConfiguration.AIStarshipTemplate(
+val exotranChetherite = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "EXOTRAN_CHETHERITE",
 	schematicName = "Exotran_chetherite",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<light_purple>Chetherite<${HE_LIGHT_GRAY.asHexString()}>]",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<light_purple>Chetherite<${HE_LIGHT_GRAY.asHexString()}>]",
 	type = StarshipType.AI_TRANSPORT,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
 	autoWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
 	)
 )
 
-val exotranRedstone = AIShipConfiguration.AIStarshipTemplate(
+val exotranRedstone = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "EXOTRAN_REDSTONE",
 	schematicName = "Exotran_redstone",
-	miniMessageName = "<${EXPLORER_DARK_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<red>Redstone<${HE_LIGHT_GRAY.asHexString()}>]",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<red>Redstone<${HE_LIGHT_GRAY.asHexString()}>]",
 	type = StarshipType.AI_TRANSPORT,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
 	autoWeaponSets = mutableSetOf(
-		AIShipConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
+		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
 	)
 )
 
-fun findExplorerSpawnLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location? {
+val amph = AISpawningConfiguration.AIStarshipTemplate(
+	identifier = "AMPH",
+	schematicName = "Amph",
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Amph",
+	type = StarshipType.AI_TRANSPORT,
+	controllerFactory = "EXPLORER_CRUISE",
+	xpMultiplier = 0.5,
+	creditReward = 100.0,
+	autoWeaponSets = mutableSetOf()
+)
+
+fun findExplorerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location? {
 	// Get a random world based on the weight in the config
 	val worldConfig = configuration.worldWeightedRandomList.random()
 	val world = worldConfig.getWorld()
 
-	val player = getNonProtectedPlayer(world) ?: return null
+	val player = getNonProtectedPlayer(world) ?: return findSpawnLocationNearPlayer(configuration) { SpaceWorlds.contains(it.world) }
 
 	var iterations = 0
 

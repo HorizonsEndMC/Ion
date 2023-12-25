@@ -13,7 +13,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.Configuration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.starship.StarshipType
 import org.bukkit.entity.Player
 
@@ -21,11 +21,11 @@ import org.bukkit.entity.Player
 @CommandAlias("aitemplatebuilder")
 @Description("A series of commands to simplify the construction of ai starship templates")
 object AIStarshipTemplateBuilderCommand : SLCommand() {
-	private val currentBuilding = mutableMapOf<String, AIShipConfiguration.AIStarshipTemplate>()
+	private val currentBuilding = mutableMapOf<String, AISpawningConfiguration.AIStarshipTemplate>()
 
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerAsyncCompletion("buildingTemplates") { currentBuilding.keys }
-		manager.commandCompletions.registerAsyncCompletion("existingTemplates") { IonServer.aiShipConfiguration.templates.map { it.identifier } }
+		manager.commandCompletions.registerAsyncCompletion("existingTemplates") { IonServer.aiSpawningConfiguration.templates.map { it.identifier } }
 	}
 
 	@Subcommand("build from new")
@@ -34,7 +34,7 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	fun onStartNew(sender: Player, identifier: String, schematicName: String, type: StarshipType) {
 		val identifierUppercase = identifier.uppercase()
 
-		currentBuilding[identifierUppercase] = AIShipConfiguration.AIStarshipTemplate(
+		currentBuilding[identifierUppercase] = AISpawningConfiguration.AIStarshipTemplate(
 			identifier = identifierUppercase,
 			schematicName = schematicName,
 			type = type,
@@ -50,7 +50,7 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	fun onStartFromExisting(sender: Player, identifier: String) {
 		val identifierUppercase = identifier.uppercase()
 
-		currentBuilding[identifierUppercase] = IonServer.aiShipConfiguration.templates.firstOrNull { it.identifier == identifierUppercase } ?: fail {
+		currentBuilding[identifierUppercase] = IonServer.aiSpawningConfiguration.templates.firstOrNull { it.identifier == identifierUppercase } ?: fail {
 			"Could not find template $identifierUppercase"
 		}
 
@@ -84,7 +84,7 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	fun addManualSet(sender: Player, identifier: String, name: String, minDistance: Double, maxDistance: Double) {
 		val template = requireBuilding(identifier)
 
-		val set = AIShipConfiguration.AIStarshipTemplate.WeaponSet(name, minDistance, maxDistance)
+		val set = AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name, minDistance, maxDistance)
 
 		template.manualWeaponSets.add(set)
 		sender.success("Added manual weapon set $set to $identifier")
@@ -97,7 +97,7 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 	fun addAutoSet(sender: Player, identifier: String, name: String, minDistance: Double, maxDistance: Double) {
 		val template = requireBuilding(identifier)
 
-		val set = AIShipConfiguration.AIStarshipTemplate.WeaponSet(name, minDistance, maxDistance)
+		val set = AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name, minDistance, maxDistance)
 
 		template.manualWeaponSets.add(set)
 		sender.success("Added auto weapon set $set to $identifier")
@@ -156,21 +156,21 @@ object AIStarshipTemplateBuilderCommand : SLCommand() {
 		val template = requireBuilding(identifier)
 
 		// Handle overwrites
-		if (IonServer.aiShipConfiguration.templates.any { it.identifier == identifierUppercase }) {
+		if (IonServer.aiSpawningConfiguration.templates.any { it.identifier == identifierUppercase }) {
 			if (overwrite == "confirm") {
 				sender.alert("A template with the identifier $identifierUppercase already exists! If you wish to overwrite it, use /aitemplatebuilder build $identifierUppercase confirm")
 				return
 			} else {
 				// They confirmed
-				IonServer.aiShipConfiguration.templates.removeAll { it.identifier == identifierUppercase }
+				IonServer.aiSpawningConfiguration.templates.removeAll { it.identifier == identifierUppercase }
 			}
 		}
 
-		IonServer.aiShipConfiguration.templates.add(template)
+		IonServer.aiSpawningConfiguration.templates.add(template)
 
-		Configuration.save(IonServer.aiShipConfiguration, IonServer.configurationFolder, "aiships.json")
+		Configuration.save(IonServer.aiSpawningConfiguration, IonServer.configurationFolder, "aiships.json")
 	}
 
-	private fun requireBuilding(identifier: String): AIShipConfiguration.AIStarshipTemplate =
+	private fun requireBuilding(identifier: String): AISpawningConfiguration.AIStarshipTemplate =
 		currentBuilding[identifier.uppercase()] ?: fail { "Could not find template ${identifier.uppercase()}" }
 }

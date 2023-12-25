@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.ai
 
-import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController

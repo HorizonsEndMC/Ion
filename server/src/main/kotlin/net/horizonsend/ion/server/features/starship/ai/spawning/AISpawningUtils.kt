@@ -2,9 +2,10 @@ package net.horizonsend.ion.server.features.starship.ai.spawning
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.misc.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipComputers
@@ -47,7 +48,7 @@ fun handleException(logger: Logger, exception: AISpawner.SpawningException) {
 
 fun createAIShipFromTemplate(
 	logger: Logger,
-	template: AIShipConfiguration.AIStarshipTemplate,
+	template: AISpawningConfiguration.AIStarshipTemplate,
 	location: Location,
 	createController: (ActiveControlledStarship) -> Controller,
 	callback: (ActiveControlledStarship) -> Unit = {}
@@ -158,11 +159,11 @@ fun Player.getLocationNear(minDistance: Double, maxDistance: Double): Location {
 }
 
 fun findSpawnLocationNearPlayer(
-	configuration: AIShipConfiguration.AISpawnerConfiguration,
-	playerFilter: (Player) -> Boolean = { !it.hasProtection() }
+	configuration: AISpawningConfiguration.AISpawnerConfiguration,
+	playerFilter: (Player) -> Boolean = { !it.hasProtection() && SpaceWorlds.contains(it.world) }
 ): Location?  {
 	// Get a random world based on the weight in the config
-	val filteredList = WeightedRandomList<AIShipConfiguration.AIWorldSettings>()
+	val filteredList = WeightedRandomList<AISpawningConfiguration.AIWorldSettings>()
 	val occupiedWorlds = configuration.worldWeightedRandomList.filterTo(filteredList) { isSystemOccupied(it.getWorld()) }
 	val world = (occupiedWorlds.randomOrNull() ?: return null).getWorld()
 
