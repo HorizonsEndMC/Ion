@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.modules
 
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class AIRewardsProvider(starship: ActiveStarship, val template: AIShipConfiguration.AIStarshipTemplate) : StandardRewardsProvider(starship) {
+class AIRewardsProvider(starship: ActiveStarship, val template: AISpawningConfiguration.AIStarshipTemplate) : StandardRewardsProvider(starship) {
 	override fun processDamagerRewards(damager: Damager, points: AtomicInteger, lastDamaged: Long, pointsSum: Int) {
 		val killedSize = starship.initialBlockCount.toDouble()
 

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.privateer
 
-import net.horizonsend.ion.server.configuration.AIShipConfiguration
-import net.horizonsend.ion.server.configuration.AIShipConfiguration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.registerFactory
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
@@ -108,7 +108,7 @@ val privateerCorvette = registerFactory("PRIVATEER_CORVETTE") {
 	build()
 }
 
-val bulwark = AIShipConfiguration.AIStarshipTemplate(
+val bulwark = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BULWARK",
 	schematicName = "Bulwark",
 	miniMessageName = "<${PRIVATEER_DARK_TEAL.asHexString()}>Bulwark",
@@ -125,7 +125,7 @@ val bulwark = AIShipConfiguration.AIStarshipTemplate(
 	)
 )
 
-val contractor = AIShipConfiguration.AIStarshipTemplate(
+val contractor = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "CONTRACTOR",
 	schematicName = "Contractor",
 	miniMessageName = "<${PRIVATEER_MEDIUM_TEAL.asHexString()}>Contractor",
@@ -141,7 +141,7 @@ val contractor = AIShipConfiguration.AIStarshipTemplate(
 	)
 )
 
-val dagger = AIShipConfiguration.AIStarshipTemplate(
+val dagger = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "DAGGER",
 	schematicName = "Dagger",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Dagger",
@@ -151,7 +151,7 @@ val dagger = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val daybreak = AIShipConfiguration.AIStarshipTemplate(
+val daybreak = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "DAYBREAK",
 	schematicName = "Daybreak",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Daybreak",
@@ -161,7 +161,7 @@ val daybreak = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val patroller = AIShipConfiguration.AIStarshipTemplate(
+val patroller = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "PATROLLER",
 	schematicName = "Patroller",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Patroller",
@@ -171,7 +171,7 @@ val patroller = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val protector = AIShipConfiguration.AIStarshipTemplate(
+val protector = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "PROTECTOR",
 	schematicName = "Protector",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Protector",
@@ -181,7 +181,7 @@ val protector = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val veteran = AIShipConfiguration.AIStarshipTemplate(
+val veteran = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "VETERAN",
 	schematicName = "Veteran",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Veteran",
@@ -191,7 +191,7 @@ val veteran = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val teneta = AIShipConfiguration.AIStarshipTemplate(
+val teneta = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TENETA",
 	schematicName = "Teneta",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Teneta",
@@ -201,7 +201,7 @@ val teneta = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val furious = AIShipConfiguration.AIStarshipTemplate(
+val furious = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "FURIOUS",
 	schematicName = "Furious",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Furious",
@@ -211,7 +211,7 @@ val furious = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-val inflict = AIShipConfiguration.AIStarshipTemplate(
+val inflict = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "INFLICT",
 	schematicName = "Inflict",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Inflict",
@@ -221,7 +221,7 @@ val inflict = AIShipConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
-fun findPrivateerSpawnLocation(configuration: AIShipConfiguration.AISpawnerConfiguration): Location?  {
+fun findPrivateerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location?  {
 	val nearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
 
 //	val world: World = nearPlayer.world
