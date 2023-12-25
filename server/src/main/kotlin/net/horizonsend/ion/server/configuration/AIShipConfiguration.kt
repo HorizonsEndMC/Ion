@@ -16,6 +16,9 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.exotran
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulCheth
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulRedstone
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulTitanium
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.nimble
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.striker
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.wayfinder
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateMultiSpawner
@@ -64,10 +67,13 @@ data class AIShipConfiguration(
 		minhaulCheth,
 		minhaulRedstone,
 		minhaulTitanium,
-//		exotranChetherite,
-//		exotranRedstone,
-//		exotranTitanium,
-//		dessle,
+		exotranChetherite,
+		exotranRedstone,
+		exotranTitanium,
+		dessle,
+		nimble,
+		wayfinder,
+		striker,
 		// Explorer End
 		// Mining Corp Start
 		// Mining Corp End
