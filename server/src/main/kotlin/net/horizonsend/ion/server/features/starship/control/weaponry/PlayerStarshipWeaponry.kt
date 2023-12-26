@@ -52,7 +52,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 			player.debug("elapsedSinceRCLICK = $elapsedSinceRightClick")
 
 			if (elapsedSinceRightClick > TimeUnit.MILLISECONDS.toNanos(250)) {
-				player.debug("click isn't doubleclick, adding...")
+				player.debug("Heavy weapon fire is not on minimum cooldown")
 				rightClickTimes[damager] = System.nanoTime()
 				return
 			}
@@ -63,7 +63,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 
 		if (event.clickedBlock?.type?.isSign == true) return
 
-		player.debug("didnt click sign, trying to fire")
+		player.debug("Didn't click sign, trying to fire")
 
 		manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
 
@@ -95,6 +95,8 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		// Mantain multicrew capabilities by creating a player damager if they're not the pilot
 		val damager = player.damager()
 
+		starship.debug("Manual firing")
+
 		val loc = player.eyeLocation
 		val playerFacing = player.facing
 		val dir = loc.direction.normalize()
@@ -104,9 +106,17 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		var weaponSet = starship.weaponSetSelections[player.uniqueId]
 		val clockWeaponSet = clock.displayNameString.lowercase()
 
+		starship.debug("Selected weapon set: $weaponSet")
+		starship.debug("Clock weapon set: $clockWeaponSet")
+
 		if (starship.weaponSets.keys().contains(clockWeaponSet)) weaponSet = clockWeaponSet
 
-		if (weaponSet == null && PilotedStarships[player] != starship) return
+		starship.debug("Final weapon set: $clockWeaponSet")
+
+		if (weaponSet == null && PilotedStarships[player] != starship) {
+			starship.debug("Returning because of weird condition")
+			return
+		}
 
 		manualFire(
 			damager,

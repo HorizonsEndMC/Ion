@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.World
@@ -22,7 +23,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 /** An object capable of damaging a starship **/
-interface Damager : Audience {
+interface Damager : ForwardingAudience {
 	val starship: ActiveStarship?
 	val color: Color
 
@@ -55,6 +56,10 @@ class PlayerDamagerWrapper(override val player: Player) : PlayerDamager {
 	override fun getAITarget(): AITarget = PlayerTarget(player)
 
 	override fun toString(): String = "PlayerDamager[${player.name}]"
+
+	override fun audiences(): MutableIterable<Audience> {
+		return mutableListOf(player)
+	}
 }
 
 val noOpDamager = NoOpDamager()
@@ -74,6 +79,10 @@ fun getDamager(entity: Entity) : Damager {
 class EntityDamager(val entity: Entity) : NoOpDamager() {
 	override fun getDisplayName(): Component = entity.name()
 	override fun getAITarget(): AITarget? = null
+
+	override fun audiences(): MutableIterable<Audience> {
+		return mutableListOf(entity)
+	}
 }
 
 open class NoOpDamager : Damager {
@@ -83,6 +92,7 @@ open class NoOpDamager : Damager {
 	override fun rewardMoney(credits: Double) { }
 	override fun rewardXP(xp: Int) { }
 	override fun getAITarget(): AITarget? = null
+	override fun audiences(): MutableIterable<Audience> = mutableListOf(Audience.empty())
 }
 
 class AIShipDamager(override val starship: ActiveStarship, override val color: Color = Color.RED): Damager {
@@ -92,6 +102,7 @@ class AIShipDamager(override val starship: ActiveStarship, override val color: C
 	override fun getAITarget(): AITarget = StarshipTarget(starship)
 
 	override fun toString(): String = "AIDamager[${starship.controller}]"
+	override fun audiences(): MutableIterable<Audience> = mutableListOf(starship)
 }
 
 fun addToDamagers(world: World, block: Block, shooter: Entity) {
