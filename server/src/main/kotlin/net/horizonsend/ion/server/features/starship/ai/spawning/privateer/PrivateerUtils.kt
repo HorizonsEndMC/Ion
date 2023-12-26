@@ -117,11 +117,11 @@ val bulwark = AISpawningConfiguration.AIStarshipTemplate(
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
 	manualWeaponSets = mutableSetOf(
-		WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
+		WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	),
 	autoWeaponSets = mutableSetOf(
-		WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
-		WeaponSet(name = "tt1", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
+		WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
+		WeaponSet(name = "tt", engagementRangeMin = 250.0, engagementRangeMax = 550.0)
 	)
 )
 
