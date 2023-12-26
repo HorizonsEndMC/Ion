@@ -9,31 +9,16 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.dessle
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.exotranChetherite
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.exotranRedstone
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.exotranTitanium
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulCheth
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulRedstone
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.minhaulTitanium
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.nimble
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.striker
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.wayfinder
+import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.explorerTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpMultiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpReinforcementSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.miningGuildTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSingleSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.bulwark
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.contractor
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.dagger
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.furious
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.inflict
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.patroller
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.protector
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.teneta
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.veteran
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.privateerTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSingleSpawner
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
@@ -47,35 +32,12 @@ import kotlin.jvm.optionals.getOrNull
 @Serializable
 data class AISpawningConfiguration(
 	val templates: MutableList<AIStarshipTemplate> = mutableListOf(
-		// Privateer Start
-		bulwark,
-		contractor,
-		dagger,
-		patroller,
-		protector,
-		veteran,
-		teneta,
-		furious,
-		inflict,
-		// Privateer End
-		// Pirate Start
-		// Pirate End
-		// Tsaii Start
-		// Tsaii End
-		// Explorer Start
-		minhaulCheth,
-		minhaulRedstone,
-		minhaulTitanium,
-		exotranChetherite,
-		exotranRedstone,
-		exotranTitanium,
-		dessle,
-		nimble,
-		wayfinder,
-		striker,
-		// Explorer End
-		// Mining Corp Start
-		// Mining Corp End
+		AIStarshipTemplate(),
+		*privateerTemplates,
+		//TODO Pirate
+		//TODO Tsaii
+		*explorerTemplates,
+		*miningGuildTemplates
 	),
 	val spawners: AISpawners = AISpawners()
 ) {
@@ -85,6 +47,7 @@ data class AISpawningConfiguration(
 	data class AISpawners(
 		val miningCorpMultiSpawner: AISpawnerConfiguration = MiningCorpMultiSpawner.defaultConfiguration,
 		val miningCorpSingleSpawner: AISpawnerConfiguration = MiningCorpSingleSpawner.defaultConfiguration,
+		val miningCorpReinforcementSpawner: AISpawnerConfiguration = MiningCorpReinforcementSpawner.defaultConfiguration,
 		val privateerMulti: AISpawnerConfiguration = PrivateerMultiSpawner.defaultConfiguration,
 		val privateerSingle: AISpawnerConfiguration = PrivateerSingleSpawner.defaultConfiguration,
 		val explorerMulti: AISpawnerConfiguration = ExplorerMultiSpawner.defaultConfiguration,
@@ -174,6 +137,7 @@ data class AISpawningConfiguration(
 		var controllerFactory: String = "STARFIGHTER",
 		var xpMultiplier: Double = 1.0,
 		var creditReward: Double = 100.0,
+		var maxSpeed: Int = -1,
 		val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 		val mobs: MutableSet<MobSpawner> = mutableSetOf()
