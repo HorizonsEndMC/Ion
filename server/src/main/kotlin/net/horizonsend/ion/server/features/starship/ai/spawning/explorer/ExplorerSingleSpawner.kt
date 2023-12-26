@@ -4,8 +4,13 @@ import net.horizonsend.ion.common.utils.text.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.SpaceWorlds
+import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
+import net.horizonsend.ion.server.features.starship.ai.spawning.getNonProtectedPlayer
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
+import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 
@@ -13,14 +18,41 @@ class ExplorerSingleSpawner : BasicSpawner(
 	"EXPLORER_SINGLE",
 	IonServer.aiSpawningConfiguration.spawners::explorerSingle,
 ) {
-	override fun findSpawnLocation(): Location? = findExplorerSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? {
+		// Get a random world based on the weight in the config
+		val worldConfig = configuration.worldWeightedRandomList.random()
+		val world = worldConfig.getWorld()
+
+		val player = getNonProtectedPlayer(world) ?: return findSpawnLocationNearPlayer(configuration) { SpaceWorlds.contains(it.world) }
+
+		var iterations = 0
+
+		val border = world.worldBorder
+
+		val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+
+		// max 10 iterations
+		while (iterations <= 15) {
+			iterations++
+
+			val loc = player.location.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
+
+			if (!border.isInside(loc)) continue
+
+			if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
+
+			return loc
+		}
+
+		return null
+	}
 
 	override val spawnMessage: Component = ofChildren(
 		Component.text("[", HEColorScheme.HE_LIGHT_GRAY),
 		Component.text("{3} System Alert", EXPLORER_LIGHT_CYAN),
 		Component.text("]", HEColorScheme.HE_LIGHT_GRAY),
 		Component.text(" A Horizon Transit Lines vessel will be passing through the system.", EXPLORER_MEDIUM_CYAN)
-	) // TODO
+	)
 
 	companion object {
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(

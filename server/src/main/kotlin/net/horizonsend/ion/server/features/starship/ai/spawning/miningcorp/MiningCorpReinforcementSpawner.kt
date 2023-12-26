@@ -97,7 +97,7 @@ class MiningCorpReinforcementSpawner(
 		) // Vestas for now
 
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
-			miniMessageSpawnMessage = "${MiningCorpSingleSpawner.miningGuild}<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {2}, {3}, in {4}",
+			miniMessageSpawnMessage = "${MiningCorpSpawner.miningGuild}<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {2}, {3}, in {4}",
 			pointChance = 0.0,
 			pointThreshold = Int.MAX_VALUE,
 			minDistanceFromPlayer = 50.0,
