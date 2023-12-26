@@ -7,20 +7,15 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.AISpawningManager
-import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.explorerTemplates
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpMultiSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpReinforcementSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.miningGuildTemplates
-import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateMultiSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSingleSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerMultiSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.privateerTemplates
-import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiMultiSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSpawner
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
 import org.bukkit.Bukkit
@@ -32,7 +27,7 @@ import kotlin.jvm.optionals.getOrNull
 @Serializable
 data class AISpawningConfiguration(
 	val templates: MutableList<AIStarshipTemplate> = mutableListOf(
-		AIStarshipTemplate(),
+		AIStarshipTemplate(), // TODO remove
 		*privateerTemplates,
 		//TODO Pirate
 		//TODO Tsaii
@@ -45,17 +40,12 @@ data class AISpawningConfiguration(
 
 	@Serializable
 	data class AISpawners(
-		val miningCorpMultiSpawner: AISpawnerConfiguration = MiningCorpMultiSpawner.defaultConfiguration,
-		val miningCorpSingleSpawner: AISpawnerConfiguration = MiningCorpSingleSpawner.defaultConfiguration,
+		val miningCorpSpawner: AISpawnerConfiguration = MiningCorpSpawner.defaultConfiguration,
 		val miningCorpReinforcementSpawner: AISpawnerConfiguration = MiningCorpReinforcementSpawner.defaultConfiguration,
-		val privateerMulti: AISpawnerConfiguration = PrivateerMultiSpawner.defaultConfiguration,
-		val privateerSingle: AISpawnerConfiguration = PrivateerSingleSpawner.defaultConfiguration,
-		val explorerMulti: AISpawnerConfiguration = ExplorerMultiSpawner.defaultConfiguration,
+		val privateerSingle: AISpawnerConfiguration = PrivateerSpawner.defaultConfiguration,
 		val explorerSingle: AISpawnerConfiguration = ExplorerSingleSpawner.defaultConfiguration,
-		val pirateMulti: AISpawnerConfiguration = PirateMultiSpawner.defaultConfiguration,
-		val pirateSingle: AISpawnerConfiguration = PirateSingleSpawner.defaultConfiguration,
-		val tsaiiMulti: AISpawnerConfiguration = TsaiiMultiSpawner.defaultConfiguration,
-		val tsaiiSingle: AISpawnerConfiguration = TsaiiSingleSpawner.defaultConfiguration,
+		val pirateSingle: AISpawnerConfiguration = PirateSpawner.defaultConfiguration,
+		val tsaiiSingle: AISpawnerConfiguration = TsaiiSpawner.defaultConfiguration,
 	)
 
 	/**
