@@ -19,7 +19,7 @@ class AIHeavyLaserWeaponSubsystem(
 	face: BlockFace
 ) : TargetTrackingCannonWeaponSubsystem(starship, pos, face), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ion.weapon.ai"
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.heavyLaser
+	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.aiHeavyLaser
 	val sound = balancing.soundName
 
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)

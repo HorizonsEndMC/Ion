@@ -411,6 +411,28 @@ class StarshipWeapons(
 		applyCooldownToAll = false
 	),
 
+	val aiHeavyLaser: StarshipWeapon = StarshipWeapon(
+		range = 200.0,
+		speed = 50.0,
+		areaShieldDamageMultiplier = 2.0,
+		starshipShieldDamageMultiplier = 2.0,
+		particleThickness = 1.0,
+		explosionPower = 12.0f,
+		volume = 10,
+		pitch = 2.0f,
+		soundName = "starship.weapon.heavy_laser.single.shoot",
+		powerUsage = 30000,
+		length = 7,
+		angleRadians = 0.0,
+		convergeDistance = 0.0,
+		extraDistance = 1,
+		fireCooldownMillis = 250,
+		boostChargeSeconds = 5,
+		aimDistance = 10,
+		maxDegrees = 25.0,
+		applyCooldownToAll = false
+	),
+
 	val phaser: StarshipWeapon = StarshipWeapon(
 		range = 140.0,
 		speed = 1.0,

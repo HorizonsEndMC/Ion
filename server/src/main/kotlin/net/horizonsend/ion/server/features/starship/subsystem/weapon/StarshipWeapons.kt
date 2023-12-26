@@ -31,6 +31,7 @@ object StarshipWeapons {
 	) : QueuedShot {
 		override fun shoot() {
 			check(weapon is ManualWeaponSubsystem)
+			println("Attempting to fire $weapon")
 			weapon.manualFire(shooter, direction, target)
 			weapon.postFire()
 		}

@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
@@ -31,10 +33,15 @@ object StarshipWeaponry : IonServerComponent() {
         target: Vector,
         weaponSet: String?
 	) {
+		starship.debug("Common manual firing")
+
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
+
+		starship.debug("Weapons: ${weapons.joinToString { it.name }}")
 
 		val fireTask = {
 			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
+			starship.debug("Queued shots: ${queuedShots.joinToString { it.weapon.name }}")
 			StarshipWeapons.fireQueuedShots(queuedShots, starship)
 		}
 
@@ -79,25 +86,52 @@ object StarshipWeaponry : IonServerComponent() {
 	): LinkedList<StarshipWeapons.ManualQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
 
+		shooter.debugBanner("Queuing shots")
+
 		for (weapon: WeaponSubsystem in weapons) {
-			if (weapon !is ManualWeaponSubsystem) continue
+			shooter.debug("Weapon: ${weapon.name}")
 
-			if (!weapon.isAcceptableDirection(facing)) continue
+			if (weapon !is ManualWeaponSubsystem) {
+				shooter.debug("Continue, weapon cannot be manually fired.")
+				continue
+			}
 
-			if (weapon is HeavyWeaponSubsystem != !leftClick) continue
+			if (!weapon.isAcceptableDirection(facing)) {
+				shooter.debug("Continue, weapon cannot fire in this direction.")
+				continue
+			}
 
-			if (!weapon.isCooledDown()) continue
+			if (weapon is HeavyWeaponSubsystem != !leftClick) {
+				shooter.debug("Continue, not correct click")
+				continue
+			}
 
-			if (!weapon.isIntact()) continue
+			if (!weapon.isCooledDown()) {
+				shooter.debug("Continue, weapon not cooled down")
+				continue
+			}
+
+			if (!weapon.isIntact()) {
+				shooter.debug("Continue, weapon not intact")
+				continue
+			}
 
 			val targetedDir: Vector = weapon.getAdjustedDir(dir, target)
 
-			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) continue
+			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) {
+				shooter.debug("Continue, turret not oriented properly")
+				continue
+			}
 
-			if (!weapon.canFire(targetedDir, target)) continue
+			if (!weapon.canFire(targetedDir, target)) {
+				shooter.debug("Continue, weapon cannot fire.")
+				continue
+			}
 
 			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, shooter, targetedDir, target))
 		}
+
+		shooter.debugBanner("Queuing shots end")
 
 		return queuedShots
 	}
