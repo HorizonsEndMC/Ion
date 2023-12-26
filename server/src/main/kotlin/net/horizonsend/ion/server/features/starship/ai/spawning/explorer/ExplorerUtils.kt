@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.Steeri
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.BasicPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
 import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
-import net.horizonsend.ion.server.features.starship.ai.spawning.getLocationNear
 import net.horizonsend.ion.server.features.starship.ai.spawning.getNonProtectedPlayer
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.component1
@@ -23,6 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
+import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
@@ -111,6 +111,7 @@ val wayfinder = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
+	maxSpeed = 10,
 	manualWeaponSets = mutableSetOf(
 		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 350.0)
 	),
@@ -128,6 +129,7 @@ val striker = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
+	maxSpeed = 10,
 	manualWeaponSets = mutableSetOf(
 		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
 	),
@@ -143,7 +145,8 @@ val nimble = AISpawningConfiguration.AIStarshipTemplate(
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	maxSpeed = 10
 )
 
 val dessle = AISpawningConfiguration.AIStarshipTemplate(
@@ -154,6 +157,7 @@ val dessle = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
+	maxSpeed = 10,
 	autoWeaponSets = mutableSetOf(
 		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt1", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
 	)
@@ -166,7 +170,8 @@ val minhaulCheth = AISpawningConfiguration.AIStarshipTemplate(
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	maxSpeed = 10
 )
 
 val minhaulRedstone = AISpawningConfiguration.AIStarshipTemplate(
@@ -176,7 +181,8 @@ val minhaulRedstone = AISpawningConfiguration.AIStarshipTemplate(
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	maxSpeed = 10
 )
 
 val minhaulTitanium = AISpawningConfiguration.AIStarshipTemplate(
@@ -186,7 +192,8 @@ val minhaulTitanium = AISpawningConfiguration.AIStarshipTemplate(
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	maxSpeed = 10
 )
 
 val exotranTitanium = AISpawningConfiguration.AIStarshipTemplate(
@@ -197,6 +204,7 @@ val exotranTitanium = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
+	maxSpeed = 10,
 	autoWeaponSets = mutableSetOf(
 		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
 	)
@@ -210,6 +218,7 @@ val exotranChetherite = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
+	maxSpeed = 10,
 	autoWeaponSets = mutableSetOf(
 		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
 	)
@@ -223,6 +232,7 @@ val exotranRedstone = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
+	maxSpeed = 10,
 	autoWeaponSets = mutableSetOf(
 		AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)
 	)
@@ -236,7 +246,22 @@ val amph = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
+	maxSpeed = 10,
 	autoWeaponSets = mutableSetOf()
+)
+
+val explorerTemplates = arrayOf(
+	minhaulCheth,
+	minhaulRedstone,
+	minhaulTitanium,
+	exotranChetherite,
+	exotranRedstone,
+	exotranTitanium,
+	dessle,
+	nimble,
+	wayfinder,
+	striker,
+	amph,
 )
 
 fun findExplorerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location? {
@@ -256,7 +281,7 @@ fun findExplorerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerCo
 	while (iterations <= 15) {
 		iterations++
 
-		val loc = player.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
+		val loc = player.location.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
 
 		if (!border.isInside(loc)) continue
 

@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.horizonsend.ion.server.miscellaneous.utils.getRadialRandomPoint
+import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
@@ -150,14 +150,6 @@ fun isSystemOccupied(world: World): Boolean {
 	return players.isNotEmpty()
 }
 
-fun Player.getLocationNear(minDistance: Double, maxDistance: Double): Location {
-	val (x, z) = getRadialRandomPoint(minDistance, maxDistance)
-
-	val loc = location.clone()
-
-	return loc.add(x, 0.0, z)
-}
-
 fun findSpawnLocationNearPlayer(
 	configuration: AISpawningConfiguration.AISpawnerConfiguration,
 	playerFilter: (Player) -> Boolean = { !it.hasProtection() && SpaceWorlds.contains(it.world) }
@@ -179,7 +171,7 @@ fun findSpawnLocationNearPlayer(
 	while (iterations <= 15) {
 		iterations++
 
-		val loc = player.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
+		val loc = player.location.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
 
 		if (!border.isInside(loc)) continue
 

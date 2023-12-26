@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
 import org.bukkit.World
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.function.Supplier
 import kotlin.random.Random
@@ -38,7 +39,7 @@ abstract class AISpawner(
 	private val pointThreshold: Int = configuration.pointThreshold
 
 	val configuration get() = configurationSupplier.get()
-	protected val log = LoggerFactory.getLogger(javaClass)
+	protected val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	private var points: Int = 0
 	private var lastTriggered: Long = 0

@@ -501,3 +501,11 @@ fun getRadialRandomPoint(minimumDistance: Double, maximumDistance: Double): Pair
 
 	return cos(radians) * distance to sin(radians) * distance
 }
+
+fun Location.getLocationNear(minDistance: Double, maxDistance: Double): Location {
+	val (x, z) = getRadialRandomPoint(minDistance, maxDistance)
+
+	val loc = this.clone()
+
+	return loc.add(x, 0.0, z)
+}

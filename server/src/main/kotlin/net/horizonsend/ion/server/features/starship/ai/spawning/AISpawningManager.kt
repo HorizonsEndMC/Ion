@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSingleSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSingleSpawner
@@ -70,6 +71,8 @@ object AISpawningManager : IonServerComponent(true) {
 //		spawners += ExplorerMultiSpawner()
 		spawners += PrivateerSingleSpawner()
 //		spawners += PrivateerMultiSpawner()
+		spawners += MiningCorpSingleSpawner()
+//		spawners += TsaiiMultiSpawner()
 		spawners += PirateSingleSpawner()
 //		spawners += PirateMultiSpawner()
 		spawners += TsaiiSingleSpawner()
