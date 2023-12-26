@@ -1,28 +1,36 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp
 
-import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AISpawnerConfiguration
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AISpawnerTier
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIWorldSettings
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.findPrivateerSpawnLocation
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 
 class MiningCorpSingleSpawner  : BasicSpawner(
-	"MINING_CORP_TRANSPORT",
+	"MINING_CORP_SINGLE",
 	IonServer.aiSpawningConfiguration.spawners::miningCorpSingleSpawner,
 ) {
-	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
+	override fun findSpawnLocation(): Location? = findMiningCorpSpawnPosition(configuration)
 
-	override val spawnMessage: Component? = null
+	override val spawnMessage: Component = ofChildren(
+		text("The ", HE_MEDIUM_GRAY),
+		text("Mining ", MINING_CORP_LIGHT_ORANGE),
+		text("Guild ", MINING_CORP_DARK_ORANGE),
+		text("branch of {3} requests non-violence during extraction operations.", HE_MEDIUM_GRAY)
+	)
 
 	companion object {
+		val miningGuild = "<$MINING_CORP_LIGHT_ORANGE>Mining<$MINING_CORP_DARK_ORANGE> Guild"
+
 		val defaultConfiguration = AISpawnerConfiguration(
-			miniMessageSpawnMessage = "<${MINING_CORP_LIGHT_ORANGE}>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {2}, {3}, in {4}",
+			miniMessageSpawnMessage = "$miningGuild <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {2}, {3}, in {4}",
 			pointChance = 1.0,
-			pointThreshold = 2500,
+			pointThreshold = 20 * 60 * 15,
 			minDistanceFromPlayer = 1000.0,
 			maxDistanceFromPlayer = 2500.0,
 			tiers = listOf(

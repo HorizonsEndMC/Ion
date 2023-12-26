@@ -221,6 +221,18 @@ val inflict = AISpawningConfiguration.AIStarshipTemplate(
 	creditReward = 100.0
 )
 
+val privateerTemplates = arrayOf(
+	bulwark,
+	contractor,
+	dagger,
+	patroller,
+	protector,
+	veteran,
+	teneta,
+	furious,
+	inflict
+)
+
 fun findPrivateerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location?  {
 	val nearPlayer = findSpawnLocationNearPlayer(configuration) ?: return null
 
