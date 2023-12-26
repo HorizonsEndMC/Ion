@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.ai.spawning.tsaii
+package net.horizonsend.ion.server.features.starship.ai.spawning.pirate
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
@@ -7,15 +7,16 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSp
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 
-class TsaiiSingleSpawner : BasicSpawner(
-	"TSAII_ATTACK",
-	IonServer.aiSpawningConfiguration.spawners::tsaiiSingle,
+class PirateSpawner : BasicSpawner(
+	"PIRATE_SINGLE",
+	IonServer.aiSpawningConfiguration.spawners::pirateSingle,
 ) {
 	override fun findSpawnLocation(): Location? = findPrivateerSpawnLocation(configuration)
 
 	override val spawnMessage: Component? = null
 
 	companion object {
-		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration() // TODO
+		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
+		)
 	}
 }

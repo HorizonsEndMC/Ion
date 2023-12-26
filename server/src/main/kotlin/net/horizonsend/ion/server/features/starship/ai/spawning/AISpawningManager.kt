@@ -14,10 +14,10 @@ import net.horizonsend.ion.server.features.starship.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.ai.spawning.explorer.ExplorerSingleSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSingleSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSingleSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSingleSpawner
-import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSingleSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
@@ -68,15 +68,10 @@ object AISpawningManager : IonServerComponent(true) {
 	private fun registerSpawners() {
 		// Register spawners
 		spawners += ExplorerSingleSpawner()
-//		spawners += ExplorerMultiSpawner()
-		spawners += PrivateerSingleSpawner()
-//		spawners += PrivateerMultiSpawner()
-		spawners += MiningCorpSingleSpawner()
-//		spawners += TsaiiMultiSpawner()
-		spawners += PirateSingleSpawner()
-//		spawners += PirateMultiSpawner()
-		spawners += TsaiiSingleSpawner()
-//		spawners += TsaiiMultiSpawner()
+		spawners += PrivateerSpawner()
+		spawners += MiningCorpSpawner()
+		spawners += PirateSpawner()
+		spawners += TsaiiSpawner()
 	}
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */

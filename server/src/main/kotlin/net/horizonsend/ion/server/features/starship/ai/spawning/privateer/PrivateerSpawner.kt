@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSp
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 
-class PrivateerSingleSpawner : BasicSpawner(
+class PrivateerSpawner : BasicSpawner(
 	"PRIVATEER_SINGLE",
 	IonServer.aiSpawningConfiguration.spawners::privateerSingle,
 ) {

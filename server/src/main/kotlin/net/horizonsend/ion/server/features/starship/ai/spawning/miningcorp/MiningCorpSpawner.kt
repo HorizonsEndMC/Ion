@@ -11,9 +11,9 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 
-class MiningCorpSingleSpawner  : BasicSpawner(
+class MiningCorpSpawner  : BasicSpawner(
 	"MINING_CORP_SINGLE",
-	IonServer.aiSpawningConfiguration.spawners::miningCorpSingleSpawner,
+	IonServer.aiSpawningConfiguration.spawners::miningCorpSpawner,
 ) {
 	override fun findSpawnLocation(): Location? = findMiningCorpSpawnPosition(configuration)
 

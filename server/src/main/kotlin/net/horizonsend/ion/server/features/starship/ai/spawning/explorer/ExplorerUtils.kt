@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.ai.spawning.explorer
 import net.horizonsend.ion.common.utils.text.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.SpaceWorlds
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
@@ -14,15 +13,12 @@ import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseMod
 import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.BasicPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
-import net.horizonsend.ion.server.features.starship.ai.spawning.findSpawnLocationNearPlayer
-import net.horizonsend.ion.server.features.starship.ai.spawning.getNonProtectedPlayer
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
 import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
@@ -263,33 +259,4 @@ val explorerTemplates = arrayOf(
 	striker,
 	amph,
 )
-
-fun findExplorerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location? {
-	// Get a random world based on the weight in the config
-	val worldConfig = configuration.worldWeightedRandomList.random()
-	val world = worldConfig.getWorld()
-
-	val player = getNonProtectedPlayer(world) ?: return findSpawnLocationNearPlayer(configuration) { SpaceWorlds.contains(it.world) }
-
-	var iterations = 0
-
-	val border = world.worldBorder
-
-	val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
-
-	// max 10 iterations
-	while (iterations <= 15) {
-		iterations++
-
-		val loc = player.location.getLocationNear(configuration.minDistanceFromPlayer, configuration.maxDistanceFromPlayer)
-
-		if (!border.isInside(loc)) continue
-
-		if (planets.any { it.distanceSquared(loc.toVector()) <= 250000 }) continue
-
-		return loc
-	}
-
-	return null
-}
 
