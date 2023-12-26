@@ -143,6 +143,8 @@ object DBManager : IonComponent() {
 	override fun onDisable() {
 		jedisPool.close()
 
+		threadPool.shutdown()
+
 		if (::client.isInitialized) {
 			client.close()
 		}
