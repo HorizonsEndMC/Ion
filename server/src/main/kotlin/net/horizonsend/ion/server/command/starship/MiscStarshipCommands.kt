@@ -670,7 +670,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					text("Your schematic has been uploaded.", NamedTextColor.DARK_GREEN), newline(),
 					text("Click this link to download it", NamedTextColor.GREEN)
 						.hoverEvent(text(it.toString()))
-						.clickEvent(ClickEvent.copyToClipboard(it.toString())),
+						.clickEvent(ClickEvent.openUrl(it.toString())),
 				))
 			}
 		}
