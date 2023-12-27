@@ -101,6 +101,8 @@ abstract class ActiveStarship (
 			field = value
 		}
 
+	var pilotDisconnectLocation: Vec3i? = null
+
 	abstract var rewardsProvider: RewardsProvider
 	abstract var sinkMessageFactory: MessageFactory
 

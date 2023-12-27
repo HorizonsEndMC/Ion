@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
@@ -51,6 +52,7 @@ import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.Locale
 import java.util.UUID
@@ -63,9 +65,22 @@ object PilotedStarships : IonServerComponent() {
 
 	override fun onEnable() {
 		listen<PlayerQuitEvent> { event ->
+			val loc = Vec3i(event.player.location)
 			val controller = ActivePlayerController[event.player] ?: return@listen
 
-			map[controller]?.let { unpilot(it) } // release the player's starship if they are piloting one
+			val starship = map[controller] ?: return@listen
+			unpilot(starship) // release the player's starship if they are piloting one
+
+			starship.pilotDisconnectLocation = loc
+		}
+
+		listen<PlayerJoinEvent> { event ->
+			val starship = getUnpiloted(event.player) ?: return@listen
+			val loc = starship.pilotDisconnectLocation ?: return@listen
+			tryPilot(event.player, starship.data)
+
+			event.player.teleport(loc.toLocation(starship.world))
+			event.player.success("Since you logged out while piloting, you were teleported back to your starship")
 		}
 	}
 
@@ -164,7 +179,7 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun canTakeControl(starship: ActiveControlledStarship, player: Player): Boolean {
-		return (starship.controller as? PlayerController)?.player == player
+		return (starship.controller as? PlayerController)?.player?.uniqueId == player.uniqueId
 	}
 
 	fun unpilot(starship: ActiveControlledStarship) {
@@ -195,7 +210,14 @@ object PilotedStarships : IonServerComponent() {
 		StarshipUnpilotedEvent(starship, controller).callEvent()
 	}
 
-	operator fun get(player: Player): ActiveControlledStarship? = ActivePlayerController[player]?.let { map[it] }
+	fun getUnpiloted(player: Player): ActiveControlledStarship? = map.filter { (controller, _) ->
+		controller is UnpilotedController && controller.player.uniqueId == player.uniqueId
+	}.values.firstOrNull()
+
+	operator fun get(player: Player): ActiveControlledStarship? = map.filter { (controller, _) ->
+		controller is ActivePlayerController && controller.player.uniqueId == player.uniqueId
+	}.values.firstOrNull()
+
 	operator fun get(player: UUID): ActiveControlledStarship? = map.filter {
 		(it.key as? PlayerController)?.player?.uniqueId == player
 	}.values.firstOrNull()
