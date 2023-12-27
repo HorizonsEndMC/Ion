@@ -26,6 +26,12 @@ open class AbstractCooldown <T> (cooldown: Long, timeUnit: TimeUnit = TimeUnit.M
 
 open class PerPlayerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): AbstractCooldown<UUID>(cooldown, timeUnit) {
 	fun tryExec(player: Player, block: () -> Unit) = tryExec(player.uniqueId, this.cooldownNanos, TimeUnit.NANOSECONDS, block)
+
+	companion object {
+		fun messagedCooldown(delay: Long, unit: TimeUnit, rejected: (UUID) -> Unit): PerPlayerCooldown = object : PerPlayerCooldown(delay, unit) {
+			override fun cooldownRejected(player: UUID) = rejected(player)
+		}
+	}
 }
 
 class PerControllerCooldown(cooldown: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): AbstractCooldown<Controller>(cooldown, timeUnit)

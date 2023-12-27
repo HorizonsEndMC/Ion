@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock.particleshield
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -24,7 +27,7 @@ abstract class ShieldMultiblock : Multiblock(), InteractableMultiblock {
 	}
 
 	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.setLine(2, sign.getLine(1))
+		sign.line(2, sign.line(1))
 	}
 
 	override fun setupSign(player: Player, sign: Sign) {
@@ -38,13 +41,20 @@ abstract class ShieldMultiblock : Multiblock(), InteractableMultiblock {
 
 	abstract fun getShieldBlocks(sign: Sign): List<Vec3i>
 
-	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+	val displayCooldown = PerPlayerCooldown.messagedCooldown(5L, TimeUnit.SECONDS) {
+		Bukkit.getPlayer(it)?.userError("You're doing that too often!")
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) = displayCooldown.tryExec(player.uniqueId) {
 		val blocks: List<Vec3i> = getShieldBlocks(sign)
 
 		val world = sign.world
 		val (x0, y0, z0) = Vec3i(sign.location)
 
 		val start = System.nanoTime()
+
+		val barrier = Material.BARRIER.createBlockData()
+
 		Tasks.bukkitRunnable {
 			for ((dx, dy, dz) in blocks) {
 				val x = x0 + dx + 0.5
@@ -60,7 +70,7 @@ abstract class ShieldMultiblock : Multiblock(), InteractableMultiblock {
 					0.0,
 					0.0,
 					0.0,
-					Material.BARRIER.createBlockData()
+					barrier
 				)
 			}
 
