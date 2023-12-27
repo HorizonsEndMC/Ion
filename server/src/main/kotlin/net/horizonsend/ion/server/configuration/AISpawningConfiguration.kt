@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.Minin
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.MiningCorpSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.miningcorp.miningGuildTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.PirateSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.pirateShips
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.privateerTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSpawner
@@ -29,7 +30,7 @@ data class AISpawningConfiguration(
 	val templates: MutableList<AIStarshipTemplate> = mutableListOf(
 		AIStarshipTemplate(), // TODO remove
 		*privateerTemplates,
-		//TODO Pirate
+		*pirateShips,
 		//TODO Tsaii
 		*explorerTemplates,
 		*miningGuildTemplates

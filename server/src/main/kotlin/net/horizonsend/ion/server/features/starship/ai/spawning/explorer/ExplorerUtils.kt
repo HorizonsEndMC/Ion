@@ -41,7 +41,7 @@ private val smackTalkList = arrayOf(
 	text("")
 )
 
-val smackPrefix = text("Receiving transmission from civilian vessel: ", EXPLORER_LIGHT_CYAN)
+val smackPrefix = text("Receiving transmission from civilian vessel", EXPLORER_LIGHT_CYAN)
 
 val cruiseEndpoint: (AIController) -> Optional<Location> = lambda@{ controller: AIController ->
 	var iterations = 0
