@@ -100,6 +100,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
 			blueprint.type = starship.data.starshipType
+			blueprint.size = starship.initialBlockCount
 
 			saveBlueprint(blueprint)
 			sender.success("Updated blueprint $name")
