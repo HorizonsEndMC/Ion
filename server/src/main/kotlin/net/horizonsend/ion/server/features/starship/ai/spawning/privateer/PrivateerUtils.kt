@@ -34,7 +34,7 @@ private val smackTalkList = arrayOf(
 	text("Message 7")
 )
 
-val smackPrefix = text("Receiving transmission from privateer vessel: ", PRIVATEER_LIGHTER_TEAL)
+val smackPrefix = text("Receiving transmission from privateer vessel", PRIVATEER_LIGHTER_TEAL)
 
 // Privateer controllers passive, only becoming aggressive if fired upon
 val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {

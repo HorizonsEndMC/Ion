@@ -1,12 +1,80 @@
 package net.horizonsend.ion.server.features.starship.ai.spawning.pirate
 
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
+import net.horizonsend.ion.server.configuration.AISpawningConfiguration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
+import net.horizonsend.ion.server.features.starship.ai.module.combat.StarfighterCombatModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.RadiusMessageModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
+import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseModule
+import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
+import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
+import net.horizonsend.ion.server.features.starship.ai.module.positioning.StandoffPositioningModule
+import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 
 val PIRATE_LIGHT_RED = TextColor.fromHexString("#A06363")!!
 val PIRATE_SATURATED_RED = TextColor.fromHexString("#C63F3F")!!
 val PIRATE_DARK_RED = TextColor.fromHexString("#732525")!!
+
+private val smackTalkList = arrayOf<Component>(
+	text(""),
+	text(""),
+	text("")
+)
+
+private val pirateSmackPrefix = text("Receiving transmission from pirate vessel", PIRATE_SATURATED_RED)
+
+val pirateGunshipPulse = AIControllerFactories.registerFactory("PIRATE_GUNSHIP_PULSE") {
+	setControllerTypeName("Starfighter")
+	setModuleBuilder {
+		val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+
+		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
+		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+		builder.addModule("smackTalk", SmackTalkModule(it, pirateSmackPrefix, *smackTalkList))
+
+		builder.addModule("warning", RadiusMessageModule(it, mapOf(
+			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
+			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", NamedTextColor.RED)
+		)))
+
+		builder
+	}
+	build()
+}
+
+val pirateGunshipPlasma = AIControllerFactories.registerFactory("PIRATE_GUNSHIP_PLASMA") {
+	setControllerTypeName("Starfighter")
+	setModuleBuilder {
+		val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+
+		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 55.0))
+		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+		builder.addModule("smackTalk", SmackTalkModule(it, pirateSmackPrefix, *smackTalkList))
+
+		builder.addModule("warning", RadiusMessageModule(it, mapOf(
+			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
+			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", NamedTextColor.RED)
+		)))
+
+		builder
+	}
+	build()
+}
 
 val iskat = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "ISKAT",
@@ -93,9 +161,10 @@ val anaan = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Anaan",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Anaan",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP",
+	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
 val vendetta = AISpawningConfiguration.AIStarshipTemplate(
@@ -103,9 +172,11 @@ val vendetta = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Vendetta",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Vendetta",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP",
+	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
 val cormorant = AISpawningConfiguration.AIStarshipTemplate(
@@ -113,9 +184,11 @@ val cormorant = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Cormorant",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Cormorant",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP",
+	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
 val mantis = AISpawningConfiguration.AIStarshipTemplate(
@@ -123,9 +196,11 @@ val mantis = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Mantis",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Mantis",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP",
+	controllerFactory = "PIRATE_GUNSHIP_PULSE",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
 val hernstein = AISpawningConfiguration.AIStarshipTemplate(
@@ -133,9 +208,11 @@ val hernstein = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Hernstein",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP",
+	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
 val fyr = AISpawningConfiguration.AIStarshipTemplate(
@@ -143,9 +220,11 @@ val fyr = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Fyr",
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Fyr",
 	type = StarshipType.AI_GUNSHIP,
-	controllerFactory = "PRIVATEER_GUNSHIP",
+	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 100.0,
+	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
 val bloodStar = AISpawningConfiguration.AIStarshipTemplate(
@@ -156,4 +235,22 @@ val bloodStar = AISpawningConfiguration.AIStarshipTemplate(
 	controllerFactory = "PRIVATEER_CORVETTE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
+)
+
+val pirateShips = arrayOf(
+	iskat,
+	voss,
+	hector,
+	hiro,
+	wasp,
+	frenz,
+	tempest,
+	velasco,
+	anaan,
+	vendetta,
+	cormorant,
+	mantis,
+	hernstein,
+	fyr,
+	bloodStar
 )
