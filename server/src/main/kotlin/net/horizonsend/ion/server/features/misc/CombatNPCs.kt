@@ -201,7 +201,7 @@ object CombatNPCs : IonServerComponent(true) {
 			}
 
 
-			if (SLPlayer[event.player].wasKilled) {
+			if (SLPlayer[event.player].wasKilled && IonServer.legacySettings.master) { // TODO find a more permanent fix for server checks
 				event.player.inventory.clear()
 				event.player.health = 0.0
 				event.player.alert("Your NPC was killed while you were offline.")
