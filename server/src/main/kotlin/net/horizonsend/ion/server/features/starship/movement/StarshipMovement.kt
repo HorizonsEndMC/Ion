@@ -214,6 +214,12 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 	}
 
+	fun moveDisconnectLocation() {
+		val disconnectLoc = starship.pilotDisconnectLocation ?: return
+
+		starship.pilotDisconnectLocation = displacedVec(disconnectLoc)
+	}
+
 	private fun updateDirectControlCenter() {
 		val directControlCenter = playerShip?.directControlCenter ?: return
 		playerShip.directControlCenter = displaceLocation(directControlCenter)
