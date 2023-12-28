@@ -41,7 +41,6 @@ import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSigns
@@ -484,7 +483,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("cruise")
 	fun onCruise(sender: Player) {
 		val ship = getStarshipPiloting(sender)
-		val controller = ActivePlayerController[sender] ?: return
+		val controller = ActiveStarships.findByPilot(sender)?.controller ?: return
 
 		if (!StarshipCruising.isCruising(ship)) {
 			val dir = sender.location.direction.setY(0).normalize()
