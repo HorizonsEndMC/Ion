@@ -66,7 +66,7 @@ object PilotedStarships : IonServerComponent() {
 	override fun onEnable() {
 		listen<PlayerQuitEvent> { event ->
 			val loc = Vec3i(event.player.location)
-			val controller = ActivePlayerController[event.player] ?: return@listen
+			val controller = ActiveStarships.findByPilot(event.player)?.controller ?: return@listen
 
 			val starship = map[controller] ?: return@listen
 			unpilot(starship) // release the player's starship if they are piloting one
@@ -104,7 +104,7 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun pilot(starship: ActiveControlledStarship, player: Player) {
-		ActivePlayerController[player]?.let { check(!map.containsKey(it)) { "${player.name} is already piloting a starship" } }
+		ActiveStarships.findByPilot(player)?.controller?.let { check(!map.containsKey(it)) { "${player.name} is already piloting a starship" } }
 		check(starship.isWithinHitbox(player)) { "${player.name} is not in their ship!" }
 		removeFromCurrentlyRidingShip(player)
 
