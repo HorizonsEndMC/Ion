@@ -51,10 +51,14 @@ abstract class AISpawner(
 	fun tickPoints() {
 		handleSuccess()
 
-		if (Random.nextDouble() < pointChance) return
+		if (Random.nextDouble() <= pointChance) return
 
 		points++
 	}
+
+	fun getPoints() = points
+
+	fun setPoints(value: Int) { points = value }
 
 	private fun handleSuccess() {
 		if (points < pointThreshold) return
