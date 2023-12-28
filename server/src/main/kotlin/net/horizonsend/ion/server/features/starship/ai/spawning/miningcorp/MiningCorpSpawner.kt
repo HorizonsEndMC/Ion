@@ -11,7 +11,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 
-class MiningCorpSpawner  : BasicSpawner(
+class MiningCorpSpawner : BasicSpawner(
 	"MINING_CORP_SINGLE",
 	IonServer.aiSpawningConfiguration.spawners::miningCorpSpawner,
 ) {
@@ -29,7 +29,7 @@ class MiningCorpSpawner  : BasicSpawner(
 
 		val defaultConfiguration = AISpawnerConfiguration(
 			miniMessageSpawnMessage = "$miningGuild <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {3}, in {4}",
-			pointChance = 1.0,
+			pointChance = 0.8,
 			pointThreshold = 20 * 60 * 15,
 			minDistanceFromPlayer = 1000.0,
 			maxDistanceFromPlayer = 2500.0,
