@@ -96,6 +96,7 @@ class MiningCorpSpawner  : BasicSpawner(
 			worldSettings = listOf(
 				AIWorldSettings(
 					world = "Asteri",
+					rolls = 3,
 					tiers = mapOf(
 						"STANDARD" to 10,
 						"MODERATE" to 2
@@ -103,6 +104,7 @@ class MiningCorpSpawner  : BasicSpawner(
 				),
 				AIWorldSettings(
 					world = "Regulus",
+					rolls = 7,
 					tiers = mapOf(
 						"STANDARD" to 4,
 						"MODERATE" to 8,
@@ -111,6 +113,7 @@ class MiningCorpSpawner  : BasicSpawner(
 				),
 				AIWorldSettings(
 					world = "Sirius",
+					rolls = 5,
 					tiers = mapOf(
 						"STANDARD" to 10,
 						"MODERATE" to 2
@@ -118,6 +121,7 @@ class MiningCorpSpawner  : BasicSpawner(
 				),
 				AIWorldSettings(
 					world = "Ilios",
+					rolls = 2,
 					tiers = mapOf(
 						"STANDARD" to 2,
 						"MODERATE" to 2
@@ -125,6 +129,7 @@ class MiningCorpSpawner  : BasicSpawner(
 				),
 				AIWorldSettings(
 					world = "Horizon",
+					rolls = 10,
 					tiers = mapOf(
 						"MODERATE" to 8,
 						"ADVANCED" to 1,
@@ -133,6 +138,7 @@ class MiningCorpSpawner  : BasicSpawner(
 				),
 				AIWorldSettings(
 					world = "Trench",
+					rolls = 20,
 					tiers = mapOf(
 						"STANDARD" to 2,
 						"MODERATE" to 8,
@@ -142,6 +148,7 @@ class MiningCorpSpawner  : BasicSpawner(
 				),
 				AIWorldSettings(
 					world = "AU-0821",
+					rolls = 2,
 					tiers = mapOf(
 						"STANDARD" to 2,
 						"MODERATE" to 8,

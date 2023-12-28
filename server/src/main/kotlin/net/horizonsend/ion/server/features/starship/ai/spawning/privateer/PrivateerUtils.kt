@@ -230,7 +230,8 @@ val privateerTemplates = arrayOf(
 	veteran,
 	teneta,
 	furious,
-	inflict
+	inflict,
+	daybreak
 )
 
 fun findPrivateerSpawnLocation(configuration: AISpawningConfiguration.AISpawnerConfiguration): Location?  {
