@@ -76,7 +76,7 @@ object Bounties : IonServerComponent() {
 	}
 
 	/** Checks if the hunter has an active bounty on the target **/
-	private fun hasActive(hunter: SLPlayerId, target: SLPlayerId): Boolean {
+	fun hasActive(hunter: SLPlayerId, target: SLPlayerId): Boolean {
 		val mostRecent = BountyCache[hunter, target] ?: return false
 
 		if (mostRecent.claimTime < lastActive) return false
@@ -101,13 +101,13 @@ object Bounties : IonServerComponent() {
 			val killerBounty = PlayerCache[killer].bounty
 
 			val increaseReason = text()
-				.append(text("For killing ", NamedTextColor.RED))
-				.append(text(victim.name, NamedTextColor.DARK_RED))
-				.append(text(", ", NamedTextColor.RED))
-				.append(text(killer.name, NamedTextColor.DARK_RED))
-				.append(text("'s bounty was increased by ", NamedTextColor.RED))
+				.append(text("For killing ", RED))
+				.append(text(victim.name, DARK_RED))
+				.append(text(", ", RED))
+				.append(text(killer.name, DARK_RED))
+				.append(text("'s bounty was increased by ", RED))
 				.append(text((amount).toCreditsString(), NamedTextColor.GOLD))
-				.append(text("! It is now ", NamedTextColor.RED))
+				.append(text("! It is now ", RED))
 				.append(text((killerBounty + amount).toCreditsString(), NamedTextColor.GOLD))
 				.build()
 
@@ -169,12 +169,12 @@ object Bounties : IonServerComponent() {
 		ClaimedBounty.updateById(claimedBounty._id, setValue(ClaimedBounty::completed, true))
 
 		val message = text()
-			.append(text(hunter.name, NamedTextColor.DARK_RED))
-			.append(text(" has collected a bounty of ", NamedTextColor.RED))
+			.append(text(hunter.name, DARK_RED))
+			.append(text(" has collected a bounty of ", RED))
 			.append(text((bounty).toCreditsString(), NamedTextColor.GOLD))
-			.append(text(" for killing ", NamedTextColor.RED))
-			.append(text(target.name, NamedTextColor.DARK_RED))
-			.append(text(".", NamedTextColor.RED))
+			.append(text(" for killing ", RED))
+			.append(text(target.name, DARK_RED))
+			.append(text(".", RED))
 			.build()
 
 		Notify.online(message)
@@ -183,7 +183,7 @@ object Bounties : IonServerComponent() {
 		hunter.sendMessage(
 			text()
 				.append(text((bounty).toCreditsString(), NamedTextColor.GOLD))
-				.append(text(" has been added to your account.", NamedTextColor.RED))
+				.append(text(" has been added to your account.", RED))
 				.build()
 		)
 	}
@@ -195,8 +195,8 @@ object Bounties : IonServerComponent() {
 		SLPlayer.updateById(target.slPlayerId, inc(SLPlayer::bounty, amount))
 
 		val defaultReason = text()
-			.append(text(target.name, NamedTextColor.DARK_RED))
-			.append(text("'s bounty was increased by $amount! It is now ", NamedTextColor.RED))
+			.append(text(target.name, DARK_RED))
+			.append(text("'s bounty was increased by $amount! It is now ", RED))
 			.append(text((cached.bounty + amount).toCreditsString(), NamedTextColor.GOLD))
 			.build()
 
