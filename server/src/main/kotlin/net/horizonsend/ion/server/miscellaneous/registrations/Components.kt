@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.misc.CombatNPCs
 import net.horizonsend.ion.server.features.misc.Decomposers
 import net.horizonsend.ion.server.features.misc.DutyModeMonitor
+import net.horizonsend.ion.server.features.misc.EventLogger
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.PacketHandler
 import net.horizonsend.ion.server.features.misc.Shuttles
@@ -166,6 +167,7 @@ val components: List<IonComponent> = listOf(
 	LastPilotedStarship,
 
 	DutyModeMonitor,
+	EventLogger,
 
 	SpaceStations,
 	Sidebar,

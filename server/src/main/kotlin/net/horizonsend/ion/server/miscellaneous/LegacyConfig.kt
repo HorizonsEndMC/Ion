@@ -14,9 +14,7 @@ data class LegacyConfig(
 	val territoryCost: Int = 10,
 
 	// @Comment("Settings for chat channels")
-	val chat: Chat = Chat(),
-
-	val dutyModeMonitorWebhook: String? = null,
+	val chat: Chat = Chat()
 ) {
 	data class Chat(
 		// @Comment("The maximum amount of blocks away someone can be and still see someone's local chat")

@@ -28,6 +28,8 @@ data class ServerConfiguration(
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
 	val soldShips: List<Ship> = listOf(),
 	val mobSpawns: Map<String, PlanetSpawnConfig> = mapOf(),
+	val dutyModeMonitorWebhook: String? = null,
+	val eventLoggerWebhook: String? = null,
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
