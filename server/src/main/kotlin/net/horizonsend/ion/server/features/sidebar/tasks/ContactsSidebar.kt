@@ -23,7 +23,6 @@ import net.horizonsend.ion.server.features.starship.StarshipType.TRANSPORT
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.kyori.adventure.key.Key
@@ -84,7 +83,7 @@ object ContactsSidebar {
             ActiveStarships.all().filter {
                 it.world == player.world &&
                         it.centerOfMass.toVector().distanceSquared(playerVector) <= MainSidebar.CONTACTS_SQRANGE &&
-                        it.controller !== ActivePlayerController[player] &&
+                        it.controller !== ActiveStarships.findByPilot(player)?.controller &&
                         (it.controller as? PlayerController)?.player?.gameMode != GameMode.SPECTATOR
             }
         } else listOf()

@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.control.signs
 import net.horizonsend.ion.server.features.starship.BoardingRamps
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg
@@ -17,7 +16,7 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 	CRUISE("[cruise]", arrayOf("&3Cruise".colorize(), "&8Control".colorize(), "&c- Look Direction".colorize(), "&c- /cruise ".colorize())) {
 		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
 			val starship = findPilotedPlayerStarship(player) ?: return
-			val controller = ActivePlayerController[player] ?: return
+			val controller = ActiveStarships.findByPilot(player)?.controller ?: return
 
 			if (rightClick) {
 				val dir = player.location.direction.setY(0).normalize()
