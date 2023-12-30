@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.ai.module.combat.StarfighterCombatModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.starship.ai.module.misc.RadiusMessageModule
 import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
 import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseModule
@@ -29,6 +30,33 @@ private val smackTalkList = arrayOf<Component>(
 )
 
 private val pirateSmackPrefix = text("Receiving transmission from pirate vessel", PIRATE_SATURATED_RED)
+
+// Privateer controllers passive, only becoming aggressive if fired upon
+val pirateStarfighter = AIControllerFactories.registerFactory("PIRATE_STARFIGHTER") {
+	setControllerTypeName("Starfighter")
+	setModuleBuilder {
+		val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+		val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
+		builder.addModule("combat", StarfighterCombatModule(it, targeting::findTarget))
+
+		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
+		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
+		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
+		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+		builder.addModule("smackTalk", SmackTalkModule(it, pirateSmackPrefix, *smackTalkList))
+		builder.addModule(
+			"warning", RadiusMessageModule(it, mapOf(
+				1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
+				500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", NamedTextColor.RED)
+			))
+		)
+
+		builder
+	}
+	build()
+}
 
 val pirateGunshipPulse = AIControllerFactories.registerFactory("PIRATE_GUNSHIP_PULSE") {
 	setControllerTypeName("Starfighter")
@@ -81,7 +109,7 @@ val iskat = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Iskat",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Iskat",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
@@ -91,7 +119,7 @@ val voss = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Voss",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Voss",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
@@ -101,7 +129,7 @@ val hector = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Hector",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Hector",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
@@ -111,7 +139,7 @@ val hiro = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Hiro",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Hiro",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
@@ -121,7 +149,7 @@ val wasp = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Wasp",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Wasp",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
@@ -131,7 +159,7 @@ val frenz = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Frenz",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Frenz",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
@@ -141,7 +169,7 @@ val tempest = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Tempest",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Tempest",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )
@@ -151,7 +179,7 @@ val velasco = AISpawningConfiguration.AIStarshipTemplate(
 	schematicName = "Velasco",
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Velasco",
 	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	controllerFactory = "PIRATE_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
 )

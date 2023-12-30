@@ -9,20 +9,24 @@ import java.util.function.Supplier
 
 /**
  * @param standardPosition, the positioning supplier to use if it is not fleeing
- * @param targetingModule, if the targeting module returns a target, it will flee from that target
+ * @param selector, if the average shield health reaches this value, it will flee from that target
  **/
 class FleeModule(
 	controller: AIController,
 	private val standardPosition: Supplier<Vec3i?>,
-	private val targetingModule: TargetingModule
+	private val targetingModule: TargetingModule,
+	private val selector: (AIController, AITarget?) -> Boolean
 ) : AIModule(controller), Supplier<Vec3i?> {
 	override fun get(): Vec3i? {
 		val target = targetingModule.findTarget()
-
-		return target?.let { getOppositeLocation(it) } ?: standardPosition.get()
+		return if (selector(controller, target)) fleeFinder(target) else standardPosition.get()
 	}
 
-	private fun getOppositeLocation(target: AITarget): Vec3i {
+	private fun fleeFinder(target: AITarget?): Vec3i? {
+		if (target == null) { // Unlikely edge case
+			return standardPosition.get()
+		}
+
 		// Gets a position opposite of the target 500 blocks away
 		val away = target
 			.getLocation()
