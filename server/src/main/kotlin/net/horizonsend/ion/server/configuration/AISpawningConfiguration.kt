@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.ai.spawning.pirate.pirateShi
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PrivateerSpawner
 import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.privateerTemplates
 import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.TsaiiSpawner
+import net.horizonsend.ion.server.features.starship.ai.spawning.tsaii.tsaiiTemplates
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import org.apache.commons.lang.math.DoubleRange
 import org.bukkit.Bukkit
@@ -31,7 +32,7 @@ data class AISpawningConfiguration(
 		AIStarshipTemplate(), // TODO remove
 		*privateerTemplates,
 		*pirateShips,
-		//TODO Tsaii
+		*tsaiiTemplates,
 		*explorerTemplates,
 		*miningGuildTemplates
 	),

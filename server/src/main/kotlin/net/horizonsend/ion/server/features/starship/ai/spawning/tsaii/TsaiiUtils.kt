@@ -2,21 +2,25 @@ package net.horizonsend.ion.server.features.starship.ai.spawning.tsaii
 
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories
+import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.registerFactory
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.kyori.adventure.text.format.TextColor
 
-val TSAII_LIGHT_ORANGE = TextColor.fromHexString("#A1543A")!!
-val TSAII_DARK_ORANGE = TextColor.fromHexString("#9C3614")!!
+val TSAII_LIGHT_ORANGE = TextColor.fromHexString("#F37F58")!!
+val TSAII_MEDIUM_ORANGE = TextColor.fromHexString("#E56034")!!
+val TSAII_DARK_ORANGE = TextColor.fromHexString("#A1543A")!!
+val TSAII_VERY_DARK_ORANGE = TextColor.fromHexString("#9C3614")!!
 
-val tsaiiFrigate: AIControllerFactory = TODO()
-val tsaiiCorvette: AIControllerFactory = TODO()
-val tsaiiGunship: AIControllerFactory = TODO()
-val tsaiiStarfighter: AIControllerFactory = TODO()
+val tsaiiFrigate: AIControllerFactory = registerFactory("TSAII_FRIGATE") { AIControllerFactory.Builder(AIControllerFactories.frigate).build() } // TODO
+val tsaiiCorvette: AIControllerFactory = registerFactory("TSAII_CORVETTE") { AIControllerFactory.Builder(AIControllerFactories.corvette).build() } // TODO
+val tsaiiGunship: AIControllerFactory = registerFactory("TSAII_GUNSHIP") { AIControllerFactory.Builder(AIControllerFactories.gunship).build() } // TODO
+val tsaiiStarfighter: AIControllerFactory = registerFactory("TSAII_STARFIGHTER") { AIControllerFactory.Builder(AIControllerFactories.starfighter).build() } // TODO
 
 val bastion = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BASTION",
 	schematicName = "Bastion",
-	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Bastion",
+	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Bastion",
 	type = StarshipType.AI_BATTLECRUISER,
 	controllerFactory = "TSAII_FRIGATE",
 	xpMultiplier = 0.5,
@@ -26,7 +30,7 @@ val bastion = AISpawningConfiguration.AIStarshipTemplate(
 val reaver = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "REAVER",
 	schematicName = "Reaver",
-	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Reaver",
+	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Reaver",
 	type = StarshipType.AI_DESTROYER,
 	controllerFactory = "AI_FRIGATE",
 	xpMultiplier = 0.5,
@@ -36,7 +40,7 @@ val reaver = AISpawningConfiguration.AIStarshipTemplate(
 val raider = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "RAIDER",
 	schematicName = "Raider",
-	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Raider",
+	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Raider",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "TSAII_GUNSHIP",
 	xpMultiplier = 0.5,
@@ -46,7 +50,7 @@ val raider = AISpawningConfiguration.AIStarshipTemplate(
 val scythe = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "SCYTHE",
 	schematicName = "Scythe",
-	miniMessageName = "<${TSAII_LIGHT_ORANGE.asHexString()}>Scythe",
+	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Scythe",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "TSAII_STARFIGHTER",
 	xpMultiplier = 0.5,
@@ -56,9 +60,17 @@ val scythe = AISpawningConfiguration.AIStarshipTemplate(
 val swarmer = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "SWARMER",
 	schematicName = "Swarmer",
-	miniMessageName = "<${TSAII_LIGHT_ORANGE.asHexString()}>Swarmer",
+	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Swarmer",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "TSAII_STARFIGHTER",
 	xpMultiplier = 0.5,
 	creditReward = 100.0
+)
+
+val tsaiiTemplates = arrayOf(
+	swarmer,
+	scythe,
+	raider,
+//	reaver,
+//	bastion
 )
