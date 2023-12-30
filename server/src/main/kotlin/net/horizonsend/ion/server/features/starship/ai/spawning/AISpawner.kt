@@ -35,11 +35,11 @@ abstract class AISpawner(
 	val identifier: String,
 	private val configurationSupplier: Supplier<AISpawningConfiguration.AISpawnerConfiguration>,
 ) {
-	private val pointChance: Double = configuration.pointChance
-	private val pointThreshold: Int = configuration.pointThreshold
-
-	val configuration get() = configurationSupplier.get()
 	protected val log: Logger = LoggerFactory.getLogger(javaClass)
+	val configuration get() = configurationSupplier.get()
+
+	private val pointChance get(): Double = configuration.pointChance
+	private val pointThreshold get(): Int = configuration.pointThreshold
 
 	private var points: Int = 0
 	private var lastTriggered: Long = 0
@@ -51,7 +51,7 @@ abstract class AISpawner(
 	fun tickPoints() {
 		handleSuccess()
 
-		if (Random.nextDouble() <= pointChance) return
+		if (Random.nextDouble() >= pointChance) return
 
 		points++
 	}
