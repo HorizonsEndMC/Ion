@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactories.registerFactory
 import net.horizonsend.ion.server.features.starship.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.starship.ai.module.combat.StarfighterCombatModule
+import net.horizonsend.ion.server.features.starship.ai.module.misc.FleeModule
 import net.horizonsend.ion.server.features.starship.ai.module.misc.RadiusMessageModule
 import net.horizonsend.ion.server.features.starship.ai.module.misc.SmackTalkModule
 import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseModule
@@ -34,7 +35,7 @@ private val smackTalkList = arrayOf(
 	text("Message 7")
 )
 
-val smackPrefix = text("Receiving transmission from privateer vessel", PRIVATEER_LIGHTER_TEAL)
+private val smackPrefix = text("Receiving transmission from privateer vessel", PRIVATEER_LIGHTER_TEAL)
 
 // Privateer controllers passive, only becoming aggressive if fired upon
 val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {
@@ -47,9 +48,10 @@ val privateerStarfighter = registerFactory("PRIVATEER_STARFIGHTER") {
 
 		val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, targeting::findTarget, 25.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
-		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
-		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
+		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
+		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
 
+		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
 		builder.addModule("warning", RadiusMessageModule(it, mapOf(
 			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
 			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", RED)
@@ -71,9 +73,10 @@ val privateerGunship = registerFactory("PRIVATEER_GUNSHIP") {
 
 		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
-		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
-		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
+		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
+		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
 
+		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
 		builder.addModule("warning", RadiusMessageModule(it, mapOf(
 			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
 			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", RED)
@@ -95,9 +98,10 @@ val privateerCorvette = registerFactory("PRIVATEER_CORVETTE") {
 
 		val positioning = builder.addModule("positioning", StandoffPositioningModule(it, targeting::findTarget, 55.0))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
-		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
-		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
+		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
+		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
 
+		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *smackTalkList))
 		builder.addModule("warning", RadiusMessageModule(it, mapOf(
 			1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
 			500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", RED)

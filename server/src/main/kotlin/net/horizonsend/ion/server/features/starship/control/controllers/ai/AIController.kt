@@ -91,6 +91,7 @@ class AIController(
 	val shields get() = starship.shields
 	val shieldCount get() = shields.size
 	fun getAverageShieldHealth() = (shields.sumOf { it.powerRatio }) / shieldCount.toDouble()
+	fun getMinimumShieldHealth() = (shields.minOf { it.powerRatio })
 
 	override fun tick() {
 		for ((_, module) in modules) {
