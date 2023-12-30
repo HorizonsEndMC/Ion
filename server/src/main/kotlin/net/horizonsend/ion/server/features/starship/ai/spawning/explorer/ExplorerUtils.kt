@@ -87,7 +87,7 @@ val explorerCruise = AIControllerFactories.registerFactory("EXPLORER_CRUISE") {
 		// Movement handling
 		val positioning = builder.addModule("positioning", BasicPositioningModule(it, getLocationSupplier().invoke(it).orNull() ?: Location(it.getWorld(), 0.0, 0.0, 0.0)))
 		val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPositionVec3i))
-		val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targeting))
+		val flee = builder.addModule("flee", FleeModule(it, positioning::getDestination, targeting) { _, target -> target != null }) // Flee if there is a target found by the highest damage module
 		builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 		// Messaging
@@ -195,8 +195,8 @@ val minhaulTitanium = AISpawningConfiguration.AIStarshipTemplate(
 val exotranTitanium = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "EXOTRAN_TITANIUM",
 	schematicName = "Exotran_titanium",
-	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]Transporter",
-	type = StarshipType.AI_TRANSPORT,
+	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<gray>Titanium<${HE_LIGHT_GRAY.asHexString()}>]",
+	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
@@ -210,7 +210,7 @@ val exotranChetherite = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "EXOTRAN_CHETHERITE",
 	schematicName = "Exotran_chetherite",
 	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<light_purple>Chetherite<${HE_LIGHT_GRAY.asHexString()}>]",
-	type = StarshipType.AI_TRANSPORT,
+	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
@@ -224,7 +224,7 @@ val exotranRedstone = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "EXOTRAN_REDSTONE",
 	schematicName = "Exotran_redstone",
 	miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Exotran <${HE_LIGHT_GRAY.asHexString()}>[<red>Redstone<${HE_LIGHT_GRAY.asHexString()}>]",
-	type = StarshipType.AI_TRANSPORT,
+	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "EXPLORER_CRUISE",
 	xpMultiplier = 0.5,
 	creditReward = 100.0,
