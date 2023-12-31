@@ -115,71 +115,72 @@ fun findMiningCorpSpawnPosition(configuration: AISpawningConfiguration.AISpawner
 
 val ostrich = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "OSTRICH",
-//	schematicName = "Ostrich",
+	schematicName = "Ostrich",
 	miniMessageName = "<$MINING_CORP_DARK_ORANGE>Ostrich",
-//	type = StarshipType.AI_LIGHT_FREIGHTER,
+	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "MINING_CORP_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.4,
+	creditReward = 1050.0
 )
 
 val woodpecker = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "WOODPECKER",
-//	schematicName = "Woodpecker",
+	schematicName = "Woodpecker",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Woodpecker",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "MINING_CORP_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.4,
+	creditReward = 375.0
 )
 
 val beaver = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BEAVER",
-//	schematicName = "Beaver",
+	schematicName = "Beaver",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Beaver",
-//	type = StarshipType.AI_TRANSPORT,
+	type = StarshipType.AI_TRANSPORT,
 	controllerFactory = "MINING_CORP_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.4,
+	creditReward = 100.0,
+	autoWeaponSets = mutableSetOf(AISpawningConfiguration.AIStarshipTemplate.WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
 val badger = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "BADGER",
-//	schematicName = "Badger",
+	schematicName = "Badger",
 	miniMessageName = "<${MINING_CORP_DARK_ORANGE.asHexString()}>Badger",
-//	type = StarshipType.AI_LIGHT_FREIGHTER,
+	type = StarshipType.AI_LIGHT_FREIGHTER,
 	controllerFactory = "MINING_CORP_STARFIGHTER",
-	xpMultiplier = 0.5,
+	xpMultiplier = 0.4,
 	creditReward = 100.0
 )
 
 val typeV11 = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TYPE_V-11",
-//	schematicName = "typeV11",
+	schematicName = "typeV11",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Type <${HEColorScheme.HE_LIGHT_GRAY.asHexString()}>V-11",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "MINING_CORP_STARFIGHTER",
-	xpMultiplier = 0.5,
+	xpMultiplier = 0.4,
 	creditReward = 100.0
 )
 
 val typeA21b = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TYPE_A-21B",
-//	schematicName = "typeA21b",
+	schematicName = "typeA21b",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Type <${HEColorScheme.HE_LIGHT_GRAY.asHexString()}>A-21b",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "MINING_CORP_STARFIGHTER",
-	xpMultiplier = 0.5,
+	xpMultiplier = 0.4,
 	creditReward = 100.0
 )
 
 val typeI41 = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "TYPE_I-41",
-//	schematicName = "typeI41",
+	schematicName = "typeI41",
 	miniMessageName = "<${MINING_CORP_LIGHT_ORANGE.asHexString()}>Type <${HEColorScheme.HE_LIGHT_GRAY.asHexString()}>I-41",
 	type = StarshipType.AI_SHUTTLE,
 	controllerFactory = "MINING_CORP_STARFIGHTER",
-	xpMultiplier = 0.5,
+	xpMultiplier = 0.4,
 	creditReward = 100.0
 )
 
