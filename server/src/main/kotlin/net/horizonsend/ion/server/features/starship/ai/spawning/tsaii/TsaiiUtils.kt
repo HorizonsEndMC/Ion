@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisSt
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.StandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.ClosestTargetingModule
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 
 val TSAII_LIGHT_ORANGE = TextColor.fromHexString("#F37F58")!!
@@ -21,11 +22,11 @@ val TSAII_MEDIUM_ORANGE = TextColor.fromHexString("#E56034")!!
 val TSAII_DARK_ORANGE = TextColor.fromHexString("#A1543A")!!
 val TSAII_VERY_DARK_ORANGE = TextColor.fromHexString("#9C3614")!!
 
-private val smackPrefix = text("Tsaii Prefix", TSAII_DARK_ORANGE)
+private val smackPrefix = text("Receiving transmission from Tsaii vessel", TSAII_LIGHT_ORANGE)
 private val tsaiiSmackTalk = arrayOf(
-	text(""),
-	text(""),
-	text("")
+	text("I'll leave nothing but scrap"),
+	text("I'll cut you to bacon"),
+	text("When I'm done with you, I'll mantle your skull!")
 )
 
 val tsaiiFrigate: AIControllerFactory = registerFactory("TSAII_FRIGATE") {
@@ -50,7 +51,10 @@ val tsaiiStarfighter = registerFactory("TSAII_STARFIGHTER") { // TODO
 		builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 		builder.addModule("smackTalk", SmackTalkModule(it, smackPrefix, *tsaiiSmackTalk))
 
-		builder.addModule("warning", RadiusMessageModule(it, mapOf(1500.0 to text("You can't run or hide in space, little ship!", TextColor.fromHexString("#FFA500")))))
+		builder.addModule("warning", RadiusMessageModule(it, mapOf(
+			2500.0 to text("Get any closer and you'll be meeting your maker.", TextColor.fromHexString("#FFA500")),
+			1500.0 to text("You can't run or hide in space, little ship!", NamedTextColor.RED),
+		)))
 
 		builder
 	}
