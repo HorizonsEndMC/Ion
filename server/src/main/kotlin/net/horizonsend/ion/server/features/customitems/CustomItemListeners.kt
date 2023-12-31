@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.meta.Damageable
 
 class CustomItemListeners : SLEventListener() {
@@ -20,6 +21,8 @@ class CustomItemListeners : SLEventListener() {
 	@Suppress("Unused")
 	fun rightClick(event: PlayerInteractEvent) {
 		if (event.item == null) return
+
+		if (event.hand != EquipmentSlot.HAND) return
 
 		val customItem = event.item?.customItem ?: return
 		when (event.action) {
