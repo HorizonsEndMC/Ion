@@ -11,6 +11,13 @@ import net.horizonsend.ion.server.features.starship.ai.module.movement.CruiseMod
 import net.horizonsend.ion.server.features.starship.ai.module.pathfinding.SteeringPathfindingModule
 import net.horizonsend.ion.server.features.starship.ai.module.positioning.AxisStandoffPositioningModule
 import net.horizonsend.ion.server.features.starship.ai.module.targeting.HighestDamagerTargetingModule
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_LIGHT_TEAL
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.PRIVATEER_MEDIUM_TEAL
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.dagger
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.daybreak
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.furious
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.inflict
+import net.horizonsend.ion.server.features.starship.ai.spawning.privateer.teneta
 import net.horizonsend.ion.server.features.starship.ai.spawning.template.BasicSpawner
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
@@ -51,8 +58,6 @@ class MiningCorpReinforcementSpawner(
 		return origin
 	}
 
-	fun getHighestDamager() = controller.starship.damagers.maxBy { it.value.points.get() }.key
-
 	override fun getStarshipTemplate(world: World): Pair<AISpawningConfiguration.AIStarshipTemplate, Component> {
 		// If the value is null, it is trying to spawn a ship in a world that it is not configured for.=
 		val tier = configuration.tiers.random()
@@ -91,11 +96,6 @@ class MiningCorpReinforcementSpawner(
 			build()
 		}
 
-		val fighter1 = AISpawningConfiguration.AIStarshipTemplate(
-			identifier = "REINFORCEMENTS",
-			controllerFactory = "MINING_CORP_REINFORCEMENTS"
-		) // Vestas for now
-
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
 			miniMessageSpawnMessage = "${MiningCorpSpawner.miningGuild}<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 			pointChance = 0.0,
@@ -106,10 +106,15 @@ class MiningCorpReinforcementSpawner(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "REINFORCEMENTS",
 					nameList = mapOf(
-						"Pilot" to 2,
+						"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie" to 2,
+						"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee" to 5
 					),
 					ships = mapOf(
-						fighter1.identifier to 2,
+						dagger.identifier to 2,
+						teneta.identifier to 2,
+						furious.identifier to 2,
+						inflict.identifier to 2,
+						daybreak.identifier to 2
 					)
 				)
 			)
