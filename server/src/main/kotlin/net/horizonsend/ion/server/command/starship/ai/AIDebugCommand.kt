@@ -10,7 +10,7 @@ import co.aikar.commands.annotation.Subcommand
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.Configuration
-import net.horizonsend.ion.common.utils.text.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
