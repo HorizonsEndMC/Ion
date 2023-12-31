@@ -33,9 +33,9 @@ class TsaiiSpawner : BasicSpawner(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "STANDARD",
 					nameList = mapOf(
-						"<$TSAII_DARK_ORANGE> Tsaii Raider" to 2,
-						"<$TSAII_DARK_ORANGE> Tsaii Champion" to 2,
-						"<$TSAII_DARK_ORANGE> Tsaii Warlord" to 2
+						"<$TSAII_DARK_ORANGE>Tsaii Raider" to 2,
+						"<$TSAII_DARK_ORANGE>Tsaii Champion" to 2,
+						"<$TSAII_DARK_ORANGE>Tsaii Warlord" to 2
 					),
 					ships = mapOf(
 						raider.identifier to 5,
