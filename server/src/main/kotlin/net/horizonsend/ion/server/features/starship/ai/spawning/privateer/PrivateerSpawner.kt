@@ -83,8 +83,8 @@ class PrivateerSpawner : BasicSpawner(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "EXPERT",
 					nameList = mapOf(
-						"<${PRIVATEER_MEDIUM_TEAL}>Expert Privateer <${PRIVATEER_LIGHT_TEAL}>Ace" to 5,
-						"<${PRIVATEER_MEDIUM_TEAL}>Expert Privateer <${PRIVATEER_LIGHT_TEAL}>Veteran" to 2
+						"<${PRIVATEER_MEDIUM_TEAL}>Privateer <${PRIVATEER_LIGHT_TEAL}>Ace" to 5,
+						"<${PRIVATEER_MEDIUM_TEAL}>Privateer <${PRIVATEER_LIGHT_TEAL}>Veteran" to 2
 					),
 					ships = mapOf(
 						bulwark.identifier to 4,
