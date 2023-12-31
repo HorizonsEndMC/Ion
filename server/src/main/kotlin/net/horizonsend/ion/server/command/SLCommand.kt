@@ -30,7 +30,6 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandException
@@ -145,11 +144,6 @@ abstract class SLCommand : BaseCommand() {
 		is Player -> PlayerCache[sender].nationOid?.let { RelationCache[it, nation] }
 		else -> null
 	} ?: NationRelation.Level.NONE
-
-	protected fun sendBreak(sender: CommandSender, color: SLTextStyle) = sender msg lineBreak(color)
-
-	protected fun lineBreak(color: SLTextStyle = SLTextStyle.DARK_GRAY): String =
-		"$color============================================="
 
 	protected fun failIf(boolean: Boolean, message: () -> String) {
 		if (boolean) {
