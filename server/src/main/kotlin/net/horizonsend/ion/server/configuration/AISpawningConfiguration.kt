@@ -29,7 +29,6 @@ import kotlin.jvm.optionals.getOrNull
 @Serializable
 data class AISpawningConfiguration(
 	val templates: MutableList<AIStarshipTemplate> = mutableListOf(
-		AIStarshipTemplate(), // TODO remove
 		*privateerTemplates,
 		*pirateShips,
 		*tsaiiTemplates,
