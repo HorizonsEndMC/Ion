@@ -24,9 +24,11 @@ val PIRATE_SATURATED_RED = TextColor.fromHexString("#C63F3F")!!
 val PIRATE_DARK_RED = TextColor.fromHexString("#732525")!!
 
 private val smackTalkList = arrayOf<Component>(
-	text(""),
-	text(""),
-	text("")
+	text("Nice day, Nice Ship. I think ill take it!"),
+	text("I'll plunder your booty!"),
+	text("Scram or we'll blow you to pieces!"),
+	text("Someones too curious for their own good."),
+	text("Don't say I didn't warn ya, mate.")
 )
 
 private val pirateSmackPrefix = text("Receiving transmission from pirate vessel", PIRATE_SATURATED_RED)
@@ -48,8 +50,8 @@ val pirateStarfighter = AIControllerFactories.registerFactory("PIRATE_STARFIGHTE
 		builder.addModule("smackTalk", SmackTalkModule(it, pirateSmackPrefix, *smackTalkList))
 		builder.addModule(
 			"warning", RadiusMessageModule(it, mapOf(
-				1000.0 to text("You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.", TextColor.fromHexString("#FFA500")),
-				500.0 to text("You have violated restricted airspace. Your vessel will be fired upon.", NamedTextColor.RED)
+				1000.0 to text("Scram! or we'll blow you to pieces!", TextColor.fromHexString("#FFA500")),
+				500.0 to text("Now you've pissed us off, scum.", NamedTextColor.RED)
 			))
 		)
 
