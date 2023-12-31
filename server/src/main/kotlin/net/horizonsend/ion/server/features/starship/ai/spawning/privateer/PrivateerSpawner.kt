@@ -75,7 +75,7 @@ class PrivateerSpawner : BasicSpawner(
 					),
 					ships = mapOf(
 						contractor.identifier to 4,
-						daybreak.identifier to 2,
+//						daybreak.identifier to 2,
 						veteran.identifier to 4,
 						patroller.identifier to 2
 					)
@@ -88,7 +88,7 @@ class PrivateerSpawner : BasicSpawner(
 					),
 					ships = mapOf(
 						bulwark.identifier to 4,
-						daybreak.identifier to 2,
+//						daybreak.identifier to 2,
 						contractor.identifier to 1,
 					)
 				)
