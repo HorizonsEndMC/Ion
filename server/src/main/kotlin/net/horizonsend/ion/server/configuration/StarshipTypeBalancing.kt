@@ -264,7 +264,36 @@ data class StarshipTypeBalancing(
 	val aiMediumFreighter: StarshipBalancing = mediumFreighter,
 	val aiHeavyFreighter: StarshipBalancing = heavyFreighter,
 
-	val aiStarfighter: StarshipBalancing = starfighter,
+	val aiStarfighter: StarshipBalancing = StarshipBalancing(
+		sneakFlyAccelDistance = 4,
+		maxSneakFlyAccel = 4,
+		interdictionRange = 600,
+		hyperspaceRangeMultiplier = 1.5,
+		weapons = StarshipWeapons(
+			pulseCannon = StarshipWeapons.StarshipWeapon(
+				range = 180.0,
+				speed = 400.0,
+				areaShieldDamageMultiplier = 2.0,
+				starshipShieldDamageMultiplier = 2.0,
+				particleThickness = 0.4,
+				explosionPower = 1.875f,
+				volume = 10,
+				pitch = 0.5f,
+				soundName = "entity.firework_rocket.blast_far",
+				powerUsage = 2400,
+				length = 2,
+				angleRadians = 180.0,
+				convergeDistance = 16.0,
+				extraDistance = 2,
+				fireCooldownMillis = 250,
+				aimDistance = 0,
+				applyCooldownToAll = true,
+				minBlockCount = 0,
+				maxBlockCount = 4000,
+				canFire = true
+			),
+		)
+	),
 	val aiGunship: StarshipBalancing = gunship,
 	val aiCorvette: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 20,
