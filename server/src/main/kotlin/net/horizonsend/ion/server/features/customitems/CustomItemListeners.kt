@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.customitems
 
-import net.horizonsend.ion.common.extensions.information
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.features.customitems.CustomItems.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -10,7 +9,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
