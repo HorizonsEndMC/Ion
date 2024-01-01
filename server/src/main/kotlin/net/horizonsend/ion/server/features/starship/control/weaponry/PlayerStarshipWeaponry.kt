@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.control.weaponry
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
+import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
+import org.bukkit.Material
 
 object PlayerStarshipWeaponry : IonServerComponent() {
 	@EventHandler(priority = EventPriority.LOW)
@@ -47,6 +49,39 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 
 		if (event.action.isRightClick) {
 			val damager = player.damager()
+			if (player.isSneaking) {
+				// I am truly sorry, but i could not think of a better way to do this
+				val ignoreBlockList = setOf(Material.AIR, Material.BLACK_STAINED_GLASS, Material.GRAY_STAINED_GLASS, Material.RED_STAINED_GLASS, Material.LIGHT_GRAY_STAINED_GLASS,Material.BLACK_STAINED_GLASS_PANE, Material.GRAY_STAINED_GLASS_PANE, Material.RED_STAINED_GLASS_PANE, Material.LIGHT_GRAY_STAINED_GLASS_PANE)
+				val hitpoints = player.getLineOfSight(ignoreBlockList, 600)
+				val detectedBlock = hitpoints.last()
+				player.debug("hitpoints recorded")
+				val item = player.inventory.itemInMainHand
+				val clockWeaponSet = item.displayNameString.lowercase()
+				var weaponSet = starship.weaponSetSelections[player.uniqueId]
+				if (hitpoints.isEmpty()) {
+					starship.autoTurretTargets.remove(weaponSet)
+					player.debug("unset turrets as hitpoints is empty")
+					return
+				}
+				player.debug("first hitpoints detected:")
+				player.debug(detectedBlock.x.toString())
+				player.debug(detectedBlock.y.toString())
+				player.debug(detectedBlock.z.toString())
+				player.debug("detected hit on:")
+				player.debug(detectedBlock.blockData.asString)
+				if (starship.weaponSets.keys().contains(clockWeaponSet)) {
+					weaponSet = clockWeaponSet
+					player.debug("found a weaponset")
+					ActiveStarships.getInWorld(player.world).find { it.contains(detectedBlock.x, detectedBlock.y, detectedBlock.z) }?.let {
+						player.debug("found a ship")
+						starship.autoTurretTargets[weaponSet] = AutoTurretTargeting.target(it)
+						player.debug("set the target to $it")
+						return
+					}
+					starship.autoTurretTargets.remove(weaponSet)
+				}
+				return
+			}
 			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(damager, 0)
 
 			player.debug("elapsedSinceRCLICK = $elapsedSinceRightClick")
