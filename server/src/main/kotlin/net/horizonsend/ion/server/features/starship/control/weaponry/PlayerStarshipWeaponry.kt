@@ -44,14 +44,50 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		if (event.action.isLeftClick) {
 			event.isCancelled = true
 		}
-
 		player.debug("player is rclicking")
-
 		if (event.action.isRightClick) {
 			val damager = player.damager()
-			if (player.isSneaking) {
+			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(damager, 0)
+
+			player.debug("elapsedSinceRCLICK = $elapsedSinceRightClick")
+
+			if (elapsedSinceRightClick > TimeUnit.MILLISECONDS.toNanos(250)) {
+				player.debug("Heavy weapon fire is not on minimum cooldown")
+				rightClickTimes[damager] = System.nanoTime()
+				return
+			}
+
+			player.debug("it's a doubleclick, going on")
+			rightClickTimes.remove(damager)
+		}
+
+		if (event.clickedBlock?.type?.isSign == true) return
+
+		player.debug("Didn't click sign, trying to fire")
+
+		manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
+
+		player.debugBanner("END")
+	}
+	@EventHandler(priority = EventPriority.LOW)
+	fun onShiftRClick(event: PlayerInteractEvent) {
+
+		val player = event.player
+
+		player.debugBanner("INTERACT EVENT TURRET TARGETING START")
+		if (!PlayerStarshipControl.isHoldingController(player)) {
+			return
+		}
+		val starship = ActiveStarships.findByPassenger(player) ?: return
+
+		if (event.action.isLeftClick) {
+			event.isCancelled = true
+		}
+
+		if (player.isSneaking) {
+			if (event.action.isRightClick) {
 				// I am truly sorry, but i could not think of a better way to do this
-				val ignoreBlockList = setOf(Material.AIR, Material.BLACK_STAINED_GLASS, Material.GRAY_STAINED_GLASS, Material.RED_STAINED_GLASS, Material.LIGHT_GRAY_STAINED_GLASS,Material.BLACK_STAINED_GLASS_PANE, Material.GRAY_STAINED_GLASS_PANE, Material.RED_STAINED_GLASS_PANE, Material.LIGHT_GRAY_STAINED_GLASS_PANE)
+				val ignoreBlockList = setOf(Material.AIR, Material.BLACK_STAINED_GLASS, Material.GRAY_STAINED_GLASS, Material.RED_STAINED_GLASS, Material.LIGHT_GRAY_STAINED_GLASS, Material.BLACK_STAINED_GLASS_PANE, Material.GRAY_STAINED_GLASS_PANE, Material.RED_STAINED_GLASS_PANE, Material.LIGHT_GRAY_STAINED_GLASS_PANE)
 				val hitpoints = player.getLineOfSight(ignoreBlockList, 600)
 				val detectedBlock = hitpoints.last()
 				player.debug("hitpoints recorded")
@@ -82,29 +118,8 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 				}
 				return
 			}
-			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(damager, 0)
-
-			player.debug("elapsedSinceRCLICK = $elapsedSinceRightClick")
-
-			if (elapsedSinceRightClick > TimeUnit.MILLISECONDS.toNanos(250)) {
-				player.debug("Heavy weapon fire is not on minimum cooldown")
-				rightClickTimes[damager] = System.nanoTime()
-				return
-			}
-
-			player.debug("it's a doubleclick, going on")
-			rightClickTimes.remove(damager)
 		}
-
-		if (event.clickedBlock?.type?.isSign == true) return
-
-		player.debug("Didn't click sign, trying to fire")
-
-		manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
-
-		player.debugBanner("END")
 	}
-
 	@EventHandler
 	fun onPlayerItemHoldEvent(event: PlayerItemHeldEvent) {
 		val itemStack: ItemStack = event.player.inventory.getItem(event.newSlot) ?: return

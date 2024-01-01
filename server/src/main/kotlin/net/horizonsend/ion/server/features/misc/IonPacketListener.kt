@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.starship.control.weaponry.PlayerStarshipWeaponry.onClick
+import net.horizonsend.ion.server.features.starship.control.weaponry.PlayerStarshipWeaponry.onShiftRClick
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.block.BlockFace
 import org.bukkit.event.block.Action
@@ -42,6 +43,15 @@ class RightClickListener : PacketAdapter(
 					null,
 					BlockFace.DOWN
 				)
+			)
+			onShiftRClick(
+					PlayerInteractEvent(
+							e.player,
+							Action.RIGHT_CLICK_BLOCK,
+							null,
+							null,
+							BlockFace.DOWN
+					)
 			)
 		}
 	}
