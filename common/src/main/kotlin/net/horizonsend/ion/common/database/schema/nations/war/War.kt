@@ -10,15 +10,22 @@ import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.inc
+import org.litote.kmongo.or
 import java.util.Date
 
 /**
+ * @param name The name of this war. Can be renamed via staff command.
+ *
+ * @param startTime The time the war was initiated
+ *
+ * @param points The current score of the war. Defensive victories decrease the score, offensive victories increase the score.
+ *
  * @param result The end result of the war. Null if it is active.
  **/
 data class War(
 	override val _id: Oid<War>,
 
-	val name: String? = null,
+	val name: String,
 
 	val aggressor: Oid<Nation>,
 	val aggressorGoal: WarGoal,
@@ -38,10 +45,12 @@ data class War(
 		ensureIndex(War::defender)
 		ensureIndex(War::startTime)
 	}) {
-		fun participantQuery(aggressor: Oid<Nation>, defender: Oid<Nation>) = and(War::aggressor eq aggressor, War::defender eq defender)
+		fun strictQuery(aggressor: Oid<Nation>, defender: Oid<Nation>) = and(War::aggressor eq aggressor, War::defender eq defender)
+		fun participantQuery(nationOne: Oid<Nation>, nationTwo: Oid<Nation>) = or(strictQuery(nationOne, nationTwo), strictQuery(nationTwo, nationOne))
+
 		fun activeQuery(aggressor: Oid<Nation>, defender: Oid<Nation>) = and(participantQuery(aggressor, defender), War::result eq null)
 
-		fun create(aggressor: Oid<Nation>, defender: Oid<Nation>, goal: WarGoal): Oid<War> = trx { session ->
+		fun create(aggressor: Oid<Nation>, defender: Oid<Nation>, goal: WarGoal, name: String): Oid<War> = trx { session ->
 			require(none(session, activeQuery(aggressor, defender))) // Require that there is not an existing active war between the two nations
 //			require(!isTruce(aggressor, defender)) // Cannot create a war if there is an enforced peace TODO
 
@@ -51,6 +60,7 @@ data class War(
 				session,
 				War(
 					_id = id,
+					name = name,
 					aggressor = aggressor,
 					defender = defender,
 					aggressorGoal= goal

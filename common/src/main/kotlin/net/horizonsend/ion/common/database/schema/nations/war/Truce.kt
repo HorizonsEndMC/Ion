@@ -31,7 +31,7 @@ class Truce(
 		fun participantQuery(victor: Oid<Nation>, defeated: Oid<Nation>) = and(Truce::victor eq victor, Truce::defeated eq defeated)
 		fun nationQuery(nationOne: Oid<Nation>, nationTwo: Oid<Nation>) = or(participantQuery(nationOne, nationTwo), participantQuery(nationTwo, nationOne))
 
-		fun start(victor: Oid<Nation>, defeated: Oid<Nation>, war: Oid<War>, goal: WarGoal): Oid<Truce> = trx { session ->
+		fun create(victor: Oid<Nation>, defeated: Oid<Nation>, war: Oid<War>, goal: WarGoal): Oid<Truce> = trx { session ->
 			//TODO checks
 
 			val id = objId<Truce>()

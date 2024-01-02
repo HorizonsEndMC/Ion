@@ -91,4 +91,6 @@ object WarCache : ManualCache() {
 	fun findActive() {
 
 	}
+
+	operator fun get(id: Oid<War>): WarData = warData[id] ?: error("War $id wasn't cached!")
 }
