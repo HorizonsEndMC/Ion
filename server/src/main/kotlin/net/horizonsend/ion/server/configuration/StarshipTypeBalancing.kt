@@ -148,7 +148,8 @@ data class StarshipTypeBalancing(
 				boostChargeSeconds = 7,
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				minBlockCount = 3400
 			)
 		)
 	),
@@ -405,7 +406,7 @@ class StarshipWeapons(
 		volume = 10,
 		pitch = 0.5f,
 		soundName = "entity.firework_rocket.blast_far",
-		powerUsage = 2400,
+		powerUsage = 2550,
 		length = 2,
 		angleRadians = 180.0,
 		convergeDistance = 16.0,
