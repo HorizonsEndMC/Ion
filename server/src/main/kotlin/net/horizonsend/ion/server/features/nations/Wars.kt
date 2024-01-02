@@ -237,7 +237,7 @@ object Wars : IonComponent() {
 		player.success("The request has been sent. ")
 	}
 
-	fun checkStalemateRequests(playerId: SLPlayerId): Collection<RequestedStalemate>? {
+	private fun checkStalemateRequests(playerId: SLPlayerId): Collection<RequestedStalemate>? {
 		val slPlayer = SLPlayer[playerId] ?: return null
 
 		val nation = slPlayer.nation ?: return null
@@ -269,5 +269,6 @@ object Wars : IonComponent() {
 			event.player.sendMessage(request.format())
 		}
 	}
+
 
 }

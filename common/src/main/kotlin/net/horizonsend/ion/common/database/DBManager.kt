@@ -32,6 +32,8 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
+import net.horizonsend.ion.common.database.schema.nations.war.Truce
+import net.horizonsend.ion.common.database.schema.nations.war.War
 import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
@@ -138,6 +140,9 @@ object DBManager : IonComponent() {
 
 		Cryopod.init()
 		ClaimedBounty.init()
+
+		War.init()
+		Truce.init()
 	}
 
 	override fun onDisable() {
