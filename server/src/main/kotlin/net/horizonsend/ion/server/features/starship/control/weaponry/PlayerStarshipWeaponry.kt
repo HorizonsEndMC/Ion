@@ -100,16 +100,10 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 					return
 				}
 				player.debug("first hitpoints detected:")
-				player.debug(detectedBlock.x.toString())
-				player.debug(detectedBlock.y.toString())
-				player.debug(detectedBlock.z.toString())
-				player.debug("detected hit on:")
 				player.debug(detectedBlock.blockData.asString)
 				if (starship.weaponSets.keys().contains(clockWeaponSet)) {
 					weaponSet = clockWeaponSet
-					player.debug("found a weaponset")
 					ActiveStarships.getInWorld(player.world).find { it.contains(detectedBlock.x, detectedBlock.y, detectedBlock.z) }?.let {
-						player.debug("found a ship")
 						starship.autoTurretTargets[weaponSet] = AutoTurretTargeting.target(it)
 						player.debug("set the target to $it")
 						return
