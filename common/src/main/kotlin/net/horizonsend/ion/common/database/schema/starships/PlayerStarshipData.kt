@@ -63,6 +63,6 @@ data class PlayerStarshipData(
 
 	/** assumes that it's also deactivated */
 	fun isLockActive(): Boolean {
-		return isLockEnabled && System.currentTimeMillis() - lastUsed >= LOCK_TIME_MS
+		return isLockEnabled && System.currentTimeMillis() - lastUsed >= LOCK_TIME_MS && !isInactive(captain.lastSeen)
 	}
 }
