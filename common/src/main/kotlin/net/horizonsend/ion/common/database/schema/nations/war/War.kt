@@ -13,46 +13,47 @@ import org.litote.kmongo.inc
 import java.util.Date
 
 /**
- *
- *
  * @param result The end result of the war. Null if it is active.
  **/
-data class ActiveWar(
-	override val _id: Oid<ActiveWar>,
+data class War(
+	override val _id: Oid<War>,
 
 	val name: String? = null,
 
 	val aggressor: Oid<Nation>,
+	val aggressorGoal: WarGoal,
+
 	val defender: Oid<Nation>,
+	val defenderGoal: WarGoal = Humiliate,
+	val defenderHasSetGoal: Boolean = false,
 
 	val startTime: Date = Date(System.currentTimeMillis()),
 
-	val goal: WarGoal,
 	val points: Int = 0,
 
 	val result: Result? = null
 ) : DbObject {
-	companion object : OidDbObjectCompanion<ActiveWar>(ActiveWar::class, setup = {
-		ensureIndex(ActiveWar::aggressor)
-		ensureIndex(ActiveWar::defender)
-		ensureIndex(ActiveWar::startTime)
+	companion object : OidDbObjectCompanion<War>(War::class, setup = {
+		ensureIndex(War::aggressor)
+		ensureIndex(War::defender)
+		ensureIndex(War::startTime)
 	}) {
-		fun participantQuery(aggressor: Oid<Nation>, defender: Oid<Nation>) = and(ActiveWar::aggressor eq aggressor, ActiveWar::defender eq defender)
-		fun activeQuery(aggressor: Oid<Nation>, defender: Oid<Nation>) = and(participantQuery(aggressor, defender), ActiveWar::result eq null)
+		fun participantQuery(aggressor: Oid<Nation>, defender: Oid<Nation>) = and(War::aggressor eq aggressor, War::defender eq defender)
+		fun activeQuery(aggressor: Oid<Nation>, defender: Oid<Nation>) = and(participantQuery(aggressor, defender), War::result eq null)
 
-		fun create(aggressor: Oid<Nation>, defender: Oid<Nation>, goal: WarGoal): Oid<ActiveWar> = trx { session ->
+		fun create(aggressor: Oid<Nation>, defender: Oid<Nation>, goal: WarGoal): Oid<War> = trx { session ->
 			require(none(session, activeQuery(aggressor, defender))) // Require that there is not an existing active war between the two nations
 //			require(!isTruce(aggressor, defender)) // Cannot create a war if there is an enforced peace TODO
 
-			val id = objId<ActiveWar>()
+			val id = objId<War>()
 
 			col.insertOne(
 				session,
-				ActiveWar(
+				War(
 					_id = id,
 					aggressor = aggressor,
 					defender = defender,
-					goal= goal
+					aggressorGoal= goal
 				)
 			)
 
@@ -62,20 +63,20 @@ data class ActiveWar(
 		/**
 		 * Ends the specified war
 		 **/
-		fun end(id: Oid<ActiveWar>, aggressorVictory: Boolean) = trx {
+		fun end(id: Oid<War>, aggressorVictory: Boolean) = trx {
 
 		}
 
-		fun addPoints(activeWar: Oid<ActiveWar>, points: Int) {
+		fun addPoints(war: Oid<War>, points: Int) {
 			require(points > 0)
 
-			updateById(activeWar, inc(ActiveWar::points, points))
+			updateById(war, inc(War::points, points))
 		}
 
-		fun subtractPoints(activeWar: Oid<ActiveWar>, points: Int) {
+		fun subtractPoints(war: Oid<War>, points: Int) {
 			require(points > 0)
 
-			updateById(activeWar, inc(ActiveWar::points, -points))
+			updateById(war, inc(War::points, -points))
 		}
 	}
 

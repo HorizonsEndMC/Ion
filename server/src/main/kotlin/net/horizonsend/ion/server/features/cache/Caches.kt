@@ -6,6 +6,8 @@ import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.cache.nations.TruceCache
+import net.horizonsend.ion.common.database.cache.nations.WarCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
@@ -33,7 +35,9 @@ object Caches : IonServerComponent() {
 
 		CargoCrates,
 		EcoStations,
-		SpaceStationCache
+		SpaceStationCache,
+		WarCache,
+		TruceCache
 	)
 
 	override fun onEnable() = caches.forEach(Cache::load)

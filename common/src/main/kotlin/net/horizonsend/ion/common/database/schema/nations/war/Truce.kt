@@ -15,6 +15,8 @@ import java.util.Date
 class Truce(
 	override val _id: Oid<Truce>,
 
+	val war: Oid<War>,
+
 	val victor: Oid<Nation>,
 	val defeated: Oid<Nation>,
 
@@ -29,22 +31,25 @@ class Truce(
 		fun participantQuery(victor: Oid<Nation>, defeated: Oid<Nation>) = and(Truce::victor eq victor, Truce::defeated eq defeated)
 		fun nationQuery(nationOne: Oid<Nation>, nationTwo: Oid<Nation>) = or(participantQuery(nationOne, nationTwo), participantQuery(nationTwo, nationOne))
 
-		fun start(victor: Oid<Nation>, defeated: Oid<Nation>, goal: WarGoal): Oid<Truce> = trx { session ->
+		fun start(victor: Oid<Nation>, defeated: Oid<Nation>, war: Oid<War>, goal: WarGoal): Oid<Truce> = trx { session ->
 			//TODO checks
 
 			val id = objId<Truce>()
 
 			col.insertOne(session,
 				Truce(
-					id,
-					victor,
-					defeated,
-					goal,
-					Date(System.currentTimeMillis())
+					_id = id,
+					war = war,
+					victor = victor,
+					defeated = defeated,
+					enforcedGoal = goal,
+					startTime = Date(System.currentTimeMillis())
 				)
 			)
 
 			return@trx id
 		}
 	}
+
+	fun getTruceEndDate(): Date = enforcedGoal.getTruceEndDate(startTime)
 }
