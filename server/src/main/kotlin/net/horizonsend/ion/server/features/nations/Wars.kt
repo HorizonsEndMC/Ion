@@ -10,7 +10,6 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.war.Truce
 import net.horizonsend.ion.common.database.schema.nations.war.War
 import net.horizonsend.ion.common.database.schema.nations.war.WarGoal
-import net.horizonsend.ion.common.database.schema.nations.war.WhitePeace
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -80,7 +79,7 @@ object Wars : IonComponent() {
 	private fun createStartEmbed(declaringName: String, defendingName: String, goal: WarGoal): Embed {
 		return Embed(
 			title = "$declaringName has declared war on $defendingName!",
-			description = "$declaringName is demanding ${goal.getVerb()} $defendingName!"
+			description = "$declaringName is demanding ${goal.verb} $defendingName!"
 		)
 	}
 
@@ -135,7 +134,7 @@ object Wars : IonComponent() {
 			victor = document.defender, // Order shouldn't matter
 			defeated = document.aggressor,
 			war = id,
-			goal = WhitePeace
+			goal = WarGoal.WHITE_PEACE
 		)
 
 		War.updateById(id, setValue(War::result, War.Result.WHITE_PEACE))

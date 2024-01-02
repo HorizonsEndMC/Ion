@@ -31,7 +31,7 @@ data class War(
 	val aggressorGoal: WarGoal,
 
 	val defender: Oid<Nation>,
-	val defenderGoal: WarGoal = Humiliate,
+	val defenderGoal: WarGoal = WarGoal.HUMILIATE,
 	val defenderHasSetGoal: Boolean = false,
 
 	val startTime: Date = Date(System.currentTimeMillis()),

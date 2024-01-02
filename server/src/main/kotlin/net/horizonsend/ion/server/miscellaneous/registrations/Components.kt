@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.StationSieges
+import net.horizonsend.ion.server.features.nations.Wars
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.ores.CustomOrePlacement
 import net.horizonsend.ion.server.features.progression.Levels
@@ -197,4 +198,6 @@ val components: List<IonComponent> = listOf(
 
 	AntiAirCannons,
 	CustomOrePlacement,
+
+	Wars
 )
