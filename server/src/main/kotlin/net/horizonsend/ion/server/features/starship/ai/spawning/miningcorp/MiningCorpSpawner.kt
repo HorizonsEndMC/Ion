@@ -60,7 +60,7 @@ class MiningCorpSpawner : BasicSpawner(
 						typeV11.identifier to 2,
 						typeA21b.identifier to 2,
 						typeI41.identifier to 2,
-						badger.identifier to 3
+//						badger.identifier to 3
 					)
 				),
 				AISpawnerTier(
@@ -76,7 +76,7 @@ class MiningCorpSpawner : BasicSpawner(
 						typeA21b.identifier to 2,
 						typeI41.identifier to 2,
 						beaver.identifier to 6,
-						badger.identifier to 2
+//						badger.identifier to 2
 					)
 				),
 				AISpawnerTier(
@@ -88,7 +88,7 @@ class MiningCorpSpawner : BasicSpawner(
 					),
 					ships = mapOf(
 						ostrich.identifier to 2,
-						badger.identifier to 2,
+//						badger.identifier to 2,
 						beaver.identifier to 3
 					)
 				)
