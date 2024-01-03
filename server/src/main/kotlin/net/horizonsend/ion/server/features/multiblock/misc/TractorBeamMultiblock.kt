@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.misc
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
@@ -53,9 +54,11 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 	}
 
 	private fun <T: Cancellable> tryDescend(player: Player, event: T) {
+		player.debug("trying to descend")
+
 		val below = player.location.block.getRelative(BlockFace.DOWN)
 
-		if (below.type != Material.GLASS && !below.type.isStainedGlass) return
+		if (below.type != Material.GLASS && !below.type.isStainedGlass) return player.debug("cancelled 1")
 
 		var distance = 1
 		val maxDistance = below.y - 1
@@ -70,11 +73,11 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 			distance++
 		}
 
-		if (distance < 3) return
+		if (distance < 3) return player.debug("cancelled 2")
 
 		val block = below.getRelative(BlockFace.DOWN, distance)
 
-		if (!checkMultiblock(block)) return
+		if (!checkMultiblock(below)) return player.debug("cancelled 3")
 
 		event.isCancelled = true
 
@@ -96,7 +99,7 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 
 			if (!checkMultiblock(block)) continue
 
-			event.isCancelled = true
+//			event.isCancelled = true
 
 			player.teleport(
 				block.location.add(0.5, 1.5, 0.5),
@@ -110,9 +113,17 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 	private fun checkMultiblock(block: Block): Boolean {
 		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
 			val sign = block.getRelative(face, 2)
-			if (!sign.type.isWallSign) continue
+			if (!sign.type.isWallSign) {
+				println("Not sign $sign")
+				continue
+			}
 
-			if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) continue
+			println("Sign at $sign")
+
+			if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) {
+				println("Not tractor beam")
+				continue
+			}
 
 			return true
 		}
@@ -140,9 +151,9 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerToggleSneakEvent(event: PlayerToggleSneakEvent) {
-		if (!event.isSneaking) return
-		if (ActiveStarships.findByPilot(event.player) != null) return
-		if (event.player.inventory.itemInMainHand.type != Material.CLOCK) return
+		if (!event.isSneaking) return event.player.debug("sneak cancelled 1")
+		if (ActiveStarships.findByPilot(event.player) != null) return event.player.debug("sneak cancelled 1")
+		if (event.player.inventory.itemInMainHand.type != Material.CLOCK) return event.player.debug("sneak cancelled 1")
 
 		tryDescend(event.player, event)
 	}
