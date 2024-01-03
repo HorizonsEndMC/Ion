@@ -89,8 +89,8 @@ val bastion = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Bastion",
 	type = StarshipType.AI_BATTLECRUISER,
 	controllerFactory = "TSAII_FRIGATE",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.8,
+	creditReward = 8000.0
 )
 
 val reaver = AISpawningConfiguration.AIStarshipTemplate(
@@ -99,8 +99,8 @@ val reaver = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Reaver",
 	type = StarshipType.AI_DESTROYER,
 	controllerFactory = "AI_FRIGATE",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.8,
+	creditReward = 8000.0
 )
 
 val raider = AISpawningConfiguration.AIStarshipTemplate(
@@ -109,8 +109,8 @@ val raider = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${TSAII_VERY_DARK_ORANGE.asHexString()}>Raider",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "TSAII_GUNSHIP",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.8,
+	creditReward = 3000.0
 )
 
 val scythe = AISpawningConfiguration.AIStarshipTemplate(
@@ -119,8 +119,8 @@ val scythe = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Scythe",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "TSAII_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.8,
+	creditReward = 1850.0
 )
 
 val swarmer = AISpawningConfiguration.AIStarshipTemplate(
@@ -129,8 +129,8 @@ val swarmer = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${TSAII_DARK_ORANGE.asHexString()}>Swarmer",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "TSAII_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.8,
+	creditReward = 1850.0
 )
 
 val tsaiiTemplates = arrayOf(

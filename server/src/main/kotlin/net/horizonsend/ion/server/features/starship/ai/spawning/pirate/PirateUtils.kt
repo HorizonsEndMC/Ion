@@ -112,8 +112,8 @@ val iskat = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Iskat",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val voss = AISpawningConfiguration.AIStarshipTemplate(
@@ -122,8 +122,8 @@ val voss = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Voss",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val hector = AISpawningConfiguration.AIStarshipTemplate(
@@ -132,8 +132,8 @@ val hector = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Hector",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val hiro = AISpawningConfiguration.AIStarshipTemplate(
@@ -142,8 +142,8 @@ val hiro = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Hiro",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val wasp = AISpawningConfiguration.AIStarshipTemplate(
@@ -152,8 +152,8 @@ val wasp = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Wasp",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val frenz = AISpawningConfiguration.AIStarshipTemplate(
@@ -162,8 +162,8 @@ val frenz = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Frenz",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val tempest = AISpawningConfiguration.AIStarshipTemplate(
@@ -172,8 +172,8 @@ val tempest = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Tempest",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val velasco = AISpawningConfiguration.AIStarshipTemplate(
@@ -182,8 +182,8 @@ val velasco = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_LIGHT_RED.asHexString()}>Velasco",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PIRATE_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val anaan = AISpawningConfiguration.AIStarshipTemplate(
@@ -192,8 +192,8 @@ val anaan = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Anaan",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 1850.0,
 	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
 
@@ -203,8 +203,8 @@ val vendetta = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Vendetta",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 1850.0,
 	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
@@ -215,8 +215,8 @@ val cormorant = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Cormorant",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 1850.0,
 	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
@@ -227,8 +227,8 @@ val mantis = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Mantis",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PIRATE_GUNSHIP_PULSE",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 1850.0,
 	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
@@ -239,8 +239,8 @@ val hernstein = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 1850.0,
 	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
@@ -251,8 +251,8 @@ val fyr = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Fyr",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PIRATE_GUNSHIP_PLASMA",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 1850.0,
 	manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 	autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 )
@@ -263,8 +263,8 @@ val bloodStar = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Bloodstar",
 	type = StarshipType.AI_CORVETTE,
 	controllerFactory = "PRIVATEER_CORVETTE",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 2650.0
 )
 
 val pirateShips = arrayOf(
