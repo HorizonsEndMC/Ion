@@ -4,13 +4,17 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Default
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.proxy.features.cache.PlayerCache
 import net.horizonsend.ion.proxy.sendRichMessage
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.CommandSender
+import net.horizonsend.ion.proxy.utils.slPlayerId
+import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
 import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.chat.ComponentBuilder
+import net.md_5.bungee.api.connection.ProxiedPlayer
 
-private val convo = mutableMapOf<CommandSender, CommandSender>()
+private val conversation = mutableMapOf<SLPlayerId, SLPlayerId>()
 
 @CommandAlias("msg|message|tell")
 class MessageCommand : BaseCommand() {
@@ -20,41 +24,39 @@ class MessageCommand : BaseCommand() {
 
 	@Default
 	@CommandCompletion("@players")
-	fun command(
-		player: CommandSender,
-		target: String,
-		message: String
-	) {
-		val target = ProxyServer.getInstance().getPlayer(target) ?: run {
-			player.sendMessage(
-				*ComponentBuilder()
-					.append("Target not found!")
-					.color(ChatColor.RED)
-					.create()
-			)
+	@Suppress("unused")
+	fun command(player: ProxiedPlayer, target: String, message: String) {
+		val wrapped = WrappedPlayer(player)
 
-			return
-		}
+		val targetPlayer = ProxyServer.getInstance().getPlayer(target) ?: return wrapped.userError("Target not found!")
+		val cached = PlayerCache[targetPlayer.slPlayerId]
 
-		val message = message.replace("${target.name} ", "")
+		val formatted = message.replace("${targetPlayer.name} ", "")
 
-		player.sendRichMessage(format.invoke("me", target.name, message))
-		target.sendRichMessage(format.invoke(player.name, "me", message))
+		player.sendRichMessage(format.invoke("me", targetPlayer.name, formatted))
 
-		convo[player] = target
-		convo[target] = player
+		// Let the sender see that the message has been sent, but don't send it to the recipient, or set the convo
+		if (cached.blockedPlayerIDs.contains(player.slPlayerId)) return
+
+		targetPlayer.sendRichMessage(format.invoke(player.name, "me", formatted))
+
+		conversation[player.slPlayerId] = targetPlayer.slPlayerId
+		conversation[targetPlayer.slPlayerId] = player.slPlayerId
 	}
 }
 
 @CommandAlias("r|reply")
 class ReplyCommand : BaseCommand() {
 	@Default
-	fun command(
-		player: CommandSender,
-		message: String
-	) {
-		val target = convo[player] ?: run {
-			player.sendRichMessage("<#ff7f3f>You aren't talking to anyone!")
+	@Suppress("unused")
+	fun command(player: ProxiedPlayer, message: String) {
+		val wrapped = WrappedPlayer(player)
+
+		val id = conversation[player.slPlayerId]?.uuid ?: return wrapped.userError("Theres no one to reply to.")
+
+		val target = ProxyServer.getInstance().getPlayer(id) ?: run {
+			wrapped.userError("The person you were talking to is no longer online!")
+
 			return
 		}
 
