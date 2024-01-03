@@ -179,10 +179,10 @@ val protector = AISpawningConfiguration.AIStarshipTemplate(
 	identifier = "PROTECTOR",
 	schematicName = "Protector",
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Protector",
-	type = StarshipType.AI_STARFIGHTER,
-	controllerFactory = "PRIVATEER_STARFIGHTER",
+	type = StarshipType.AI_GUNSHIP,
+	controllerFactory = "PRIVATEER_GUNSHIP",
 	xpMultiplier = 0.6,
-	creditReward = 950.0
+	creditReward = 1850.0
 )
 
 val veteran = AISpawningConfiguration.AIStarshipTemplate(
