@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.modules.AIRewardsProvider
+import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
@@ -69,6 +70,7 @@ fun createAIShipFromTemplate(
 		createController
 	) {
 		it.rewardsProvider = AIRewardsProvider(it, template)
+		it.sinkMessageFactory = AISinkMessageFactory(it)
 		callback(it)
 	}
 }
