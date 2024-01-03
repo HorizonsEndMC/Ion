@@ -66,11 +66,15 @@ fun template(
 	return template(text(message, color), paramColor, useQuotesAroundObjects, *parameters)
 }
 
+fun template(message: Component, vararg parameters: Any?): Component = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, useQuotesAroundObjects: Boolean = true, vararg parameters: Any?): Component = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = useQuotesAroundObjects, *parameters)
+fun template(message: Component, paramColor: TextColor, vararg parameters: Any?): Component = template(message = message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
+
 fun template(
 	message: Component,
 	paramColor: TextColor = NamedTextColor.WHITE,
 	useQuotesAroundObjects: Boolean = true,
-	vararg parameters: Any
+	vararg parameters: Any?
 ): Component {
 	val replacement = TextReplacementConfig.builder()
 		.match(Pattern.compile("\\{([0-9]*?)}"))
