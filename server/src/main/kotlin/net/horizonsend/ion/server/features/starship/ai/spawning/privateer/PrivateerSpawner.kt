@@ -60,7 +60,7 @@ class PrivateerSpawner : BasicSpawner(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Veteran" to 2,
 					),
 					ships = mapOf(
-//						contractor.identifier to 2,
+						contractor.identifier to 2,
 						teneta.identifier to 2,
 						veteran.identifier to 2,
 //						patroller.identifier to 2
@@ -74,7 +74,7 @@ class PrivateerSpawner : BasicSpawner(
 						"<${PRIVATEER_MEDIUM_TEAL}>System Defense <${PRIVATEER_LIGHT_TEAL}>Pilot" to 2
 					),
 					ships = mapOf(
-//						contractor.identifier to 4,
+						contractor.identifier to 4,
 //						daybreak.identifier to 2,
 						veteran.identifier to 4,
 //						patroller.identifier to 2
@@ -89,7 +89,7 @@ class PrivateerSpawner : BasicSpawner(
 					ships = mapOf(
 						bulwark.identifier to 4,
 //						daybreak.identifier to 2,
-//						contractor.identifier to 1,
+						contractor.identifier to 1,
 					)
 				)
 			),
