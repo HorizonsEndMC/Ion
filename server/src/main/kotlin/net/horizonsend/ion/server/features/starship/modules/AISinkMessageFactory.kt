@@ -36,7 +36,7 @@ class AISinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactor
 
 		val message = ofChildren(sinkMessage, assistPrefix, assists.values.join(separator = Component.newline()))
 
-		if (arena) Bukkit.getServer().sendMessage(message) else Notify.online(message)
+		if (arena) Bukkit.getServer().sendMessage(message) else Notify.chatAndGlobal(message)
 	}
 
 	private fun getSinkMessage(arena: Boolean, killerDamager: Damager): Component {
