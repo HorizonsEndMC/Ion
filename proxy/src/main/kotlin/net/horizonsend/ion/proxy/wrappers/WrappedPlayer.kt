@@ -1,5 +1,6 @@
 package net.horizonsend.ion.proxy.wrappers
 
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.CommonPlayer
 import net.horizonsend.ion.common.utils.luckPerms
 import net.horizonsend.ion.proxy.PLUGIN
@@ -17,6 +18,7 @@ class WrappedPlayer(private val inner: ProxiedPlayer) : CommonPlayer, Forwarding
 
 	override val name: String get() = inner.name
 	override val uniqueId: UUID get() = inner.uniqueId
+	val slPlayerId get() = uniqueId.slPlayerId
 
 	override fun getDisplayName(): Component = legacyAmpersand().deserialize(inner.displayName)
 	override fun getUser(): User = luckPerms.getPlayerAdapter(ProxiedPlayer::class.java).getUser(inner)

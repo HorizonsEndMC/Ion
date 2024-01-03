@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
@@ -13,7 +14,9 @@ import org.litote.kmongo.pull
 object BlockCommand : SLCommand() {
 	@CommandAlias("block")
 	@Suppress("unused")
+	@CommandCompletion("@players")
 	fun onBlock(sender: Player, player: String) = asyncCommand(sender) {
+		if (sender.name == player) fail { "You can't block yourself!" }
 		val resolvedPlayer = SLPlayer[player] ?: fail { "Player $player not found!" }
 		val cached = PlayerCache[sender]
 
@@ -26,7 +29,9 @@ object BlockCommand : SLCommand() {
 
 	@CommandAlias("unblock")
 	@Suppress("unused")
+	@CommandCompletion("@players")
 	fun onUnblock(sender: Player, player: String) = asyncCommand(sender) {
+		if (sender.name == player) fail { "You can't block yourself!" }
 		val resolvedPlayer = SLPlayer[player] ?: fail { "Player $player not found!" }
 		val cached = PlayerCache[sender]
 
