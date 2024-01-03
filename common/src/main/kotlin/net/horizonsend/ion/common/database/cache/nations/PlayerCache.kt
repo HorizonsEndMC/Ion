@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.containsUpdated
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
+import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -46,6 +47,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var waypointsEnabled: Boolean = true,
 		var compactWaypoints: Boolean = true,
+
+		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
 
 	val PLAYER_DATA: MutableMap<UUID, PlayerData> = ConcurrentHashMap()
@@ -200,6 +203,14 @@ abstract class AbstractPlayerCache : ManualCache() {
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
 					data.bounty = it.double()
+				}
+			}
+
+			change[SLPlayer::blockedPlayerIDs]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					data.blockedPlayerIDs = it.mappedSet { it.slPlayerId() }
 				}
 			}
 		}

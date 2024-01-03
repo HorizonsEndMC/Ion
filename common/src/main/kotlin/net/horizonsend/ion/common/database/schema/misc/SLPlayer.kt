@@ -72,6 +72,8 @@ data class SLPlayer(
 	var beaconsEnabled: Boolean = true,
 	var waypointsEnabled: Boolean = true,
 	var compactWaypoints: Boolean = true,
+
+	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {
