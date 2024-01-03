@@ -5,6 +5,7 @@ import io.papermc.paper.event.player.AsyncChatEvent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -28,6 +29,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.miscellaneous.utils.PlayerWrapper.Companion.common
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -68,7 +70,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				}
 			}
 
-			val component = formatChatMessage(empty(), player, event, messageColor)
+			val component = formatChatMessage(empty(), player, event, messageColor, player.slPlayerId)
 			globalAction(component)
 
 			try {
@@ -94,7 +96,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		private val distanceSquared = LegacySettings.chat.localDistance * LegacySettings.chat.localDistance
 
 		override fun onChat(player: Player, event: AsyncChatEvent) {
-			val component = formatChatMessage(text("Local", YELLOW, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
+			val component = formatChatMessage(text("Local", YELLOW, TextDecoration.BOLD), player, event, messageColor, player.slPlayerId).buildChatComponent()
 
 			for (other in player.world.players) {
 				if (other.location.distanceSquared(player.location) > distanceSquared) continue
@@ -112,7 +114,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return player.userError("You're not on a planet! To go back to global chat, use /global")
 			}
 
-			val component = formatChatMessage(text("Planet", GREEN, TextDecoration.BOLD), player, event, messageColor).buildChatComponent()
+			val component = formatChatMessage(text("Planet", GREEN, TextDecoration.BOLD), player, event, messageColor, player.slPlayerId).buildChatComponent()
 
 			for (other in player.world.players) {
 				other.sendMessage(component)
@@ -127,7 +129,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			adminAction(formatChatMessage(text("Admin", DARK_RED, TextDecoration.BOLD), player, event, messageColor))
+			adminAction(formatChatMessage(text("Admin", DARK_RED, TextDecoration.BOLD), player, event, messageColor, player.slPlayerId))
 		}
 	},
 
@@ -138,7 +140,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			staffAction(formatChatMessage(text("Staff", DARK_GRAY, TextDecoration.BOLD), player, event, messageColor))
+			staffAction(formatChatMessage(text("Staff", DARK_GRAY, TextDecoration.BOLD), player, event, messageColor, player.slPlayerId))
 		}
 	},
 
@@ -149,7 +151,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			modAction(formatChatMessage(text("Mod", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor))
+			modAction(formatChatMessage(text("Mod", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor, player.slPlayerId))
 		}
 	},
 
@@ -160,7 +162,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			devAction(formatChatMessage(text("Dev", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor))
+			devAction(formatChatMessage(text("Dev", DARK_AQUA, TextDecoration.BOLD), player, event, messageColor, player.slPlayerId))
 		}
 	},
 
@@ -175,7 +177,8 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				ofChildren(text("Content", GREEN, TextDecoration.BOLD), text("Design", RED, TextDecoration.BOLD)),
 				player,
 				event,
-				messageColor
+				messageColor,
+				player.slPlayerId
 			))
 		}
 	},
@@ -187,7 +190,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				return
 			}
 
-			vipAction(formatChatMessage(text("VIP", GREEN, TextDecoration.BOLD), player, event, messageColor))
+			vipAction(formatChatMessage(text("VIP", GREEN, TextDecoration.BOLD), player, event, messageColor, player.slPlayerId))
 		}
 	},
 
@@ -201,7 +204,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				else -> text("[Ship]", HEColorScheme.HE_LIGHT_BLUE)
 			}
 
-			starship.sendMessage(formatChatMessage(prefix, player, event, messageColor).buildChatComponent())
+			starship.sendMessage(formatChatMessage(prefix, player, event, messageColor, player.slPlayerId).buildChatComponent())
 		}
 	},
 
@@ -288,9 +291,11 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 	companion object ChannelActions : IonServerComponent() {
 		private val globalAction = { message: NormalChatMessage ->
 			val component = message.buildChatComponent()
+			val sender = message.sender
 
 			for (player in Bukkit.getOnlinePlayers()) {
 				if (LegacySettings.chat.noGlobalWorlds.contains(player.world.name)) continue
+				if (PlayerCache[player].blockedPlayerIDs.contains(sender)) continue
 
 				if (GToggleCommand.noGlobalInheritanceNode != null) {
 					val user = player.common().getUser()
@@ -358,7 +363,8 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		prefix: Component,
 		player: Player,
 		event: AsyncChatEvent,
-		color: TextColor
+		color: TextColor,
+		senderId: SLPlayerId
 	): NormalChatMessage = NormalChatMessage(
 		prefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), prefix.addSpace(true)),
 		playerPrefix = player.common().getPrefix(),
@@ -366,7 +372,8 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		playerSuffix = player.common().getSuffix(),
 		message = event.message(),
 		playerInfo = text(playerInfo(player)),
-		color = color
+		color = color,
+		sender = senderId
 	)
 }
 
