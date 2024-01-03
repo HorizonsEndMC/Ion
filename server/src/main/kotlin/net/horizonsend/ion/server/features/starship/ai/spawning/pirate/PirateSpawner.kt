@@ -26,7 +26,7 @@ class PirateSpawner : BasicSpawner(
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
 			miniMessageSpawnMessage = "<${HEColorScheme.HE_MEDIUM_GRAY}>A pirate {0} has been identified in the area of {1}, {3}, in {4}. <$PIRATE_SATURATED_RED>Please avoid the sector until the threat has been cleared.",
 			pointChance = 0.5,
-			pointThreshold = 20 * 60 * 15,
+			pointThreshold = 20 * 60 * 10,
 			minDistanceFromPlayer = 2000.0,
 			maxDistanceFromPlayer = 4000.0,
 			tiers = listOf(

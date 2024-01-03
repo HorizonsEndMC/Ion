@@ -28,7 +28,7 @@ class TsaiiSpawner : BasicSpawner(
 			minDistanceFromPlayer = 2500.0,
 			maxDistanceFromPlayer = 4500.0,
 			pointThreshold = 30 * 20 * 60,
-			pointChance = 0.25,
+			pointChance = 0.5,
 			tiers = listOf(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "STANDARD",

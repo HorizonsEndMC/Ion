@@ -30,7 +30,7 @@ class MiningCorpSpawner : BasicSpawner(
 		val defaultConfiguration = AISpawnerConfiguration(
 			miniMessageSpawnMessage = "$miningGuild <${HE_MEDIUM_GRAY}>extraction vessel {0} spawned at {1}, {3}, in {4}",
 			pointChance = 0.8,
-			pointThreshold = 20 * 60 * 15,
+			pointThreshold = 20 * 60 * 7,
 			minDistanceFromPlayer = 1000.0,
 			maxDistanceFromPlayer = 2500.0,
 			tiers = listOf(

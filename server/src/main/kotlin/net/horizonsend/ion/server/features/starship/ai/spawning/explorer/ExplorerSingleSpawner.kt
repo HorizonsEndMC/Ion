@@ -57,8 +57,8 @@ class ExplorerSingleSpawner : BasicSpawner(
 	companion object {
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
 			miniMessageSpawnMessage = "<$PRIVATEER_LIGHT_TEAL>Horizon Transit Lines<${HEColorScheme.HE_MEDIUM_GRAY.asHexString()}> {0} spawned at {1}, {3}, in {4}",
-			pointChance = 0.5,
-			pointThreshold = 20 * 60 * 15,
+			pointChance = 0.75,
+			pointThreshold = 20 * 60 * 10,
 			tiers = listOf(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "SMALL",

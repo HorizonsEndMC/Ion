@@ -24,7 +24,7 @@ class PrivateerSpawner : BasicSpawner(
 		val defaultConfiguration = AISpawningConfiguration.AISpawnerConfiguration(
 			miniMessageSpawnMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HEColorScheme.HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}",
 			pointChance = 0.5,
-			pointThreshold = 20 * 60 * 15,
+			pointThreshold = 20 * 60 * 7,
 			tiers = listOf(
 				AISpawningConfiguration.AISpawnerTier(
 					identifier = "EASY",
