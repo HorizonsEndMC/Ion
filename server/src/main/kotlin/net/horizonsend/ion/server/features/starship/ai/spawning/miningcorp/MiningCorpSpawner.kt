@@ -79,19 +79,19 @@ class MiningCorpSpawner : BasicSpawner(
 //						badger.identifier to 2
 					)
 				),
-				AISpawnerTier(
-					identifier = "ULTRA",
-					nameList = mapOf(
-						"<${MINING_CORP_DARK_ORANGE.asHexString()}>Ship's Captain <white>1" to 2,
-						"<${MINING_CORP_DARK_ORANGE.asHexString()}>Ship's Captain <white>2" to 2,
-						"<${MINING_CORP_DARK_ORANGE.asHexString()}>Ship's Captain <white>3" to 2
-					),
-					ships = mapOf(
-						ostrich.identifier to 2,
+//				AISpawnerTier(
+//					identifier = "ULTRA",
+//					nameList = mapOf(
+//						"<${MINING_CORP_DARK_ORANGE.asHexString()}>Ship's Captain <white>1" to 2,
+//						"<${MINING_CORP_DARK_ORANGE.asHexString()}>Ship's Captain <white>2" to 2,
+//						"<${MINING_CORP_DARK_ORANGE.asHexString()}>Ship's Captain <white>3" to 2
+//					),
+//					ships = mapOf(
+//						ostrich.identifier to 2,
 //						badger.identifier to 2,
-						beaver.identifier to 3
-					)
-				)
+//						beaver.identifier to 3
+//					)
+//				)
 			),
 			worldSettings = listOf(
 				AIWorldSettings(
@@ -133,7 +133,7 @@ class MiningCorpSpawner : BasicSpawner(
 					tiers = mapOf(
 						"MODERATE" to 8,
 						"ADVANCED" to 1,
-						"ULTRA" to 1
+//						"ULTRA" to 1
 					)
 				),
 				AIWorldSettings(
@@ -143,7 +143,7 @@ class MiningCorpSpawner : BasicSpawner(
 						"STANDARD" to 2,
 						"MODERATE" to 8,
 						"ADVANCED" to 4,
-						"ULTRA" to 2
+//						"ULTRA" to 2
 					)
 				),
 				AIWorldSettings(
@@ -153,7 +153,7 @@ class MiningCorpSpawner : BasicSpawner(
 						"STANDARD" to 2,
 						"MODERATE" to 8,
 						"ADVANCED" to 4,
-						"ULTRA" to 2
+//						"ULTRA" to 2
 					)
 				)
 			)

@@ -63,7 +63,7 @@ class PrivateerSpawner : BasicSpawner(
 						contractor.identifier to 2,
 						teneta.identifier to 2,
 						veteran.identifier to 2,
-						patroller.identifier to 2
+//						patroller.identifier to 2
 					)
 				),
 				AISpawningConfiguration.AISpawnerTier(
@@ -77,7 +77,7 @@ class PrivateerSpawner : BasicSpawner(
 						contractor.identifier to 4,
 //						daybreak.identifier to 2,
 						veteran.identifier to 4,
-						patroller.identifier to 2
+//						patroller.identifier to 2
 					)
 				),
 				AISpawningConfiguration.AISpawnerTier(

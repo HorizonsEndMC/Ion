@@ -118,8 +118,8 @@ val bulwark = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_DARK_TEAL.asHexString()}>Bulwark",
 	type = StarshipType.AI_CORVETTE,
 	controllerFactory = "PRIVATEER_CORVETTE",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 2650.0,
 	manualWeaponSets = mutableSetOf(
 		WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 	),
@@ -135,8 +135,8 @@ val contractor = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_MEDIUM_TEAL.asHexString()}>Contractor",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PRIVATEER_GUNSHIP",
-	xpMultiplier = 0.5,
-	creditReward = 100.0,
+	xpMultiplier = 0.6,
+	creditReward = 1850.0,
 	manualWeaponSets = mutableSetOf(
 		WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)
 	),
@@ -151,8 +151,8 @@ val dagger = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Dagger",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PRIVATEER_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val daybreak = AISpawningConfiguration.AIStarshipTemplate(
@@ -162,7 +162,7 @@ val daybreak = AISpawningConfiguration.AIStarshipTemplate(
 	type = StarshipType.AI_CORVETTE,
 	controllerFactory = "PRIVATEER_CORVETTE",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 2650.0
 )
 
 val patroller = AISpawningConfiguration.AIStarshipTemplate(
@@ -171,8 +171,8 @@ val patroller = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Patroller",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PRIVATEER_GUNSHIP",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 1850.0
 )
 
 val protector = AISpawningConfiguration.AIStarshipTemplate(
@@ -181,8 +181,8 @@ val protector = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Protector",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PRIVATEER_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val veteran = AISpawningConfiguration.AIStarshipTemplate(
@@ -191,8 +191,8 @@ val veteran = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Veteran",
 	type = StarshipType.AI_GUNSHIP,
 	controllerFactory = "PRIVATEER_GUNSHIP",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 1850.0
 )
 
 val teneta = AISpawningConfiguration.AIStarshipTemplate(
@@ -202,7 +202,7 @@ val teneta = AISpawningConfiguration.AIStarshipTemplate(
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PRIVATEER_STARFIGHTER",
 	xpMultiplier = 0.5,
-	creditReward = 100.0
+	creditReward = 950.0
 )
 
 val furious = AISpawningConfiguration.AIStarshipTemplate(
@@ -211,8 +211,8 @@ val furious = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Furious",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PRIVATEER_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val inflict = AISpawningConfiguration.AIStarshipTemplate(
@@ -221,8 +221,8 @@ val inflict = AISpawningConfiguration.AIStarshipTemplate(
 	miniMessageName = "<${PRIVATEER_LIGHT_TEAL.asHexString()}>Inflict",
 	type = StarshipType.AI_STARFIGHTER,
 	controllerFactory = "PRIVATEER_STARFIGHTER",
-	xpMultiplier = 0.5,
-	creditReward = 100.0
+	xpMultiplier = 0.6,
+	creditReward = 950.0
 )
 
 val privateerTemplates = arrayOf(
