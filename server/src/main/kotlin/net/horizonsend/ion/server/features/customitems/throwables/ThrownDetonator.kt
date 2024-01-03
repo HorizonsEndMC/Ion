@@ -61,7 +61,7 @@ class ThrownDetonator(
 						.getRelative(BlockFace.UP, y)
 						.getRelative(BlockFace.SOUTH, z)
 
-					if (toExplode.type != Material.AIR) {
+					if (toExplode.type != Material.AIR && toExplode.type != Material.BEDROCK) {
 						blocks.add(toExplode)
 					}
 				}
