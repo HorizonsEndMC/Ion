@@ -566,7 +566,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				starship.controller.getPilotName(),
 				bracketed(text(starship.initialBlockCount, WHITE)),
 				worldName
-			)
+			).hoverEvent(ofChildren(text("${starship.initialBlockCount} block "), starship.type.displayNameComponent))
 
 			sender.sendMessage(line)
 		}
