@@ -18,7 +18,7 @@ import java.io.File
 import kotlin.system.exitProcess
 
 object IonDiscordBot {
-	private val logger: Logger = LoggerFactory.getLogger("WikipediaFeaturedBot")
+	private val logger: Logger = LoggerFactory.getLogger("IonDiscordBot-Main")
 
 	val dataFolder = getAppFolder()
 	val configurationFolder = dataFolder.resolve("configuration")
