@@ -69,6 +69,7 @@ internal object NationRelationCommand : SLCommand() {
 				paramColor = YELLOW,
 				useQuotesAroundObjects = false,
 				sender.name,
+				getNationName(senderNation),
 				wish.component,
 				getNationName(otherNation),
 				otherWish.component,
