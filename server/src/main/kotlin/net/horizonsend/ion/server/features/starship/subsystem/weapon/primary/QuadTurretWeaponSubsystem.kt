@@ -1,15 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-
-import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.starshipweapon.turret.QuadTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
-import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 class QuadTurretWeaponSubsystem(
@@ -17,10 +14,12 @@ class QuadTurretWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace,
     override val multiblock: QuadTurretMultiblock
-) : TurretWeaponSubsystem(ship, pos, face) {
+) : TurretWeaponSubsystem(ship, pos, face), PermissionWeaponSubsystem {
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.quadTurret
 	override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
 	override val powerUsage: Int get() = balancing.powerUsage
 	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 	override fun getMaxPerShot(): Int = balancing.maxPerShot
+
+	override val permission: String = "ion.multiblock.quadturret"
 }

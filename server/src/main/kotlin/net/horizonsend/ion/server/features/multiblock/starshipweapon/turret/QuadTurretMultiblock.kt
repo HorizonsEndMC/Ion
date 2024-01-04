@@ -11,6 +11,8 @@ import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 
 sealed class QuadTurretMultiblock : TurretMultiblock() {
+	override val requiredPermission = "ion.multiblock.quadturret"
+
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
 		return QuadTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
