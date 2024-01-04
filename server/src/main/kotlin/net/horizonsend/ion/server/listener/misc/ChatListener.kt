@@ -15,7 +15,7 @@ object ChatListener : SLEventListener() {
 		return true
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	fun onAsyncPlayerChatEventC(event: AsyncChatEvent) {
 		if (event.isCancelled) return
 
