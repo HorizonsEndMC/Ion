@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.minecraft.world.level.block.state.BlockState
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.transport.Extractors
+import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
@@ -12,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
@@ -24,7 +24,7 @@ import kotlin.math.min
 
 class StarshipFactoryPrinter(
 	private val world: World,
-	private val inventories: List<Inventory>,
+	private val inventory: Inventory,
 	private val blocks: Long2ObjectOpenHashMap<BlockData>,
 	private val signs: Long2ObjectOpenHashMap<Array<String>>,
 	private var availableCredits: Double = 0.0
@@ -52,17 +52,15 @@ class StarshipFactoryPrinter(
 	}
 
 	private fun countMaterials() {
-		for (inventory in inventories) {
-			for (item: ItemStack? in inventory.contents) {
-				if (item == null || item.type.isAir) {
-					continue
-				}
-
-				val printItem = PrintItem(item)
-
-				val oldAmount = availableItems.getOrDefault(printItem, 0)
-				availableItems[printItem] = oldAmount + item.amount
+		for (item: ItemStack? in inventory.contents) {
+			if (item == null || item.type.isAir) {
+				continue
 			}
+
+			val printItem = PrintItem(item)
+
+			val oldAmount = availableItems.getOrDefault(printItem, 0)
+			availableItems[printItem] = oldAmount + item.amount
 		}
 	}
 
@@ -145,28 +143,26 @@ class StarshipFactoryPrinter(
 		for ((printItem, count) in usedItems) {
 			var remainingCount = count
 
-			for (inventory in inventories) {
-				for (item: ItemStack? in inventory.contents) {
-					if (item == null || item.type.isAir) {
-						continue
-					}
-
-					if (printItem != PrintItem(item)) {
-						continue
-					}
-
-					val amount = min(remainingCount, item.amount)
-					item.amount -= amount
-					remainingCount -= amount
-
-					if (remainingCount == 0) {
-						break
-					}
+			for (item: ItemStack? in inventory.contents) {
+				if (item == null || item.type.isAir) {
+					continue
 				}
 
-				if (remainingCount > 0) {
-					Throwable("$remainingCount missing of $printItem").printStackTrace()
+				if (printItem != PrintItem(item)) {
+					continue
 				}
+
+				val amount = min(remainingCount, item.amount)
+				item.amount -= amount
+				remainingCount -= amount
+
+				if (remainingCount == 0) {
+					break
+				}
+			}
+
+			if (remainingCount > 0) {
+				Throwable("$remainingCount missing of $printItem").printStackTrace()
 			}
 		}
 	}
