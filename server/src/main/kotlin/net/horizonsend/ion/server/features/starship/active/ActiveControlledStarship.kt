@@ -74,7 +74,7 @@ class ActiveControlledStarship(
 
 	val creationTime = System.currentTimeMillis()
 	var lastUnpilotTime: Long = 0
-	val minutesUnpiloted = if (isPiloted(this) || controller is NoOpController) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
+	val minutesUnpiloted get() = if (isPiloted(this) || controller is NoOpController) 0 else TimeUnit.NANOSECONDS.toMinutes(System.nanoTime() - lastUnpilotTime)
 
 	var speedLimit = -1
 
