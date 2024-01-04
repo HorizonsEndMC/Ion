@@ -72,7 +72,7 @@ enum class StarshipType(
 		displayName = "Starfighter",
 		minSize = 350,
 		maxSize = 500,
-		minLevel = 1000,
+		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
 		menuItemMaterial = Material.IRON_NUGGET,
