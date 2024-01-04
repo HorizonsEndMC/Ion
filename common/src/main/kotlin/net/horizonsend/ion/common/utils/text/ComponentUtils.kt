@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_D
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -113,12 +112,18 @@ fun Iterable<ComponentLike>.join(separator: Component = text(", ")): Component {
 	return builder.build()
 }
 
-fun Component.addSpace(prefix: Boolean): Component {
-	if ((this as? TextComponent)?.content()?.isEmpty() == true) return this
+fun formatSpaceSuffix(message: Component?): Component {
+	if (message == null) return Component.empty()
+	if (message == Component.empty()) return Component.empty()
+	if (message.plainText().isEmpty()) return Component.empty()
 
-	val plainText = plainText()
+	return ofChildren(message, text(" "))
+}
 
-	if (plainText.isEmpty()) return this
+fun formatSpacePrefix(message: Component?): Component {
+	if (message == null) return Component.empty()
+	if (message == Component.empty()) return Component.empty()
+	if (message.plainText().isEmpty()) return Component.empty()
 
-	return if (prefix) ofChildren(text(" "), this) else ofChildren(this, text(" "))
+	return ofChildren(text(" "), message)
 }

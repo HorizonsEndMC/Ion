@@ -12,9 +12,9 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.redis.RedisAction
-import net.horizonsend.ion.common.utils.text.addSpace
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.formatSpacePrefix
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
@@ -31,7 +31,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.miscellaneous.utils.PlayerWrapper.Companion.common
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -70,7 +69,13 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				}
 			}
 
-			val component = formatChatMessage(empty(), player, event, messageColor, player.slPlayerId)
+			val component = formatChatMessage(
+				prefix = null,
+				player = player,
+				event = event,
+				color = messageColor
+			)
+
 			globalAction(component)
 
 			try {
@@ -215,7 +220,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			val prefix = ofChildren(
 				displayName,
-				LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.settlementTag ?: "").addSpace(true)
+				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.settlementTag ?: ""))
 			)
 
 			settlementAction(NationsChatMessage(
@@ -243,7 +248,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				displayName,
 				text(" "),
 				text(settlementName, AQUA),
-				LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: "").addSpace(true)
+				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: ""))
 			)
 
 			nationAction(NationsChatMessage(
@@ -270,7 +275,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				displayName,
 				text(" "),
 				text(nationName, YELLOW),
-				LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: "").addSpace(true)
+				formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(playerData.nationTag ?: ""))
 			)
 
 			allyAction(NationsChatMessage(
@@ -360,13 +365,13 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 	}
 
 	fun formatChatMessage(
-		prefix: Component,
+		prefix: Component?,
 		player: Player,
 		event: AsyncChatEvent,
 		color: TextColor,
 		senderId: SLPlayerId
 	): NormalChatMessage = NormalChatMessage(
-		prefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), prefix.addSpace(true)),
+		prefix = ofChildren(bracketed(text(Levels[event.player], AQUA)), formatSpacePrefix(prefix)),
 		playerPrefix = player.common().getPrefix(),
 		playerDisplayName = event.player.displayName(),
 		playerSuffix = player.common().getSuffix(),
