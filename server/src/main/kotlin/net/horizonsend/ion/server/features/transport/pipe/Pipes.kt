@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.customitems.GasCanister
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
-import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.pipe.filter.FilterData
 import net.horizonsend.ion.server.features.transport.pipe.filter.FilterItemData
@@ -16,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.areaDebugMessage
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
@@ -399,17 +397,6 @@ object Pipes : IonServerComponent() {
 				if (destinationInventory.location == sourceInventory.location) {
 					continue@destinationLoop
 				}
-
-				loopy@ for ((printerChest, invs) in StarshipFactories.connectedChests) {
-					if (printerChest != Vec3i(dest.location)) continue@loopy
-					areaDebugMessage(printerChest.x, printerChest.y, printerChest.z, "Found pipe running to printer.")
-
-					if (invs.none { Vec3i(it) == Vec3i(sourceInventoryBlock.location)}) {
-						invs.add(sourceInventory.location!!)
-						areaDebugMessage(printerChest.x, printerChest.y, printerChest.z, "adding inv")
-					}
-				}
-
 				var remainingItemStacks = 0
 
 				val items: Iterable<IndexedValue<ItemStack?>> = when (sourceInventory) {

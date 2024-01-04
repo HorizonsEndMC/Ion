@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -24,8 +23,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.starlegacy.javautil.SignUtils
-import org.bukkit.Location
-import org.bukkit.block.Container
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Slab
@@ -38,15 +35,12 @@ import org.litote.kmongo.findOne
 import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.math.roundToInt
 
 object StarshipFactories : IonServerComponent() {
-	val connectedChests = ConcurrentHashMap<Vec3i, MutableSet<Location>>()
-
 	override fun onEnable() {
 		listen<PlayerInteractEvent> { event ->
 			val block = event.clickedBlock
@@ -66,14 +60,6 @@ object StarshipFactories : IonServerComponent() {
 
 	@Synchronized
 	private fun process(player: Player, sign: Sign, creditPrint: Boolean) {
-		Tasks.sync {
-			val loc = Vec3i(ShipFactoryMultiblock.getStorage(sign).location!!)
-			if (connectedChests.none { it.key == loc }) {
-				connectedChests[loc] = mutableSetOf()
-				player.information("Initializing piping... please wait for 10-20 seconds for all the pipes connected to this printer to register.")
-			}
-		}
-
 		val blueprintOwner = UUID.fromString(sign.getLine(1)).slPlayerId
 		val blueprintName = sign.getLine(2)
 		val blueprint = Blueprint.col.findOne(and(Blueprint::name eq blueprintName, Blueprint::owner eq blueprintOwner))
@@ -123,14 +109,9 @@ object StarshipFactories : IonServerComponent() {
 
 		Tasks.getSyncBlocking {
 			val world = sign.world
+			val inventory = ShipFactoryMultiblock.getStorage(sign)
 			val availableCredits = player.getMoneyBalance()
-			val inv = ShipFactoryMultiblock.getStorage(sign)
-
-			val inventories = connectedChests[Vec3i(inv.location!!)]!!.mapNotNull {
-				(it.block.state as? Container ?: return@mapNotNull null).inventory
-			}.toMutableList().apply { add(inv) }
-
-			val printer = StarshipFactoryPrinter(world, inventories, blocks, signs, availableCredits)
+			val printer = StarshipFactoryPrinter(world, inventory, blocks, signs, availableCredits)
 
 			printer.print()
 
