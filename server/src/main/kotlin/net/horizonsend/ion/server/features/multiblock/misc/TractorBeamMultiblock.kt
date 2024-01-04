@@ -114,14 +114,10 @@ object TractorBeamMultiblock : Multiblock(), InteractableMultiblock, Listener {
 		for (face in LegacyBlockUtils.PIPE_DIRECTIONS) {
 			val sign = block.getRelative(face, 2)
 			if (!sign.type.isWallSign) {
-				println("Not sign $sign")
 				continue
 			}
 
-			println("Sign at $sign")
-
 			if (Multiblocks[sign.getState(false) as Sign] !is TractorBeamMultiblock) {
-				println("Not tractor beam")
 				continue
 			}
 
