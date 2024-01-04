@@ -67,6 +67,8 @@ object IonDiscordBot {
 	fun exit(message: String, throwable: Throwable?): Nothing {
 		if (throwable == null) logger.info("Exiting: $message") else logger.error("The discord bot has encountered an exception. Exiting. $throwable")
 
+		throwable?.printStackTrace()
+
 		disable()
 
 		exitProcess(-1)
