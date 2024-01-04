@@ -139,11 +139,11 @@ class CachedPlanet(
 	fun orbit(): Unit = orbit(updateDb = true)
 
 	fun orbit(updateDb: Boolean = true) {
-		val newProgress = (orbitProgress + orbitSpeed) % 360
+		if (rogue) return
 
-		if (rogue) {
-			return
-		}
+		val newProgress = (orbitProgress + orbitSpeed) % 360
+		val newLocation = calculateLocation(sun, orbitDistance, newProgress)
+		move(newLocation)
 
 		orbitProgress = newProgress
 
