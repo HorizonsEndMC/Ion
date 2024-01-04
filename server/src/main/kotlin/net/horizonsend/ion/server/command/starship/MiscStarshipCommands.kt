@@ -62,6 +62,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.Vector
 import java.util.Locale
 import java.util.UUID
@@ -673,5 +674,29 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				))
 			}
 		}
+
+		@Suppress("unused")
+		@CommandAlias("drills")
+		@Description("Drill enable/disable")
+		fun onDrillCommand(sender: Player, enableOrDisableForThisCommand: enableOrDisable) {
+			val starship = getStarshipPiloting(sender)
+			val drillSubsystems = starship.drills
+			if(enableOrDisableForThisCommand == enableOrDisable.ENABLE){
+				for (drill in drillSubsystems){
+				    drill.sign.line(3, sender.name())
+					drill.sign.update(false, false)
+				}
+			} else if(enableOrDisableForThisCommand == enableOrDisable.DISABLE) {
+				for (drill in drillSubsystems){
+					drill.sign.line(3, text("[DISABLED]", NamedTextColor.RED))
+					drill.sign.update(false, false)
+				}
+			}
+		}
 	}
+}
+
+enum class enableOrDisable {
+	ENABLE,
+	DISABLE
 }
