@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.chat
 
-import github.scarsz.discordsrv.DiscordSRV
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
@@ -15,13 +14,13 @@ import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatSpacePrefix
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.LegacySettings
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
+import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.space.Space
@@ -76,23 +75,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 			)
 
 			globalAction(component)
-
-			try {
-				discord(event)
-			} catch (e: ClassNotFoundException) {
-				// ignore, plugin just isn't loaded
-			} catch (e: NoClassDefFoundError) {
-				// ignore
-			}
-		}
-
-		private fun discord(event: AsyncChatEvent) {
-			DiscordSRV.getPlugin().processChatMessage(
-				event.player,
-				event.message().plainText(),
-				null,
-				false
-			)
+			ServerDiscordMessaging.globalMessage(component.buildChatComponent())
 		}
 	},
 
