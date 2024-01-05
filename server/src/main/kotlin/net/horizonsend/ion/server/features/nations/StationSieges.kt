@@ -107,7 +107,7 @@ object StationSieges : IonServerComponent() {
 
 			IonServer.server.sendMessage(message)
 			if (IonServer.legacySettings.master) ServerDiscordMessaging.globalEmbed(Embed(
-				title = "Siege Station $lastStationName's siege hour has ended."
+				description = "Siege Station $lastStationName's siege hour has ended."
 			))
 		}
 
@@ -125,7 +125,7 @@ object StationSieges : IonServerComponent() {
 
 			IonServer.server.sendMessage(message)
 			if (IonServer.legacySettings.master) ServerDiscordMessaging.globalEmbed(Embed(
-				title = "Siege Station ${station.name}'s siege hour has began! It can be besieged for the rest of the hour with /siege!."
+				description = "Siege Station ${station.name}'s siege hour has began! It can be besieged for the rest of the hour with /siege!."
 			))
 		}
 		lastStations = stations.map { it.name }

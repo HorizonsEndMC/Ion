@@ -93,7 +93,7 @@ object Levels : IonServerComponent() {
 
 				val message = template(
 						text("{0} leveled up to {1}!", GREEN),
-						text("name", GOLD),
+						text(name, GOLD),
 						text("Level $newLevel", DARK_PURPLE)
 					)
 
