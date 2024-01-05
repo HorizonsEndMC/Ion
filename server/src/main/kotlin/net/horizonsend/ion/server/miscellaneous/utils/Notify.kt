@@ -16,7 +16,7 @@ import java.util.UUID
 object Notify : Notifications() {
 	fun chatAndGlobal(message: Component) {
 		notifyOnlineAction(message)
-		ServerDiscordMessaging.globalEmbed(Embed(title = message.plainText(), color = message.color()?.value()))
+		ServerDiscordMessaging.globalEmbed(Embed(description = message.plainText(), color = message.color()?.value()))
 	}
 
 	override val notifyOnlineAction = { message: Component ->
