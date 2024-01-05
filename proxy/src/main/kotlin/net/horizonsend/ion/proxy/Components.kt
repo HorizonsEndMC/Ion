@@ -1,6 +1,7 @@
 package net.horizonsend.ion.proxy
 
 import net.horizonsend.ion.common.database.DBManager
+import net.horizonsend.ion.common.utils.UnusedMessaging
 import net.horizonsend.ion.common.utils.redis.RedisActions
 import net.horizonsend.ion.proxy.features.ConnectionMessages
 import net.horizonsend.ion.proxy.features.ServerPresence
@@ -19,5 +20,6 @@ val components = listOf(
 	ReminderManager,
 	PlayerTracking,
 	ProxyDiscordMessaging,
-	Notifications
+	Notifications,
+	UnusedMessaging
 )
