@@ -121,7 +121,7 @@ object StationSieges : IonServerComponent() {
 				paramColor = HEColorScheme.HE_LIGHT_BLUE,
 				useQuotesAroundObjects = false,
 				station.name
-			).hoverEvent(text("${station.world} : (${station.x}, ${station.z})"))
+			).hoverEvent(text("Current Owner: ${station.nation?.let { NationCache[it].name } ?: "None"}. Location: ${station.world}, (${station.x}, ${station.z})"))
 
 			IonServer.server.sendMessage(message)
 			if (IonServer.legacySettings.master) Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
