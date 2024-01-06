@@ -71,7 +71,7 @@ object ProtectionListener : SLEventListener() {
 
 	@EventHandler
 	fun onItemFrameChange(event: PlayerItemFrameChangeEvent) {
-		if (denyBlockAccess(event.player, event.itemFrame.location)) {
+		if (denyBlockAccess(event.player, event.itemFrame.location, event)) {
 			event.isCancelled = true
 		}
 	}
@@ -81,7 +81,7 @@ object ProtectionListener : SLEventListener() {
 		val damager = event.damager as? Player ?: return
 		if (event.entity !is Animals) return
 
-		if (denyBlockAccess(damager, event.entity.location)) {
+		if (denyBlockAccess(damager, event.entity.location, event)) {
 			event.isCancelled = true
 		}
 	}
@@ -93,7 +93,7 @@ object ProtectionListener : SLEventListener() {
 	fun onBlockBreak(event: BlockBreakEvent) = onBlockEdit(event, event.block.location, event.player)
 
 	private fun onBlockEdit(event: Cancellable, location: Location, player: Player) {
-		if (denyBlockAccess(player, location)) {
+		if (denyBlockAccess(player, location, event)) {
 			event.isCancelled = true
 		}
 	}
@@ -101,7 +101,7 @@ object ProtectionListener : SLEventListener() {
 	/** Called on block break etc. GriefPrevention check should be done first.
 	 *  Loops through protected regions at location, checks each one for access message
 	 *  @return true if the event should be cancelled, false if it should stay the same. */
-	fun denyBlockAccess(player: Player, location: Location): Boolean {
+	fun denyBlockAccess(player: Player, location: Location, event: Cancellable?): Boolean {
 		var denied = false
 
 		if (isRegionDenied(player, location)) denied = true
@@ -112,7 +112,7 @@ object ProtectionListener : SLEventListener() {
 		// Need to also check for null
 		if (shipContaining !is PlayerStarshipData?) return true
 
-		if (shipContaining?.isPilot(player) == true) denied = false
+		if (shipContaining?.isPilot(player) == true && event !is BlockPlaceEvent) denied = false
 
 		val (x1, y1, z1) = Vec3i(location)
 		if (ActiveStarships.findByPilot(player)?.contains(x1, y1, z1) == true) denied = false
