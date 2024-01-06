@@ -156,8 +156,8 @@ object NationsMap : IonServerComponent(true) {
 			marker.setLabel(
 				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
 				"\n<h3 style=\"text-align: center; color: $hex;\">Settlement: ${settlement.name}</h3>" +
-				(if (nation == null) "" else "\n<h3 style=\"text-align: center; color: $hex;\">Nation: ${nation.name}</h3>") +
-				"\n<p style=\"padding-top: 0;\">\"${settlement.motd}\"</p>" +
+				(nation?.let { "\n<h3 style=\"text-align: center; color: $hex;\">Nation: ${nation.name}</h3>" } ?: "") +
+				(settlement.motd?.let { "\n<p style=\"padding-top: 0;\">\"${settlement.motd}\"</p>" } ?: "") +
 				"\n<p style=\"padding-top: 0;\">Leader: ${SLPlayer.getName(settlement.leader)}</p>" +
 				"\n<p style=\"padding-top: 0;\">Members: ${members.joinToString()}</p>",
 				true
