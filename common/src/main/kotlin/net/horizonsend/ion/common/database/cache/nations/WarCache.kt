@@ -17,7 +17,7 @@ object WarCache : ManualCache() {
 	data class WarData(
 		val id: Oid<War>,
 
-		val name: String?,
+		val name: String,
 
 		val aggressor: Oid<Nation>,
 		val aggressorGoal: WarGoal,

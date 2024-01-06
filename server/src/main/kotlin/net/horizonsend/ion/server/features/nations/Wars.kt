@@ -65,16 +65,49 @@ object Wars : IonComponent() {
 	}
 
 	/** Starts a war between the two nations */
-	fun startWar(declaring: Oid<Nation>, defender: Oid<Nation>, goal: WarGoal) {
+	fun startWar(declaring: Oid<Nation>, defender: Oid<Nation>, goal: WarGoal) = Tasks.async {
 		val name = formatName(declaring, defender)
+
+		if (declaring == defender) throw IllegalArgumentException("Identical attacker and defender!")
 
 		War.create(declaring, defender, goal, name)
 
 		val declaringName = NationCache[declaring].name
-		val defendingName = NationCache[declaring].name
+		val defendingName = NationCache[defender].name
 
 		val embed = createStartEmbed(declaringName, defendingName, goal)
 		sendMessages(importantWarMessageTemplate("{0} has declared war on {1}!", declaringName, defendingName), embed)
+	}
+
+	fun surrender(warId: Oid<War>, surrenderNation: Oid<Nation>) = Tasks.async {
+		val war = War.findById(warId) ?: error("War $warId not found!")
+
+		val attacker = war.aggressor
+		val defender = war.defender
+
+		val result = when (surrenderNation) {
+			attacker -> War.Result.DEFENDER_VICTORY
+			defender -> War.Result.AGGRESSOR_VICTORY
+			else -> War.Result.WHITE_PEACE
+		}
+
+		val name = NationCache[surrenderNation].name
+
+		val otherName = when (surrenderNation) {
+			attacker -> NationCache[defender].name
+			defender -> NationCache[attacker].name
+			else -> throw IllegalArgumentException()
+		}
+
+		val embed = Embed(
+			title = "$name has surrendered!",
+			description = "$name has surrendered to $otherName in the ${war.name}!"
+		)
+
+		val message = importantWarMessageTemplate("{0} has surrendered to {0} in the {0}!", name, otherName, war.name)
+
+		sendMessages(message, embed)
+		endWar(warId, result)
 	}
 
 	private fun createStartEmbed(declaringName: String, defendingName: String, goal: WarGoal): Embed {
@@ -82,6 +115,14 @@ object Wars : IonComponent() {
 			title = "$declaringName has declared war on $defendingName!",
 			description = "$declaringName is demanding ${goal.verb} $defendingName!"
 		)
+	}
+
+	fun endWar(war: Oid<War>, result: War.Result) {
+		when (result) {
+			War.Result.AGGRESSOR_VICTORY -> endWarVictory(war)
+			War.Result.DEFENDER_VICTORY -> endWarLoss(war)
+			War.Result.WHITE_PEACE -> endWarStalemate(war)
+		}
 	}
 
 	/** Ends the war in a point determined state, surrenders are handled differently. */
@@ -227,6 +268,13 @@ object Wars : IonComponent() {
 			)
 		)
 
+		Notify.nationCrossServer(nation, warMessageTemplate(
+			"{0} has requested that the {1} war end in a white peace. It is up to {2} to accept or deny the offer.",
+			player.name,
+			cachedWar.name,
+			NationCache[otherNation].name
+		))
+
 		Notify.nationCrossServer(otherNation, warMessageTemplate(
 			"{0} of {1} has requested that the {2} war end in a white peace. Use /war to accept or decline this offer.",
 			player.name,
@@ -270,5 +318,13 @@ object Wars : IonComponent() {
 		}
 	}
 
+	fun resolveOtherNation(warId: Oid<War>, nation: Oid<Nation>): Oid<Nation> {
+		val war = WarCache[warId]
 
+		return when (nation) {
+			war.aggressor -> war.defender
+			war.defender -> war.aggressor
+			else -> throw IllegalArgumentException()
+		}
+	}
 }

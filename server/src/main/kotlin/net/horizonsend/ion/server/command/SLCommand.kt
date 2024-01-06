@@ -68,6 +68,22 @@ abstract class SLCommand : BaseCommand() {
 		manager.commandCompletions.registerAsyncCompletion(key, value)
 	}
 
+	fun matchesArgumentWithSpaces(args: List<String>, match: String): Boolean {
+		val builder = StringBuilder()
+
+		val iterator = args.iterator()
+
+		while (iterator.hasNext()) {
+			val arg = iterator.next()
+			if (builder.toString() == match) return true
+
+			builder.append(arg)
+			if (iterator.hasNext()) builder.append(" ")
+		}
+
+		return false
+	}
+
 	/**
 	 * Run this block of code async. Also, no two blocks passed to this method will run at the same time,
 	 * because it runs them all on a single thread. This prevents exploits from multiple people running
