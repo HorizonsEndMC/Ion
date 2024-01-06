@@ -118,7 +118,7 @@ data class StarshipTypeBalancing(
 				volume = 10,
 				pitch = 2.0f,
 				soundName = "starship.weapon.turbolaser.light.shoot",
-				powerUsage = 7500,
+				powerUsage = 6000,
 				length = 0,
 				angleRadians = 0.0,
 				convergeDistance = 0.0,
