@@ -5,12 +5,13 @@ import net.horizonsend.ion.common.utils.text.MessageFactory
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
@@ -73,8 +74,8 @@ class SinkMessageFactory(private val sunkShip: ActiveStarship) : MessageFactory 
 				fields = fields
 			)
 
-			ServerDiscordMessaging.eventsEmbed(embed)
-			ServerDiscordMessaging.globalEmbed(embed)
+			Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
+			Discord.sendEmbed(IonServer.discordSettings.globalChannel, embed)
 		}
 	}
 

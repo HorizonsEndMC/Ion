@@ -1,7 +1,6 @@
 package net.horizonsend.ion.common
 
 import net.horizonsend.ion.common.utils.redis.RedisAction
-import net.horizonsend.ion.common.utils.redis.RedisActions
 import net.horizonsend.ion.common.utils.redis.RedisActions.register
 
 abstract class IonComponent {
@@ -12,10 +11,6 @@ abstract class IonComponent {
 	open fun onDisable() {}
 
 	inline fun <reified T, B> ((T) -> B).registerRedisAction(id: String, runSync: Boolean = true): RedisAction<T> {
-		return RedisActions.createAction(id, runSync, this).register()
-	}
-
-	inline fun <reified T, B> ((T) -> B).createRedisAction(id: String, runSync: Boolean = true): RedisAction<T> {
-		return RedisActions.createAction(id, runSync, this)
+		return register(id, runSync, this)
 	}
 }

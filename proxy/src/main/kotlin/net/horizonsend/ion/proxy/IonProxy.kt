@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
+import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.proxy.commands.BungeeInfoCommand
 import net.horizonsend.ion.proxy.commands.MessageCommand
 import net.horizonsend.ion.proxy.commands.ReplyCommand
@@ -24,6 +25,7 @@ class IonProxy : Plugin() {
 	val adventure = BungeeAudiences.create(this)
 
 	val configuration: ProxyConfiguration = Configuration.load(dataFolder, "proxy.json")
+	val discordConfiguration: DiscordConfiguration = Configuration.load(dataFolder, "discord.json")
 
 	val proxy = WrappedProxy(getProxy())
 

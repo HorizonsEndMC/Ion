@@ -43,3 +43,4 @@ load-after:
   - name: Multiverse-Core
   - name: Vault
   - name: dynmap
+  - name: DiscordSRV

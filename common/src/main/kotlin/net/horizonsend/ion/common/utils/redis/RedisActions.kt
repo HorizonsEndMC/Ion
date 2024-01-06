@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.CommonConfig
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager.jedisPool
 import net.horizonsend.ion.common.utils.Server
-import net.horizonsend.ion.common.utils.redis.messaging.ChatMessageWrapper
 import net.horizonsend.ion.common.utils.redis.serialization.RedisSerialization
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPubSub
@@ -15,16 +14,20 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 
 object RedisActions : IonComponent() {
+	var ignoreUnknownMessages: Boolean = false
+
 	var enabled = false
 
 	private lateinit var channel: String
 	private lateinit var pubSub: JedisPubSub
 	private lateinit var subscriber: Jedis
+	private lateinit var thread: Thread
 
 	override fun onEnable() {
 		connect()
 
-		Thread({ subscriber.subscribe(pubSub, channel) }, "Ion Plugin Messaging").start()
+		thread = Thread({ subscriber.subscribe(pubSub, channel) }, "Ion Plugin Messaging")
+		thread.start()
 
 		enabled = true
 	}
@@ -38,30 +41,36 @@ object RedisActions : IonComponent() {
 		log.info("Connected to Redis with channel $channel, pubSub: $pubSub, subscriber: $subscriber")
 	}
 
+	private val executor = Executors.newSingleThreadExecutor(object : ThreadFactory {
+		private var counter: Int = 0
+
+		override fun newThread(r: Runnable): Thread {
+			return Thread(r, "redis-action-publisher-${counter++}")
+		}
+	})
+
 	override fun onDisable() {
 		enabled = false
 
 		pubSub.unsubscribe() // stop listening for messages
 		subscriber.close() // close the subscriber instance
 		idActionMap.clear() // clear the plugin message map
+
+		thread.interrupt() // Stop async services
+		executor.shutdown() // Stop async services
 	}
 
 	// Actions
 	private val idActionMap = mutableMapOf<String, RedisAction<*>>()
 
-	inline fun <reified T, B> createAction(id: String, runSync: Boolean, noinline function: (T) -> B): RedisAction<T> {
+	inline fun <reified T, B> register(id: String, runSync: Boolean, noinline function: (T) -> B): RedisAction<T> {
 		val action = object : RedisAction<T>(id, object : TypeToken<T>() {}.type, runSync) {
 			override fun onReceive(data: T) {
 				function.invoke(data)
 			}
 		}
-
+		register(action)
 		return action
-	}
-
-	fun <T> RedisAction<T>.register(): RedisAction<T> {
-		register(this)
-		return this
 	}
 
 	fun <T : RedisAction<*>> register(message: T) {
@@ -72,15 +81,7 @@ object RedisActions : IonComponent() {
 
 	private val serverId = UUID.randomUUID()
 
-	private val executor = Executors.newSingleThreadExecutor(object : ThreadFactory {
-		private var counter: Int = 0
-
-		override fun newThread(r: Runnable): Thread {
-			return Thread(r, "redis-action-publisher-${counter++}")
-		}
-	})
-
-	val wrapperType: Type = object : TypeToken<ChatMessageWrapper>() {}.type
+	val wrapperType: Type = object : TypeToken<RedisMessageWrapper>() {}.type
 
 	fun <Data> publishMessage(
 		actionId: String,
@@ -91,7 +92,7 @@ object RedisActions : IonComponent() {
 		val messageUuid = UUID.randomUUID()
 		val serializedContent = RedisSerialization.serialize(data = content, type = type)
 
-		val wrapper = ChatMessageWrapper(
+		val wrapper = RedisMessageWrapper(
 			actionId = actionId,
 			messageId = messageUuid.toString(),
 			serverId = serverId.toString(),
@@ -114,7 +115,7 @@ object RedisActions : IonComponent() {
 				if (!enabled) return
 
 				val formatted = try {
-					RedisSerialization.readTyped<ChatMessageWrapper>(message, wrapperType)
+					RedisSerialization.readTyped<RedisMessageWrapper>(message, wrapperType)
 				} catch (e: Exception) {
 					return log.warn("Could not deserialize redis message. Full contents: $message")
 				}
@@ -125,7 +126,13 @@ object RedisActions : IonComponent() {
 				// ignore if it came from the server it was sent from
 				if (formatted.serverId == serverId.toString()) return
 
-				val receiver = idActionMap[formatted.actionId] ?: return log.warn("Unknown redis action: ${formatted.actionId}, full contents: $formatted")
+				val receiver = idActionMap[formatted.actionId]
+
+				if (receiver == null) {
+					if (!ignoreUnknownMessages) log.warn("Unknown redis action: ${formatted.actionId}, full contents: $formatted")
+
+					return
+				}
 
 				val data = RedisSerialization.read(formatted.message, receiver.type)
 

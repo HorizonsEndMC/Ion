@@ -31,8 +31,6 @@ import net.horizonsend.ion.server.features.misc.EventLogger
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.PacketHandler
 import net.horizonsend.ion.server.features.misc.Shuttles
-import net.horizonsend.ion.server.features.misc.messaging.PlayerTracking
-import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
@@ -83,6 +81,7 @@ import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.TutorialManager
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
 val components: List<IonComponent> = listOf(
@@ -90,6 +89,7 @@ val components: List<IonComponent> = listOf(
 	DBManager,
 	RedisActions,
 	Caches,
+	Discord,
 	Notify,
 	Shuttles,
 
@@ -200,7 +200,4 @@ val components: List<IonComponent> = listOf(
 
 	AntiAirCannons,
 	CustomOrePlacement,
-
-	PlayerTracking,
-	ServerDiscordMessaging
 )

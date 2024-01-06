@@ -1,8 +1,8 @@
-package net.horizonsend.ion.common.utils.redis.messaging
+package net.horizonsend.ion.common.utils.redis
 
 import net.horizonsend.ion.common.utils.Server
 
-data class ChatMessageWrapper(
+data class RedisMessageWrapper(
 	val actionId: String,
 	val messageId: String,
 	val serverId: String,

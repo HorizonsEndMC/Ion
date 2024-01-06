@@ -23,7 +23,6 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.achievements.Achievement
 import net.horizonsend.ion.server.features.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -32,6 +31,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -106,9 +106,9 @@ object StationSieges : IonServerComponent() {
 			)
 
 			IonServer.server.sendMessage(message)
-			if (IonServer.legacySettings.master) ServerDiscordMessaging.globalEmbed(Embed(
+			if (IonServer.legacySettings.master) Discord.sendEmbed(IonServer.discordSettings.globalChannel, (Embed(
 				description = "Siege Station $lastStationName's siege hour has ended."
-			))
+			)))
 		}
 
 		val stations = Regions.getAllOf<RegionCapturableStation>()
@@ -124,7 +124,7 @@ object StationSieges : IonServerComponent() {
 			).hoverEvent(text("${station.world} : (${station.x}, ${station.z})"))
 
 			IonServer.server.sendMessage(message)
-			if (IonServer.legacySettings.master) ServerDiscordMessaging.globalEmbed(Embed(
+			if (IonServer.legacySettings.master) Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
 				description = "Siege Station ${station.name}'s siege hour has began! It can be besieged for the rest of the hour with /siege!."
 			))
 		}
@@ -157,7 +157,7 @@ object StationSieges : IonServerComponent() {
 		val stationName = CapturableStation.findPropById(siege.stationId, CapturableStation::name) ?: "??NULL??"
 
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>Siege of Space Station $stationName by $playerName has failed!"))
-		ServerDiscordMessaging.eventsMessage(text("Siege of Space Station **$stationName** by **$playerName** has failed!"))
+		Discord.sendMessage(IonServer.discordSettings.eventsChannel, "Siege of Space Station **$stationName** by **$playerName** has failed!")
 	}
 
 	fun beginSiege(player: Player) = asyncLocked {
@@ -252,7 +252,7 @@ object StationSieges : IonServerComponent() {
 		val oldNationName = NationCache[oldNation].name
 
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>${player.name} of $nationName began a siege on Space Station ${station.name}! (Current Nation: $oldNationName)"))
-		ServerDiscordMessaging.eventsMessage(text("**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}"))
+		Discord.sendMessage(IonServer.discordSettings.eventsChannel, "**${player.name}** of $nationName has initiated a siege on $oldNationName's Space Station ${station.name}")
 
 		player.rewardAchievement(Achievement.SIEGE_STATION)
 	}
@@ -327,7 +327,7 @@ object StationSieges : IonServerComponent() {
 
 			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>Space Station ${station.name} has been captured by $playerName of $nationName from $oldNationName." +
 				" $nationName now has $nowCaptured stations!"))
-			ServerDiscordMessaging.eventsMessage(text("Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**"))
+			Discord.sendMessage(IonServer.discordSettings.eventsChannel, "Space Station **${station.name}** has been captured by **$playerName of $nationName** from **$oldNationName**")
 
 			SLXP.addAsync(player, NATIONS_BALANCE.capturableStation.siegerXP)
 

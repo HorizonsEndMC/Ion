@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.ManualCache
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.utils.redis.RedisAction
-import net.horizonsend.ion.common.utils.redis.RedisActions
 import net.horizonsend.ion.common.utils.redis.RedisActions.register
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateItems
@@ -27,10 +26,10 @@ object CargoCrates : ManualCache() {
 	private lateinit var refreshGlobal: RedisAction<Long>
 
 	override fun load() {
-		refreshGlobal = RedisActions.createAction("trade-reload-all-crate-data", runSync = false) { time: Long ->
+		refreshGlobal = register("trade-reload-all-crate-data", runSync = false) { time: Long ->
 			log.info("Received Reload Request Initiated At ${Date(time).toInstant().atZone(ZoneId.systemDefault())}")
 			refreshLocal()
-		}.register()
+		}
 
 		refreshLocal()
 	}

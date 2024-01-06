@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.Configuration
-import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.AISpawningConfiguration
@@ -16,7 +16,6 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.TradeConfiguration
-import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceBiomeProvider
 import net.horizonsend.ion.server.features.space.generation.generators.SpaceChunkGenerator
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -25,11 +24,10 @@ import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -53,6 +51,7 @@ object IonServer : JavaPlugin() {
 	var gassesConfiguration: GassesConfiguration = Configuration.load(configurationFolder, "gasses.json")
 	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
 	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
+	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
 	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
 
 	override fun onEnable(): Unit =
@@ -62,7 +61,7 @@ object IonServer : JavaPlugin() {
 				slF4JLogger.info(message)
 
 				try {
-					ServerDiscordMessaging.changelogMessage(text("${configuration.serverName} $message"))
+					Discord.sendMessage(discordSettings.changelogChannel,"${configuration.serverName} $message")
 				} catch (_: Exception) {
 				}
 			},
@@ -73,7 +72,7 @@ object IonServer : JavaPlugin() {
 		)
 
 	private fun internalEnable() {
-		CommonConfig.init(IonServer.dataFolder) // DB Configs
+		CommonConfig.init(configurationFolder) // DB Configs
 
 		prefixProvider = { // Audience extensions
 			when (it) {
@@ -127,7 +126,6 @@ object IonServer : JavaPlugin() {
 		}
 
 		// Checkmark is not an emoji?
-		ServerDiscordMessaging.globalEmbed(Embed(title = "✅ ${configuration.serverName} has started", color = NamedTextColor.GREEN.value()))
 		DBManager.INITIALIZATION_COMPLETE = true // Start handling reads from the DB
 
 		BazaarItem.replaceLegacyMinerals()

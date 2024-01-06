@@ -9,8 +9,9 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Bukkit
@@ -78,7 +79,7 @@ internal object NationRelationCommand : SLCommand() {
 
 			player.sendMessage(message)
 
-			ServerDiscordMessaging.globalEmbed(Embed(
+			Discord.sendEmbed(IonServer.discordSettings.globalChannel, Embed(
 				description = message.plainText(),
 				color = wish.color.value()
 			))
