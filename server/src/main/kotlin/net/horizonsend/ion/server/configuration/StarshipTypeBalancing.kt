@@ -77,7 +77,8 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 2.0,
 				applyCooldownToAll = true,
-				maxBlockCount = 12000
+				maxBlockCount = 12000,
+				minBlockCount = 1750
 			),
 			pulseCannon = StarshipWeapons.StarshipWeapon(
 				range = 180.0,
