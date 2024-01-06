@@ -60,6 +60,19 @@ class PlayerDamagerWrapper(override val player: Player) : PlayerDamager {
 	override fun audiences(): MutableIterable<Audience> {
 		return mutableListOf(player)
 	}
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as PlayerDamagerWrapper
+
+		return player.uniqueId == other.player.uniqueId
+	}
+
+	override fun hashCode(): Int {
+		return player.hashCode()
+	}
 }
 
 val noOpDamager = NoOpDamager()

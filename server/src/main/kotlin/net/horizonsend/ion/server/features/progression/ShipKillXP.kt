@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.misc.CombatNPCKillEvent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.starship.damager.PlayerDamagerWrapper
+import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -46,11 +46,7 @@ object ShipKillXP : IonServerComponent() {
 	private fun onPlayerKilled(killed: UUID, killer: Entity?) {
 		val killedStarship = ActiveStarships.findByPilot(killed) ?: return
 
-		if (killer is Player) {
-			val damager = PlayerDamagerWrapper(killer)
-
-			killedStarship.addToDamagers(damager)
-		}
+		killer?.let { killedStarship.addToDamagers(killer.damager()) }
 
 		onShipKill(killedStarship)
 	}
