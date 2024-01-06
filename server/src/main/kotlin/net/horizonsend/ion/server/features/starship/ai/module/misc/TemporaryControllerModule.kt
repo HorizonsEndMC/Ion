@@ -22,6 +22,6 @@ class TemporaryControllerModule(
 
 	private fun returnToPreviousController() {
 		val previousController = previousController
-		starship.controller = previousController
+		starship.setController(previousController)
 	}
 }

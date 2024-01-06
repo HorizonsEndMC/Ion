@@ -21,11 +21,13 @@ class CombatModeModule(
 	}
 
 	private fun switchToCombatMode(target: AITarget) {
-		starship.controller = combatController(
+		val combatController = combatController(
 			starship,
 			controller.getPilotName(),
 			controller.manualWeaponSets,
 			controller.autoWeaponSets
 		)
+
+		starship.setController(controller)
 	}
 }

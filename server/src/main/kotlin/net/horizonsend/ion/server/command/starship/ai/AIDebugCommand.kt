@@ -61,7 +61,7 @@ object AIDebugCommand : SLCommand() {
 	) {
 		val starship = getStarshipRiding(sender)
 
-		starship.controller = controller(
+		val newController = controller(
 			starship,
 			text("Player Created AI Ship"),
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
@@ -70,6 +70,8 @@ object AIDebugCommand : SLCommand() {
 			val positioningEngine = modules["positioning"]
 			(positioningEngine as? AxisStandoffPositioningModule)?.let { it.standoffDistance = standoffDistance }
 		}
+
+		starship.setController(newController)
 
 		starship.removePassenger(sender.uniqueId)
 	}

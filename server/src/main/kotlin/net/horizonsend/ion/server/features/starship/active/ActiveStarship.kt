@@ -92,13 +92,14 @@ abstract class ActiveStarship (
 			field = value
 		}
 
-	var controller: Controller = NoOpController(this, null)
-		set(value) {
-			if (this is ActiveControlledStarship) PilotedStarships.changeController(this, value)
-			value.hint("Updated control mode to ${value.name}.")
-			field.destroy()
-			field = value
-		}
+	var controller: Controller = NoOpController(this, null); private set
+
+	fun setController(value: Controller, updateMap: Boolean = true) {
+		if (this is ActiveControlledStarship && updateMap) PilotedStarships.changeController(this, value)
+		value.hint("Updated control mode to ${value.name}.")
+		controller.destroy()
+		controller = value
+	}
 
 	var pilotDisconnectLocation: Vec3i? = null
 

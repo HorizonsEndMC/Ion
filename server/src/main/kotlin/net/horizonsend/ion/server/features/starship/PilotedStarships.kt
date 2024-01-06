@@ -90,7 +90,7 @@ object PilotedStarships : IonServerComponent() {
 		check(!starship.isExploding)
 
 		map[controller] = starship
-		starship.controller = controller
+		starship.setController(controller)
 
 		setupPassengers(starship)
 
@@ -186,14 +186,14 @@ object PilotedStarships : IonServerComponent() {
 		Tasks.checkMainThread()
 		val controller = starship.controller
 
-		map.remove(starship.controller)
-
-		val unpilotedController = when (starship.controller) {
-			is PlayerController -> UnpilotedController(starship.controller as PlayerController)
+		val unpilotedController = when (controller) {
+			is PlayerController -> UnpilotedController(controller)
 			else -> NoOpController(starship, starship.controller.damager)
 		}
 
-		starship.controller = unpilotedController
+		map.remove(starship.controller)
+
+		starship.setController(unpilotedController, updateMap = false)
 		starship.lastUnpilotTime = System.nanoTime()
 
 		starship.clearPassengers()
@@ -214,13 +214,12 @@ object PilotedStarships : IonServerComponent() {
 		controller is UnpilotedController && controller.player.uniqueId == player.uniqueId
 	}.values.firstOrNull()
 
-	operator fun get(player: Player): ActiveControlledStarship? = map.filter { (controller, _) ->
-		controller is ActivePlayerController && controller.player.uniqueId == player.uniqueId
-	}.values.firstOrNull()
+	operator fun get(player: Player): ActiveControlledStarship? = get(player.uniqueId)
 
-	operator fun get(player: UUID): ActiveControlledStarship? = map.filter {
-		(it.key as? PlayerController)?.player?.uniqueId == player
-	}.values.firstOrNull()
+	operator fun get(player: UUID): ActiveControlledStarship? = map.entries.firstOrNull { (controller, _) ->
+		(controller as? PlayerController)?.player?.uniqueId == player
+	}?.value
+
 	operator fun get(controller: Controller) = map[controller]
 
 	fun activateWithoutPilot(
