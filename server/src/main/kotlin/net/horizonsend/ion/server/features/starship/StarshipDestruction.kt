@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import java.util.LinkedList
@@ -197,6 +198,11 @@ object StarshipDestruction {
 			val newZ = z + zOffset
 
 			if (newY < world.minHeight || newY > world.maxHeight) {
+				obstructedLocations.add(key)
+				continue
+			}
+
+			if (!world.worldBorder.isInside(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))) {
 				obstructedLocations.add(key)
 				continue
 			}
