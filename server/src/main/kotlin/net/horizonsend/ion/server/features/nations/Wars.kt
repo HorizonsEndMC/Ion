@@ -14,8 +14,9 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.misc.messaging.ServerDiscordMessaging
+import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -59,8 +60,8 @@ object Wars : IonComponent() {
 	private fun sendMessages(message: Component, embed: Embed) {
 		Notify.notifyOnlineAction(message)
 
-		ServerDiscordMessaging.eventsEmbed(embed)
-		ServerDiscordMessaging.globalEmbed(embed)
+		Discord.sendEmbed(IonServer.discordSettings.globalChannel, embed)
+		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
 	}
 
 	/** Starts a war between the two nations */
