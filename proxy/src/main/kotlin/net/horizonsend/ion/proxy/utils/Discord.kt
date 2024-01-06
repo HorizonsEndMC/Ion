@@ -14,6 +14,11 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.proxy.IonProxyComponent
 import net.horizonsend.ion.proxy.PLUGIN
+import net.horizonsend.ion.proxy.commands.discord.DiscordInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordNationInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordPlayerInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.DiscordSettlementInfoCommand
+import net.horizonsend.ion.proxy.commands.discord.PlayerListCommand
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
 import net.kyori.adventure.text.TranslatableComponent
@@ -30,16 +35,27 @@ object Discord : IonProxyComponent() {
 	private val configuration get() = PLUGIN.discordConfiguration
 	private var enabled: Boolean = false
 	private var JDA: JDA? = null
+	private var commandManager: JDACommandManager? = null
 
 	override fun onEnable() {
 		try {
-			JDA = JDABuilder.createLight(configuration.token)
+			val jda = JDABuilder.createLight(configuration.token)
 				.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setChunkingFilter(ChunkingFilter.ALL)
 				.disableCache(CacheFlag.values().toList())
 				.setEnableShutdownHook(false)
 				.build()
+
+			JDA  = jda
+			commandManager = JDACommandManager(jda, configuration)
+
+			commandManager?.registerGuildCommand(DiscordInfoCommand)
+			commandManager?.registerGuildCommand(PlayerListCommand)
+			commandManager?.registerGlobalCommand(DiscordPlayerInfoCommand)
+			commandManager?.registerGlobalCommand(DiscordSettlementInfoCommand)
+			commandManager?.registerGlobalCommand(DiscordNationInfoCommand)
+			commandManager?.build()
 
 			enabled = true
 		} catch (e: Throwable) {
