@@ -4,12 +4,14 @@ import com.google.gson.GsonBuilder
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.extensions.CommonPlayer
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import java.lang.reflect.Type
 
 object RedisSerialization {
 	private val gson = GsonBuilder()
 		.registerTypeAdapter(Oid::class.java, OidSerializer)
 		.registerTypeAdapter(Component::class.java, ComponentSerializer)
+		.registerTypeAdapter(TextColor::class.java, TextColorSerializer)
 		.registerTypeAdapter(CommonPlayer::class.java, CommonPlayerSerializer)
 		.create()
 
