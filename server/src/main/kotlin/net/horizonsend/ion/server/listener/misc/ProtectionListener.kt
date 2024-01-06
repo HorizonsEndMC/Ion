@@ -7,8 +7,10 @@ import net.horizonsend.ion.server.command.nations.SpaceStationCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.component1
@@ -105,12 +107,15 @@ object ProtectionListener : SLEventListener() {
 		if (isRegionDenied(player, location)) denied = true
 
 		val (world, x, y, z) = location
-		val shipContaining = DeactivatedPlayerStarships.getContaining(world!!, x.toInt(), y.toInt(), z.toInt())
+		val shipContaining = DeactivatedPlayerStarships.getContaining(world, x.toInt(), y.toInt(), z.toInt())
 
 		// Need to also check for null
 		if (shipContaining !is PlayerStarshipData?) return true
 
 		if (shipContaining?.isPilot(player) == true) denied = false
+
+		val (x1, y1, z1) = Vec3i(location)
+		if (ActiveStarships.findByPilot(player)?.contains(x1, y1, z1) == true) denied = false
 
 		if (isLockedShipDenied(player, location)) return true
 
