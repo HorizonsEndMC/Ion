@@ -6,16 +6,26 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.WarCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.war.War
 import net.horizonsend.ion.common.database.schema.nations.war.WarGoal
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.Wars
+import net.horizonsend.ion.server.features.nations.Wars.warMessageTemplate
+import net.kyori.adventure.text.Component.newline
+import net.kyori.adventure.text.Component.text
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.setValue
 
-@CommandAlias("war")
+@CommandAlias("war|n war")
 object WarCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerAsyncCompletion("@activeWars") { _ ->
@@ -103,33 +113,104 @@ object WarCommand : SLCommand() {
 		val senderNation = requireNationIn(sender)
 		requireNationLeader(sender, senderNation)
 
-
+		Wars
+		TODO()
 	}
 
 	@Subcommand("info")
 	@CommandCompletion("@activeWars")
-	fun onInfo(sender: Player) = asyncCommand(sender) {
+	@Suppress("unused")
+	fun onInfo(sender: Player, war: WarCache.WarData) = asyncCommand(sender) {
+		val name = Wars.importantWarMessageTemplate(war.name)
+		val attackerAndGoal = warMessageTemplate("Aggressor: {0}. Goal: {1}", NationCache[war.aggressor].name, war.aggressorGoal)
+		val defenderAndGoal = warMessageTemplate("Defender: {0}. Goal: {1}", NationCache[war.defender].name, war.defenderGoal)
 
+		val points = war.points.toCreditComponent() //TODO
+		val started = war.points.toCreditComponent() //TODO
+		val timeout = war.points.toCreditComponent() //TODO
+
+		ofChildren(
+			lineBreakWithCenterText(name), newline(),
+			attackerAndGoal, newline(),
+			defenderAndGoal, newline(),
+			points, newline(),
+			started, newline(),
+			timeout, newline(),
+			lineBreak(47)
+		)
 	}
 
 	/** Gets all active wars */
 	@Subcommand("list")
-	fun onList(sender: Player) = asyncCommand(sender) {
+	@CommandCompletion("1|2|3|4|5")
+	fun onList(sender: CommandSender, @Optional page: Int?) = asyncCommand(sender) {
+		val active = WarCache.all().filter { it.result == null }
 
+		sendWarList(sender, active, "Active Wars", page)
 	}
 
 	/** Gets all wars that the specified nation is participating in */
 	@Subcommand("list")
-	@CommandCompletion("@nations")
-	fun onList(sender: Player, nation: String) = asyncCommand(sender) {
+	@CommandCompletion("@nations 1|2|3|4|5")
+	fun onList(sender: Player, nation: String, @Optional page: Int?) = asyncCommand(sender) {
+		val nationId = resolveNation(nation)
+		val name = getNationName(nationId)
 
+		val active = WarCache.all().filter {
+			it.result == null &&
+			(it.aggressor == nationId || it.defender == nationId)
+		}
+
+		sendWarList(sender, active, "$name's Active Wars", page)
 	}
 
 	/** Gets all wars that the specified nation has participated in */
 	@Subcommand("history")
-	@CommandCompletion("@nations")
-	fun onHistory(sender: Player, nation: String) = asyncCommand(sender) {
+	@CommandCompletion("@nations 1|2|3|4|5")
+	@Suppress("unused")
+	fun onHistory(sender: Player, nation: String, @Optional page: Int?) = asyncCommand(sender) {
+		val nationId = resolveNation(nation)
+		val name = getNationName(nationId)
 
+		val wars = WarCache.all().filter { (it.aggressor == nationId || it.defender == nationId) }
+
+		sendWarList(sender, wars, "$name's Past Wars", page)
+	}
+
+	private fun sendWarList(
+		sender: CommandSender,
+		wars: List<WarCache.WarData>,
+		message: String,
+		page: Int?
+	) {
+		if ((page ?: 1) < 1) fail { "Can't have a negative page" }
+
+		val builder = text()
+
+		builder.append(lineBreakWithCenterText(warMessageTemplate(message)), newline())
+
+		val menu = formatPaginatedMenu(
+			wars.size,
+			"/war list",
+			page ?: 1,
+			maxPerPage = 4,
+			) {
+			val war = wars[it]
+
+			val name = Wars.importantWarMessageTemplate(war.name)
+			val attackerAndGoal = warMessageTemplate("Aggressor: {0}. Goal: {1}", NationCache[war.aggressor].name, war.aggressorGoal)
+			val defenderAndGoal = warMessageTemplate("Defender: {0}. Goal: {1}", NationCache[war.defender].name, war.defenderGoal)
+
+			ofChildren(
+				name, newline(),
+				attackerAndGoal, newline(),
+				defenderAndGoal, newline()
+			)
+		}
+
+		builder.append(menu)
+
+		sender.sendMessage(builder.build())
 	}
 
 	fun requireAttacker(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].aggressor != nation) { "Your nation must be the aggressor in this war to do this!" }
