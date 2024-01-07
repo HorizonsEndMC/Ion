@@ -41,10 +41,6 @@ internal object NationRelationCommand : SLCommand() {
 	@CommandCompletion("@nations")
 	fun onEnemy(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.ENEMY)
 
-	@Subcommand("nation")
-	@CommandCompletion("@nations")
-	fun onNation(sender: Player, nation: String) = setRelationWish(sender, nation, NationRelation.Level.NATION)
-
 	private fun setRelationWish(sender: Player, nation: String, wish: NationRelation.Level) = asyncCommand(sender) {
 		val senderNation = requireNationIn(sender)
 		requireNationPermission(sender, senderNation, NationRole.Permission.MANAGE_RELATIONS)
