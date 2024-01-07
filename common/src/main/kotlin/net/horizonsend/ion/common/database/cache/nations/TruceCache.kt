@@ -63,9 +63,9 @@ object TruceCache : ManualCache() {
 
 	operator fun get(id: Oid<Truce>): TruceData? = truceData[id]
 
-	operator fun get(id: Oid<Nation>): Iterable<TruceData> = truceData.values.filter { (it.defeated == id || it.victor == id) && it.endDate > Date(System.currentTimeMillis()) }
+	fun getByNation(id: Oid<Nation>): Iterable<TruceData> = truceData.values.filter { (it.defeated == id || it.victor == id) && it.endDate > Date(System.currentTimeMillis()) }
 
 	// Measures against abuse
-	operator fun get(id: Oid<Settlement>): Iterable<TruceData> = truceData.values.filter { (it.partySettlements.contains(id)) && it.endDate > Date(System.currentTimeMillis()) }
-	operator fun get(id: SLPlayerId): Iterable<TruceData> = truceData.values.filter { (it.partyPlayers.contains(id)) && it.endDate > Date(System.currentTimeMillis()) }
+	fun getBySettlement(id: Oid<Settlement>): Iterable<TruceData> = truceData.values.filter { (it.partySettlements.contains(id)) && it.endDate > Date(System.currentTimeMillis()) }
+	fun getByPlayer(id: SLPlayerId): Iterable<TruceData> = truceData.values.filter { (it.partyPlayers.contains(id)) && it.endDate > Date(System.currentTimeMillis()) }
 }

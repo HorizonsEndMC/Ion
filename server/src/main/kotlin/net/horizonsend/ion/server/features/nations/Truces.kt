@@ -14,7 +14,7 @@ object Truces : IonServerComponent() {
 		val playerOneCached = PlayerCache[playerOne]
 		val playerTwoCached = PlayerCache[playerTwo]
 
-		val isMemberParty = TruceCache[playerOne].any {
+		val isMemberParty = TruceCache.getByPlayer(playerOne).any {
 			it.partyPlayers.contains(playerTwo)
 			|| it.partySettlements.contains(playerTwoCached.settlementOid)
 			|| it.victor == playerTwoCached.nationOid
@@ -24,7 +24,7 @@ object Truces : IonServerComponent() {
 		if (isMemberParty) return true
 
 		playerOneCached.settlementOid?.let { settlement ->
-			val isSettlementParty = TruceCache[settlement].any {
+			val isSettlementParty = TruceCache.getBySettlement(settlement).any {
 				it.partyPlayers.contains(playerTwo)
 					|| it.partySettlements.contains(playerTwoCached.settlementOid)
 					|| it.victor == playerTwoCached.nationOid
@@ -35,7 +35,7 @@ object Truces : IonServerComponent() {
 		}
 
 		playerOneCached.nationOid?.let { nation ->
-			val isSettlementParty = TruceCache[nation].any {
+			val isSettlementParty = TruceCache.getByNation(nation).any {
 				it.partyPlayers.contains(playerTwo)
 					|| it.partySettlements.contains(playerTwoCached.settlementOid)
 					|| it.victor == playerTwoCached.nationOid
