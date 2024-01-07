@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.nations
 
-import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.WarCache
@@ -15,6 +14,7 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -30,7 +30,7 @@ import org.litote.kmongo.or
 import org.litote.kmongo.setValue
 import java.util.concurrent.TimeUnit
 
-object Wars : IonComponent() {
+object Wars : IonServerComponent() {
 	private const val STALEMATE_THRESHOLD = 100
 
 	fun warMessageTemplate(message: String, vararg params: Any?) = template(
@@ -104,7 +104,7 @@ object Wars : IonComponent() {
 			description = "$name has surrendered to $otherName in the ${war.name}!"
 		)
 
-		val message = importantWarMessageTemplate("{0} has surrendered to {0} in the {0}!", name, otherName, war.name)
+		val message = importantWarMessageTemplate("{0} has surrendered to {1} in the {2}!", name, otherName, war.name)
 
 		sendMessages(message, embed)
 		endWar(warId, result)
@@ -285,6 +285,34 @@ object Wars : IonComponent() {
 		player.success("The request has been sent. ")
 	}
 
+	fun hasStalemateRequest(warId: Oid<War>, nation: Oid<Nation>): Boolean {
+		return requestedStalemates.any { it.otherNation == nation && it.warId == warId }
+	}
+
+	/** Used when a player accepts a stalemate request put forward by the other nation */
+	fun acceptStalemateRequest(player: Player, warId: Oid<War>, nation: Oid<Nation>) {
+		// First ensure that there is a stalemate request
+		if (!requestedStalemates.any { it.warId == warId && it.otherNation == nation }) return
+
+		val request = requestedStalemates.first { it.warId == warId }
+		if (nation == request.requestingNation) throw IllegalArgumentException("A nation cannot accept its own proposal to end the war.")
+
+		val nationName = NationCache[nation].name
+
+		val requestingNationName = NationCache[request.requestingNation].name
+		val requestingPlayerName = SLPlayer.getName(request.requestingPlayer)
+
+		val embed = Embed(
+			title = "White Peace Accepted!",
+			description = "${player.name} of $nationName has accepted a white peace put forward by $requestingPlayerName of $requestingNationName."
+		)
+
+		val message = importantWarMessageTemplate("{0} of {1} has accepted a white peace put forward by {2} of {3}.", player.name, nationName, requestingPlayerName, requestingNationName)
+
+		sendMessages(message, embed)
+		endWarStalemate(warId)
+	}
+
 	private fun checkStalemateRequests(playerId: SLPlayerId): Collection<RequestedStalemate>? {
 		val slPlayer = SLPlayer[playerId] ?: return null
 
@@ -308,16 +336,7 @@ object Wars : IonComponent() {
 		return requests
 	}
 
-	/** Messages a player on login if a stalemate has been requested, and they have permission to act on it */
-	@EventHandler
-	fun onPlayerJoin(event: PlayerJoinEvent) = Tasks.async {
-		val requested = checkStalemateRequests(event.player.slPlayerId) ?: return@async
-
-		for (request in requested) {
-			event.player.sendMessage(request.format())
-		}
-	}
-
+	/** Gets the other participate in the war, provided one. */
 	fun resolveOtherNation(warId: Oid<War>, nation: Oid<Nation>): Oid<Nation> {
 		val war = WarCache[warId]
 
@@ -327,4 +346,44 @@ object Wars : IonComponent() {
 			else -> throw IllegalArgumentException()
 		}
 	}
+
+	/** Messages a player on login if a stalemate has been requested, and they have permission to act on it */
+	private fun checkStalemateRequests(player: Player) {
+		val requested = checkStalemateRequests(player.slPlayerId) ?: return
+
+		for (request in requested) {
+			player.sendMessage(request.format())
+		}
+	}
+
+	/** Messages a player on login if they are in a defending nation that has not yet set a goal */
+	private fun checkWarGoal(player: Player) {
+		val cached = PlayerCache[player]
+		val nation = cached.nationOid ?: return
+		val cachedNation = NationCache[nation]
+
+		val wars = WarCache.getActiveDefending(nation)
+
+		if (wars.isEmpty()) return
+
+		for (war in wars) {
+			if (war.defenderHasSetGoal) {
+				continue
+			}
+
+			if (player.slPlayerId == cachedNation.leader) {
+				player.sendMessage(warMessageTemplate("Your nation has not set a goal in the {0}. Use \"/war set goal\" to do so.", war.name))
+			} else {
+				player.sendMessage(warMessageTemplate("Your nation has not set a goal in the {0}. Ask your leader to use \"/war set goal\" to do so.", war.name))
+			}
+		}
+	}
+
+	@EventHandler
+	fun onPlayerJoin(event: PlayerJoinEvent) = Tasks.async {
+		checkStalemateRequests(event.player)
+		checkWarGoal(event.player)
+	}
+
+
 }

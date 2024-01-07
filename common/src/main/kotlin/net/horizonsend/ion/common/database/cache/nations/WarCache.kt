@@ -1,8 +1,8 @@
 package net.horizonsend.ion.common.database.cache.nations
 
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.boolean
 import net.horizonsend.ion.common.database.cache.ManualCache
-import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
@@ -21,8 +21,10 @@ object WarCache : ManualCache() {
 
 		val aggressor: Oid<Nation>,
 		val aggressorGoal: WarGoal,
+
 		val defender: Oid<Nation>,
 		var defenderGoal: WarGoal,
+		var defenderHasSetGoal: Boolean = false,
 
 		val startDate: Date,
 
@@ -72,11 +74,15 @@ object WarCache : ManualCache() {
 			}
 
 			change[War::defenderGoal]?.let {
-				data.defenderGoal = it.document()
+				data.defenderGoal = it.enumValue()
+			}
+
+			change[War::defenderHasSetGoal]?.let {
+				data.defenderHasSetGoal = it.boolean()
 			}
 
 			change[War::result]?.let {
-				data.result	 = it.enumValue<War.Result>()
+				data.result	= it.enumValue<War.Result>()
 			}
 		}
 
@@ -88,11 +94,13 @@ object WarCache : ManualCache() {
 		}
 	}
 
-	fun findActive() {
-
-	}
+	fun allActive(): Collection<WarData> = warData.values.filter { it.result == null }
 
 	fun all(): Collection<WarData> = warData.values
 
 	operator fun get(id: Oid<War>): WarData = warData[id] ?: error("War $id wasn't cached!")
+	operator fun get(id: Oid<Nation>): Collection<WarData> = all().filter { it.defender == id || it.aggressor == id }
+	fun getActive(id: Oid<Nation>): Collection<WarData> = allActive().filter { it.defender == id || it.aggressor == id }
+	fun getActiveDefending(id: Oid<Nation>): Collection<WarData> = allActive().filter { it.defender == id }
+	fun getActiveAggressor(id: Oid<Nation>): Collection<WarData> = allActive().filter { it.aggressor == id }
 }

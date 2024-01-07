@@ -15,12 +15,15 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.Wars
 import net.horizonsend.ion.server.features.nations.Wars.warMessageTemplate
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.setValue
@@ -39,7 +42,9 @@ object WarCommand : SLCommand() {
 		}
 
 		manager.commandContexts.registerContext(WarCache.WarData::class.java) { context ->
-			WarCache.all().firstOrNull { it.name.replace(" ", "_") == context.popFirstArg() } ?: fail { "War ${context.firstArg} does not exist!" }
+			val arg = context.popFirstArg()
+
+			WarCache.all().firstOrNull { it.name.replace(" ", "_") == arg } ?: fail { "War $arg does not exist!" }
 		}
 	}
 
@@ -113,31 +118,44 @@ object WarCommand : SLCommand() {
 		val senderNation = requireNationIn(sender)
 		requireNationLeader(sender, senderNation)
 
-		Wars
-		TODO()
+		if (!Wars.hasStalemateRequest(war.id, senderNation)) fail { "The other party has not requested a white peace!" }
+
+		Wars.acceptStalemateRequest(sender, war.id, senderNation)
 	}
 
 	@Subcommand("info")
 	@CommandCompletion("@activeWars")
 	@Suppress("unused")
-	fun onInfo(sender: Player, war: WarCache.WarData) = asyncCommand(sender) {
+	fun onInfo(sender: CommandSender, war: WarCache.WarData) = asyncCommand(sender) {
 		val name = Wars.importantWarMessageTemplate(war.name)
 		val attackerAndGoal = warMessageTemplate("Aggressor: {0}. Goal: {1}", NationCache[war.aggressor].name, war.aggressorGoal)
 		val defenderAndGoal = warMessageTemplate("Defender: {0}. Goal: {1}", NationCache[war.defender].name, war.defenderGoal)
+
+		val aggressorCached = NationCache[war.aggressor]
+		val aggressorColor = TextColor.color(aggressorCached.color)
+		val defenderCached = NationCache[war.defender]
+		val defenderColor = TextColor.color(defenderCached.color)
+
+		val pointsNormalized = (war.points.toDouble() + 1000.0) / 2000.0
+
+		val transition = "<transition:${aggressorColor.asHexString()}:${defenderColor.asHexString()}:$pointsNormalized>"
 
 		val points = war.points.toCreditComponent() //TODO
 		val started = war.points.toCreditComponent() //TODO
 		val timeout = war.points.toCreditComponent() //TODO
 
-		ofChildren(
+		val text = ofChildren(
 			lineBreakWithCenterText(name), newline(),
+			miniMessage().deserialize("$transition${repeatString("█", 37)}</transition>\n"),
 			attackerAndGoal, newline(),
 			defenderAndGoal, newline(),
 			points, newline(),
 			started, newline(),
 			timeout, newline(),
-			lineBreak(47)
+			lineBreak(52)
 		)
+
+		sender.sendMessage(text)
 	}
 
 	/** Gets all active wars */
