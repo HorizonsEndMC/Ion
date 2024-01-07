@@ -33,7 +33,7 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.setValue
 import kotlin.math.abs
 
-@CommandAlias("war|n war")
+@CommandAlias("n war|war|nwar")
 object WarCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerAsyncCompletion("@activeWars") { _ ->
@@ -119,6 +119,7 @@ object WarCommand : SLCommand() {
 
 	@Subcommand("accept stalemate")
 	@CommandCompletion("@activeWars")
+	@Suppress("unused")
 	fun onAcceptStalemate(sender: Player, war: WarCache.WarData) = asyncCommand(sender) {
 		val senderNation = requireNationIn(sender)
 		requireNationLeader(sender, senderNation)
@@ -201,9 +202,9 @@ object WarCommand : SLCommand() {
 		sender.sendMessage(builder.build())
 	}
 
-	fun requireAttacker(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].aggressor != nation) { "Your nation must be the aggressor in this war to do this!" }
-	fun requireDefender(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].defender != nation) { "Your nation must be the defender in this war to do this!" }
-	fun requireParticipation(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].defender != nation && WarCache[war].aggressor != nation) {
+	private fun requireAttacker(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].aggressor != nation) { "Your nation must be the aggressor in this war to do this!" }
+	private fun requireDefender(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].defender != nation) { "Your nation must be the defender in this war to do this!" }
+	private fun requireParticipation(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].defender != nation && WarCache[war].aggressor != nation) {
 		"Your nation must participate in this war to do this!"
 	}
 
@@ -243,14 +244,9 @@ object WarCommand : SLCommand() {
 
 		builder.append(formatBar(war.points), newline())
 
-		builder.append(lineBreak(WAR_INFO_LINE_WIDTH))
+		//TODO the rest of this
 
-		val text = ofChildren(
-			points, newline(),
-			started, newline(),
-			timeout, newline(),
-			lineBreak(WAR_INFO_LINE_WIDTH)
-		)
+		builder.append(lineBreak(WAR_INFO_LINE_WIDTH))
 
 		sender.sendMessage(builder.build())
 	}
