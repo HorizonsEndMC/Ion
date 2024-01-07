@@ -87,7 +87,7 @@ object WarCache : ManualCache() {
 		}
 
 		War.watchDeletes { change ->
-			val id: Oid<War> = change.oid
+			val id = change.fullDocument?._id ?: return@watchDeletes
 
 			warData[id] ?: error("$id wasn't cached")
 			warData.remove(id)

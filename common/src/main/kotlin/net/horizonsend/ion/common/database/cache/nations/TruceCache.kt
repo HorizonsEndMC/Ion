@@ -2,7 +2,9 @@ package net.horizonsend.ion.common.database.cache.nations
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.ManualCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.war.Truce
 import net.horizonsend.ion.common.database.schema.nations.war.War
 import java.util.Date
@@ -17,7 +19,10 @@ object TruceCache : ManualCache() {
 		val victor: Oid<Nation>,
 		val defeated: Oid<Nation>,
 
-		val endDate: Date
+		val endDate: Date,
+
+		val partyPlayers: Set<SLPlayerId>,
+		val partySettlements: Set<Oid<Settlement>>
 	)
 
 	override fun load() {
@@ -31,7 +36,9 @@ object TruceCache : ManualCache() {
 				war = truce.war,
 				victor = truce.victor,
 				defeated = truce.defeated,
-				endDate = truce.getTruceEndDate()
+				endDate = truce.getTruceEndDate(),
+				partyPlayers = truce.partyPlayers,
+				partySettlements = truce.partySettlements
 			)
 
 			truceData[id] = data
@@ -44,7 +51,21 @@ object TruceCache : ManualCache() {
 		Truce.watchInserts { change ->
 			change.fullDocument?.let(::cache)
 		}
+
+		Truce.watchDeletes { change ->
+			val truce = change.fullDocument ?: return@watchDeletes
+
+			truceData.remove(truce._id)
+		}
 	}
 
 	private val truceData = ConcurrentHashMap<Oid<Truce>, TruceData>()
+
+	operator fun get(id: Oid<Truce>): TruceData? = truceData[id]
+
+	operator fun get(id: Oid<Nation>): Iterable<TruceData> = truceData.values.filter { (it.defeated == id || it.victor == id) && it.endDate > Date(System.currentTimeMillis()) }
+
+	// Measures against abuse
+	operator fun get(id: Oid<Settlement>): Iterable<TruceData> = truceData.values.filter { (it.partySettlements.contains(id)) && it.endDate > Date(System.currentTimeMillis()) }
+	operator fun get(id: SLPlayerId): Iterable<TruceData> = truceData.values.filter { (it.partyPlayers.contains(id)) && it.endDate > Date(System.currentTimeMillis()) }
 }
