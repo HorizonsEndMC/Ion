@@ -42,7 +42,7 @@ import org.bukkit.util.Vector
 import kotlin.math.abs
 
 object ContactsSidebar {
-	private val fontKey = Key.key("horizonsend:sidebar")
+	val fontKey = Key.key("horizonsend:sidebar")
 
     private fun distanceColor(distance: Int): NamedTextColor {
         return when {

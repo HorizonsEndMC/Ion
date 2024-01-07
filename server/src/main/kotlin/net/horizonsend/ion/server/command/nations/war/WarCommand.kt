@@ -15,18 +15,23 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.Wars
 import net.horizonsend.ion.server.features.nations.Wars.warMessageTemplate
+import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.setValue
+import kotlin.math.abs
 
 @CommandAlias("war|n war")
 object WarCommand : SLCommand() {
@@ -123,41 +128,6 @@ object WarCommand : SLCommand() {
 		Wars.acceptStalemateRequest(sender, war.id, senderNation)
 	}
 
-	@Subcommand("info")
-	@CommandCompletion("@activeWars")
-	@Suppress("unused")
-	fun onInfo(sender: CommandSender, war: WarCache.WarData) = asyncCommand(sender) {
-		val name = Wars.importantWarMessageTemplate(war.name)
-		val attackerAndGoal = warMessageTemplate("Aggressor: {0}. Goal: {1}", NationCache[war.aggressor].name, war.aggressorGoal)
-		val defenderAndGoal = warMessageTemplate("Defender: {0}. Goal: {1}", NationCache[war.defender].name, war.defenderGoal)
-
-		val aggressorCached = NationCache[war.aggressor]
-		val aggressorColor = TextColor.color(aggressorCached.color)
-		val defenderCached = NationCache[war.defender]
-		val defenderColor = TextColor.color(defenderCached.color)
-
-		val pointsNormalized = (war.points.toDouble() + 1000.0) / 2000.0
-
-		val transition = "<transition:${aggressorColor.asHexString()}:${defenderColor.asHexString()}:$pointsNormalized>"
-
-		val points = war.points.toCreditComponent() //TODO
-		val started = war.points.toCreditComponent() //TODO
-		val timeout = war.points.toCreditComponent() //TODO
-
-		val text = ofChildren(
-			lineBreakWithCenterText(name), newline(),
-			miniMessage().deserialize("$transition${repeatString("█", 37)}</transition>\n"),
-			attackerAndGoal, newline(),
-			defenderAndGoal, newline(),
-			points, newline(),
-			started, newline(),
-			timeout, newline(),
-			lineBreak(52)
-		)
-
-		sender.sendMessage(text)
-	}
-
 	/** Gets all active wars */
 	@Subcommand("list")
 	@CommandCompletion("1|2|3|4|5")
@@ -235,5 +205,108 @@ object WarCommand : SLCommand() {
 	fun requireDefender(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].defender != nation) { "Your nation must be the defender in this war to do this!" }
 	fun requireParticipation(war: Oid<War>, nation: Oid<Nation>) = failIf(WarCache[war].defender != nation && WarCache[war].aggressor != nation) {
 		"Your nation must participate in this war to do this!"
+	}
+
+	private const val WAR_INFO_LINE_WIDTH = 52
+
+	@Subcommand("info")
+	@CommandCompletion("@activeWars")
+	@Suppress("unused")
+	fun onInfo(sender: CommandSender, war: WarCache.WarData) = asyncCommand(sender) {
+		val name = Wars.importantWarMessageTemplate(war.name)
+		val attackerName = warMessageTemplate("Aggressor: {0}", NationCache[war.aggressor].name)
+		val attackerGoal = warMessageTemplate("Goal: {0}", war.aggressorGoal)
+		val defenderName = warMessageTemplate("Defender: {0}", NationCache[war.defender].name)
+		val defenderGoal = warMessageTemplate("Goal: {0}", war.defenderGoal)
+
+		val aggressorCached = NationCache[war.aggressor]
+		val aggressorColor = TextColor.color(aggressorCached.color)
+		val defenderCached = NationCache[war.defender]
+		val defenderColor = TextColor.color(defenderCached.color)
+
+		val pointsNormalized = (war.points.toDouble() + 1000.0) / 2000.0
+
+		val transition = "<transition:${aggressorColor.asHexString()}:${defenderColor.asHexString()}:$pointsNormalized>"
+
+		val points = war.points.toCreditComponent() //TODO
+		val started = war.points.toCreditComponent() //TODO
+		val timeout = war.points.toCreditComponent() //TODO
+
+		miniMessage().deserialize("$transition${repeatString("█", 35)}</transition>\n")
+
+		val builder = text()
+
+		builder.append(lineBreakWithCenterText(name), newline(), newline())
+
+		builder.append(formatSplitLine(attackerName, defenderName), newline())
+		builder.append(formatSplitLine(attackerGoal, defenderGoal), newline(), newline())
+
+		builder.append(formatBar(war.points), newline())
+
+		builder.append(lineBreak(WAR_INFO_LINE_WIDTH))
+
+		val text = ofChildren(
+			points, newline(),
+			started, newline(),
+			timeout, newline(),
+			lineBreak(WAR_INFO_LINE_WIDTH)
+		)
+
+		sender.sendMessage(builder.build())
+	}
+
+	private fun formatBar(points: Int): Component {
+		val midpoint = (WAR_INFO_LINE_WIDTH / 2) - 1
+
+		require(points in -1000..1000)
+
+		val barNumber = ((abs(points).toDouble() / 1000.0) * midpoint).toInt()
+
+		println(barNumber)
+
+		// ▍ characters are 1/3 of a regular character
+		val colored = text(repeatString("▍", barNumber * 3), NamedTextColor.GOLD)
+
+		val fullOther = formatExtraSpaces(midpoint)
+
+		return if (points > 1) {
+			ofChildren(
+				fullOther, colored, newline(),
+				fullOther, text("+$points Defender", NamedTextColor.GOLD)
+			)
+		} else {
+			val secondLine = "+${abs(points)}} Attacker"
+			val extra = midpoint - secondLine.length
+
+			ofChildren(
+				formatExtraSpaces(extra - barNumber), colored, newline(),
+				formatExtraSpaces(extra), text(secondLine, NamedTextColor.GOLD)
+			)
+		}
+	}
+
+	private fun formatExtraSpaces(amount: Int): Component {
+		val string = repeatString(" ", amount)
+
+		return text(string).font(ContactsSidebar.fontKey)
+	}
+
+	private fun formatSplitLine(left: Component, right: Component): Component {
+		left.font(ContactsSidebar.fontKey)
+		right.font(ContactsSidebar.fontKey)
+
+		val midpoint = WAR_INFO_LINE_WIDTH / 2
+		val leftAllowance = midpoint - left.plainText().length
+//		val rightAllowance = midpoint - right.plainText().length
+
+		return ofChildren(left, formatExtraSpaces(leftAllowance), right)
+	}
+
+	enum class PointReward() { //TODO
+		WARSHIP_KILL,
+		TRADE_SHIP_KILL,
+		SIEGE_WIN,
+		PLAYER_KILL,
+		HOLDING_STATION,
 	}
 }
